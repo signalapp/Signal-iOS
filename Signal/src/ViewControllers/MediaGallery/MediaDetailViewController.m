@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MediaDetailViewController () <UIScrollViewDelegate,
     UIGestureRecognizerDelegate,
     PlayerProgressBarDelegate,
-    OWSVideoPlayerDelegate>
+    OWSVideoPlayerDelegate,
+    LoopingVideoViewDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
@@ -95,16 +96,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    OWSAssertIsOnMainThread();
+    
     [super viewWillAppear:animated];
     [self resetMediaFrame];
+    
+    [self updateZoomScaleAndConstraints];
+    self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    OWSAssertIsOnMainThread();
+
     [super viewDidAppear:animated];
 
     if (self.isVideo && self.shouldAutoPlayVideo && !self.hasAutoPlayedVideo) {
-
         [self playVideo];
         self.hasAutoPlayedVideo = YES;
     }
@@ -263,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     LoopingVideoView *view = [[LoopingVideoView alloc] init];
     view.video = video;
+
     return view;
 }
 
@@ -282,6 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     VideoPlayerView *playerView = [VideoPlayerView new];
     playerView.player = player.avPlayer;
+
     return playerView;
 }
 
@@ -403,26 +412,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    CGSize newMediaSize
-        = CGSizeMake(MIN(scrollViewSize.width, mediaSize.width), MIN(scrollViewSize.height, mediaSize.height));
-    OWSAssertDebug(newMediaSize.width > 0);
-    OWSAssertDebug(newMediaSize.height > 0);
-
-    CGFloat scaleWidth = scrollViewSize.width / newMediaSize.width;
-    CGFloat scaleHeight = scrollViewSize.height / newMediaSize.height;
-    CGFloat minScale = MIN(scaleWidth, scaleHeight);
+    CGFloat scaleWidth = scrollViewSize.width / mediaSize.width;
+    CGFloat scaleHeight = scrollViewSize.height / mediaSize.height;
+    CGFloat minScale = MIN(1, MIN(scaleWidth, scaleHeight));
 
     // UIScrollView transforms its content.
     // Therefore its subviews operate in a different coordinate system.
     // These constraints should reflect the _transformed_ frame of the mediaView,
     // so we need to scale by the minScale.
-    CGSize newMediaSizeScaled = CGSizeScale(newMediaSize, minScale);
-    CGFloat yOffset = MAX(0, (scrollViewSize.height - newMediaSizeScaled.height) / 2);
-    CGFloat xOffset = MAX(0, (scrollViewSize.width - newMediaSizeScaled.width) / 2);
+    CGSize newMediaSize = CGSizeScale(mediaSize, minScale);
+    CGFloat yOffset = MAX(0, (scrollViewSize.height - newMediaSize.height) / 2);
+    CGFloat xOffset = MAX(0, (scrollViewSize.width - newMediaSize.width) / 2);
     self.mediaViewTopConstraint.constant = yOffset;
     self.mediaViewBottomConstraint.constant = yOffset;
     self.mediaViewLeadingConstraint.constant = xOffset;
-    self.mediaViewTrailingConstraint.constant = -xOffset;
+    self.mediaViewTrailingConstraint.constant = xOffset;
 
     CGFloat maxScale = minScale * 8;
     self.scrollView.minimumZoomScale = minScale;
@@ -546,6 +550,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark - LoopingVideoViewDelegate
+
+- (void)loopingVideoViewChangedPlayerItem {
+    OWSAssertIsOnMainThread();
+    
+    [self updateZoomScaleAndConstraints];
+    self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
+}
+
 @end
+
 
 NS_ASSUME_NONNULL_END

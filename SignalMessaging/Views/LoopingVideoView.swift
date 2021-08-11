@@ -113,8 +113,20 @@ private class LoopingVideoPlayer: AVPlayer {
     }
 }
 
+// MARK: -
+
+@objc
+public protocol LoopingVideoViewDelegate: AnyObject {
+    func loopingVideoViewChangedPlayerItem()
+}
+
+// MARK: -
+
 @objc
 public class LoopingVideoView: UIView {
+    @objc
+    public weak var delegate: LoopingVideoViewDelegate?
+
     private let player = LoopingVideoPlayer()
 
     @objc
@@ -125,16 +137,25 @@ public class LoopingVideoView: UIView {
             invalidateIntrinsicContentSize()
 
             if let assetPromise = video?.assetPromise {
-                assetPromise.done(on: .global(qos: .userInitiated)) { asset in
-                    guard asset === self.video?.asset else { return }
-
-                    if let asset = asset {
-                        let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
-                        self.player.replaceCurrentItem(with: playerItem)
-                        self.player.play()
-
-                        DispatchQueue.main.async { self.invalidateIntrinsicContentSize() }
+                firstly {
+                    assetPromise
+                }.map(on: .global(qos: .userInitiated)) { [weak self] asset -> Bool in
+                    guard let self = self,
+                          let asset = asset,
+                          asset === self.video?.asset else {
+                        return false
                     }
+                    let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
+                    self.player.replaceCurrentItem(with: playerItem)
+                    self.player.play()
+                    return true
+                }.done(on: .main) { [weak self] didLoadPlayer in
+                    guard let self = self,
+                          didLoadPlayer else {
+                        return
+                    }
+                    self.invalidateIntrinsicContentSize()
+                    self.delegate?.loopingVideoViewChangedPlayerItem()
                 }
             }
         }
@@ -182,8 +203,7 @@ public class LoopingVideoView: UIView {
         return asset.tracks(withMediaType: .video)
             .map { $0.naturalSize }
             .reduce(.zero) {
-                CGSize(width: max($0.width, $1.width),
-                       height: max($0.height, $1.height))
+                CGSizeMax($0, $1)
             }
     }
 }
