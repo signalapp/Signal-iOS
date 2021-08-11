@@ -270,6 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     LoopingVideoView *view = [[LoopingVideoView alloc] init];
     view.video = video;
+    view.delegate = self;
 
     return view;
 }

@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "Isyarat perlu menggunakan Apple Music untuk memainkan lampiran media.";
+NSCameraUsageDescription = "Isyarat menggunakan kamera anda untuk mengambil gambar dan untuk panggilan video.";
+NSContactsUsageDescription = "Isyarat menggunakan kenalan anda untuk mencari pengguna yang anda kenali. Kami tidak menyimpan kenalan anda di pelayan.";
+NSFaceIDUsageDescription = "Kunci Skrin Isyarat menggunakan ID Wajah.";
+NSLocationWhenInUseUsageDescription = "Isyarat memerlukan akses ke lokasi anda untuk berkongsi lokasi semasa anda.";
+NSMicrophoneUsageDescription = "Isyarat memerlukan akses ke mikrofon anda untuk membuat dan menerima panggilan telefon dan merakam pesanan suara.";
+NSPhotoLibraryAddUsageDescription = "Isyarat akan menyimpan foto ke perpustakaan anda.";
+NSPhotoLibraryUsageDescription = "Isyarat akan membolehkan anda memilih foto dari perpustakaan anda untuk dihantar.";
+NSLocalNetworkUsageDescription = "Signal menggunakan rangkaian tempatan untuk membolehkan anda memindahkan akaun anda secara langsung ke telefon baru. Ia tidak akan digunakan melainkan anda secara jelas memilih untuk melakukan pemindahan ke peranti baru.";

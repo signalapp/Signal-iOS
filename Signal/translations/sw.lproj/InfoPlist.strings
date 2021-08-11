@@ -1,0 +1,9 @@
+NSAppleMusicUsageDescription = "Ishara inahitaji kutumia Apple Music kucheza viambatisho vya media.";
+NSCameraUsageDescription = "Signal hutumia kamera yako kupiga picha na kupiga simu za video.";
+NSContactsUsageDescription = "Ishara hutumia anwani zako kupata watumiaji unaowajua. Hatuhifadhi anwani zako kwenye seva.";
+NSFaceIDUsageDescription = "Screen Lock ya Signal inatumia ID ya Uso.";
+NSLocationWhenInUseUsageDescription = "Ishara inahitaji ufikiaji wa eneo lako ili kushiriki eneo lako la sasa.";
+NSMicrophoneUsageDescription = "Ishara inahitaji ufikiaji wa maikrofoni yako ili kupiga na kupokea simu na kurekodi ujumbe wa sauti.";
+NSPhotoLibraryAddUsageDescription = "Ishara itahifadhi picha kwenye maktaba yako.";
+NSPhotoLibraryUsageDescription = "Ishara itakuruhusu uchague picha kutoka maktaba yako utumie.";
+NSLocalNetworkUsageDescription = "Ishara hutumia mtandao wa karibu kukuruhusu kuhamisha akaunti yako moja kwa moja kwa simu mpya. Haitatumika isipokuwa uchague wazi kuanzisha uhamisho kwa kifaa kipya.";
