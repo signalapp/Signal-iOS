@@ -7,7 +7,7 @@ PODS:
   - AFNetworking/Security (3.2.1)
   - AFNetworking/Serialization (3.2.1)
   - blurhash (0.0.1)
-  - BonMot (5.6.0)
+  - BonMot (6.0.0)
   - CGRPCZlib (1.0.0)
   - CNIOAtomics (2.27.0)
   - CNIOBoringSSL (2.10.5)
@@ -386,7 +386,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
-  BonMot: 2217a66e5ddc6a8d2ffb759fe8c85a8528e0d3e7
+  BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CGRPCZlib: b0c9d704a12fa667f1824ffff20688f191945989
   CNIOAtomics: 43316aa185f4bd639aa0a9cd49741151bbe8de7f
   CNIOBoringSSL: 7ff9c35139a115f93269915b9555044d741b2ac9
