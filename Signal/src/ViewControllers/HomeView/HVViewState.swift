@@ -8,10 +8,14 @@ import Foundation
 public class HVViewState: NSObject {
 
     public let tableDataSource = HVTableDataSource()
-    public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
-    let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
 
     public let loadCoordinator = HVLoadCoordinator()
+
+    // MARK: - Caches
+
+    public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
+    let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
+    public var conversationCellHeight: CGFloat?
 
     // MARK: - Views
 
@@ -53,13 +57,21 @@ public extension HomeViewController {
 
     var tableDataSource: HVTableDataSource { viewState.tableDataSource }
 
+    var loadCoordinator: HVLoadCoordinator { viewState.loadCoordinator }
+
+    // MARK: - Caches
+
     @nonobjc
     var threadViewModelCache: LRUCache<String, ThreadViewModel> { viewState.threadViewModelCache }
 
     @nonobjc
     internal var cellContentCache: LRUCache<String, HVCellContentToken> { viewState.cellContentCache }
 
-    var loadCoordinator: HVLoadCoordinator { viewState.loadCoordinator }
+    @nonobjc
+    var conversationCellHeight: CGFloat? {
+        get { viewState.conversationCellHeight }
+        set { viewState.conversationCellHeight = newValue }
+    }
 
     // MARK: - Views
 
