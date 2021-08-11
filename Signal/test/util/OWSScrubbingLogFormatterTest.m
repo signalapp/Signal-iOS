@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSScrubbingLogFormatterTest : SignalBaseTest
 
 @property (nonatomic) NSDate *testDate;
+@property (nonatomic) OWSScrubbingLogFormatter *formatter;
+@property (nonatomic) NSUInteger datePrefixLength;
 
 @end
 
@@ -24,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     self.testDate = [NSDate new];
+    self.formatter = [[OWSScrubbingLogFormatter alloc] init];
+
+    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
+    self.datePrefixLength = [self.formatter formatLogMessage:[self messageWithString:@""]].length;
 }
 
 - (void)tearDown
@@ -77,22 +83,12 @@ NS_ASSUME_NONNULL_BEGIN
             @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
     };
 
-    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-
-    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
-    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
-
     for (NSString *input in expectedOutputs) {
-
-        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:input]];
-
-        // strip out dynamic date portion of log line
-        NSString *actual =
-            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
-
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+        NSString *result = [self stripDateFromMessage:rawResult];
         NSString *expected = expectedOutputs[input];
 
-        XCTAssertEqualObjects(expected, actual);
+        XCTAssertEqualObjects(expected, result, @"Failed redaction: %@", input);
     }
 }
 
@@ -129,22 +125,12 @@ NS_ASSUME_NONNULL_BEGIN
         @"0x8765432189ab1234}" : @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
     };
 
-    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-
-    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
-    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
-
     for (NSString *input in expectedOutputs) {
-
-        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:input]];
-
-        // strip out dynamic date portion of log line
-        NSString *actual =
-            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
-
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+        NSString *result = [self stripDateFromMessage:rawResult];
         NSString *expected = expectedOutputs[input];
 
-        XCTAssertEqualObjects(expected, actual);
+        XCTAssertEqualObjects(expected, result, @"Failed redaction: %@", input);
     }
 }
 
@@ -177,22 +163,12 @@ NS_ASSUME_NONNULL_BEGIN
         [NSData dataFromHexString:@"999999"] : @"[ REDACTED_DATA:99... ]",
     };
 
-    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+    for (NSData *input in expectedOutputs) {
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input.description]];
+        NSString *result = [self stripDateFromMessage:rawResult];
+        NSString *expected = expectedOutputs[input];
 
-    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
-    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
-
-    for (NSData *rawData in expectedOutputs) {
-
-        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:rawData.description]];
-
-        // strip out dynamic date portion of log line
-        NSString *actual =
-            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
-
-        NSString *expected = expectedOutputs[rawData];
-
-        XCTAssertEqualObjects(expected, actual);
+        XCTAssertEqualObjects(expected, result, @"Failed redaction: %@", input);
     }
 }
 
@@ -203,34 +179,27 @@ NS_ASSUME_NONNULL_BEGIN
                                           @"+4113331231234",
                                           @"+13331231234 something something +13331231234",
                                           ];
-    
+
     for (NSString *phoneString in phoneStrings) {
-        OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-        NSString *messageText = [NSString stringWithFormat:@"My phone number is %@", phoneString];
-        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
-        NSRange redactedRange = [actual rangeOfString:@"My phone number is [ REDACTED_PHONE_NUMBER:xxx234 ]"];
-        XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact phone string: %@", phoneString);
-        
-        NSRange phoneNumberRange = [actual rangeOfString:phoneString];
-        XCTAssertEqual(NSNotFound, phoneNumberRange.location, "Failed to redact phone string: %@", phoneString);
+        NSString *input = [NSString stringWithFormat:@"My phone number is %@", phoneString];
+        NSString *result = [self.formatter formatLogMessage:[self messageWithString:input]];
+
+        NSString *expectation = @"My phone number is [ REDACTED_PHONE_NUMBER:xxx234 ]";
+        XCTAssertTrue([result containsString:expectation], "Failed to redact phone string: %@", phoneString);
+        XCTAssertFalse([result containsString:phoneString], "Failed to redact phone string: %@", phoneString);
     }
 }
 
 - (void)testNonPhoneNumberNotScrubbed
 {
-    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-    NSString *actual =
-        [formatter formatLogMessage:[self messageWithString:[NSString stringWithFormat:@"Some unfiltered string"]]];
-
-    NSRange redactedRange = [actual rangeOfString:@"Some unfiltered string"];
-    XCTAssertNotEqual(NSNotFound, redactedRange.location, "Shouldn't touch non phone string.");
+    NSString *input = @"Some unfiltered string";
+    NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+    NSString *result = [self stripDateFromMessage:rawResult];
+    XCTAssertEqualObjects(input, result, "Shouldn't touch non phone string.");
 }
 
 - (void)testIPAddressesScrubbed
 {
-    id<DDLogFormatter> scrubbingFormatter = [OWSScrubbingLogFormatter new];
-    id<DDLogFormatter> defaultFormatter = [DDLogFileFormatterDefault new];
-
     NSDictionary<NSString *, NSString *> *valueMap = @{
         @"0.0.0.0" : @"[ REDACTED_IPV4_ADDRESS:...0 ]",
         @"127.0.0.1" : @"[ REDACTED_IPV4_ADDRESS:...1 ]",
@@ -252,20 +221,14 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *redactedIPAddress = valueMap[ipAddress];
 
         for (NSString *messageFormat in messageFormats) {
-            NSString *message = [messageFormat stringByReplacingOccurrencesOfString:@"%@" withString:ipAddress];
+            NSString *input = [messageFormat stringByReplacingOccurrencesOfString:@"%@" withString:ipAddress];
+            NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+            NSString *result = [self stripDateFromMessage:rawResult];
+            NSString *expected = [messageFormat stringByReplacingOccurrencesOfString:@"%@"
+                                                                          withString:redactedIPAddress];
 
-            NSString *unredactedMessage = [defaultFormatter formatLogMessage:[self messageWithString:messageFormat]];
-            NSString *expectedRedactedMessage = [defaultFormatter
-                formatLogMessage:[self messageWithString:[messageFormat
-                                                             stringByReplacingOccurrencesOfString:@"%@"
-                                                                                       withString:redactedIPAddress]]];
-            NSString *redactedMessage = [scrubbingFormatter formatLogMessage:[self messageWithString:message]];
-
-            XCTAssertEqualObjects(
-                expectedRedactedMessage, redactedMessage, @"Scrubbing failed for message: %@", unredactedMessage);
-
-            NSRange ipAddressRange = [redactedMessage rangeOfString:ipAddress];
-            XCTAssertEqual(NSNotFound, ipAddressRange.location, "Failed to redact IP address: %@", unredactedMessage);
+            XCTAssertFalse([result containsString:ipAddress], "Failed to redact IP address: %@", input);
+            XCTAssertEqualObjects(result, expected, @"Failed redaction: %@", input);
         }
     }
 }
@@ -280,29 +243,85 @@ NS_ASSUME_NONNULL_BEGIN
                                          ];
     
     for (NSString *uuidString in uuidStrings) {
-        OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-        NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
-        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
-        NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"];
-        XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
-        
-        NSRange uuidRange = [actual rangeOfString:uuidString];
-        XCTAssertEqual(NSNotFound, uuidRange.location, "Failed to redact UUID string: %@", uuidString);
+        NSString *input = [NSString stringWithFormat:@"My UUID is %@", uuidString];
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+
+        NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx";
+        XCTAssertTrue([rawResult containsString:expectation], "Failed to redact UUID string: %@", uuidString);
+        XCTAssertFalse([rawResult containsString:uuidString], "Failed to redact UUID string: %@", uuidString);
     }
 }
 
 - (void)testUUIDsScrubbed_Specific
 {
     NSString *uuidString = @"BAF1768C-2A25-4D8F-83B7-A89C59C98748";
-    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
-    NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
-    NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
-    OWSLogVerbose(@"actual: %@", actual);
-    NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]"];
-    XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
-    
-    NSRange uuidRange = [actual rangeOfString:uuidString];
-    XCTAssertEqual(NSNotFound, uuidRange.location, "Failed to redact UUID string: %@", uuidString);
+    NSString *input = [NSString stringWithFormat:@"My UUID is %@", uuidString];
+
+    NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+    NSString *result = [self stripDateFromMessage:rawResult];
+
+    NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]";
+    XCTAssertEqualObjects(result, expectation, "Failed to redact UUID string: %@", uuidString);
+    XCTAssertFalse([result containsString:uuidString], "Failed to redact UUID string: %@", uuidString);
+}
+
+- (void)testTimestampsNotScrubbed
+{
+    // A couple sample messages from our logs
+    NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        // No change:
+        @"Sending message: TSOutgoingMessage, timestamp: %llu" : @"Sending message: TSOutgoingMessage, timestamp: %llu",
+        // Leave timestamp, but UUID and phone number should be redacted
+        @"attempting to send message: TSOutgoingMessage, timestamp: %llu, recipient: <SignalServiceAddress "
+        @"phoneNumber: +12345678900, uuid: BAF1768C-2A25-4D8F-83B7-A89C59C98748>" :
+            @"attempting to send message: TSOutgoingMessage, timestamp: %llu, recipient: <SignalServiceAddress "
+            @"phoneNumber: [ REDACTED_PHONE_NUMBER:xxx900 ], uuid: [ "
+            @"REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]>",
+    };
+
+    for (NSString *inputFormat in expectedOutputs) {
+        uint64_t timestamp = [[NSDate date] ows_millisecondsSince1970];
+        NSString *input = [NSString stringWithFormat:inputFormat, timestamp];
+
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+        NSString *result = [self stripDateFromMessage:rawResult];
+
+        NSString *expectationFormat = expectedOutputs[inputFormat];
+        NSString *expectation = [NSString stringWithFormat:expectationFormat, timestamp];
+
+        XCTAssertEqualObjects(result, expectation);
+    }
+}
+
+- (void)testLongHexStrings
+{
+    NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"" : @"",
+        @"01" : @"01",
+        @"0102" : @"0102",
+        @"010203" : @"010203",
+        @"01020304" : @"01020304",
+        @"0102030405" : @"0102030405",
+        @"010203040506" : @"010203040506",
+        @"01020304050607" : @"[ REDACTED_HEX:...607 ]",
+        @"0102030405060708" : @"[ REDACTED_HEX:...708 ]",
+        @"010203040506070809" : @"[ REDACTED_HEX:...809 ]",
+        @"010203040506070809ab" : @"[ REDACTED_HEX:...9ab ]",
+        @"010203040506070809abcd" : @"[ REDACTED_HEX:...bcd ]",
+    };
+
+    for (NSString *input in expectedOutputs) {
+        NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
+        NSString *result = [self stripDateFromMessage:rawResult];
+        NSString *expected = expectedOutputs[input];
+
+        XCTAssertEqualObjects(expected, result, @"Failed redaction: %@", input);
+    }
+}
+
+- (NSString *)stripDateFromMessage:(NSString *)rawMessage
+{
+    return [rawMessage substringFromIndex:self.datePrefixLength];
 }
 
 @end

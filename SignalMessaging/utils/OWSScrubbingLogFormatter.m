@@ -98,10 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
     static NSRegularExpression *regex = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        // Any hex string of 12 chars (6 bytes) or more.
+        // Any hex string of 14 chars (7 bytes) or more.
         // Example: A321CCE01BA2C85D
         NSError *error;
-        regex = [NSRegularExpression regularExpressionWithPattern:@"[\\da-f]{9,}([\\da-f]{3})"
+        regex = [NSRegularExpression regularExpressionWithPattern:@"[\\da-f]{11,}([\\da-f]{3})"
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
         if (error || !regex) {
