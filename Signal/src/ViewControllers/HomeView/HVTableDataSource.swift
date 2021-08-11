@@ -69,6 +69,122 @@ extension HVTableDataSource {
     }
 }
 
+// MARK: - UIScrollViewDelegate
+
+extension HVTableDataSource: UIScrollViewDelegate {
+
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("----")
+
+        preloadCellsIfNecessary()
+    }
+
+    private func preloadCellsIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        let newContentOffset = tableView.contentOffset
+        defer {
+            viewController.lastKnownTableViewContentOffset = newContentOffset
+        }
+        guard let oldContentOffset = viewController.lastKnownTableViewContentOffset else {
+            return
+        }
+        let deltaY = (newContentOffset - oldContentOffset).y
+        let isScrollingDownward = deltaY > 0
+
+        Logger.verbose("---- deltaY: \(deltaY), isScrollingDownward: \(isScrollingDownward), ")
+        guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
+            owsFailDebug("Missing visibleIndexPaths.")
+            return
+        }
+        let conversationIndexPaths = visibleIndexPaths.compactMap { indexPath -> IndexPath? in
+            guard let section = HomeViewSection(rawValue: indexPath.section) else {
+                owsFailDebug("Invalid section: \(indexPath.section).")
+                return nil
+            }
+
+            switch section {
+            case .reminders:
+                return nil
+            case .pinned, .unpinned:
+                return indexPath
+            case .archiveButton:
+                return nil
+            }
+        }
+        guard !conversationIndexPaths.isEmpty else {
+            return
+        }
+        let sortedIndexPaths = conversationIndexPaths.sorted()
+        var indexPathsToPreload = [IndexPath]()
+        func tryToEnqueue(_ indexPath: IndexPath) {
+            let rowCount = numberOfRows(inSection: indexPath.section)
+            guard indexPath.row >= 0,
+                  indexPath.row < rowCount else {
+                return
+            }
+            indexPathsToPreload.append(indexPath)
+        }
+
+        if isScrollingDownward {
+            guard let lastIndexPath = sortedIndexPaths.last else {
+                owsFailDebug("Missing indexPath.")
+                return
+            }
+            Logger.verbose("---- lastIndexPath: \(lastIndexPath), ")
+            // Order matters; we want to preload in order of proximity
+            // to viewport.
+            tryToEnqueue(IndexPath(row: lastIndexPath.row + 1,
+                                   section: lastIndexPath.section))
+            tryToEnqueue(IndexPath(row: lastIndexPath.row + 2,
+                                   section: lastIndexPath.section))
+            tryToEnqueue(IndexPath(row: lastIndexPath.row + 3,
+                                   section: lastIndexPath.section))
+        } else {
+            guard let firstIndexPath = sortedIndexPaths.first else {
+                owsFailDebug("Missing indexPath.")
+                return
+            }
+            guard firstIndexPath.row > 0 else {
+                return
+            }
+            Logger.verbose("---- firstIndexPath: \(firstIndexPath), ")
+            // Order matters; we want to preload in order of proximity
+            // to viewport.
+            tryToEnqueue(IndexPath(row: firstIndexPath.row - 1,
+                                   section: firstIndexPath.section))
+            tryToEnqueue(IndexPath(row: firstIndexPath.row - 2,
+                                   section: firstIndexPath.section))
+            tryToEnqueue(IndexPath(row: firstIndexPath.row - 3,
+                                   section: firstIndexPath.section))
+        }
+        Logger.verbose("---- sortedIndexPaths: \(sortedIndexPaths), ")
+
+        for indexPath in indexPathsToPreload {
+            Logger.verbose("---- indexPathToPreload: \(indexPath), ")
+
+            preloadCellIfNecessaryAsync(indexPath: indexPath)
+        }
+    }
+
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        AssertIsOnMainThread()
+
+        guard let viewController = viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+
+        viewController.dismissSearchKeyboard()
+    }
+}
+
 // MARK: -
 
 @objc
@@ -320,6 +436,12 @@ extension HVTableDataSource: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         AssertIsOnMainThread()
 
+        return numberOfRows(inSection: section)
+    }
+
+    fileprivate func numberOfRows(inSection section: Int) -> Int {
+        AssertIsOnMainThread()
+
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return 0
@@ -396,26 +518,32 @@ extension HVTableDataSource: UITableViewDataSource {
     private func measureConversationCell(tableView: UITableView, indexPath: IndexPath) -> CGFloat {
         AssertIsOnMainThread()
 
-        guard let configuration = cellConfiguration(forIndexPath: indexPath) else {
-            owsFailDebug("Missing configuration.")
+        Logger.verbose("---- measureConversationCell 1: \(indexPath)")
+
+        guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
+            owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableView.automaticDimension
         }
-        return HomeViewCell.measureCellHeight(configuration: configuration)
+        return HomeViewCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
     }
 
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
+        Logger.verbose("---- buildConversationCell 1: \(indexPath)")
+
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
             owsFailDebug("Invalid cell.")
             return UITableViewCell()
         }
-        guard let configuration = cellConfiguration(forIndexPath: indexPath) else {
-            owsFailDebug("Missing configuration.")
+        guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
+            owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableViewCell()
         }
+        let configuration = cellConfigurationAndContentToken.configuration
+        let contentToken = cellConfigurationAndContentToken.contentToken
 
-        cell.configure(configuration: configuration)
+        cell.configure(cellContentToken: contentToken)
 
         let thread = configuration.thread.threadRecord
         let cellName: String = {
@@ -437,34 +565,6 @@ extension HVTableDataSource: UITableViewDataSource {
         }
 
         return cell
-    }
-
-    private func cellConfiguration(forIndexPath indexPath: IndexPath) -> HomeViewCell.Configuration? {
-        AssertIsOnMainThread()
-
-        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-            owsFailDebug("Missing threadViewModel.")
-            return nil
-        }
-        guard let viewController = self.viewController else {
-            owsFailDebug("Missing viewController.")
-            return nil
-        }
-
-        let lastReloadDate: Date? = {
-            guard viewState.hasEverAppeared else {
-                return nil
-            }
-            return self.lastReloadDate
-        }()
-        owsAssertDebug(threadViewModel.homeViewInfo != nil)
-        let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
-        let cellContentCache = viewController.cellContentCache
-        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
-                                                       lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked,
-                                                       cellContentCache: cellContentCache)
-        return configuration
     }
 
     private func isConversationActive(forThread thread: TSThread) -> Bool {
@@ -704,6 +804,140 @@ extension HVTableDataSource: UITableViewDataSource {
 
             // The first action will be auto-performed for "very long swipes".
             return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
+        }
+    }
+}
+
+// MARK: -
+
+extension HVTableDataSource {
+
+    fileprivate struct HVCellConfigurationAndContentToken {
+        let configuration: HomeViewCell.Configuration
+        let contentToken: HVCellContentToken
+    }
+
+    // This method can be called from any thread.
+    private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
+                                               lastReloadDate: Date?) -> HomeViewCell.Configuration {
+        owsAssertDebug(threadViewModel.homeViewInfo != nil)
+
+        let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
+        let configuration = HomeViewCell.Configuration(thread: threadViewModel,
+                                                       lastReloadDate: lastReloadDate,
+                                                       isBlocked: isBlocked)
+        return configuration
+    }
+
+    fileprivate func buildCellConfigurationAndContentTokenSync(forIndexPath indexPath: IndexPath) -> HVCellConfigurationAndContentToken? {
+        AssertIsOnMainThread()
+
+        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+            owsFailDebug("Missing threadViewModel.")
+            return nil
+        }
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return nil
+        }
+        let lastReloadDate: Date? = {
+            guard viewState.hasEverAppeared else {
+                return nil
+            }
+            return self.lastReloadDate
+        }()
+        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
+                                                        lastReloadDate: lastReloadDate)
+        let cellContentCache = viewController.cellContentCache
+        let contentToken = { () -> HVCellContentToken in
+            // If we have an existing HVCellContentToken, use it.
+            // Cell measurement/arrangement is expensive.
+            let cacheKey = configuration.thread.threadRecord.uniqueId
+            if let cellContentToken = cellContentCache.get(key: cacheKey) {
+                return cellContentToken
+            }
+
+            let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+            cellContentCache.set(key: cacheKey, value: cellContentToken)
+            return cellContentToken
+        }()
+        return HVCellConfigurationAndContentToken(configuration: configuration,
+                                                  contentToken: contentToken)
+    }
+
+    // TODO: It would be preferable to figure out some way to use ReverseDispatchQueue.
+    private static let preloadSerialQueue = DispatchQueue(label: "HVTableDataSource.preloadSerialQueue")
+
+    fileprivate func preloadCellIfNecessaryAsync(indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("---- preloadCellIfNecessaryAsync 1: \(indexPath)")
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        // These caches should only be accessed on the main thread.
+        // They are thread-safe, but we don't want to race with a reset.
+        let cellContentCache = viewController.cellContentCache
+        let threadViewModelCache = viewController.threadViewModelCache
+        // Take note of the cache reset counts. If either cache is reset
+        // before we complete, discard the outcome of the preload.
+        let cellContentCacheResetCount = cellContentCache.resetCount
+        let threadViewModelCacheResetCount = threadViewModelCache.resetCount
+
+        guard let thread = self.thread(forIndexPath: indexPath) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        let cacheKey = thread.uniqueId
+        if nil != cellContentCache.get(key: cacheKey) {
+            // If we already have an existing HVCellContentToken, abort.
+            return
+        }
+
+        let lastReloadDate: Date? = {
+            guard viewState.hasEverAppeared else {
+                return nil
+            }
+            return self.lastReloadDate
+        }()
+
+        // We use a serial queue to ensure we don't race and preload the same cell
+        // twice at the same time.
+        firstly(on: Self.preloadSerialQueue) { () -> (ThreadViewModel, HVCellContentToken) in
+            // This is the expensive work we do off the main thread.
+            let threadViewModel = Self.databaseStorage.read { transaction in
+                ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
+            }
+            let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
+                                                            lastReloadDate: lastReloadDate)
+            let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+            return (threadViewModel, contentToken)
+        }.done(on: .main) { (threadViewModel: ThreadViewModel,
+                             contentToken: HVCellContentToken) in
+            // Commit the preloaded values to their respective caches.
+            guard cellContentCacheResetCount == cellContentCache.resetCount else {
+                Logger.info("cellContentCache was reset.")
+                return
+            }
+            guard threadViewModelCacheResetCount == threadViewModelCache.resetCount else {
+                Logger.info("cellContentCache was reset.")
+                return
+            }
+            if nil == threadViewModelCache.get(key: cacheKey) {
+                threadViewModelCache.set(key: cacheKey, value: threadViewModel)
+            } else {
+                Logger.info("threadViewModel already loaded.")
+            }
+            if nil == cellContentCache.get(key: cacheKey) {
+                cellContentCache.set(key: cacheKey, value: contentToken)
+            } else {
+                Logger.info("contentToken already loaded.")
+            }
+            Logger.verbose("---- preloadCellIfNecessaryAsync 2: \(indexPath)")
+        }.catch(on: .global()) { error in
+            owsFailDebugUnlessNetworkFailure(error)
         }
     }
 }
