@@ -426,7 +426,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // fail over to the snapshot.
                         return true
                     default:
-                        owsFailDebug("Error: \(error)")
+                        owsFailDebugUnlessNetworkFailure(error)
                         return false
                     }
                 }()
