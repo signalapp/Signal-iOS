@@ -1,4 +1,4 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• Gambar mungkin bernilai 1k perkataan, tetapi sekarang anda boleh menghantarnya dalam 4k. Gunakan pemilih kualiti baru untuk menghantar foto beresolusi tinggi secara pilihan. Anda juga boleh lalai untuk selalu mengirim foto beresolusi lebih tinggi dalam Tetapan&gt; Penggunaan Data.
+• Apabila anda lama menekan pesan, menu baru yang pantas membolehkan anda bertindak balas, membalas, menghapus, dan lain-lain dengan cepat.
+• Memperkenalkan &quot;Kehidupan Harian Saya&quot;, pek pelekat animasi baru oleh artis Plastic Thing.
+• Kami telah membuat beberapa penambahbaikan untuk membantu menatal senarai sembang anda dengan lebih lancar.

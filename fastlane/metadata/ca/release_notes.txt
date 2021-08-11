@@ -1,4 +1,4 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• Una imatge pot valer 1k paraules, però ara les podeu enviar en 4k. Useu el nou selector de qualitat per enviar opcionalment fotografies de més resolució. També podeu enviar per defecte sempre fotografies de més alta resolució a Configuració > Ús de dades.
+• Quan premeu un missatge durant estona, un menú àgil nou us permetrà reaccionar, respondre, suprimir i molt més ràpidament.
+• Us presentem La meva vida quotidiana, un nou paquet d’adhesius animats de l’artista Plastic Thing.
+• Hem fet diverses millores per ajudar-vos a desplaçar-vos més fàcilment per la llista de converses.
