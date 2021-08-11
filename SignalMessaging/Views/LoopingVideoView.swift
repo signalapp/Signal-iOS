@@ -126,7 +126,7 @@ public protocol LoopingVideoViewDelegate: AnyObject {
 public class LoopingVideoView: UIView {
     @objc
     public weak var delegate: LoopingVideoViewDelegate?
-    
+
     private let player = LoopingVideoPlayer()
 
     @objc
@@ -203,8 +203,7 @@ public class LoopingVideoView: UIView {
         return asset.tracks(withMediaType: .video)
             .map { $0.naturalSize }
             .reduce(.zero) {
-                CGSize(width: max($0.width, $1.width),
-                       height: max($0.height, $1.height))
+                CGSizeMax($0, $1)
             }
     }
 }
