@@ -144,28 +144,50 @@ public extension TSOutgoingMessage {
     }
 }
 
-// MARK: Message Send Log
+// MARK: Sender Key + Message Send Log
 
 extension TSOutgoingMessage {
 
-    // Subclasses should override to include any related interaction ids
-    // This is used to help prune the Message Send Log. eg. deleting a message
-    // will trigger a delete of a reaction payload for that message.
+    /// A collection of message unique IDs related to the outgoing message
+    ///
+    /// Used to help prune the Message Send Log. For example, a properly annotated outgoing reaction
+    /// message will automatically be deleted from the Message Send Log when the reacted message is
+    /// deleted.
+    ///
+    /// Subclasses should override to include any interactionIds their specific subclass relates to. Subclasses
+    /// *probably* want to return a union with the results of their parent class' implementation
     @objc
     var relatedUniqueIds: Set<String> {
         Set([self.uniqueId])
     }
 
-    // Most messages are resendable by default
-    // `.default` should be used if the message contains content but will most
-    // likely not be resent (e.g. a call message)
-    // `.implicit` should be used if the message contains no user-visible content
-    // and will not be resent (e.g. sync requests)
+    /// Returns a content hint appropriate for representing this content
+    ///
+    /// If a message is sent with sealed sender, this will be included inside the envelope. A recipient who's
+    /// able to decrypt the envelope, but unable to decrypt the inner content can use this to infer how to
+    /// handle recovery based on the user-visibility of the content and likelihood of recovery.
+    ///
+    /// See: SealedSenderContentHint
     @objc
     var contentHint: SealedSenderContentHint {
         .resendable
     }
 
+    /// Returns a groupId relevant to the message. This is included in the envelope, outside the content encryption.
+    ///
+    /// Usually, this will be the groupId of the target thread. However, there's a special case here where message resend
+    /// responses will inherit the groupId of the original message. This probably shouldn't be overriden by anything except
+    /// OWSOutgoingMessageResendResponse
+    @objc
+    func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? {
+        (thread(transaction: transaction) as? TSGroupThread)?.groupId
+    }
+
+    /// Indicates whether or not this message's proto should be saved into the MessageSendLog
+    ///
+    /// Anything high volume or time-dependent (typing indicators, calls, etc.) should set this false.
+    /// A non-resendable content hint does not necessarily mean this should be false set false (though
+    /// it is a good indicator)
     @objc
     var shouldRecordSendLog: Bool { true }
 }

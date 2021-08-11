@@ -4,10 +4,23 @@
 
 import SignalClient
 
+/// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
 public enum SealedSenderContentHint: Int {
+    /// Indicates that the content of a message is user-visible and will not be resent.
+    /// Insert a placeholder: No
+    /// Show error to user: Yes, immediately
+    /// Send DecryptionErrorMessage: Yes (to request a session reset)
     case `default` = 0
+    /// Indicates that the content of a message is user-visible and likely to be resent.
+    /// Insert a placeholder: Yes
+    /// Show error to user: Yes, after some deferral period
+    /// Send DecryptionErrorMessage: Yes (for resend if possible, session reset otherwise)
     case resendable
+    /// Indicates that the content of a message is not user-visible and will not be resent.
+    /// Insert a placeholder: No
+    /// Show error to user: No
+    /// Send DecryptionErrorMessage: Yes (to request session reset)
     case implicit
 
     init(_ signalClientHint: UnidentifiedSenderMessageContent.ContentHint) {
