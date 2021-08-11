@@ -2176,13 +2176,17 @@ public class GroupManager: NSObject {
 
         switch infoMessagePolicy {
         case .always, .updatesOnly:
-            insertGroupUpdateInfoMessage(groupThread: groupThread,
-                                         oldGroupModel: oldGroupModel,
-                                         newGroupModel: newGroupModel,
-                                         oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
-                                         newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
-                                         groupUpdateSourceAddress: groupUpdateSourceAddress,
-                                         transaction: transaction)
+            let infoMessage = insertGroupUpdateInfoMessage(groupThread: groupThread,
+                                                           oldGroupModel: oldGroupModel,
+                                                           newGroupModel: newGroupModel,
+                                                           oldDisappearingMessageToken: updateDMResult.oldDisappearingMessageToken,
+                                                           newDisappearingMessageToken: updateDMResult.newDisappearingMessageToken,
+                                                           groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                                           transaction: transaction)
+            if let infoMessage = infoMessage,
+               DebugFlags.internalLogging {
+                owsAssertDebug(!infoMessage.isEmptyGroupUpdate(transaction: transaction))
+            }
         default:
             break
         }
@@ -2218,16 +2222,18 @@ public class GroupManager: NSObject {
     // MARK: - "Group Update" Info Messages
 
     // NOTE: This should only be called by GroupManager and by DebugUI.
+    @discardableResult
     public static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,
                                                     oldGroupModel: TSGroupModel?,
                                                     newGroupModel: TSGroupModel,
                                                     oldDisappearingMessageToken: DisappearingMessageToken?,
                                                     newDisappearingMessageToken: DisappearingMessageToken,
                                                     groupUpdateSourceAddress: SignalServiceAddress?,
-                                                    transaction: SDSAnyWriteTransaction) {
+                                                    transaction: SDSAnyWriteTransaction) -> TSInfoMessage? {
 
         guard let localAddress = tsAccountManager.localAddress else {
-            return owsFailDebug("missing local address")
+            owsFailDebug("missing local address")
+            return nil
         }
 
         var userInfo: [InfoMessageUserInfoKey: Any] = [
@@ -2266,6 +2272,7 @@ public class GroupManager: NSObject {
                 transaction: transaction
             )
         }
+        return infoMessage
     }
 
     // MARK: - Capabilities
