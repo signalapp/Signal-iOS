@@ -76,8 +76,6 @@ extension HVTableDataSource: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         AssertIsOnMainThread()
 
-        Logger.verbose("----")
-
         preloadCellsIfNecessary()
     }
 
@@ -98,7 +96,6 @@ extension HVTableDataSource: UIScrollViewDelegate {
         let deltaY = (newContentOffset - oldContentOffset).y
         let isScrollingDownward = deltaY > 0
 
-        Logger.verbose("---- deltaY: \(deltaY), isScrollingDownward: \(isScrollingDownward), ")
         guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
             owsFailDebug("Missing visibleIndexPaths.")
             return
@@ -137,7 +134,6 @@ extension HVTableDataSource: UIScrollViewDelegate {
                 owsFailDebug("Missing indexPath.")
                 return
             }
-            Logger.verbose("---- lastIndexPath: \(lastIndexPath), ")
             // Order matters; we want to preload in order of proximity
             // to viewport.
             tryToEnqueue(IndexPath(row: lastIndexPath.row + 1,
@@ -154,7 +150,6 @@ extension HVTableDataSource: UIScrollViewDelegate {
             guard firstIndexPath.row > 0 else {
                 return
             }
-            Logger.verbose("---- firstIndexPath: \(firstIndexPath), ")
             // Order matters; we want to preload in order of proximity
             // to viewport.
             tryToEnqueue(IndexPath(row: firstIndexPath.row - 1,
@@ -164,11 +159,8 @@ extension HVTableDataSource: UIScrollViewDelegate {
             tryToEnqueue(IndexPath(row: firstIndexPath.row - 3,
                                    section: firstIndexPath.section))
         }
-        Logger.verbose("---- sortedIndexPaths: \(sortedIndexPaths), ")
 
         for indexPath in indexPathsToPreload {
-            Logger.verbose("---- indexPathToPreload: \(indexPath), ")
-
             preloadCellIfNecessaryAsync(indexPath: indexPath)
         }
     }
@@ -518,8 +510,6 @@ extension HVTableDataSource: UITableViewDataSource {
     private func measureConversationCell(tableView: UITableView, indexPath: IndexPath) -> CGFloat {
         AssertIsOnMainThread()
 
-        Logger.verbose("---- measureConversationCell 1: \(indexPath)")
-
         guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableView.automaticDimension
@@ -529,8 +519,6 @@ extension HVTableDataSource: UITableViewDataSource {
 
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
-
-        Logger.verbose("---- buildConversationCell 1: \(indexPath)")
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.reuseIdentifier) as? HomeViewCell else {
             owsFailDebug("Invalid cell.")
@@ -871,8 +859,6 @@ extension HVTableDataSource {
     fileprivate func preloadCellIfNecessaryAsync(indexPath: IndexPath) {
         AssertIsOnMainThread()
 
-        Logger.verbose("---- preloadCellIfNecessaryAsync 1: \(indexPath)")
-
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -935,7 +921,6 @@ extension HVTableDataSource {
             } else {
                 Logger.info("contentToken already loaded.")
             }
-            Logger.verbose("---- preloadCellIfNecessaryAsync 2: \(indexPath)")
         }.catch(on: .global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
         }
