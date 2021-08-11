@@ -15,7 +15,7 @@ public class HVViewState: NSObject {
 
     public let threadViewModelCache = LRUCache<String, ThreadViewModel>(maxSize: 32)
     let cellContentCache = LRUCache<String, HVCellContentToken>(maxSize: 256)
-    public var conversationCellHeight: CGFloat?
+    public var conversationCellHeightCache: CGFloat?
 
     // MARK: - Views
 
@@ -68,9 +68,9 @@ public extension HomeViewController {
     internal var cellContentCache: LRUCache<String, HVCellContentToken> { viewState.cellContentCache }
 
     @nonobjc
-    var conversationCellHeight: CGFloat? {
-        get { viewState.conversationCellHeight }
-        set { viewState.conversationCellHeight = newValue }
+    var conversationCellHeightCache: CGFloat? {
+        get { viewState.conversationCellHeightCache }
+        set { viewState.conversationCellHeightCache = newValue }
     }
 
     // MARK: - Views

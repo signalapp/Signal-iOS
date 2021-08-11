@@ -524,7 +524,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Missing viewController.")
             return UITableView.automaticDimension
         }
-        if let result = viewController.conversationCellHeight {
+        if let result = viewController.conversationCellHeightCache {
             return result
         }
         guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
@@ -532,7 +532,7 @@ extension HVTableDataSource: UITableViewDataSource {
             return UITableView.automaticDimension
         }
         let result = HomeViewCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
-        viewController.conversationCellHeight = result
+        viewController.conversationCellHeightCache = result
         return result
     }
 

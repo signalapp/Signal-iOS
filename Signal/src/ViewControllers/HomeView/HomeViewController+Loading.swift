@@ -95,7 +95,7 @@ extension HomeViewController {
 
             threadViewModelCache.clear()
             cellContentCache.clear()
-            conversationCellHeight = nil
+            conversationCellHeightCache = nil
 
             reloadTableData()
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
