@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,14 +30,20 @@ public class VideoPlayerView: UIView {
     @objc
     public var player: AVPlayer? {
         get {
+            AssertIsOnMainThread()
+
             return playerLayer.player
         }
         set {
+            AssertIsOnMainThread()
+
             removeKVO(player: playerLayer.player)
 
             playerLayer.player = newValue
 
             addKVO(player: playerLayer.player)
+
+            invalidateIntrinsicContentSize()
         }
     }
 
@@ -77,6 +83,21 @@ public class VideoPlayerView: UIView {
 
     deinit {
         removeKVO(player: player)
+    }
+
+    // MARK: -
+
+    override public var intrinsicContentSize: CGSize {
+        guard let player = self.player,
+              let playerItem = player.currentItem else {
+            return CGSize(square: UIView.noIntrinsicMetric)
+        }
+
+        return playerItem.asset.tracks(withMediaType: .video)
+            .map { $0.naturalSize }
+            .reduce(.zero) {
+                CGSizeMax($0, $1)
+            }
     }
 
     // MARK: - KVO
@@ -151,7 +172,6 @@ public class VideoPlayerView: UIView {
         }
 
         videoPlayer.stop()
-
     }
 
     @objc(seekToTime:)
