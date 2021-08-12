@@ -181,7 +181,7 @@ public class FeatureFlags: BaseFlags {
     public static let chatColors = true
 
     @objc
-    public static let contextMenus = build.includes(.beta)
+    public static let contextMenus = true
 
     @objc
     public static let newLinkDeviceScheme = build.includes(.dev)
