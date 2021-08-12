@@ -2,7 +2,7 @@ import UIKit
 import AVFoundation
 import WebRTC
 
-class VideoCallVC : UIViewController {
+final class VideoCallVC : UIViewController {
     private var localVideoView: UIView!
     private var remoteVideoView: UIView!
     

@@ -1,8 +1,14 @@
 import PromiseKit
 import WebRTC
 
+public protocol CallManagerDelegate : AnyObject {
+    
+    func callManager(_ callManager: CallManager, sendData data: Data)
+}
+
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 public final class CallManager : NSObject, RTCPeerConnectionDelegate {
+    public weak var delegate: CallManagerDelegate?
     
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
