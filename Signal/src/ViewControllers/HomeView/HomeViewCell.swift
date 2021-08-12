@@ -276,7 +276,7 @@ public class HomeViewCell: UITableViewCell {
                                   snippetLineHeight: snippetLineHeight)
     }
 
-    internal func configure(cellContentToken: HVCellContentToken) {
+    func configure(cellContentToken: HVCellContentToken) {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCell(self)

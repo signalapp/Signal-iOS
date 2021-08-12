@@ -22,6 +22,8 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
+    fileprivate var lastPreloadCellDate: Date?
+
     public required override init() {
         super.init()
     }
@@ -73,12 +75,6 @@ extension HVTableDataSource {
 
 extension HVTableDataSource: UIScrollViewDelegate {
 
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        AssertIsOnMainThread()
-
-        preloadCellsIfNecessary()
-    }
-
     private func preloadCellsIfNecessary() {
         AssertIsOnMainThread()
 
@@ -86,15 +82,28 @@ extension HVTableDataSource: UIScrollViewDelegate {
             owsFailDebug("Missing viewController.")
             return
         }
-        let newContentOffset = tableView.contentOffset
-        defer {
-            viewController.lastKnownTableViewContentOffset = newContentOffset
+        guard viewController.hasEverAppeared else {
+            return
         }
-        guard let oldContentOffset = viewController.lastKnownTableViewContentOffset else {
+        let newContentOffset = tableView.contentOffset
+        let oldContentOffset = viewController.lastKnownTableViewContentOffset
+        viewController.lastKnownTableViewContentOffset = newContentOffset
+        guard let oldContentOffset = oldContentOffset else {
             return
         }
         let deltaY = (newContentOffset - oldContentOffset).y
+        guard deltaY != 0 else {
+            return
+        }
         let isScrollingDownward = deltaY > 0
+
+        // Debounce.
+        let maxPreloadFrequency: TimeInterval = kSecondInterval / 100
+        if let lastPreloadCellDate = self.lastPreloadCellDate,
+           abs(lastPreloadCellDate.timeIntervalSinceNow) < maxPreloadFrequency {
+            return
+        }
+        lastPreloadCellDate = Date()
 
         guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else {
             owsFailDebug("Missing visibleIndexPaths.")
@@ -129,6 +138,7 @@ extension HVTableDataSource: UIScrollViewDelegate {
             indexPathsToPreload.append(indexPath)
         }
 
+        let preloadCount: Int = 3
         if isScrollingDownward {
             guard let lastIndexPath = sortedIndexPaths.last else {
                 owsFailDebug("Missing indexPath.")
@@ -136,12 +146,11 @@ extension HVTableDataSource: UIScrollViewDelegate {
             }
             // Order matters; we want to preload in order of proximity
             // to viewport.
-            tryToEnqueue(IndexPath(row: lastIndexPath.row + 1,
-                                   section: lastIndexPath.section))
-            tryToEnqueue(IndexPath(row: lastIndexPath.row + 2,
-                                   section: lastIndexPath.section))
-            tryToEnqueue(IndexPath(row: lastIndexPath.row + 3,
-                                   section: lastIndexPath.section))
+            for index in 0..<preloadCount {
+                let offset = +index
+                tryToEnqueue(IndexPath(row: lastIndexPath.row + offset,
+                                       section: lastIndexPath.section))
+            }
         } else {
             guard let firstIndexPath = sortedIndexPaths.first else {
                 owsFailDebug("Missing indexPath.")
@@ -152,12 +161,11 @@ extension HVTableDataSource: UIScrollViewDelegate {
             }
             // Order matters; we want to preload in order of proximity
             // to viewport.
-            tryToEnqueue(IndexPath(row: firstIndexPath.row - 1,
-                                   section: firstIndexPath.section))
-            tryToEnqueue(IndexPath(row: firstIndexPath.row - 2,
-                                   section: firstIndexPath.section))
-            tryToEnqueue(IndexPath(row: firstIndexPath.row - 3,
-                                   section: firstIndexPath.section))
+            for index in 0..<preloadCount {
+                let offset = -index
+                tryToEnqueue(IndexPath(row: firstIndexPath.row + offset,
+                                       section: firstIndexPath.section))
+            }
         }
 
         for indexPath in indexPathsToPreload {
@@ -401,6 +409,8 @@ extension HVTableDataSource: UITableViewDelegate {
             return
         }
         viewController?.updateCellVisibility(cell: cell, isCellVisible: true)
+
+        preloadCellsIfNecessary()
     }
 
     public func tableView(_ tableView: UITableView,
@@ -877,7 +887,7 @@ extension HVTableDataSource {
             return
         }
         let cacheKey = thread.uniqueId
-        if nil != cellContentCache.get(key: cacheKey) {
+        guard nil == cellContentCache.get(key: cacheKey) else {
             // If we already have an existing HVCellContentToken, abort.
             return
         }
@@ -892,6 +902,10 @@ extension HVTableDataSource {
         // We use a serial queue to ensure we don't race and preload the same cell
         // twice at the same time.
         firstly(on: Self.preloadSerialQueue) { () -> (ThreadViewModel, HVCellContentToken) in
+            guard nil == cellContentCache.get(key: cacheKey) else {
+                // If we already have an existing HVCellContentToken, abort.
+                throw HVPreloadError.alreadyLoaded
+            }
             // This is the expensive work we do off the main thread.
             let threadViewModel = Self.databaseStorage.read { transaction in
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
@@ -922,8 +936,15 @@ extension HVTableDataSource {
                 Logger.info("contentToken already loaded.")
             }
         }.catch(on: .global()) { error in
+            if case HVPreloadError.alreadyLoaded = error {
+                return
+            }
             owsFailDebugUnlessNetworkFailure(error)
         }
+    }
+
+    private enum HVPreloadError: Error {
+        case alreadyLoaded
     }
 }
 
