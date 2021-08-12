@@ -1448,7 +1448,7 @@
 "DISAPPEARING_MESSAGES_MINUTES" = "minutes";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "सेकंड";
 
 /* subheading in privacy settings */
 "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";

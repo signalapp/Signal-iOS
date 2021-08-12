@@ -1310,10 +1310,10 @@
 "DEREGISTRATION_WARNING" = "Kifaa hakijasajiliwa tena. Nambari yako ya simu huenda ikawa imesajiliwa na Signal kwenye kifaa tofauti. Gusa ili kujisajili tena. ";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Mwisho amilifu% @";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Alionekana mwisho %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Imeunganishwa% @";
+"DEVICE_LINKED_AT_LABEL" = "Kiliunganishwa %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Imeshindwa kusasisha orodha ya kifaa.";
@@ -1433,7 +1433,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "siku";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Ikiwashwa, ujumbe mpya uliotumwa na kupokelewa katika gumzo hili utatoweka baada ya kuonekana.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Ukiwasha mipangilio hii, ujumbe mpya uliotumwa na kupokelewa katika gumzo hili utatoweka baada ya kuonekana.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Kwa sasa jumbe zinatoweka baada ya %@";
@@ -4271,7 +4271,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Hii haionekani kama nambari yako ya usalama na %@. Je! Unathibitisha mwasiliani sahihi?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nambari kwenye ubao wako wa kunakili haionekani kama nambari sahihi ya usalama kwa gumzo hili.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nambari iliyo kwenye ubao wako wa kunakili inaonekana kuwa nambari ya usalama isiyo sahihi kwa gumzo hili.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal haikuweza kupata nambari yoyote ya usalama kwenye ubao nakili wako. Je! Umeinakili kwa usahihi?";
@@ -5045,7 +5045,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Futa Historia ya Gumzo";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Ishara ya Hakimiliki Mjumbe Amepewa Leseni chini ya GPLv3";
+"SETTINGS_COPYRIGHT" = "Hakimiliki ya Signal Messenger\nImeidhinishwa kwa Lesisi chini ya GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Matumizi ya Takwimu";

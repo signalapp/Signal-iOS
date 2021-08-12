@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "Revocare";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Revocare meniu contextual";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Locație ocolire cenzură";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Detalii mesaj";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Previzualizare mesaj";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blochează";
