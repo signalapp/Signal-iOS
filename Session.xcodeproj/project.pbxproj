@@ -252,6 +252,7 @@
 		B8B558F326C4CA4600693325 /* MockCallConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F226C4CA4600693325 /* MockCallConfig.swift */; };
 		B8B558F926C4CE6800693325 /* CallVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F826C4CE6800693325 /* CallVC.swift */; };
 		B8B558FB26C4D25C00693325 /* MockWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FA26C4D25C00693325 /* MockWebSocket.swift */; };
+		B8B558FD26C4D35400693325 /* MockCallServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FC26C4D35400693325 /* MockCallServer.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
@@ -1225,6 +1226,7 @@
 		B8B558F226C4CA4600693325 /* MockCallConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallConfig.swift; sourceTree = "<group>"; };
 		B8B558F826C4CE6800693325 /* CallVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVC.swift; sourceTree = "<group>"; };
 		B8B558FA26C4D25C00693325 /* MockWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWebSocket.swift; sourceTree = "<group>"; };
+		B8B558FC26C4D35400693325 /* MockCallServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallServer.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		B8BAC75B2695645400EA1759 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8BAC75C2695648500EA1759 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2366,6 +2368,7 @@
 				B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */,
 				B8B558F226C4CA4600693325 /* MockCallConfig.swift */,
 				B8B558FA26C4D25C00693325 /* MockWebSocket.swift */,
+				B8B558FC26C4D35400693325 /* MockCallServer.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4741,6 +4744,7 @@
 				C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
+				B8B558FD26C4D35400693325 /* MockCallServer.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C35D76DB26606304009AA5FB /* ThreadUpdateBatcher.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
