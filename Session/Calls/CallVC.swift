@@ -13,6 +13,10 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
     }
     private var currentRoomInfo: RoomInfo?
     
+    var isInitiator: Bool {
+        return currentRoomInfo?.isInitiator == "true"
+    }
+    
     // MARK: UI Components
     private lazy var previewView: UIImageView = {
         return UIImageView()
@@ -142,19 +146,36 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
     
     // MARK: Streaming
     func webSocketDidConnect(_ webSocket: MockWebSocket) {
-        
+        guard let info = currentRoomInfo else { return }
+        log("Connected to web socket.")
+        let message = [
+            "cmd": "register",
+            "roomid": info.roomID,
+            "clientid": info.clientID
+        ]
+        guard let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) else { return }
+        MockWebSocket.shared.send(data)
+        CallManager.shared.delegate = self
+        if isInitiator {
+            CallManager.shared.initiateCall().retainUntilComplete()
+        }
+        drainMessageQueue()
     }
     
     func webSocket(_ webSocket: MockWebSocket, didReceive data: String) {
-        
+        log("Received data from web socket.")
+        handle(data)
+        CallManager.shared.drainMessageQueue()
     }
     
     func webSocketDidDisconnect(_ webSocket: MockWebSocket) {
-        
+        MockWebSocket.shared.delegate = nil
+        log("Disconnecting from web socket.")
     }
     
     func callManager(_ callManager: CallManager, sendData data: Data) {
-        // TODO: Implement
+        guard let info = currentRoomInfo else { return }
+        MockCallServer.send(data, roomID: info.roomID, userID: info.clientID).retainUntilComplete()
     }
     
     // MARK: Camera
