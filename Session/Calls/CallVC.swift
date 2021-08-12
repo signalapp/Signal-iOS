@@ -2,7 +2,7 @@ import UIKit
 import AVFoundation
 import WebRTC
 
-final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate, CallManagerDelegate, MockWebSocketDelegate {
+final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegate, MockWebSocketDelegate {
     private let videoCallVC = VideoCallVC()
     private var messageQueue: [String] = []
     private var isConnected = false {
