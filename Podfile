@@ -26,12 +26,14 @@ target 'SessionShareExtension' do
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
+  pod 'WebRTC', '~> 63.11', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
 end
 
 target 'SessionNotificationServiceExtension' do
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
+  pod 'WebRTC', '~> 63.11', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
 end
 
@@ -49,6 +51,7 @@ target 'SignalUtilitiesKit' do
   pod 'SAMKeychain', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true
   pod 'SwiftProtobuf', '~> 1.5.0', :inhibit_warnings => true
+  pod 'WebRTC', '~> 63.11', :inhibit_warnings => true
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/loki-project/session-ios-yap-database.git', branch: 'signal-release', :inhibit_warnings => true
   pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 end
