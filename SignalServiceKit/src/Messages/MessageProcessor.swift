@@ -318,6 +318,8 @@ public class MessageProcessor: NSObject {
 
             // If the sender is in the block list, we can skip scheduling any additional processing.
             if let sourceAddress = envelope.sourceAddress, blockingManager.isAddressBlocked(sourceAddress) {
+                Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
+
                 let error = OWSGenericError("Ignoring blocked envelope: \(sourceAddress)")
                 transaction.addAsyncCompletionOffMain { pendingEnvelope.completion(error) }
                 return
