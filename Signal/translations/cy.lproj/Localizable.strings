@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Iawn, rwy'n deall";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Methwyd anfon atoch neges, sticer, ymateb, derbynneb ddarllen neu gyrfryngau gan %@ yn y sgwrs hon.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Mater Cyflenwi";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Nid oedd modd anfon neges, sticer, ymateb, na derbynneb ddarllen i chi gan %@. Efallai eu bod wedi ceisio ei anfon atoch yn uniongyrchol, neu mewn grŵp.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Taflu";
@@ -884,7 +884,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Dileu";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "Gwyb";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Ymlaen";
@@ -1016,7 +1016,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Paid Hysbysu Os Ddistewyd";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Derbyn hysbysiadau pan soniwyd amdanoch mewn sgyrsiau tawel?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Derbyn hysbysiadau pan sonir amdanoch mewn sgyrsiau wedi'u tewi?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Crybwylliadau";
@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "Diddymu";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Gwaredu Dewislen Cyd-destun";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lleoliad Osgoi Sensoriaeth";
@@ -1652,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Methwyd lawrlwytho atodiad.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Nid oedd modd trosglwyddo neges gan %@";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Derbynwyd neges ddyblyg.";
@@ -3146,7 +3146,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Math MIME";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Anfonwyd at";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Trosglwyddwyd i";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Methwyd";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Manylion Neges";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Rhagolwg Neges";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Rhwystro";
@@ -3299,7 +3299,7 @@
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Mae eich cais i ymuno wedi'i anfon at weinyddiaeth y grŵp. Fe gewch hysbysiad pan fyddan nhw'n gweithredu.";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Anfonwyd";
+"MESSAGE_STATUS_DELIVERED" = "Trosglwyddwyd";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "Yn Lawrlwytho";
@@ -5069,13 +5069,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Ail-osod Gosodiadau Awto-Lawrlwytho";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Ansawdd Cyfryngau â Anfonir";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Dewiswch yr ansawdd â anfonir lluniau a fideos.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Cyfryngau â Anfonir";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Defnydd Data";
@@ -5690,10 +5690,10 @@
 "SETTINGS_SECURITY_TITLE" = "Diogelwch Ap";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Bydd anfon cyfryngau ansawdd uchel yn defnyddio mwy o ddata.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Lluniau a Videos";
 
 /* Setting for enabling & disabling sharing suggestions. */
 "SETTINGS_SHARING_SUGGESTIONS" = "Dangos Sgyrsiau yn Awgrymiadau";
