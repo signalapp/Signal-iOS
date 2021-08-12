@@ -65,6 +65,10 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private let cache = NSCache<AnyObject, AnyObject>()
     private let maxSize: Int
+    private let _resetCount = AtomicUInt(0)
+    public var resetCount: UInt {
+        _resetCount.get()
+    }
 
     public init(maxSize: Int,
                 nseMaxSize: Int = 0,
@@ -118,6 +122,8 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     @objc
     public func clear() {
+        _resetCount.increment()
+
         autoreleasepool {
             cache.removeAllObjects()
         }

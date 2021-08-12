@@ -31,6 +31,7 @@ public class HVViewState: NSObject {
 
     public var unreadPaymentNotificationsCount: UInt = 0
     public var firstUnreadPaymentModel: TSPaymentModel?
+    public var lastKnownTableViewContentOffset: CGPoint?
 
     // MARK: - Initializer
 
@@ -76,5 +77,11 @@ public extension HomeViewController {
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }
         set { viewState.hasEverAppeared = newValue }
+    }
+
+    @nonobjc
+    var lastKnownTableViewContentOffset: CGPoint? {
+        get { viewState.lastKnownTableViewContentOffset }
+        set { viewState.lastKnownTableViewContentOffset = newValue }
     }
 }

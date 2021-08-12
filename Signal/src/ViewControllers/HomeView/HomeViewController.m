@@ -859,13 +859,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    [self dismissSearchKeyboard];
-}
-
 #pragma mark - ConversationSearchViewDelegate
 
 - (void)conversationSearchViewWillBeginDragging

@@ -248,8 +248,24 @@ public class ConversationSearchViewController: UITableViewController {
                 owsFailDebug("Missing configuration.")
                 return UITableView.automaticDimension
             }
-            return HomeViewCell.measureCellHeight(configuration: configuration)
+            let cellContentToken = cellContentToken(forConfiguration: configuration)
+            return HomeViewCell.measureCellHeight(cellContentToken: cellContentToken)
         }
+    }
+
+    private func cellContentToken(forConfiguration configuration: HomeViewCell.Configuration) -> HVCellContentToken {
+        AssertIsOnMainThread()
+
+        // If we have an existing HVCellContentToken, use it.
+        // Cell measurement/arrangement is expensive.
+        let cacheKey = configuration.thread.threadRecord.uniqueId
+        if let cellContentToken = cellContentCache.get(key: cacheKey) {
+            return cellContentToken
+        }
+
+        let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
+        cellContentCache.set(key: cacheKey, value: cellContentToken)
+        return cellContentToken
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -297,7 +313,8 @@ public class ConversationSearchViewController: UITableViewController {
                 owsFailDebug("Missing configuration.")
                 return UITableViewCell()
             }
-            cell.configure(configuration: configuration)
+            let cellContentToken = cellContentToken(forConfiguration: configuration)
+            cell.configure(cellContentToken: cellContentToken)
             return cell
         }
     }
@@ -311,7 +328,6 @@ public class ConversationSearchViewController: UITableViewController {
             }
             return self.lastReloadDate
         }()
-        let cellContentCache = self.cellContentCache
 
         switch searchSection {
         case .noResults:
@@ -325,8 +341,7 @@ public class ConversationSearchViewController: UITableViewController {
             return HomeViewCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
-                isBlocked: isBlocked(thread: searchResult.thread),
-                cellContentCache: cellContentCache
+                isBlocked: isBlocked(thread: searchResult.thread)
             )
         case .groupThreads:
             guard let searchResult = self.searchResultSet.groupThreads[safe: row] else {
@@ -338,8 +353,7 @@ public class ConversationSearchViewController: UITableViewController {
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
-                overrideDate: nil,
-                cellContentCache: cellContentCache
+                overrideDate: nil
             )
         case .contacts:
             owsFailDebug("Invalid section.")
@@ -373,8 +387,7 @@ public class ConversationSearchViewController: UITableViewController {
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
-                overrideDate: overrideDate,
-                cellContentCache: cellContentCache
+                overrideDate: overrideDate
             )
         }
     }

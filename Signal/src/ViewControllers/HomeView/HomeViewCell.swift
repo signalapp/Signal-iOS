@@ -62,13 +62,21 @@ public class HomeViewCell: UITableViewCell {
 
     // MARK: - Configuration
 
+    // Compare with HVCellContentToken:
+    //
+    // * Configuration captures _how_ the view wants to render the cell.
+    //   HomeViewCell is used by Home view and Home Search view and they
+    //   render cells differently. Configuration reflects that.
+    //   Configuration is cheap to build.
+    // * HVCellContentToken captures (only) the exact content that will
+    //   be rendered in the cell, its measurement/layout, etc.
+    //   HVCellContentToken is expensive to build.
     struct Configuration {
         let thread: ThreadViewModel
         let lastReloadDate: Date?
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
-        let cellContentCache: LRUCache<String, HVCellContentToken>
 
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
@@ -81,14 +89,12 @@ public class HomeViewCell: UITableViewCell {
              lastReloadDate: Date?,
              isBlocked: Bool,
              overrideSnippet: NSAttributedString? = nil,
-             overrideDate: Date? = nil,
-             cellContentCache: LRUCache<String, HVCellContentToken>) {
+             overrideDate: Date? = nil) {
             self.thread = thread
             self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
-            self.cellContentCache = cellContentCache
         }
     }
     private var cellContentToken: HVCellContentToken?
@@ -151,52 +157,18 @@ public class HomeViewCell: UITableViewCell {
         self.selectionStyle = .default
     }
 
-    static func measureCellHeight(configuration: Configuration) -> CGFloat {
-        AssertIsOnMainThread()
-
-        let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
-        return cellContentToken.measurements.outerHStackMeasurement.measuredSize.height
+    // This method can be invoked from any thread.
+    static func measureCellHeight(cellContentToken: HVCellContentToken) -> CGFloat {
+        cellContentToken.measurements.outerHStackMeasurement.measuredSize.height
     }
 
-    func configure(configuration: Configuration) {
-        AssertIsOnMainThread()
-
-        let cellContentToken = Self.cellContentToken(forConfiguration: configuration)
-        configure(cellContentToken: cellContentToken)
-    }
-
-    // Perf matters in home view.  Configuring home view cells is
-    // probably the biggest perf bottleneck.  In conversation view,
-    // we address this by doing cell measurement/arrangement off
-    // the main thread.  That's viable in conversation view because
-    // there's a "load window" so there's an upper bound on how
-    // many cells need to be prepared.
-    //
-    // Home view has no load window.  Therefore, home view defers
-    // the expensive work of a) building ThreadViewModel
-    // b) measurement/arrangement of cells.  threadViewModelCache
-    // caches a).  cellContentCache caches b).
-    //
-    // When configuring a hohome view cell, we reuse any existing
-    // cell measurement in cellContentCache.  If none exists,
-    // we build one and store it in cellContentCache for next
-    // time.
-    private static func cellContentToken(forConfiguration configuration: Configuration) -> HVCellContentToken {
-        let cellContentCache = configuration.cellContentCache
-
-        // If we have an existing HVCellContentToken, use it.
-        // Cell measurement/arrangement is expensive.
-        let cacheKey = configuration.thread.threadRecord.uniqueId
-        if let cellContentToken = cellContentCache.get(key: cacheKey) {
-            return cellContentToken
-        }
-
+    // This method can be invoked from any thread.
+    internal static func buildCellContentToken(forConfiguration configuration: Configuration) -> HVCellContentToken {
         let configs = buildCellConfigs(configuration: configuration)
         let measurements = buildMeasurements(configuration: configuration,
                                              configs: configs)
         let cellContentToken = HVCellContentToken(configs: configs,
                                                   measurements: measurements)
-        cellContentCache.set(key: cacheKey, value: cellContentToken)
         return cellContentToken
     }
 
@@ -304,7 +276,7 @@ public class HomeViewCell: UITableViewCell {
                                   snippetLineHeight: snippetLineHeight)
     }
 
-    private func configure(cellContentToken: HVCellContentToken) {
+    func configure(cellContentToken: HVCellContentToken) {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCell(self)
@@ -966,6 +938,34 @@ private struct HVCellMeasurements {
 
 // MARK: -
 
+// Perf matters in home view.  Configuring home view cells is
+// probably the biggest perf bottleneck.  In conversation view,
+// we address this by doing cell measurement/arrangement off
+// the main thread.  That's viable in conversation view because
+// there's a "load window" so there's an upper bound on how
+// many cells need to be prepared.
+//
+// Home view has no load window.  Therefore, home view defers
+// the expensive work of a) building ThreadViewModel
+// b) measurement/arrangement of cells.  threadViewModelCache
+// caches a).  cellContentCache caches b).
+//
+// When configuring a hohome view cell, we reuse any existing
+// cell measurement in cellContentCache.  If none exists,
+// we build one and store it in cellContentCache for next
+// time.
+//
+// These content tokens can be preloaded async.
+//
+// Compare with Configuration:
+//
+// * Configuration captures _how_ the view wants to render the cell.
+//   HomeViewCell is used by Home view and Home Search view and they
+//   render cells differently. Configuration reflects that.
+//   Configuration is cheap to build.
+// * HVCellContentToken captures (only) the exact content that will
+//   be rendered in the cell, its measurement/layout, etc.
+//   HVCellContentToken is expensive to build.
 class HVCellContentToken {
     fileprivate let configs: HVCellConfigs
     fileprivate let measurements: HVCellMeasurements
