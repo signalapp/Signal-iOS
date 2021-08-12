@@ -18,6 +18,8 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     func chatColorDidChange()
 
+    func updateAccessibilityCustomActionsForCell(_ cell: CVItemCell)
+
     var isScrolledToBottom: Bool { get }
 
     var isScrollNearTopOfLoadWindow: Bool { get }
@@ -801,6 +803,7 @@ extension CVLoadCoordinator: UICollectionViewDelegate {
         let delegate = self.delegate
         DispatchQueue.main.async {
             delegate?.updateScrollingContent()
+            delegate?.updateAccessibilityCustomActionsForCell(cell)
         }
     }
 

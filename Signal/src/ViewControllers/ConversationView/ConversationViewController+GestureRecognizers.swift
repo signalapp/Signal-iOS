@@ -4,6 +4,10 @@
 
 import Foundation
 
+public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
+    public var messageAction: MessageAction?
+}
+
 extension ConversationViewController: UIGestureRecognizerDelegate {
     func createGestureRecognizers() {
         collectionViewTapGestureRecognizer.addTarget(self, action: #selector(handleTapGesture))
@@ -203,6 +207,47 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
             longPressHandler.startGesture(cell: cell)
         }
         return longPressHandler
+    }
+
+    // MARK: - VoiceOver Custom Actions
+
+    func updateAccessibilityCustomActionsForCell(cell: CVCell) {
+        guard let renderItem = cell.renderItem else {
+            return
+        }
+
+        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+        let shouldAllowReply = cvc_shouldAllowReplyForItem(itemViewModel)
+        let messageActions: [MessageAction]
+        if itemViewModel.messageCellType == .systemMessage {
+            messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
+                                                               delegate: self)
+        } else if itemViewModel.messageCellType == .stickerMessage || itemViewModel.messageCellType == .genericAttachment {
+            messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
+                                                         shouldAllowReply: shouldAllowReply,
+                                                         delegate: self)
+        } else {
+            messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
+                                                        shouldAllowReply: shouldAllowReply,
+                                                        delegate: self)
+        }
+
+        var actions: [CVAccessibilityCustomAction] = []
+        for messageAction in messageActions {
+            let action = CVAccessibilityCustomAction(name: messageAction.accessibilityIdentifier, target: self, selector: #selector(handleCustomAccessibilityActionInvoked(sender:)))
+            action.messageAction = messageAction
+            actions.append(action)
+        }
+        cell.accessibilityCustomActions = actions
+    }
+
+    @objc
+    public func handleCustomAccessibilityActionInvoked(sender: UIAccessibilityCustomAction) {
+        guard let cvCustomAction = sender as? CVAccessibilityCustomAction else {
+            return
+        }
+
+        cvCustomAction.messageAction?.block(self)
     }
 
     // MARK: - Pan

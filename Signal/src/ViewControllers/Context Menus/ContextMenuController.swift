@@ -507,6 +507,8 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                     self.auxiliaryPreviewView?.frame = finalAuxFrame
                 }) { _ in
                     self.animationState = .none
+                    self.dismissButton.accessibilityActivate()
+                    UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: nil)
             }
         } else {
             // Re-scale to match original size, on the original scaling curve
