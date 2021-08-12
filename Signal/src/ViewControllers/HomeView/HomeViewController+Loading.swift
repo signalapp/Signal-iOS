@@ -92,8 +92,11 @@ extension HomeViewController {
         switch loadResult {
         case .renderStateForReset(renderState: let renderState):
             tableDataSource.renderState = renderState
+
             threadViewModelCache.clear()
             cellContentCache.clear()
+            conversationCellHeightCache = nil
+
             reloadTableData()
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
             tableDataSource.renderState = renderState

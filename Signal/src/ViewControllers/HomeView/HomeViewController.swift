@@ -11,6 +11,7 @@ public extension HomeViewController {
         AssertIsOnMainThread()
 
         cellContentCache.clear()
+        conversationCellHeightCache = nil
         reloadTableData()
     }
 

@@ -520,11 +520,20 @@ extension HVTableDataSource: UITableViewDataSource {
     private func measureConversationCell(tableView: UITableView, indexPath: IndexPath) -> CGFloat {
         AssertIsOnMainThread()
 
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return UITableView.automaticDimension
+        }
+        if let result = viewController.conversationCellHeightCache {
+            return result
+        }
         guard let cellConfigurationAndContentToken = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableView.automaticDimension
         }
-        return HomeViewCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
+        let result = HomeViewCell.measureCellHeight(cellContentToken: cellConfigurationAndContentToken.contentToken)
+        viewController.conversationCellHeightCache = result
+        return result
     }
 
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
