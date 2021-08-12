@@ -276,7 +276,7 @@ extension MessageSender {
 
                 if let plaintext = plaintext {
                     payloadId = MessageSendLog.recordPayload(
-                        plaintext, for: skdmMessage, transaction: writeTx)
+                        plaintext, forMessageBeingSent: skdmMessage, transaction: writeTx)
                 } else {
                     payloadId = nil
                 }

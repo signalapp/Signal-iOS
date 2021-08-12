@@ -604,7 +604,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) {
         // Record plaintext
         plaintext = [message buildPlainTextData:thread transaction:writeTx];
-        plaintextPayloadId = [MessageSendLog recordPayload:plaintext for:message transaction:writeTx];
+        plaintextPayloadId = [MessageSendLog recordPayload:plaintext forMessageBeingSent:message transaction:writeTx];
     });
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 
@@ -1275,7 +1275,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                                             isRecipientUpdate:isRecipientUpdate];
         plaintext = [sentMessageTranscript buildPlainTextData:localThread transaction:transaction];
         plaintextPayloadId = [MessageSendLog recordPayload:plaintext
-                                                       for:sentMessageTranscript
+                                       forMessageBeingSent:sentMessageTranscript
                                                transaction:transaction];
     });
     if (localThread == nil) {

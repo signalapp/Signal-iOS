@@ -21,7 +21,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -50,7 +50,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to one recipient
             let recipientAddress = CommonGenerator.address()
@@ -82,7 +82,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to two devices
             let recipientAddress = CommonGenerator.address()
@@ -122,7 +122,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload. Outgoing message date is long ago
             let newMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 10000), transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -147,7 +147,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to one recipient, two devices
             let recipientAddress = CommonGenerator.address()
@@ -186,7 +186,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -210,14 +210,14 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save several message payloads
             let message1 = createOutgoingMessage(transaction: writeTx)
             let data1 = CommonGenerator.sentence.data(using: .utf8)!
-            let index1 = MessageSendLog.recordPayload(data1, for: message1, transaction: writeTx) as! Int64
+            let index1 = MessageSendLog.recordPayload(data1, forMessageBeingSent: message1, transaction: writeTx) as! Int64
             let message2 = createOutgoingMessage(transaction: writeTx)
             let data2 = CommonGenerator.sentence.data(using: .utf8)!
-            let index2 = MessageSendLog.recordPayload(data2, for: message2, transaction: writeTx) as! Int64
+            let index2 = MessageSendLog.recordPayload(data2, forMessageBeingSent: message2, transaction: writeTx) as! Int64
 
             let readReceiptMessage = createOutgoingMessage(relatedMessageIds: [message1.uniqueId, message2.uniqueId], transaction: writeTx)
             let data3 = CommonGenerator.sentence.data(using: .utf8)!
-            let index3 = MessageSendLog.recordPayload(data3, for: readReceiptMessage, transaction: writeTx) as! Int64
+            let index3 = MessageSendLog.recordPayload(data3, forMessageBeingSent: readReceiptMessage, transaction: writeTx) as! Int64
 
             // "Send" the messages to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -245,10 +245,10 @@ class MessageSendLogTests: SSKBaseTestSwift {
         databaseStorage.write { writeTx in
             let oldMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 1000), transaction: writeTx)
             let oldData = CommonGenerator.sentence.data(using: .utf8)!
-            let oldIndex = MessageSendLog.recordPayload(oldData, for: oldMessage, transaction: writeTx) as! Int64
+            let oldIndex = MessageSendLog.recordPayload(oldData, forMessageBeingSent: oldMessage, transaction: writeTx) as! Int64
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let newData = CommonGenerator.sentence.data(using: .utf8)!
-            let newIndex = MessageSendLog.recordPayload(newData, for: newMessage, transaction: writeTx) as! Int64
+            let newIndex = MessageSendLog.recordPayload(newData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // Verify both messages exist
             XCTAssertTrue(isPayloadAlive(index: oldIndex, transaction: writeTx))

@@ -461,11 +461,27 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     _storedMessageState = self.messageState;
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    if (self.sendingRecipientAddresses.count == 0) {
+        [MessageSendLog sendCompleteWithMessage:self transaction:transaction];
+    }
+}
+
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
     _storedMessageState = self.messageState;
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+    if (self.sendingRecipientAddresses.count == 0) {
+        [MessageSendLog sendCompleteWithMessage:self transaction:transaction];
+    }
 }
 
 // This method will be called after every insert and update, so it needs

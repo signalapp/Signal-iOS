@@ -26,17 +26,23 @@ public class MessageSendLog: NSObject {
         let sentTimestamp: Date
         @objc
         let uniqueThreadId: String
+        // Indicates whether or not this payload is in the process of being sent.
+        // Used to prevent deletion of the MSL entry if a recipient acks delivery
+        // before we've finished sending to another recipient.
+        var sendComplete: Bool
 
         init(
             plaintextContent: Data,
             contentHint: SealedSenderContentHint,
             sentTimestamp: Date,
-            uniqueThreadId: String
+            uniqueThreadId: String,
+            sendComplete: Bool
         ) {
             self.plaintextContent = plaintextContent
             self.contentHint = contentHint
             self.sentTimestamp = sentTimestamp
             self.uniqueThreadId = uniqueThreadId
+            self.sendComplete = sendComplete
         }
 
         func didInsert(with rowID: Int64, for column: String?) {
@@ -76,7 +82,7 @@ public class MessageSendLog: NSObject {
     @objc
     public static func recordPayload(
         _ plaintext: Data,
-        for message: TSOutgoingMessage,
+        forMessageBeingSent message: TSOutgoingMessage,
         transaction writeTx: SDSAnyWriteTransaction
     ) -> NSNumber? {
 
@@ -84,46 +90,72 @@ public class MessageSendLog: NSObject {
             Logger.info("Resend kill switch activated. Ignoring MSL payload save.")
             return nil
         }
-
         guard message.shouldRecordSendLog else { return nil }
 
-        var payload = Payload(
-            plaintextContent: plaintext,
-            contentHint: message.contentHint,
-            sentTimestamp: Date(millisecondsSince1970: message.timestamp),
-            uniqueThreadId: message.uniqueThreadId)
-
+        let payloads: [Payload]
         do {
-            // Insert the plaintext into the database
-            try payload.insert(writeTx.unwrapGrdbWrite.database)
-        } catch let error as DatabaseError where error.resultCode == .SQLITE_ABORT {
-            // A UNIQUE constraint may fail if the payload for this message
-            // has already been inserted. e.g. The message is being resent.
-            // That's okay, just ignore it.
-            Logger.warn("")
-            // Sender Key TODO: Verify cached payload matches?
-            return nil
-
+            payloads = try Payload
+                .filter(Column("sentTimestamp") == message.timestamp)
+                .filter(Column("uniqueThreadId") == message.uniqueThreadId)
+                .fetchAll(writeTx.unwrapGrdbRead.database)
         } catch {
-            // We don't anticipate any other error.
-            owsFailDebug("Unexpected MSL payload insertion error \(error)")
+            owsFailDebug("")
             return nil
         }
 
-        // If the payload was successfully recorded, we should also record
-        // any interactions related to this payload. This should not fail.
-        do {
-            guard let payloadId = payload.payloadId else {
-                throw OWSAssertionError("Expected payloadId to be set")
+        if let existingPayload = payloads.first {
+            // We found an existing payload. This message was probably a partial failure the first time
+            // Double check the plaintext matches. If it does, we can use the existing payloadId
+            // If not, we can't record MSL entries for subsequent sends because the timestamp
+            // and threadId will alias each other.
+            if payloads.count == 1, existingPayload.plaintextContent == plaintext, let payloadId = existingPayload.payloadId {
+                Logger.info("Reusing existing payloadId from a previous send: \(payloadId)")
+
+                // If we're working to record a payload, this message is no longer complete
+                // We set "sendComplete" false to make sure if a delivery receipt comes in
+                // before we finish sending to the remaining recipients that we don't clear
+                // out our payload.
+                do {
+                    existingPayload.sendComplete = false
+                    try existingPayload.update(writeTx.unwrapGrdbWrite.database)
+                } catch {
+                    owsFailDebug("Failed to mark existing payload incomplete.")
+                }
+
+                return NSNumber(value: payloadId)
+            } else {
+                owsAssertDebug(payloads.count == 1)
+                owsAssertDebug(existingPayload.plaintextContent == plaintext)
+                owsAssertDebug(existingPayload.payloadId != nil)
+                owsFailDebug("MSL payload table inconsistency")
+                return nil
             }
-            try message.relatedUniqueIds.forEach { uniqueId in
-                try Message(payloadId: payloadId, uniqueId: uniqueId)
-                    .insert(writeTx.unwrapGrdbWrite.database)
+        } else {
+            // No existing payload found. Create a new one and insert it
+            var payload = Payload(
+                plaintextContent: plaintext,
+                contentHint: message.contentHint,
+                sentTimestamp: Date(millisecondsSince1970: message.timestamp),
+                uniqueThreadId: message.uniqueThreadId,
+                sendComplete: false)
+            do {
+                try payload.insert(writeTx.unwrapGrdbWrite.database)
+                Logger.info("Inserted MSL payload with id: \(String(describing: payload.payloadId))")
+
+                // If the payload was successfully recorded, we should also record
+                // any interactions related to this payload. This should not fail.
+                guard let payloadId = payload.payloadId else {
+                    throw OWSAssertionError("Expected payloadId to be set")
+                }
+                try message.relatedUniqueIds.forEach { uniqueId in
+                    try Message(payloadId: payloadId, uniqueId: uniqueId)
+                        .insert(writeTx.unwrapGrdbWrite.database)
+                }
+                return NSNumber(value: payloadId)
+            } catch {
+                owsFailDebug("Unexpected MSL payload insertion error \(error)")
+                return nil
             }
-            return NSNumber(value: payloadId)
-        } catch {
-            owsFailDebug("Unexpected message relation error \(error)")
-            return nil
         }
     }
 
@@ -162,6 +194,47 @@ public class MessageSendLog: NSObject {
         } catch {
             owsFailDebug("\(error)")
             return nil
+        }
+    }
+
+    @objc
+    public static func sendComplete(message: TSOutgoingMessage, transaction writeTx: SDSAnyWriteTransaction) {
+        guard !RemoteConfig.messageResendKillSwitch else {
+            Logger.info("Resend kill switch activated. Ignoring MSL payload save.")
+            return
+        }
+        guard message.shouldRecordSendLog else { return }
+
+        let payloads: [Payload]
+        do {
+            payloads = try Payload
+                .filter(Column("sentTimestamp") == message.timestamp)
+                .filter(Column("uniqueThreadId") == message.uniqueThreadId)
+                .fetchAll(writeTx.unwrapGrdbRead.database)
+
+            guard let payload = payloads.first else { return }
+            guard payloads.count <= 1 else {
+                throw OWSAssertionError("Aliased entries: \(payloads.count)")
+            }
+
+            // We found the payload that needs to be marked complete!
+            // - If there are any outstanding deliveries, the payload needs to be kept while
+            //   we wait for delivery receipts from our recipients.
+            // - If every recipient has acked already (this would be an unlikely race) we should
+            //   delete the payload now. Our trigger to prune on updates to the recipient table
+            //   won't catch this.
+            let hasPendingDeliveries = try Recipient
+                .filter(Column("payloadId") == payload.payloadId)
+                .fetchCount(writeTx.unwrapGrdbWrite.database) > 0
+
+            if hasPendingDeliveries {
+                payload.sendComplete = true
+                try payload.update(writeTx.unwrapGrdbWrite.database)
+            } else {
+                try payload.delete(writeTx.unwrapGrdbWrite.database)
+            }
+        } catch {
+            owsFailDebug("Failed to mark send complete for \(message.timestamp): \(error)")
         }
     }
 
