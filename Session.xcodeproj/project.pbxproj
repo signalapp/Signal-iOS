@@ -158,6 +158,7 @@
 		B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */; };
 		B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */; };
 		B806ECA126C4A7E4008BDA44 /* CallManager+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */; };
+		B806ECA326C4A8C6008BDA44 /* TURNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA226C4A8C6008BDA44 /* TURNServer.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
 		B817AD9A26436593009DF825 /* SimplifiedConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */; };
 		B817AD9C26436F73009DF825 /* ThreadPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */; };
@@ -1144,6 +1145,7 @@
 		B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoaderView.swift; sourceTree = "<group>"; };
 		B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
 		B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallManager+UI.swift"; sourceTree = "<group>"; };
+		B806ECA226C4A8C6008BDA44 /* TURNServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TURNServer.swift; sourceTree = "<group>"; };
 		B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewClosedGroupVC.swift; sourceTree = "<group>"; };
 		B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedConversationCell.swift; sourceTree = "<group>"; };
 		B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerVC.swift; sourceTree = "<group>"; };
@@ -2341,6 +2343,7 @@
 			children = (
 				B8DE1FB326C22F2F0079C9CE /* CallManager.swift */,
 				B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */,
+				B806ECA226C4A8C6008BDA44 /* TURNServer.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4753,6 +4756,7 @@
 				B8856D11256F112A001CE70E /* OWSAudioSession.swift in Sources */,
 				C3DB66C3260ACCE6001EFC55 /* OpenGroupPollerV2.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
+				B806ECA326C4A8C6008BDA44 /* TURNServer.swift in Sources */,
 				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,
 				B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,
