@@ -86,7 +86,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // "Send" the message to two devices
             let recipientAddress = CommonGenerator.address()
-            for deviceId: Int64 in [0,1] {
+            for deviceId: Int64 in [0, 1] {
                 MessageSendLog.recordPendingDelivery(
                     payloadId: payloadIndex,
                     recipientUuid: recipientAddress.uuid!,
@@ -274,7 +274,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             fatalError("init(coder:) has not been implemented")
         }
 
-        required init(dictionary dictionaryValue: [String : Any]!) throws {
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
             fatalError("init(dictionary:) has not been implemented")
         }
 
