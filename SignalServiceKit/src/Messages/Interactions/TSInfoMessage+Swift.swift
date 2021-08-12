@@ -108,15 +108,11 @@ extension TSInfoMessage {
     func isEmptyGroupUpdate(transaction: SDSAnyReadTransaction) -> Bool {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string
-        guard nil != newGroupModel as? TSGroupModelV2 else {
-            return false
-        }
         guard customMessage == nil else {
             owsFailDebug("Unexpected customMessage.")
             return false
         }
-
-        guard let newGroupModel = self.newGroupModel else {
+        guard let newGroupModel = self.newGroupModel as? TSGroupModelV2 else {
             // Legacy info message before we began embedding user info.
             return false
         }
