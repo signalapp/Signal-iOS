@@ -477,8 +477,11 @@ public final class CallService: NSObject {
 
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = false
-        // TODO: Should we return nil if connect() return false?
-        call.groupCall.connect()
+
+        guard call.groupCall.connect() else {
+            terminate(call: call)
+            return nil
+        }
 
         return call
     }
@@ -497,7 +500,10 @@ public final class CallService: NSObject {
         // example, the call ended unexpectedly.
         if call.groupCall.localDeviceState.connectionState == .notConnected {
             // TODO: Should we return nil if connect() return false?
-            call.groupCall.connect()
+            guard call.groupCall.connect() else {
+                terminate(call: call)
+                return
+            }
         }
 
         // If we're not yet joined, join now. In general, it's unexpected that
