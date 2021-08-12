@@ -9,6 +9,7 @@ public protocol CallManagerDelegate : AnyObject {
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: CallManagerDelegate?
+    internal var candidateQueue: [RTCIceCandidate] = []
     
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
@@ -21,7 +22,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
-        // TODO: Configure
+        configuration.iceServers = [ RTCIceServer(urlStrings: MockCallConfig.default.webRTCICEServers) ]
         // TODO: Do these constraints make sense?
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [ "DtlsSrtpKeyAgreement" : "true" ])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
@@ -105,8 +106,10 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     public static let shared = CallManager()
     
     // MARK: Call Management
-    public func initiateCall(with publicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func initiateCall() -> Promise<Void> {
+        /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
+         */
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.offer(for: constraints) { [weak self] sdp, error in
             if let error = error {
@@ -119,18 +122,22 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
+                /*
                 let message = CallMessage()
                 message.type = .offer
                 message.sdp = sdp.sdp
                 MessageSender.send(message, in: thread, using: transaction)
+                 */
                 seal.fulfill(())
             }
         }
         return promise
     }
     
-    public func acceptCall(with publicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func acceptCall() -> Promise<Void> {
+        /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
+         */
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.answer(for: constraints) { [weak self] sdp, error in
             if let error = error {
@@ -143,10 +150,12 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
+                /*
                 let message = CallMessage()
                 message.type = .answer
                 message.sdp = sdp.sdp
                 MessageSender.send(message, in: thread, using: transaction)
+                 */
                 seal.fulfill(())
             }
         }

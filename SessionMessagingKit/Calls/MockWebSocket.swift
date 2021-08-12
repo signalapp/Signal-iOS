@@ -1,34 +1,38 @@
 import Foundation
 import SocketRocket
 
-protocol MockWebSocketDelegate : AnyObject {
+public protocol MockWebSocketDelegate : AnyObject {
     
     func webSocketDidConnect(_ webSocket: MockWebSocket)
     func webSocketDidDisconnect(_ webSocket: MockWebSocket)
     func webSocket(_ webSocket: MockWebSocket, didReceive data: String)
 }
 
-final class MockWebSocket : NSObject {
-    weak var delegate: MockWebSocketDelegate?
-    var socket: SRWebSocket?
+public final class MockWebSocket : NSObject {
+    public weak var delegate: MockWebSocketDelegate?
+    private var socket: SRWebSocket?
     
-    var isConnected: Bool {
+    public var isConnected: Bool {
         return socket != nil
     }
     
-    func connect(url: URL) {
+    private override init() { }
+    
+    public static let shared = MockWebSocket()
+    
+    public func connect(url: URL) {
         socket = SRWebSocket(url: url)
         socket?.delegate = self
         socket?.open()
     }
     
-    func disconnect() {
+    public func disconnect() {
         socket?.close()
         socket = nil
         delegate?.webSocketDidDisconnect(self)
     }
     
-    func send(data: Data) {
+    public func send(_ data: Data) {
         guard let socket = socket else { return }
         socket.send(data)
     }
@@ -36,21 +40,21 @@ final class MockWebSocket : NSObject {
 
 extension MockWebSocket : SRWebSocketDelegate {
     
-    func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
+    public func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
         guard let message = message as? String else { return }
         delegate?.webSocket(self, didReceive: message)
     }
     
-    func webSocketDidOpen(_ webSocket: SRWebSocket!) {
+    public func webSocketDidOpen(_ webSocket: SRWebSocket!) {
         delegate?.webSocketDidConnect(self)
     }
     
-    func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
+    public func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
         SNLog("Web socket failed with error: \(error?.localizedDescription ?? "nil").")
         self.disconnect()
     }
     
-    func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
+    public func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
         SNLog("Web socket closed.")
         self.disconnect()
     }

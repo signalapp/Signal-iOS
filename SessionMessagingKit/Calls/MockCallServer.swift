@@ -7,7 +7,7 @@ public struct RoomInfo {
     public let wssPostURL: String
     public let clientID: String
     public let isInitiator: String
-    public let messages: [String]
+    public let messages: [String]?
 }
 
 public enum MockCallServer {
@@ -34,8 +34,8 @@ public enum MockCallServer {
                 let wssURL = info["wss_url"] as? String,
                 let wssPostURL = info["wss_post_url"] as? String,
                 let clientID = info["client_id"] as? String,
-                let isInitiator = info["is_initiator"] as? String,
-                let messages = info["messages"] as? [String] else { throw HTTP.Error.invalidJSON }
+                let isInitiator = info["is_initiator"] as? String else { throw HTTP.Error.invalidJSON }
+            let messages = info["messages"] as? [String]
             return RoomInfo(roomID: roomID, wssURL: wssURL, wssPostURL: wssPostURL,
                 clientID: clientID, isInitiator: isInitiator, messages: messages)
         }

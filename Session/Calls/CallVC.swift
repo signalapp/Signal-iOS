@@ -2,7 +2,16 @@ import UIKit
 import AVFoundation
 import WebRTC
 
-final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate, CallManagerDelegate {
+final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate, CallManagerDelegate, MockWebSocketDelegate {
+    private let videoCallVC = VideoCallVC()
+    private var messageQueue: [String] = []
+    private var isConnected = false {
+        didSet {
+            let title = isConnected ? "Leave" : "Join"
+            joinOrLeaveButton.setTitle(title, for: UIControl.State.normal)
+        }
+    }
+    private var currentRoomInfo: RoomInfo?
     
     // MARK: UI Components
     private lazy var previewView: UIImageView = {
@@ -13,7 +22,7 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
         return UIView()
     }()
     
-    private lazy var joinButton: UIButton = {
+    private lazy var joinOrLeaveButton: UIButton = {
         let result = UIButton()
         result.setTitle("Join", for: UIControl.State.normal)
         return result
@@ -31,11 +40,19 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpCamera()
+        embedVideoCallVC()
     }
     
     private func setUpCamera() {
         CameraManager.shared.delegate = self
         CameraManager.shared.prepare()
+    }
+    
+    private func embedVideoCallVC() {
+        addChild(videoCallVC)
+        containerView.addSubview(videoCallVC.view)
+        videoCallVC.view.translatesAutoresizingMaskIntoConstraints = false
+        videoCallVC.view.pin(to: containerView)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +65,94 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
         CameraManager.shared.stop()
     }
     
+    // MARK: Interaction
+    @objc private func joinOrLeave() {
+        guard let roomID = roomNumberTextField.text, !roomID.isEmpty else { return }
+        if isConnected {
+            disconnect()
+        } else {
+            isConnected = true
+            MockCallServer.join(roomID: roomID).done2 { [weak self] info in
+                guard let self = self else { return }
+                self.log("Successfully joined room.")
+                self.currentRoomInfo = info
+                if let messages = info.messages {
+                    self.handle(messages)
+                }
+                MockWebSocket.shared.delegate = self
+                MockWebSocket.shared.connect(url: URL(string: info.wssURL)!)
+            }.catch2 { [weak self] error in
+                guard let self = self else { return }
+                self.isConnected = false
+                self.log("Couldn't join room due to error: \(error).")
+                SNLog("Couldn't join room due to error: \(error).")
+            }
+            roomNumberTextField.resignFirstResponder()
+        }
+    }
+    
+    private func disconnect() {
+        guard let info = currentRoomInfo else { return }
+        MockCallServer.leave(roomID: info.roomID, userID: info.clientID).done2 { [weak self] in
+            guard let self = self else { return }
+            self.log("Disconnected.")
+        }
+        let message = [ "type": "bye" ]
+        guard let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) else { return }
+        MockWebSocket.shared.send(data)
+        MockWebSocket.shared.delegate = nil
+        currentRoomInfo = nil
+        isConnected = false
+        CallManager.shared.endCall()
+    }
+    
+    // MARK: Message Handling
+    func handle(_ messages: [String]) {
+        messageQueue.append(contentsOf: messages)
+        drainMessageQueue()
+    }
+    
+    func drainMessageQueue() {
+        guard isConnected else { return }
+        for message in messageQueue {
+            handle(message)
+        }
+        messageQueue.removeAll()
+        CallManager.shared.drainMessageQueue()
+    }
+    
+    func handle(_ message: String) {
+        let signalingMessage = SignalingMessage.from(message: message)
+        switch signalingMessage {
+        case .candidate(let candidate):
+            CallManager.shared.handleCandidateMessage(candidate)
+            log("Candidate received.")
+        case .answer(let answer):
+            CallManager.shared.handleRemoteDescription(answer)
+            log("Answer received.")
+        case .offer(let offer):
+            CallManager.shared.handleRemoteDescription(offer)
+            log("Offer received.")
+        case .bye:
+            disconnect()
+        default:
+            break
+        }
+    }
+    
     // MARK: Streaming
+    func webSocketDidConnect(_ webSocket: MockWebSocket) {
+        
+    }
+    
+    func webSocket(_ webSocket: MockWebSocket, didReceive data: String) {
+        
+    }
+    
+    func webSocketDidDisconnect(_ webSocket: MockWebSocket) {
+        
+    }
+    
     func callManager(_ callManager: CallManager, sendData data: Data) {
         // TODO: Implement
     }
@@ -64,7 +168,7 @@ final class MainChatRoomViewController : UIViewController, CameraCaptureDelegate
     }
     
     // MARK: Logging
-    private func log(string: String) {
+    private func log(_ string: String) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.infoTextView.text = self.infoTextView.text + "\n" + string
