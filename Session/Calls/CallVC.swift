@@ -45,6 +45,8 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
         super.viewDidLoad()
         setUpCamera()
         embedVideoCallVC()
+        view.addSubview(containerView)
+        containerView.pin(to: view)
     }
     
     private func setUpCamera() {

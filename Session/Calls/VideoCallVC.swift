@@ -3,8 +3,8 @@ import AVFoundation
 import WebRTC
 
 final class VideoCallVC : UIViewController {
-    private var localVideoView: UIView!
-    private var remoteVideoView: UIView!
+    private var localVideoView = UIView()
+    private var remoteVideoView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()

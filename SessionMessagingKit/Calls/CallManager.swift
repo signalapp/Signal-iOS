@@ -51,7 +51,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     // Video
     internal lazy var localVideoSource: RTCVideoSource = {
-        return factory.videoSource()
+        return factory.avFoundationVideoSource(with: nil)
     }()
     
     internal lazy var localVideoTrack: RTCVideoTrack = {
