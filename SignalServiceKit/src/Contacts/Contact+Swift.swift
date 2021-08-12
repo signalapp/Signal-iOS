@@ -35,13 +35,13 @@ public extension Contact {
         return phoneNumbers.orderedMembers
     }
 
-    public func registeredAddresses() -> [SignalServiceAddress] {
+    func registeredAddresses() -> [SignalServiceAddress] {
         databaseStorage.read { transaction in
             registeredAddresses(transaction: transaction)
         }
     }
 
-    public func registeredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    func registeredAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         e164sForIntersection.compactMap { e164 in
             let address = SignalServiceAddress(phoneNumber: e164)
             if SignalRecipient.isRegisteredRecipient(address, transaction: transaction) {

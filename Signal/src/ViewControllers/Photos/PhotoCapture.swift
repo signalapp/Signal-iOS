@@ -174,7 +174,6 @@ class PhotoCapture: NSObject {
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
-            guard let delegate = self.delegate else { return }
 
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }

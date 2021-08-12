@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol MockConversationDelegate: class {
+protocol MockConversationDelegate: AnyObject {
     var mockConversationViewWidth: CGFloat { get }
 }
 

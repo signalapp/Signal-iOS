@@ -106,6 +106,7 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Notification Methods
 
+    @discardableResult
     func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
@@ -130,6 +131,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -137,6 +139,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -144,6 +147,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -151,6 +155,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
@@ -158,6 +163,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
         return delayedNotificationDispatch {
             self.databaseStorage.write { transaction in
@@ -172,6 +178,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
         return delayedNotificationDispatch {
             let builder = TSErrorMessageBuilder(thread: thread, errorType: .invalidMessage)
@@ -183,6 +190,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
         return delayedNotificationDispatch {
             self.databaseStorage.write { transaction in
@@ -193,6 +201,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
+    @discardableResult
     func notifyOfNewUsers() -> Guarantee<Void> {
         return delayedNotificationDispatch {
             let recipients: Set<SignalRecipient> = self.databaseStorage.read { transaction in
