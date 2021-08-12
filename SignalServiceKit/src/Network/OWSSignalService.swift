@@ -41,7 +41,7 @@ fileprivate extension OWSSignalService {
     func signalServiceInfo(for signalServiceType: SignalServiceType) -> SignalServiceInfo {
         switch signalServiceType {
         case .mainSignalService:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.textSecureServerURL)!,
+            return SignalServiceInfo(baseUrl: URL(string: TSConstants.mainServiceURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
                                      requestSerializerType: .json,
                                      responseSerializerType: .json,

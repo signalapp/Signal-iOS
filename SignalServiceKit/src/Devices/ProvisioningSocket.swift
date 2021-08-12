@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,7 +16,8 @@ public class ProvisioningSocket {
 
     public init() {
         // TODO: Will this work with censorship circumvention?
-        let serviceBaseURL = URL(string: TSConstants.textSecureWebSocketAPI)!
+        // TODO: Should we (sometimes?) use the unidentified service?
+        let serviceBaseURL = URL(string: TSConstants.mainServiceWebSocketAPI_identified)!
         let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSUserAgent)",
                             relativeTo: serviceBaseURL)!
 

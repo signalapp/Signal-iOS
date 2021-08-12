@@ -309,8 +309,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
             [self resetSocket];
 
             // Create a new web socket.
-            NSString *webSocketConnect =
-                [TSConstants.textSecureWebSocketAPI stringByAppendingString:[self webSocketAuthenticationString]];
+            //
+            // TODO: Use the unidentified URL for unidentified websockets.
+            NSString *webSocketConnect = [TSConstants.mainServiceWebSocketAPI_identified
+                stringByAppendingString:[self webSocketAuthenticationString]];
             NSURL *webSocketConnectURL = [NSURL URLWithString:webSocketConnect];
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:webSocketConnectURL];
             [request setValue:OWSURLSession.signalIosUserAgent forHTTPHeaderField:OWSURLSession.kUserAgentHeader];
