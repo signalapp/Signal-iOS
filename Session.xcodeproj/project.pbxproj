@@ -249,6 +249,7 @@
 		B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B320B6258C30D70020074B /* HTMLMetadata.swift */; };
 		B8B558EF26C4B56C00693325 /* VideoCallVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558EE26C4B56C00693325 /* VideoCallVC.swift */; };
 		B8B558F126C4BB0600693325 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F026C4BB0600693325 /* CameraManager.swift */; };
+		B8B558F326C4CA4600693325 /* MockCallConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F226C4CA4600693325 /* MockCallConfig.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
@@ -1219,6 +1220,7 @@
 		B8B320B6258C30D70020074B /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		B8B558EE26C4B56C00693325 /* VideoCallVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCallVC.swift; sourceTree = "<group>"; };
 		B8B558F026C4BB0600693325 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
+		B8B558F226C4CA4600693325 /* MockCallConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallConfig.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		B8BAC75B2695645400EA1759 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8BAC75C2695648500EA1759 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2357,6 +2359,7 @@
 				B8DE1FB326C22F2F0079C9CE /* CallManager.swift */,
 				B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */,
 				B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */,
+				B8B558F226C4CA4600693325 /* MockCallConfig.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4739,6 +4742,7 @@
 				C32C5AAB256DBE8F003C73A2 /* TSIncomingMessage+Conversion.swift in Sources */,
 				B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */,
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
+				B8B558F326C4CA4600693325 /* MockCallConfig.swift in Sources */,
 				C32C5C1B256DC9E0003C73A2 /* General.swift in Sources */,
 				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
