@@ -110,6 +110,8 @@ struct GroupUpdateCopy: Dependencies {
     // debug builds and logging in production.
     private var itemSet = Set<UpdateItem>()
 
+    public var isEmptyUpdate = false
+
     init(newGroupModel: TSGroupModel,
          oldGroupModel: TSGroupModel?,
          oldDisappearingMessageToken: DisappearingMessageToken?,
@@ -205,6 +207,7 @@ struct GroupUpdateCopy: Dependencies {
                 } else {
                     addItem(.debug, copy: "Error: Group update without any items.")
                 }
+                isEmptyUpdate = true
             }
             addItem(.generic, copy: defaultGroupUpdateDescription)
         }

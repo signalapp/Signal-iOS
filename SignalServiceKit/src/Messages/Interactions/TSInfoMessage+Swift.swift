@@ -105,6 +105,42 @@ extension TSInfoMessage {
         return groupUpdate.itemList
     }
 
+    func isEmptyGroupUpdate(transaction: SDSAnyReadTransaction) -> Bool {
+        // for legacy group updates we persisted a pre-rendered string, rather than the details
+        // to generate that string
+        guard customMessage == nil else {
+            owsFailDebug("Unexpected customMessage.")
+            return false
+        }
+        guard let newGroupModel = self.newGroupModel as? TSGroupModelV2 else {
+            // Legacy info message before we began embedding user info.
+            return false
+        }
+
+        return isEmptyGroupUpdate(oldGroupModel: self.oldGroupModel,
+                                  newGroupModel: newGroupModel,
+                                  transaction: transaction)
+    }
+
+    private func isEmptyGroupUpdate(oldGroupModel: TSGroupModel?,
+                                    newGroupModel: TSGroupModel,
+                                    transaction: SDSAnyReadTransaction) -> Bool {
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("missing local address")
+            return false
+        }
+
+        let groupUpdate = GroupUpdateCopy(newGroupModel: newGroupModel,
+                                          oldGroupModel: oldGroupModel,
+                                          oldDisappearingMessageToken: oldDisappearingMessageToken,
+                                          newDisappearingMessageToken: newDisappearingMessageToken,
+                                          localAddress: localAddress,
+                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
+                                          transaction: transaction)
+        return groupUpdate.isEmptyUpdate
+    }
+
     @objc
     public static func legacyDisappearingMessageUpdateDescription(token newToken: DisappearingMessageToken,
                                                                   wasAddedToExistingGroup: Bool,
