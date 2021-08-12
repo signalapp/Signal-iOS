@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
     shouldDiscardVisibleMessages:(BOOL)shouldDiscardVisibleMessages
                      transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!envelope) {
+    if (![self isValidEnvelope:envelope]) {
         OWSFailDebug(@"Missing envelope.");
         return;
     }
@@ -390,22 +390,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (!transaction) {
         OWSFail(@"Missing transaction.");
-        return;
-    }
-    if (envelope.timestamp < 1) {
-        OWSFailDebug(@"Invalid timestamp.");
-        return;
-    }
-    if (![SDS fitsInInt64:envelope.timestamp]) {
-        OWSFailDebug(@"Invalid timestamp.");
-        return;
-    }
-    if (!envelope.hasValidSource) {
-        OWSFailDebug(@"Invalid source.");
-        return;
-    }
-    if (envelope.sourceDevice < 1) {
-        OWSFailDebug(@"Invaid source device.");
         return;
     }
 
@@ -430,14 +414,6 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
-
-        // SKDM's are not mutually exclusive.
-        // They can be sent in isolation or along with another message type
-        if (contentProto.hasSenderKeyDistributionMessage) {
-            [self handleIncomingEnvelope:envelope
-                withSenderKeyDistributionMessage:contentProto.senderKeyDistributionMessage
-                                     transaction:transaction];
-        }
 
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
@@ -485,11 +461,16 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleIncomingEnvelope:envelope
                 withDecryptionErrorMessage:contentProto.decryptionErrorMessage
                                transaction:transaction];
-        } else if (!contentProto.hasSenderKeyDistributionMessage) {
-            // An SKDM can be sent in isolation. Only warn if we don't have any
-            // of the above messages *and* no sender key
+        } else if (contentProto.hasSenderKeyDistributionMessage) {
+            // Sender key distribution messages are not mutually exclusive. They can be
+            // included with any message type. However, they're not processed here. They're
+            // process in the -preprocess phase that occurs post-decryption.
+            //
+            // See: OWSMessageManager.preprocessEnvelope(envelope:plaintext:transaction:)
+        } else {
             OWSLogWarn(@"Ignoring envelope. Content with no known payload");
         }
+
     } else if (envelope.legacyMessage != nil) { // DEPRECATED - Remove after all clients have been upgraded.
         NSError *error;
         SSKProtoDataMessage *_Nullable dataMessageProto =

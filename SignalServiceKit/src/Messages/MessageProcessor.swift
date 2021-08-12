@@ -313,6 +313,16 @@ public class MessageProcessor: NSObject {
                 return
             }
 
+            // Pre-processing happens during the same transaction that performed decryption
+            messageManager.preprocessEnvelope(envelope: envelope, plaintext: result.plaintextData, transaction: transaction)
+
+            // If the sender is in the block list, we can skip scheduling any additional processing.
+            if let sourceAddress = envelope.sourceAddress, blockingManager.isAddressBlocked(sourceAddress) {
+                let error = OWSGenericError("Ignoring blocked envelope: \(sourceAddress)")
+                transaction.addAsyncCompletionOffMain { pendingEnvelope.completion(error) }
+                return
+            }
+
             enum ProcessingStep {
                 case discard
                 case enqueueForGroupProcessing

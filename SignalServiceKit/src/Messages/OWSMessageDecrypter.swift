@@ -25,12 +25,6 @@ public class OWSMessageDecryptResult: NSObject {
         owsAssertDebug(sourceDevice > 0)
 
         let localDeviceId = Self.tsAccountManager.storedDeviceId()
-
-        // Ensure all blocked messages are discarded.
-        guard !Self.blockingManager.isAddressBlocked(sourceAddress) else {
-            throw OWSGenericError("Ignoring blocked envelope: \(sourceAddress)")
-        }
-
         guard !(sourceAddress.isLocalAddress && sourceDevice == localDeviceId) else {
             // Self-sent messages should be discarded during the decryption process.
             throw OWSAssertionError("Unexpected self-sent sync message.")
@@ -71,20 +65,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         )
     }
 
-    @objc
-    @available(*, deprecated, message: "Use Result based function instead")
-    func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, successBlock: @escaping (OWSMessageDecryptResult, SDSAnyWriteTransaction) -> Void, failureBlock: @escaping () -> Void) {
-        SDSDatabaseStorage.shared.asyncWrite { transaction in
-            let result = self.decryptEnvelope(envelope, envelopeData: envelopeData, transaction: transaction)
-            switch result {
-            case .success(let result):
-                successBlock(result, transaction)
-            case .failure:
-                transaction.addAsyncCompletionOffMain(failureBlock)
-            }
-        }
-    }
-
     public func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
         owsAssertDebug(tsAccountManager.isRegistered)
 
@@ -103,16 +83,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         if envelope.unwrappedType != .unidentifiedSender {
-            guard envelope.hasValidSource, let sourceAddress = envelope.sourceAddress else {
+            guard envelope.hasValidSource, envelope.sourceAddress != nil else {
                 return .failure(OWSAssertionError("incoming envelope has invalid source"))
             }
 
             guard envelope.hasSourceDevice, envelope.sourceDevice > 0 else {
                 return .failure(OWSAssertionError("incoming envelope has invalid source device"))
-            }
-
-            guard !blockingManager.isAddressBlocked(sourceAddress) else {
-                return .failure(OWSGenericError("ignoring blocked envelope: \(sourceAddress)"))
             }
         }
 
@@ -535,44 +511,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                               sessionStore: Self.sessionStore,
                                               identityStore: Self.identityManager,
                                               context: transaction)
-
-                // We do this work in an async completion so we don't delay
-                // receipt of this message.
-                transaction.addAsyncCompletionOffMain {
-                    let needsReactiveProfileKeyMessage: Bool = self.databaseStorage.read { transaction in
-                        // This user is whitelisted, they should have our profile key / be sending UD messages
-                        // Send them our profile key in case they somehow lost it.
-                        if self.profileManager.isUser(
-                            inProfileWhitelist: sourceAddress,
-                            transaction: transaction
-                        ) {
-                            return true
-                        }
-
-                        // If we're in a V2 group with this user, they should also have our profile key /
-                        // be sending UD messages. Send them it in case they somehow lost it.
-                        var needsReactiveProfileKeyMessage = false
-                        TSGroupThread.enumerateGroupThreads(
-                            with: sourceAddress,
-                            transaction: transaction
-                        ) { thread, stop in
-                            guard thread.isGroupV2Thread else { return }
-                            stop.pointee = true
-                            needsReactiveProfileKeyMessage = true
-                        }
-                        return needsReactiveProfileKeyMessage
-                    }
-
-                    if needsReactiveProfileKeyMessage {
-                        self.databaseStorage.write { transaction in
-                            self.trySendReactiveProfileKey(
-                                to: sourceAddress,
-                                transaction: transaction
-                            )
-                        }
-                    }
-                }
-
+                sendReactiveProfileKeyIfNecessary(address: sourceAddress, transaction: transaction)
             case .preKey:
                 let message = try PreKeySignalMessage(bytes: encryptedData)
                 plaintext = try signalDecryptPreKey(message: message,
@@ -622,6 +561,50 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             )
 
             return .failure(wrappedError)
+        }
+    }
+
+    private func sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        guard !blockingManager.isAddressBlocked(address) else {
+            Logger.info("Skipping send of reactive profile key to blocked address")
+            return
+        }
+
+        // We do this work in an async completion so we don't delay
+        // receipt of this message.
+        transaction.addAsyncCompletionOffMain {
+            let needsReactiveProfileKeyMessage: Bool = self.databaseStorage.read { transaction in
+                // This user is whitelisted, they should have our profile key / be sending UD messages
+                // Send them our profile key in case they somehow lost it.
+                if self.profileManager.isUser(
+                    inProfileWhitelist: address,
+                    transaction: transaction
+                ) {
+                    return true
+                }
+
+                // If we're in a V2 group with this user, they should also have our profile key /
+                // be sending UD messages. Send them it in case they somehow lost it.
+                var needsReactiveProfileKeyMessage = false
+                TSGroupThread.enumerateGroupThreads(
+                    with: address,
+                    transaction: transaction
+                ) { thread, stop in
+                    guard thread.isGroupV2Thread else { return }
+                    stop.pointee = true
+                    needsReactiveProfileKeyMessage = true
+                }
+                return needsReactiveProfileKeyMessage
+            }
+
+            if needsReactiveProfileKeyMessage {
+                self.databaseStorage.write { transaction in
+                    self.trySendReactiveProfileKey(
+                        to: address,
+                        transaction: transaction
+                    )
+                }
+            }
         }
     }
 
