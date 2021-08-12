@@ -3872,7 +3872,7 @@
 				LastSwiftUpdateCheck = 1130;
 				LastTestingUpgradeCheck = 0600;
 				LastUpgradeCheck = 1020;
-				ORGANIZATIONNAME = "Open Whisper Systems";
+				ORGANIZATIONNAME = "Rangeproof Pty Ltd";
 				TargetAttributes = {
 					453518671FC635DD00210559 = {
 						CreatedOnToolsVersion = 9.2;
