@@ -4,7 +4,7 @@ import WebRTC
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
-    private lazy var factory: RTCPeerConnectionFactory = {
+    internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
         let videoEncoderFactory = RTCVideoEncoderFactoryH264()
         let videoDecoderFactory = RTCVideoDecoderFactoryH264()
@@ -13,7 +13,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     /// Represents a WebRTC connection between the user and a remote peer. Provides methods to connect to a
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
-    private lazy var peerConnection: RTCPeerConnection = {
+    internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
         // TODO: Configure
         // TODO: Do these constraints make sense?
@@ -21,7 +21,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
     }()
     
-    private lazy var constraints: RTCMediaConstraints = {
+    internal lazy var constraints: RTCMediaConstraints = {
         let mandatory: [String:String] = [
             kRTCMediaConstraintsOfferToReceiveAudio : kRTCMediaConstraintsValueTrue,
             kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue
@@ -32,35 +32,35 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }()
     
     // Audio
-    private lazy var audioSource: RTCAudioSource = {
+    internal lazy var audioSource: RTCAudioSource = {
         // TODO: Do these constraints make sense?
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.audioSource(with: constraints)
     }()
     
-    private lazy var audioTrack: RTCAudioTrack = {
+    internal lazy var audioTrack: RTCAudioTrack = {
         return factory.audioTrack(with: audioSource, trackId: "ARDAMSa0")
     }()
     
     // Video
-    private lazy var localVideoSource: RTCVideoSource = {
+    internal lazy var localVideoSource: RTCVideoSource = {
         return factory.videoSource()
     }()
     
-    private lazy var localVideoTrack: RTCVideoTrack = {
+    internal lazy var localVideoTrack: RTCVideoTrack = {
         return factory.videoTrack(with: localVideoSource, trackId: "ARDAMSv0")
     }()
     
-    private lazy var videoCapturer: RTCVideoCapturer = {
+    internal lazy var videoCapturer: RTCVideoCapturer = {
         return RTCCameraVideoCapturer(delegate: localVideoSource)
     }()
     
-    private lazy var remoteVideoTrack: RTCVideoTrack? = {
+    internal lazy var remoteVideoTrack: RTCVideoTrack? = {
         return peerConnection.receivers.first { $0.track.kind == "video" }?.track as? RTCVideoTrack
     }()
     
     // Stream
-    private lazy var stream: RTCMediaStream = {
+    internal lazy var stream: RTCMediaStream = {
         let result = factory.mediaStream(withStreamId: "ARDAMS")
         result.addAudioTrack(audioTrack)
         result.addVideoTrack(localVideoTrack)
@@ -79,7 +79,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Initialization
-    private override init() {
+    internal override init() {
         super.init()
         peerConnection.add(stream)
         // Configure audio session
