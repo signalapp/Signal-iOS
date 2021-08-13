@@ -52,6 +52,7 @@ public enum HTTPMethod {
 
 // MARK: -
 
+// TODO: Remove in favor of HTTPResponse?
 public struct OWSHTTPResponse {
     public let task: URLSessionTask
     public let httpUrlResponse: HTTPURLResponse

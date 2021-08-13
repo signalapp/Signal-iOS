@@ -5,6 +5,7 @@
 import Foundation
 import PromiseKit
 
+// A class used for making HTTP requests against the main service.
 @objc
 public class NetworkManager: NSObject {
     private let restNetworkManager = RESTNetworkManager()
@@ -17,8 +18,9 @@ public class NetworkManager: NSObject {
     }
 
     public func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
-        // TODO: Websocket might be just opening. We should wait.
-        Self.socketManager.makeRequestPromise(request: request, webSocketType: .default)
+        FeatureFlags.deprecateREST
+            ? websocketRequestPromise(request: request)
+            : restRequestPromise(request: request)
     }
 
     private func isRESTOnlyEndpoint(request: TSRequest) -> Bool {

@@ -86,7 +86,7 @@ fileprivate extension Stripe {
                 )
 
                 return networkManager.makePromise(request: request)
-            }.map(on: .sharedUserInitiated) {  response in
+            }.map(on: .sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing or invalid JSON")
                 }

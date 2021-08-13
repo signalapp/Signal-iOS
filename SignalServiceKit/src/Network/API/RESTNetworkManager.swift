@@ -27,7 +27,6 @@ public extension RESTNetworkManager {
 public class RESTSessionManager: NSObject {
 
     private let sessionManager: AFHTTPSessionManager
-    private let defaultHeaders: [String: String]
     @objc
     public let createdDate = Date()
 
@@ -38,9 +37,6 @@ public class RESTSessionManager: NSObject {
         // TODO: Use OWSUrlSession instead.
         self.sessionManager = Self.signalService.sessionManagerForMainSignalService()
         self.sessionManager.completionQueue = .global()
-        // NOTE: We could enable HTTPShouldUsePipelining here.
-        // Make a copy of the default headers for this session manager.
-        self.defaultHeaders = sessionManager.requestSerializer.httpRequestHeaders
     }
 
     @objc
@@ -61,16 +57,14 @@ public class RESTSessionManager: NSObject {
             return
         }
 
-        // Clear all headers so that we don't retain headers from previous requests.
-        let oldHeaderFields: [String] = Array(sessionManager.requestSerializer.httpRequestHeaders.keys)
-        for headerField in oldHeaderFields {
-            sessionManager.requestSerializer.setValue(nil, forKey: headerField)
-        }
+        // Use new serializers. This will clear all request headers.
+        //
+        // NOTE: that we send JSON and receive a binary Blob.
+        // NOTE: We could enable HTTPShouldUsePipelining here.
+        sessionManager.requestSerializer = AFJSONRequestSerializer()
+        sessionManager.responseSerializer = AFHTTPResponseSerializer()
 
         let httpHeaders = OWSHttpHeaders()
-
-        // Apply the default headers for this session manager.
-        httpHeaders.addHeaders(defaultHeaders, overwriteOnConflict: false)
 
         // Set User-Agent header.
         httpHeaders.addHeader(OWSURLSession.kUserAgentHeader,
@@ -132,7 +126,7 @@ public class RESTSessionManager: NSObject {
 
         // Honor the request's headers.
         for (key, value) in httpHeaders.headers {
-            sessionManager.requestSerializer.setValue(value, forKey: key)
+            sessionManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
         }
 
         func parseResponse(task: URLSessionDataTask?, error: Error? = nil) -> HTTPURLResponse? {

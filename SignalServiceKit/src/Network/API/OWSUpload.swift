@@ -175,11 +175,14 @@ public class OWSAttachmentUploadV2: NSObject {
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV2()
             }
-        }.then(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Promise<OWSUploadFormV2> in
+        }.then(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Promise<OWSUploadFormV2> in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
-            return self.parseUploadFormV2(formResponseObject: formResponseObject)
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            return self.parseUploadFormV2(formResponseObject: json)
         }.then(on: Self.serialQueue) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
             return firstly {
                 return self.attachmentData()
@@ -232,12 +235,15 @@ public class OWSAttachmentUploadV2: NSObject {
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV3()
             }
-        }.map(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Void in
+        }.map(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Void in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
             // Parse upload form.
-            let uploadForm = try OWSUploadFormV3(responseObject: formResponseObject)
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            let uploadForm = try OWSUploadFormV3(responseObject: json)
             self.cdnKey = uploadForm.cdnKey
             self.cdnNumber = uploadForm.cdnNumber
             form = uploadForm

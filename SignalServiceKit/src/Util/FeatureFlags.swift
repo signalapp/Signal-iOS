@@ -199,7 +199,7 @@ public class FeatureFlags: BaseFlags {
     public static let forceEnableGiphyMP4 = build.includes(.beta)
 
     @objc
-    public static let deprecateREST = build.includes(.dev)
+    public static let deprecateREST = false
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in

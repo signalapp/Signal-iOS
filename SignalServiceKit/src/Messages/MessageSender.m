@@ -30,7 +30,6 @@
 #import <SignalServiceKit/OWSOutgoingReactionMessage.h>
 #import <SignalServiceKit/OWSOutgoingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>

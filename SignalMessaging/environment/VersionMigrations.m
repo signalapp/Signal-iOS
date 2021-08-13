@@ -9,7 +9,6 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 

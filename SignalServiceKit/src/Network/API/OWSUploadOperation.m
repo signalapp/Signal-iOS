@@ -10,7 +10,6 @@
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSOperation.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

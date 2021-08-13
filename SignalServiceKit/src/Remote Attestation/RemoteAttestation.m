@@ -9,7 +9,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/RemoteAttestationQuote.h>
 #import <SignalServiceKit/RemoteAttestationSigningCertificate.h>
 #import <SignalServiceKit/SSKEnvironment.h>

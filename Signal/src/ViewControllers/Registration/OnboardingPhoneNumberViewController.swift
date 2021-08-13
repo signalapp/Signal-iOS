@@ -603,7 +603,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             if let error = error, error.httpStatusCode == 413 {
                 // If we're not handed a retry-after date directly from the server, either
                 // use the existing date we already have or construct a new date 5 min from now
-                let retryAfterDate = HTTPRetryAfterDateForError(error) ?? {
+                let retryAfterDate = error.httpRetryAfterDate ?? {
                     if case let .rateLimit(existingRetryAfter) = self.phoneNumberError {
                         return existingRetryAfter
                     } else {

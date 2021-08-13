@@ -145,7 +145,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                        version: profileKeyVersionString,
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
-        }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
+        }.then(on: .global()) { response -> Promise<VersionedProfileUpdate> in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }

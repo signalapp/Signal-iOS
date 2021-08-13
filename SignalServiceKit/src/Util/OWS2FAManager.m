@@ -6,7 +6,6 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/HTTPUtils.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
