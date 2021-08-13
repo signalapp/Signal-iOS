@@ -30,8 +30,7 @@ public protocol HTTPError {
     // status is zero by default, if request never made or failed.
     var responseStatusCode: Int { get }
     var responseHeaders: OWSHttpHeaders? { get }
-    // TODO: Eradicate NSUnderlyingErrorKey.
-    // TODO: Eradicate responseError.
+    // TODO: Can we eventually eliminate responseError?
     var responseError: Error? { get }
     var responseBodyData: Data? { get }
 
@@ -120,7 +119,7 @@ public enum OWSHTTPError: Error, IsRetryableProvider {
         case .serviceResponse:
             // TODO: We might eventually special-case 413 Rate Limited errors.
             let responseStatus = self.responseStatusCode
-            // TODO: What about 5xx?
+            // We retry 5xx.
             if responseStatus >= 400, responseStatus <= 499 {
                 return false
             } else {

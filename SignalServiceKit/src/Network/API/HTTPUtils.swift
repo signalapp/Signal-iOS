@@ -142,7 +142,8 @@ extension HTTPUtils {
         // * CDS requests.
         // * Requests using UD auth.
         // * etc.
-        // TODO: CC?
+        //
+        // TODO: Will this work with censorship circumvention?
         if requestUrl.absoluteString.hasPrefix(TSConstants.textSecureServerURL),
            request.shouldHaveAuthorizationHeaders {
             DispatchQueue.main.async {
@@ -156,12 +157,6 @@ extension HTTPUtils {
             Logger.warn("Ignoring \(statusCode) for URL: \(requestUrl.absoluteString)")
         }
     }
-
-    // TODO: Grep for NSUnderlyingErrorKey
-    // TODO: Grep for AFNetworkingOperationFailingURLResponseDataErrorKey
-    // TODO: Grep for NSLocalizedFailureReasonErrorKey
-    // TODO: Grep for NSLocalizedRecoverySuggestionErrorKey
-    // TODO: Grep for NSLocalizedDescriptionKey
 }
 
 // MARK: -

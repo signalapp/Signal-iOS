@@ -18,7 +18,8 @@ BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
             case kCFURLErrorDNSLookupFailed:
             case kCFURLErrorNotConnectedToInternet:
             case kCFURLErrorSecureConnectionFailed:
-                // TODO: We might want to add kCFURLErrorCannotFindHost.
+            case kCFURLErrorCannotLoadFromNetwork:
+            case kCFURLErrorCannotFindHost:
                 return YES;
             default:
                 return NO;

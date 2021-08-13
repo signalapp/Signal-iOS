@@ -67,14 +67,24 @@ public class SocketManager: NSObject {
     }
 
     func makeRequestPromise(request: TSRequest, webSocketType: OWSWebSocketType) -> Promise<HTTPResponse> {
+
+        // webSocketType, isUDRequest and shouldHaveAuthorizationHeaders
+        // should be (mostly?) aligned.
+        //
         // TODO: Should we pick the websocketType based on these properties?
         switch webSocketType {
         case .identified:
             owsAssertDebug(!request.isUDRequest)
             owsAssertDebug(request.shouldHaveAuthorizationHeaders)
+            if request.isUDRequest || !request.shouldHaveAuthorizationHeaders {
+                Logger.info("request: \(String(describing: request.url))")
+            }
         case .unidentified:
             owsAssertDebug(request.isUDRequest)
             owsAssertDebug(!request.shouldHaveAuthorizationHeaders)
+            if !request.isUDRequest || request.shouldHaveAuthorizationHeaders {
+                Logger.info("request: \(String(describing: request.url))")
+            }
         }
 
         return firstly {

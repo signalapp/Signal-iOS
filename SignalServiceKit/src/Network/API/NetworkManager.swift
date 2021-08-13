@@ -17,10 +17,20 @@ public class NetworkManager: NSObject {
         SwiftSingletons.register(self)
     }
 
-    public func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
-        FeatureFlags.deprecateREST
-            ? websocketRequestPromise(request: request)
-            : restRequestPromise(request: request)
+    public func makePromise(request: TSRequest, remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+        firstly {
+            FeatureFlags.deprecateREST
+                ? websocketRequestPromise(request: request)
+                : restRequestPromise(request: request)
+        }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+            if error.isRetryable,
+               remainingRetryCount > 0 {
+                // TODO: Backoff?
+                return self.makePromise(request: request, remainingRetryCount: remainingRetryCount - 1)
+            } else {
+                throw error
+            }
+        }
     }
 
     private func isRESTOnlyEndpoint(request: TSRequest) -> Bool {
@@ -56,7 +66,7 @@ public class NetworkManager: NSObject {
 @objc
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest, remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         let (promise, _) = Promise<HTTPResponse>.pending()
