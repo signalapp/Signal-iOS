@@ -391,7 +391,7 @@ extension MessageSender {
         senderCertificate: SenderCertificate,
         remainingAttempts: UInt
     ) -> Promise<SenderKeySendResult> {
-        return firstly { () -> Promise<OWSHTTPResponse> in
+        return firstly { () -> Promise<HTTPResponse> in
             try self.performSenderKeySend(
                 ciphertext: encryptedMessageBody,
                 timestamp: timestamp,
@@ -542,7 +542,7 @@ extension MessageSender {
         thread: TSGroupThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
-    ) throws -> Promise<OWSHTTPResponse> {
+    ) throws -> Promise<HTTPResponse> {
 
         // Sender key messages use an access key composed of every recipient's individual access key.
         let allAccessKeys = recipients.compactMap { udAccessMap[$0.address]?.udAccess.senderKeyUDAccessKey }

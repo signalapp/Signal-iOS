@@ -12,7 +12,7 @@ extension HTTPUtils {
     // in the same way.
     public static func preprocessMainServiceHTTPError(request: TSRequest,
                                                       requestUrl: URL,
-                                                      responseStatus: UInt32,
+                                                      responseStatus: Int,
                                                       responseHeaders: OWSHttpHeaders,
                                                       responseError: Error?,
                                                       responseData: Data?) -> OWSHTTPError {
@@ -40,7 +40,7 @@ extension HTTPUtils {
 
     private static func buildServiceError(request: TSRequest,
                                           requestUrl: URL,
-                                          responseStatus: UInt32,
+                                          responseStatus: Int,
                                           responseHeaders: OWSHttpHeaders,
                                           responseError: Error?,
                                           responseData: Data?) -> OWSHTTPError {
@@ -127,7 +127,7 @@ extension HTTPUtils {
 
     private static func deregisterAfterAuthErrorIfNecessary(request: TSRequest,
                                                             requestUrl: URL,
-                                                            statusCode: UInt32) {
+                                                            statusCode: Int) {
         let requestHeaders: [String: String] = request.allHTTPHeaderFields ?? [:]
         Logger.verbose("Invalid auth: \(requestHeaders)")
 
@@ -181,7 +181,7 @@ public class OWSHTTPErrorWrapper: NSObject {
     @objc
     public var asConnectionFailureError: OWSHTTPErrorWrapper {
         let newError = OWSHTTPError.forServiceResponse(requestUrl: error.requestUrl,
-                                                       responseStatus: UInt32(error.responseStatusCode),
+                                                       responseStatus: error.responseStatusCode,
                                                        responseHeaders: error.responseHeaders ?? OWSHttpHeaders(),
                                                        responseError: error.responseError,
                                                        responseData: error.responseBodyData,

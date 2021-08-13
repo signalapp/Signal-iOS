@@ -409,11 +409,11 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     }
 
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
-        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+        firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (response: OWSHTTPResponse) -> (URL, String) in
+        }.map(on: Self.workQueue) { (response: HTTPResponse) -> (URL, String) in
             let statusCode = response.responseStatusCode
             guard statusCode >= 200 && statusCode < 300 else {
                 Logger.warn("Invalid response: \(statusCode).")
@@ -430,11 +430,11 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     }
 
     private func fetchImageResource(from url: URL) -> Promise<Data> {
-        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+        firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (httpResponse: OWSHTTPResponse) -> Data in
+        }.map(on: Self.workQueue) { (httpResponse: HTTPResponse) -> Data in
             try autoreleasepool {
                 let statusCode = httpResponse.responseStatusCode
                 guard statusCode >= 200 && statusCode < 300 else {

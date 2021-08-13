@@ -391,7 +391,7 @@ public struct StorageService: Dependencies {
     private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
         return serviceClient.requestStorageAuth().map { username, password in
             Auth(username: username, password: password)
-        }.then(on: .global()) { (auth: Auth) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (auth: Auth) -> Promise<HTTPResponse> in
             if method == .get { assert(body == nil) }
 
             let headers = [
@@ -409,7 +409,7 @@ public struct StorageService: Dependencies {
                                               method: method,
                                               headers: headers,
                                               body: body)
-        }.map(on: .global()) { (response: OWSHTTPResponse) -> StorageResponse in
+        }.map(on: .global()) { (response: HTTPResponse) -> StorageResponse in
             let status: StorageResponse.Status
 
             let statusCode = response.responseStatusCode

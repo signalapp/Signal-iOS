@@ -22,7 +22,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketState) {
 };
 
 @class OWSHTTPErrorWrapper;
-@class OWSHTTPResponseImpl;
 @class TSRequest;
 
 @protocol HTTPResponse;

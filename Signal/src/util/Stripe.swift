@@ -103,7 +103,7 @@ fileprivate extension Stripe {
         static func confirmPaymentIntent(for payment: PKPayment, clientSecret: String, paymentIntentId: String) -> Promise<Void> {
             firstly(on: .sharedUserInitiated) { () -> Promise<String> in
                 createPaymentMethod(with: payment)
-            }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<OWSHTTPResponse> in
+            }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
                 var parameters = [
                     "payment_method": paymentMethodId,
                     "client_secret": clientSecret
@@ -116,7 +116,7 @@ fileprivate extension Stripe {
         }
 
         static func createToken(with payment: PKPayment) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<OWSHTTPResponse> in
+            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 try postForm(endpoint: "tokens", parameters: parameters(for: payment))
             }.map(on: .sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
@@ -132,7 +132,7 @@ fileprivate extension Stripe {
         static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
             firstly(on: .sharedUserInitiated) { () -> Promise<String> in
                 createToken(with: payment)
-            }.then(on: .sharedUserInitiated) { tokenId -> Promise<OWSHTTPResponse> in
+            }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
                 let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
                 return try postForm(endpoint: "payment_methods", parameters: parameters)
             }.map(on: .sharedUserInitiated) { response in
@@ -194,7 +194,7 @@ fileprivate extension Stripe {
             return parameters
         }
 
-        static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<OWSHTTPResponse> {
+        static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
             guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
             }

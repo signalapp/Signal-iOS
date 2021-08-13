@@ -52,11 +52,6 @@ public enum HTTPMethod {
 
 // MARK: -
 
-// TODO: Remove in favor of HTTPResponse?
-public typealias OWSHTTPResponse = HTTPResponse
-
-// MARK: -
-
 public struct OWSUrlDownloadResponse {
     public let task: URLSessionTask
     public let httpUrlResponse: HTTPURLResponse
@@ -263,7 +258,7 @@ public class OWSURLSession: NSObject {
         firstly {
             baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
         }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
-            OWSHTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
+            HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
                                       httpUrlResponse: httpUrlResponse,
                                       bodyData: responseData)
         }
@@ -329,10 +324,9 @@ public class OWSURLSession: NSObject {
 
                     let requestUrl = requestConfig.requestUrl
                     if statusCode > 0 {
-                        owsAssert(statusCode <= UInt32.max)
                         let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
                         throw OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
-                                                              responseStatus: UInt32(statusCode),
+                                                              responseStatus: statusCode,
                                                               responseHeaders: responseHeaders,
                                                               responseError: nil,
                                                               responseData: responseData)
@@ -741,8 +735,8 @@ public extension OWSURLSession {
                            method: HTTPMethod,
                            headers: [String: String]? = nil,
                            data requestData: Data,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
         }
@@ -750,7 +744,7 @@ public extension OWSURLSession {
 
     func uploadTaskPromise(request: URLRequest,
                            data requestData: Data,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
@@ -787,8 +781,8 @@ public extension OWSURLSession {
                            method: HTTPMethod,
                            headers: [String: String]? = nil,
                            dataUrl: URL,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progress: progressBlock)
         }
@@ -796,7 +790,7 @@ public extension OWSURLSession {
 
     func uploadTaskPromise(request: URLRequest,
                            dataUrl: URL,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
@@ -834,14 +828,14 @@ public extension OWSURLSession {
     func dataTaskPromise(_ urlString: String,
                          method: HTTPMethod,
                          headers: [String: String]? = nil,
-                         body: Data? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                         body: Data? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.dataTaskPromise(request: request)
         }
     }
 
-    func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
+    func dataTaskPromise(request: URLRequest) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))

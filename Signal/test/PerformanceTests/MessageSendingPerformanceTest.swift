@@ -208,7 +208,7 @@ class StubbableNetworkManager: NetworkManager {
 
     var block: (TSRequest, NetworkManagerSuccess, NetworkManagerFailure) -> Void = { request, success, _ in
         Logger.info("faking success for request: \(request)")
-        let response = OWSHTTPResponseImpl(requestUrl: request.url!,
+        let response = HTTPResponseImpl(requestUrl: request.url!,
                                            status: 200,
                                            headers: OWSHttpHeaders(),
                                            bodyData: nil,

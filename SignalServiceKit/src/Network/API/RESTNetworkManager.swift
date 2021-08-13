@@ -176,20 +176,20 @@ public class RESTSessionManager: NSObject {
                     owsFailDebug("Invalid response: \(type(of: responseObject))")
                 }
             }
-            let response = OWSHTTPResponseImpl.build(requestUrl: requestUrl,
+            let response = HTTPResponseImpl.build(requestUrl: requestUrl,
                                                      httpUrlResponse: httpUrlResponse,
                                                      bodyData: responseData)
             success(response)
         }
 
         let afFailure = { (task: URLSessionDataTask?, error: Error) in
-            var responseStatus: UInt32 = 0
+            var responseStatus: Int = 0
             let responseHeaders = parseResponseHeaders(task: task)
             // TODO: Can we extract a response body?
             let responseData: Data? = nil
 
             if let response = parseResponse(task: task) {
-                responseStatus = UInt32(response.statusCode)
+                responseStatus = response.statusCode
             } else {
                 owsFailDebug("Invalid response.")
             }

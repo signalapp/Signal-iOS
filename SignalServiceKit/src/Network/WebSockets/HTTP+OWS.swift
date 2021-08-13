@@ -43,7 +43,7 @@ public protocol HTTPError {
 
 public struct HTTPErrorServiceResponse {
     let requestUrl: URL
-    let responseStatus: UInt32
+    let responseStatus: Int
     let responseHeaders: OWSHttpHeaders
     let responseError: Error?
     let responseData: Data?
@@ -66,7 +66,7 @@ public enum OWSHTTPError: Error, IsRetryableProvider {
     // The first 5 parameters are required (even if nil).
     // The custom parameters are optional.
     public static func forServiceResponse(requestUrl: URL,
-                                          responseStatus: UInt32,
+                                          responseStatus: Int,
                                           responseHeaders: OWSHttpHeaders,
                                           responseError: Error?,
                                           responseData: Data?,
@@ -325,15 +325,14 @@ public extension Error {
 
 // MARK: -
 
-// TODO: Rename.
 @objc
-public class OWSHTTPResponseImpl: NSObject {
+public class HTTPResponseImpl: NSObject {
 
     @objc
     public let requestUrl: URL
 
     @objc
-    public let status: UInt32
+    public let status: Int
 
     @objc
     public let headers: OWSHttpHeaders
@@ -355,7 +354,7 @@ public class OWSHTTPResponseImpl: NSObject {
     private static let unfairLock = UnfairLock()
 
     public required init(requestUrl: URL,
-                         status: UInt32,
+                         status: Int,
                          headers: OWSHttpHeaders,
                          bodyData: Data?,
                          stringEncoding: String.Encoding = .utf8) {
@@ -371,8 +370,8 @@ public class OWSHTTPResponseImpl: NSObject {
                              bodyData: Data?) -> HTTPResponse {
         let headers = OWSHttpHeaders(response: httpUrlResponse)
         let stringEncoding: String.Encoding = httpUrlResponse.parseStringEncoding() ?? .utf8
-        return OWSHTTPResponseImpl(requestUrl: requestUrl,
-                                   status: UInt32(httpUrlResponse.statusCode),
+        return HTTPResponseImpl(requestUrl: requestUrl,
+                                   status: httpUrlResponse.statusCode,
                                    headers: headers,
                                    bodyData: bodyData,
                                    stringEncoding: stringEncoding)
@@ -406,8 +405,7 @@ public class OWSHTTPResponseImpl: NSObject {
 
 // MARK: -
 
-// TODO: Modify OWSHTTPResponse to confirm to HTTPResponse as well?
-extension OWSHTTPResponseImpl: HTTPResponse {
+extension HTTPResponseImpl: HTTPResponse {
     @objc
     public var responseStatusCode: Int { Int(status) }
     @objc

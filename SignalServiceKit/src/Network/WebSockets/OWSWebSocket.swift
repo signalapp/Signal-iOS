@@ -129,22 +129,22 @@ public class SocketMessageInfo: NSObject {
     }
 
     @objc
-    public func didSucceed(status: UInt32,
+    public func didSucceed(status: Int,
                            headers: OWSHttpHeaders,
                            bodyData: Data?,
                            message: String?) {
         if let message = message?.nilIfEmpty {
             Logger.verbose("message: \(message)")
         }
-        let response = OWSHTTPResponseImpl(requestUrl: requestUrl,
-                                           status: status,
-                                           headers: headers,
-                                           bodyData: bodyData)
+        let response = HTTPResponseImpl(requestUrl: requestUrl,
+                                        status: status,
+                                        headers: headers,
+                                        bodyData: bodyData)
         didSucceed(response: response)
     }
 
     @objc
-    public func didSucceed(response: OWSHTTPResponseImpl) {
+    public func didSucceed(response: HTTPResponse) {
         Self.unfairLock.withLock {
             switch status {
             case .complete:
@@ -176,7 +176,7 @@ public class SocketMessageInfo: NSObject {
     }
 
     @objc
-    public func didFail(responseStatus: UInt32,
+    public func didFail(responseStatus: Int,
                         responseHeaders: OWSHttpHeaders,
                         responseError: Error?,
                         responseData: Data?) {

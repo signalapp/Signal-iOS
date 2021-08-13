@@ -371,7 +371,7 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
@@ -602,7 +602,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      uploadV3Metadata: UploadV3Metadata,
                                                      locationUrl: URL) -> Promise<Int> {
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let urlString = locationUrl.absoluteString
 
             var headers = [String: String]()
@@ -614,7 +614,7 @@ public class OWSAttachmentUploadV2: NSObject {
             let body = "".data(using: .utf8)
 
             return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
-        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
+        }.map(on: Self.serialQueue) { (response: HTTPResponse) in
             let statusCode = response.responseStatusCode
             if statusCode != 308 {
                 owsFailDebug("Invalid status code: \(statusCode).")
