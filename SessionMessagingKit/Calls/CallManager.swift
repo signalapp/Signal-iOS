@@ -23,7 +23,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
-        configuration.iceServers = [ RTCIceServer(urlStrings: MockCallConfig.default.webRTCICEServers) ]
+        configuration.iceServers = [ RTCIceServer(urlStrings: TestCallConfig.defaultICEServers) ]
         configuration.sdpSemantics = .unifiedPlan
         let pcert = RTCCertificate.generate(withParams: [ "expires": NSNumber(value: 100000), "name": "RSASSA-PKCS1-v1_5" ])
         configuration.certificate = pcert

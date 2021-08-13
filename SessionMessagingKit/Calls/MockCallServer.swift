@@ -13,15 +13,15 @@ public struct RoomInfo {
 public enum MockCallServer {
     
     private static func getRoomURL(for roomID: String) -> String {
-        let base = MockCallConfig.default.serverURL + "/join/"
+        let base = TestCallConfig.defaultServerURL + "/join/"
         return base + "\(roomID)"
     }
     private static func getLeaveURL(roomID: String, userID: String) -> String {
-        let base = MockCallConfig.default.serverURL + "/leave/"
+        let base = TestCallConfig.defaultServerURL + "/leave/"
         return base + "\(roomID)/\(userID)"
     }
     private static func getMessageURL(roomID: String, userID: String) -> String {
-        let base = MockCallConfig.default.serverURL + "/message/"
+        let base = TestCallConfig.defaultServerURL + "/message/"
         return base + "\(roomID)/\(userID)"
     }
     
