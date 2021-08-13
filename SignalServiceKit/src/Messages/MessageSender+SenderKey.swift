@@ -476,7 +476,7 @@ extension MessageSender {
                     }
                     throw SenderKeyError.staleDevices
                 case 428:
-                    guard let body = responseData, let expiry = HTTPRetryAfterDateForError(error) else {
+                    guard let body = responseData, let expiry = error.httpRetryAfterDate else {
                         throw OWSAssertionError("Invalid spam response body")
                     }
                     return Promise { resolver in

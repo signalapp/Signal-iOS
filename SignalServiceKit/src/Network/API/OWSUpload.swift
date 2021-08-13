@@ -703,7 +703,8 @@ public extension OWSUpload {
                     owsFailDebug("Missing task.")
                 }
 
-                if error.httpStatusCode == AppExpiry.appExpiredStatusCode {
+                if let statusCode = error.httpStatusCode,
+                   statusCode == AppExpiry.appExpiredStatusCode {
                     AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
                 }
 

@@ -196,7 +196,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             return error
         }
 
-        let retryAfterDate = HTTPRetryAfterDateForError(error)
+        let retryAfterDate = error.httpRetryAfterDate
 
         if let statusCode = error.httpStatusCode {
             switch statusCode {

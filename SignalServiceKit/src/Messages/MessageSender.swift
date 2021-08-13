@@ -232,9 +232,9 @@ public extension MessageSender {
                 } else if httpStatusCode == 428 {
                     // SPAM TODO: Only retry messages with -hasRenderableContent
                     let responseData = HTTPResponseDataForError(error)
-                    let expiry = HTTPRetryAfterDateForError(error)
 
-                    if let body = responseData, let expiry = expiry {
+                    if let body = responseData,
+                       let expiry = error.httpRetryAfterDate {
                         // The resolver has 10s to asynchronously resolve a challenge
                         // If it resolves, great! We'll let MessageSender auto-retry
                         // Otherwise, it'll be marked as "pending"
