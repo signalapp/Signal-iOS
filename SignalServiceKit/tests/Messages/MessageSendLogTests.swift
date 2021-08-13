@@ -158,6 +158,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     recipientDeviceId: deviceId,
                     transaction: writeTx)
             }
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
 
             // Deliver to first device
             MessageSendLog.recordSuccessfulDelivery(
@@ -178,6 +179,192 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Verify the payload was deleted
             XCTAssertFalse(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+        }
+    }
+
+    func testReceiveDeliveryBeforeSendFinished() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
+
+            let recipientAddress = CommonGenerator.address()
+
+            // "Send" the message to one device. It acks delivery
+            MessageSendLog.recordPendingDelivery(
+                payloadId: payloadIndex,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: newMessage.timestampDate(),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+
+            // Verify the payload still exists since we haven't finished sending
+            XCTAssertTrue(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+
+            // "Send" the message to two more devices. Mark send as complete
+            for deviceId: Int64 in [1, 2] {
+                MessageSendLog.recordPendingDelivery(
+                    payloadId: payloadIndex,
+                    recipientUuid: recipientAddress.uuid!,
+                    recipientDeviceId: deviceId,
+                    transaction: writeTx)
+            }
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Deliver to second device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify the payload still exists
+            XCTAssertTrue(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+
+            // Deliver to third device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 2,
+                transaction: writeTx)
+
+            // Verify the payload was deleted
+            XCTAssertFalse(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+        }
+    }
+
+    func testPartialFailureReusesPayloadEntry() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let initialPayloadId = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
+
+            let recipientAddress = CommonGenerator.address()
+
+            // "Send" the message to one device. Complete send but don't mark as delivered.
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Simulate a "retry" of a failed send. Try a fresh insert of the payload data
+            // Then send to another device and complete the send.
+            let retryPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Both payloadIds should be the same. The payload is still alive.
+            XCTAssertEqual(initialPayloadId, retryPayloadId)
+            XCTAssertTrue(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Deliver to first device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+
+            // Verify the payload still exists
+            XCTAssertTrue(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Deliver to second device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify the payload was deleted
+            XCTAssertFalse(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+        }
+    }
+
+    func testRetryPartialFailureAfterAllInitialRecipientsAcked() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let recipientAddress = CommonGenerator.address()
+
+            // Record + Send + Deliver + Complete (Deliver and Complete can happen in either order)
+            let initialPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Verify payload is deleted:
+            XCTAssertFalse(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Record + Send + Complete + Deliver (Deliver and Complete can happen in either order)
+            let secondPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: secondPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: newMessage.timestampDate(),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify payload is deleted:
+            XCTAssertFalse(isPayloadAlive(index: secondPayloadId, transaction: writeTx))
+            // Verify the ID was not reusued
+            XCTAssertNotEqual(initialPayloadId, secondPayloadId)
+        }
+    }
+
+    // Test disabled since it exercises an owsFailDebug()
+    // Works correctly if assertions are disabled and the test is enabled.
+    func testPlaintextMismatchFails() throws {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+
+            let initialPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx)
+
+            let secondPayloadId = MessageSendLog.recordPayload(
+                payloadData + Data([1]),    // append a byte so the payload doesn't match
+                forMessageBeingSent: newMessage,
+                transaction: writeTx)
+
+            XCTAssertNotNil(initialPayloadId)
+            XCTAssertNil(secondPayloadId)
         }
     }
 
