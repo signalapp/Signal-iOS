@@ -107,7 +107,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func attachmentMetadata() -> Promise<(url: URL, length: Int)> {
-        return firstly(on: Self.serialQueue) {
+        firstly(on: Self.serialQueue) {
             let temporaryFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let metadata = try Cryptography.encryptAttachment(at: self.attachmentStream.originalMediaURL!, output: temporaryFile)
 
@@ -130,7 +130,7 @@ public class OWSAttachmentUploadV2: NSObject {
     private func attachmentData() -> Promise<Data> {
         // TODO: Eliminate the need for ever loading the attachment data into memory.
         // Right now, this is only used when updating group avatars.
-        return attachmentMetadata().map { try Data(contentsOf: $0.url) }
+        attachmentMetadata().map { try Data(contentsOf: $0.url) }
     }
 
     @objc
@@ -151,7 +151,7 @@ public class OWSAttachmentUploadV2: NSObject {
     // TODO: Remove skipWebsocket.
     private func performRequest(skipWebsocket: Bool = false,
                                 requestBlock: @escaping () -> TSRequest) -> Promise<HTTPResponse> {
-        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
+        firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let formRequest = requestBlock()
             let shouldUseWebsocket: Bool
             if FeatureFlags.deprecateREST {
@@ -165,15 +165,15 @@ public class OWSAttachmentUploadV2: NSObject {
                     Self.socketManager.makeRequestPromise(request: formRequest,
                                                           webSocketType: .identified)
                 }.recover(on: Self.serialQueue) { error -> Promise<HTTPResponse> in
-                    // Failover to REST request.
                     if FeatureFlags.deprecateREST {
                         throw error
                     } else {
+                        // Failover to REST request.
                         return self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
                     }
                 }
             } else {
-                return OWSUpload.networkManager.makePromise(request: formRequest)
+                return Self.networkManager.makePromise(request: formRequest)
             }
         }
     }
@@ -181,9 +181,9 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V2
 
     public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return firstly(on: Self.serialQueue) {
+        firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
-            return self.performRequest {
+            self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV2()
             }
         }.then(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Promise<OWSUploadFormV2> in
@@ -195,7 +195,7 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             return self.parseUploadFormV2(formResponseObject: json)
         }.then(on: Self.serialQueue) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
-            return firstly {
+            firstly {
                 return self.attachmentData()
             }.map(on: Self.serialQueue) { (attachmentData: Data) in
                 return (form, attachmentData)
@@ -213,7 +213,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private func parseUploadFormV2(formResponseObject: Any?) -> Promise<OWSUploadFormV2> {
 
-        return firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
+        firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
             guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
                 Logger.warn("formResponseObject: \(String(describing: formResponseObject))")
                 throw OWSAssertionError("Invalid form.")

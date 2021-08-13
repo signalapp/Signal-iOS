@@ -146,14 +146,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
         }.then(on: .global()) { response -> Promise<VersionedProfileUpdate> in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
             if let profileAvatarData = profileAvatarData {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
                 guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
                                                                               profileKey: profileKey) else {
                     throw OWSAssertionError("Could not encrypt profile avatar.")
+                }
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
                 }
                 return self.parseFormAndUpload(formResponseObject: json,
                                                profileAvatarData: encryptedProfileAvatarData)

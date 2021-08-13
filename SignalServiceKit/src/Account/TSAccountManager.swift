@@ -268,7 +268,7 @@ extension TSAccountManager {
                 failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
             }
         }.catch(on: .global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
+            Logger.warn("Error: \(error)")
 
             let statusCode = error.httpStatusCode ?? 0
 
@@ -317,7 +317,7 @@ extension TSAccountManager {
                                                  ])
                 failure(userError)
             default:
-                owsFailDebug("Verifying code failed with unknown error: \(error).")
+                owsFailDebugUnlessNetworkFailure(error)
                 failure(error)
             }
         }

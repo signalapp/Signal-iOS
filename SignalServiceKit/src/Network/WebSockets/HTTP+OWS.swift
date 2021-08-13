@@ -387,7 +387,8 @@ public class HTTPResponseImpl: NSObject {
     }
 
     private static func parseJSON(data: Data?) -> JSONValue {
-        guard let data = data else {
+        guard let data = data,
+              !data.isEmpty else {
             return JSONValue(json: nil)
         }
         do {

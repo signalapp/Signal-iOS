@@ -201,6 +201,9 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let deprecateREST = false
 
+    @objc
+    public static let newHostNames = false
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
