@@ -2,7 +2,8 @@ import UIKit
 import AVFoundation
 import WebRTC
 
-final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegate, MockWebSocketDelegate {
+final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegate, WebSocketDelegate {
+    private var webSocket: WebSocket?
     private let videoCallVC = VideoCallVC()
     let videoCapturer: RTCVideoCapturer = RTCCameraVideoCapturer(delegate: CallManager.shared.localVideoSource)
     private var messageQueue: [String] = []
@@ -98,8 +99,9 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
                 if let messages = info.messages {
                     self.handle(messages)
                 }
-                MockWebSocket.shared.delegate = self
-                MockWebSocket.shared.connect(url: URL(string: info.wssURL)!)
+                let webSocket = WebSocket(url: URL(string: info.wssURL)!)
+                webSocket.delegate = self
+                self.webSocket = webSocket
             }.catch2 { [weak self] error in
                 guard let self = self else { return }
                 self.isConnected = false
@@ -118,8 +120,9 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
         }
         let message = [ "type": "bye" ]
         guard let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) else { return }
-        MockWebSocket.shared.send(data)
-        MockWebSocket.shared.delegate = nil
+        webSocket?.send(data)
+        webSocket?.delegate = nil
+        webSocket = nil
         currentRoomInfo = nil
         isConnected = false
         CallManager.shared.endCall()
@@ -160,7 +163,7 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     }
     
     // MARK: Streaming
-    func webSocketDidConnect(_ webSocket: MockWebSocket) {
+    func webSocketDidConnect(_ webSocket: WebSocket) {
         guard let info = currentRoomInfo else { return }
         log("Connected to web socket.")
         let message = [
@@ -169,21 +172,21 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
             "clientid": info.clientID
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) else { return }
-        MockWebSocket.shared.send(data)
+        webSocket.send(data)
         if isInitiator {
             CallManager.shared.initiateCall().retainUntilComplete()
         }
         drainMessageQueue()
     }
     
-    func webSocket(_ webSocket: MockWebSocket, didReceive data: String) {
+    func webSocket(_ webSocket: WebSocket, didReceive message: String) {
         log("Received data from web socket.")
-        handle(data)
+        handle(message)
         CallManager.shared.drainMessageQueue()
     }
     
-    func webSocketDidDisconnect(_ webSocket: MockWebSocket) {
-        MockWebSocket.shared.delegate = nil
+    func webSocketDidDisconnect(_ webSocket: WebSocket) {
+        webSocket.delegate = nil
         log("Disconnecting from web socket.")
     }
     
