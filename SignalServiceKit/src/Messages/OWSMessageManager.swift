@@ -46,6 +46,81 @@ public enum SealedSenderContentHint: Int {
 extension OWSMessageManager {
 
     @objc
+    func isValidEnvelope(_ envelope: SSKProtoEnvelope?) -> Bool {
+        guard let envelope = envelope else {
+            owsFailDebug("Missing envelope")
+            return false
+        }
+        guard envelope.timestamp >= 1 else {
+            owsFailDebug("Invalid timestamp")
+            return false
+        }
+        guard SDS.fitsInInt64(envelope.timestamp) else {
+            owsFailDebug("Invalid timestamp")
+            return false
+        }
+        guard envelope.hasValidSource else {
+            owsFailDebug("Invalid source")
+            return false
+        }
+        guard envelope.sourceDevice >= 1 else {
+            owsFailDebug("Invalid source device")
+            return false
+        }
+        return true
+    }
+
+    /// Performs a limited amount of time sensitive processing before scheduling the remainder of message processing
+    ///
+    /// Currently, the preprocess step only parses sender key distribution messages to update the sender key store. It's important
+    /// the sender key store is updated *before* the write transaction completes since we don't know if the next message to be
+    /// decrypted will depend on the sender key store being up to date.
+    ///
+    /// Some other things worth noting:
+    /// - We should preprocess *all* envelopes, even those where the sender is blocked. This is important because it protects us
+    /// from a case where the recipeint blocks and then unblocks a user. If the sender they blocked sent an SKDM while the user was
+    /// blocked, their understanding of the world is that we have saved the SKDM. After unblock, if we don't have the SKDM we'll fail
+    /// to decrypt.
+    /// - This *needs* to happen in the very same write transaction where the message was decrypted. It's important to keep in mind
+    /// that the NSE could race with the main app when processing messages. The write transaction is used to protect us from any races.
+    func preprocessEnvelope(envelope: SSKProtoEnvelope, plaintext: Data?, transaction: SDSAnyWriteTransaction) {
+        guard CurrentAppContext().shouldProcessIncomingMessages else {
+            owsFail("Should not process messages")
+        }
+        guard self.tsAccountManager.isRegistered else {
+            owsFailDebug("Not registered")
+            return
+        }
+        guard isValidEnvelope(envelope) else {
+            owsFailDebug("Invalid envelope")
+            return
+        }
+        guard let plaintext = plaintext else {
+            Logger.warn("No plaintext")
+            return
+        }
+
+        // Currently, this function is only used for SKDM processing
+        // Since this is idempotent, we don't need to check for a duplicate envelope.
+        //
+        // SKDM proecessing is also not user-visible, so we don't want to skip if the sender is
+        // blocked. This ensures that we retain session info to decrypt future messages from a blocked
+        // sender if they're ever unblocked.
+        let contentProto: SSKProtoContent
+        do {
+            contentProto = try SSKProtoContent(serializedData: plaintext)
+        } catch {
+            owsFailDebug("Failed to deserialize content proto: \(error)")
+            return
+        }
+
+        if let skdmBytes = contentProto.senderKeyDistributionMessage {
+            Logger.info("Preprocessing content: \(description(for: contentProto))")
+            handleIncomingEnvelope(envelope, withSenderKeyDistributionMessage: skdmBytes, transaction: transaction)
+        }
+    }
+
+    @objc
     func handleIncomingEnvelope(
         _ envelope: SSKProtoEnvelope,
         withSenderKeyDistributionMessage skdmData: Data,
@@ -60,6 +135,9 @@ extension OWSMessageManager {
             let sourceDeviceId = envelope.sourceDevice
             let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: sourceDeviceId)
             try processSenderKeyDistributionMessage(skdm, from: protocolAddress, store: senderKeyStore, context: writeTx)
+
+            Logger.info("Processed incoming sender key distribution message. Sender: \(sourceAddress).\(sourceDeviceId)")
+
         } catch {
             owsFailDebug("Failed to process incoming sender key \(error)")
         }
