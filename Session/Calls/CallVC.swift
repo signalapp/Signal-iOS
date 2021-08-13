@@ -16,7 +16,7 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     private var currentRoomInfo: RoomInfo?
     
     var isInitiator: Bool {
-        return currentRoomInfo?.isInitiator == "true"
+        return currentRoomInfo?.isInitiator == true
     }
     
     // MARK: UI Components
@@ -92,7 +92,7 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
             disconnect()
         } else {
             isConnected = true
-            MockCallServer.join(roomID: roomID).done2 { [weak self] info in
+            TestCallServer.join(roomID: roomID).done2 { [weak self] info in
                 guard let self = self else { return }
                 self.log("Successfully joined room.")
                 self.currentRoomInfo = info
@@ -114,7 +114,7 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     
     private func disconnect() {
         guard let info = currentRoomInfo else { return }
-        MockCallServer.leave(roomID: info.roomID, userID: info.clientID).done2 { [weak self] in
+        TestCallServer.leave(roomID: info.roomID, userID: info.clientID).done2 { [weak self] in
             guard let self = self else { return }
             self.log("Disconnected.")
         }
@@ -192,7 +192,7 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     
     func callManager(_ callManager: CallManager, sendData data: Data) {
         guard let info = currentRoomInfo else { return }
-        MockCallServer.send(data, roomID: info.roomID, userID: info.clientID).retainUntilComplete()
+        TestCallServer.send(data, roomID: info.roomID, userID: info.clientID).retainUntilComplete()
     }
     
     // MARK: Camera

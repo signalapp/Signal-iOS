@@ -160,6 +160,7 @@
 		B806ECA126C4A7E4008BDA44 /* CallManager+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */; };
 		B806ECA326C4A8C6008BDA44 /* MockTURNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
+		B80F469A26C63DD000DCE243 /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80F469926C63DD000DCE243 /* RoomInfo.swift */; };
 		B817AD9A26436593009DF825 /* SimplifiedConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */; };
 		B817AD9C26436F73009DF825 /* ThreadPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */; };
 		B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
@@ -252,7 +253,7 @@
 		B8B558F326C4CA4600693325 /* TestCallConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F226C4CA4600693325 /* TestCallConfig.swift */; };
 		B8B558F926C4CE6800693325 /* CallVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F826C4CE6800693325 /* CallVC.swift */; };
 		B8B558FB26C4D25C00693325 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FA26C4D25C00693325 /* WebSocket.swift */; };
-		B8B558FD26C4D35400693325 /* MockCallServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FC26C4D35400693325 /* MockCallServer.swift */; };
+		B8B558FD26C4D35400693325 /* TestCallServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FC26C4D35400693325 /* TestCallServer.swift */; };
 		B8B558FF26C4E05E00693325 /* CallManager+Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FE26C4E05E00693325 /* CallManager+Messages.swift */; };
 		B8B5590126C4E2A400693325 /* SignalingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B5590026C4E2A400693325 /* SignalingMessage.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
@@ -1155,6 +1156,7 @@
 		B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallManager+UI.swift"; sourceTree = "<group>"; };
 		B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTURNServer.swift; sourceTree = "<group>"; };
 		B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewClosedGroupVC.swift; sourceTree = "<group>"; };
+		B80F469926C63DD000DCE243 /* RoomInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
 		B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedConversationCell.swift; sourceTree = "<group>"; };
 		B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerVC.swift; sourceTree = "<group>"; };
 		B81D25B726157F20004D1FE1 /* storage-seed-1.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "storage-seed-1.crt"; sourceTree = "<group>"; };
@@ -1228,7 +1230,7 @@
 		B8B558F226C4CA4600693325 /* TestCallConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCallConfig.swift; sourceTree = "<group>"; };
 		B8B558F826C4CE6800693325 /* CallVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVC.swift; sourceTree = "<group>"; };
 		B8B558FA26C4D25C00693325 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
-		B8B558FC26C4D35400693325 /* MockCallServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallServer.swift; sourceTree = "<group>"; };
+		B8B558FC26C4D35400693325 /* TestCallServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCallServer.swift; sourceTree = "<group>"; };
 		B8B558FE26C4E05E00693325 /* CallManager+Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallManager+Messages.swift"; sourceTree = "<group>"; };
 		B8B5590026C4E2A400693325 /* SignalingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalingMessage.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
@@ -2371,10 +2373,11 @@
 				B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */,
 				B8B558FE26C4E05E00693325 /* CallManager+Messages.swift */,
 				B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */,
-				B8B558FC26C4D35400693325 /* MockCallServer.swift */,
 				B8B5590026C4E2A400693325 /* SignalingMessage.swift */,
 				B8B558FA26C4D25C00693325 /* WebSocket.swift */,
 				B8B558F226C4CA4600693325 /* TestCallConfig.swift */,
+				B8B558FC26C4D35400693325 /* TestCallServer.swift */,
+				B80F469926C63DD000DCE243 /* RoomInfo.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4739,6 +4742,7 @@
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
+				B80F469A26C63DD000DCE243 /* RoomInfo.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
@@ -4751,7 +4755,7 @@
 				C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
-				B8B558FD26C4D35400693325 /* MockCallServer.swift in Sources */,
+				B8B558FD26C4D35400693325 /* TestCallServer.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C35D76DB26606304009AA5FB /* ThreadUpdateBatcher.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
