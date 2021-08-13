@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static void *OWSWebSocketStateObservationContext = &OWSWebSocketStateObservationContext;
-
 extern NSNotificationName const NSNotificationWebSocketStateDidChange;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketType) {
