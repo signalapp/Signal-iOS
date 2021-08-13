@@ -37,7 +37,28 @@ extension NSError {
     }
 
     fileprivate var isRetryableImpl: Bool {
+        // Error and NSError have a special relationship.
+        // They can be "cast" back and forth, but are separate objects.
+        //
+        // If Error is cast to NSError, a new NSError will wrap the Error.
+        // This is called "NSError bridging".
+        //
+        // NSError implements Error protocol, but casting NSError to Error
+        // might unwrap a bridged wrapper.
+        //
+        // If an Error is roundtrip-cast through NSError, you end up with the
+        // same as instance as you began.
+        //
+        // If a NSError is roundtrip-cast through Error, you should not count
+        // on ending up with the same instance of NSError, although you
+        // sometimes will.
+        //
+        // Therefore, when trying to cast an error to IsRetryableProvider,
+        // we need to try casting both the Error and NSError form.
         if let error = self as? IsRetryableProvider {
+            return error.isRetryableProvider
+        }
+        if let error = (self as Error) as? IsRetryableProvider {
             return error.isRetryableProvider
         }
 
