@@ -119,11 +119,10 @@ fileprivate extension Stripe {
             firstly(on: .sharedUserInitiated) { () -> Promise<OWSHTTPResponse> in
                 try postForm(endpoint: "tokens", parameters: parameters(for: payment))
             }.map(on: .sharedUserInitiated) { response in
-                guard let responseData = response.responseData, !responseData.isEmpty else {
-                    throw OWSAssertionError("Missing response data")
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing responseBodyJson")
                 }
-                let responseObject = try JSONSerialization.jsonObject(with: responseData, options: .init(rawValue: 0))
-                guard let parser = ParamParser(responseObject: responseObject) else {
+                guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
                 return try parser.required(key: "id")
@@ -137,11 +136,10 @@ fileprivate extension Stripe {
                 let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
                 return try postForm(endpoint: "payment_methods", parameters: parameters)
             }.map(on: .sharedUserInitiated) { response in
-                guard let responseData = response.responseData, !responseData.isEmpty else {
-                    throw OWSAssertionError("Missing response data")
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing responseBodyJson")
                 }
-                let responseObject = try JSONSerialization.jsonObject(with: responseData, options: .init(rawValue: 0))
-                guard let parser = ParamParser(responseObject: responseObject) else {
+                guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
                 return try parser.required(key: "id")

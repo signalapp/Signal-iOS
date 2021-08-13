@@ -976,8 +976,8 @@ extension CallService: CallManagerDelegate {
         }.done(on: .main) { response in
             self.callManager.receivedHttpResponse(
                 requestId: requestId,
-                statusCode: UInt16(response.statusCode),
-                body: response.responseData
+                statusCode: UInt16(response.responseStatusCode),
+                body: response.responseBodyData
             )
         }.catch(on: .main) { error in
             if error.isNetworkFailureOrTimeout {

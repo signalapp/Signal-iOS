@@ -412,7 +412,8 @@ public struct StorageService: Dependencies {
         }.map(on: .global()) { (response: OWSHTTPResponse) -> StorageResponse in
             let status: StorageResponse.Status
 
-            switch response.statusCode {
+            let statusCode = response.responseStatusCode
+            switch statusCode {
             case 200:
                 status = .success
             case 204:
@@ -422,12 +423,12 @@ public struct StorageService: Dependencies {
             case 404:
                 status = .notFound
             default:
-                let error = OWSAssertionError("Unexpected statusCode: \(response.statusCode)")
-                throw StorageError.networkError(statusCode: response.statusCode, underlyingError: error)
+                let error = OWSAssertionError("Unexpected statusCode: \(statusCode)")
+                throw StorageError.networkError(statusCode: statusCode, underlyingError: error)
             }
 
             // We should always receive response data, for some responses it will be empty.
-            guard let responseData = response.responseData else {
+            guard let responseData = response.responseBodyData else {
                 owsFailDebug("missing response data")
                 throw StorageError.retryableAssertion
             }

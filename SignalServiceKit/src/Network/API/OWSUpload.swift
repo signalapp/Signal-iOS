@@ -387,11 +387,12 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
-        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
-            guard response.statusCode == 201 else {
-                throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
+        }.map(on: Self.serialQueue) { (response: HTTPResponse) in
+            let statusCode = response.responseStatusCode
+            guard statusCode == 201 else {
+                throw OWSAssertionError("Invalid statusCode: \(statusCode).")
             }
-            guard let locationHeader = response.allHeaderFields["Location"] as? String else {
+            guard let locationHeader = response.responseHeaders["Location"] else {
                 throw OWSAssertionError("Missing location header.")
             }
             guard locationHeader.lowercased().hasPrefix("http") else {
@@ -614,9 +615,9 @@ public class OWSAttachmentUploadV2: NSObject {
 
             return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
         }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
-
-            if response.statusCode != 308 {
-                owsFailDebug("Invalid status code: \(response.statusCode).")
+            let statusCode = response.responseStatusCode
+            if statusCode != 308 {
+                owsFailDebug("Invalid status code: \(statusCode).")
                 // Return zero to restart the upload.
                 return 0
             }
@@ -631,7 +632,7 @@ public class OWSAttachmentUploadV2: NSObject {
             //
             // * https://cloud.google.com/storage/docs/performing-resumable-uploads#resume-upload
             // * https://cloud.google.com/storage/docs/resumable-uploads
-            guard let rangeHeader = response.allHeaderFields["Range"] as? String else {
+            guard let rangeHeader = response.responseHeaders["Range"] else {
                 Logger.warn("Missing Range header.")
 
                 throw OWSUploadError.missingRangeHeader

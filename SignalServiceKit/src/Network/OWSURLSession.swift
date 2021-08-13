@@ -53,19 +53,7 @@ public enum HTTPMethod {
 // MARK: -
 
 // TODO: Remove in favor of HTTPResponse?
-public struct OWSHTTPResponse {
-    public let task: URLSessionTask
-    public let httpUrlResponse: HTTPURLResponse
-    public let responseData: Data?
-
-    public var statusCode: Int {
-        httpUrlResponse.statusCode
-    }
-
-    public var allHeaderFields: [AnyHashable: Any] {
-        httpUrlResponse.allHeaderFields
-    }
-}
+public typealias OWSHTTPResponse = HTTPResponse
 
 // MARK: -
 
@@ -271,13 +259,13 @@ public class OWSURLSession: NSObject {
     }
 
     private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig,
-                                                         responseData: Data?) -> Promise<OWSHTTPResponse> {
+                                                         responseData: Data?) -> Promise<HTTPResponse> {
         firstly {
             baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
-        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSHTTPResponse in
-            OWSHTTPResponse(task: requestConfig.task,
-                            httpUrlResponse: httpUrlResponse,
-                            responseData: responseData)
+        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
+            OWSHTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
+                                      httpUrlResponse: httpUrlResponse,
+                                      bodyData: responseData)
         }
     }
 
@@ -786,11 +774,12 @@ public extension OWSURLSession {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 
@@ -831,11 +820,12 @@ public extension OWSURLSession {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 
@@ -886,11 +876,12 @@ public extension OWSURLSession {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 

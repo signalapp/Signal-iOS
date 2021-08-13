@@ -284,7 +284,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        behavior404: .fail)
         }.then(on: .global()) { (response: OWSHTTPResponse) -> Promise<UpdatedV2Group> in
 
-            guard let changeActionsProtoData = response.responseData else {
+            guard let changeActionsProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let changeActionsProto = try GroupsV2Protos.parseAndVerifyChangeActionsProto(changeActionsProtoData,
@@ -490,7 +490,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               behavior404: .fail)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoAvatarUploadAttributes in
 
-            guard let protoData = response.responseData else {
+            guard let protoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoAvatarUploadAttributes(serializedData: protoData)
@@ -549,7 +549,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               behavior403: .removeFromGroup,
                                               behavior404: .groupDoesNotExistOnService)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroup in
-            guard let groupProtoData = response.responseData else {
+            guard let groupProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoGroup(serializedData: groupProtoData)
@@ -634,7 +634,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        behavior403: .ignore,
                                        behavior404: .fail)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroupChanges in
-            guard let groupChangesProtoData = response.responseData else {
+            guard let groupChangesProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoGroupChanges(serializedData: groupChangesProtoData)
@@ -996,9 +996,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                        headers: request.headers.headers,
                                        body: request.bodyData)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> OWSHTTPResponse in
-            let hasValidStatusCode = [200, 206].contains(response.statusCode)
+            let statusCode = response.responseStatusCode
+            let hasValidStatusCode = [200, 206].contains(statusCode)
             guard hasValidStatusCode else {
-                throw OWSAssertionError("Invalid status code: \(response.statusCode)")
+                throw OWSAssertionError("Invalid status code: \(statusCode)")
             }
 
             // NOTE: responseObject may be nil; not all group v2 responses have bodies.
@@ -1530,7 +1531,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               behavior403: behavior403,
                                               behavior404: .fail)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupInviteLinkPreview in
-            guard let protoData = response.responseData else {
+            guard let protoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             let groupInviteLinkPreview = try GroupsV2Protos.parseGroupInviteLinkPreview(protoData, groupV2Params: groupV2Params)
@@ -1691,7 +1692,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               behavior403: .expiredGroupInviteLink,
                                               behavior404: .fail)
         }.then(on: .global()) { (response: OWSHTTPResponse) -> Promise<TSGroupThread> in
-            guard let changeActionsProtoData = response.responseData else {
+            guard let changeActionsProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             // The PATCH request that adds us to the group (as a full or requesting member)
@@ -2165,7 +2166,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                               behavior403: .fetchGroupUpdates,
                                               behavior404: .fail)
         }.map(on: .global()) { (response: OWSHTTPResponse) -> GroupsProtoGroupExternalCredential in
-            guard let groupProtoData = response.responseData else {
+            guard let groupProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
             return try GroupsProtoGroupExternalCredential(serializedData: groupProtoData)

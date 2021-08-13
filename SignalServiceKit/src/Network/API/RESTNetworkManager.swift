@@ -158,27 +158,27 @@ public class RESTSessionManager: NSObject {
         }
 
         let afSuccess = { (task: URLSessionDataTask?, responseObject: Any?) in
-            var responseStatus: UInt32 = 0
-            let responseHeaders = parseResponseHeaders(task: task)
+            guard let httpUrlResponse = parseResponse(task: task) else {
+                if DebugFlags.internalLogging,
+                   let response = task?.response {
+                    Logger.warn("Invalid response: \(response)")
+                }
+                owsFailDebug("Invalid response")
+                failure(OWSHTTPErrorWrapper(error: .invalidResponse(requestUrl: requestUrl)))
+                return
+            }
             // TODO: Can we extract a response body?
             var responseData: Data?
-            if let response = parseResponse(task: task) {
-                responseStatus = UInt32(response.statusCode)
-                if let responseObject = responseObject {
-                    if let data = responseObject as? Data {
-                        responseData = data
-                    } else {
-                        owsFailDebug("Invalid response: \(type(of: responseObject))")
-                    }
+            if let responseObject = responseObject {
+                if let data = responseObject as? Data {
+                    responseData = data
+                } else {
+                    owsFailDebug("Invalid response: \(type(of: responseObject))")
                 }
-            } else {
-                owsFailDebug("Invalid response.")
             }
-            let response = OWSHTTPResponseImpl(requestUrl: requestUrl,
-                                               status: responseStatus,
-                                               headers: responseHeaders,
-                                               bodyData: responseData,
-                                               message: nil)
+            let response = OWSHTTPResponseImpl.build(requestUrl: requestUrl,
+                                                     httpUrlResponse: httpUrlResponse,
+                                                     bodyData: responseData)
             success(response)
         }
 

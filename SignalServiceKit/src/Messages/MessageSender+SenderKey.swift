@@ -400,10 +400,10 @@ extension MessageSender {
                 recipients: recipients,
                 udAccessMap: udAccessMap)
         }.map(on: senderKeyQueue) { response -> SenderKeySendResult in
-            guard response.statusCode == 200 else { throw
+            guard response.responseStatusCode == 200 else { throw
                 OWSAssertionError("Unhandled error")
             }
-            let response = try Self.decodeSuccessResponse(data: response.responseData)
+            let response = try Self.decodeSuccessResponse(data: response.responseBodyData)
             let uuids404 = Set(response.uuids404)
 
             let successful = try recipients.filter {

@@ -18,6 +18,7 @@ public protocol HTTPResponse {
     var responseHeaders: [String: String] { get }
     var responseBodyData: Data? { get }
     var responseBodyJson: Any? { get }
+    var responseBodyString: String? { get }
 }
 
 // MARK: -
@@ -56,6 +57,7 @@ public struct HTTPErrorServiceResponse {
 public enum OWSHTTPError: Error, IsRetryableProvider {
     case invalidAppState(requestUrl: URL)
     case invalidRequest(requestUrl: URL)
+    case invalidResponse(requestUrl: URL)
     // Request failed without a response from the service.
     case networkFailure(requestUrl: URL)
     // Request failed with a response from the service.
@@ -111,6 +113,8 @@ public enum OWSHTTPError: Error, IsRetryableProvider {
         switch self {
         case .invalidAppState, .invalidRequest:
             return false
+        case .invalidResponse:
+            return true
         case .networkFailure:
             return true
         case .serviceResponse:
@@ -123,7 +127,6 @@ public enum OWSHTTPError: Error, IsRetryableProvider {
                 return true
             }
         }
-        return true
     }
 }
 
@@ -137,6 +140,8 @@ extension OWSHTTPError: HTTPError {
             return requestUrl
         case .invalidRequest(let requestUrl):
             return requestUrl
+        case .invalidResponse(let requestUrl):
+            return requestUrl
         case .networkFailure(let requestUrl):
             return requestUrl
         case .serviceResponse(let serviceResponse):
@@ -147,7 +152,7 @@ extension OWSHTTPError: HTTPError {
     // NOTE: This function should only be called from NetworkManager.swiftHTTPStatusCodeForError.
     public var responseStatusCode: Int {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return 0
         case .serviceResponse(let serviceResponse):
             return Int(serviceResponse.responseStatus)
@@ -156,7 +161,7 @@ extension OWSHTTPError: HTTPError {
 
     public var responseHeaders: OWSHttpHeaders? {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.responseHeaders
@@ -165,7 +170,7 @@ extension OWSHTTPError: HTTPError {
 
     public var responseError: Error? {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.responseError
@@ -174,7 +179,7 @@ extension OWSHTTPError: HTTPError {
 
     public var responseBodyData: Data? {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.responseData
@@ -188,7 +193,7 @@ extension OWSHTTPError: HTTPError {
         }
 
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customRetryAfterDate
@@ -197,7 +202,7 @@ extension OWSHTTPError: HTTPError {
 
     public var customLocalizedDescription: String? {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customLocalizedDescription
@@ -206,7 +211,7 @@ extension OWSHTTPError: HTTPError {
 
     public var customLocalizedRecoverySuggestion: String? {
         switch self {
-        case .invalidAppState, .invalidRequest, .networkFailure:
+        case .invalidAppState, .invalidRequest, .invalidResponse, .networkFailure:
             return nil
         case .serviceResponse(let serviceResponse):
             return serviceResponse.customLocalizedRecoverySuggestion
@@ -216,9 +221,7 @@ extension OWSHTTPError: HTTPError {
     // NOTE: This function should only be called from NetworkManager.isSwiftNetworkConnectivityError.
     public var isNetworkConnectivityError: Bool {
         switch self {
-        case .invalidAppState:
-            return false
-        case .invalidRequest:
+        case .invalidAppState, .invalidRequest, .invalidResponse:
             return false
         case .networkFailure:
             return true
@@ -317,5 +320,124 @@ public extension Error {
             owsFailDebug("Could not parse JSON: \(error).")
             return nil
         }
+    }
+}
+
+// MARK: -
+
+// TODO: Rename.
+@objc
+public class OWSHTTPResponseImpl: NSObject {
+
+    @objc
+    public let requestUrl: URL
+
+    @objc
+    public let status: UInt32
+
+    @objc
+    public let headers: OWSHttpHeaders
+
+    @objc
+    public let bodyData: Data?
+
+    public let stringEncoding: String.Encoding
+
+    private struct JSONValue {
+        let json: Any?
+    }
+
+    // This property should only be accessed with unfairLock acquired.
+    //
+    // TODO: Type?
+    private var jsonValue: JSONValue?
+
+    private static let unfairLock = UnfairLock()
+
+    public required init(requestUrl: URL,
+                         status: UInt32,
+                         headers: OWSHttpHeaders,
+                         bodyData: Data?,
+                         stringEncoding: String.Encoding = .utf8) {
+        self.requestUrl = requestUrl
+        self.status = status
+        self.headers = headers
+        self.bodyData = bodyData
+        self.stringEncoding = stringEncoding
+    }
+
+    public static func build(requestUrl: URL,
+                             httpUrlResponse: HTTPURLResponse,
+                             bodyData: Data?) -> HTTPResponse {
+        let headers = OWSHttpHeaders(response: httpUrlResponse)
+        let stringEncoding: String.Encoding = httpUrlResponse.parseStringEncoding() ?? .utf8
+        return OWSHTTPResponseImpl(requestUrl: requestUrl,
+                                   status: UInt32(httpUrlResponse.statusCode),
+                                   headers: headers,
+                                   bodyData: bodyData,
+                                   stringEncoding: stringEncoding)
+    }
+
+    @objc
+    public var bodyJson: Any? {
+        Self.unfairLock.withLock {
+            if let jsonValue = self.jsonValue {
+                return jsonValue.json
+            }
+            let jsonValue = Self.parseJSON(data: bodyData)
+            self.jsonValue = jsonValue
+            return jsonValue.json
+        }
+    }
+
+    private static func parseJSON(data: Data?) -> JSONValue {
+        guard let data = data else {
+            return JSONValue(json: nil)
+        }
+        do {
+            let json = try JSONSerialization.jsonObject(with: data, options: [])
+            return JSONValue(json: json)
+        } catch {
+            owsFailDebug("Could not parse JSON: \(error).")
+            return JSONValue(json: nil)
+        }
+    }
+}
+
+// MARK: -
+
+// TODO: Modify OWSHTTPResponse to confirm to HTTPResponse as well?
+extension OWSHTTPResponseImpl: HTTPResponse {
+    @objc
+    public var responseStatusCode: Int { Int(status) }
+    @objc
+    public var responseHeaders: [String: String] { headers.headers }
+    @objc
+    public var responseBodyData: Data? { bodyData }
+    @objc
+    public var responseBodyJson: Any? { bodyJson }
+    @objc
+    public var responseBodyString: String? {
+        guard let data = bodyData,
+              let string = String(data: data, encoding: stringEncoding) else {
+            Logger.warn("Invalid body string.")
+            return nil
+        }
+        return string
+    }
+}
+
+// MARK: -
+
+extension HTTPURLResponse {
+    fileprivate func parseStringEncoding() -> String.Encoding? {
+        guard let encodingName = textEncodingName else {
+            return nil
+        }
+        let encoding = CFStringConvertIANACharSetNameToEncoding(encodingName as CFString)
+        guard encoding != kCFStringEncodingInvalidId else {
+            return nil
+        }
+        return String.Encoding(rawValue: CFStringConvertEncodingToNSStringEncoding(encoding))
     }
 }

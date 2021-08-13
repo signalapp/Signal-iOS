@@ -90,90 +90,6 @@ extension OWSWebSocket {
 
 // MARK: -
 
-@objc
-public class OWSHTTPResponseImpl: NSObject {
-
-    @objc
-    public let requestUrl: URL
-
-    @objc
-    public let status: UInt32
-
-    @objc
-    public let headers: OWSHttpHeaders
-
-    @objc
-    public let bodyData: Data?
-
-    // TODO: Remove?
-    @objc
-    public let message: String?
-
-    private struct JSONValue {
-        let json: Any?
-    }
-
-    // This property should only be accessed with unfairLock acquired.
-    //
-    // TODO: Type?
-    private var jsonValue: JSONValue?
-
-    private static let unfairLock = UnfairLock()
-
-    public required init(requestUrl: URL,
-                         status: UInt32,
-                         headers: OWSHttpHeaders,
-                         bodyData: Data?,
-                         message: String?) {
-        self.requestUrl = requestUrl
-        self.status = status
-        self.headers = headers
-        self.bodyData = bodyData
-        self.message = message
-    }
-
-    @objc
-    public var bodyJson: Any? {
-        Self.unfairLock.withLock {
-            if let jsonValue = self.jsonValue {
-                return jsonValue.json
-            }
-            let jsonValue = Self.parseJSON(data: bodyData)
-            self.jsonValue = jsonValue
-            return jsonValue.json
-        }
-    }
-
-    private static func parseJSON(data: Data?) -> JSONValue {
-        guard let data = data else {
-            return JSONValue(json: nil)
-        }
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            return JSONValue(json: json)
-        } catch {
-            owsFailDebug("Could not parse JSON: \(error).")
-            return JSONValue(json: nil)
-        }
-    }
-}
-
-// MARK: -
-
-// TODO: Modify OWSHTTPResponse to confirm to HTTPResponse as well?
-extension OWSHTTPResponseImpl: HTTPResponse {
-    @objc
-    public var responseStatusCode: Int { Int(status) }
-    @objc
-    public var responseHeaders: [String: String] { headers.headers }
-    @objc
-    public var responseBodyData: Data? { bodyData }
-    @objc
-    public var responseBodyJson: Any? { bodyJson }
-}
-
-// MARK: -
-
 // TODO: Make this private, rename class.
 @objc
 public class SocketMessageInfo: NSObject {
@@ -217,11 +133,13 @@ public class SocketMessageInfo: NSObject {
                            headers: OWSHttpHeaders,
                            bodyData: Data?,
                            message: String?) {
+        if let message = message?.nilIfEmpty {
+            Logger.verbose("message: \(message)")
+        }
         let response = OWSHTTPResponseImpl(requestUrl: requestUrl,
                                            status: status,
                                            headers: headers,
-                                           bodyData: bodyData,
-                                           message: message)
+                                           bodyData: bodyData)
         didSucceed(response: response)
     }
 
