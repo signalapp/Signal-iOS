@@ -11,6 +11,7 @@ import Foundation
 // * REST (e.g. AFNetworking, OWSURLSession, URLSession, etc.).
 // * a Websocket (e.g. OWSWebSocket).
 
+// A common protocol for responses from OWSUrlSession, NetworkManager, SocketManager, etc.
 @objc
 public protocol HTTPResponse {
     var requestUrl: URL { get }
@@ -23,16 +24,15 @@ public protocol HTTPResponse {
 
 // MARK: -
 
-// TODO: Apply this protocol to OWSUrlSession, network manager, etc?
+// A common protocol for errors from OWSUrlSession, NetworkManager, SocketManager, etc.
 public protocol HTTPError {
     var requestUrl: URL { get }
     // status is zero by default, if request never made or failed.
     var responseStatusCode: Int { get }
     var responseHeaders: OWSHttpHeaders? { get }
     // TODO: Eradicate NSUnderlyingErrorKey.
-    // TODO: Eradice responseError.
+    // TODO: Eradicate responseError.
     var responseError: Error? { get }
-    // TODO: Eradicate extracting response data from AFNetworking.
     var responseBodyData: Data? { get }
 
     var customRetryAfterDate: Date? { get }
@@ -347,8 +347,6 @@ public class HTTPResponseImpl: NSObject {
     }
 
     // This property should only be accessed with unfairLock acquired.
-    //
-    // TODO: Type?
     private var jsonValue: JSONValue?
 
     private static let unfairLock = UnfairLock()

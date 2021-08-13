@@ -27,8 +27,13 @@ extension SSKWebSocketState: CustomStringConvertible {
 
 // MARK: -
 
+// TODO: Eliminate.
 @objc
 public class SSKWebSocketError: NSObject, CustomNSError {
+
+    let underlyingError: Starscream.WSError
+
+    public var code: Int { underlyingError.code }
 
     init(underlyingError: Starscream.WSError) {
         self.underlyingError = underlyingError
@@ -40,19 +45,17 @@ public class SSKWebSocketError: NSObject, CustomNSError {
     public static let errorDomain = "SignalServiceKit.SSKWebSocketError"
 
     public var errorUserInfo: [String: Any] {
-        // TODO:
         return [
-            type(of: self).kStatusCodeKey: underlyingError.code,
+            type(of: self).kStatusCodeKey: code,
             NSUnderlyingErrorKey: (underlyingError as NSError)
         ]
     }
 
     // MARK: -
 
+    // TODO: Eliminate.
     @objc
     public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
-
-    let underlyingError: Starscream.WSError
 
     public override var description: String {
         return "SSKWebSocketError - underlyingError: \(underlyingError)"

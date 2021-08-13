@@ -44,7 +44,6 @@ public class NetworkManager: NSObject {
     }
 
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        // TODO: Websocket might be just opening. We should wait.
         // TODO: Should we use the unidentified socket for requests without auth?
         Self.socketManager.makeRequestPromise(request: request, webSocketType: .identified)
     }

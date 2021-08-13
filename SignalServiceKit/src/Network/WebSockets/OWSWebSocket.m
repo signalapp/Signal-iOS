@@ -536,7 +536,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
                                      bodyData:responseData
                                       message:responseMessage];
         } else {
-            // TODO: We should never get 403 from the UD socket. Assert.
+            if (self.webSocketType == OWSWebSocketTypeUnidentified) {
+                // We should never get 403 from the UD socket.
+                OWSAssertDebug(responseStatus != 403);
+            }
             if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeIdentified) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.

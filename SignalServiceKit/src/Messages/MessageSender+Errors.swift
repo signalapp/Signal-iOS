@@ -145,9 +145,6 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
     }
 
     @objc
-    public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
-
-    @objc
     public class func isNoSuchSignalRecipientError(_ error: Error?) -> Bool {
         error is MessageSenderNoSuchSignalRecipientError
     }

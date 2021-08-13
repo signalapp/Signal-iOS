@@ -167,7 +167,6 @@ public class RESTSessionManager: NSObject {
                 failure(OWSHTTPErrorWrapper(error: .invalidResponse(requestUrl: requestUrl)))
                 return
             }
-            // TODO: Can we extract a response body?
             var responseData: Data?
             if let responseObject = responseObject {
                 if let data = responseObject as? Data {
@@ -187,7 +186,6 @@ public class RESTSessionManager: NSObject {
             let responseHeaders = parseResponseHeaders(task: task)
             // TODO: Can we extract a response body?
             let responseData: Data? = nil
-
             if let response = parseResponse(task: task) {
                 responseStatus = response.statusCode
             } else {
