@@ -23,6 +23,7 @@ public extension RESTNetworkManager {
 
 // MARK: -
 
+// TODO: Use OWSURLSession instead.
 @objc
 public class RESTSessionManager: NSObject {
 

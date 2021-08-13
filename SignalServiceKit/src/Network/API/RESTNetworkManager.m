@@ -9,20 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// You might be asking: "why use a pool at all? We're only using the session manager
-// on the serial queue, so can't we just have two session managers (1 UD, 1 non-UD)
-// that we use for all requests?"
-//
-// That assumes that the session managers are not stateful in a way where concurrent
-// requests can interfere with each other. I audited the AFNetworking codebase and my
-// reading is that sessions managers are safe to use in that way - that the state of
-// their properties (e.g. header values) is only used when building the request and
-// can be safely changed after performRequest is complete.
-//
-// But I decided that I didn't want to (silently) bake that assumption into the
-// codebase, since the stakes are high. The session managers aren't expensive. IMO
-// better to use a pool and not re-use a session manager until its request succeeds
-// or fails.
+// Session managers are stateful (e.g. the headers in the requestSerializer).
+// Concurrent requests can interfere with each other. Therefore we use a pool
+// do not re-use a session manager until its request succeeds or fails.
 @interface OWSSessionManagerPool : NSObject
 
 @property (nonatomic) NSMutableArray<RESTSessionManager *> *pool;

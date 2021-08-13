@@ -44,6 +44,16 @@ public class SocketManager: NSObject {
 
     // TODO: Introduce retry?
     func makeRequestPromise(request: TSRequest, webSocketType: OWSWebSocketType) -> Promise<HTTPResponse> {
+        // TODO: Should we pick the websocketType based on these properties?
+        switch webSocketType {
+        case .identified:
+            owsAssertDebug(!request.isUDRequest)
+            owsAssertDebug(request.shouldHaveAuthorizationHeaders)
+        case .unidentified:
+            owsAssertDebug(request.isUDRequest)
+            owsAssertDebug(!request.shouldHaveAuthorizationHeaders)
+        }
+
         let (promise, resolver) = Promise<HTTPResponse>.pending()
         makeRequest(request,
                     webSocketType: webSocketType,

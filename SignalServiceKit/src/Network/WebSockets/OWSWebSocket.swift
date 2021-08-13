@@ -29,19 +29,9 @@ extension OWSWebSocket {
         let canUseAuth = !isUDRequest
         if isUDRequest {
             owsAssert(!request.shouldHaveAuthorizationHeaders)
+        } else {
+            owsAssertDebug(request.shouldHaveAuthorizationHeaders)
         }
-
-        //        let has
-        //        // Add UD auth header.
-        //        [request setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
-        //
-        //        - (void)setAuthorizationHeaderFieldWithUsername:(NSString *)username
-        //        password:(NSString *)password
-        //        {
-        //            NSData *basicAuthCredentials = [[NSString stringWithFormat:@"%@:%@", username, password] dataUsingEncoding:NSUTF8StringEncoding];
-        //            NSString *base64AuthCredentials = [basicAuthCredentials base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0];
-        //            [self setValue:[NSString stringWithFormat:@"Basic %@", base64AuthCredentials] forHTTPHeaderField:@"Authorization"];
-        //        }
 
         Logger.info("Making \(label): \(request)")
 
