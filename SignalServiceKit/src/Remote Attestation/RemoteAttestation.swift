@@ -118,8 +118,7 @@ extension RemoteAttestation {
                 }
 
                 #if TESTABLE_BUILD
-                // TODO:
-                // HTTPUtils.logCurl(for: task)
+                 HTTPUtils.logCurl(for: request as URLRequest)
                 #endif
             }
 

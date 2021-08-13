@@ -31,7 +31,10 @@ extension NSError {
 
     @objc
     public func afRetryAfterDate() -> Date? {
-        return afFailingHTTPURLResponse?.retryAfterDate()
+        guard let response = afFailingHTTPURLResponse else {
+            return nil
+        }
+        return OWSHttpHeaders(response: response).retryAfterDate
     }
 
     public var afFailingHTTPURLResponse: HTTPURLResponse? {
