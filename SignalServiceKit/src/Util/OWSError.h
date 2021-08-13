@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
 // TODO: These error codes are somtimes persisted, so we should
-// explicitly assign a value to every case in this enum.
+//       explicitly assign a value to every case in this enum.
 typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeInvalidMethodParameters = 11,
     OWSErrorCodeUnableToProcessServerResponse = 12,
@@ -67,7 +67,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToDecryptDuplicateMessage,
     OWSErrorCodeServerRejectedSuspectedSpam,
     OWSErrorCodeSenderKeyEphemeralFailure,
-    OWSErrorCodeSenderKeyUnavailable
+    OWSErrorCodeSenderKeyUnavailable,
+    OWSErrorCodeMessageSendEncryptionFailure
 };
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
@@ -75,13 +76,5 @@ extern NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...);
-extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
-extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
-
-@interface NSError (OWSError)
-
-- (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code;
-
-@end
 
 NS_ASSUME_NONNULL_END

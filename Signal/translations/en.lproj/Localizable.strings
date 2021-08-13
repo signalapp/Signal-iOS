@@ -1624,9 +1624,6 @@
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Message send failed due to a lack of valid recipients.";
 
-/* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
-
 /* Error indicating that a socket request timed out. */
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
 
@@ -1701,12 +1698,6 @@
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
-
-/* A default error description. */
-"ERRORS_DEFAULT_ERROR_DESCRIPTION" = "Error";
-
-/* A default error recovery suggestion. */
-"ERRORS_DEFAULT_ERROR_RECOVERY_DESCRIPTION" = "Please try again.";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
@@ -4554,6 +4545,9 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verification Failed";

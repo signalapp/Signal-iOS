@@ -278,8 +278,8 @@ extension TSAccountManager {
                                                 comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
                 failure(OWSErrorWithCodeDescription(.userError, message))
             case 409:
-                // TODO: Localize?
-                let message = "There was an account previously registered with this number that is available for transfer."
+                let message = NSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
+                                                comment: "Error message indicating that device transfer from another device might be possible.")
                 failure(OWSErrorWithCodeDescription(.registrationTransferAvailable, message))
             case 413:
                 // In the case of the "rate limiting" error, we want to show the

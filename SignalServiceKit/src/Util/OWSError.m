@@ -48,30 +48,4 @@ NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...)
         NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }
 
-
-NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError()
-{
-    return OWSErrorWithCodeDescription(OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures,
-        NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES",
-            @"Error message indicating that message send is disabled due to prekey update failures"));
-}
-
-NSError *OWSErrorMakeMessageSendFailedDueToBlockListError()
-{
-    return OWSErrorWithCodeDescription(OWSErrorCodeMessageSendFailedToBlockList,
-        NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
-            @"Error message indicating that message send failed due to block list"));
-}
-
-@implementation NSError (OWSError)
-
-- (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code
-{
-    BOOL sameDomain = [self.domain isEqualToString:OWSSignalServiceKitErrorDomain];
-    BOOL sameCode = (self.code == code);
-    return (sameDomain && sameCode);
-}
-
-@end
-
 NS_ASSUME_NONNULL_END

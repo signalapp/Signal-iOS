@@ -1107,10 +1107,6 @@ extension MessageSender {
 }
 
 extension MessageSender {
-    private enum EncryptionError: Error {
-        case missingSession(recipientAddress: SignalServiceAddress, deviceId: Int32)
-    }
-
     @objc(encryptedMessageForMessageSend:deviceId:transaction:error:)
     private func encryptedMessage(for messageSend: OWSMessageSend,
                                   deviceId: Int32,
@@ -1123,7 +1119,7 @@ extension MessageSender {
         guard Self.sessionStore.containsActiveSession(for: recipientAddress,
                                                       deviceId: deviceId,
                                                       transaction: transaction) else {
-            throw EncryptionError.missingSession(recipientAddress: recipientAddress, deviceId: deviceId)
+            throw MessageSendEncryptionError(recipientAddress: recipientAddress, deviceId: deviceId)
         }
         guard let plainText = messageSend.plaintextContent else {
             throw OWSAssertionError("Missing message content")
