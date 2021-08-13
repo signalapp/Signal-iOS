@@ -244,28 +244,17 @@ public class SocketMessageInfo: NSObject {
 
     @objc
     public func timeoutIfNecessary() {
-        let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
-        // TODO: Set retry.
-        didFail(error: error)
+        didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     @objc
     public func didFailInvalidRequest() {
-        let error = OWSHTTPError.invalidRequest(requestUrl: requestUrl)
-        // TODO: Set retry.
-        didFail(error: error)
-        // TODO: copy.
-        //        let errorMessage = NSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
-        //                                             comment: "Error indicating that a socket request failed.")
-        //        let error = OWSErrorWithCodeDescription(.messageRequestFailed, errorMessage)
-        //        didFail(status: 0, headers: OWSHttpHeaders(), error: error, bodyData: nil)
+        didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
     }
 
     @objc
     public func didFailDueToNetwork() {
-        let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
-        // TODO: Set retry.
-        didFail(error: error)
+        didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     @objc

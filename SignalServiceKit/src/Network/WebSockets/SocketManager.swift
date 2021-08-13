@@ -33,7 +33,6 @@ public class SocketManager: NSObject {
         webSocket(ofType: webSocketType).canMakeRequests
     }
 
-    // TODO: Introduce retry?
     private func makeRequest(_ request: TSRequest,
                             webSocketType: OWSWebSocketType,
                             success: @escaping TSSocketMessageSuccess,
@@ -67,7 +66,6 @@ public class SocketManager: NSObject {
         }
     }
 
-    // TODO: Introduce retry?
     func makeRequestPromise(request: TSRequest, webSocketType: OWSWebSocketType) -> Promise<HTTPResponse> {
         // TODO: Should we pick the websocketType based on these properties?
         switch webSocketType {
