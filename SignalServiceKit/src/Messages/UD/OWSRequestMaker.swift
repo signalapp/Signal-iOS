@@ -135,7 +135,7 @@ public class RequestMaker: NSObject {
                                             resolver.reject(failure.error)
                                           })
             }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
-                let statusCode = HTTPStatusCodeForError(error)?.intValue ?? 0
+                let statusCode = error.httpStatusCode ?? 0
 
                 if statusCode == 413 {
                     // We've hit rate limit; don't retry.

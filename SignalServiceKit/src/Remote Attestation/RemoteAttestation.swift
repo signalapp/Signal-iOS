@@ -135,7 +135,7 @@ extension RemoteAttestation {
             }
             success(auth)
         }.catch(on: .global()) { error in
-            let statusCode = HTTPStatusCodeForError(error)
+            let statusCode = HTTPStatusCodeForError(error) ?? 0
             Logger.verbose("Remote attestation auth failure: \(statusCode)")
         }
     }

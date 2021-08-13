@@ -794,7 +794,7 @@ public extension MessageSender {
                                        wasSentByUD: result.wasSentByUD,
                                        wasSentByWebsocket: result.wasSentByWebsocket)
         }.catch(on: Self.completionQueue) { (error: Error) in
-            let statusCode: Int = HTTPStatusCodeForError(error)?.intValue ?? 0
+            let statusCode: Int = error.httpStatusCode ?? 0
             let responseData: Data? = HTTPResponseDataForError(error)
 
             if case RequestMakerUDAuthError.udAuthFailure = error {

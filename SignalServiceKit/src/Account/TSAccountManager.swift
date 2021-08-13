@@ -270,7 +270,7 @@ extension TSAccountManager {
         }.catch(on: .global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
 
-            let statusCode = HTTPStatusCodeForError(error)
+            let statusCode = error.httpStatusCode ?? 0
 
             switch statusCode {
             case 403:
