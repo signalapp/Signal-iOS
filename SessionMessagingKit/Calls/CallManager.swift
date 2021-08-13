@@ -24,8 +24,10 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
         configuration.iceServers = [ RTCIceServer(urlStrings: MockCallConfig.default.webRTCICEServers) ]
+        configuration.sdpSemantics = .unifiedPlan
+        let pcert = RTCCertificate.generate(withParams: [ "expires": NSNumber(value: 100000), "name": "RSASSA-PKCS1-v1_5" ])
+        configuration.certificate = pcert
         configuration.iceTransportPolicy = .all
-        // TODO: Do these constraints make sense?
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [ "DtlsSrtpKeyAgreement" : "true" ])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
     }()
@@ -61,15 +63,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }()
     
     internal lazy var remoteVideoTrack: RTCVideoTrack? = {
-        return peerConnection.receivers.first { $0.track?.kind == "video" }?.track as? RTCVideoTrack
-    }()
-    
-    // Stream
-    internal lazy var stream: RTCMediaStream = {
-        let result = factory.mediaStream(withStreamId: "ARDAMS")
-        result.addAudioTrack(audioTrack)
-        result.addVideoTrack(localVideoTrack)
-        return result
+        return peerConnection.transceivers.first { $0.mediaType == .video }?.receiver.track as? RTCVideoTrack
     }()
     
     // MARK: Error
@@ -86,7 +80,9 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     // MARK: Initialization
     internal override init() {
         super.init()
-        peerConnection.add(stream)
+        let mediaStreamTrackIDS = ["ARDAMS"]
+        peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
+        peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
         let audioSession = RTCAudioSession.sharedInstance()
         audioSession.lockForConfiguration()
@@ -120,6 +116,10 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
+                
+                let message = sdp.serialize()!
+                self.delegate?.callManager(self, sendData: message)
+                
                 /*
                 let message = CallMessage()
                 message.type = .offer
@@ -148,6 +148,10 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
+                
+                let message = sdp.serialize()!
+                self.delegate?.callManager(self, sendData: message)
+                
                 /*
                 let message = CallMessage()
                 message.type = .answer
@@ -191,6 +195,8 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         SNLog("ICE candidate generated.")
+        let message = candidate.serialize()!
+        delegate?.callManager(self, sendData: message)
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
@@ -199,5 +205,18 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         SNLog("Data channel opened.")
+    }
+}
+
+// MARK: Utilities
+
+extension RTCSessionDescription {
+    
+    func serialize() -> Data? {
+        let json = [
+            "type": RTCSessionDescription.string(for: self.type),
+            "sdp": self.sdp
+        ]
+        return try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
     }
 }

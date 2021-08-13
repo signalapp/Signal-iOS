@@ -30,15 +30,22 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     private lazy var joinOrLeaveButton: UIButton = {
         let result = UIButton()
         result.setTitle("Join", for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(joinOrLeave), for: UIControl.Event.touchUpInside)
         return result
     }()
     
     private lazy var roomNumberTextField: UITextField = {
-        return UITextField()
+        let result = UITextField()
+        result.set(.width, to: 120)
+        result.set(.height, to: 40)
+        result.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        return result
     }()
     
     private lazy var infoTextView: UITextView = {
-        return UITextView()
+        let result = UITextView()
+        result.backgroundColor = UIColor.white.withAlphaComponent(0.1)
+        return result
     }()
     
     // MARK: Lifecycle
@@ -54,6 +61,17 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
         videoCallVC.view.pin(to: containerView)
         view.addSubview(containerView)
         containerView.pin(to: view)
+        view.addSubview(joinOrLeaveButton)
+        joinOrLeaveButton.translatesAutoresizingMaskIntoConstraints = false
+        joinOrLeaveButton.pin([ UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
+        view.addSubview(roomNumberTextField)
+        roomNumberTextField.translatesAutoresizingMaskIntoConstraints = false
+        roomNumberTextField.pin([ UIView.VerticalEdge.top, UIView.HorizontalEdge.left ], to: view)
+        view.addSubview(infoTextView)
+        infoTextView.translatesAutoresizingMaskIntoConstraints = false
+        infoTextView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: view)
+        infoTextView.center(.vertical, in: view)
+        infoTextView.set(.height, to: 200)
     }
     
     override func viewDidAppear(_ animated: Bool) {
