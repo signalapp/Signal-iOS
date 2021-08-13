@@ -46,6 +46,13 @@ extension NSError {
             Logger.verbose("Network error without retry behavior specified: \(self)")
             return true
         }
+        // Do not retry 4xx errors.
+        if let statusCode = (self as Error).httpStatusCode,
+           statusCode >= 400,
+           statusCode <= 499 {
+            Logger.info("Not retrying error: \(statusCode), \(String(describing: (self as Error).httpRequestUrl))")
+            return false
+        }
 
         // This value should always be set for all errors by this
         // var is consulted.  If not, default to retrying in production.

@@ -164,11 +164,6 @@ public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRet
         MessageSenderErrorNoValidRecipients() as Error as NSError
     }
 
-    public var localizedDescription: String {
-        NSLocalizedString("ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
-                          comment: "Error indicating that an outgoing message had no valid recipients.")
-    }
-
     /// NSError bridging: the domain of the error.
     /// :nodoc:
     @objc
@@ -187,6 +182,11 @@ public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRet
     /// :nodoc:
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
+    }
+
+    public var localizedDescription: String {
+        NSLocalizedString("ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
+                          comment: "Error indicating that an outgoing message had no valid recipients.")
     }
 
     public var isRetryableProvider: Bool { false }
@@ -214,12 +214,6 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
     /// NSError bridging: the error code within the given domain.
     /// :nodoc:
     public var errorCode: Int { Self.errorCode }
-
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
-    public var errorUserInfo: [String: Any] {
-        [NSLocalizedDescriptionKey: self.localizedDescription]
-    }
 
     public var isRetryableProvider: Bool { false }
 }

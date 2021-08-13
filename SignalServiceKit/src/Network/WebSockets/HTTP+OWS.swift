@@ -308,6 +308,13 @@ public extension Error {
         HTTPResponseDataForError(self)
     }
 
+    var httpRequestUrl: URL? {
+        guard let error = self as? HTTPError else {
+            return nil
+        }
+        return error.requestUrl
+    }
+
     var httpResponseJson: Any? {
         guard let data = httpResponseData else {
             return nil

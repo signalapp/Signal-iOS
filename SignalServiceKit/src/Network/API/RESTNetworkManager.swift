@@ -46,6 +46,7 @@ public class RESTSessionManager: NSObject {
                                success: @escaping RESTNetworkManagerSuccess,
                                failure: @escaping RESTNetworkManagerFailure) {
         assertOnQueue(NetworkManagerQueue())
+        owsAssertDebug(!FeatureFlags.deprecateREST)
 
         guard let rawRequestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")
