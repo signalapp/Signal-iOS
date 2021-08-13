@@ -84,14 +84,4 @@ extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
 
 @end
 
-#pragma mark -
-
-#ifdef TESTABLE_BUILD
-
-@interface OWSErrorTestUtils : NSObject
-
-@end
-
-#endif
-
 NS_ASSUME_NONNULL_END

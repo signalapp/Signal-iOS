@@ -74,14 +74,4 @@ NSError *OWSErrorMakeMessageSendFailedDueToBlockListError()
 
 @end
 
-#pragma mark -
-
-#ifdef TESTABLE_BUILD
-
-@implementation OWSErrorTestUtils
-
-@end
-
-#endif
-
 NS_ASSUME_NONNULL_END

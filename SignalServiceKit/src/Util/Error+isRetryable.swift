@@ -119,7 +119,6 @@ public enum SSKUnretryableError: Error, IsRetryableProvider {
     case messageProcessingFailed
     case couldNotLoadFileData
     case restoreGroupFailed
-    //                        case
 
     // MARK: - IsRetryableProvider
 
