@@ -36,6 +36,7 @@ typedef void (^TSSocketMessageFailure)(OWSHTTPErrorWrapper *failure);
 
 @property (nonatomic, readonly) OWSWebSocketState state;
 @property (nonatomic, readonly) BOOL hasEmptiedInitialQueue;
+@property (nonatomic, readonly) BOOL shouldSocketBeOpen;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithWebSocketType:(OWSWebSocketType)webSocketType NS_DESIGNATED_INITIALIZER;

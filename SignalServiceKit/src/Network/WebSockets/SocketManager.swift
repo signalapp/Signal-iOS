@@ -33,13 +33,38 @@ public class SocketManager: NSObject {
         webSocket(ofType: webSocketType).canMakeRequests
     }
 
-    // TODO: Remove?
     // TODO: Introduce retry?
-    public func makeRequest(_ request: TSRequest,
+    private func makeRequest(_ request: TSRequest,
                             webSocketType: OWSWebSocketType,
                             success: @escaping TSSocketMessageSuccess,
                             failure: @escaping TSSocketMessageFailure) {
         webSocket(ofType: webSocketType).makeRequest(request, success: success, failure: failure)
+    }
+
+    private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
+                                     waitStartDate: Date = Date()) -> Promise<Void> {
+        let webSocket = self.webSocket(ofType: webSocketType)
+        if webSocket.canMakeRequests {
+            // The socket is open; proceed.
+            return Promise.value(())
+        }
+        guard webSocket.shouldSocketBeOpen else {
+            // The socket wants to be open, but isn't.
+            // Proceed even though we will probably fail.
+            return Promise.value(())
+        }
+        let maxWaitInteral = kSecondInterval * 30
+        guard abs(waitStartDate.timeIntervalSinceNow) < maxWaitInteral else {
+            // The socket wants to be open, but isn't.
+            // Proceed even though we will probably fail.
+            return Promise.value(())
+        }
+        return firstly {
+            after(seconds: kSecondInterval / 10)
+        }.then(on: .global()) {
+            self.waitForSocketToOpen(webSocketType: webSocketType,
+                                     waitStartDate: waitStartDate)
+        }
     }
 
     // TODO: Introduce retry?
@@ -54,16 +79,20 @@ public class SocketManager: NSObject {
             owsAssertDebug(!request.shouldHaveAuthorizationHeaders)
         }
 
-        let (promise, resolver) = Promise<HTTPResponse>.pending()
-        makeRequest(request,
-                    webSocketType: webSocketType,
-                    success: { (response: HTTPResponse) in
-                        resolver.fulfill(response)
-                    },
-                    failure: { (failure: OWSHTTPErrorWrapper) in
-                        resolver.reject(failure.error)
-                    })
-        return promise
+        return firstly {
+            waitForSocketToOpen(webSocketType: webSocketType)
+        }.then(on: .global()) { () -> Promise<HTTPResponse> in
+            let (promise, resolver) = Promise<HTTPResponse>.pending()
+            self.makeRequest(request,
+                             webSocketType: webSocketType,
+                             success: { (response: HTTPResponse) in
+                                resolver.fulfill(response)
+                             },
+                             failure: { (failure: OWSHTTPErrorWrapper) in
+                                resolver.reject(failure.error)
+                             })
+            return promise
+        }
     }
 
     // This method can be called from any thread.

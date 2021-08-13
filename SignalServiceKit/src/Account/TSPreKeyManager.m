@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/TSPreKeyManager.h>
-#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/HTTPUtils.h>

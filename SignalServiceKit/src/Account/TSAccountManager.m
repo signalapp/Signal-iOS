@@ -3,7 +3,6 @@
 //
 
 #import "TSAccountManager.h"
-#import "NSURLSessionDataTask+OWS_HTTP.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
