@@ -4,6 +4,7 @@ import WebRTC
 
 final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegate, MockWebSocketDelegate {
     private let videoCallVC = VideoCallVC()
+    let videoCapturer: RTCVideoCapturer = RTCCameraVideoCapturer(delegate: CallManager.shared.localVideoSource)
     private var messageQueue: [String] = []
     private var isConnected = false {
         didSet {
@@ -43,31 +44,25 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpCamera()
-        embedVideoCallVC()
-        view.addSubview(containerView)
-        containerView.pin(to: view)
-    }
-    
-    private func setUpCamera() {
+        touch(CallManager.shared)
+        CallManager.shared.delegate = self
         CameraManager.shared.delegate = self
         CameraManager.shared.prepare()
-    }
-    
-    private func embedVideoCallVC() {
         addChild(videoCallVC)
         containerView.addSubview(videoCallVC.view)
         videoCallVC.view.translatesAutoresizingMaskIntoConstraints = false
         videoCallVC.view.pin(to: containerView)
+        view.addSubview(containerView)
+        containerView.pin(to: view)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         CameraManager.shared.start()
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         CameraManager.shared.stop()
     }
     
@@ -157,7 +152,6 @@ final class CallVC : UIViewController, CameraCaptureDelegate, CallManagerDelegat
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) else { return }
         MockWebSocket.shared.send(data)
-        CallManager.shared.delegate = self
         if isInitiator {
             CallManager.shared.initiateCall().retainUntilComplete()
         }

@@ -24,13 +24,14 @@ final class CameraManager : NSObject {
     private override init() { }
     
     func prepare() {
+        captureSession.sessionPreset = .low
         if let videoCaptureDevice = videoCaptureDevice,
             let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice), captureSession.canAddInput(videoInput) {
             captureSession.addInput(videoInput)
         }
         if captureSession.canAddOutput(videoDataOutput) {
             captureSession.addOutput(videoDataOutput)
-            videoDataOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)]
+            videoDataOutput.videoSettings = [ kCVPixelBufferPixelFormatTypeKey as String : Int(kCVPixelFormatType_32BGRA) ]
             videoDataOutput.setSampleBufferDelegate(self, queue: dataOutputQueue)
             videoDataOutput.connection(with: .video)?.videoOrientation = .portrait
             videoDataOutput.connection(with: .video)?.automaticallyAdjustsVideoMirroring = false

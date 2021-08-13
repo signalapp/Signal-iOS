@@ -51,8 +51,10 @@ extension VideoCallVC : CameraCaptureDelegate {
     func captureVideoOutput(sampleBuffer: CMSampleBuffer) {
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         let rtcpixelBuffer = RTCCVPixelBuffer(pixelBuffer: pixelBuffer)
-        let timeStampNs = Int64(CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)) * 1000000000)
-        let videoFrame = RTCVideoFrame(buffer: rtcpixelBuffer, rotation: RTCVideoRotation._0, timeStampNs: timeStampNs)
+        let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+        let timestampNs = Int64(timestamp * 1000000000)
+        let videoFrame = RTCVideoFrame(buffer: rtcpixelBuffer, rotation: RTCVideoRotation._0, timeStampNs: timestampNs)
+        videoFrame.timeStamp = Int32(timestamp)
         CallManager.shared.handleLocalFrameCaptured(videoFrame)
     }
 }

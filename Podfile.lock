@@ -21,6 +21,7 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
+  - GoogleWebRTC (1.1.31999)
   - GRKOpenSSLFramework (1.0.2.20)
   - HKDFKit (0.0.3)
   - Mantle (2.1.0):
@@ -52,7 +53,6 @@ PODS:
   - SQLCipher/standard (4.4.0):
     - SQLCipher/common
   - SwiftProtobuf (1.5.0)
-  - WebRTC (63.11.20455)
   - YapDatabase/SQLCipher (3.1.1):
     - YapDatabase/SQLCipher/Core (= 3.1.1)
     - YapDatabase/SQLCipher/Extensions (= 3.1.1)
@@ -126,6 +126,7 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
+  - GoogleWebRTC
   - GRKOpenSSLFramework
   - HKDFKit
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
@@ -138,7 +139,6 @@ DEPENDENCIES:
   - SocketRocket (~> 0.5.1)
   - Sodium (~> 0.8.0)
   - SwiftProtobuf (~> 1.5.0)
-  - WebRTC (~> 63.11)
   - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
@@ -148,6 +148,7 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
+    - GoogleWebRTC
     - GRKOpenSSLFramework
     - HKDFKit
     - NVActivityIndicatorView
@@ -159,7 +160,6 @@ SPEC REPOS:
     - Sodium
     - SQLCipher
     - SwiftProtobuf
-    - WebRTC
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -198,6 +198,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
+  GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -211,11 +212,10 @@ SPEC CHECKSUMS:
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
-  WebRTC: f2a6203584745fe53532633397557876b5d71640
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0f0ee15979921c085945dc1cacb0fd1fd380b77d
+PODFILE CHECKSUM: 215e4f2af32f65d98d1442e6ec0df3576c994a02
 
 COCOAPODS: 1.10.1

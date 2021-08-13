@@ -11,6 +11,7 @@ extension CallManager {
     }
     
     public func handleLocalFrameCaptured(_ videoFrame: RTCVideoFrame) {
+        guard let videoCapturer = delegate?.videoCapturer else { return }
         localVideoSource.capturer(videoCapturer, didCapture: videoFrame)
     }
 }

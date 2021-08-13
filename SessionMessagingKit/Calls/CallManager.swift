@@ -2,6 +2,7 @@ import PromiseKit
 import WebRTC
 
 public protocol CallManagerDelegate : AnyObject {
+    var videoCapturer: RTCVideoCapturer { get }
     
     func callManager(_ callManager: CallManager, sendData data: Data)
 }
@@ -23,6 +24,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
         configuration.iceServers = [ RTCIceServer(urlStrings: MockCallConfig.default.webRTCICEServers) ]
+        configuration.iceTransportPolicy = .all
         // TODO: Do these constraints make sense?
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [ "DtlsSrtpKeyAgreement" : "true" ])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
@@ -50,20 +52,16 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }()
     
     // Video
-    internal lazy var localVideoSource: RTCVideoSource = {
-        return factory.avFoundationVideoSource(with: nil)
+    public lazy var localVideoSource: RTCVideoSource = {
+        return factory.videoSource()
     }()
     
     internal lazy var localVideoTrack: RTCVideoTrack = {
         return factory.videoTrack(with: localVideoSource, trackId: "ARDAMSv0")
     }()
     
-    internal lazy var videoCapturer: RTCVideoCapturer = {
-        return RTCCameraVideoCapturer(delegate: localVideoSource)
-    }()
-    
     internal lazy var remoteVideoTrack: RTCVideoTrack? = {
-        return peerConnection.receivers.first { $0.track.kind == "video" }?.track as? RTCVideoTrack
+        return peerConnection.receivers.first { $0.track?.kind == "video" }?.track as? RTCVideoTrack
     }()
     
     // Stream
