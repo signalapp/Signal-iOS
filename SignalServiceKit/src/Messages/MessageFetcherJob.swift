@@ -99,11 +99,15 @@ public class MessageFetcherJob: NSObject {
         // this by having our message fetch operations depend
         // on a no-op operation that flushes the "message ack"
         // operation queue.
-        let flushAckOperation = Operation()
-        flushAckOperation.queuePriority = .normal
-        ackOperationQueue.addOperation(flushAckOperation)
+        let shouldFlush = !FeatureFlags.deprecateREST
+        if shouldFlush {
+            let flushAckOperation = Operation()
+            flushAckOperation.queuePriority = .normal
+            ackOperationQueue.addOperation(flushAckOperation)
 
-        fetchOperation.addDependency(flushAckOperation)
+            fetchOperation.addDependency(flushAckOperation)
+        }
+
         fetchOperationQueue.addOperation(fetchOperation)
 
         completionQueue.async {
@@ -172,7 +176,7 @@ public class MessageFetcherJob: NSObject {
     @objc
     @available(swift, obsoleted: 1.0)
     public func fetchingCompletePromise() -> AnyPromise {
-        return AnyPromise(fetchingCompletePromise())
+        AnyPromise(fetchingCompletePromise())
     }
 
     public func fetchingCompletePromise() -> Promise<Void> {
@@ -196,7 +200,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             return NotificationCenter.default.observe(once: .webSocketStateDidChange).then { _ in
-                return self.fetchingCompletePromise()
+                self.fetchingCompletePromise()
             }.asVoid()
         } else {
             guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
@@ -211,7 +215,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             return NotificationCenter.default.observe(once: Self.didChangeStateNotificationName).then { _ in
-                return self.fetchingCompletePromise()
+                self.fetchingCompletePromise()
             }.asVoid()
         }
     }
@@ -275,8 +279,8 @@ public class MessageFetcherJob: NSObject {
 
         return firstly(on: .global()) {
             fetchBatchViaRest()
-        }.map(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> ([EnvelopeJob], UInt64, Bool) in
-            let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+        }.map(on: .global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
+            let envelopeJobs: [EnvelopeJob] = batch.envelopes.compactMap { envelope in
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
@@ -289,15 +293,19 @@ public class MessageFetcherJob: NSObject {
                     return nil
                 }
             }
-            return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
-        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+            return (envelopeJobs: envelopeJobs,
+                    serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
+                    hasMore: batch.hasMore)
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob],
+                                 serverDeliveryTimestamp: UInt64,
+                                 hasMore: Bool) -> Promise<Void> in
             Self.messageProcessor.processEncryptedEnvelopes(
                 envelopeJobs: envelopeJobs,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: .rest
             )
 
-            if more {
+            if hasMore {
                 Logger.info("fetching more messages.")
 
                 return self.fetchMessagesViaRestWhenReady()
@@ -426,29 +434,33 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool)> {
-        return Promise { resolver in
+    private struct RESTBatch {
+        let envelopes: [SSKProtoEnvelope]
+        let serverDeliveryTimestamp: UInt64
+        let hasMore: Bool
+    }
+
+    private class func fetchBatchViaRest() -> Promise<RESTBatch> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.getMessagesRequest()
-            firstly(on: .global()) {
-                self.networkManager.makePromise(request: request)
-            }.done(on: .global()) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                guard let timestampString = response.responseHeaders["x-signal-timestamp"],
-                      let serverDeliveryTimestamp = UInt64(timestampString) else {
-                    return resolver.reject(OWSAssertionError("Unable to parse server delivery timestamp."))
-                }
-
-                guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
-                    Logger.error("response object had unexpected content")
-                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                }
-
-                resolver.fulfill((envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more))
-            }.catch(on: .global()) { error in
-                resolver.reject(error)
+            return self.networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
             }
+            guard let timestampString = response.responseHeaders["x-signal-timestamp"],
+                  let serverDeliveryTimestamp = UInt64(timestampString) else {
+                throw OWSAssertionError("Unable to parse server delivery timestamp.")
+            }
+
+            guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
+                Logger.error("response object had unexpected content")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            return RESTBatch(envelopes: envelopes,
+                             serverDeliveryTimestamp: serverDeliveryTimestamp,
+                             hasMore: more)
         }
     }
 
