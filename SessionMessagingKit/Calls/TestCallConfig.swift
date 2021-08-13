@@ -1,7 +1,6 @@
 
 public enum TestCallConfig {
 
-    public static let defaultSignalingServerURL = "ws://developereric.com:8080"
     public static let defaultICEServers = [
         "stun:stun.l.google.com:19302",
         "stun:stun1.l.google.com:19302",

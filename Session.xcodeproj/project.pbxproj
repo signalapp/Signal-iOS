@@ -158,7 +158,6 @@
 		B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */; };
 		B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */; };
 		B806ECA126C4A7E4008BDA44 /* CallManager+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */; };
-		B806ECA326C4A8C6008BDA44 /* MockTURNServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
 		B80F469A26C63DD000DCE243 /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80F469926C63DD000DCE243 /* RoomInfo.swift */; };
 		B817AD9A26436593009DF825 /* SimplifiedConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */; };
@@ -1154,7 +1153,6 @@
 		B8041A9425C8FA1D003C2166 /* MediaLoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoaderView.swift; sourceTree = "<group>"; };
 		B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
 		B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallManager+UI.swift"; sourceTree = "<group>"; };
-		B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTURNServer.swift; sourceTree = "<group>"; };
 		B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewClosedGroupVC.swift; sourceTree = "<group>"; };
 		B80F469926C63DD000DCE243 /* RoomInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
 		B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedConversationCell.swift; sourceTree = "<group>"; };
@@ -2372,7 +2370,6 @@
 				B8DE1FB326C22F2F0079C9CE /* CallManager.swift */,
 				B806ECA026C4A7E4008BDA44 /* CallManager+UI.swift */,
 				B8B558FE26C4E05E00693325 /* CallManager+Messages.swift */,
-				B806ECA226C4A8C6008BDA44 /* MockTURNServer.swift */,
 				B8B5590026C4E2A400693325 /* SignalingMessage.swift */,
 				B8B558FA26C4D25C00693325 /* WebSocket.swift */,
 				B8B558F226C4CA4600693325 /* TestCallConfig.swift */,
@@ -4798,7 +4795,6 @@
 				B8856D11256F112A001CE70E /* OWSAudioSession.swift in Sources */,
 				C3DB66C3260ACCE6001EFC55 /* OpenGroupPollerV2.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
-				B806ECA326C4A8C6008BDA44 /* MockTURNServer.swift in Sources */,
 				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,
 				B8856CA8256F0F42001CE70E /* OWSBackupFragment.m in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,
