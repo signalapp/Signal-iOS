@@ -317,20 +317,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 self.reportSuccess()
                 self.resolver.fulfill(groupThread)
             }.catch(on: .global()) { (error) in
-
-                var error = error
-                if self.shouldRetryAuthFailures,
-                   case GroupsV2Error.unauthorizedUnretryable = error {
-                    error = GroupsV2Error.unauthorizedRetryable
-                   }
-
                 if IsNetworkConnectivityFailure(error) {
                     Logger.warn("Group update failed: \(error)")
                 } else {
                     switch error {
-                    case GroupsV2Error.unauthorizedUnretryable,
-                         GroupsV2Error.unauthorizedRetryable,
-                         GroupsV2Error.localUserNotInGroup,
+                    case GroupsV2Error.localUserNotInGroup,
                          GroupsV2Error.timeout,
                          GroupsV2Error.missingGroupChangeProtos:
                     Logger.warn("Group update failed: \(error)")
@@ -408,9 +399,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     case GroupsV2Error.groupNotInDatabase:
                         // Unknown groups are handled by snapshot.
                         return true
-                    case GroupsV2Error.unauthorizedUnretryable,
-                         GroupsV2Error.unauthorizedRetryable,
-                         GroupsV2Error.localUserNotInGroup:
+                    case GroupsV2Error.localUserNotInGroup:
                         // We can recover from some auth edge cases
                         // using a snapshot.
                         return true
@@ -1030,10 +1019,6 @@ extension GroupsV2Error: IsRetryableProvider {
         switch self {
         case .redundantChange:
             return true
-        case .unauthorizedRetryable:
-            return true
-        case .unauthorizedUnretryable:
-            return false
         case .shouldRetry:
             return true
         case .shouldDiscard:
