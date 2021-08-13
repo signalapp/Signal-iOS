@@ -46,14 +46,11 @@ extension NSError {
         // NSError implements Error protocol, but casting NSError to Error
         // might unwrap a bridged wrapper.
         //
-        // If an Error is roundtrip-cast through NSError, you end up with the
-        // same as instance as you began.
+        // If you roundtrip-cast Error to NSError and back (or vice versa),
+        // you should not count on ending up with the same as instance as
+        // you began with, even though you sometimes will.
         //
-        // If a NSError is roundtrip-cast through Error, you should not count
-        // on ending up with the same instance of NSError, although you
-        // sometimes will.
-        //
-        // Therefore, when trying to cast an error to IsRetryableProvider,
+        // When trying to cast an error to IsRetryableProvider,
         // we need to try casting both the Error and NSError form.
         if let error = self as? IsRetryableProvider {
             return error.isRetryableProvider
@@ -67,7 +64,10 @@ extension NSError {
             Logger.verbose("Network error without retry behavior specified: \(self)")
             return true
         }
-        // Do not retry 4xx errors.
+        // Do not retry generic 4xx errors.
+        //
+        // If there are any 4xx errors that we want to retry, we should catch them
+        // and throw a custom Error that implements IsRetryableProvider.
         if let statusCode = (self as Error).httpStatusCode,
            statusCode >= 400,
            statusCode <= 499 {
