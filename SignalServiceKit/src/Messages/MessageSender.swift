@@ -1238,12 +1238,15 @@ extension MessageSender {
                                                           identityStore: Self.identityManager,
                                                           senderKeyStore: Self.senderKeyStore)
 
-            serializedMessage = try secretCipher.throwswrapped_encryptMessage(
+            serializedMessage = try secretCipher.encryptMessage(
                 recipient: SMKAddress(uuid: recipientAddress.uuid, e164: recipientAddress.phoneNumber),
                 deviceId: deviceId,
                 paddedPlaintext: paddedPlaintext,
+                contentHint: messageSend.message.contentHint.signalClientHint,
+                groupId: messageSend.message.envelopeGroupIdWithTransaction(transaction),
                 senderCertificate: udSendingAccess.senderCertificate,
                 protocolContext: transaction)
+
             messageType = .unidentifiedSenderMessageType
 
         } else {

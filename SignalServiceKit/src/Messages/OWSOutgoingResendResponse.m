@@ -9,6 +9,8 @@
 @interface OWSOutgoingResendResponse ()
 @property (nonatomic, readonly, nullable) NSData *originalMessagePlaintext;
 @property (nonatomic, readonly, nullable) NSString *originalThreadId;
+@property (nonatomic, readonly, nullable) NSData *originalGroupId;
+
 @property (nonatomic) BOOL didAppendSKDM;
 @end
 
@@ -29,6 +31,7 @@
                                                            timestamp:originalSentDate
                                                          transaction:transaction];
 
+    TSThread *originalThread = [TSThread anyFetchWithUniqueId:payloadRecord.uniqueThreadId transaction:transaction];
     TSThread *targetThread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:targetThread];
 
@@ -54,6 +57,10 @@
     if (self) {
         _originalMessagePlaintext = payloadRecord.plaintextContent;
         _originalThreadId = payloadRecord.uniqueThreadId;
+
+        if ([originalThread isKindOfClass:[TSGroupThread class]]) {
+            _originalGroupId = ((TSGroupThread *)originalThread).groupId;
+        }
     }
     return self;
 }
@@ -134,6 +141,11 @@
 - (SealedSenderContentHint)contentHint
 {
     return SealedSenderContentHintDefault;
+}
+
+- (nullable NSData *)envelopeGroupIdWithTransaction:(__unused SDSAnyReadTransaction *)transaction
+{
+    return self.originalGroupId;
 }
 
 - (void)resetSenderKeyDeliveryRecordIfNecessaryForThreadId:(NSString *)threadId
