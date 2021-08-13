@@ -9,8 +9,8 @@ static void *OWSWebSocketStateObservationContext = &OWSWebSocketStateObservation
 extern NSNotificationName const NSNotificationWebSocketStateDidChange;
 
 typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketType) {
-    OWSWebSocketTypeDefault,
-    OWSWebSocketTypeUD,
+    OWSWebSocketTypeIdentified,
+    OWSWebSocketTypeUnidentified,
 };
 
 NSString *NSStringForOWSWebSocketType(OWSWebSocketType value);

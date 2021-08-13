@@ -85,7 +85,7 @@ public class MessageFetcherJob: NSObject {
 
         // Use an operation queue to ensure that only one fetch cycle is done
         // at a time.
-        let fetchOperation = MessageFetchOperation(job: self)
+        let fetchOperation = MessageFetchOperation()
         let promise = fetchOperation.promise
         let fetchCycle = MessageFetchCycle(promise: promise)
 
@@ -93,6 +93,17 @@ public class MessageFetcherJob: NSObject {
             activeFetchCycles.insert(fetchCycle.uuid)
         }
 
+        // We don't want to re-fetch any messages that have
+        // already been processed, so fetch operations should
+        // block on "message ack" operations.  We accomplish
+        // this by having our message fetch operations depend
+        // on a no-op operation that flushes the "message ack"
+        // operation queue.
+        let flushAckOperation = Operation()
+        flushAckOperation.queuePriority = .normal
+        ackOperationQueue.addOperation(flushAckOperation)
+
+        fetchOperation.addDependency(flushAckOperation)
         fetchOperationQueue.addOperation(fetchOperation)
 
         completionQueue.async {
@@ -139,10 +150,23 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
+    public class var shouldUseWebSocket: Bool {
+        if FeatureFlags.deprecateREST {
+            return true
+        }
+        return CurrentAppContext().isMainApp && !signalService.isCensorshipCircumventionActive
+    }
+
     @objc
     public var hasCompletedInitialFetch: Bool {
-        (SocketManager.shared.socketState(forType: .default) == .open &&
-            SocketManager.shared.hasEmptiedInitialQueue)
+        if Self.shouldUseWebSocket {
+            let isWebsocketDrained = (socketManager.socketState(forType: .identified) == .open &&
+                                        socketManager.hasEmptiedInitialQueue)
+            guard isWebsocketDrained else { return false }
+        } else {
+            guard completedRestFetches > 0 else { return false }
+        }
+        return true
     }
 
     @objc
@@ -159,25 +183,42 @@ public class MessageFetcherJob: NSObject {
             return Promise.value(())
         }
 
-        guard !hasCompletedInitialFetch else {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("hasCompletedInitialFetch")
+        if Self.shouldUseWebSocket {
+            guard !hasCompletedInitialFetch else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("hasCompletedInitialFetch")
+                }
+                return Promise.value(())
             }
-            return Promise.value(())
-        }
 
-        if DebugFlags.isMessageProcessingVerbose {
-            Logger.verbose("!hasCompletedInitialFetch")
-        }
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("!hasCompletedInitialFetch")
+            }
 
-        return NotificationCenter.default.observe(once: .webSocketStateDidChange).then { _ in
-            return self.fetchingCompletePromise()
-        }.asVoid()
+            return NotificationCenter.default.observe(once: .webSocketStateDidChange).then { _ in
+                return self.fetchingCompletePromise()
+            }.asVoid()
+        } else {
+            guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("areAllFetchCyclesComplete && hasCompletedInitialFetch")
+                }
+                return Promise.value(())
+            }
+
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("!areAllFetchCyclesComplete || !hasCompletedInitialFetch")
+            }
+
+            return NotificationCenter.default.observe(once: Self.didChangeStateNotificationName).then { _ in
+                return self.fetchingCompletePromise()
+            }.asVoid()
+        }
     }
 
     // MARK: -
 
-    fileprivate func fetchMessages(resolver: Resolver<Void>) {
+    fileprivate class func fetchMessages(resolver: Resolver<Void>) {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
@@ -186,53 +227,105 @@ public class MessageFetcherJob: NSObject {
             return resolver.fulfill(())
         }
 
-        // Delegate message fetching to SocketManager.
-        if hasCompletedInitialFetch {
-            // If the websocket is already open & has drained
-            // it's initial queue, wait a bit before fulfilling
-            // to give the websocket time to receive any new
-            // incoming messages.
-            //
-            // TODO: Is this necessary?
-            let minimumInterval: TimeInterval = 0.5
-            DispatchQueue.global().asyncAfter(deadline: .now() + minimumInterval) {
-                resolver.fulfill(())
-            }
+        if shouldUseWebSocket {
+            Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
+            socketManager.requestSocketOpen()
+            return resolver.fulfill(())
+        } else if CurrentAppContext().shouldProcessIncomingMessages {
+            // Main app should use REST if censorship circumvention is active.
+            // Notification extension that should always use REST.
         } else {
-            return Self.tryToResolveFetch(resolver: resolver,
-                                          startDate: Date(),
-                                          hasRequestedOpen: AtomicBool(false))
+            return resolver.reject(OWSAssertionError("App extensions should not fetch messages."))
+        }
+
+        Logger.info("Fetching messages via REST.")
+
+        firstly {
+            fetchMessagesViaRestWhenReady()
+        }.done {
+            resolver.fulfill(())
+        }.catch { error in
+            Logger.error("Error: \(error).")
+            resolver.reject(error)
         }
     }
 
-    fileprivate class func tryToResolveFetch(resolver: Resolver<Void>,
-                                             startDate: Date,
-                                             hasRequestedOpen: AtomicBool) {
+    // MARK: -
+
+    // This operation queue ensures that only one fetch operation is
+    // running at a given time.
+    private let ackOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "MessageFetcherJob.ackOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 3
+        return operationQueue
+    }()
+
+    private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
+        let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo)
+        ackOperationQueue.addOperation(ackOperation)
+    }
+
+    // MARK: -
+
+    typealias EnvelopeJob = MessageProcessor.EnvelopeJob
+
+    private class func fetchMessagesViaRest() -> Promise<Void> {
         Logger.debug("")
 
-        let socketState = socketManager.socketState(forType: .default)
-        if socketState == .open {
-            if socketManager.hasEmptiedInitialQueue {
-                resolver.fulfill(())
-                return
+        return firstly(on: .global()) {
+            fetchBatchViaRest()
+        }.map(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> ([EnvelopeJob], UInt64, Bool) in
+            let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+                let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
+                do {
+                    let envelopeData = try envelope.serializedData()
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
+                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    }
+                } catch {
+                    owsFailDebug("failed to serialize envelope")
+                    Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    return nil
+                }
             }
-        } else if hasRequestedOpen.tryToSetFlag() {
-            // If we haven't requested that the default websocket open yet,
-            // do so now.
-            socketManager.requestSocketOpen()
-        }
+            return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+            Self.messageProcessor.processEncryptedEnvelopes(
+                envelopeJobs: envelopeJobs,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: .rest
+            )
 
-        let timeoutInterval: TimeInterval = kSecondInterval * 30
-        guard abs(startDate.timeIntervalSinceNow) < timeoutInterval else {
-            // We don't need to bother rejecting.
-            resolver.fulfill(())
-            return
-        }
+            if more {
+                Logger.info("fetching more messages.")
 
-        // Wait a bit longer for the socket to open and drain its initial queue.
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) {
-            Self.tryToResolveFetch(resolver: resolver, startDate: startDate, hasRequestedOpen: hasRequestedOpen)
+                return self.fetchMessagesViaRestWhenReady()
+            } else {
+                // All finished
+                return Promise.value(())
+            }
         }
+    }
+
+    private class func fetchMessagesViaRestWhenReady() -> Promise<Void> {
+        Promise<Void>.waitUntil {
+            isReadyToFetchMessagesViaRest
+        }.then {
+            fetchMessagesViaRest()
+        }
+    }
+
+    private class var isReadyToFetchMessagesViaRest: Bool {
+        guard CurrentAppContext().isNSE else {
+            // If not NSE, fetch more immediately.
+            return true
+        }
+        // In NSE, if messageProcessor queue has enough content,
+        // wait before fetching more envelopes.
+        // We need to bound peak memory usage in the NSE when processing
+        // lots of incoming message.
+        return !Self.messageProcessor.hasSomeQueuedContent
     }
 
     // MARK: - Run Loop
@@ -251,19 +344,135 @@ public class MessageFetcherJob: NSObject {
         timer?.invalidate()
         timer = nil
     }
+
+    // MARK: -
+
+    private class func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKProtoEnvelope], more: Bool)? {
+        guard let responseObject = responseObject else {
+            Logger.error("response object was unexpectedly nil")
+            return nil
+        }
+
+        guard let responseDict = responseObject as? [String: Any] else {
+            Logger.error("response object was not a dictionary")
+            return nil
+        }
+
+        guard let messageDicts = responseDict["messages"] as? [[String: Any]] else {
+            Logger.error("messages object was not a list of dictionaries")
+            return nil
+        }
+
+        let moreMessages = { () -> Bool in
+            if let responseMore = responseDict["more"] as? Bool {
+                return responseMore
+            } else {
+                Logger.warn("more object was not a bool. Assuming no more")
+                return false
+            }
+        }()
+
+        let envelopes: [SSKProtoEnvelope] = messageDicts.compactMap { buildEnvelope(messageDict: $0) }
+
+        return (
+            envelopes: envelopes,
+            more: moreMessages
+        )
+    }
+
+    private class func buildEnvelope(messageDict: [String: Any]) -> SSKProtoEnvelope? {
+        do {
+            let params = ParamParser(dictionary: messageDict)
+
+            let typeInt: Int32 = try params.required(key: "type")
+            guard let type: SSKProtoEnvelopeType = SSKProtoEnvelopeType(rawValue: typeInt) else {
+                Logger.error("`type` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("type")
+            }
+
+            guard let timestamp: UInt64 = try params.required(key: "timestamp") else {
+                Logger.error("`timestamp` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("timestamp")
+            }
+
+            let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
+            builder.setType(type)
+
+            if let source: String = try params.optional(key: "source") {
+                builder.setSourceE164(source)
+            }
+
+            if let sourceDevice: UInt32 = try params.optional(key: "sourceDevice") {
+                builder.setSourceDevice(sourceDevice)
+            }
+
+            if let legacyMessage = try params.optionalBase64EncodedData(key: "message") {
+                builder.setLegacyMessage(legacyMessage)
+            }
+            if let content = try params.optionalBase64EncodedData(key: "content") {
+                builder.setContent(content)
+            }
+            if let serverTimestamp: UInt64 = try params.optional(key: "serverTimestamp") {
+                builder.setServerTimestamp(serverTimestamp)
+            }
+            if let serverGuid: String = try params.optional(key: "guid") {
+                builder.setServerGuid(serverGuid)
+            }
+
+            return try builder.build()
+        } catch {
+            owsFailDebug("error building envelope: \(error)")
+            return nil
+        }
+    }
+
+    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool)> {
+        return Promise { resolver in
+            let request = OWSRequestFactory.getMessagesRequest()
+            firstly(on: .global()) {
+                self.networkManager.makePromise(request: request)
+            }.done(on: .global()) { response in
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
+                }
+                guard let timestampString = response.responseHeaders["x-signal-timestamp"],
+                      let serverDeliveryTimestamp = UInt64(timestampString) else {
+                    return resolver.reject(OWSAssertionError("Unable to parse server delivery timestamp."))
+                }
+
+                guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
+                    Logger.error("response object had unexpected content")
+                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+                }
+
+                resolver.fulfill((envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more))
+            }.catch(on: .global()) { error in
+                resolver.reject(error)
+            }
+        }
+    }
+
+    fileprivate struct EnvelopeInfo {
+        let sourceAddress: SignalServiceAddress?
+        let serverGuid: String?
+        let timestamp: UInt64
+    }
+
+    private class func buildEnvelopeInfo(envelope: SSKProtoEnvelope) -> EnvelopeInfo {
+        EnvelopeInfo(sourceAddress: envelope.sourceAddress,
+                     serverGuid: envelope.serverGuid,
+                     timestamp: envelope.timestamp)
+    }
 }
 
 // MARK: -
 
 private class MessageFetchOperation: OWSOperation {
 
-    private weak var job: MessageFetcherJob?
-
     let promise: Promise<Void>
-    private let resolver: Resolver<Void>
+    let resolver: Resolver<Void>
 
-    required init(job: MessageFetcherJob) {
-        self.job = job
+    override required init() {
 
         let (promise, resolver) = Promise<Void>.pending()
         self.promise = promise
@@ -275,14 +484,89 @@ private class MessageFetchOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        if let job = job {
-            job.fetchMessages(resolver: resolver)
+        MessageFetcherJob.fetchMessages(resolver: resolver)
+
+        _ = promise.ensure {
+            self.reportSuccess()
+        }
+    }
+}
+
+// MARK: -
+
+private class MessageAckOperation: OWSOperation {
+
+    fileprivate typealias EnvelopeInfo = MessageFetcherJob.EnvelopeInfo
+
+    private let envelopeInfo: EnvelopeInfo
+
+    fileprivate required init(envelopeInfo: EnvelopeInfo) {
+        self.envelopeInfo = envelopeInfo
+
+        super.init()
+
+        self.remainingRetries = 3
+
+        // MessageAckOperation must have a higher priority than than the
+        // operations used to flush the ack operation queue.
+        self.queuePriority = .high
+    }
+
+    public override func run() {
+        Logger.debug("")
+
+        let request: TSRequest
+        if let serverGuid = envelopeInfo.serverGuid, serverGuid.count > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
+        } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)
         } else {
-            resolver.reject(OWSAssertionError("Missing job."))
+            let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
+            reportError(error)
+            return
         }
 
-        _ = promise.ensure(on: .global()) {
+        let envelopeInfo = self.envelopeInfo
+        firstly(on: .global()) {
+            self.networkManager.makePromise(request: request)
+        }.done(on: .global()) { _ in
+            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
             self.reportSuccess()
+        }.catch(on: .global()) { error in
+            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + " failed with error: \(error)")
+            self.reportError(error)
+        }
+    }
+}
+
+// MARK: -
+
+extension Promise {
+    public static func waitUntil(checkFrequency: TimeInterval = 0.01,
+                                 dispatchQueue: DispatchQueue = .global(),
+                                 conditionBlock: @escaping () -> Bool) -> Promise<Void> {
+
+        let (promise, resolver) = Promise<Void>.pending()
+        fulfillWaitUntil(resolver: resolver,
+                         checkFrequency: checkFrequency,
+                         dispatchQueue: dispatchQueue,
+                         conditionBlock: conditionBlock)
+        return promise
+    }
+
+    private static func fulfillWaitUntil(resolver: Resolver<Void>,
+                                         checkFrequency: TimeInterval,
+                                         dispatchQueue: DispatchQueue,
+                                         conditionBlock: @escaping () -> Bool) {
+        if conditionBlock() {
+            resolver.fulfill(())
+            return
+        }
+        dispatchQueue.asyncAfter(deadline: .now() + checkFrequency) {
+            fulfillWaitUntil(resolver: resolver,
+                             checkFrequency: checkFrequency,
+                             dispatchQueue: dispatchQueue,
+                             conditionBlock: conditionBlock)
         }
     }
 }

@@ -108,7 +108,7 @@ public class RequestMaker: NSObject {
         guard let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey) else {
             return Promise(error: RequestMakerError.requestCreationFailed)
         }
-        let webSocketType: OWSWebSocketType = (isUDRequest ? .UD : .default)
+        let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
         let canMakeWebsocketRequests = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
                                             !skipWebsocket)
 

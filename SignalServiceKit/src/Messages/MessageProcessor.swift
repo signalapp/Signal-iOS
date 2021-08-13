@@ -501,8 +501,8 @@ private struct DecryptedEnvelope: PendingEnvelope {
 @objc
 public enum EnvelopeSource: UInt, CustomStringConvertible {
     case unknown
-    case websocketNormal
-    case websocketUD
+    case websocketIdentified
+    case websocketUnidentified
     case rest
     // We re-decrypt incoming messages after accepting a safety number change.
     case identityChangeError
@@ -515,10 +515,10 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
         switch self {
         case .unknown:
             return "unknown"
-        case .websocketNormal:
-            return "websocketNormal"
-        case .websocketUD:
-            return "websocketUD"
+        case .websocketIdentified:
+            return "websocketIdentified"
+        case .websocketUnidentified:
+            return "websocketUnidentified"
         case .rest:
             return "rest"
         case .identityChangeError:

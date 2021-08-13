@@ -43,24 +43,14 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 {
     switch (value) {
-        case OWSWebSocketTypeDefault:
-            return @"Default";
-        case OWSWebSocketTypeUD:
-            return @"UD";
+        case OWSWebSocketTypeIdentified:
+            return @"Identified";
+        case OWSWebSocketTypeUnidentified:
+            return @"Unidentified";
     }
 }
 
 #pragma mark -
-
-NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
-{
-    switch (type) {
-        case OWSWebSocketTypeDefault:
-            return @"Default";
-        case OWSWebSocketTypeUD:
-            return @"UD";
-    }
-}
 
 // OWSWebSocket's properties should only be accessed from the main thread.
 //
@@ -476,7 +466,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
         request.HTTPMethod,
         requestPath,
         jsonData.length,
-        NSStringFromOWSWebSocketType(self.webSocketType));
+        NSStringForOWSWebSocketType(self.webSocketType));
 
     const int64_t kSocketTimeoutSeconds = 10;
     __weak SocketMessageInfo *weakMessageInfo = messageInfo;
@@ -547,7 +537,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
                                       message:responseMessage];
         } else {
             // TODO: We should never get 403 from the UD socket. Assert.
-            if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
+            if (responseStatus == 403 && self.webSocketType == OWSWebSocketTypeIdentified) {
                 // This should be redundant with our check for the socket
                 // failing due to 403, but let's be thorough.
                 if (self.tsAccountManager.isRegisteredAndReady) {
@@ -620,7 +610,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
     OWSLogWarn(@"Websocket did fail with error[%@]: %@", NSStringForOWSWebSocketType(self.webSocketType), error);
     if ([error.domain isEqualToString:SSKWebSocketError.errorDomain]) {
         NSNumber *_Nullable statusCode = error.userInfo[SSKWebSocketError.kStatusCodeKey];
-        if (statusCode.unsignedIntegerValue == 403 && self.webSocketType == OWSWebSocketTypeDefault) {
+        if (statusCode.unsignedIntegerValue == 403 && self.webSocketType == OWSWebSocketTypeIdentified) {
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
             } else {
@@ -729,10 +719,10 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
             } else {
                 EnvelopeSource envelopeSource;
                 switch (self.webSocketType) {
-                    case OWSWebSocketTypeDefault:
-                        envelopeSource = EnvelopeSourceWebsocketNormal;
-                    case OWSWebSocketTypeUD:
-                        envelopeSource = EnvelopeSourceWebsocketUD;
+                    case OWSWebSocketTypeIdentified:
+                        envelopeSource = EnvelopeSourceWebsocketIdentified;
+                    case OWSWebSocketTypeUnidentified:
+                        envelopeSource = EnvelopeSourceWebsocketUnidentified;
                 }
                 [MessageProcessor.shared processEncryptedEnvelopeData:encryptedEnvelope
                                                     encryptedEnvelope:nil
@@ -834,10 +824,10 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 - (NSString *)webSocketAuthenticationString
 {
     switch (self.webSocketType) {
-        case OWSWebSocketTypeUD:
+        case OWSWebSocketTypeUnidentified:
             // UD socket is unauthenticated.
             return @"";
-        case OWSWebSocketTypeDefault: {
+        case OWSWebSocketTypeIdentified: {
             NSString *login = [self.tsAccountManager.storedServerUsername stringByReplacingOccurrencesOfString:@"+"
                                                                                                     withString:@"%2B"];
             return [NSString
@@ -1084,7 +1074,7 @@ NSString *NSStringFromOWSWebSocketType(OWSWebSocketType type)
 {
     OWSAssertIsOnMainThread();
 
-    if (self.webSocketType == OWSWebSocketTypeDefault) {
+    if (self.webSocketType == OWSWebSocketTypeIdentified) {
         [self cycleSocket];
     }
 }

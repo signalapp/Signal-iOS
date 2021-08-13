@@ -8,8 +8,8 @@ import PromiseKit
 @objc
 public class SocketManager: NSObject {
 
-    private let websocketDefault = OWSWebSocket(webSocketType: .default)
-    private let websocketUD = OWSWebSocket(webSocketType: .UD)
+    private let websocketIdentified = OWSWebSocket(webSocketType: .identified)
+    private let websocketUnidentified = OWSWebSocket(webSocketType: .unidentified)
 
     @objc
     public required override init() {
@@ -22,10 +22,10 @@ public class SocketManager: NSObject {
 
     private func webSocket(ofType webSocketType: OWSWebSocketType) -> OWSWebSocket {
         switch webSocketType {
-        case .default:
-            return websocketDefault
-        case .UD:
-            return websocketUD
+        case .identified:
+            return websocketIdentified
+        case .unidentified:
+            return websocketUnidentified
         }
     }
 
@@ -59,23 +59,23 @@ public class SocketManager: NSObject {
     // This method can be called from any thread.
     @objc
     public func requestSocketOpen() {
-        websocketDefault.requestOpen()
-        websocketUD.requestOpen()
+        websocketIdentified.requestOpen()
+        websocketUnidentified.requestOpen()
     }
 
     @objc
     public func cycleSocket() {
         AssertIsOnMainThread()
 
-        websocketDefault.cycle()
-        websocketUD.cycle()
+        websocketIdentified.cycle()
+        websocketUnidentified.cycle()
     }
 
     @objc
     public var isAnySocketOpen: Bool {
         // TODO: Use CaseIterable
-        (socketState(forType: .default) == .open ||
-         socketState(forType: .UD) == .open)
+        (socketState(forType: .identified) == .open ||
+         socketState(forType: .unidentified) == .open)
     }
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
@@ -83,6 +83,6 @@ public class SocketManager: NSObject {
     }
 
     public var hasEmptiedInitialQueue: Bool {
-        websocketDefault.hasEmptiedInitialQueue
+        websocketIdentified.hasEmptiedInitialQueue
     }
 }
