@@ -170,8 +170,9 @@ extension RemoteAttestation {
                                                    authUsername: auth.username,
                                                    authPassword: auth.password,
                                                    clientEphemeralKeyPair: clientEphemeralKeyPair)
-
-            return networkManager.makePromise(request: request).map { (response: HTTPResponse) in
+            return firstly {
+                networkManager.makePromise(request: request)
+            }.map(on: .global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing or invalid JSON.")
                 }
