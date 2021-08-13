@@ -5,6 +5,7 @@
 import Foundation
 import UserNotifications
 import PromiseKit
+import Intents
 
 public class UserNotificationConfig {
 
@@ -105,12 +106,12 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?) {
         AssertIsOnMainThread()
-        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
+        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, interaction: interaction, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isOnboarded() else {
@@ -162,7 +163,27 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             content.threadIdentifier = threadIdentifier
         }
 
-        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
+        var contentToUse: UNNotificationContent = content
+        #if swift(>=5.5) // Temporary for Xcode 12 support. 
+        if #available(iOS 15, *), let interaction = interaction {
+            interaction.donate(completion: { error in
+                guard let error = error else {
+                    return
+                }
+                owsFailDebug("Failed to donate incoming message intent \(error)")
+            })
+
+            if let intent = interaction.intent as? INSendMessageIntent {
+                do {
+                    try contentToUse = content.updating(from: intent)
+                } catch {
+                    owsFailDebug("Failed to update UNNotificationContent for comm style notification")
+                }
+            }
+        }
+        #endif
+
+        let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
         notificationCenter.add(request) { (error: Error?) in
