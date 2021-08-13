@@ -17,7 +17,7 @@ extension OWSWebSocket {
                 guard let requestUrl = request.url else {
                     owsFail("Missing requestUrl.")
                 }
-                let error = OWSHTTPError.other(requestUrl: requestUrl)
+                let error = OWSHTTPError.invalidAppState(requestUrl: requestUrl)
                 let failure = OWSHTTPErrorWrapper(error: error)
                 failureParam(failure)
             }
@@ -252,18 +252,6 @@ public class SocketMessageInfo: NSObject {
     @objc
     public func didFailInvalidRequest() {
         let error = OWSHTTPError.invalidRequest(requestUrl: requestUrl)
-        // TODO: Set retry.
-        didFail(error: error)
-        // TODO: copy.
-        //        let errorMessage = NSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
-        //                                             comment: "Error indicating that a socket request failed.")
-        //        let error = OWSErrorWithCodeDescription(.messageRequestFailed, errorMessage)
-        //        didFail(status: 0, headers: OWSHttpHeaders(), error: error, bodyData: nil)
-    }
-
-    @objc
-    public func didFailForOtherReasons() {
-        let error = OWSHTTPError.other(requestUrl: requestUrl)
         // TODO: Set retry.
         didFail(error: error)
         // TODO: copy.
