@@ -42,6 +42,10 @@ public class SocketManager: NSObject {
 
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
+        // The socket state we consult in this method is not yet thread-safe,
+        // so we need to do this waiting on the main thread.
+        AssertIsOnMainThread()
+
         let webSocket = self.webSocket(ofType: webSocketType)
         if webSocket.canMakeRequests {
             // The socket is open; proceed.
@@ -58,37 +62,50 @@ public class SocketManager: NSObject {
             // Proceed even though we will probably fail.
             return Promise.value(())
         }
-        return firstly {
+        return firstly(on: .global()) {
             after(seconds: kSecondInterval / 10)
-        }.then(on: .global()) {
+        }.then(on: .main) {
             self.waitForSocketToOpen(webSocketType: webSocketType,
                                      waitStartDate: waitStartDate)
         }
     }
 
-    func makeRequestPromise(request: TSRequest, webSocketType: OWSWebSocketType) -> Promise<HTTPResponse> {
+    // This method can be called from any thread.
+    func makeRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+        let webSocketType: OWSWebSocketType = {
+            if request.isUDRequest {
+                return .unidentified
+            } else if !request.shouldHaveAuthorizationHeaders {
+                return .unidentified
+            } else {
+                return .identified
+            }
+        }()
+        return makeRequestPromise(request: request, webSocketType: webSocketType)
+    }
+
+    // This method can be called from any thread.
+    private func makeRequestPromise(request: TSRequest,
+                                    webSocketType: OWSWebSocketType) -> Promise<HTTPResponse> {
 
         // webSocketType, isUDRequest and shouldHaveAuthorizationHeaders
         // should be (mostly?) aligned.
-        //
-        // TODO: Should we pick the websocketType based on these properties?
         switch webSocketType {
         case .identified:
             owsAssertDebug(!request.isUDRequest)
             owsAssertDebug(request.shouldHaveAuthorizationHeaders)
             if request.isUDRequest || !request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(String(describing: request.url))")
+                Logger.info("request: \(String(describing: request.url)), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
             }
         case .unidentified:
-            owsAssertDebug(request.isUDRequest)
-            owsAssertDebug(!request.shouldHaveAuthorizationHeaders)
-            if !request.isUDRequest || request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(String(describing: request.url))")
+            owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
+            if !request.isUDRequest && request.shouldHaveAuthorizationHeaders {
+                Logger.info("request: \(String(describing: request.url)), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
             }
         }
 
-        return firstly {
-            waitForSocketToOpen(webSocketType: webSocketType)
+        return firstly(on: .main) {
+            self.waitForSocketToOpen(webSocketType: webSocketType)
         }.then(on: .global()) { () -> Promise<HTTPResponse> in
             let (promise, resolver) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,

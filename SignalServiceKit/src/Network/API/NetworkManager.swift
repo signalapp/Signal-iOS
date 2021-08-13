@@ -17,7 +17,9 @@ public class NetworkManager: NSObject {
         SwiftSingletons.register(self)
     }
 
-    public func makePromise(request: TSRequest, remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+    // This method can be called from any thread.
+    public func makePromise(request: TSRequest,
+                            remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         firstly {
             FeatureFlags.deprecateREST
                 ? websocketRequestPromise(request: request)
@@ -26,7 +28,8 @@ public class NetworkManager: NSObject {
             if error.isRetryable,
                remainingRetryCount > 0 {
                 // TODO: Backoff?
-                return self.makePromise(request: request, remainingRetryCount: remainingRetryCount - 1)
+                return self.makePromise(request: request,
+                                        remainingRetryCount: remainingRetryCount - 1)
             } else {
                 throw error
             }
@@ -54,8 +57,7 @@ public class NetworkManager: NSObject {
     }
 
     private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
-        // TODO: Should we use the unidentified socket for requests without auth?
-        Self.socketManager.makeRequestPromise(request: request, webSocketType: .identified)
+        return Self.socketManager.makeRequestPromise(request: request)
     }
 }
 

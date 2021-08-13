@@ -24,15 +24,15 @@ extension OWSWebSocket {
             return
         }
 
-        let isUDRequest = request.isUDRequest
-        let label = isUDRequest ? "UD request" : "Non-UD request"
-        let canUseAuth = !isUDRequest
-        if isUDRequest {
-            owsAssert(!request.shouldHaveAuthorizationHeaders)
-        } else {
+        switch webSocketType {
+        case .identified:
+            owsAssertDebug(!request.isUDRequest)
             owsAssertDebug(request.shouldHaveAuthorizationHeaders)
+        case .unidentified:
+            owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
         }
-
+        let label = "\(webSocketType) request"
+        let canUseAuth = webSocketType == .identified && !request.isUDRequest
         Logger.info("Making \(label): \(request)")
 
         self.makeRequestInternal(request,

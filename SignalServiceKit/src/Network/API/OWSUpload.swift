@@ -162,8 +162,8 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             if shouldUseWebsocket {
                 return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
-                    Self.socketManager.makeRequestPromise(request: formRequest,
-                                                          webSocketType: .identified)
+                    owsAssertDebug(!formRequest.isUDRequest)
+                    return Self.socketManager.makeRequestPromise(request: formRequest)
                 }.recover(on: Self.serialQueue) { error -> Promise<HTTPResponse> in
                     if FeatureFlags.deprecateREST {
                         throw error

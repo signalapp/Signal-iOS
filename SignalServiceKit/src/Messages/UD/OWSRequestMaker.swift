@@ -108,6 +108,7 @@ public class RequestMaker: NSObject {
         guard let request: TSRequest = requestFactoryBlock(udAccessForRequest?.udAccessKey) else {
             return Promise(error: RequestMakerError.requestCreationFailed)
         }
+        owsAssertDebug(isUDRequest == request.isUDRequest)
         let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
         let shouldUseWebsocket: Bool
         if FeatureFlags.deprecateREST {
@@ -119,7 +120,7 @@ public class RequestMaker: NSObject {
 
         if shouldUseWebsocket {
             return firstly {
-                socketManager.makeRequestPromise(request: request, webSocketType: webSocketType)
+                socketManager.makeRequestPromise(request: request)
             }.map(on: .global()) { response in
                 if self.udManager.isUDVerboseLoggingEnabled() {
                     if isUDRequest {

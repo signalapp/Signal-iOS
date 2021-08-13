@@ -57,8 +57,6 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 // TODO: Port to Swift.
 @interface OWSWebSocket () <SSKWebSocketDelegate>
 
-@property (nonatomic) OWSWebSocketType webSocketType;
-
 // This class has a few "tiers" of state.
 //
 // The first tier is the actual websocket and the timers used
@@ -849,7 +847,11 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 
     // Don't open socket in app extensions.
     if (!CurrentAppContext().isMainApp) {
-        return NO;
+        if (SSKFeatureFlags.deprecateREST) {
+            // If we've deprecated REST, we _do_ want to open both websockets in the app extensions.
+        } else {
+            return NO;
+        }
     }
 
     if (!AppReadiness.isAppReady) {
@@ -857,7 +859,12 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
     }
 
     if (![self.tsAccountManager isRegisteredAndReady]) {
-        return NO;
+        if (SSKFeatureFlags.deprecateREST && self.webSocketType == OWSWebSocketTypeUnidentified) {
+            // If we've deprecated REST, we _do_ want to open the unidentified websocket
+            // before the user is registered.
+        } else {
+            return NO;
+        }
     }
 
     if (AppExpiry.shared.isExpired) {
@@ -866,9 +873,14 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 
     if (self.signalService.isCensorshipCircumventionActive) {
         OWSLogWarn(@"Skipping opening of websocket due to censorship circumvention.");
-        return NO;
+        if (SSKFeatureFlags.deprecateREST) {
+            // If we've deprecated REST, we _do_ want to open both websockets when using CC.
+        } else {
+            return NO;
+        }
     }
 
+    // TODO: We need to revisit the websocket behavior for the NSE.
     if (self.appIsActive) {
         // If app is active, keep web socket alive.
         return YES;
