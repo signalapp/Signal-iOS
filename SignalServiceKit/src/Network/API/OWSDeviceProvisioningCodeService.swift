@@ -16,18 +16,18 @@ open class OWSDeviceProvisioningCodeService: NSObject {
         let request = OWSRequestFactory.deviceProvisioningCodeRequest()
         firstly(on: .global()) {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .global()) { response in
+        }.map(on: .global()) { response in
             Logger.verbose("ProvisioningCode request succeeded")
             guard let json = response.responseBodyJson as? [String: String] else {
-                failure(OWSAssertionError("Missing or invalid JSON."))
-                return
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let provisioningCode = json[Self.provisioningCodeKey]?.nilIfEmpty else {
-                failure(OWSAssertionError("Missing or invalid provisioningCode."))
-                return
+                throw OWSAssertionError("Missing or invalid provisioningCode.")
             }
+            return provisioningCode
+        }.done(on: .main) { provisioningCode in
             success(provisioningCode)
-        }.catch(on: .global()) { error in
+        }.catch(on: .main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

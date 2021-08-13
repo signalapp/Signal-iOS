@@ -87,10 +87,10 @@ open class OWSDevicesService: NSObject {
         let request = OWSRequestFactory.deleteDeviceRequest(with: device)
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { _ in
+        }.map(on: .main) { _ in
             Logger.verbose("Delete device request succeeded")
             success()
-        }.catch(on: .global()) { error in
+        }.catch(on: .main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

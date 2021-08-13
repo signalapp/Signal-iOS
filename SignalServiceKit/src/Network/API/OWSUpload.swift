@@ -147,19 +147,30 @@ public class OWSAttachmentUploadV2: NSObject {
 
     // Performs a request, trying to use the websocket
     // and failing over to REST.
+    //
+    // TODO: Remove skipWebsocket.
     private func performRequest(skipWebsocket: Bool = false,
                                 requestBlock: @escaping () -> TSRequest) -> Promise<HTTPResponse> {
         return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let formRequest = requestBlock()
-            let shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&
+            let shouldUseWebsocket: Bool
+            if FeatureFlags.deprecateREST {
+                shouldUseWebsocket = true
+            } else {
+                shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&
                                         !skipWebsocket)
+            }
             if shouldUseWebsocket {
                 return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
                     Self.socketManager.makeRequestPromise(request: formRequest,
                                                           webSocketType: .identified)
-                }.recover(on: Self.serialQueue) { (_) -> Promise<HTTPResponse> in
+                }.recover(on: Self.serialQueue) { error -> Promise<HTTPResponse> in
                     // Failover to REST request.
-                    self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
+                    if FeatureFlags.deprecateREST {
+                        throw error
+                    } else {
+                        return self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
+                    }
                 }
             } else {
                 return OWSUpload.networkManager.makePromise(request: formRequest)

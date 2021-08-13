@@ -109,31 +109,31 @@ public class RequestMaker: NSObject {
             return Promise(error: RequestMakerError.requestCreationFailed)
         }
         let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
-        let canMakeWebsocketRequests = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
-                                            !skipWebsocket)
+        let shouldUseWebsocket: Bool
+        if FeatureFlags.deprecateREST {
+            shouldUseWebsocket = true
+        } else {
+            shouldUseWebsocket = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
+                                    !skipWebsocket)
+        }
 
-        if canMakeWebsocketRequests {
-            return Promise { resolver in
-                socketManager.makeRequest(request,
-                                          webSocketType: webSocketType,
-                                          success: { (response: HTTPResponse) in
-                                            if self.udManager.isUDVerboseLoggingEnabled() {
-                                                if isUDRequest {
-                                                    Logger.debug("UD websocket request '\(self.label)' succeeded.")
-                                                } else {
-                                                    Logger.debug("Non-UD websocket request '\(self.label)' succeeded.")
-                                                }
-                                            }
+        if shouldUseWebsocket {
+            return firstly {
+                socketManager.makeRequestPromise(request: request, webSocketType: webSocketType)
+            }.map(on: .global()) { response in
+                if self.udManager.isUDVerboseLoggingEnabled() {
+                    if isUDRequest {
+                        Logger.debug("UD websocket request '\(self.label)' succeeded.")
+                    } else {
+                        Logger.debug("Non-UD websocket request '\(self.label)' succeeded.")
+                    }
+                }
 
-                                            self.requestSucceeded(udAccess: udAccessForRequest)
+                self.requestSucceeded(udAccess: udAccessForRequest)
 
-                                            resolver.fulfill(RequestMakerResult(response: response,
-                                                                                wasSentByUD: isUDRequest,
-                                                                                wasSentByWebsocket: true))
-                                          },
-                                          failure: { (failure: OWSHTTPErrorWrapper) in
-                                            resolver.reject(failure.error)
-                                          })
+                return RequestMakerResult(response: response,
+                                          wasSentByUD: isUDRequest,
+                                          wasSentByWebsocket: true)
             }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
                 let statusCode = error.httpStatusCode ?? 0
 
@@ -165,56 +165,63 @@ public class RequestMaker: NSObject {
                 } else {
                     Logger.info("Non-UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
                 }
-                return self.makeRequestInternal(skipUD: skipUD, skipWebsocket: true)
+
+                if FeatureFlags.deprecateREST {
+                    throw error
+                } else {
+                    return self.makeRequestInternal(skipUD: skipUD, skipWebsocket: true)
+                }
             }
         } else {
-            return self.networkManager.makePromise(request: request)
-                .map(on: DispatchQueue.global()) { (response: HTTPResponse) -> RequestMakerResult in
-                    if self.udManager.isUDVerboseLoggingEnabled() {
-                        if isUDRequest {
-                            Logger.debug("UD REST request '\(self.label)' succeeded.")
-                        } else {
-                            Logger.debug("Non-UD REST request '\(self.label)' succeeded.")
-                        }
-                    }
-
-                    self.requestSucceeded(udAccess: udAccessForRequest)
-
-                    // Unwrap the network manager promise into a request maker promise.
-                    return RequestMakerResult(response: response,
-                                              wasSentByUD: isUDRequest,
-                                              wasSentByWebsocket: false)
-                }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
-                    if error.httpStatusCode == 413 {
-                        // We've hit rate limit; don't retry.
-                        throw error
-                    }
-
-                    if isUDRequest,
-                       let statusCode = error.httpStatusCode,
-                       statusCode == 401 || statusCode == 403 {
-                        // If a UD request fails due to service response (as opposed to network
-                        // failure), mark recipient as _not_ in UD mode, then retry.
-                        self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                        self.profileManager.fetchProfile(for: self.address)
-                        self.udAuthFailureBlock()
-
-                        if self.canFailoverUDAuth {
-                            Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
-                            return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
-                        } else {
-                            Logger.info("UD REST request '\(self.label)' auth failed; aborting.")
-                            throw RequestMakerUDAuthError.udAuthFailure
-                        }
-                    }
-
+            owsAssertDebug(!FeatureFlags.deprecateREST)
+            return firstly {
+                networkManager.makePromise(request: request)
+            }.map(on: .global()) { (response: HTTPResponse) -> RequestMakerResult in
+                if self.udManager.isUDVerboseLoggingEnabled() {
                     if isUDRequest {
-                        Logger.debug("UD REST request '\(self.label)' failed: \(error).")
+                        Logger.debug("UD REST request '\(self.label)' succeeded.")
                     } else {
-                        Logger.debug("Non-UD REST request '\(self.label)' failed: \(error).")
+                        Logger.debug("Non-UD REST request '\(self.label)' succeeded.")
                     }
+                }
+
+                self.requestSucceeded(udAccess: udAccessForRequest)
+
+                // Unwrap the network manager promise into a request maker promise.
+                return RequestMakerResult(response: response,
+                                          wasSentByUD: isUDRequest,
+                                          wasSentByWebsocket: false)
+            }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
+                if error.httpStatusCode == 413 {
+                    // We've hit rate limit; don't retry.
                     throw error
                 }
+
+                if isUDRequest,
+                   let statusCode = error.httpStatusCode,
+                   statusCode == 401 || statusCode == 403 {
+                    // If a UD request fails due to service response (as opposed to network
+                    // failure), mark recipient as _not_ in UD mode, then retry.
+                    self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
+                    self.profileManager.fetchProfile(for: self.address)
+                    self.udAuthFailureBlock()
+
+                    if self.canFailoverUDAuth {
+                        Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
+                        return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
+                    } else {
+                        Logger.info("UD REST request '\(self.label)' auth failed; aborting.")
+                        throw RequestMakerUDAuthError.udAuthFailure
+                    }
+                }
+
+                if isUDRequest {
+                    Logger.debug("UD REST request '\(self.label)' failed: \(error).")
+                } else {
+                    Logger.debug("Non-UD REST request '\(self.label)' failed: \(error).")
+                }
+                throw error
+            }
         }
     }
 

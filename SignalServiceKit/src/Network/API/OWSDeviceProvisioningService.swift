@@ -17,10 +17,10 @@ open class OWSDeviceProvisioningService: NSObject {
                                                                   ephemeralDeviceId: ephemeralDeviceId)
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .global()) { _ in
+        }.done(on: .main) { _ in
             Logger.verbose("Provisioning request succeeded")
             success()
-        }.catch(on: .global()) { error in
+        }.catch(on: .main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }
