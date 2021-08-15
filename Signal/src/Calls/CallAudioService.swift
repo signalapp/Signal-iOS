@@ -87,17 +87,6 @@ protocol CallAudioServiceDelegate: AnyObject {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        // This should not be required, but for some reason setting the mode
-        // to "videoChat" prior to a remote device being connected gets changed
-        // to "voiceChat" by iOS. This results in the audio coming out of the
-        // earpiece instead of the speaker. It may be a result of us not actually
-        // playing any audio until the remote device connects, or something
-        // going on with the underlying RTCAudioSession that's not directly
-        // in our control.
-        ensureProperAudioSession(call: call)
-    }
-
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         ensureProperAudioSession(call: call)
     }
@@ -172,32 +161,26 @@ protocol CallAudioServiceDelegate: AnyObject {
 
         guard let call = call, !call.isEnded else {
             // Revert to ambient audio
-            setAudioSession(category: .ambient,
-                            mode: .default)
+            setAudioSession(category: .ambient, mode: .default)
             return
         }
 
         if call.state == .localRinging {
             setAudioSession(category: .playback, mode: .default)
-        } else if call.hasLocalVideo {
-            // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
-            // otherwise sounds like ringing will be extra loud for video vs. speakerphone
-
-            // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
-            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
-            // does not include my linked bluetooth device
-            setAudioSession(category: .playAndRecord,
-                            mode: .videoChat,
-                            options: .allowBluetooth)
+        } else if call.state == .connected || call.state == .reconnecting {
+            // Switch to VoiceChat or VideoChat mode only once we are actually in
+            // a connected state to avoid gain glitches when transitioning from
+            // the ringing state, especially to the speaker.
+            //
+            // Note: Force the .allowBluetooth option to ensure linked bluetooth
+            // devices are included as an available input.
+            if call.hasLocalVideo {
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+            } else {
+                setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+            }
         } else {
-            // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
-            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
-            // does not include my linked bluetooth device
-            setAudioSession(category: .playAndRecord,
-                            mode: .voiceChat,
-                            options: .allowBluetooth)
+            setAudioSession(category: .ambient, mode: .default)
         }
     }
 
@@ -337,8 +320,7 @@ protocol CallAudioServiceDelegate: AnyObject {
             audioPlayer.stop()
         }
 
-        // Stop solo audio, revert to ambient.
-        setAudioSession(category: .ambient)
+        setAudioSession(category: .ambient, mode: .default)
     }
 
     // MARK: Playing Sounds
@@ -501,10 +483,11 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
     }
 
+    // The default option upon entry is always .mixWithOthers, so we will set that
+    // as our default value if no options are provided.
     private func setAudioSession(category: AVAudioSession.Category,
                                  mode: AVAudioSession.Mode? = nil,
-                                 options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions(rawValue: 0)) {
-
+                                 options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
         AssertIsOnMainThread()
 
         var audioSessionChanged = false

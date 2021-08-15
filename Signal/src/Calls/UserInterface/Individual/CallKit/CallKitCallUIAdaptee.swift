@@ -321,7 +321,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
 
         Logger.info("Received \(#function) CXAnswerCallAction")
-        // Retrieve the instance corresponding to the action's call UUID
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             owsFailDebug("call as unexpectedly nil")
             action.fail()
@@ -426,16 +425,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("Received")
+        Logger.debug("Received \(#function) didActivate")
 
         _ = self.audioSession.startAudioActivity(self.audioActivity)
-        self.audioSession.isRTCAudioEnabled = true
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
 
-        Logger.debug("Received")
+        Logger.debug("Received \(#function) didDeactivate")
         self.audioSession.isRTCAudioEnabled = false
         self.audioSession.endAudioActivity(self.audioActivity)
     }
