@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
     UIGestureRecognizerDelegate,
     PlayerProgressBarDelegate,
     OWSVideoPlayerDelegate,
-    LoopingVideoViewDelegate>
+    LoopingVideoViewDelegate,
+    VideoPlayerViewDelegate>
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
@@ -291,6 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     VideoPlayerView *playerView = [VideoPlayerView new];
     playerView.player = player.avPlayer;
+    playerView.delegate = self;
 
     return playerView;
 }
@@ -560,7 +562,22 @@ NS_ASSUME_NONNULL_BEGIN
     self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
 }
 
-@end
+#pragma mark - VideoPlayerViewDelegate
 
+- (void)videoPlayerViewStatusDidChange:(VideoPlayerView *)view
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateZoomScaleAndConstraints];
+}
+
+- (void)videoPlayerViewPlaybackTimeDidChange:(VideoPlayerView *)view
+{
+    OWSAssertIsOnMainThread();
+
+    // Do nothing.
+}
+
+@end
 
 NS_ASSUME_NONNULL_END

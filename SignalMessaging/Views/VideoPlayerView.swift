@@ -18,6 +18,7 @@ public class VideoPlayerView: UIView {
 
     // MARK: - Properties
 
+    @objc
     public weak var delegate: VideoPlayerViewDelegate?
 
     @objc
@@ -94,8 +95,9 @@ public class VideoPlayerView: UIView {
         }
 
         return playerItem.asset.tracks(withMediaType: .video)
-            .map { $0.naturalSize }
-            .reduce(.zero) {
+            .map { (assetTrack: AVAssetTrack) -> CGSize in
+                assetTrack.naturalSize.applying(assetTrack.preferredTransform).abs
+            }.reduce(.zero) {
                 CGSizeMax($0, $1)
             }
     }

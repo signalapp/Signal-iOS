@@ -201,8 +201,9 @@ public class LoopingVideoView: UIView {
 
         // Tracks will always be loaded by LoopingVideo
         return asset.tracks(withMediaType: .video)
-            .map { $0.naturalSize }
-            .reduce(.zero) {
+            .map { (assetTrack: AVAssetTrack) -> CGSize in
+                assetTrack.naturalSize.applying(assetTrack.preferredTransform).abs
+            }.reduce(.zero) {
                 CGSizeMax($0, $1)
             }
     }
