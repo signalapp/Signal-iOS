@@ -53,7 +53,11 @@ public class SenderKeyStore: NSObject {
                 } catch {
                     // It's likely there's no session for the current recipient. Maybe it was cleared?
                     // In this case, we just assume we need to send a new SKDM
-                    Logger.warn("Failed to fetch current recipient state for \(cachedRecipientState.ownerAddress). \(error)")
+                    if case SignalError.invalidState(_) = error {
+                        Logger.warn("Invalid session state. Cannot build recipient state for \(address). \(error)")
+                    } else {
+                        owsFailDebug("Failed to fetch current recipient state for \(address): \(error)")
+                    }
                 }
             }
         }
