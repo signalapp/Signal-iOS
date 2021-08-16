@@ -274,7 +274,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                     if DebugFlags.internalLogging {
                         Logger.info("requestProfileKey: \(requestProfileKey.keyData.hexadecimalString) != currentProfileKey: \(currentProfileKey.keyData.hexadecimalString)")
                     }
-                    owsFailDebug("Profile key for versioned profile fetch does not match current profile key.")
+                    Logger.warn("Profile key for versioned profile fetch does not match current profile key.")
                     return
                 }
 
