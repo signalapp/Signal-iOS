@@ -31,22 +31,33 @@ public class SenderKeyStore: NSObject {
         for thread: TSGroupThread,
         addresses: [SignalServiceAddress],
         writeTx: SDSAnyWriteTransaction
-    ) throws -> [SignalServiceAddress] {
+    ) -> [SignalServiceAddress] {
         var addressesNeedingSenderKey = Set(addresses)
-        try storageLock.withLock {
+        storageLock.withLock {
             let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
             guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
                 // No cached metadata. All recipients will need an SKDM
                 return
             }
 
-            // For each candidate SKDM recipient that we have stored in our key metadata, we want to check that no new
-            // devices have been added. If there aren't any new devices, we can remove that recipient from the set of
-            // addresses that we will send an SKDM too
-            for existingRecipient in keyMetadata.keyRecipients.values {
-                let currentRecipientState = try KeyRecipient.currentState(for: existingRecipient.ownerAddress, transaction: writeTx)
-                if existingRecipient.containsEveryDevice(from: currentRecipientState) {
-                    addressesNeedingSenderKey.remove(existingRecipient.ownerAddress)
+            // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
+            // we last recorded an SKDM send, we can skip sending to them.
+            for (address, cachedRecipientState) in keyMetadata.keyRecipients {
+                do {
+                    // Only remove the recipient in question from our send targets if the cached state contains
+                    // every device from the current state. Any new devices mean we need to re-send.
+                    let currentRecipientState = try KeyRecipient.currentState(for: address, transaction: writeTx)
+                    if cachedRecipientState.containsEveryDevice(from: currentRecipientState) {
+                        addressesNeedingSenderKey.remove(address)
+                    }
+                } catch {
+                    // It's likely there's no session for the current recipient. Maybe it was cleared?
+                    // In this case, we just assume we need to send a new SKDM
+                    if case SignalError.invalidState(_) = error {
+                        Logger.warn("Invalid session state. Cannot build recipient state for \(address). \(error)")
+                    } else {
+                        owsFailDebug("Failed to fetch current recipient state for \(address): \(error)")
+                    }
                 }
             }
         }
