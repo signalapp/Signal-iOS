@@ -125,10 +125,18 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSourceE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.sourceE164 = valueParam
         }
 
         public func setSourceE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.sourceE164 = valueParam
         }
 
@@ -2954,10 +2962,18 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setAuthorE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
         public func setAuthorE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
@@ -5387,10 +5403,18 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setAuthorE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
         public func setAuthorE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
@@ -8581,10 +8605,18 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -8881,10 +8913,18 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -9134,10 +9174,18 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -10159,10 +10207,18 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -10408,10 +10464,18 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -11108,10 +11172,18 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -11730,10 +11802,18 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
         @available(swift, obsoleted: 1.0)
         public func setThreadE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.threadE164 = valueParam
         }
 
         public func setThreadE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.threadE164 = valueParam
         }
 
@@ -14373,10 +14453,18 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setContactE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.contactE164 = valueParam
         }
 
         public func setContactE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.contactE164 = valueParam
         }
 

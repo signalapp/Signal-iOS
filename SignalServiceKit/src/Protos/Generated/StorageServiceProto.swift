@@ -1295,10 +1295,18 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         @available(swift, obsoleted: 1.0)
         public mutating func setServiceE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.serviceE164 = valueParam
         }
 
         public mutating func setServiceE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.serviceE164 = valueParam
         }
 

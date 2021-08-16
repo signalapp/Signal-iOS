@@ -1159,6 +1159,14 @@ public func serializedData() throws -> Data {
                     elif self.is_field_a_proto(field):
                         writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                     else:
+                        if field.name.endswith('E164') and field.proto_type == 'string':
+                            writer.add('if let valueParam = valueParam.nilIfEmpty {')
+                            writer.push_indent()
+                            writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                            writer.pop_indent()
+                            writer.add('}')
+                            writer.newline()
+                        
                         writer.add('proto.%s = valueParam' % ( field.name_swift, ) )
 
                     writer.pop_indent()
@@ -1183,6 +1191,13 @@ public func serializedData() throws -> Data {
                 elif self.is_field_a_proto(field):
                     writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                 else:
+                    if field.name.endswith('E164') and field.proto_type == 'string':
+                        writer.add('if let valueParam = valueParam.nilIfEmpty {')
+                        writer.push_indent()
+                        writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                        writer.pop_indent()
+                        writer.add('}')
+                        writer.newline()
                     writer.add('proto.%s = valueParam' % ( field.name_swift, ) )
 
                 writer.pop_indent()
