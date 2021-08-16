@@ -73,10 +73,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             Logger.debug("got response")
             guard let json = response.responseBodyJson else {
                 owsFailDebug("Missing or invalid JSON.")
-                throw self.unexpectedServerResponseError()
+                throw OWSUDError.invalidData(description: "Missing or invalid JSON")
             }
             guard let params = ParamParser(responseObject: json) else {
-                throw self.unexpectedServerResponseError()
+                throw OWSAssertionError("Missing or invalid response.")
             }
 
             let count: Int = try params.required(key: "count")
@@ -131,17 +131,16 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid response.")
             }
 
             let uuidString: String = try parser.required(key: "uuid")
 
             guard let uuid = UUID(uuidString: uuidString) else {
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid uuid.")
             }
 
             return uuid
@@ -155,10 +154,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
                 owsFailDebug("Missing or invalid JSON.")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid response.")
             }
 
             let username: String = try parser.required(key: "username")
@@ -183,10 +182,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
                 owsFailDebug("Missing or invalid JSON.")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid response.")
             }
 
             let deviceId: UInt32 = try parser.required(key: "deviceId")
@@ -214,10 +213,10 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
                 owsFailDebug("Missing or invalid JSON.")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid response.")
             }
 
             let config: [[String: Any]] = try parser.required(key: "config")
@@ -225,7 +224,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             return try config.reduce([:]) { accum, item in
                 var accum = accum
                 guard let itemParser = ParamParser(responseObject: item) else {
-                    throw OWSErrorMakeUnableToProcessServerResponseError()
+                    throw OWSAssertionError("Missing or invalid remote config item.")
                 }
 
                 let name: String = try itemParser.required(key: "name")
@@ -247,11 +246,5 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     public func updateSecondaryDeviceCapabilities() -> Promise<Void> {
         let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest()
         return self.networkManager.makePromise(request: request).asVoid()
-    }
-
-    // MARK: - Helpers
-
-    private func unexpectedServerResponseError() -> Error {
-        return OWSErrorMakeUnableToProcessServerResponseError()
     }
 }

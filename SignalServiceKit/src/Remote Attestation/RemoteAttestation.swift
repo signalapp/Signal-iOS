@@ -128,8 +128,7 @@ extension RemoteAttestation {
             }
             guard let auth = self.parseAuthParams(json) else {
                 owsFailDebug("Remote attestation auth could not be parsed: \(json)")
-                let error = OWSErrorMakeUnableToProcessServerResponseError()
-                failure(error)
+                failure(OWSAssertionError("Missing or invalid auth"))
                 return
             }
             success(auth)

@@ -12,13 +12,13 @@ extern NSString *const OWSSignalServiceKitErrorDomain;
 //       explicitly assign a value to every case in this enum.
 typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeInvalidMethodParameters = 11,
-    OWSErrorCodeUnableToProcessServerResponse = 12,
+    OWSErrorCodeObsolete12 = 12,
     OWSErrorCodeFailedToDecodeJson = 13,
     OWSErrorCodeFailedToEncodeJson = 14,
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
     OWSErrorCodeUntrustedIdentity = 777427,
-    OWSErrorCodeObsolete1 = 30,
+    OWSErrorCodeObsolete30 = 30,
     OWSErrorCodeAssertionFailure = 31,
     OWSErrorCodeGenericFailure = 32,
     OWSErrorCodeFailedToDecryptMessage = 100,
@@ -49,8 +49,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     // A non-recoverable while importing or exporting a backup.
     OWSErrorCodeBackupFailure = 777419,
     OWSErrorCodeLocalAuthenticationError = 777420,
-    OWSErrorCodeObsolete2 = 777421,
-    OWSErrorCodeObsolete3 = 777422,
+    OWSErrorCodeObsolete777421 = 777421,
+    OWSErrorCodeObsolete777422 = 777422,
     OWSErrorCodeInvalidMessage = 777423,
     OWSErrorCodeProfileUpdateFailed = 777424,
     OWSErrorCodeAvatarWriteFailed = 777425,
@@ -71,7 +71,6 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageSendEncryptionFailure
 };
 
-extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...);
 

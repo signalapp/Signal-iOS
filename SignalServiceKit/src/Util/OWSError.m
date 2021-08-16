@@ -9,14 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSSignalServiceKitErrorDomain = @"OWSSignalServiceKitErrorDomain";
 
-NSError *OWSErrorMakeUnableToProcessServerResponseError()
-{
-    // TODO: Audit all of the places this is called and replace with more specific errors.
-    return [OWSError withError:OWSErrorCodeUnableToProcessServerResponse
-                   description:NSLocalizedString(@"ERROR_DESCRIPTION_SERVER_FAILURE", @"Generic server error")
-                   isRetryable:YES];
-}
-
 NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
 {
     va_list args;

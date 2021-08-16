@@ -356,13 +356,11 @@ public class AccountManager: NSObject {
             }
 
             guard let responseObject = responseObject else {
-                owsFailDebug("unexpectedly missing responseObject")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing responseObject.")
             }
 
             guard let params = ParamParser(responseObject: responseObject) else {
-                owsFailDebug("params was unexpectedly nil")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid params.")
             }
 
             var registrationResponse = RegistrationResponse()
@@ -371,7 +369,7 @@ public class AccountManager: NSObject {
             if let uuidString: String = try params.optional(key: "uuid") {
                 guard let uuid = UUID(uuidString: uuidString) else {
                     owsFailDebug("invalid uuidString: \(uuidString)")
-                    throw OWSErrorMakeUnableToProcessServerResponseError()
+                    throw OWSAssertionError("Missing or invalid uuid.")
                 }
                 registrationResponse.uuid = uuid
             }

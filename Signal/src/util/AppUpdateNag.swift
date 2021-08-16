@@ -226,8 +226,7 @@ class AppStoreVersionService: NSObject {
             }
 
             guard let data = data else {
-                Logger.warn("data was unexpectedly nil")
-                resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+                resolver.reject(OWSAssertionError("Missing data."))
                 return
             }
 
@@ -235,8 +234,7 @@ class AppStoreVersionService: NSObject {
                 let decoder = JSONDecoder()
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
-                    Logger.warn("record was unexpectedly nil")
-                    resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+                    resolver.reject(OWSAssertionError("Missing or invalid record."))
                     return
                 }
 

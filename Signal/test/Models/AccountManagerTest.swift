@@ -37,7 +37,7 @@ class FailingTSAccountManager: TSAccountManager {
                                                success successHandler: @escaping () -> Void,
                                                failure failureHandler: @escaping (Error) -> Void) {
         if pushToken == PushNotificationRequestResult.failTSOnly.rawValue || pushToken == PushNotificationRequestResult.failBoth.rawValue {
-            failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
+            failureHandler(OWSGenericError("Missing or invalid push token."))
         } else {
             successHandler()
         }
