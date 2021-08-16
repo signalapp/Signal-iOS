@@ -253,7 +253,7 @@ extension MessageSender {
             // If it's *about* to go invalid, that key will still be used for the rest of this send flow.
             self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
 
-            let recipientsNeedingSKDM = try self.senderKeyStore.recipientsInNeedOfSenderKey(
+            let recipientsNeedingSKDM = self.senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
                 addresses: recipients,
                 writeTx: writeTx)
