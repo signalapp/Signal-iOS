@@ -108,6 +108,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addServerGuidToInteractions
         case addMessageSendLog
         case updatePendingReadReceipts
+        case addSendCompletionToMessageSendLog
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1260,6 +1261,35 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "pending_viewed_receipts") { (table: TableAlteration) -> Void in
                     table.add(column: "messageUniqueId", .text)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addSendCompletionToMessageSendLog.rawValue) { db in
+            do {
+                try db.alter(table: "MessageSendLog_Payload") { (table: TableAlteration) -> Void in
+                    table.add(column: "sendComplete", .boolean).notNull().defaults(to: false)
+                }
+
+                // All existing entries are assumed to have completed.
+                try db.execute(sql: "UPDATE MessageSendLog_Payload SET sendComplete = 1")
+
+                // Update the trigger to include the new column: "AND sendComplete = true"
+                try db.execute(sql: """
+                    DROP TRIGGER MSLRecipient_deliveryReceiptCleanup;
+
+                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                    AFTER DELETE ON MessageSendLog_Recipient
+                    WHEN 0 = (
+                        SELECT COUNT(*) FROM MessageSendLog_Recipient
+                        WHERE payloadId = old.payloadId
+                    )
+                    BEGIN
+                        DELETE FROM MessageSendLog_Payload
+                        WHERE payloadId = old.payloadId AND sendComplete = true;
+                    END;
+                """)
             } catch {
                 owsFail("Error: \(error)")
             }

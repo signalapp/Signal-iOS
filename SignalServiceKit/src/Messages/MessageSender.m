@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "MessageSender.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "NSError+OWSOperation.h"
@@ -16,7 +17,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/FunctionalUtil.h>
-#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -604,7 +604,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) {
         // Record plaintext
         plaintext = [message buildPlainTextData:thread transaction:writeTx];
-        plaintextPayloadId = [MessageSendLog recordPayload:plaintext for:message transaction:writeTx];
+        plaintextPayloadId = [MessageSendLog recordPayload:plaintext forMessageBeingSent:message transaction:writeTx];
     });
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 
@@ -1275,7 +1275,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                                             isRecipientUpdate:isRecipientUpdate];
         plaintext = [sentMessageTranscript buildPlainTextData:localThread transaction:transaction];
         plaintextPayloadId = [MessageSendLog recordPayload:plaintext
-                                                       for:sentMessageTranscript
+                                       forMessageBeingSent:sentMessageTranscript
                                                transaction:transaction];
     });
     if (localThread == nil) {

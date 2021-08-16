@@ -21,7 +21,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -50,7 +50,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to one recipient
             let recipientAddress = CommonGenerator.address()
@@ -82,11 +82,11 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to two devices
             let recipientAddress = CommonGenerator.address()
-            for deviceId: Int64 in [0,1] {
+            for deviceId: Int64 in [0, 1] {
                 MessageSendLog.recordPendingDelivery(
                     payloadId: payloadIndex,
                     recipientUuid: recipientAddress.uuid!,
@@ -122,7 +122,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload. Outgoing message date is long ago
             let newMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 10000), transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -147,7 +147,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to one recipient, two devices
             let recipientAddress = CommonGenerator.address()
@@ -158,6 +158,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     recipientDeviceId: deviceId,
                     transaction: writeTx)
             }
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
 
             // Deliver to first device
             MessageSendLog.recordSuccessfulDelivery(
@@ -181,12 +182,198 @@ class MessageSendLogTests: SSKBaseTestSwift {
         }
     }
 
+    func testReceiveDeliveryBeforeSendFinished() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
+
+            let recipientAddress = CommonGenerator.address()
+
+            // "Send" the message to one device. It acks delivery
+            MessageSendLog.recordPendingDelivery(
+                payloadId: payloadIndex,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: newMessage.timestampDate(),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+
+            // Verify the payload still exists since we haven't finished sending
+            XCTAssertTrue(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+
+            // "Send" the message to two more devices. Mark send as complete
+            for deviceId: Int64 in [1, 2] {
+                MessageSendLog.recordPendingDelivery(
+                    payloadId: payloadIndex,
+                    recipientUuid: recipientAddress.uuid!,
+                    recipientDeviceId: deviceId,
+                    transaction: writeTx)
+            }
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Deliver to second device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify the payload still exists
+            XCTAssertTrue(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+
+            // Deliver to third device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 2,
+                transaction: writeTx)
+
+            // Verify the payload was deleted
+            XCTAssertFalse(isPayloadAlive(index: payloadIndex, transaction: writeTx))
+        }
+    }
+
+    func testPartialFailureReusesPayloadEntry() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let initialPayloadId = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
+
+            let recipientAddress = CommonGenerator.address()
+
+            // "Send" the message to one device. Complete send but don't mark as delivered.
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Simulate a "retry" of a failed send. Try a fresh insert of the payload data
+            // Then send to another device and complete the send.
+            let retryPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Both payloadIds should be the same. The payload is still alive.
+            XCTAssertEqual(initialPayloadId, retryPayloadId)
+            XCTAssertTrue(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Deliver to first device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+
+            // Verify the payload still exists
+            XCTAssertTrue(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Deliver to second device
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify the payload was deleted
+            XCTAssertFalse(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+        }
+    }
+
+    func testRetryPartialFailureAfterAllInitialRecipientsAcked() {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+            let recipientAddress = CommonGenerator.address()
+
+            // Record + Send + Deliver + Complete (Deliver and Complete can happen in either order)
+            let initialPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: initialPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 0,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+
+            // Verify payload is deleted:
+            XCTAssertFalse(isPayloadAlive(index: initialPayloadId, transaction: writeTx))
+
+            // Record + Send + Complete + Deliver (Deliver and Complete can happen in either order)
+            let secondPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx) as! Int64
+            MessageSendLog.recordPendingDelivery(
+                payloadId: secondPayloadId,
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+            MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
+            MessageSendLog.recordSuccessfulDelivery(
+                timestamp: newMessage.timestampDate(),
+                recipientUuid: recipientAddress.uuid!,
+                recipientDeviceId: 1,
+                transaction: writeTx)
+
+            // Verify payload is deleted:
+            XCTAssertFalse(isPayloadAlive(index: secondPayloadId, transaction: writeTx))
+            // Verify the ID was not reusued
+            XCTAssertNotEqual(initialPayloadId, secondPayloadId)
+        }
+    }
+
+    // Test disabled since it exercises an owsFailDebug()
+    // Works correctly if assertions are disabled and the test is enabled.
+    func testPlaintextMismatchFails() throws {
+        databaseStorage.write { writeTx in
+            // Create and save the message payload
+            let newMessage = createOutgoingMessage(transaction: writeTx)
+            let payloadData = CommonGenerator.sentence.data(using: .utf8)!
+
+            let initialPayloadId = MessageSendLog.recordPayload(
+                payloadData,
+                forMessageBeingSent: newMessage,
+                transaction: writeTx)
+
+            let secondPayloadId = MessageSendLog.recordPayload(
+                payloadData + Data([1]),    // append a byte so the payload doesn't match
+                forMessageBeingSent: newMessage,
+                transaction: writeTx)
+
+            XCTAssertNotNil(initialPayloadId)
+            XCTAssertNil(secondPayloadId)
+        }
+    }
+
     func testDeleteMessageWithOnePayload() {
         databaseStorage.write { writeTx in
             // Create and save the message payload
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let payloadData = CommonGenerator.sentence.data(using: .utf8)!
-            let payloadIndex = MessageSendLog.recordPayload(payloadData, for: newMessage, transaction: writeTx) as! Int64
+            let payloadIndex = MessageSendLog.recordPayload(payloadData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // "Send" the message to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -210,14 +397,14 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Create and save several message payloads
             let message1 = createOutgoingMessage(transaction: writeTx)
             let data1 = CommonGenerator.sentence.data(using: .utf8)!
-            let index1 = MessageSendLog.recordPayload(data1, for: message1, transaction: writeTx) as! Int64
+            let index1 = MessageSendLog.recordPayload(data1, forMessageBeingSent: message1, transaction: writeTx) as! Int64
             let message2 = createOutgoingMessage(transaction: writeTx)
             let data2 = CommonGenerator.sentence.data(using: .utf8)!
-            let index2 = MessageSendLog.recordPayload(data2, for: message2, transaction: writeTx) as! Int64
+            let index2 = MessageSendLog.recordPayload(data2, forMessageBeingSent: message2, transaction: writeTx) as! Int64
 
             let readReceiptMessage = createOutgoingMessage(relatedMessageIds: [message1.uniqueId, message2.uniqueId], transaction: writeTx)
             let data3 = CommonGenerator.sentence.data(using: .utf8)!
-            let index3 = MessageSendLog.recordPayload(data3, for: readReceiptMessage, transaction: writeTx) as! Int64
+            let index3 = MessageSendLog.recordPayload(data3, forMessageBeingSent: readReceiptMessage, transaction: writeTx) as! Int64
 
             // "Send" the messages to a recipient
             let recipientAddress = CommonGenerator.address()
@@ -245,10 +432,10 @@ class MessageSendLogTests: SSKBaseTestSwift {
         databaseStorage.write { writeTx in
             let oldMessage = createOutgoingMessage(date: Date(timeIntervalSince1970: 1000), transaction: writeTx)
             let oldData = CommonGenerator.sentence.data(using: .utf8)!
-            let oldIndex = MessageSendLog.recordPayload(oldData, for: oldMessage, transaction: writeTx) as! Int64
+            let oldIndex = MessageSendLog.recordPayload(oldData, forMessageBeingSent: oldMessage, transaction: writeTx) as! Int64
             let newMessage = createOutgoingMessage(transaction: writeTx)
             let newData = CommonGenerator.sentence.data(using: .utf8)!
-            let newIndex = MessageSendLog.recordPayload(newData, for: newMessage, transaction: writeTx) as! Int64
+            let newIndex = MessageSendLog.recordPayload(newData, forMessageBeingSent: newMessage, transaction: writeTx) as! Int64
 
             // Verify both messages exist
             XCTAssertTrue(isPayloadAlive(index: oldIndex, transaction: writeTx))
@@ -274,7 +461,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             fatalError("init(coder:) has not been implemented")
         }
 
-        required init(dictionary dictionaryValue: [String : Any]!) throws {
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
             fatalError("init(dictionary:) has not been implemented")
         }
 
