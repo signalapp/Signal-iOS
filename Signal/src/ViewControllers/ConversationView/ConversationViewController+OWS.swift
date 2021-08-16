@@ -326,7 +326,7 @@ extension ConversationViewController {
                 // *slightly* taller (44pt -> 56pt)
                 navigationItem.titleView = searchController.uiSearchController.searchBar
             }
-        case .multiselect, .forwarding:
+        case .selection:
             navigationItem.titleView = nil
         }
 

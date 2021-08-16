@@ -148,8 +148,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             ]
             var outerHStackViews = [UIView]()
             if isShowingSelectionUI || wasShowingSelectionUI {
-                // System messages can only be selected in .multiselect mode
-                // and cannot be partially selected.
+                // System messages cannot be partially selected.
                 selectionView.isSelected = componentDelegate.selectionState.hasAnySelection(interaction: interaction)
                 outerHStackViews.append(selectionView)
             }
@@ -422,8 +421,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         if isShowingSelectionUI {
             let selectionView = componentView.selectionView
-            // System messages can only be selected in .multiselect mode
-            // and cannot be partially selected.
+            // System messages cannot be partially selected.
             let selectionState = componentDelegate.selectionState
             if selectionState.hasAnySelection(interaction: interaction) {
                 selectionView.isSelected = false

@@ -104,15 +104,9 @@ extension ConversationViewController {
                 navigationItem.hidesBackButton = true
             }
             return
-        case .multiselect:
+        case .selection:
             navigationItem.rightBarButtonItems = [ self.cancelSelectionBarButtonItem ]
             navigationItem.leftBarButtonItem = self.deleteAllBarButtonItem
-            navigationItem.hidesBackButton = true
-            return
-        case .forwarding:
-            // TODO:
-            navigationItem.rightBarButtonItem = nil
-            navigationItem.leftBarButtonItem = nil
             navigationItem.hidesBackButton = true
             return
         case .normal:

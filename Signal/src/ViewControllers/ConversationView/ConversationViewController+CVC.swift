@@ -817,7 +817,8 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 extension ConversationViewController: CVViewStateDelegate {
     public func viewStateUIModeDidChange(oldValue: ConversationUIMode) {
 
-        if oldValue.hasSelectionUI != uiMode.hasSelectionUI {
+        if oldValue != uiMode && (oldValue == .selection || uiMode == .selection) {
+
             // Proactively update bottom bar before load lands
             ensureBottomViewType()
 

@@ -81,14 +81,12 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl) {
-        uiMode = .forwarding
-
-        selectionState.add(itemViewModel: itemViewModel, selectionType: .allContent)
-//        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        // TODO: Modify to support partial/multiple forwards.
+        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
-        uiMode = .multiselect
+        uiMode = .selection
 
         selectionState.add(itemViewModel: itemViewModel, selectionType: .allContent)
     }

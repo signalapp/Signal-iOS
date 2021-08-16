@@ -506,7 +506,8 @@ public class MessageActionsToolbar: UIToolbar {
         return actionToItem[action]
     }
 
-    @objc func didTapItem(_ item: UIBarButtonItem) {
+    @objc
+    func didTapItem(_ item: UIBarButtonItem) {
         guard let action = itemToAction[item] else {
             return owsFailDebug("missing action for item")
         }
