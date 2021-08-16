@@ -615,7 +615,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                                   }
                                               }
-                                              [message setMostRecentFailureText:error.localizedDescription];
+                                              [message setMostRecentFailureText:error.errorLocalizedDescription];
                                           }];
 }
 

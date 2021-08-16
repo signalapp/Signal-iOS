@@ -641,7 +641,7 @@ public class OnboardingController: NSObject {
             default:
                 owsFailDebug("unexpected error: \(error)")
                 completion?(false, error)
-                OWSActionSheets.showActionSheet(title: error.localizedDescription,
+                OWSActionSheets.showActionSheet(title: error.errorLocalizedDescription,
                                                 message: (error as NSError).localizedRecoverySuggestion)
             }
         }
@@ -886,7 +886,7 @@ public class OnboardingController: NSObject {
 
             Logger.verbose("error: \(error.domain) \(error.code)")
             OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
-                                message: error.localizedDescription,
+                                message: error.errorLocalizedDescription,
                                 fromViewController: fromViewController)
         }
     }

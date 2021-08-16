@@ -217,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
     } // else no title. We don't want to show a big scary "VERIFICATION FAILED" when it's just user error.
 
     ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:failureTitle
-                                                                        message:error.localizedDescription];
+                                                                        message:error.errorLocalizedDescription];
 
     if (retryBlock) {
         [alert addAction:[[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]

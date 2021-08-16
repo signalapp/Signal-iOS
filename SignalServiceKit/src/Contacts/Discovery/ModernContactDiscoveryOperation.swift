@@ -236,19 +236,19 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             case 400..<500:
                 return ContactDiscoveryError(
                     kind: .genericClientError,
-                    debugDescription: "Client error (\(statusCode)): \(error.localizedDescription)",
+                    debugDescription: "Client error (\(statusCode)): \(error.errorLocalizedDescription)",
                     retryable: false,
                     retryAfterDate: retryAfterDate)
             case 500..<600:
                 return ContactDiscoveryError(
                     kind: .genericServerError,
-                    debugDescription: "Server error (\(statusCode)): \(error.localizedDescription)",
+                    debugDescription: "Server error (\(statusCode)): \(error.errorLocalizedDescription)",
                     retryable: true,
                     retryAfterDate: retryAfterDate)
             default:
                 return ContactDiscoveryError(
                     kind: .generic,
-                    debugDescription: "Unknown error (\(statusCode)): \(error.localizedDescription)",
+                    debugDescription: "Unknown error (\(statusCode)): \(error.errorLocalizedDescription)",
                     retryable: false,
                     retryAfterDate: retryAfterDate)
             }
