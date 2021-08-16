@@ -1123,7 +1123,7 @@ CREATE
             ,"contentHint" INTEGER NOT NULL
             ,"sentTimestamp" DATE NOT NULL
             ,"uniqueThreadId" TEXT NOT NULL
-            ,"sendComplete" BOOLEAN DEFAULT 1
+            ,"sendComplete" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 

@@ -1269,10 +1269,11 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.addSendCompletionToMessageSendLog.rawValue) { db in
             do {
                 try db.alter(table: "MessageSendLog_Payload") { (table: TableAlteration) -> Void in
-                    // New entries explicitly set this false on insert
-                    // Existing entries should assume that send has completed
-                    table.add(column: "sendComplete", .boolean).defaults(to: true)
+                    table.add(column: "sendComplete", .boolean).notNull().defaults(to: false)
                 }
+
+                // All existing entries are assumed to have completed.
+                try db.execute(sql: "UPDATE MessageSendLog_Payload SET sendComplete = 1")
 
                 // Update the trigger to include the new column: "AND sendComplete = true"
                 try db.execute(sql: """
