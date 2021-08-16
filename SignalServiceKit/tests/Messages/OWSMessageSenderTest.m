@@ -158,8 +158,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.shouldSucceed) {
             success([NSURLSessionDataTask new], @{});
         } else {
-            NSError *error
-                = OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage, @"fake error description");
+            NSError *error = [OWSError withError:OWSErrorCodeFailedToSendOutgoingMessage
+                                     description:@"fake error description")
+                                     isRetryable:NO];
             OWSFakeURLSessionDataTask *task = [[OWSFakeURLSessionDataTask alloc] initWithStatusCode:500];
             failure(task, error);
         }

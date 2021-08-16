@@ -390,7 +390,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         if (success) {
             return successBlock(filename);
         }
-        failureBlock(OWSErrorWithCodeDescription(OWSErrorCodeAvatarWriteFailed, @"Avatar write failed."));
+        failureBlock([OWSError withError:OWSErrorCodeAvatarWriteFailed
+                             description:@"Avatar write failed."
+                             isRetryable:NO]);
     });
 }
 

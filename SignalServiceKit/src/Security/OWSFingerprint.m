@@ -134,7 +134,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         OWSFailDebug(@"fingerprint failure: %@", *error);
 
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", @"alert body");
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        *error = [OWSError withError:OWSErrorCodePrivacyVerificationFailure description:description isRetryable:NO];
         return NO;
     }
 
@@ -142,14 +142,14 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         OWSLogWarn(@"Verification failed. They're running an old version.");
         NSString *description
             = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", @"alert body");
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        *error = [OWSError withError:OWSErrorCodePrivacyVerificationFailure description:description isRetryable:NO];
         return NO;
     }
 
     if (logicalFingerprints.version > self.scannableFingerprintVersion) {
         OWSLogWarn(@"Verification failed. We're running an old version.");
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", @"alert body");
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        *error = [OWSError withError:OWSErrorCodePrivacyVerificationFailure description:description isRetryable:NO];
         return NO;
     }
 
@@ -162,7 +162,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
             @"Alert body when verifying with {{contact name}}");
         NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        *error = [OWSError withError:OWSErrorCodePrivacyVerificationFailure description:description isRetryable:NO];
         return NO;
     }
 
@@ -171,7 +171,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         NSString *descriptionFormat = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
             @"Alert body when verifying with {{contact name}}");
         NSString *description = [NSString stringWithFormat:descriptionFormat, self.theirName];
-        *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
+        *error = [OWSError withError:OWSErrorCodePrivacyVerificationFailure description:description isRetryable:NO];
         return NO;
     }
 

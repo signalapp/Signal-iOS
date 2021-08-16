@@ -1159,9 +1159,10 @@ public extension OWSAttachmentDownloads {
 
     @objc
     static func buildError() -> Error {
-        OWSErrorWithCodeDescription(.attachmentDownloadFailed,
-                                    NSLocalizedString("ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED",
-                                                      comment: "Error message indicating that attachment download(s) failed."))
+        OWSError(error: .attachmentDownloadFailed,
+                 description: NSLocalizedString("ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED",
+                                                comment: "Error message indicating that attachment download(s) failed."),
+                 isRetryable: true)
     }
 
     // MARK: -

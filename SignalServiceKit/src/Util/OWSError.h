@@ -71,8 +71,6 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeMessageSendEncryptionFailure
 };
 
-extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
-extern NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...);

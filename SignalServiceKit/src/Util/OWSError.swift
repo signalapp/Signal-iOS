@@ -11,39 +11,48 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocali
     public let errorCode: Int
     private let customLocalizedDescription: String
     private let customIsRetryable: Bool
+    private var customUserInfo: [String: Any]?
 
     public required init(errorCode: Int,
                          description customLocalizedDescription: String,
-                         isRetryable customIsRetryable: Bool) {
+                         isRetryable customIsRetryable: Bool,
+                         userInfo customUserInfo: [String: Any]? = nil) {
         self.errorCode = errorCode
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable
+        self.customUserInfo = customUserInfo
     }
 
     @objc
     public static func with(errorCode: Int,
                             description customLocalizedDescription: String,
-                            isRetryable customIsRetryable: Bool) -> OWSError {
+                            isRetryable customIsRetryable: Bool) -> NSError {
+        // Error can be cast directly to NSError, but classes that implement Error
+        // cannot, so we have to cast twice.
         OWSError(errorCode: errorCode,
                  description: customLocalizedDescription,
-                 isRetryable: customIsRetryable)
+                 isRetryable: customIsRetryable) as Error as NSError
     }
 
     public required init(error: OWSErrorCode,
                          description customLocalizedDescription: String,
-                         isRetryable customIsRetryable: Bool) {
+                         isRetryable customIsRetryable: Bool,
+                         userInfo customUserInfo: [String: Any]? = nil) {
         self.errorCode = error.rawValue
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable
+        self.customUserInfo = customUserInfo
     }
 
     @objc
     public static func with(error: OWSErrorCode,
                             description customLocalizedDescription: String,
-                            isRetryable customIsRetryable: Bool) -> OWSError {
+                            isRetryable customIsRetryable: Bool) -> NSError {
+        // Error can be cast directly to NSError, but classes that implement Error
+        // cannot, so we have to cast twice.
         OWSError(error: error,
                  description: customLocalizedDescription,
-                 isRetryable: customIsRetryable)
+                 isRetryable: customIsRetryable) as Error as NSError
     }
 
     // MARK: - CustomNSError
@@ -56,7 +65,9 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocali
     /// NSError bridging: the error code within the given domain.
     /// :nodoc:
     public var errorUserInfo: [String: Any] {
-        [ NSLocalizedDescriptionKey: customLocalizedDescription ]
+        var result: [String: Any] = customUserInfo ?? [:]
+        result[NSLocalizedDescriptionKey] = customLocalizedDescription
+        return result
     }
 
     @objc

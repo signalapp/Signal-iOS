@@ -189,8 +189,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogDebug(
             @"Can't move file or directory from: %@ to: %@; destination already exists.", oldFilePath, newFilePath);
         OWSFailDebug(@"Can't move file or directory; destination already exists.");
-        return OWSErrorWithCodeDescription(
-            OWSErrorCodeMoveFileToSharedDataContainerError, @"Can't move file; destination already exists.");
+        return [OWSError withError:OWSErrorCodeMoveFileToSharedDataContainerError
+                       description:@"Can't move file; destination already exists."
+                       isRetryable:NO];
     }
     
     NSDate *startDate = [NSDate new];

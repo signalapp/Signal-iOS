@@ -61,7 +61,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         return error;
     }
     OWSCFailDebug(@"Using fallback error.");
-    return OWSErrorWithCodeDescription(fallbackCode, fallbackErrorDescription);
+    // TODO: Audit all of the places this is called and replace with more specific errors.
+    return [OWSError withError:fallbackCode description:fallbackErrorDescription isRetryable:true];
 }
 
 #pragma mark -

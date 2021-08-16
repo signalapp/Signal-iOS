@@ -94,22 +94,25 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
             if (![responseObject isKindOfClass:[NSDictionary class]]) {
                 OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                  description:@"Invalid response"
+                                                  isRetryable:NO]];
                 return;
             }
             NSString *uploadUrl = responseObject[@"url"];
             if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
                 OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                  description:@"Invalid response"
+                                                  isRetryable:NO]];
                 return;
             }
             NSDictionary *fields = responseObject[@"fields"];
             if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
                 OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                  description:@"Invalid response"
+                                                  isRetryable:NO]];
                 return;
             }
             for (NSString *fieldName in fields) {
@@ -117,16 +120,18 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
                     || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
                     OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                    [strongSelf failWithError:OWSErrorWithCodeDescription(
-                                                  OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                    [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                      description:@"Invalid response"
+                                                      isRetryable:NO]];
                     return;
                 }
             }
             NSString *_Nullable uploadKey = fields[@"key"];
             if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
                 OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                  description:@"Invalid response"
+                                                  isRetryable:NO]];
                 return;
             }
 
@@ -134,8 +139,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             NSString *fileExtension = strongSelf.fileUrl.lastPathComponent.pathExtension;
             if (fileExtension.length < 1) {
                 OWSLogError(@"Invalid file url: %@, %@", urlString, responseObject);
-                [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid file url")];
+                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
+                                                  description:@"Invalid file url"
+                                                  isRetryable:NO]];
                 return;
             }
             uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];

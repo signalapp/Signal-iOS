@@ -78,6 +78,7 @@ extension NSError {
         } else {
             owsFailDebug("Presenting error to user without a specific localizedDescription: \(self)")
         }
-        return NSLocalizedString("ERROR_GENERIC", comment: "A generic description for errors without a specific error message.")
+        return NSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR",
+                                 comment: "Worst case generic error message")
     }
 }

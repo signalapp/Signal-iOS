@@ -200,7 +200,7 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
     OWSDevice *device = [MTLJSONAdapter modelOfClass:[self class] fromJSONDictionary:deviceAttributes error:error];
     if (device.deviceId < OWSDevicePrimaryDeviceId) {
         OWSFailDebug(@"Invalid device id: %lu", (unsigned long)device.deviceId);
-        *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Invalid device id.");
+        *error = [OWSError withError:OWSErrorCodeFailedToDecodeJson description:@"Invalid device id." isRetryable:NO];
         return nil;
     }
     return device;
@@ -242,7 +242,9 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
             }
             *success = NO;
             OWSLogError(@"unable to decode date from %@", value);
-            *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecodeJson, @"Unable to decode date from JSON.");
+            *error = [OWSError withError:OWSErrorCodeFailedToDecodeJson
+                             description:@"Unable to decode date from JSON."
+                             isRetryable:NO];
             return nil;
         }
             reverseBlock:^id(id value, BOOL *success, NSError **error) {
@@ -255,7 +257,9 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
                     }
                 }
                 OWSLogError(@"unable to encode date from %@", value);
-                *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncodeJson, @"Unable to encode date to JSON.");
+                *error = [OWSError withError:OWSErrorCodeFailedToEncodeJson
+                                 description:@"Unable to encode date to JSON."
+                                 isRetryable:NO];
                 *success = NO;
                 return nil;
             }];

@@ -207,7 +207,7 @@ public class OWSScreenLock: NSObject {
             switch outcome {
             case .success:
                 owsFailDebug("local authentication unexpected success")
-                completion(.failure(error:defaultErrorDescription))
+                completion(.failure(error: defaultErrorDescription))
             case .cancel, .failure, .unexpectedFailure:
                 completion(outcome)
             }
@@ -225,7 +225,7 @@ public class OWSScreenLock: NSObject {
                 switch outcome {
                 case .success:
                     owsFailDebug("local authentication unexpected success")
-                    completion(.failure(error:defaultErrorDescription))
+                    completion(.failure(error: defaultErrorDescription))
                 case .cancel, .failure, .unexpectedFailure:
                     completion(outcome)
                 }
@@ -238,7 +238,7 @@ public class OWSScreenLock: NSObject {
     private func outcomeForLAError(errorParam: Error?, defaultErrorDescription: String) -> OWSScreenLockOutcome {
         if let error = errorParam {
             guard let laError = error as? LAError else {
-                return .failure(error:defaultErrorDescription)
+                return .failure(error: defaultErrorDescription)
             }
 
             switch laError.code {
@@ -285,21 +285,22 @@ public class OWSScreenLock: NSObject {
                                                          comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
             case .invalidContext:
                 owsFailDebug("context not valid.")
-                return .unexpectedFailure(error:defaultErrorDescription)
+                return .unexpectedFailure(error: defaultErrorDescription)
             case .notInteractive:
                 owsFailDebug("context not interactive.")
-                return .unexpectedFailure(error:defaultErrorDescription)
+                return .unexpectedFailure(error: defaultErrorDescription)
             @unknown default:
                 owsFailDebug("Unexpected enum value.")
-                return .unexpectedFailure(error:defaultErrorDescription)
+                return .unexpectedFailure(error: defaultErrorDescription)
             }
         }
-        return .failure(error:defaultErrorDescription)
+        return .failure(error: defaultErrorDescription)
     }
 
     private func authenticationError(errorDescription: String) -> Error {
-        return OWSErrorWithCodeDescription(.localAuthenticationError,
-                                           errorDescription)
+        return OWSError(error: .localAuthenticationError,
+                        description: errorDescription,
+                        isRetryable: false)
     }
 
     // MARK: - Context
