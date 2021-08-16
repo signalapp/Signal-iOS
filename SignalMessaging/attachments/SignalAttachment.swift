@@ -273,7 +273,8 @@ public class SignalAttachment: NSObject {
     public func preparedForOutput(qualityLevel: ImageQualityLevel) -> SignalAttachment {
         owsAssertDebug(!Thread.isMainThread)
 
-        guard isImage else { return self }
+        // We only bother converting/compressing non-animated images
+        guard isImage, !isAnimatedImage else { return self }
 
         guard !Self.isValidOutputOriginalImage(
             dataSource: dataSource,
