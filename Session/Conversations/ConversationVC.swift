@@ -294,7 +294,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         if isShowingSearchUI {
             navigationItem.rightBarButtonItems = []
         } else {
-            let rightBarButtonItem: UIBarButtonItem
+            var rightBarButtonItems: [UIBarButtonItem] = []
             if thread is TSContactThread {
                 let size = Values.verySmallProfilePictureSize
                 let profilePictureView = ProfilePictureView()
@@ -305,13 +305,19 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 profilePictureView.set(.height, to: size)
                 let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openSettings))
                 profilePictureView.addGestureRecognizer(tapGestureRecognizer)
-                rightBarButtonItem = UIBarButtonItem(customView: profilePictureView)
+                let settingsButton = UIBarButtonItem(customView: profilePictureView)
+                settingsButton.accessibilityLabel = "Settings button"
+                settingsButton.isAccessibilityElement = true
+                rightBarButtonItems.append(settingsButton)
+                let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
+                rightBarButtonItems.append(callButton)
             } else {
-                rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+                let settingsButton = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
+                settingsButton.accessibilityLabel = "Settings button"
+                settingsButton.isAccessibilityElement = true
+                rightBarButtonItems.append(settingsButton)
             }
-            rightBarButtonItem.accessibilityLabel = "Settings button"
-            rightBarButtonItem.isAccessibilityElement = true
-            navigationItem.rightBarButtonItem = rightBarButtonItem
+            navigationItem.rightBarButtonItems = rightBarButtonItems
         }
     }
     

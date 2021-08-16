@@ -44,7 +44,8 @@ final class ConversationTitleView : UIView {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+        let leftMargin: CGFloat = (thread is TSContactThread) ? 54 : 8 // Contact threads also have the call button to compensate for
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
         addSubview(stackView)
         stackView.pin(to: self)
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))

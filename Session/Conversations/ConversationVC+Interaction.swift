@@ -25,6 +25,11 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         unreadViewItems.removeAll()
         messagesTableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
+    
+    @objc func startCall() {
+        let callVC = CallVCV2()
+        navigationController!.pushViewController(callVC, animated: true, completion: nil)
+    }
 
     // MARK: Blocking
     @objc func unblock() {
