@@ -818,6 +818,11 @@ def process_objc(file_path, swift_bridging_path, intermediates):
 
 def process_file(file_path, swift_bridging_path, intermediates):
     filename = os.path.basename(file_path)
+
+    # TODO: Fix this file
+    if filename == 'OWSDisappearingMessageFinderTest.m':
+        return
+
     # print 'filename', filename
     _, file_extension = os.path.splitext(filename)
     if file_extension == '.m':

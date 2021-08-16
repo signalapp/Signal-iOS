@@ -16,11 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isMediaMessage;
 @property (nonatomic, readonly, nullable) TSOutgoingMessage *invisibleMessage;
 @property (nonatomic, readonly) BOOL removeMessageAfterSending;
+@property (nonatomic, readonly) BOOL isHighPriority;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
+                          isHighPriority:(BOOL)isHighPriority
                                    label:(NSString *)label
                              transaction:(SDSAnyReadTransaction *)transaction
                                    error:(NSError **)outError NS_DESIGNATED_INITIALIZER;
@@ -42,16 +44,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+      exclusiveProcessIdentifier:(nullable NSString *)exclusiveProcessIdentifier
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                 invisibleMessage:(nullable TSOutgoingMessage *)invisibleMessage
+                  isHighPriority:(BOOL)isHighPriority
                   isMediaMessage:(BOOL)isMediaMessage
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
                         threadId:(nullable NSString *)threadId
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:invisibleMessage:isMediaMessage:messageId:removeMessageAfterSending:threadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:invisibleMessage:isHighPriority:isMediaMessage:messageId:removeMessageAfterSending:threadId:));
 
 // clang-format on
 

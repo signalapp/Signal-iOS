@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
+                          isHighPriority:(BOOL)isHighPriority
                                    label:(NSString *)label
                              transaction:(SDSAnyReadTransaction *)transaction
                                    error:(NSError **)outError
@@ -48,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _removeMessageAfterSending = removeMessageAfterSending;
+    _isHighPriority = isHighPriority;
     _threadId = message.uniqueThreadId;
 
     return self;
@@ -61,11 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
+      exclusiveProcessIdentifier:(nullable NSString *)exclusiveProcessIdentifier
                     failureCount:(NSUInteger)failureCount
                            label:(NSString *)label
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                 invisibleMessage:(nullable TSOutgoingMessage *)invisibleMessage
+                  isHighPriority:(BOOL)isHighPriority
                   isMediaMessage:(BOOL)isMediaMessage
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
@@ -73,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
+        exclusiveProcessIdentifier:exclusiveProcessIdentifier
                       failureCount:failureCount
                              label:label
                             sortId:sortId
@@ -83,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _invisibleMessage = invisibleMessage;
+    _isHighPriority = isHighPriority;
     _isMediaMessage = isMediaMessage;
     _messageId = messageId;
     _removeMessageAfterSending = removeMessageAfterSending;

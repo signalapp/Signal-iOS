@@ -898,7 +898,7 @@ extension CallService: CallManagerDelegate {
                 withContactAddress: SignalServiceAddress(uuid: recipientUuid),
                 transaction: transaction
             )
-        }.then { thread throws -> Promise<Void> in
+        }.then(on: .global()) { thread throws -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
 
@@ -907,7 +907,14 @@ extension CallService: CallManagerDelegate {
                 opaqueMessage: try opaqueBuilder.build()
             )
 
-            return self.messageSender.sendMessage(.promise, callMessage.asPreparer)
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         }.catch { error in

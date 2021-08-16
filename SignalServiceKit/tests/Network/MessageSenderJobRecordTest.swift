@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.read { transaction in
             let jobRecord = try! SSKMessageSenderJobRecord(message: message,
                                                            removeMessageAfterSending: false,
+                                                           isHighPriority: false,
                                                            label: MessageSenderJobQueue.jobRecordLabel,
                                                            transaction: transaction)
             XCTAssertNotNil(jobRecord.messageId)
@@ -27,7 +28,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
             let message = OutgoingMessageFactory().build(transaction: transaction)
 
             do {
-                _ = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction)
+                _ = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, isHighPriority: false, label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction)
                 XCTFail("Should error")
             } catch JobRecordError.assertionError {
                 // expected
@@ -42,6 +43,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.read { transaction in
             let jobRecord = try! SSKMessageSenderJobRecord(message: message,
                                                            removeMessageAfterSending: false,
+                                                           isHighPriority: false,
                                                            label: MessageSenderJobQueue.jobRecordLabel,
                                                            transaction: transaction)
             XCTAssertNil(jobRecord.messageId)

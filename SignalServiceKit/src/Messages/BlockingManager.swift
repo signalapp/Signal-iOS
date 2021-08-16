@@ -747,31 +747,36 @@ public class BlockingManager: NSObject {
     }
 
     private static func sendBlockListSyncMessage(state: State) {
-        let possibleThread = databaseStorage.write { transaction in
-            TSAccountManager.getOrCreateLocalThread(transaction: transaction)
+        databaseStorage.write { transaction in
+            let possibleThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction)
+
+            guard let thread = possibleThread else {
+                owsFailDebug("Missing thread.")
+                return
+            }
+
+            let message = OWSBlockedPhoneNumbersMessage(
+                thread: thread,
+                phoneNumbers: Array(state.blockedPhoneNumbers),
+                uuids: Array(state.blockedUUIDStrings),
+                groupIds: Array(state.blockedGroupMap.keys)
+            )
+
+            messageSenderJobQueue.add(
+                .promise,
+                message: message.asPreparer,
+                transaction: transaction
+            ).done(on: .global()) {
+                Logger.info("Successfully sent blocked phone numbers sync message")
+
+                // Record the last block list which we successfully synced..
+                Self.databaseStorage.write { transaction in
+                    state.saveSyncedState(transaction: transaction)
+                }
+            }.catch { error in
+                owsFailDebugUnlessNetworkFailure(error)
+            }
         }
-        guard let thread = possibleThread else {
-            owsFailDebug("Missing thread.")
-            return
-        }
-
-        let message = OWSBlockedPhoneNumbersMessage(thread: thread,
-                                                    phoneNumbers: Array(state.blockedPhoneNumbers),
-                                                    uuids: Array(state.blockedUUIDStrings),
-                                                    groupIds: Array(state.blockedGroupMap.keys))
-
-        messageSender.sendMessage(message.asPreparer,
-                                  success: {
-                                    Logger.info("Successfully sent blocked phone numbers sync message")
-
-                                    // Record the last block list which we successfully synced..
-                                    databaseStorage.write { transaction in
-                                        state.saveSyncedState(transaction: transaction)
-                                    }
-                                  },
-                                  failure: { error in
-                                    owsFailDebugUnlessNetworkFailure(error)
-                                  })
     }
 
     // MARK: - Notifications

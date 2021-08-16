@@ -294,6 +294,14 @@ public class AtomicDictionary<Key: Hashable, Value> {
         get { Atomics.perform { self.values[key] } }
     }
 
+    public func pop(_ key: Key) -> Value? {
+        Atomics.perform {
+            guard let value = self.values[key] else { return nil }
+            self.values[key] = nil
+            return value
+        }
+    }
+
     public func get() -> [Key: Value] {
         Atomics.perform { self.values }
     }

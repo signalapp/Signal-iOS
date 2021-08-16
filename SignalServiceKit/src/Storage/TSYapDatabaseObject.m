@@ -2,15 +2,15 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSYapDatabaseObject.h"
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSYapDatabaseObject ()
 
-@property (nonatomic, nullable) NSString *uniqueId;
+@property (nonatomic) NSString *uniqueId;
 @property (atomic, nullable) NSNumber *grdbId;
 
 @end

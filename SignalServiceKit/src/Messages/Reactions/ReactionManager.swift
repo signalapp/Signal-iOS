@@ -10,26 +10,14 @@ public class ReactionManager: NSObject {
 
     public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
-    public class func localUserReactedWithDurableSend(to message: TSMessage,
-                                                      emoji: String,
-                                                      isRemoving: Bool,
-                                                      transaction: SDSAnyWriteTransaction) {
-        let outgoingMessage: TSOutgoingMessage
-        do {
-            outgoingMessage = try _localUserReacted(to: message, emoji: emoji, isRemoving: isRemoving, transaction: transaction)
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return
-        }
-        let messagePreparer = outgoingMessage.asPreparer
-        Self.messageSenderJobQueue.add(message: messagePreparer, transaction: transaction)
-    }
-
-    public class func localUserReactedWithNonDurableSend(to message: TSMessage,
-                                                         emoji: String,
-                                                         isRemoving: Bool,
-                                                         transaction: SDSAnyWriteTransaction) -> Promise<Void> {
-
+    @discardableResult
+    public class func localUserReacted(
+        to message: TSMessage,
+        emoji: String,
+        isRemoving: Bool,
+        isHighPriority: Bool = false,
+        transaction: SDSAnyWriteTransaction
+    ) -> Promise<Void> {
         let outgoingMessage: TSOutgoingMessage
         do {
             outgoingMessage = try _localUserReacted(to: message, emoji: emoji, isRemoving: isRemoving, transaction: transaction)
@@ -37,21 +25,13 @@ public class ReactionManager: NSObject {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
-
         let messagePreparer = outgoingMessage.asPreparer
-        messagePreparer.insertMessage(linkPreviewDraft: nil, transaction: transaction)
-
-        let (promise, resolver) = Promise<Void>.pending()
-        transaction.addAsyncCompletionOffMain {
-            self.messageSender.sendMessage(messagePreparer,
-                                           success: {
-                                            resolver.fulfill(())
-            },
-                                           failure: { (error: Error) in
-                                            resolver.reject(error)
-            })
-        }
-        return promise
+        return Self.messageSenderJobQueue.add(
+            .promise,
+            message: messagePreparer,
+            isHighPriority: isHighPriority,
+            transaction: transaction
+        )
     }
 
     // This helper method DRYs up the logic shared by the above methods.

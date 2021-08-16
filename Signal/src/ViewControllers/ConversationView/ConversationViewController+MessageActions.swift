@@ -273,10 +273,12 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = {(message: TSMessage, reaction: String, isRemoving: Bool) in
                 self.databaseStorage.asyncWrite { transaction in
-                    ReactionManager.localUserReactedWithDurableSend(to: message,
-                                                                    emoji: reaction,
-                                                                    isRemoving: isRemoving,
-                                                                    transaction: transaction)
+                    ReactionManager.localUserReacted(
+                        to: message,
+                        emoji: reaction,
+                        isRemoving: isRemoving,
+                        transaction: transaction
+                    )
                 }
             }
             accessories.append(reactionBarAccessory)

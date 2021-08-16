@@ -831,7 +831,7 @@ import SignalMessaging
 
         Logger.info("shouldSendOffer")
 
-        firstly { () throws -> Promise<Void> in
+        firstly(on: .global()) { () throws -> Promise<Void> in
             let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
             offerBuilder.setOpaque(opaque)
             switch callMediaType {
@@ -839,7 +839,15 @@ import SignalMessaging
             case .videoCall: offerBuilder.setType(.offerVideoCall)
             }
             let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, offerMessage: try offerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
-            return messageSender.sendMessage(.promise, callMessage.asPreparer)
+
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.info("sent offer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
@@ -854,11 +862,19 @@ import SignalMessaging
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendAnswer")
 
-        firstly { () throws -> Promise<Void> in
+        firstly(on: .global()) { () throws -> Promise<Void> in
             let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
             answerBuilder.setOpaque(opaque)
             let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
-            return messageSender.sendMessage(.promise, callMessage.asPreparer)
+
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.debug("sent answer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
@@ -873,7 +889,7 @@ import SignalMessaging
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendIceCandidates")
 
-        firstly { () throws -> Promise<Void> in
+        firstly(on: .global()) { () throws -> Promise<Void> in
             var iceUpdateProtos = [SSKProtoCallMessageIceUpdate]()
 
             for iceCandidate in candidates {
@@ -890,7 +906,15 @@ import SignalMessaging
             }
 
             let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, iceUpdateMessages: iceUpdateProtos, destinationDeviceId: NSNumber(value: destinationDeviceId))
-            return messageSender.sendMessage(.promise, callMessage.asPreparer)
+
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.debug("sent ice update message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
@@ -905,7 +929,7 @@ import SignalMessaging
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendHangup")
 
-        firstly { () throws -> Promise<Void> in
+        firstly(on: .global()) { () throws -> Promise<Void> in
             let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
 
             switch hangupType {
@@ -928,7 +952,15 @@ import SignalMessaging
             } else {
                 callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, hangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             }
-            return messageSender.sendMessage(.promise, callMessage.asPreparer)
+
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
@@ -943,10 +975,18 @@ import SignalMessaging
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendBusy")
 
-        firstly { () throws -> Promise<Void> in
+        firstly(on: .global()) { () throws -> Promise<Void> in
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
             let callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, busyMessage: try busyBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
-            return messageSender.sendMessage(.promise, callMessage.asPreparer)
+
+            return Self.databaseStorage.write { transaction in
+                ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
         }.done {
             Logger.debug("sent busy message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)

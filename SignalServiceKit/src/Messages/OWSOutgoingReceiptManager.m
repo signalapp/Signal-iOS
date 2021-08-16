@@ -177,31 +177,33 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-            [self.messageSender sendMessage:message.asPreparer
-                success:^{
-                    OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
-                        (unsigned long)receiptSet.timestamps.count,
-                        receiptName);
+        __block AnyPromise *sendPromise;
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            sendPromise =
+                [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                        removeMessageAfterSending:NO
+                                    limitToCurrentProcessLifetime:YES
+                                                   isHighPriority:NO
+                                                      transaction:transaction]
+                    .thenInBackground(^{
+                        OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
+                            (unsigned long)receiptSet.timestamps.count,
+                            receiptName);
 
-                    // DURABLE CLEANUP - we could replace the custom durability logic in this class
-                    // with a durable JobQueue.
-                    [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
-
-                    // The value doesn't matter, we just need any non-NSError value.
-                    resolve(@(1));
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
-
-                    if (error.domain == OWSSignalServiceKitErrorDomain
-                        && error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                        // DURABLE CLEANUP - we could replace the custom durability logic in this class
+                        // with a durable JobQueue.
                         [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
-                    }
+                    })
+                    .catchInBackground(^(NSError *error) {
+                        OWSLogError(@"Failed to send %@ receipts to sender with error: %@", receiptName, error);
 
-                    resolve(error);
-                }];
-        }];
+                        if (error.domain == OWSSignalServiceKitErrorDomain
+                            && error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                            [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+                        }
+                    });
+        });
+
         [sendPromises addObject:sendPromise];
     }
 

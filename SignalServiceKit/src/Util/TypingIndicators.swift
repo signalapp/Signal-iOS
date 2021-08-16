@@ -315,19 +315,25 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             Logger.verbose("\(action)")
 
             guard let delegate = delegate else {
-                owsFailDebug("Missing delegate.")
-                return
+                return owsFailDebug("Missing delegate.")
             }
             // `areTypingIndicatorsEnabled` reflects the user-facing setting in the app preferences.
             // If it's disabled we don't want to emit "typing indicator" messages
             // or show typing indicators for other users.
-            guard delegate.areTypingIndicatorsEnabled() else {
-                return
-            }
+            guard delegate.areTypingIndicatorsEnabled() else { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            firstly {
-                messageSender.sendMessage(.promise, message.asPreparer)
+
+            firstly(on: .global()) {
+                SDSDatabaseStorage.shared.write { transaction in
+                    messageSenderJobQueue.add(
+                        .promise,
+                        message: message.asPreparer,
+                        limitToCurrentProcessLifetime: true,
+                        isHighPriority: true,
+                        transaction: transaction
+                    )
+                }
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
