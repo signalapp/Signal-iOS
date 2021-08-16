@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldAutoPlayVideo;
 @property (nonatomic) BOOL hasAutoPlayedVideo;
+@property (nonatomic) CGFloat lastKnownScrollViewWidth;
 
 @end
 
@@ -123,6 +124,15 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLayoutSubviews];
 
     [self updateZoomScaleAndConstraints];
+
+    // In iOS multi-tasking, the size of root view (and hence the scroll view)
+    // is set later, after viewWillAppear, etc.  Therefore we need to reset the
+    // zoomScale to the default whenever the scrollView width changes.
+    const CGFloat tolerance = 0.001f;
+    if (fabs(self.lastKnownScrollViewWidth - self.scrollView.frame.size.width) > tolerance) {
+        self.scrollView.zoomScale = self.scrollView.minimumZoomScale;
+    }
+    self.lastKnownScrollViewWidth = self.scrollView.frame.size.width;
 }
 
 - (void)zoomOutAnimated:(BOOL)isAnimated
