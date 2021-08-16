@@ -7,7 +7,18 @@ import Foundation
 public enum ConversationUIMode: UInt {
     case normal
     case search
-    case selection
+    case multiselect
+    case forwarding
+
+    // These two modes are used to select interactions.
+    public var hasSelectionUI: Bool {
+        switch uiMode {
+        case .normal, .search:
+            return false
+        case .multiselect, .forwarding:
+            return true
+        }
+    }
 }
 
 // MARK: -

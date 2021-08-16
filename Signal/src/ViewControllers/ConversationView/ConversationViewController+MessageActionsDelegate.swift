@@ -85,7 +85,7 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
-        uiMode = .selection
+        uiMode = .multiselect
 
         self.addToSelection(itemViewModel.interaction.uniqueId)
     }

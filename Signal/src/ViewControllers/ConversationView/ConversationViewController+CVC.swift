@@ -58,10 +58,6 @@ extension ConversationViewController {
     public var areCellsAnimating: Bool {
         viewState.activeCellAnimations.count > 0
     }
-
-    public var isShowingSelectionUI: Bool {
-        viewState.isShowingSelectionUI
-    }
 }
 
 // MARK: -

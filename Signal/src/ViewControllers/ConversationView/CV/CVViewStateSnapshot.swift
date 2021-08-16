@@ -26,8 +26,11 @@ struct CVViewStateSnapshot: Dependencies {
 
     let typingIndicatorsSender: SignalServiceAddress?
 
-    let isShowingSelectionUI: Bool
-    let wasShowingSelectionUI: Bool
+    let uiMode: ConversationUIMode
+    let previousUIMode: ConversationUIMode
+
+    public var isShowingSelectionUI: Bool { uiMode.hasSelectionUI }
+    public var wasShowingSelectionUI: Bool { previousUIMode.hasSelectionUI }
 
     let searchText: String?
 
@@ -38,13 +41,13 @@ struct CVViewStateSnapshot: Dependencies {
     static func snapshot(viewState: CVViewState,
                          typingIndicatorsSender: SignalServiceAddress?,
                          hasClearedUnreadMessagesIndicator: Bool,
-                         wasShowingSelectionUI: Bool) -> CVViewStateSnapshot {
+                         previousViewStateSnapshot: CVViewStateSnapshot?) -> CVViewStateSnapshot {
         CVViewStateSnapshot(textExpansion: viewState.textExpansion.copy(),
                             messageSwipeActionState: viewState.messageSwipeActionState.copy(),
                             coreState: viewState.asCoreState,
                             typingIndicatorsSender: typingIndicatorsSender,
-                            isShowingSelectionUI: viewState.isShowingSelectionUI,
-                            wasShowingSelectionUI: wasShowingSelectionUI,
+                            uiMode: viewState.uiMode,
+                            previousUIMode: previousViewStateSnapshot?.uiMode ?? .normal,
                             searchText: viewState.lastSearchedText,
                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
                             currentCallThreadId: callService.currentCall?.thread.uniqueId)
@@ -55,8 +58,8 @@ struct CVViewStateSnapshot: Dependencies {
                             messageSwipeActionState: CVMessageSwipeActionState(),
                             coreState: coreState,
                             typingIndicatorsSender: nil,
-                            isShowingSelectionUI: false,
-                            wasShowingSelectionUI: false,
+                            uiMode: .normal,
+                            previousUIMode: .normal,
                             searchText: nil,
                             hasClearedUnreadMessagesIndicator: false,
                             currentCallThreadId: nil)

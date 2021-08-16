@@ -89,7 +89,8 @@ public class CVLoadCoordinator: NSObject {
 
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
                                                              typingIndicatorsSender: nil,
-                                                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator, wasShowingSelectionUI: false)
+                                                             hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
+                                                             previousViewStateSnapshot: nil)
         self.renderState = CVRenderState.defaultRenderState(threadViewModel: threadViewModel,
                                                             viewStateSnapshot: viewStateSnapshot)
 
@@ -509,7 +510,7 @@ public class CVLoadCoordinator: NSObject {
         let viewStateSnapshot = CVViewStateSnapshot.snapshot(viewState: viewState,
                                                              typingIndicatorsSender: typingIndicatorsSender,
                                                              hasClearedUnreadMessagesIndicator: hasClearedUnreadMessagesIndicator,
-                                                             wasShowingSelectionUI: prevRenderState.viewStateSnapshot.isShowingSelectionUI)
+                                                             previousViewStateSnapshot: prevRenderState.viewStateSnapshot)
         let loader = CVLoader(threadUniqueId: threadUniqueId,
                               loadRequest: loadRequest,
                               viewStateSnapshot: viewStateSnapshot,

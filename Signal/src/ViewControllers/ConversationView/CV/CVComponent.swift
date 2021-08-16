@@ -72,7 +72,7 @@ public protocol CVRootComponent: CVComponent {
     func configureCellRootComponent(cellView: UIView,
                                     cellMeasurement: CVCellMeasurement,
                                     componentDelegate: CVComponentDelegate,
-                                    cellSelection: CVCellSelection,
+                                    selectionState: CVSelectionState,
                                     messageSwipeActionState: CVMessageSwipeActionState,
                                     componentView: CVComponentView)
 
@@ -156,13 +156,10 @@ public class CVComponentBase: NSObject {
         return nil
     }
 
-    var isShowingSelectionUI: Bool {
-        itemModel.itemViewState.isShowingSelectionUI
-    }
-
-    var wasShowingSelectionUI: Bool {
-        itemModel.itemViewState.wasShowingSelectionUI
-    }
+    var uiMode: ConversationUIMode { itemModel.itemViewState.uiMode }
+    var previousUIMode: ConversationUIMode { itemModel.itemViewState.previousUIMode }
+    var isShowingSelectionUI: Bool { uiMode.hasSelectionUI }
+    var wasShowingSelectionUI: Bool { previousUIMode.hasSelectionUI }
 
     // MARK: - Root Components
 

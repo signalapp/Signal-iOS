@@ -24,7 +24,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
     public func configureCellRootComponent(cellView: UIView,
                                            cellMeasurement: CVCellMeasurement,
                                            componentDelegate: CVComponentDelegate,
-                                           cellSelection: CVCellSelection,
+                                           selectionState: CVSelectionState,
                                            messageSwipeActionState: CVMessageSwipeActionState,
                                            componentView: CVComponentView) {
         Self.configureCellRootComponent(rootComponent: self,

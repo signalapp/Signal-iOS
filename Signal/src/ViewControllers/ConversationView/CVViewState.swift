@@ -73,13 +73,12 @@ public class CVViewState: NSObject {
             }
         }
     }
-    public var isShowingSelectionUI: Bool { uiMode == .selection }
-    public var wasShowingSelectionUI: Bool = false
 
     enum SelectionAnimationState { case idle, willAnimate, animating }
     var selectionAnimationState: SelectionAnimationState = .idle
 
-    public let cellSelection = CVCellSelection()
+    // We _do not_ want to render this; see: renderSelectionState.
+    public let latestSelectionState = CVSelectionState()
     public let textExpansion = CVTextExpansion()
     public let messageSwipeActionState = CVMessageSwipeActionState()
 
@@ -252,6 +251,8 @@ public extension ConversationViewController {
         }
     }
 
+    var isShowingSelectionUI: Bool { viewState.uiMode.hasSelectionUI }
+
     var lastSearchedText: String? {
         get { viewState.lastSearchedText }
         set { viewState.lastSearchedText = newValue }
@@ -422,7 +423,8 @@ extension ConversationViewController {
         set { viewState.panHandler = newValue }
     }
 
-    var cellSelection: CVCellSelection { viewState.cellSelection }
+    // We _do not_ want to render this; see: renderSelectionState.
+    var latestSelectionState: CVSelectionState { viewState.latestSelectionState }
 
     func isTextExpanded(interactionId: String) -> Bool {
         viewState.textExpansion.isTextExpanded(interactionId: interactionId)

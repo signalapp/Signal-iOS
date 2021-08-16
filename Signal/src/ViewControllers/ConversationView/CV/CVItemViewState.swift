@@ -28,8 +28,11 @@ public struct CVItemViewState: Equatable {
     let bodyTextState: CVComponentBodyText.State?
     let nextAudioAttachment: AudioAttachment?
 
-    let isShowingSelectionUI: Bool
-    let wasShowingSelectionUI: Bool
+    let uiMode: ConversationUIMode
+    let previousUIMode: ConversationUIMode
+
+    public var isShowingSelectionUI: Bool { uiMode.hasSelectionUI }
+    public var wasShowingSelectionUI: Bool { previousUIMode.hasSelectionUI }
 
     public class Builder {
         var shouldShowSenderAvatar = false
@@ -43,8 +46,8 @@ public struct CVItemViewState: Equatable {
         var dateHeaderState: CVComponentDateHeader.State?
         var bodyTextState: CVComponentBodyText.State?
         var nextAudioAttachment: AudioAttachment?
-        var isShowingSelectionUI = false
-        var wasShowingSelectionUI = false
+        var uiMode: ConversationUIMode = .normal
+        var previousUIMode: ConversationUIMode = .normal
 
         func build() -> CVItemViewState {
             CVItemViewState(shouldShowSenderAvatar: shouldShowSenderAvatar,
@@ -58,8 +61,8 @@ public struct CVItemViewState: Equatable {
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
                             nextAudioAttachment: nextAudioAttachment,
-                            isShowingSelectionUI: isShowingSelectionUI,
-                            wasShowingSelectionUI: wasShowingSelectionUI)
+                            uiMode: uiMode,
+                            previousUIMode: previousUIMode)
         }
     }
 }
@@ -254,8 +257,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                                          hasTapForMore: hasTapForMore,
                                                                          hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest)
         }
-        itemViewState.wasShowingSelectionUI = viewStateSnapshot.wasShowingSelectionUI
-        itemViewState.isShowingSelectionUI = viewStateSnapshot.isShowingSelectionUI
+        itemViewState.uiMode = viewStateSnapshot.uiMode
+        itemViewState.previousUIMode = viewStateSnapshot.previousUIMode
 
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
