@@ -66,9 +66,10 @@ public class CVViewState: NSObject {
 
     public var uiMode: ConversationUIMode = .normal {
         didSet {
+            AssertIsOnMainThread()
             let didChange = uiMode != oldValue
             if didChange {
-                cellSelection.reset()
+                selectionState.reset()
                 delegate?.viewStateUIModeDidChange(oldValue: oldValue)
             }
         }
@@ -77,8 +78,7 @@ public class CVViewState: NSObject {
     enum SelectionAnimationState { case idle, willAnimate, animating }
     var selectionAnimationState: SelectionAnimationState = .idle
 
-    // We _do not_ want to render this; see: renderSelectionState.
-    public let latestSelectionState = CVSelectionState()
+    public let selectionState = CVSelectionState()
     public let textExpansion = CVTextExpansion()
     public let messageSwipeActionState = CVMessageSwipeActionState()
 
@@ -423,8 +423,7 @@ extension ConversationViewController {
         set { viewState.panHandler = newValue }
     }
 
-    // We _do not_ want to render this; see: renderSelectionState.
-    var latestSelectionState: CVSelectionState { viewState.latestSelectionState }
+    public var selectionState: CVSelectionState { viewState.selectionState }
 
     func isTextExpanded(interactionId: String) -> Bool {
         viewState.textExpansion.isTextExpanded(interactionId: interactionId)

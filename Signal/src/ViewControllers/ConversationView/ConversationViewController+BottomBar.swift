@@ -69,8 +69,11 @@ public extension ConversationViewController {
                 switch uiMode {
                 case .search:
                     return .search
-                case .selection:
+                case .multiselect:
                     return .selection
+                case .forwarding:
+                    // TODO:
+                    return .none
                 case .normal:
                     if viewState.isInPreviewPlatter || userLeftGroup {
                         return .none

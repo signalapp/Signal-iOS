@@ -23,52 +23,105 @@ public struct CVSelectionType: OptionSet {
 
 // MARK: -
 
+public protocol CVSelectionStateDelegate: AnyObject {
+    func selectionStateDidChange()
+}
+
+// MARK: -
+
 // In multi-select mode, represents which interactions are currently selected.
 // In forwarding mode, represents which interactions (or portions thereof) are currently selected.
-public class CVSelectionState {
+@objc
+public class CVSelectionState: NSObject {
+    public weak var delegate: CVSelectionStateDelegate?
+
     // A map of interaction uniqueId-CVSelectionType.
     //
     // CVSelectionType values should never be .none.
     private var stateMap = [String: CVSelectionType]()
 
-    fileprivate func add(_ interactionId: String, selectionType: CVSelectionType) {
+    public func add(_ interactionId: String, selectionType: CVSelectionType) {
         AssertIsOnMainThread()
         owsAssertDebug(!isSelected(interactionId, selectionType: selectionType))
 
         let oldSelectionType: CVSelectionType = stateMap[interactionId] ?? .none
         let newSelectionType: CVSelectionType = oldSelectionType.union(selectionType)
+        guard oldSelectionType != newSelectionType else {
+            return
+        }
         if newSelectionType.isEmpty {
             owsFailDebug("Adding should never remove.")
             stateMap.removeValue(forKey: interactionId)
         } else {
             stateMap[interactionId] = newSelectionType
         }
+        delegate?.selectionStateDidChange()
     }
 
-    fileprivate func remove(_ interactionId: String, selectionType: CVSelectionType) {
+    public func add(interaction: TSInteraction, selectionType: CVSelectionType) {
+        add(interaction.uniqueId, selectionType: selectionType)
+    }
+
+    public func add(itemViewModel: CVItemViewModel, selectionType: CVSelectionType) {
+        add(interaction: itemViewModel.interaction, selectionType: selectionType)
+    }
+
+    public func remove(_ interactionId: String, selectionType: CVSelectionType) {
         AssertIsOnMainThread()
         owsAssertDebug(isSelected(interactionId, selectionType: selectionType))
 
         let oldSelectionType: CVSelectionType = stateMap[interactionId] ?? .none
         let newSelectionType: CVSelectionType = oldSelectionType.subtracting(selectionType)
+        guard oldSelectionType != newSelectionType else {
+            return
+        }
         if newSelectionType.isEmpty {
             stateMap.removeValue(forKey: interactionId)
         } else {
             stateMap[interactionId] = newSelectionType
         }
+        delegate?.selectionStateDidChange()
     }
 
-    fileprivate func isSelected(_ interactionId: String, selectionType: CVSelectionType) -> Bool {
+    public func remove(interaction: TSInteraction, selectionType: CVSelectionType) {
+        remove(interaction.uniqueId, selectionType: selectionType)
+    }
+
+    public func remove(itemViewModel: CVItemViewModel, selectionType: CVSelectionType) {
+        remove(interaction: itemViewModel.interaction, selectionType: selectionType)
+    }
+
+    public func isSelected(_ interactionId: String, selectionType: CVSelectionType) -> Bool {
         AssertIsOnMainThread()
 
         let oldSelectionType: CVSelectionType = stateMap[interactionId] ?? .none
         return oldSelectionType.contains(selectionType)
     }
 
-    func reset() {
+    public func hasAnySelection(_ interactionId: String) -> Bool {
         AssertIsOnMainThread()
 
+        guard let selectionType = stateMap[interactionId] else {
+            return false
+        }
+        owsAssertDebug(selectionType != .none)
+        return true
+    }
+
+    public func hasAnySelection(interaction: TSInteraction) -> Bool {
+        hasAnySelection(interaction.uniqueId)
+    }
+
+    public func reset() {
+        AssertIsOnMainThread()
+
+        guard !stateMap.isEmpty else {
+            return
+        }
+
         stateMap.removeAll()
+
+        delegate?.selectionStateDidChange()
     }
 
     fileprivate func selectedInteractionIds(withSelectionType filterSelectionType: CVSelectionType) -> Set<String> {
@@ -83,7 +136,7 @@ public class CVSelectionState {
         })
     }
 
-    fileprivate var multiSelectSelection: Set<String> {
+    public var multiSelectSelection: Set<String> {
         AssertIsOnMainThread()
 
         return Set(stateMap.keys)
@@ -94,17 +147,60 @@ public class CVSelectionState {
 
 extension ConversationViewController {
 
-    public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
-        isMessageSelected(interaction)
+    public static func canSelect(interaction: TSInteraction,
+                                 uiMode: ConversationUIMode) -> Bool {
+        switch uiMode {
+        case .normal, .search:
+            return false
+        case .multiselect:
+            switch interaction.interactionType {
+            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
+                return false
+            case .info, .error, .call:
+                return true
+            case .incomingMessage, .outgoingMessage:
+                return true
+            case .unknown:
+                owsFailDebug("Unknown interaction type.")
+                return false
+            }
+        case .forwarding:
+            switch interaction.interactionType {
+            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
+                return false
+            case .info, .error, .call:
+                return false
+            case .incomingMessage, .outgoingMessage:
+                return true
+            case .unknown:
+                owsFailDebug("Unknown interaction type.")
+                return false
+            }
+        }
     }
+//    // TODO:
+//    let selectionType: CVSelectionType = .allContent
+//    componentDelegate.selectionState.remove(itemViewModel.interaction.uniqueId,
+//    selectionType: selectionType)
+// } else {
+//    selectionView.isSelected = true
+//    // TODO:
+//    let selectionType: CVSelectionType = .allContent
+//    componentDelegate.selectionState.add(itemViewModel.interaction.uniqueId,
+//                                         selectionType: selectionType)
 
-    public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-        didSelectMessage(itemViewModel)
-    }
+    // TODO: Remove from delegate protocol.
+//    public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
+//        isMessageSelected(interaction)
+//    }
 
-    public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-        didDeselectMessage(itemViewModel)
-    }
+//    public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
+//        didSelectMessage(itemViewModel)
+//    }
+//
+//    public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
+//        didDeselectMessage(itemViewModel)
+//    }
 
 //    public func addToSelection(_ interactionId: String) {
 //        cellSelection.add(interactionId)
@@ -157,7 +253,7 @@ extension ConversationViewController {
     }
 
     func didTapDeleteSelectedItems() {
-        let selectedInteractionIds = self.selectedInteractionIds
+        let selectedInteractionIds = self.selectionState.multiSelectSelection
 
         let message: String
         if selectedInteractionIds.count > 1 {
@@ -177,7 +273,6 @@ extension ConversationViewController {
                 guard let self = self else { return }
 
                 DispatchQueue.main.async {
-                    self.clearSelection()
                     modalActivityIndicator.dismiss {
                         self.uiMode = .normal
                         DispatchQueue.global().async {
@@ -213,64 +308,67 @@ extension ConversationViewController {
             owsFailDebug("deleteButton was unexpectedly nil")
             return
         }
-        deleteButton.isEnabled = selectedInteractionIds.count > 0
+        let hasMultiSelectSelection = (uiMode == .multiselect &&
+                                        !selectionState.multiSelectSelection.isEmpty)
+        deleteButton.isEnabled = hasMultiSelectSelection
     }
 
+    // TODO:
     public func ensureSelectionViewState() {
-        guard isShowingSelectionUI else {
-            return
-        }
-        clearCollectionViewSelection()
-
-        let selectedInteractionIds = self.selectedInteractionIds
-        let selectedIndexPaths = selectedInteractionIds.compactMap { interactionId in
-            indexPath(forInteractionUniqueId: interactionId)
-        }
-        let indexPaths = collectionView.indexPathsForVisibleItems
-        for indexPath in indexPaths {
-            let isSelected = selectedIndexPaths.contains(indexPath)
-            if isSelected {
-                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-            } else {
-                collectionView.deselectItem(at: indexPath, animated: false)
-            }
-        }
-    }
-
-    public func didSelectMessage(_ message: CVItemViewModel) {
-        AssertIsOnMainThread()
-        owsAssertDebug(isShowingSelectionUI)
-
-        let interactionId = message.interaction.uniqueId
-//        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
-//            owsFailDebug("indexPath was unexpectedly nil")
+//        guard isShowingSelectionUI else {
 //            return
 //        }
+//        clearCollectionViewSelection()
 //
-//        collectionView.selectItem(at: indexPath,
-//                                  animated: false,
-//                                  // TODO: Is there a better way to indicate .none?
-//                                  scrollPosition: UICollectionView.ScrollPosition(rawValue: 0))
-        addToSelection(interactionId)
-
-        updateSelectionButtons()
-    }
-
-    public func didDeselectMessage(_ message: CVItemViewModel) {
-        AssertIsOnMainThread()
-        owsAssertDebug(isShowingSelectionUI)
-
-        let interactionId = message.interaction.uniqueId
-//        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
-//            owsFailDebug("indexPath was unexpectedly nil")
-//            return
+//        let selectedInteractionIds = self.selectedInteractionIds
+//        let selectedIndexPaths = selectedInteractionIds.compactMap { interactionId in
+//            indexPath(forInteractionUniqueId: interactionId)
 //        }
-//
-//        collectionView.deselectItem(at: indexPath, animated: false)
-        removeFromSelection(interactionId)
-
-        updateSelectionButtons()
+//        let indexPaths = collectionView.indexPathsForVisibleItems
+//        for indexPath in indexPaths {
+//            let isSelected = selectedIndexPaths.contains(indexPath)
+//            if isSelected {
+//                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+//            } else {
+//                collectionView.deselectItem(at: indexPath, animated: false)
+//            }
+//        }
     }
+
+//    public func didSelectMessage(_ message: CVItemViewModel) {
+//        AssertIsOnMainThread()
+//        owsAssertDebug(isShowingSelectionUI)
+//
+//        let interactionId = message.interaction.uniqueId
+////        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
+////            owsFailDebug("indexPath was unexpectedly nil")
+////            return
+////        }
+////
+////        collectionView.selectItem(at: indexPath,
+////                                  animated: false,
+////                                  // TODO: Is there a better way to indicate .none?
+////                                  scrollPosition: UICollectionView.ScrollPosition(rawValue: 0))
+//        addToSelection(interactionId)
+//
+//        updateSelectionButtons()
+//    }
+//
+//    public func didDeselectMessage(_ message: CVItemViewModel) {
+//        AssertIsOnMainThread()
+//        owsAssertDebug(isShowingSelectionUI)
+//
+//        let interactionId = message.interaction.uniqueId
+////        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
+////            owsFailDebug("indexPath was unexpectedly nil")
+////            return
+////        }
+////
+////        collectionView.deselectItem(at: indexPath, animated: false)
+//        removeFromSelection(interactionId)
+//
+//        updateSelectionButtons()
+//    }
 }
 
 // MARK: - Selection
@@ -288,7 +386,6 @@ extension ConversationViewController {
 
     @objc
     func didTapCancelSelection() {
-        clearSelection()
         uiMode = .normal
     }
 
@@ -306,8 +403,8 @@ extension ConversationViewController {
                     thread.removeAllThreadInteractions(transaction: $0)
                 }
                 DispatchQueue.main.async {
-                    self.clearSelection()
-                    modalActivityIndicator.dismiss {
+                    modalActivityIndicator.dismiss { [weak self] in
+                        guard let self = self else { return }
                         self.uiMode = .normal
                     }
                 }
@@ -315,5 +412,15 @@ extension ConversationViewController {
         }
         alert.addAction(delete)
         present(alert, animated: true)
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: CVSelectionStateDelegate {
+    public func selectionStateDidChange() {
+        AssertIsOnMainThread()
+
+        updateSelectionButtons()
     }
 }

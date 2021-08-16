@@ -619,7 +619,7 @@ fileprivate extension CVComponentState.Builder {
 
         self.failedOrPendingDownloads = tryToBuildFailedOrPendingDownloads()
 
-        switch interaction.interactionType() {
+        switch interaction.interactionType {
         case .threadDetails:
             self.threadDetails = buildThreadDetails()
             return build()
@@ -674,7 +674,7 @@ fileprivate extension CVComponentState.Builder {
             owsFailDebug("Unknown interaction type.")
             return build()
         default:
-            owsFailDebug("Invalid interaction type: \(NSStringFromOWSInteractionType(interaction.interactionType()))")
+            owsFailDebug("Invalid interaction type: \(NSStringFromOWSInteractionType(interaction.interactionType))")
             return build()
         }
     }

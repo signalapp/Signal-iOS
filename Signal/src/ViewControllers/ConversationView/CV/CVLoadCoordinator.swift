@@ -726,11 +726,9 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
             owsFailDebug("Missing delegate.")
             return UICollectionViewCell()
         }
-        let cellSelection = delegate.viewState.cellSelection
         let messageSwipeActionState = delegate.viewState.messageSwipeActionState
         cell.configure(renderItem: renderItem,
                        componentDelegate: componentDelegate,
-                       cellSelection: cellSelection,
                        messageSwipeActionState: messageSwipeActionState)
         return cell
 

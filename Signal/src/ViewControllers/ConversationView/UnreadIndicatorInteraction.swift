@@ -7,12 +7,12 @@ import Foundation
 @objc(OWSUnreadIndicatorInteraction)
 public class UnreadIndicatorInteraction: TSInteraction {
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .unreadIndicator
+    public override var interactionType: OWSInteractionType {
+        .unreadIndicator
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

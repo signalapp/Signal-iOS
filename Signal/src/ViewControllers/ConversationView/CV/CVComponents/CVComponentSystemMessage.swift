@@ -26,7 +26,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     public func configureCellRootComponent(cellView: UIView,
                                            cellMeasurement: CVCellMeasurement,
                                            componentDelegate: CVComponentDelegate,
-                                           selectionState: CVSelectionState,
                                            messageSwipeActionState: CVMessageSwipeActionState,
                                            componentView: CVComponentView) {
         Self.configureCellRootComponent(rootComponent: self,
@@ -149,7 +148,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             ]
             var outerHStackViews = [UIView]()
             if isShowingSelectionUI || wasShowingSelectionUI {
-                selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
+                // System messages can only be selected in .multiselect mode
+                // and cannot be partially selected.
+                selectionView.isSelected = componentDelegate.selectionState.hasAnySelection(interaction: interaction)
                 outerHStackViews.append(selectionView)
             }
             outerHStackViews.append(contentsOf: [
@@ -421,13 +422,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         if isShowingSelectionUI {
             let selectionView = componentView.selectionView
-            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if componentDelegate.cvc_isMessageSelected(interaction) {
+            // System messages can only be selected in .multiselect mode
+            // and cannot be partially selected.
+            let selectionState = componentDelegate.selectionState
+            if selectionState.hasAnySelection(interaction: interaction) {
                 selectionView.isSelected = false
-                componentDelegate.cvc_didDeselectViewItem(itemViewModel)
+                selectionState.remove(interaction: interaction, selectionType: .allContent)
             } else {
                 selectionView.isSelected = true
-                componentDelegate.cvc_didSelectViewItem(itemViewModel)
+                selectionState.add(interaction: interaction, selectionType: .allContent)
             }
             // Suppress other tap handling during selection mode.
             return true
@@ -600,7 +603,7 @@ extension CVComponentSystemMessage {
         owsAssertDebug(!systemMessageText.isEmpty)
         labelText.append(systemMessageText)
 
-        let shouldShowTimestamp = interaction.interactionType() == .call
+        let shouldShowTimestamp = interaction.interactionType == .call
         if shouldShowTimestamp {
             labelText.append(LocalizationNotNeeded(" · "))
             labelText.append(DateUtil.formatTimestamp(asDate: interaction.timestamp))

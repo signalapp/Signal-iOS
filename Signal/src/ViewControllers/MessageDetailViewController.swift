@@ -949,17 +949,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Selection
 
-    // TODO:
-    var isShowingSelectionUI: Bool { false }
-
-    // TODO:
-    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
-
-    // TODO:
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
-
-    // TODO:
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
+    public var selectionState: CVSelectionState { CVSelectionState() }
 
     // MARK: - System Cell
 

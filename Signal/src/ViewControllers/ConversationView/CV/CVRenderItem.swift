@@ -26,7 +26,7 @@ public class CVRenderItem: NSObject {
     }
 
     public var interactionUniqueId: String { interaction.uniqueId }
-    public var interactionType: OWSInteractionType { interaction.interactionType() }
+    public var interactionType: OWSInteractionType { interaction.interactionType }
 
     init(itemModel: CVItemModel,
          rootComponent: CVRootComponent,
@@ -81,7 +81,7 @@ public class CVRenderItem: NSObject {
     }
 
     var interactionTypeName: String {
-        NSStringFromOWSInteractionType(interaction.interactionType())
+        NSStringFromOWSInteractionType(interaction.interactionType)
     }
 
     public override var debugDescription: String {
@@ -106,11 +106,11 @@ extension CVRenderItem: ConversationViewLayoutItem {
         let interaction = itemModel.interaction
         let previousInteraction = previousLayoutItem.itemModel.interaction
 
-        switch interaction.interactionType() {
+        switch interaction.interactionType {
         case .dateHeader, .unreadIndicator:
             return ConversationStyle.defaultMessageSpacing
         case .incomingMessage:
-            switch previousInteraction.interactionType() {
+            switch previousInteraction.interactionType {
             case .incomingMessage:
                 if let selfAuthorAddress = self.incomingMessageAuthorAddress,
                    let prevAuthorAddress = previousLayoutItem.incomingMessageAuthorAddress,
@@ -124,7 +124,7 @@ extension CVRenderItem: ConversationViewLayoutItem {
                 return ConversationStyle.defaultMessageSpacing
             }
         case .outgoingMessage:
-            switch previousInteraction.interactionType() {
+            switch previousInteraction.interactionType {
             case .outgoingMessage:
                 return ConversationStyle.compactMessageSpacing
             case .call, .info, .error:
@@ -133,8 +133,8 @@ extension CVRenderItem: ConversationViewLayoutItem {
                 return ConversationStyle.defaultMessageSpacing
             }
         case .call, .info, .error:
-            if previousInteraction.interactionType() == interaction.interactionType() {
-                switch previousInteraction.interactionType() {
+            if previousInteraction.interactionType == interaction.interactionType {
+                switch previousInteraction.interactionType {
                 case .error:
                     if let errorMessage = interaction as? TSErrorMessage,
                        let previousErrorMessage = previousInteraction as? TSErrorMessage,
@@ -156,8 +156,8 @@ extension CVRenderItem: ConversationViewLayoutItem {
                 default:
                     return ConversationStyle.defaultMessageSpacing
                 }
-            } else if previousInteraction.interactionType() == .outgoingMessage
-                        || previousInteraction.interactionType() == .incomingMessage {
+            } else if previousInteraction.interactionType == .outgoingMessage
+                        || previousInteraction.interactionType == .incomingMessage {
                 return ConversationStyle.systemMessageSpacing
             } else {
                 return ConversationStyle.defaultMessageSpacing

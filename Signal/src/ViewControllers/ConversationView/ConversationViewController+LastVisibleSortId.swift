@@ -160,7 +160,7 @@ extension ConversationViewController {
         while matchingIndexPath.row >= 0,
               matchingIndexPath.row < renderItems.count,
               let renderItem = renderItem(forIndex: matchingIndexPath.row) {
-            guard !renderItem.interaction.isDynamicInteraction() else {
+            guard !renderItem.interaction.isDynamicInteraction else {
                 guard matchingIndexPath.row > 0 else {
                     return nil
                 }

@@ -113,7 +113,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
     func configure(renderItem: CVRenderItem,
                    componentDelegate: CVComponentDelegate,
-                   selectionState: CVSelectionState,
                    messageSwipeActionState: CVMessageSwipeActionState) {
 
         let isReusingDedicatedCell = componentView != nil && renderItem.rootComponent.isDedicatedCell
@@ -125,7 +124,6 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
         configureForHosting(renderItem: renderItem,
                             componentDelegate: componentDelegate,
-                            selectionState: selectionState,
                             messageSwipeActionState: messageSwipeActionState)
 
         self.messageSwipeActionState = messageSwipeActionState
@@ -198,12 +196,9 @@ public class CVCellView: UIView, CVRootComponentHost {
 
         self.layoutMargins = .zero
 
-        // Use fake state; we're not in the CVC.
-        let selectionState = CVSelectionState()
         let messageSwipeActionState = CVMessageSwipeActionState()
         configureForHosting(renderItem: renderItem,
                             componentDelegate: componentDelegate,
-                            selectionState: selectionState,
                             messageSwipeActionState: messageSwipeActionState)
         owsAssertDebug(componentView != nil)
     }
@@ -239,7 +234,6 @@ public protocol CVRootComponentHost: AnyObject {
 public extension CVRootComponentHost {
     fileprivate func configureForHosting(renderItem: CVRenderItem,
                                          componentDelegate: CVComponentDelegate,
-                                         selectionState: CVSelectionState,
                                          messageSwipeActionState: CVMessageSwipeActionState) {
         self.renderItem = renderItem
 
@@ -263,7 +257,6 @@ public extension CVRootComponentHost {
         rootComponent.configureCellRootComponent(cellView: hostView,
                                                  cellMeasurement: renderItem.cellMeasurement,
                                                  componentDelegate: componentDelegate,
-                                                 selectionState: selectionState,
                                                  messageSwipeActionState: messageSwipeActionState,
                                                  componentView: componentView)
 

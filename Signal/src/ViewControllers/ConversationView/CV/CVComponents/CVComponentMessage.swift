@@ -272,7 +272,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     public func configureCellRootComponent(cellView: UIView,
                                            cellMeasurement: CVCellMeasurement,
                                            componentDelegate: CVComponentDelegate,
-                                           selectionState: CVSelectionState,
                                            messageSwipeActionState: CVMessageSwipeActionState,
                                            componentView: CVComponentView) {
 
@@ -420,7 +419,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var hOuterStackSubviews = [UIView]()
         if isShowingSelectionUI || wasShowingSelectionUI {
             let selectionView = componentView.selectionView
-            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
+            // TODO:
+            selectionView.isSelected = componentDelegate.selectionState.hasAnySelection(interaction: interaction)
             hOuterStackSubviews.append(selectionView)
         }
 
@@ -1055,12 +1055,20 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isShowingSelectionUI {
             let selectionView = componentView.selectionView
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if componentDelegate.cvc_isMessageSelected(interaction) {
+            let selectionState = componentDelegate.selectionState
+            // TODO:
+            if selectionState.hasAnySelection(interaction: interaction) {
                 selectionView.isSelected = false
-                componentDelegate.cvc_didDeselectViewItem(itemViewModel)
+                // TODO:
+                let selectionType: CVSelectionType = .allContent
+                componentDelegate.selectionState.remove(itemViewModel: itemViewModel,
+                                                        selectionType: selectionType)
             } else {
                 selectionView.isSelected = true
-                componentDelegate.cvc_didSelectViewItem(itemViewModel)
+                // TODO:
+                let selectionType: CVSelectionType = .allContent
+                componentDelegate.selectionState.add(itemViewModel: itemViewModel,
+                                                     selectionType: selectionType)
             }
             // Suppress other tap handling during selection mode.
             return true

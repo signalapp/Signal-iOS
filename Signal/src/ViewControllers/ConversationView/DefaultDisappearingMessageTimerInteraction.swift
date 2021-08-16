@@ -7,12 +7,12 @@ import Foundation
 @objc(OWSDefaultDisappearingMessageTimerInteraction)
 public class DefaultDisappearingMessageTimerInteraction: TSInteraction {
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .defaultDisappearingMessageTimer
+    public override var interactionType: OWSInteractionType {
+        .defaultDisappearingMessageTimer
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

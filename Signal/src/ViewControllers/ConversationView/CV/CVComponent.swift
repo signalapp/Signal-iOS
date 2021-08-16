@@ -72,7 +72,6 @@ public protocol CVRootComponent: CVComponent {
     func configureCellRootComponent(cellView: UIView,
                                     cellMeasurement: CVCellMeasurement,
                                     componentDelegate: CVComponentDelegate,
-                                    selectionState: CVSelectionState,
                                     messageSwipeActionState: CVMessageSwipeActionState,
                                     componentView: CVComponentView)
 

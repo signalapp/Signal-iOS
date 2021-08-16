@@ -247,7 +247,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         itemViewState.footerState = CVComponentFooter.buildState(interaction: interaction,
                                                                  hasTapForMore: hasTapForMore)
 
-        if interaction.interactionType() == .dateHeader {
+        if interaction.interactionType == .dateHeader {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)
         }
         if let bodyText = item.componentState.bodyText {
@@ -375,13 +375,13 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                     transaction: transaction)
             }
 
-        } else if [.call, .info, .error].contains(interaction.interactionType()) {
+        } else if [.call, .info, .error].contains(interaction.interactionType) {
             // clustering
 
             if let previousItem = previousItem,
-               interaction.interactionType() == previousItem.interaction.interactionType() {
+               interaction.interactionType == previousItem.interaction.interactionType {
 
-                switch previousItem.interaction.interactionType() {
+                switch previousItem.interaction.interactionType {
                 case .error:
                     if let errorMessage = interaction as? TSErrorMessage,
                        let previousErrorMessage = previousItem.interaction as? TSErrorMessage,
@@ -410,8 +410,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             }
 
             if let nextItem = nextItem,
-               interaction.interactionType() == nextItem.interaction.interactionType() {
-                switch nextItem.interaction.interactionType() {
+               interaction.interactionType == nextItem.interaction.interactionType {
+                switch nextItem.interaction.interactionType {
                 case .error:
                     if let errorMessage = interaction as? TSErrorMessage,
                        let nextErrorMessage = nextItem.interaction as? TSErrorMessage,
@@ -674,11 +674,11 @@ private class ItemBuilder {
     }
 
     var interactionType: OWSInteractionType {
-        interaction.interactionType()
+        interaction.interactionType
     }
 
     var canShowDate: Bool {
-        switch interaction.interactionType() {
+        switch interaction.interactionType {
         case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return false
         case .info:

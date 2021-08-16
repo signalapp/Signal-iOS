@@ -80,10 +80,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
-- (NSDate *)receivedAtDate;
-- (NSDate *)timestampDate;
+@property (nonatomic, readonly) NSDate *receivedAtDate;
+@property (nonatomic, readonly) NSDate *timestampDate;
 
-- (OWSInteractionType)interactionType;
+@property (nonatomic, readonly) OWSInteractionType interactionType;
 
 @property (nonatomic, readonly, nullable) TSThread *threadWithSneakyTransaction;
 
@@ -99,7 +99,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 //
 // These include block offers, "add to contact" offers,
 // unseen message indicators, etc.
-- (BOOL)isDynamicInteraction;
+@property (nonatomic, readonly) BOOL isDynamicInteraction;
 
 - (void)replaceSortId:(uint64_t)sortId;
 

@@ -103,13 +103,15 @@ public protocol CVComponentDelegate {
 
     // MARK: - Selection
 
+    var selectionState: CVSelectionState { get }
+
 //    var isShowingSelectionUI: Bool { get }
 
-    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool
-
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl)
-
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl)
+//    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool
+//
+//    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl)
+//
+//    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl)
 
     // MARK: - System Cell
 
@@ -251,3 +253,17 @@ struct CVMessageAction: Equatable {
         }
     }
 }
+
+// MARK: -
+//
+// extension CVComponentDelegate {
+////    var selectionState: CVSelectionState { get }
+//    public func addToSelection(itemViewModel: CVItemViewModel,
+//                               CVSelectionType: selectionType) {
+//
+//    }
+//        CVItemViewModelImpl(renderItem: renderItem)
+//    if componentDelegate.cvc_isMessageSelected(interaction) {
+//    selectionView.isSelected = false
+//    componentDelegate.cvc_didDeselectViewItem(itemViewModel
+// }
