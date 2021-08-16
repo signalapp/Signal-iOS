@@ -158,7 +158,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         // Get default open group rooms if needed
         OpenGroupAPIV2.getDefaultRoomsIfNeeded()
         
-        let callVC = CallVC()
+        let callVC = CallVCV2()
         present(callVC, animated: true, completion: nil)
         
     }

@@ -18,13 +18,17 @@ public final class WebSocket : NSObject, SRWebSocketDelegate {
         socket.delegate = self
     }
 
-    public func connect(url: URL) {
+    public func connect() {
         socket.open()
     }
     
     public func send(_ data: Data) {
         socket.send(data)
     }
+    
+    public func webSocketDidOpen(_ webSocket: SRWebSocket!) {
+         delegate?.webSocketDidConnect(self)
+     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
         guard let message = message as? String else { return }

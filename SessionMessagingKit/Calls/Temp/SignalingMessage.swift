@@ -2,37 +2,36 @@ import Foundation
 import WebRTC
 
 public enum SignalingMessage {
-    case none
     case candidate(_ message: RTCIceCandidate)
     case answer(_ message: RTCSessionDescription)
     case offer(_ message: RTCSessionDescription)
     case bye
     
-    public static func from(message: String) -> SignalingMessage {
-        guard let data = message.data(using: String.Encoding.utf8) else { return .none }
-        guard let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON else { return .none }
+    public static func from(message: String) -> SignalingMessage? {
+        guard let data = message.data(using: String.Encoding.utf8),
+            let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON else { return nil }
         let messageAsJSON: JSON
-        if let foo = json["msg"] as? String {
-            guard let data = foo.data(using: String.Encoding.utf8) else { return .none }
-            guard let bar = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON else { return .none }
-            messageAsJSON = bar
+        if let string = json["msg"] as? String {
+            guard let data = string.data(using: String.Encoding.utf8),
+                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON else { return nil }
+            messageAsJSON = json
         } else {
             messageAsJSON = json
         }
-        guard let type = messageAsJSON["type"] as? String else { return .none }
+        guard let type = messageAsJSON["type"] as? String else { return nil }
         switch type {
         case "candidate":
-            guard let candidate = RTCIceCandidate.candidate(from: messageAsJSON) else { return .none }
+            guard let candidate = RTCIceCandidate.candidate(from: messageAsJSON) else { return nil }
             return .candidate(candidate)
         case "answer":
-            guard let sdp = messageAsJSON["sdp"] as? String else { return .none }
+            guard let sdp = messageAsJSON["sdp"] as? String else { return nil }
             return .answer(RTCSessionDescription(type: .answer, sdp: sdp))
         case "offer":
-            guard let sdp = messageAsJSON["sdp"] as? String else { return .none }
+            guard let sdp = messageAsJSON["sdp"] as? String else { return nil }
             return .offer(RTCSessionDescription(type: .offer, sdp: sdp))
         case "bye":
             return .bye
-        default: return .none
+        default: return nil
         }
     }
 }
@@ -46,7 +45,7 @@ extension RTCIceCandidate {
             "id": sdpMid,
             "candidate": sdp
         ]
-        return try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
+        return try? JSONSerialization.data(withJSONObject: json, options: [ .prettyPrinted ])
     }
 
     static func candidate(from json: JSON) -> RTCIceCandidate? {

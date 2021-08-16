@@ -3,8 +3,9 @@ import WebRTC
 
 public protocol CallManagerDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
-    
-    func callManager(_ callManager: CallManager, sendData data: Data)
+
+    func sendSDP(_ sdp: RTCSessionDescription)
+    func sendICECandidate(_ candidate: RTCIceCandidate)
 }
 
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
@@ -78,7 +79,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Initialization
-    internal override init() {
+    public override init() {
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
         peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
@@ -97,10 +98,16 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
         audioSession.unlockForConfiguration()
     }
     
-    public static let shared = CallManager()
+    // MARK: General
+    public func drainICECandidateQueue() {
+        print("[Calls] Draining ICE candidate queue.")
+        candidateQueue.forEach { peerConnection.add($0) }
+        candidateQueue.removeAll()
+    }
     
     // MARK: Call Management
     public func initiateCall() -> Promise<Void> {
+        print("[Calls] Initiating call.")
         /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
          */
@@ -117,8 +124,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                     }
                 }
                 
-                let message = sdp.serialize()!
-                self.delegate?.callManager(self, sendData: message)
+                self.delegate?.sendSDP(sdp)
                 
                 /*
                 let message = CallMessage()
@@ -133,6 +139,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func acceptCall() -> Promise<Void> {
+        print("[Calls] Accepting call.")
         /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
          */
@@ -149,8 +156,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
                     }
                 }
                 
-                let message = sdp.serialize()!
-                self.delegate?.callManager(self, sendData: message)
+                self.delegate?.sendSDP(sdp)
                 
                 /*
                 let message = CallMessage()
@@ -195,8 +201,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         SNLog("ICE candidate generated.")
-        let message = candidate.serialize()!
-        delegate?.callManager(self, sendData: message)
+        delegate?.sendICECandidate(candidate)
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
@@ -205,18 +210,5 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         SNLog("Data channel opened.")
-    }
-}
-
-// MARK: Utilities
-
-extension RTCSessionDescription {
-    
-    func serialize() -> Data? {
-        let json = [
-            "type": RTCSessionDescription.string(for: self.type),
-            "sdp": self.sdp
-        ]
-        return try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted])
     }
 }
