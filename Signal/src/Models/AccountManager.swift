@@ -102,9 +102,10 @@ public class AccountManager: NSObject {
 
     func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
         guard verificationCode.count > 0 else {
-            let error = OWSErrorWithCodeDescription(.userError,
-                                                    NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                      comment: "alert body during registration"))
+            let error = OWSError(error: .userError,
+                                 description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                                                comment: "alert body during registration"),
+                                 isRetryable: false)
             return Promise(error: error)
         }
 

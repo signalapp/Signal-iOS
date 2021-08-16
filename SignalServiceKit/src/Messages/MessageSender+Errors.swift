@@ -8,11 +8,30 @@ import SignalMetadataKit
 import SignalClient
 
 @objc
-public enum MessageSenderError: Int, Error, IsRetryableProvider {
+public enum MessageSenderError: Int, Error, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     case prekeyRateLimit
     case missingDevice
     case blockedContactRecipient
     case threadMissing
+
+    /// NSError bridging: the error code within the given domain.
+    /// :nodoc:
+    public var errorUserInfo: [String: Any] {
+        var result = [String: Any]()
+        result[NSLocalizedDescriptionKey] = localizedDescription
+        return result
+    }
+
+    public var localizedDescription: String {
+        switch self {
+        case .blockedContactRecipient:
+            return NSLocalizedString("ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
+                                     comment: "Error message indicating that message send failed due to block list")
+        case .prekeyRateLimit, .missingDevice, .threadMissing:
+            return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+                                     comment: "Label indicating that a message failed to send.")
+        }
+    }
 
     // MARK: - IsRetryableProvider
 
@@ -113,7 +132,7 @@ extension Error {
 // MARK: -
 
 @objc
-public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, IsRetryableProvider {
+public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
 
     // MARK: - CustomNSError
 
@@ -137,7 +156,8 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
         [ NSLocalizedDescriptionKey: localizedDescription ]
     }
 
-    var localizedDescription: String {
+    @objc
+    public var localizedDescription: String {
         NSLocalizedString("ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT",
                           comment: "Error message when attempting to send message")
     }
@@ -157,7 +177,7 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
 // MARK: -
 
 @objc
-public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRetryableProvider {
+public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         MessageSenderErrorNoValidRecipients() as Error as NSError
@@ -220,7 +240,7 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
 // MARK: -
 
 @objc
-public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvider {
+public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public let address: SignalServiceAddress
 
@@ -272,7 +292,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
 // MARK: -
 
 @objc
-public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvider {
+public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         SignalServiceRateLimitedError() as Error as NSError
@@ -310,7 +330,7 @@ public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryable
 // MARK: -
 
 @objc
-public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider {
+public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         SpamChallengeRequiredError() as Error as NSError
@@ -352,7 +372,7 @@ public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryablePro
 // MARK: -
 
 @objc
-public class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryableProvider {
+public class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         SpamChallengeResolvedError() as Error as NSError
@@ -423,7 +443,7 @@ public class OWSUnretryableMessageSenderError: NSObject, CustomNSError, IsRetrya
 // MARK: -
 
 @objc
-public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider {
+public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         AppExpiredError() as Error as NSError
@@ -460,7 +480,7 @@ public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider {
 // MARK: -
 
 @objc
-public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider {
+public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         AppDeregisteredError() as Error as NSError
@@ -526,7 +546,7 @@ public class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryable
 // MARK: -
 
 @objc
-public class SenderKeyEphemeralError: NSObject, CustomNSError, IsRetryableProvider {
+public class SenderKeyEphemeralError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     private let customLocalizedDescription: String
 
     init(customLocalizedDescription: String) {
@@ -561,7 +581,7 @@ public class SenderKeyEphemeralError: NSObject, CustomNSError, IsRetryableProvid
 // MARK: -
 
 @objc
-public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProvider {
+public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     private let customLocalizedDescription: String
 
     init(customLocalizedDescription: String) {
@@ -596,7 +616,7 @@ public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProv
 // MARK: -
 
 @objc
-public class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider {
+public class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
     /// NSError bridging: the domain of the error.
     /// :nodoc:
     @objc

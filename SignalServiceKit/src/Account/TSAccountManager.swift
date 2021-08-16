@@ -131,11 +131,11 @@ public extension TSAccountManager {
     // * When reachability changes.
     private func updateAccountAttributesIfNecessaryAttempt() -> Promise<Void> {
         guard isRegisteredAndReady else {
-            Logger.info("Aborting not registered and ready.")
+            Logger.info("Aborting; not registered and ready.")
             return Promise.value(())
         }
         guard AppReadiness.isAppReady else {
-            Logger.info("Aborting app is not ready.")
+            Logger.info("Aborting; app is not ready.")
             return Promise.value(())
         }
 
@@ -164,7 +164,7 @@ public extension TSAccountManager {
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
-            Logger.info("Skipping lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
             return false
         }
         guard shouldUpdateAttributes else {
