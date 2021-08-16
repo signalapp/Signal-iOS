@@ -405,7 +405,7 @@ extension ProtocolAddress {
     //            ...
     //            guard let address = address else { throw OWSAssertionError("No recipient address") }
     //            return try ProtocolAddress(from: address, deviceId: deviceId)
-    @available(swift, obsoleted: 5.5, message: "Please swap out commented implementation in SenderKeyStore.swift")
+    @available(swift, obsoleted: 5.6, message: "Please swap out commented implementation in SenderKeyStore.swift")
     static var localAddress: ProtocolAddress? {
         get {
             let tsAccountManager = SSKEnvironment.shared.tsAccountManager
