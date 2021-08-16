@@ -1,7 +1,7 @@
 import WebRTC
 
 final class CallVCV2 : UIViewController {
-    let roomID = "37923672512" // NOTE: You need to change this every time to ensure the room isn't full
+    let roomID = "37923672514" // NOTE: You need to change this every time to ensure the room isn't full
     var room: RoomInfo?
     var socket: WebSocket?
     
@@ -31,22 +31,23 @@ final class CallVCV2 : UIViewController {
     }
     
     func setUpViewHierarchy() {
-        // Create video views
-        let localVideoView = RTCMTLVideoView()
-        localVideoView.contentMode = .scaleAspectFill
+        // Remote video view
         let remoteVideoView = RTCMTLVideoView()
         remoteVideoView.contentMode = .scaleAspectFill
-        // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ localVideoView, remoteVideoView ])
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.alignment = .fill
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.pin(to: view)
-        // Attach video views
-        callManager.attachLocalRenderer(localVideoView)
         callManager.attachRemoteRenderer(remoteVideoView)
+        view.addSubview(remoteVideoView)
+        remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
+        remoteVideoView.pin(to: view)
+        // Local video view
+        let localVideoView = RTCMTLVideoView()
+        localVideoView.contentMode = .scaleAspectFill
+        callManager.attachLocalRenderer(localVideoView)
+        localVideoView.set(.width, to: 80)
+        localVideoView.set(.height, to: 173)
+        view.addSubview(localVideoView)
+        localVideoView.pin(.right, to: .right, of: view, withInset: -Values.largeSpacing)
+        let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom + Values.largeSpacing
+        localVideoView.pin(.bottom, to: .bottom, of: view, withInset: -bottomMargin)
     }
     
     override func viewDidAppear(_ animated: Bool) {
