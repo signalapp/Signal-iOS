@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Dispensar o menu de contexto";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Localização para contornar a censura";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Detalhes da mensagem";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Visualização da mensagem";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Bloquear";

@@ -1343,7 +1343,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Yeni cihaz əlavə et";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Köçürmədən qeydiyyat";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Köçürmə olmadan qeydiyyatdan keç";
 
 /* The title for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Hesabı və mesajları köçür";

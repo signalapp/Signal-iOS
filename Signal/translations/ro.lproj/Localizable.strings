@@ -1013,7 +1013,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notifică întotdeauna";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Fără notificări pe mod silențios";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Nu notifica pe silențios";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Dorești să primești notificări atunci când ești menționat în convorbiri silențioase?";
@@ -3275,7 +3275,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continuă conversația ta cu %@ și partajezi numele și fotografia de profil cu el/ea?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continuă conversația ta cu acest grup și partajezi numele și fotografia de profil cu membrii săi?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continuați conversația cu acest grup și partajați numele și fotografia dvs. cu membrii săi?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Permiteţi lui %@ să vă trimită mesaje și să vă împărtășiți numele și fotografia cu ei? Nu vor ști că le-ai văzut mesajul până nu accepți.";
@@ -3476,7 +3476,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Nu există alte grupuri în comun.";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Alege un contact sau un grup pentru a discuta.";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Alegeți un contact sau un grup pentru a începe o conversație.";
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Bun venit la Signal";

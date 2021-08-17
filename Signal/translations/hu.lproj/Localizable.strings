@@ -146,7 +146,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Válasz";
 
 /* notification body */
-"APN_Message" = "Új üzeneteid érkezhettek";
+"APN_Message" = "Új üzenet érkezett";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal indítási hiba. Kérlek küldj egy hibanapló fájlt a support@signal.org címre, hogy megvizsgálhassuk, mi történt.";
