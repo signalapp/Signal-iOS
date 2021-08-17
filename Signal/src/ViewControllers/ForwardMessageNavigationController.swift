@@ -410,13 +410,9 @@ extension ForwardMessageNavigationController {
                 }
             }
 
-            // TODO: Ideally we would re-filter mentions at the last minute.
-
             // TODO: Ideally we would enqueue all with a single write tranasction.
             return firstly {
                 // Maintain order of interactions.
-                //
-                // TODO: Verify order.
                 let sortedItems = content.allItems.sorted { lhs, rhs in
                     lhs.itemViewModel.interaction.timestamp < rhs.itemViewModel.interaction.timestamp
                 }
