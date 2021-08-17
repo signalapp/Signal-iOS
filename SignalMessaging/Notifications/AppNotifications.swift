@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import Intents
 
 /// There are two primary components in our system notification integration:
 ///
@@ -161,9 +162,9 @@ protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?)
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(messageId: String)
@@ -239,6 +240,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: nil, // TODO INStartCallIntent donation here
                                 sound: nil,
                                 replacingIdentifier: call.localId.uuidString)
         }
@@ -278,6 +280,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: nil, // TODO INStartCallIntent donation here
                                 sound: sound,
                                 replacingIdentifier: call.localId.uuidString)
         }
@@ -310,6 +313,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: nil,
                                 sound: sound,
                                 replacingIdentifier: call.localId.uuidString)
         }
@@ -343,6 +347,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: nil,
                                 sound: sound,
                                 replacingIdentifier: call.localId.uuidString)
         }
@@ -452,6 +457,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
         ]
 
+        var interaction: INInteraction?
+        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: incomingMessage.authorAddress) {
+            let wrapper = INInteraction(intent: intent, response: nil)
+            wrapper.direction = .incoming
+            interaction = wrapper
+        }
+
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
@@ -459,12 +471,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody ?? "",
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: interaction,
                                 sound: sound)
         }
     }
 
     public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
-
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         // Reaction notifications only get displayed if we can
@@ -555,6 +567,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.reactionId: reaction.uniqueId
         ]
 
+        var interaction: INInteraction?
+        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: reaction.reactor) {
+            let wrapper = INInteraction(intent: intent, response: nil)
+            wrapper.direction = .incoming
+            interaction = wrapper
+        }
+
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(
@@ -563,6 +582,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 body: notificationBody,
                 threadIdentifier: thread.uniqueId,
                 userInfo: userInfo,
+                interaction: interaction,
                 sound: sound
             )
         }
@@ -590,6 +610,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: nil, // show ungrouped
                                 userInfo: userInfo,
+                                interaction: nil,
                                 sound: sound)
         }
     }
@@ -612,6 +633,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 userInfo: [
                     AppNotificationUserInfoKey.defaultAction: AppNotificationAction.submitDebugLogs.rawValue
                 ],
+                interaction: nil,
                 sound: self.requestGlobalSound())
         }
     }
@@ -639,6 +661,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: nil, // show ungrouped
                                 userInfo: userInfo,
+                                interaction: nil,
                                 sound: sound)
         }
     }
@@ -693,6 +716,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.messageId: previewableInteraction.uniqueId,
             AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
+        var interaction: INInteraction?
+        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: nil) {
+            let wrapper = INInteraction(intent: intent, response: nil)
+            wrapper.direction = .incoming
+            interaction = wrapper
+        }
 
         transaction.addAsyncCompletionOnMain {
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
@@ -701,6 +730,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
+                                interaction: interaction,
                                 sound: sound)
         }
     }
@@ -714,6 +744,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: nil,
                                 userInfo: [:],
+                                interaction: nil,
                                 sound: self.requestGlobalSound())
         }
     }
