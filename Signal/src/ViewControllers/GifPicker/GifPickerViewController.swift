@@ -113,7 +113,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     var searchErrorView: UILabel?
     var activityIndicator: UIActivityIndicatorView?
     var hasSelectedCell: Bool = false
-    var imageInfos = [GiphyImageInfo]()
+    var imageInfos = [GiphyImageInfo]() {
+        didSet {
+            collectionView.collectionViewLayout.invalidateLayout()
+            collectionView.reloadData()
+        }
+    }
 
     private let kCellReuseIdentifier = "kCellReuseIdentifier"
 
@@ -363,9 +368,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             searchErrorView.isHidden = true
             activityIndicator.isHidden = true
             activityIndicator.stopAnimating()
-
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.reloadData()
         case .noResults:
             self.collectionView.isHidden = true
             noResultsView.isHidden = false
@@ -621,7 +623,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     private func search(query: String) {
-        Logger.info("searching: \(query)")
+        let loggableQueryString = DebugFlags.internalLogging ? query : "(\(query.count) characters)"
+        Logger.info("searching: \(loggableQueryString)")
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil

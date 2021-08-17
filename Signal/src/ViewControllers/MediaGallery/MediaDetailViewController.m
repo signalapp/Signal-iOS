@@ -378,11 +378,8 @@ NS_ASSUME_NONNULL_BEGIN
     // We want a default layout that...
     //
     // * Has the media visually centered.
-    // * If the media content is larger than the screen, it should be
-    //   zoomed to just barely fit.
-    // * If the media content is smaller than the screen, it should
-    //   appear at the "natural" size where its content resolution
-    //   matches screen resolution.
+    // * The media content should be zoomed to just barely fit by default,
+    //   regardless of the content size.
     // * We should be able to safely zoom.
     // * The "min zoom scale" should satisfy the requirements above.
     // * The user should be able to scale in 4x.
@@ -390,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
     // We use constraint-based layout and adjust
     // UIScrollView.minimumZoomScale, etc.
 
-    // Determine the media's aspect ratio and content resolution.
+    // Determine the media's aspect ratio.
     //
     // * mediaView.intrinsicContentSize is most accurate, but
     //   may not be available yet for media that is loaded async.
@@ -425,9 +422,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Find minScale for .scaleAspectFit-style layout.
     CGFloat scaleWidth = scrollViewSize.width / mediaSize.width;
     CGFloat scaleHeight = scrollViewSize.height / mediaSize.height;
-    CGFloat minScale = MIN(1, MIN(scaleWidth, scaleHeight));
+    CGFloat minScale = MIN(scaleWidth, scaleHeight);
 
     // UIScrollView transforms its content.
     // Therefore its subviews operate in a different coordinate system.
