@@ -171,78 +171,57 @@ public class CVSelectionState: NSObject {
 
 // MARK: -
 
+extension CVSelectionState {
+
+    public var selectionCanBeDeleted: Bool {
+        guard !itemMap.isEmpty else {
+            return false
+        }
+        for item in itemMap.values {
+            switch item.interactionType {
+            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
+                return false
+            case .info, .error, .call:
+                break
+            case .incomingMessage, .outgoingMessage:
+                break
+            case .unknown:
+                owsFailDebug("Unknown interaction type.")
+                return false
+            }
+        }
+        return true
+    }
+
+    public var selectionCanBeForwarded: Bool {
+        guard !itemMap.isEmpty else {
+            return false
+        }
+        let maxForwardCount: Int = 32
+        guard itemMap.count <= maxForwardCount else {
+            return false
+        }
+        for item in itemMap.values {
+            switch item.interactionType {
+            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
+                return false
+            case .info, .error, .call:
+                return false
+            case .incomingMessage, .outgoingMessage:
+                break
+            case .unknown:
+                owsFailDebug("Unknown interaction type.")
+                return false
+            }
+        }
+        return true
+    }
+}
+
+// MARK: -
+
 extension ConversationViewController {
 
-    //    public static func canSelect(interaction: TSInteraction,
-    //                                 uiMode: ConversationUIMode) -> Bool {
-    //        switch uiMode {
-    //        case .normal, .search:
-    //            return false
-    //        case .selection:
-    //            switch interaction.interactionType {
-    //            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
-    //                return false
-    //            case .info, .error, .call:
-    //                return true
-    //            case .incomingMessage, .outgoingMessage:
-    //                return true
-    //            case .unknown:
-    //                owsFailDebug("Unknown interaction type.")
-    //                return false
-    //            }
-    //        case .forwarding:
-    //            switch interaction.interactionType {
-    //            case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
-    //                return false
-    //            case .info, .error, .call:
-    //                return false
-    //            case .incomingMessage, .outgoingMessage:
-    //                return true
-    //            case .unknown:
-    //                owsFailDebug("Unknown interaction type.")
-    //                return false
-    //            }
-    //        }
-    //    }
-    //    // TODO:
-    //    let selectionType: CVSelectionType = .allContent
-    //    componentDelegate.selectionState.remove(itemViewModel.interaction.uniqueId,
-    //    selectionType: selectionType)
-    // } else {
-    //    selectionView.isSelected = true
-    //    // TODO:
-    //    let selectionType: CVSelectionType = .allContent
-    //    componentDelegate.selectionState.add(itemViewModel.interaction.uniqueId,
-    //                                         selectionType: selectionType)
-
-    // TODO: Remove from delegate protocol.
-    //    public func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool {
-    //        isMessageSelected(interaction)
-    //    }
-
-    //    public func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-    //        didSelectMessage(itemViewModel)
-    //    }
-    //
-    //    public func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {
-    //        didDeselectMessage(itemViewModel)
-    //    }
-
-    //    public func addToSelection(_ interactionId: String) {
-    //        cellSelection.add(interactionId)
-    //        // TODO: Update cells/selection view?
-    //    }
-    //
-    //    public func removeFromSelection(_ interactionId: String) {
-    //        cellSelection.remove(interactionId)
-    //        // TODO: Update cells/selection view?
-    //    }
-    //
-    //    public func isMessageSelected(_ interaction: TSInteraction) -> Bool {
-    //        cellSelection.isSelected(interaction.uniqueId)
-    //    }
-    //    fileprivate var selectedInteractionIds: Set<String> { cellSelection.selectedInteractionIds }
-    //
     //    func clearSelection() {
     //        cellSelection.reset()
     //        clearCollectionViewSelection()
@@ -264,22 +243,40 @@ extension ConversationViewController {
     //    }
 
     public func buildSelectionToolbar() -> MessageActionsToolbar {
-        let deleteSelectedMessages = MessageAction(
+        let deleteMessagesAction = MessageAction(
             .delete,
             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_SELECTED_MESSAGES",
                                                   comment: "accessibility label"),
             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action",
-                                                                    name: "delete_selected_messages"), contextMenuTitle: "Delete Selected", contextMenuAttributes: [],
+                                                                    name: "delete_selected_messages"),
+            contextMenuTitle: "Delete Selected",
+            contextMenuAttributes: [],
             block: { [weak self] _ in self?.didTapDeleteSelectedItems() }
         )
+        let forwardMessagesAction = MessageAction(
+            .forward,
+            accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES",
+                                                  comment: "Action sheet button title"),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action",
+                                                                    name: "forward_selected_messages"),
+            contextMenuTitle: "Forward Selected",
+            contextMenuAttributes: [],
+            block: { [weak self] _ in self?.didTapForwardSelectedItems() }
+        )
 
-        let toolbar = MessageActionsToolbar(actions: [deleteSelectedMessages])
+        let toolbarMode = MessageActionsToolbar.Mode.selection(deleteMessagesAction: deleteMessagesAction,
+                                                               forwardMessagesAction: forwardMessagesAction)
+        let toolbar = MessageActionsToolbar(mode: toolbarMode)
         toolbar.actionDelegate = self
         return toolbar
     }
 
     func didTapDeleteSelectedItems() {
         let selectedInteractionIds = self.selectionState.multiSelectSelection
+        guard !selectedInteractionIds.isEmpty else {
+            owsFailDebug("Invalid selection.")
+            return
+        }
 
         let message: String
         if selectedInteractionIds.count > 1 {
@@ -325,18 +322,100 @@ extension ConversationViewController {
         }
     }
 
+    func didTapForwardSelectedItems() {
+        let selectedInteractionIds = self.selectionState.multiSelectSelection
+        guard !selectedInteractionIds.isEmpty else {
+            owsFailDebug("Invalid selection.")
+            return
+        }
+        do {
+            let itemViewModels = try self.buildForwardItems(interactionIds: selectedInteractionIds)
+            ForwardMessageNavigationController.present(for: itemViewModels, from: self, delegate: self)
+        } catch {
+            if let forwardError = error as? ForwardError {
+                let message: String
+                switch forwardError {
+                case .missingInteraction:
+                    if selectedInteractionIds.count > 1 {
+                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N",
+                                                    comment: "Error indicating that messages could not be forwarded.")
+                    } else {
+                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1",
+                                                    comment: "Error indicating that a message could not be forwarded.")
+                    }
+                case .missingThread, .invalidInteraction:
+                    owsFailDebug("Error: \(error).")
+
+                    if selectedInteractionIds.count > 1 {
+                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_INVALID_N",
+                                                    comment: "Error indicating that messages could not be forwarded.")
+                    } else {
+                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_INVALID_1",
+                                                    comment: "Error indicating that a message could not be forwarded.")
+                    }
+                }
+                OWSActionSheets.showErrorAlert(message: message)
+            } else {
+                owsFailDebug("Error: \(error).")
+            }
+        }
+    }
+
+    private enum ForwardError: Error {
+        case missingInteraction
+        case missingThread
+        case invalidInteraction
+    }
+
+    private func buildForwardItems(interactionIds: Set<String>) throws -> [CVItemViewModelImpl] {
+        try databaseStorage.read { transaction in
+            var items = [CVItemViewModelImpl]()
+            for interactionId in interactionIds {
+                guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
+                                                               transaction: transaction) else {
+                    throw ForwardError.missingInteraction
+                }
+                guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
+                                                     transaction: transaction) else {
+                    owsFailDebug("Missing thread.")
+                    throw ForwardError.missingThread
+                }
+                guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                                          thread: thread,
+                                                                          containerView: self.view,
+                                                                          transaction: transaction) else {
+                    throw ForwardError.invalidInteraction
+                }
+                let item = CVItemViewModelImpl(renderItem: renderItem)
+                items.append(item)
+            }
+            return items
+        }
+    }
+
     public func updateSelectionButtons() {
         guard let selectionToolbar = self.selectionToolbar else {
             owsFailDebug("Missing selectionToolbar.")
             return
         }
-        guard let deleteButton = selectionToolbar.buttonItem(for: .delete) else {
+
+        if let deleteButton = selectionToolbar.buttonItem(for: .delete) {
+            let hasMultiSelectSelection = (uiMode == .selection &&
+                                            selectionState.selectionCanBeDeleted)
+            deleteButton.isEnabled = hasMultiSelectSelection
+        } else {
             owsFailDebug("deleteButton was unexpectedly nil")
             return
         }
-        let hasMultiSelectSelection = (uiMode == .selection &&
-                                        !selectionState.multiSelectSelection.isEmpty)
-        deleteButton.isEnabled = hasMultiSelectSelection
+
+        if let forwardButton = selectionToolbar.buttonItem(for: .forward) {
+            let hasMultiSelectSelection = (uiMode == .selection &&
+                                            selectionState.selectionCanBeForwarded)
+            forwardButton.isEnabled = hasMultiSelectSelection
+        } else {
+            owsFailDebug("forwardButton was unexpectedly nil")
+            return
+        }
     }
 
     // TODO:

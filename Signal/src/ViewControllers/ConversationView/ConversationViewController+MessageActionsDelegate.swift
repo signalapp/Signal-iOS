@@ -82,7 +82,7 @@ extension ConversationViewController: MessageActionsDelegate {
 
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl) {
         // TODO: Modify to support partial/multiple forwards.
-        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        ForwardMessageNavigationController.present(for: [itemViewModel], from: self, delegate: self)
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {

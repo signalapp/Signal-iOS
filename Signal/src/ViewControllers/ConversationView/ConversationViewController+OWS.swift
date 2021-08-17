@@ -218,16 +218,11 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl, threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+                                              recipientThreads: [TSThread]) {
         self.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-
-            guard let thread = threads.first,
-                  thread.uniqueId != self.thread.uniqueId else {
-                return
-            }
-
-            SignalApp.shared().presentConversation(for: thread, animated: true)
+            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
+                                                                                          recipientThreads: recipientThreads)
         }
     }
 

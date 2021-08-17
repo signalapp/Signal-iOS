@@ -411,7 +411,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        ForwardMessageNavigationController.present(for: [itemViewModel], from: self, delegate: self)
     }
 
     @objc
@@ -907,29 +907,15 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 // MARK: -
 
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
-                                              threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+                                              recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            self.didForwardMessage(itemViewModel: itemViewModel, threads: threads)
+            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
+                                                                                          recipientThreads: recipientThreads)
         }
     }
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
-    }
-
-    func didForwardMessage(itemViewModel: CVItemViewModelImpl,
-                           threads: [TSThread]) {
-        guard threads.count == 1 else {
-            return
-        }
-        guard let thread = threads.first else {
-            owsFailDebug("Missing thread.")
-            return
-        }
-        guard thread.uniqueId != itemViewModel.interaction.uniqueThreadId else {
-            return
-        }
-        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

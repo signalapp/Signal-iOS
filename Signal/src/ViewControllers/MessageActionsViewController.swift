@@ -102,7 +102,9 @@ public class MessageActionsViewController: UIViewController {
     init(itemViewModel: CVItemViewModelImpl, focusedView: UIView, actions: [MessageAction]) {
         self.itemViewModel = itemViewModel
         self.focusedView = focusedView
-        self.actionsToolbar = MessageActionsToolbar(actions: actions)
+
+        let toolbarMode = MessageActionsToolbar.Mode.normal(messagesActions: actions)
+        self.actionsToolbar = MessageActionsToolbar(mode: toolbarMode)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -438,14 +440,19 @@ public class MessageActionsToolbar: UIToolbar {
 
     weak var actionDelegate: MessageActionsToolbarDelegate?
 
-    let actions: [MessageAction]
+    enum Mode {
+        case normal(messagesActions: [MessageAction])
+        case selection(deleteMessagesAction: MessageAction,
+                       forwardMessagesAction: MessageAction)
+    }
+    private let mode: Mode
 
     deinit {
         Logger.verbose("")
     }
 
-    required init(actions: [MessageAction]) {
-        self.actions = actions
+    required init(mode: Mode) {
+        self.mode = mode
 
         super.init(frame: .zero)
 
@@ -466,27 +473,32 @@ public class MessageActionsToolbar: UIToolbar {
 
     // MARK: -
 
-    private var itemToAction = [UIBarButtonItem: MessageAction]()
-    private var actionToItem = [MessageAction: UIBarButtonItem]()
     private func buildItems() {
+        switch mode {
+        case .normal(let messagesActions):
+            buildNormalItems(messagesActions: messagesActions)
+        case .selection(let deleteMessagesAction, let forwardMessagesAction):
+            buildSelectionItems(deleteMessagesAction: deleteMessagesAction,
+                                forwardMessagesAction: forwardMessagesAction)
+        }
+    }
+
+    var actionItems = [MessageActionsToolbarButton]()
+
+    private func buildNormalItems(messagesActions: [MessageAction]) {
         var newItems = [UIBarButtonItem]()
 
-        for action in actions {
-            let actionItem = UIBarButtonItem(
-                image: action.image.withRenderingMode(.alwaysTemplate),
-                style: .plain,
-                target: self,
-                action: #selector(didTapItem(_:))
-            )
+        var actionItems = [MessageActionsToolbarButton]()
+        for action in messagesActions {
+            if !newItems.isEmpty {
+                newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+            }
+
+            let actionItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: action)
             actionItem.tintColor = Theme.primaryIconColor
             actionItem.accessibilityLabel = action.accessibilityLabel
             newItems.append(actionItem)
-            itemToAction[actionItem] = action
-            actionToItem[action] = actionItem
-
-            if action != actions.last {
-                newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
-            }
+            actionItems.append(actionItem)
         }
 
         // If we only have a single button, center it.
@@ -496,22 +508,85 @@ public class MessageActionsToolbar: UIToolbar {
         }
 
         items = newItems
+        self.actionItems = actionItems
+    }
+
+    private func buildSelectionItems(deleteMessagesAction: MessageAction,
+                                     forwardMessagesAction: MessageAction) {
+
+        let deleteItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: deleteMessagesAction)
+        let forwardItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: forwardMessagesAction)
+
+        let selectedCount: Int = 0
+        let labelTitle: String
+        if selectedCount == 0 {
+            labelTitle = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_0",
+                                           comment: "Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected.")
+        } else if selectedCount == 1 {
+            labelTitle = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_1",
+                                           comment: "Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected.")
+        } else {
+            let labelFormat = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT",
+                                                comment: "Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}.")
+            labelTitle = String(format: labelFormat, OWSFormat.formatInt(selectedCount))
+        }
+        let labelItem = UIBarButtonItem(title: labelTitle, style: .plain, target: nil, action: nil)
+
+        var newItems = [UIBarButtonItem]()
+        newItems.append(deleteItem)
+        newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        newItems.append(labelItem)
+        newItems.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        newItems.append(forwardItem)
+
+        items = newItems
+        self.actionItems = [ deleteItem, forwardItem ]
     }
 
     public func buttonItem(for actionType: MessageAction.MessageActionType) -> UIBarButtonItem? {
-        guard let action = (actions.first { $0.actionType == actionType }) else {
-            return nil
+        for actionItem in actionItems {
+            if actionItem.messageAction.actionType == actionType {
+                return actionItem
+            }
         }
-        assert(actionToItem[action] != nil)
-        return actionToItem[action]
+        owsFailDebug("Missing action item: \(actionType).")
+        return nil
+    }
+}
+
+// MARK: -
+
+class MessageActionsToolbarButton: UIBarButtonItem {
+    private weak var actionsToolbar: MessageActionsToolbar?
+    fileprivate let messageAction: MessageAction
+
+    required init(actionsToolbar: MessageActionsToolbar,
+                  messageAction: MessageAction) {
+        self.actionsToolbar = actionsToolbar
+        self.messageAction = messageAction
+
+        super.init(image: messageAction.image.withRenderingMode(.alwaysTemplate),
+                   style: .plain,
+                   target: nil,
+                   action: nil)
+        self.target = self
+        self.action = #selector(didTapItem(_:))
+        self.tintColor = Theme.primaryIconColor
+        self.accessibilityLabel = messageAction.accessibilityLabel
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     @objc
-    func didTapItem(_ item: UIBarButtonItem) {
-        guard let action = itemToAction[item] else {
-            return owsFailDebug("missing action for item")
-        }
+    private func didTapItem(_ item: UIBarButtonItem) {
+        AssertIsOnMainThread()
 
-        actionDelegate?.messageActionsToolbar(self, executedAction: action)
+        guard let actionsToolbar = actionsToolbar,
+              let actionDelegate = actionsToolbar.actionDelegate else {
+            return
+        }
+        actionDelegate.messageActionsToolbar(actionsToolbar, executedAction: messageAction)
     }
 }

@@ -6,8 +6,8 @@ import PromiseKit
 
 @objc
 public protocol ForwardMessageDelegate: AnyObject {
-    func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
-                                       threads: [TSThread])
+    func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+                                       recipientThreads: [TSThread])
     func forwardMessageFlowDidCancel()
 }
 
@@ -19,11 +19,59 @@ class ForwardMessageNavigationController: OWSNavigationController {
     @objc
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
-    var approvedAttachments: [SignalAttachment]?
-    var approvedContactShare: ContactShareViewModel?
-    var approvalMessageBody: MessageBody?
-    var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
+    fileprivate struct Item {
+        let itemViewModel: CVItemViewModelImpl
+        let attachments: [SignalAttachment]?
+        let contactShare: ContactShareViewModel?
+        let messageBody: MessageBody?
+        let linkPreviewDraft: OWSLinkPreviewDraft?
 
+        init(itemViewModel: CVItemViewModelImpl,
+             attachments: [SignalAttachment]? = nil,
+             contactShare: ContactShareViewModel? = nil,
+             messageBody: MessageBody? = nil,
+             linkPreviewDraft: OWSLinkPreviewDraft? = nil) {
+            self.itemViewModel = itemViewModel
+            self.attachments = attachments
+            self.contactShare = contactShare
+            self.messageBody = messageBody
+            self.linkPreviewDraft = linkPreviewDraft
+        }
+
+        func with(messageBody: MessageBody?) -> Item {
+            Item(itemViewModel: self.itemViewModel,
+                 attachments: self.attachments,
+                 contactShare: self.contactShare,
+                 messageBody: messageBody,
+                 linkPreviewDraft: self.linkPreviewDraft)
+        }
+
+        func with(attachments: [SignalAttachment]) -> Item {
+            Item(itemViewModel: self.itemViewModel,
+                 attachments: attachments,
+                 contactShare: self.contactShare,
+                 messageBody: self.messageBody,
+                 linkPreviewDraft: self.linkPreviewDraft)
+        }
+
+        func with(contactShare: ContactShareViewModel) -> Item {
+            Item(itemViewModel: self.itemViewModel,
+                 attachments: self.attachments,
+                 contactShare: contactShare,
+                 messageBody: self.messageBody,
+                 linkPreviewDraft: self.linkPreviewDraft)
+        }
+
+        func with(linkPreviewDraft: OWSLinkPreviewDraft?) -> Item {
+            Item(itemViewModel: self.itemViewModel,
+                 attachments: self.attachments,
+                 contactShare: self.contactShare,
+                 messageBody: self.messageBody,
+                 linkPreviewDraft: linkPreviewDraft)
+        }
+    }
+
+    // TODO:
     var mentionCandidates: [SignalServiceAddress] = []
     var selectedConversations: [ConversationItem] = [] {
         didSet {
@@ -31,50 +79,145 @@ class ForwardMessageNavigationController: OWSNavigationController {
         }
     }
 
-    private let itemViewModel: CVItemViewModelImpl
+    fileprivate enum Content {
+        case single(item: Item)
+        case multiple(items: [Item])
 
-    @objc
-    public init(itemViewModel: CVItemViewModelImpl) {
-        self.itemViewModel = itemViewModel
-
-        if let displayableBodyText = itemViewModel.displayableBodyText {
-           let attributedText = displayableBodyText.fullAttributedText
-            self.approvalMessageBody = MessageBody(attributedString: attributedText)
+        var singleItem: Item? {
+            switch self {
+            case .single(let item):
+                return item
+            case .multiple:
+                owsFailDebug("Single item requested in multiple item mode.")
+                return nil
+            }
         }
+
+        var allItems: [Item] {
+            switch self {
+            case .single(let item):
+                return [item]
+            case .multiple(let items):
+                return items
+            }
+        }
+
+        static func build(itemViewModels: [CVItemViewModelImpl]) -> Content {
+            if itemViewModels.count == 1,
+               let itemViewModel = itemViewModels.first {
+                if let displayableBodyText = itemViewModel.displayableBodyText {
+                    let attributedText = displayableBodyText.fullAttributedText
+                    let messageBody = MessageBody(attributedString: attributedText)
+                    let item = Item(itemViewModel: itemViewModel, messageBody: messageBody)
+                    return .single(item: item)
+                } else {
+                    let item = Item(itemViewModel: itemViewModel)
+                    return .single(item: item)
+                }
+            } else {
+                let items = itemViewModels.map { Item(itemViewModel: $0) }
+                return .multiple(items: items)
+            }
+        }
+
+        var needsApproval: Bool {
+            switch self {
+            case .single(let item):
+                let itemViewModel = item.itemViewModel
+                guard ![.audio,
+                        .genericAttachment,
+                        .stickerMessage].contains(itemViewModel.messageCellType) else { return false }
+
+                let isBorderless: Bool = {
+                    let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
+                    guard !bodyMediaAttachmentStreams.isEmpty else {
+                        return false
+                    }
+
+                    return bodyMediaAttachmentStreams.count == 1 && bodyMediaAttachmentStreams.first?.isBorderless == true
+                }()
+
+                guard !isBorderless else { return false }
+
+                return true
+            case .multiple:
+                return false
+            }
+        }
+    }
+
+    fileprivate var content: Content
+
+    private init(content: Content) {
+        self.content = content
 
         super.init()
 
+        performStep(.selectRecipients)
+    }
+
+    @objc
+    public class func present(for itemViewModels: [CVItemViewModelImpl],
+                              from fromViewController: UIViewController,
+                              delegate: ForwardMessageDelegate) {
+        let modal = ForwardMessageNavigationController(content: .build(itemViewModels: itemViewModels))
+        modal.forwardMessageDelegate = delegate
+        fromViewController.presentFormSheet(modal, animated: true)
+    }
+
+    fileprivate enum Step {
+        case selectRecipients
+        case approve
+        case send
+
+        var nextStep: Step {
+            switch self {
+            case .selectRecipients:
+                return .approve
+            case .approve:
+                return .send
+            case .send:
+                owsFailDebug("There is no next step.")
+                return .send
+            }
+        }
+    }
+
+    private func performStep(_ step: Step) {
+        switch step {
+        case .selectRecipients:
+            selectRecipientsStep()
+        case .approve:
+            approveStep()
+        case .send:
+            sendStep()
+        }
+    }
+
+    private func selectRecipientsStep() {
         let pickerVC = ConversationPickerViewController()
         pickerVC.delegate = self
 
         setViewControllers([
             pickerVC
-            ], animated: false)
+        ], animated: false)
     }
 
-    @objc
-    public class func present(for itemViewModel: CVItemViewModelImpl,
-                              from fromViewController: UIViewController,
-                              delegate: ForwardMessageDelegate) {
-        let modal = ForwardMessageNavigationController(itemViewModel: itemViewModel)
-        modal.forwardMessageDelegate = delegate
-        fromViewController.presentFormSheet(modal, animated: true)
-    }
 }
 
 // MARK: - Approval
 
 extension ForwardMessageNavigationController {
 
-    func approve() {
-        guard needsApproval else {
-            // Skip approval for these message types.
-            send()
-            return
-        }
-
+    func approveStep() {
         do {
-            try showApprovalUI()
+            if content.needsApproval,
+               let item = content.singleItem {
+                try showApprovalUI(item: item)
+            } else {
+                // Skip approval for these message types.
+                try autoApproveContent()
+            }
         } catch {
             owsFailDebug("Error: \(error)")
 
@@ -82,29 +225,12 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    private var needsApproval: Bool {
-        guard ![.audio,
-                 .genericAttachment,
-                 .stickerMessage].contains(itemViewModel.messageCellType) else { return false }
+    private func showApprovalUI(item: Item) throws {
+        let itemViewModel = item.itemViewModel
 
-        guard !isBorderless else { return false }
-
-        return true
-    }
-
-    private var isBorderless: Bool {
-        let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
-        guard !bodyMediaAttachmentStreams.isEmpty else {
-            return false
-        }
-
-        return bodyMediaAttachmentStreams.count == 1 && bodyMediaAttachmentStreams.first?.isBorderless == true
-    }
-
-    func showApprovalUI() throws {
         switch itemViewModel.messageCellType {
         case .textOnlyMessage:
-            guard let body = approvalMessageBody,
+            guard let body = item.messageBody,
                 body.text.count > 0 else {
                     throw OWSAssertionError("Missing body.")
             }
@@ -143,12 +269,53 @@ extension ForwardMessageNavigationController {
                                                                           sendButtonImageName: sendButtonImageName,
                                                                           attachmentApprovalItems: attachmentApprovalItems)
             approvalViewController.approvalDelegate = self
-            approvalViewController.messageBody = approvalMessageBody
+            approvalViewController.messageBody = item.messageBody
 
             pushViewController(approvalViewController, animated: true)
         case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
              .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             throw OWSAssertionError("Invalid message type.")
+        }
+    }
+
+    private func autoApproveContent() throws {
+        let items = try content.allItems.map { try autoApprove(item: $0) }
+        if items.count == 1,
+           let item = items.first {
+            self.content = .single(item: item)
+        } else {
+            self.content = .multiple(items: items)
+        }
+        performStep(Step.approve.nextStep)
+    }
+
+    private func autoApprove(item: Item) throws -> Item {
+        let itemViewModel = item.itemViewModel
+        switch itemViewModel.messageCellType {
+        case .textOnlyMessage:
+            return item
+        case .contactShare:
+            guard let oldContactShare = itemViewModel.contactShare else {
+                return item
+            }
+            let newContactShare = oldContactShare.copyForResending()
+            return item.with(contactShare: newContactShare)
+        case .audio,
+             .genericAttachment,
+             .stickerMessage:
+            return item
+        case .bodyMedia:
+            let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
+            guard !bodyMediaAttachmentStreams.isEmpty else {
+                throw OWSAssertionError("Missing bodyMediaAttachmentStreams.")
+            }
+            let signalAttachments = try bodyMediaAttachmentStreams.map { attachmentStream in
+                try attachmentStream.cloneAsSignalAttachment()
+            }
+            return item.with(attachments: signalAttachments)
+        case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
+             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+            return item
         }
     }
 }
@@ -157,7 +324,7 @@ extension ForwardMessageNavigationController {
 
 extension ForwardMessageNavigationController {
 
-    func send() {
+    func sendStep() {
         do {
             try tryToSend()
         } catch {
@@ -254,8 +421,9 @@ extension ForwardMessageNavigationController {
                                                           approvalMessageBody: self.approvalMessageBody,
                                                           approvedAttachments: approvedAttachments)
                 }.done { threads in
-                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModel: self.itemViewModel,
-                                                                               threads: threads)
+                    let itemViewModels = content.allItems.map { $0.itemViewModel }
+                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
+                                                                               recipientThreads: threads)
                 }.catch { error in
                     owsFailDebug("Error: \(error)")
                     // TODO: Do we need to call a delegate method?
@@ -310,8 +478,9 @@ extension ForwardMessageNavigationController {
                 ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
             }
 
-            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModel: self.itemViewModel,
-                                                                       threads: threads)
+            let itemViewModels = content.allItems.map { $0.itemViewModel }
+            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
+                                                                       recipientThreads: threads)
         }.catch { error in
             owsFailDebug("Error: \(error)")
             // TODO: Do we need to call a delegate methoad?
@@ -365,12 +534,12 @@ extension ForwardMessageNavigationController {
 
 extension ForwardMessageNavigationController: ConversationPickerDelegate {
     var selectedConversationsForConversationPicker: [ConversationItem] {
-        return selectedConversations
+        selectedConversations
     }
 
     func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
                             didSelectConversation conversation: ConversationItem) {
-        self.selectedConversations.append(conversation)
+        selectedConversations.append(conversation)
     }
 
     func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
@@ -381,11 +550,11 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
-        approve()
+        performStep(Step.selectRecipients.nextStep)
     }
 
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
-        return true
+        true
     }
 
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -393,20 +562,24 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
-        return needsApproval ? .next : .send
+        content.needsApproval ? .next : .send
     }
 }
 
 // MARK: -
 
 extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
+    func textApproval(_ textApproval: TextApprovalViewController,
+                      didApproveMessage messageBody: MessageBody?,
+                      linkPreviewDraft: OWSLinkPreviewDraft?) {
         assert(messageBody?.text.count ?? 0 > 0)
 
-        approvalMessageBody = messageBody
-        approvalLinkPreviewDraft = linkPreviewDraft
+        guard let item = content.singleItem else {
+            return
+        }
+        self.content = .single(item: item.with(messageBody: messageBody).with(linkPreviewDraft: linkPreviewDraft))
 
-        send()
+        performStep(Step.approve.nextStep)
     }
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {
@@ -435,9 +608,12 @@ extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate
 extension ForwardMessageNavigationController: ContactShareApprovalViewControllerDelegate {
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didApproveContactShare contactShare: ContactShareViewModel) {
-        approvedContactShare = contactShare
+        guard let item = content.singleItem else {
+            return
+        }
+        self.content = .single(item: item.with(contactShare: contactShare))
 
-        send()
+        performStep(Step.approve.nextStep)
     }
 
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
@@ -471,18 +647,25 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
-        self.approvalMessageBody = newMessageBody
+        guard let item = content.singleItem else {
+            return
+        }
+        self.content = .single(item: item.with(messageBody: newMessageBody))
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
         // We can ignore this event.
     }
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?) {
-        self.approvedAttachments = attachments
-        self.approvalMessageBody = messageBody
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
+                            didApproveAttachments attachments: [SignalAttachment],
+                            messageBody: MessageBody?) {
+        guard let item = content.singleItem else {
+            return
+        }
+        self.content = .single(item: item.with(messageBody: messageBody).with(attachments: attachments))
 
-        send()
+        performStep(ForwardMessageNavigationController.Step.approve.nextStep)
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
@@ -533,5 +716,27 @@ extension TSAttachmentStream {
         signalAttachment.isBorderless = isBorderless
         signalAttachment.isLoopingVideo = isLoopingVideo
         return signalAttachment
+    }
+}
+
+// MARK: -
+
+extension ForwardMessageNavigationController {
+    public static func presentConversationAfterForwardIfNecessary(itemViewModels: [CVItemViewModelImpl],
+                                                                  recipientThreads: [TSThread]) {
+        let srcThreadIds = Set(itemViewModels.compactMap { itemViewModel in
+            itemViewModel.interaction.uniqueThreadId
+        })
+        let dstThreadIds = Set(recipientThreads.compactMap { thread in
+            thread.uniqueId
+        })
+        // If the user forwarded to just one recipient thread, and it's different from
+        // the current thread, navigate to the recipient thread.
+        guard srcThreadIds != dstThreadIds,
+              dstThreadIds.count == 1,
+              let thread = recipientThreads.first else {
+            return
+        }
+        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }
