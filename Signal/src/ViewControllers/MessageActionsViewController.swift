@@ -545,7 +545,8 @@ public class MessageActionsToolbar: UIToolbar {
 
     public func buttonItem(for actionType: MessageAction.MessageActionType) -> UIBarButtonItem? {
         for actionItem in actionItems {
-            if actionItem.messageAction.actionType == actionType {
+            if let messageAction = actionItem.messageAction,
+               messageAction.actionType == actionType {
                 return actionItem
             }
         }
@@ -558,17 +559,20 @@ public class MessageActionsToolbar: UIToolbar {
 
 class MessageActionsToolbarButton: UIBarButtonItem {
     private weak var actionsToolbar: MessageActionsToolbar?
-    fileprivate let messageAction: MessageAction
+    fileprivate var messageAction: MessageAction?
 
-    required init(actionsToolbar: MessageActionsToolbar,
-                  messageAction: MessageAction) {
+    required override init() {
+        super.init()
+    }
+
+    required init(actionsToolbar: MessageActionsToolbar, messageAction: MessageAction) {
         self.actionsToolbar = actionsToolbar
         self.messageAction = messageAction
 
-        super.init(image: messageAction.image.withRenderingMode(.alwaysTemplate),
-                   style: .plain,
-                   target: nil,
-                   action: nil)
+        super.init()
+
+        self.image = messageAction.image.withRenderingMode(.alwaysTemplate)
+        self.style = .plain
         self.target = self
         self.action = #selector(didTapItem(_:))
         self.tintColor = Theme.primaryIconColor
@@ -583,7 +587,8 @@ class MessageActionsToolbarButton: UIBarButtonItem {
     private func didTapItem(_ item: UIBarButtonItem) {
         AssertIsOnMainThread()
 
-        guard let actionsToolbar = actionsToolbar,
+        guard let messageAction = messageAction,
+              let actionsToolbar = actionsToolbar,
               let actionDelegate = actionsToolbar.actionDelegate else {
             return
         }

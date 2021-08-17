@@ -95,19 +95,18 @@ class ForwardMessageNavigationController: OWSNavigationController {
         }
 
         static func build(itemViewModels: [CVItemViewModelImpl]) -> Content {
-            if itemViewModels.count == 1,
-               let itemViewModel = itemViewModels.first {
+            let items: [Item] = itemViewModels.map { itemViewModel in
                 if let displayableBodyText = itemViewModel.displayableBodyText {
                     let attributedText = displayableBodyText.fullAttributedText
                     let messageBody = MessageBody(attributedString: attributedText)
-                    let item = Item(itemViewModel: itemViewModel, messageBody: messageBody)
-                    return .single(item: item)
+                    return Item(itemViewModel: itemViewModel, messageBody: messageBody)
                 } else {
-                    let item = Item(itemViewModel: itemViewModel)
-                    return .single(item: item)
+                    return Item(itemViewModel: itemViewModel)
                 }
+            }
+            if items.count == 1, let item = items.first {
+                return .single(item: item)
             } else {
-                let items = itemViewModels.map { Item(itemViewModel: $0) }
                 return .multiple(items: items)
             }
         }
@@ -168,8 +167,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         private static func mentionCandidates(conversationItem: ConversationItem,
                                               thread: TSThread,
                                               transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-            AssertIsOnMainThread()
-
             guard let groupThread = thread as? TSGroupThread,
                   Mention.threadAllowsMentionSend(groupThread) else {
                 return []
@@ -397,6 +394,9 @@ extension ForwardMessageNavigationController {
                 }
             }
 
+            // TODO: Ideally we would re-filter mentions at the last minute.
+            // TODO: Verify that messages have not disappeared.
+
             // TODO: Ideally we would enqueue all with a single write tranasction.
             return firstly {
                 // Maintain order of interactions.
@@ -417,7 +417,8 @@ extension ForwardMessageNavigationController {
             }
         }.catch(on: .main) { error in
             owsFailDebug("Error: \(error)")
-            // TODO: Show error?
+
+            Self.showAlertForForwardError(error: error, forwardedInteractionCount: content.allItems.count)
         }
     }
 
@@ -800,6 +801,7 @@ public enum ForwardError: Error {
 // MARK: -
 
 extension ForwardMessageNavigationController {
+
     public static func showAlertForForwardError(error: Error,
                                                 forwardedInteractionCount: Int) {
         let genericErrorMessage = (forwardedInteractionCount > 1
