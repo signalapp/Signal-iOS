@@ -161,7 +161,7 @@ extension Sequence where Element: RemoteDeviceState {
     /// Members that are presenting are always put at the top of the list.
     var sortedByAddedTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.presenting != rhs.presenting {
+            if lhs.presenting ?? false != rhs.presenting ?? false {
                 return lhs.presenting ?? false
             } else if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
                 return lhs.mediaKeysReceived
@@ -177,7 +177,7 @@ extension Sequence where Element: RemoteDeviceState {
     /// Members that are presenting are always put at the top of the list.
     var sortedBySpeakerTime: [RemoteDeviceState] {
         return sorted { lhs, rhs in
-            if lhs.presenting != rhs.presenting {
+            if lhs.presenting ?? false != rhs.presenting ?? false {
                 return lhs.presenting ?? false
             } else if lhs.mediaKeysReceived != rhs.mediaKeysReceived {
                 return lhs.mediaKeysReceived
