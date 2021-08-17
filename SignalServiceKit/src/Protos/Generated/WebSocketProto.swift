@@ -15,7 +15,7 @@ public enum WebSocketProtoError: Error {
 // MARK: - WebSocketProtoWebSocketRequestMessage
 
 @objc
-public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable {
+public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - WebSocketProtoWebSocketRequestMessageBuilder
 
@@ -211,6 +211,26 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -238,7 +258,7 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
 // MARK: - WebSocketProtoWebSocketResponseMessage
 
 @objc
-public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable {
+public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - WebSocketProtoWebSocketResponseMessageBuilder
 
@@ -431,6 +451,26 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -483,7 +523,7 @@ private func WebSocketProtoWebSocketMessageTypeUnwrap(_ value: WebSocketProtoWeb
 // MARK: - WebSocketProtoWebSocketMessage
 
 @objc
-public class WebSocketProtoWebSocketMessage: NSObject, Codable {
+public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - WebSocketProtoWebSocketMessageBuilder
 
@@ -644,6 +684,26 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc

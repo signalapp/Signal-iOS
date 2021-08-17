@@ -55,7 +55,7 @@ private func SSKProtoEnvelopeTypeUnwrap(_ value: SSKProtoEnvelopeType) -> Signal
 // MARK: - SSKProtoEnvelope
 
 @objc
-public class SSKProtoEnvelope: NSObject, Codable {
+public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoEnvelopeBuilder
 
@@ -433,6 +433,26 @@ public class SSKProtoEnvelope: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -482,7 +502,7 @@ private func SSKProtoTypingMessageActionUnwrap(_ value: SSKProtoTypingMessageAct
 // MARK: - SSKProtoTypingMessage
 
 @objc
-public class SSKProtoTypingMessage: NSObject, Codable {
+public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoTypingMessageBuilder
 
@@ -644,6 +664,26 @@ public class SSKProtoTypingMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -671,7 +711,7 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 // MARK: - SSKProtoContent
 
 @objc
-public class SSKProtoContent: NSObject, Codable {
+public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoContentBuilder
 
@@ -958,6 +998,26 @@ public class SSKProtoContent: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1007,7 +1067,7 @@ private func SSKProtoCallMessageOfferTypeUnwrap(_ value: SSKProtoCallMessageOffe
 // MARK: - SSKProtoCallMessageOffer
 
 @objc
-public class SSKProtoCallMessageOffer: NSObject, Codable {
+public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageOfferBuilder
 
@@ -1195,6 +1255,26 @@ public class SSKProtoCallMessageOffer: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1222,7 +1302,7 @@ extension SSKProtoCallMessageOffer.SSKProtoCallMessageOfferBuilder {
 // MARK: - SSKProtoCallMessageAnswer
 
 @objc
-public class SSKProtoCallMessageAnswer: NSObject, Codable {
+public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageAnswerBuilder
 
@@ -1382,6 +1462,26 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1409,7 +1509,7 @@ extension SSKProtoCallMessageAnswer.SSKProtoCallMessageAnswerBuilder {
 // MARK: - SSKProtoCallMessageIceUpdate
 
 @objc
-public class SSKProtoCallMessageIceUpdate: NSObject, Codable {
+public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageIceUpdateBuilder
 
@@ -1612,6 +1712,26 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1639,7 +1759,7 @@ extension SSKProtoCallMessageIceUpdate.SSKProtoCallMessageIceUpdateBuilder {
 // MARK: - SSKProtoCallMessageBusy
 
 @objc
-public class SSKProtoCallMessageBusy: NSObject, Codable {
+public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageBusyBuilder
 
@@ -1747,6 +1867,26 @@ public class SSKProtoCallMessageBusy: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1805,7 +1945,7 @@ private func SSKProtoCallMessageHangupTypeUnwrap(_ value: SSKProtoCallMessageHan
 // MARK: - SSKProtoCallMessageHangup
 
 @objc
-public class SSKProtoCallMessageHangup: NSObject, Codable {
+public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageHangupBuilder
 
@@ -1958,6 +2098,26 @@ public class SSKProtoCallMessageHangup: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1985,7 +2145,7 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
 // MARK: - SSKProtoCallMessageOpaque
 
 @objc
-public class SSKProtoCallMessageOpaque: NSObject, Codable {
+public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageOpaqueBuilder
 
@@ -2096,6 +2256,26 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -2123,7 +2303,7 @@ extension SSKProtoCallMessageOpaque.SSKProtoCallMessageOpaqueBuilder {
 // MARK: - SSKProtoCallMessage
 
 @objc
-public class SSKProtoCallMessage: NSObject, Codable {
+public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoCallMessageBuilder
 
@@ -2438,6 +2618,26 @@ public class SSKProtoCallMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -2484,7 +2684,7 @@ private func SSKProtoDataMessageQuoteQuotedAttachmentFlagsUnwrap(_ value: SSKPro
 // MARK: - SSKProtoDataMessageQuoteQuotedAttachment
 
 @objc
-public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable {
+public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageQuoteQuotedAttachmentBuilder
 
@@ -2663,6 +2863,26 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -2690,7 +2910,7 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
 // MARK: - SSKProtoDataMessageQuote
 
 @objc
-public class SSKProtoDataMessageQuote: NSObject, Codable {
+public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageQuoteBuilder
 
@@ -2968,6 +3188,26 @@ public class SSKProtoDataMessageQuote: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -2995,7 +3235,7 @@ extension SSKProtoDataMessageQuote.SSKProtoDataMessageQuoteBuilder {
 // MARK: - SSKProtoDataMessageContactName
 
 @objc
-public class SSKProtoDataMessageContactName: NSObject, Codable {
+public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactNameBuilder
 
@@ -3236,6 +3476,26 @@ public class SSKProtoDataMessageContactName: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -3291,7 +3551,7 @@ private func SSKProtoDataMessageContactPhoneTypeUnwrap(_ value: SSKProtoDataMess
 // MARK: - SSKProtoDataMessageContactPhone
 
 @objc
-public class SSKProtoDataMessageContactPhone: NSObject, Codable {
+public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactPhoneBuilder
 
@@ -3456,6 +3716,26 @@ public class SSKProtoDataMessageContactPhone: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -3511,7 +3791,7 @@ private func SSKProtoDataMessageContactEmailTypeUnwrap(_ value: SSKProtoDataMess
 // MARK: - SSKProtoDataMessageContactEmail
 
 @objc
-public class SSKProtoDataMessageContactEmail: NSObject, Codable {
+public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactEmailBuilder
 
@@ -3676,6 +3956,26 @@ public class SSKProtoDataMessageContactEmail: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -3728,7 +4028,7 @@ private func SSKProtoDataMessageContactPostalAddressTypeUnwrap(_ value: SSKProto
 // MARK: - SSKProtoDataMessageContactPostalAddress
 
 @objc
-public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable {
+public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactPostalAddressBuilder
 
@@ -4049,6 +4349,26 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -4076,7 +4396,7 @@ extension SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPost
 // MARK: - SSKProtoDataMessageContactAvatar
 
 @objc
-public class SSKProtoDataMessageContactAvatar: NSObject, Codable {
+public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactAvatarBuilder
 
@@ -4203,6 +4523,26 @@ public class SSKProtoDataMessageContactAvatar: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -4230,7 +4570,7 @@ extension SSKProtoDataMessageContactAvatar.SSKProtoDataMessageContactAvatarBuild
 // MARK: - SSKProtoDataMessageContact
 
 @objc
-public class SSKProtoDataMessageContact: NSObject, Codable {
+public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageContactBuilder
 
@@ -4451,6 +4791,26 @@ public class SSKProtoDataMessageContact: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -4478,7 +4838,7 @@ extension SSKProtoDataMessageContact.SSKProtoDataMessageContactBuilder {
 // MARK: - SSKProtoDataMessagePreview
 
 @objc
-public class SSKProtoDataMessagePreview: NSObject, Codable {
+public class SSKProtoDataMessagePreview: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePreviewBuilder
 
@@ -4686,6 +5046,26 @@ public class SSKProtoDataMessagePreview: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -4713,7 +5093,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 // MARK: - SSKProtoDataMessageSticker
 
 @objc
-public class SSKProtoDataMessageSticker: NSObject, Codable {
+public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageStickerBuilder
 
@@ -4916,6 +5296,26 @@ public class SSKProtoDataMessageSticker: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -4943,7 +5343,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 // MARK: - SSKProtoDataMessageReaction
 
 @objc
-public class SSKProtoDataMessageReaction: NSObject, Codable {
+public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageReactionBuilder
 
@@ -5195,6 +5595,26 @@ public class SSKProtoDataMessageReaction: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5222,7 +5642,7 @@ extension SSKProtoDataMessageReaction.SSKProtoDataMessageReactionBuilder {
 // MARK: - SSKProtoDataMessageDelete
 
 @objc
-public class SSKProtoDataMessageDelete: NSObject, Codable {
+public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageDeleteBuilder
 
@@ -5330,6 +5750,26 @@ public class SSKProtoDataMessageDelete: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5357,7 +5797,7 @@ extension SSKProtoDataMessageDelete.SSKProtoDataMessageDeleteBuilder {
 // MARK: - SSKProtoDataMessageBodyRange
 
 @objc
-public class SSKProtoDataMessageBodyRange: NSObject, Codable {
+public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageBodyRangeBuilder
 
@@ -5502,6 +5942,26 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5529,7 +5989,7 @@ extension SSKProtoDataMessageBodyRange.SSKProtoDataMessageBodyRangeBuilder {
 // MARK: - SSKProtoDataMessageGroupCallUpdate
 
 @objc
-public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
+public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageGroupCallUpdateBuilder
 
@@ -5640,6 +6100,26 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5667,7 +6147,7 @@ extension SSKProtoDataMessageGroupCallUpdate.SSKProtoDataMessageGroupCallUpdateB
 // MARK: - SSKProtoDataMessagePaymentAmountMobileCoin
 
 @objc
-public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable {
+public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentAmountMobileCoinBuilder
 
@@ -5775,6 +6255,26 @@ public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5802,7 +6302,7 @@ extension SSKProtoDataMessagePaymentAmountMobileCoin.SSKProtoDataMessagePaymentA
 // MARK: - SSKProtoDataMessagePaymentAmount
 
 @objc
-public class SSKProtoDataMessagePaymentAmount: NSObject, Codable {
+public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentAmountBuilder
 
@@ -5912,6 +6412,26 @@ public class SSKProtoDataMessagePaymentAmount: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -5939,7 +6459,7 @@ extension SSKProtoDataMessagePaymentAmount.SSKProtoDataMessagePaymentAmountBuild
 // MARK: - SSKProtoDataMessagePaymentRequestId
 
 @objc
-public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable {
+public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentRequestIdBuilder
 
@@ -6053,6 +6573,26 @@ public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6080,7 +6620,7 @@ extension SSKProtoDataMessagePaymentRequestId.SSKProtoDataMessagePaymentRequestI
 // MARK: - SSKProtoDataMessagePaymentRequest
 
 @objc
-public class SSKProtoDataMessagePaymentRequest: NSObject, Codable {
+public class SSKProtoDataMessagePaymentRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentRequestBuilder
 
@@ -6243,6 +6783,26 @@ public class SSKProtoDataMessagePaymentRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6270,7 +6830,7 @@ extension SSKProtoDataMessagePaymentRequest.SSKProtoDataMessagePaymentRequestBui
 // MARK: - SSKProtoDataMessagePaymentNotificationMobileCoin
 
 @objc
-public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable {
+public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentNotificationMobileCoinBuilder
 
@@ -6384,6 +6944,26 @@ public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6411,7 +6991,7 @@ extension SSKProtoDataMessagePaymentNotificationMobileCoin.SSKProtoDataMessagePa
 // MARK: - SSKProtoDataMessagePaymentNotification
 
 @objc
-public class SSKProtoDataMessagePaymentNotification: NSObject, Codable {
+public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentNotificationBuilder
 
@@ -6572,6 +7152,26 @@ public class SSKProtoDataMessagePaymentNotification: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6599,7 +7199,7 @@ extension SSKProtoDataMessagePaymentNotification.SSKProtoDataMessagePaymentNotif
 // MARK: - SSKProtoDataMessagePaymentCancellation
 
 @objc
-public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable {
+public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentCancellationBuilder
 
@@ -6713,6 +7313,26 @@ public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6740,7 +7360,7 @@ extension SSKProtoDataMessagePaymentCancellation.SSKProtoDataMessagePaymentCance
 // MARK: - SSKProtoDataMessagePayment
 
 @objc
-public class SSKProtoDataMessagePayment: NSObject, Codable {
+public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessagePaymentBuilder
 
@@ -6900,6 +7520,26 @@ public class SSKProtoDataMessagePayment: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -6992,7 +7632,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
 // MARK: - SSKProtoDataMessage
 
 @objc
-public class SSKProtoDataMessage: NSObject, Codable {
+public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDataMessageBuilder
 
@@ -7494,6 +8134,26 @@ public class SSKProtoDataMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -7521,7 +8181,7 @@ extension SSKProtoDataMessage.SSKProtoDataMessageBuilder {
 // MARK: - SSKProtoNullMessage
 
 @objc
-public class SSKProtoNullMessage: NSObject, Codable {
+public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoNullMessageBuilder
 
@@ -7632,6 +8292,26 @@ public class SSKProtoNullMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -7684,7 +8364,7 @@ private func SSKProtoReceiptMessageTypeUnwrap(_ value: SSKProtoReceiptMessageTyp
 // MARK: - SSKProtoReceiptMessage
 
 @objc
-public class SSKProtoReceiptMessage: NSObject, Codable {
+public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoReceiptMessageBuilder
 
@@ -7813,6 +8493,26 @@ public class SSKProtoReceiptMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -7865,7 +8565,7 @@ private func SSKProtoVerifiedStateUnwrap(_ value: SSKProtoVerifiedState) -> Sign
 // MARK: - SSKProtoVerified
 
 @objc
-public class SSKProtoVerified: NSObject, Codable {
+public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoVerifiedBuilder
 
@@ -8134,6 +8834,26 @@ public class SSKProtoVerified: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -8161,7 +8881,7 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
 // MARK: - SSKProtoSyncMessageSentUnidentifiedDeliveryStatus
 
 @objc
-public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codable {
+public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder
 
@@ -8367,6 +9087,26 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -8394,7 +9134,7 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
 // MARK: - SSKProtoSyncMessageSent
 
 @objc
-public class SSKProtoSyncMessageSent: NSObject, Codable {
+public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageSentBuilder
 
@@ -8679,6 +9419,26 @@ public class SSKProtoSyncMessageSent: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -8706,7 +9466,7 @@ extension SSKProtoSyncMessageSent.SSKProtoSyncMessageSentBuilder {
 // MARK: - SSKProtoSyncMessageContacts
 
 @objc
-public class SSKProtoSyncMessageContacts: NSObject, Codable {
+public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageContactsBuilder
 
@@ -8837,6 +9597,26 @@ public class SSKProtoSyncMessageContacts: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -8864,7 +9644,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
 // MARK: - SSKProtoSyncMessageGroups
 
 @objc
-public class SSKProtoSyncMessageGroups: NSObject, Codable {
+public class SSKProtoSyncMessageGroups: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageGroupsBuilder
 
@@ -8974,6 +9754,26 @@ public class SSKProtoSyncMessageGroups: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -9001,7 +9801,7 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 // MARK: - SSKProtoSyncMessageBlocked
 
 @objc
-public class SSKProtoSyncMessageBlocked: NSObject, Codable {
+public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageBlockedBuilder
 
@@ -9134,6 +9934,26 @@ public class SSKProtoSyncMessageBlocked: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -9195,7 +10015,7 @@ private func SSKProtoSyncMessageRequestTypeUnwrap(_ value: SSKProtoSyncMessageRe
 // MARK: - SSKProtoSyncMessageRequest
 
 @objc
-public class SSKProtoSyncMessageRequest: NSObject, Codable {
+public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageRequestBuilder
 
@@ -9308,6 +10128,26 @@ public class SSKProtoSyncMessageRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -9335,7 +10175,7 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 // MARK: - SSKProtoSyncMessageRead
 
 @objc
-public class SSKProtoSyncMessageRead: NSObject, Codable {
+public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageReadBuilder
 
@@ -9547,6 +10387,26 @@ public class SSKProtoSyncMessageRead: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -9574,7 +10434,7 @@ extension SSKProtoSyncMessageRead.SSKProtoSyncMessageReadBuilder {
 // MARK: - SSKProtoSyncMessageViewed
 
 @objc
-public class SSKProtoSyncMessageViewed: NSObject, Codable {
+public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageViewedBuilder
 
@@ -9786,6 +10646,26 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -9813,7 +10693,7 @@ extension SSKProtoSyncMessageViewed.SSKProtoSyncMessageViewedBuilder {
 // MARK: - SSKProtoSyncMessageConfiguration
 
 @objc
-public class SSKProtoSyncMessageConfiguration: NSObject, Codable {
+public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageConfigurationBuilder
 
@@ -9983,6 +10863,26 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -10032,7 +10932,7 @@ private func SSKProtoSyncMessageStickerPackOperationTypeUnwrap(_ value: SSKProto
 // MARK: - SSKProtoSyncMessageStickerPackOperation
 
 @objc
-public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable {
+public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageStickerPackOperationBuilder
 
@@ -10197,6 +11097,26 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -10224,7 +11144,7 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 // MARK: - SSKProtoSyncMessageViewOnceOpen
 
 @objc
-public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
+public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageViewOnceOpenBuilder
 
@@ -10436,6 +11356,26 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -10488,7 +11428,7 @@ private func SSKProtoSyncMessageFetchLatestTypeUnwrap(_ value: SSKProtoSyncMessa
 // MARK: - SSKProtoSyncMessageFetchLatest
 
 @objc
-public class SSKProtoSyncMessageFetchLatest: NSObject, Codable {
+public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageFetchLatestBuilder
 
@@ -10601,6 +11541,26 @@ public class SSKProtoSyncMessageFetchLatest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -10628,7 +11588,7 @@ extension SSKProtoSyncMessageFetchLatest.SSKProtoSyncMessageFetchLatestBuilder {
 // MARK: - SSKProtoSyncMessageKeys
 
 @objc
-public class SSKProtoSyncMessageKeys: NSObject, Codable {
+public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageKeysBuilder
 
@@ -10739,6 +11699,26 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -10797,7 +11777,7 @@ private func SSKProtoSyncMessageMessageRequestResponseTypeUnwrap(_ value: SSKPro
 // MARK: - SSKProtoSyncMessageMessageRequestResponse
 
 @objc
-public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
+public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageMessageRequestResponseBuilder
 
@@ -11040,6 +12020,26 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -11067,7 +12067,7 @@ extension SSKProtoSyncMessageMessageRequestResponse.SSKProtoSyncMessageMessageRe
 // MARK: - SSKProtoSyncMessageOutgoingPaymentMobileCoin
 
 @objc
-public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
+public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageOutgoingPaymentMobileCoinBuilder
 
@@ -11310,6 +12310,26 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -11337,7 +12357,7 @@ extension SSKProtoSyncMessageOutgoingPaymentMobileCoin.SSKProtoSyncMessageOutgoi
 // MARK: - SSKProtoSyncMessageOutgoingPayment
 
 @objc
-public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
+public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageOutgoingPaymentBuilder
 
@@ -11499,6 +12519,26 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -11526,7 +12566,7 @@ extension SSKProtoSyncMessageOutgoingPayment.SSKProtoSyncMessageOutgoingPaymentB
 // MARK: - SSKProtoSyncMessage
 
 @objc
-public class SSKProtoSyncMessage: NSObject, Codable {
+public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoSyncMessageBuilder
 
@@ -11997,6 +13037,26 @@ public class SSKProtoSyncMessage: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -12049,7 +13109,7 @@ private func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPoi
 // MARK: - SSKProtoAttachmentPointer
 
 @objc
-public class SSKProtoAttachmentPointer: NSObject, Codable {
+public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoAttachmentPointerBuilder
 
@@ -12461,6 +13521,26 @@ public class SSKProtoAttachmentPointer: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -12488,7 +13568,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 // MARK: - SSKProtoGroupContextMember
 
 @objc
-public class SSKProtoGroupContextMember: NSObject, Codable {
+public class SSKProtoGroupContextMember: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupContextMemberBuilder
 
@@ -12599,6 +13679,26 @@ public class SSKProtoGroupContextMember: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -12657,7 +13757,7 @@ private func SSKProtoGroupContextTypeUnwrap(_ value: SSKProtoGroupContextType) -
 // MARK: - SSKProtoGroupContext
 
 @objc
-public class SSKProtoGroupContext: NSObject, Codable {
+public class SSKProtoGroupContext: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupContextBuilder
 
@@ -12886,6 +13986,26 @@ public class SSKProtoGroupContext: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -12913,7 +14033,7 @@ extension SSKProtoGroupContext.SSKProtoGroupContextBuilder {
 // MARK: - SSKProtoGroupContextV2
 
 @objc
-public class SSKProtoGroupContextV2: NSObject, Codable {
+public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupContextV2Builder
 
@@ -13067,6 +14187,26 @@ public class SSKProtoGroupContextV2: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -13094,7 +14234,7 @@ extension SSKProtoGroupContextV2.SSKProtoGroupContextV2Builder {
 // MARK: - SSKProtoContactDetailsAvatar
 
 @objc
-public class SSKProtoContactDetailsAvatar: NSObject, Codable {
+public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoContactDetailsAvatarBuilder
 
@@ -13222,6 +14362,26 @@ public class SSKProtoContactDetailsAvatar: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -13249,7 +14409,7 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 // MARK: - SSKProtoContactDetails
 
 @objc
-public class SSKProtoContactDetails: NSObject, Codable {
+public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoContactDetailsBuilder
 
@@ -13634,6 +14794,26 @@ public class SSKProtoContactDetails: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -13661,7 +14841,7 @@ extension SSKProtoContactDetails.SSKProtoContactDetailsBuilder {
 // MARK: - SSKProtoGroupDetailsAvatar
 
 @objc
-public class SSKProtoGroupDetailsAvatar: NSObject, Codable {
+public class SSKProtoGroupDetailsAvatar: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupDetailsAvatarBuilder
 
@@ -13789,6 +14969,26 @@ public class SSKProtoGroupDetailsAvatar: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -13816,7 +15016,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 // MARK: - SSKProtoGroupDetailsMember
 
 @objc
-public class SSKProtoGroupDetailsMember: NSObject, Codable {
+public class SSKProtoGroupDetailsMember: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupDetailsMemberBuilder
 
@@ -13927,6 +15127,26 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -13954,7 +15174,7 @@ extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
 // MARK: - SSKProtoGroupDetails
 
 @objc
-public class SSKProtoGroupDetails: NSObject, Codable {
+public class SSKProtoGroupDetails: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoGroupDetailsBuilder
 
@@ -14266,6 +15486,26 @@ public class SSKProtoGroupDetails: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -14293,7 +15533,7 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 // MARK: - SSKProtoPackSticker
 
 @objc
-public class SSKProtoPackSticker: NSObject, Codable {
+public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoPackStickerBuilder
 
@@ -14453,6 +15693,26 @@ public class SSKProtoPackSticker: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -14480,7 +15740,7 @@ extension SSKProtoPackSticker.SSKProtoPackStickerBuilder {
 // MARK: - SSKProtoPack
 
 @objc
-public class SSKProtoPack: NSObject, Codable {
+public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoPackBuilder
 
@@ -14662,6 +15922,26 @@ public class SSKProtoPack: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -14689,7 +15969,7 @@ extension SSKProtoPack.SSKProtoPackBuilder {
 // MARK: - SSKProtoPaymentAddressMobileCoin
 
 @objc
-public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
+public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoPaymentAddressMobileCoinBuilder
 
@@ -14826,6 +16106,26 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -14853,7 +16153,7 @@ extension SSKProtoPaymentAddressMobileCoin.SSKProtoPaymentAddressMobileCoinBuild
 // MARK: - SSKProtoPaymentAddress
 
 @objc
-public class SSKProtoPaymentAddress: NSObject, Codable {
+public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoPaymentAddressBuilder
 
@@ -14963,6 +16263,26 @@ public class SSKProtoPaymentAddress: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -14990,7 +16310,7 @@ extension SSKProtoPaymentAddress.SSKProtoPaymentAddressBuilder {
 // MARK: - SSKProtoDecryptionErrorMessage
 
 @objc
-public class SSKProtoDecryptionErrorMessage: NSObject, Codable {
+public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SSKProtoDecryptionErrorMessageBuilder
 
@@ -15133,6 +16453,26 @@ public class SSKProtoDecryptionErrorMessage: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc

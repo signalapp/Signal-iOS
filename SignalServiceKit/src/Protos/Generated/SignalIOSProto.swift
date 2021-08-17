@@ -49,7 +49,7 @@ private func SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(_ value: SignalI
 // MARK: - SignalIOSProtoBackupSnapshotBackupEntity
 
 @objc
-public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable {
+public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
@@ -237,6 +237,26 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -264,7 +284,7 @@ extension SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotB
 // MARK: - SignalIOSProtoBackupSnapshot
 
 @objc
-public class SignalIOSProtoBackupSnapshot: NSObject, Codable {
+public class SignalIOSProtoBackupSnapshot: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SignalIOSProtoBackupSnapshotBuilder
 
@@ -369,6 +389,26 @@ public class SignalIOSProtoBackupSnapshot: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -396,7 +436,7 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
 // MARK: - SignalIOSProtoDeviceName
 
 @objc
-public class SignalIOSProtoDeviceName: NSObject, Codable {
+public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
 
     // MARK: - SignalIOSProtoDeviceNameBuilder
 
@@ -554,6 +594,26 @@ public class SignalIOSProtoDeviceName: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc

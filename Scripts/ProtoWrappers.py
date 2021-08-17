@@ -489,7 +489,7 @@ class MessageContext(BaseContext):
 
         if writer.needs_objc():
             writer.add_objc()
-            writer.add('public class %s: NSObject, Codable {' % self.swift_name)
+            writer.add('public class %s: NSObject, Codable, NSSecureCoding {' % self.swift_name)
         else:
             writer.add('public struct %s: Codable, CustomDebugStringConvertible {' % self.swift_name)
         writer.newline()
@@ -917,6 +917,43 @@ public func serializedData() throws -> Data {
         writer.pop_indent()
         writer.add('}')
         writer.newline()
+
+        # NSSecureCoding
+        if writer.needs_objc():
+            writer.add('public static var supportsSecureCoding: Bool { true }')
+            writer.newline()
+
+            writer.add('public required convenience init?(coder: NSCoder) {')
+            writer.push_indent()
+            writer.add('guard let serializedData = coder.decodeData() else { return nil }')
+            writer.add('do {')
+            writer.push_indent()
+            writer.add('try self.init(serializedData: serializedData)')
+            writer.pop_indent()
+            writer.add('} catch {')
+            writer.push_indent()
+            writer.add('owsFailDebug("Failed to decode serialized data \\(error)")')
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+
+            writer.add('public func encode(with coder: NSCoder) {')
+            writer.push_indent()
+            writer.add('do {')
+            writer.push_indent()
+            writer.add('coder.encode(try serializedData())')
+            writer.pop_indent()
+            writer.add('} catch {')
+            writer.push_indent()
+            writer.add('owsFailDebug("Failed to encode serialized data \\(error)")')
+            writer.pop_indent()
+            writer.add('}')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
 
         # description
         if writer.needs_objc():

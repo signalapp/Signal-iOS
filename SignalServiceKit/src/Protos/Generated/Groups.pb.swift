@@ -2392,36 +2392,28 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
+        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: String?
         try decoder.decodeSingularStringField(value: &v)
-        if let v = v {
-          if self.content != nil {try decoder.handleConflictingOneOf()}
-          self.content = .title(v)
-        }
+        if let v = v {self.content = .title(v)}
       }()
       case 2: try {
+        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: Data?
         try decoder.decodeSingularBytesField(value: &v)
-        if let v = v {
-          if self.content != nil {try decoder.handleConflictingOneOf()}
-          self.content = .avatar(v)
-        }
+        if let v = v {self.content = .avatar(v)}
       }()
       case 3: try {
+        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: UInt32?
         try decoder.decodeSingularUInt32Field(value: &v)
-        if let v = v {
-          if self.content != nil {try decoder.handleConflictingOneOf()}
-          self.content = .disappearingMessagesDuration(v)
-        }
+        if let v = v {self.content = .disappearingMessagesDuration(v)}
       }()
       case 4: try {
+        if self.content != nil {try decoder.handleConflictingOneOf()}
         var v: String?
         try decoder.decodeSingularStringField(value: &v)
-        if let v = v {
-          if self.content != nil {try decoder.handleConflictingOneOf()}
-          self.content = .descriptionText(v)
-        }
+        if let v = v {self.content = .descriptionText(v)}
       }()
       default: break
       }
@@ -2475,16 +2467,12 @@ extension GroupsProtos_GroupInviteLink: SwiftProtobuf.Message, SwiftProtobuf._Me
       switch fieldNumber {
       case 1: try {
         var v: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1?
-        var hadOneofValue = false
         if let current = self.contents {
-          hadOneofValue = true
+          try decoder.handleConflictingOneOf()
           if case .contentsV1(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.contents = .contentsV1(v)
-        }
+        if let v = v {self.contents = .contentsV1(v)}
       }()
       default: break
       }

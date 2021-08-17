@@ -15,7 +15,7 @@ public enum ProvisioningProtoError: Error {
 // MARK: - ProvisioningProtoProvisioningUuid
 
 @objc
-public class ProvisioningProtoProvisioningUuid: NSObject, Codable {
+public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCoding {
 
     // MARK: - ProvisioningProtoProvisioningUuidBuilder
 
@@ -129,6 +129,26 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -156,7 +176,7 @@ extension ProvisioningProtoProvisioningUuid.ProvisioningProtoProvisioningUuidBui
 // MARK: - ProvisioningProtoProvisionEnvelope
 
 @objc
-public class ProvisioningProtoProvisionEnvelope: NSObject, Codable {
+public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCoding {
 
     // MARK: - ProvisioningProtoProvisionEnvelopeBuilder
 
@@ -293,6 +313,26 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -320,7 +360,7 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 // MARK: - ProvisioningProtoProvisionMessage
 
 @objc
-public class ProvisioningProtoProvisionMessage: NSObject, Codable {
+public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCoding {
 
     // MARK: - ProvisioningProtoProvisionMessageBuilder
 
@@ -613,6 +653,26 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc

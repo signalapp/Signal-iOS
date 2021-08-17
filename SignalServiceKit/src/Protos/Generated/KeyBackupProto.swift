@@ -15,7 +15,7 @@ public enum KeyBackupProtoError: Error {
 // MARK: - KeyBackupProtoRequest
 
 @objc
-public class KeyBackupProtoRequest: NSObject, Codable {
+public class KeyBackupProtoRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoRequestBuilder
 
@@ -175,6 +175,26 @@ public class KeyBackupProtoRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -202,7 +222,7 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 // MARK: - KeyBackupProtoResponse
 
 @objc
-public class KeyBackupProtoResponse: NSObject, Codable {
+public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoResponseBuilder
 
@@ -362,6 +382,26 @@ public class KeyBackupProtoResponse: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -389,7 +429,7 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 // MARK: - KeyBackupProtoBackupRequest
 
 @objc
-public class KeyBackupProtoBackupRequest: NSObject, Codable {
+public class KeyBackupProtoBackupRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoBackupRequestBuilder
 
@@ -638,6 +678,26 @@ public class KeyBackupProtoBackupRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -690,7 +750,7 @@ private func KeyBackupProtoBackupResponseStatusUnwrap(_ value: KeyBackupProtoBac
 // MARK: - KeyBackupProtoBackupResponse
 
 @objc
-public class KeyBackupProtoBackupResponse: NSObject, Codable {
+public class KeyBackupProtoBackupResponse: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoBackupResponseBuilder
 
@@ -829,6 +889,26 @@ public class KeyBackupProtoBackupResponse: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -856,7 +936,7 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 // MARK: - KeyBackupProtoRestoreRequest
 
 @objc
-public class KeyBackupProtoRestoreRequest: NSObject, Codable {
+public class KeyBackupProtoRestoreRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoRestoreRequestBuilder
 
@@ -1062,6 +1142,26 @@ public class KeyBackupProtoRestoreRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1120,7 +1220,7 @@ private func KeyBackupProtoRestoreResponseStatusUnwrap(_ value: KeyBackupProtoRe
 // MARK: - KeyBackupProtoRestoreResponse
 
 @objc
-public class KeyBackupProtoRestoreResponse: NSObject, Codable {
+public class KeyBackupProtoRestoreResponse: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoRestoreResponseBuilder
 
@@ -1302,6 +1402,26 @@ public class KeyBackupProtoRestoreResponse: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1329,7 +1449,7 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 // MARK: - KeyBackupProtoDeleteRequest
 
 @objc
-public class KeyBackupProtoDeleteRequest: NSObject, Codable {
+public class KeyBackupProtoDeleteRequest: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoDeleteRequestBuilder
 
@@ -1466,6 +1586,26 @@ public class KeyBackupProtoDeleteRequest: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -1493,7 +1633,7 @@ extension KeyBackupProtoDeleteRequest.KeyBackupProtoDeleteRequestBuilder {
 // MARK: - KeyBackupProtoDeleteResponse
 
 @objc
-public class KeyBackupProtoDeleteResponse: NSObject, Codable {
+public class KeyBackupProtoDeleteResponse: NSObject, Codable, NSSecureCoding {
 
     // MARK: - KeyBackupProtoDeleteResponseBuilder
 
@@ -1576,6 +1716,26 @@ public class KeyBackupProtoDeleteResponse: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc

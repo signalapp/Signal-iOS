@@ -15,7 +15,7 @@ public enum FingerprintProtoError: Error {
 // MARK: - FingerprintProtoLogicalFingerprint
 
 @objc
-public class FingerprintProtoLogicalFingerprint: NSObject, Codable {
+public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCoding {
 
     // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
@@ -129,6 +129,26 @@ public class FingerprintProtoLogicalFingerprint: NSObject, Codable {
         try singleValueContainer.encode(try serializedData())
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
     @objc
     public override var debugDescription: String {
         return "\(proto)"
@@ -156,7 +176,7 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 // MARK: - FingerprintProtoLogicalFingerprints
 
 @objc
-public class FingerprintProtoLogicalFingerprints: NSObject, Codable {
+public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCoding {
 
     // MARK: - FingerprintProtoLogicalFingerprintsBuilder
 
@@ -308,6 +328,26 @@ public class FingerprintProtoLogicalFingerprints: NSObject, Codable {
     public func encode(to encoder: Swift.Encoder) throws {
         var singleValueContainer = encoder.singleValueContainer()
         try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
     }
 
     @objc
