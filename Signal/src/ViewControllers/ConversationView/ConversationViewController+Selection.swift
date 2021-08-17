@@ -332,39 +332,9 @@ extension ConversationViewController {
             let itemViewModels = try self.buildForwardItems(interactionIds: selectedInteractionIds)
             ForwardMessageNavigationController.present(for: itemViewModels, from: self, delegate: self)
         } catch {
-            if let forwardError = error as? ForwardError {
-                let message: String
-                switch forwardError {
-                case .missingInteraction:
-                    if selectedInteractionIds.count > 1 {
-                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N",
-                                                    comment: "Error indicating that messages could not be forwarded.")
-                    } else {
-                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1",
-                                                    comment: "Error indicating that a message could not be forwarded.")
-                    }
-                case .missingThread, .invalidInteraction:
-                    owsFailDebug("Error: \(error).")
-
-                    if selectedInteractionIds.count > 1 {
-                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_INVALID_N",
-                                                    comment: "Error indicating that messages could not be forwarded.")
-                    } else {
-                        message = NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_INVALID_1",
-                                                    comment: "Error indicating that a message could not be forwarded.")
-                    }
-                }
-                OWSActionSheets.showErrorAlert(message: message)
-            } else {
-                owsFailDebug("Error: \(error).")
-            }
+            ForwardMessageNavigationController.showAlertForForwardError(error: error,
+                                                                        forwardedInteractionCount: selectedInteractionIds.count)
         }
-    }
-
-    private enum ForwardError: Error {
-        case missingInteraction
-        case missingThread
-        case invalidInteraction
     }
 
     private func buildForwardItems(interactionIds: Set<String>) throws -> [CVItemViewModelImpl] {

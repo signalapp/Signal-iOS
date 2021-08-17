@@ -63,9 +63,10 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Returns YES IFF the thread was just added to the profile whitelist.
 + (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction:(TSThread *)thread
-    NS_SWIFT_NAME(addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread:));
+    NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread:));
 + (BOOL)addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer:(TSThread *)thread
-                                                                 transaction:(SDSAnyWriteTransaction *)transaction;
+                                                                 transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread:transaction:));
 
 #pragma mark - Delete Content
 

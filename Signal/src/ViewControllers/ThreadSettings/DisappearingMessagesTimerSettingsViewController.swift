@@ -227,7 +227,7 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             )
         }.map(on: .global()) {
             // We're sending a message, so we're accepting any pending message request.
-            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
         }.then(on: .global()) {
             GroupManager.localUpdateDisappearingMessages(
                 thread: thread,

@@ -517,6 +517,10 @@ extension ConversationPickerViewController: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
         guard let conversation = conversation(for: indexPath) else {
             owsFailDebug("conversation was unexpectedly nil")
             return
@@ -532,8 +536,15 @@ extension ConversationPickerViewController: UITableViewDelegate {
             showBlockedByAnnouncementOnlyToast()
             return
         }
+        let maxRecipientCount: Int = 5
+        let recipientCount = delegate.selectedConversationsForConversationPicker.count
+        guard recipientCount < maxRecipientCount else {
+            tableView.deselectRow(at: indexPath, animated: false)
+            showBlockedByMaxRecipientCountToast()
+            return
+        }
 
-        delegate?.conversationPicker(self, didSelectConversation: conversation)
+        delegate.conversationPicker(self, didSelectConversation: conversation)
         updateUIForCurrentSelection(animated: true)
     }
 
@@ -544,6 +555,14 @@ extension ConversationPickerViewController: UITableViewDelegate {
                                             comment: "Message indicating that only administrators can send message to an announcement-only group.")
 
         let toastText = String(format: toastFormat, NSNumber(value: kMaxPickerSelection))
+        showToast(message: toastText)
+    }
+
+    private func showBlockedByMaxRecipientCountToast() {
+        Logger.info("")
+
+        let toastText = NSLocalizedString("CONVERSATION_PICKER_TOO_MANY_RECIPIENTS",
+                                          comment: "Message indicating that the maximum number of recipients has been reached.")
         showToast(message: toastText)
     }
 

@@ -333,7 +333,7 @@ extension SharingThreadPickerViewController {
         }.done { threads in
             for thread in threads {
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
 
             dismissSendProgress {}
@@ -356,7 +356,7 @@ extension SharingThreadPickerViewController {
                 sendPromises.append(enqueueBlock(thread))
 
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
             return when(fulfilled: sendPromises)
         }.done {

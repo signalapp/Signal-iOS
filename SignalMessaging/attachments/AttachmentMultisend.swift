@@ -40,7 +40,8 @@ public class AttachmentMultisend: Dependencies {
                     }
 
                     // If this thread has a pending message request, treat it as accepted.
-                    ThreadUtil.addThread(toProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer: thread, transaction: transaction)
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
+                                                                                                    transaction: transaction)
 
                     let message = try! ThreadUtil.createUnsentMessage(with: approvalMessageBody,
                                                                       mediaAttachments: attachments,
@@ -113,7 +114,8 @@ public class AttachmentMultisend: Dependencies {
                     }
 
                     // If this thread has a pending message request, treat it as accepted.
-                    ThreadUtil.addThread(toProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer: thread, transaction: transaction)
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
+                                                                                                    transaction: transaction)
 
                     let message = try! ThreadUtil.createUnsentMessage(with: approvalMessageBody,
                                                                       mediaAttachments: attachments,

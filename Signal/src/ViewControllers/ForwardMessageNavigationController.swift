@@ -71,14 +71,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         }
     }
 
-    // TODO:
-    var mentionCandidates: [SignalServiceAddress] = []
-    var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateMentionCandidates()
-        }
-    }
-
     fileprivate enum Content {
         case single(item: Item)
         case multiple(items: [Item])
@@ -148,6 +140,44 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     fileprivate var content: Content
 
+    fileprivate var selectedConversations: [ConversationItem] = [] {
+        didSet {
+            updateCurrentMentionableAddresses()
+        }
+    }
+    fileprivate var currentMentionableAddresses: [SignalServiceAddress] = []
+
+    fileprivate struct RecipientThread {
+        let thread: TSThread
+        let mentionCandidates: [SignalServiceAddress]
+
+        static func build(conversationItem: ConversationItem,
+                          transaction: SDSAnyWriteTransaction) throws -> RecipientThread {
+
+            guard let thread = conversationItem.thread(transaction: transaction) else {
+                owsFailDebug("Missing thread for conversation")
+                throw ForwardError.missingThread
+            }
+
+            let mentionCandidates = self.mentionCandidates(conversationItem: conversationItem,
+                                                           thread: thread,
+                                                           transaction: transaction)
+            return RecipientThread(thread: thread, mentionCandidates: mentionCandidates)
+        }
+
+        private static func mentionCandidates(conversationItem: ConversationItem,
+                                              thread: TSThread,
+                                              transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+            AssertIsOnMainThread()
+
+            guard let groupThread = thread as? TSGroupThread,
+                  Mention.threadAllowsMentionSend(groupThread) else {
+                return []
+            }
+            return groupThread.recipientAddresses
+        }
+    }
+
     private init(content: Content) {
         self.content = content
 
@@ -203,6 +233,24 @@ class ForwardMessageNavigationController: OWSNavigationController {
         ], animated: false)
     }
 
+    fileprivate func updateCurrentMentionableAddresses() {
+        guard selectedConversations.count == 1,
+              let conversationItem = selectedConversations.first else {
+            self.currentMentionableAddresses = []
+            return
+        }
+
+        do {
+            try databaseStorage.write { transaction in
+                let recipientThread = try RecipientThread.build(conversationItem: conversationItem,
+                                                                transaction: transaction)
+                self.currentMentionableAddresses = recipientThread.mentionCandidates
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+            self.currentMentionableAddresses = []
+        }
+    }
 }
 
 // MARK: - Approval
@@ -231,8 +279,8 @@ extension ForwardMessageNavigationController {
         switch itemViewModel.messageCellType {
         case .textOnlyMessage:
             guard let body = item.messageBody,
-                body.text.count > 0 else {
-                    throw OWSAssertionError("Missing body.")
+                  body.text.count > 0 else {
+                throw OWSAssertionError("Missing body.")
             }
 
             let approvalView = TextApprovalViewController(messageBody: body)
@@ -337,133 +385,156 @@ extension ForwardMessageNavigationController {
     private func tryToSend() throws {
         let content = self.content
 
-        firstly(on: .main) { () -> Promise<Void> in
-            let promises = content.allItems.map { item in
-                self.tryToSend(item: item)
+        let recipientConversations = self.selectedConversations
+        firstly(on: .global()) {
+            self.recipientThreads(for: recipientConversations)
+        }.then(on: .main) { (recipientThreads: [RecipientThread]) -> Promise<Void> in
+            Self.databaseStorage.write { transaction in
+                for recipientThread in recipientThreads {
+                    // We're sending a message to this thread, approve any pending message request
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread.thread,
+                                                                                                    transaction: transaction)
+                }
             }
-            return when(resolved: promises).asVoid()
-        }.done(on: .main) { threads in
-            let itemViewModels = content.allItems.map { $0.itemViewModel }
-            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
-                                                                       recipientThreads: threads)
+
+            // TODO: Ideally we would enqueue all with a single write tranasction.
+            return firstly {
+                // Maintain order of interactions.
+                //
+                // TODO: Verify order.
+                let sortedItems = content.allItems.sorted { lhs, rhs in
+                    lhs.itemViewModel.interaction.timestamp < rhs.itemViewModel.interaction.timestamp
+                }
+                let promises = sortedItems.map { item in
+                    self.send(item: item, toRecipientThreads: recipientThreads)
+                }
+                return when(resolved: promises).asVoid()
+            }.map(on: .main) {
+                let itemViewModels = content.allItems.map { $0.itemViewModel }
+                let threads = recipientThreads.map { $0.thread }
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
+                                                                           recipientThreads: threads)
+            }
         }.catch(on: .main) { error in
             owsFailDebug("Error: \(error)")
             // TODO: Show error?
         }
     }
 
-    private func tryToSend(item: Item) -> Promise<Void> {
+    private func send(item: Item, toRecipientThreads recipientThreads: [RecipientThread]) -> Promise<Void> {
+        AssertIsOnMainThread()
+
+        let itemViewModel = item.itemViewModel
+
         switch itemViewModel.messageCellType {
         case .textOnlyMessage:
-            guard let body = approvalMessageBody,
-                body.text.count > 0 else {
-                    throw OWSAssertionError("Missing body.")
+            guard let body = item.messageBody,
+                  body.text.count > 0 else {
+                return Promise(error: OWSAssertionError("Missing body."))
             }
 
-            let linkPreviewDraft = approvalLinkPreviewDraft
+            let linkPreviewDraft = item.linkPreviewDraft
 
-            send { thread in
-                self.send(body: body, linkPreviewDraft: linkPreviewDraft, thread: thread)
+            return send(toRecipientThreads: recipientThreads) { recipientThread in
+                self.send(body: body, linkPreviewDraft: linkPreviewDraft, thread: recipientThread.thread)
             }
         case .contactShare:
-            guard let contactShare = approvedContactShare else {
-                throw OWSAssertionError("Missing contactShare.")
+            guard let contactShare = item.contactShare else {
+                return Promise(error: OWSAssertionError("Missing contactShare."))
             }
 
-            send { thread in
-                let contactShareCopy = contactShare.copyForResending()
+            return send(toRecipientThreads: recipientThreads) { recipientThread in
+                //                let contactShareCopy = contactShare.copyForResending()
 
-                if let avatarImage = contactShareCopy.avatarImage {
+                if let avatarImage = contactShare.avatarImage {
                     self.databaseStorage.write { transaction in
-                        contactShareCopy.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
+                        contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
                     }
                 }
 
-                self.send(contactShare: contactShareCopy, thread: thread)
+                return self.send(contactShare: contactShare, thread: recipientThread.thread)
             }
         case .stickerMessage:
             guard let stickerMetadata = itemViewModel.stickerMetadata else {
-                throw OWSAssertionError("Missing stickerInfo.")
+                return Promise(error: OWSAssertionError("Missing stickerInfo."))
             }
 
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-                send { thread in
-                    self.send(installedSticker: stickerInfo, thread: thread)
+                return send(toRecipientThreads: recipientThreads) { recipientThread in
+                    self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
                 }
             } else {
                 guard let stickerAttachment = itemViewModel.stickerAttachment else {
-                    owsFailDebug("Missing stickerAttachment.")
-                    return
+                    return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
-                let stickerData = try stickerAttachment.readDataFromFile()
-                send { thread in
-                    self.send(uninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
+                do {
+                    let stickerData = try stickerAttachment.readDataFromFile()
+                    return send(toRecipientThreads: recipientThreads) { recipientThread in
+                        self.send(uninstalledSticker: stickerMetadata,
+                                  stickerData: stickerData,
+                                  thread: recipientThread.thread)
+                    }
+                } catch {
+                    return Promise(error: error)
                 }
             }
         case .audio:
             guard let attachmentStream = itemViewModel.audioAttachmentStream else {
-                throw OWSAssertionError("Missing attachmentStream.")
+                return Promise(error: OWSAssertionError("Missing attachmentStream."))
             }
-            send { thread in
-                let attachment = try attachmentStream.cloneAsSignalAttachment()
-                self.send(body: nil, attachment: attachment, thread: thread)
+            return send(toRecipientThreads: recipientThreads) { recipientThread in
+                do {
+                    let attachment = try attachmentStream.cloneAsSignalAttachment()
+                    return self.send(body: nil, attachment: attachment, thread: recipientThread.thread)
+                } catch {
+                    return Promise(error: error)
+                }
             }
         case .genericAttachment:
             guard let attachmentStream = itemViewModel.genericAttachmentStream else {
-                throw OWSAssertionError("Missing attachmentStream.")
+                return Promise(error: OWSAssertionError("Missing attachmentStream."))
             }
-            send { thread in
-                let attachment = try attachmentStream.cloneAsSignalAttachment()
-                self.send(body: nil, attachment: attachment, thread: thread)
+            return send(toRecipientThreads: recipientThreads) { recipientThread in
+                do {
+                    let attachment = try attachmentStream.cloneAsSignalAttachment()
+                    return self.send(body: nil, attachment: attachment, thread: recipientThread.thread)
+                } catch {
+                    return Promise(error: error)
+                }
             }
         case .bodyMedia:
             // TODO: Why are stickers special-cased here?
-//            if isBorderless {
-//                guard let attachmentStream = itemViewModel.firstValidAlbumAttachment() else {
-//                    throw OWSAssertionError("Missing attachmentStream.")
-//                }
-//
-//                send { thread in
-//                    let attachment = try attachmentStream.cloneAsSignalAttachment()
-//                    self.send(body: nil, attachment: attachment, thread: thread)
-//                }
-//            } else {
-                guard let approvedAttachments = approvedAttachments else {
-                    throw OWSAssertionError("Missing approvedAttachments.")
-                }
-
-                let conversations = selectedConversationsForConversationPicker
-                firstly {
-                    AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                          approvalMessageBody: self.approvalMessageBody,
-                                                          approvedAttachments: approvedAttachments)
-                }.done { threads in
-                    let itemViewModels = content.allItems.map { $0.itemViewModel }
-                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
-                                                                               recipientThreads: threads)
-                }.catch { error in
-                    owsFailDebug("Error: \(error)")
-                    // TODO: Do we need to call a delegate method?
-                }
-//            }
+            guard let approvedAttachments = item.attachments else {
+                return Promise(error: OWSAssertionError("Missing approvedAttachments."))
+            }
+            let conversations = selectedConversationsForConversationPicker
+            return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                         approvalMessageBody: item.messageBody,
+                                                         approvedAttachments: approvedAttachments).asVoid()
         case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
              .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
-            throw OWSAssertionError("Invalid message type.")
+            return Promise(error: OWSAssertionError("Invalid message type."))
         }
     }
 
-    func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) {
+    fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+            ThreadUtil.enqueueMessage(with: body,
+                                      thread: thread,
+                                      quotedReplyModel: nil,
+                                      linkPreviewDraft: linkPreviewDraft,
+                                      transaction: transaction)
         }
+        return Promise.value(())
     }
 
-    func send(contactShare: ContactShareViewModel, thread: TSThread) {
+    fileprivate func send(contactShare: ContactShareViewModel, thread: TSThread) -> Promise<Void> {
         ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
+        return Promise.value(())
     }
 
-    func send(body: MessageBody?, attachment: SignalAttachment, thread: TSThread) {
+    fileprivate func send(body: MessageBody?, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
             ThreadUtil.enqueueMessage(with: body,
                                       mediaAttachments: [attachment],
@@ -472,80 +543,37 @@ extension ForwardMessageNavigationController {
                                       linkPreviewDraft: nil,
                                       transaction: transaction)
         }
+        return Promise.value(())
     }
 
-    func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
+    fileprivate func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) -> Promise<Void> {
         ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
+        return Promise.value(())
     }
 
-    func send(uninstalledSticker stickerMetadata: StickerMetadata, stickerData: Data, thread: TSThread) {
+    fileprivate func send(uninstalledSticker stickerMetadata: StickerMetadata, stickerData: Data, thread: TSThread) -> Promise<Void> {
         ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
+        return Promise.value(())
     }
 
-    // TODO: Eliminate.
-    func send(enqueueBlock: @escaping (TSThread) throws -> Void) {
+    fileprivate func send(toRecipientThreads recipientThreads: [RecipientThread],
+                          enqueueBlock: @escaping (RecipientThread) -> Promise<Void>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let content = self.content
-        let conversations = self.selectedConversationsForConversationPicker
-        firstly {
-            self.threads(for: conversations)
-        }.done { (threads: [TSThread]) in
-            for thread in threads {
-                try enqueueBlock(thread)
-
-                // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
-            }
-
-            let itemViewModels = content.allItems.map { $0.itemViewModel }
-            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
-                                                                       recipientThreads: threads)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-            // TODO: Do we need to call a delegate methoad?
-        }
+        return when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
     }
 
-    func threads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
-        return DispatchQueue.global().async(.promise) {
+    fileprivate func recipientThreads(for conversationItems: [ConversationItem]) -> Promise<[RecipientThread]> {
+        firstly(on: .global()) {
             guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
             }
 
-            var threads: [TSThread] = []
-
-            self.databaseStorage.write { transaction in
-                for conversation in conversationItems {
-                    guard let thread = conversation.thread(transaction: transaction) else {
-                        owsFailDebug("Missing thread for conversation")
-                        continue
-                    }
-                    threads.append(thread)
+            return try self.databaseStorage.write { transaction in
+                try conversationItems.map {
+                    try RecipientThread.build(conversationItem: $0, transaction: transaction)
                 }
             }
-            return threads
-        }
-    }
-
-    private func updateMentionCandidates() {
-        AssertIsOnMainThread()
-
-        guard selectedConversations.count == 1,
-              case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else {
-            mentionCandidates = []
-            return
-        }
-
-        let groupThread = databaseStorage.read { readTx in
-            TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: readTx)
-        }
-
-        owsAssertDebug(groupThread != nil)
-        if let groupThread = groupThread, Mention.threadAllowsMentionSend(groupThread) {
-            mentionCandidates = groupThread.recipientAddresses
-        } else {
-            mentionCandidates = []
         }
     }
 }
@@ -611,7 +639,7 @@ extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate
     }
 
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = selectedConversations
         guard conversations.count > 0 else {
             return nil
         }
@@ -646,7 +674,7 @@ extension ForwardMessageNavigationController: ContactShareApprovalViewController
     }
 
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = selectedConversations
         guard conversations.count > 0 else {
             return nil
         }
@@ -701,11 +729,11 @@ extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDe
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        selectedConversationsForConversationPicker.map { $0.title }
+        selectedConversations.map { $0.title }
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        mentionCandidates
+        currentMentionableAddresses
     }
 }
 
@@ -758,5 +786,46 @@ extension ForwardMessageNavigationController {
             return
         }
         SignalApp.shared().presentConversation(for: thread, animated: true)
+    }
+}
+
+// MARK: -
+
+public enum ForwardError: Error {
+    case missingInteraction
+    case missingThread
+    case invalidInteraction
+}
+
+// MARK: -
+
+extension ForwardMessageNavigationController {
+    public static func showAlertForForwardError(error: Error,
+                                                forwardedInteractionCount: Int) {
+        let genericErrorMessage = (forwardedInteractionCount > 1
+                                    ? NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_N",
+                                                        comment: "Error indicating that messages could not be forwarded.")
+                                    : NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_1",
+                                                        comment: "Error indicating that a message could not be forwarded."))
+
+        guard let forwardError = error as? ForwardError else {
+            owsFailDebug("Error: \(error).")
+            OWSActionSheets.showErrorAlert(message: genericErrorMessage)
+            return
+        }
+
+        switch forwardError {
+        case .missingInteraction:
+            let message = (forwardedInteractionCount > 1
+                            ? NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N",
+                                                comment: "Error indicating that messages could not be forwarded.")
+                            : NSLocalizedString("ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1",
+                                                comment: "Error indicating that a message could not be forwarded."))
+            OWSActionSheets.showErrorAlert(message: message)
+        case .missingThread, .invalidInteraction:
+            owsFailDebug("Error: \(error).")
+
+            OWSActionSheets.showErrorAlert(message: genericErrorMessage)
+        }
     }
 }
