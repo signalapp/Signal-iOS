@@ -1,4 +1,4 @@
-• A picture may be worth 1k words, but now you can send them in 4k. Use the the new quality selector to optionally send higher-resolution photos. You can also default to always send higher resolution photos in Settings > Data Usage.
-• When you long press a message, a snappy new menu lets you quickly react, reply, delete, and more.
-• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
-• We’ve made several improvements to help make scrolling your chat list smoother.
+• एक फ़ोटो का मूल्य 1 हज़ार शब्द हो सकता है, लेकिन अब आप उन्हें 4k में भेज सकते हैं। वैक्लपिक रूप से उच्च रिज़ॉल्यूशन वाली फ़ोटो भेजने के लिए नए क्वालिटी चयनकर्ता का उपयोग करें। आप हमेशा उच्च रिज़ॉल्यूशन वाली फ़ोटो भेजने के लिए सेटिंग्ज़ > डेटा उपयोग को डिफ़ॉल्ट सेटिंग्ज़ भी बना सकते हैं।
+• जब आप किसी संदेश को देर तक दबाते हैं, तो एक तेज़ नए मेनू की मदद से आप तुरंत प्रतिक्रिया या उत्तर दे सकते हैं और उसे हटाने के अलावा और भी बहुत कुछ कर सकते हैं।
+• प्रस्तुत है, कलाकार प्लास्टिक थिंग की ओर से एक नया ऐनिमेटेड स्टिकर पैक “माई डेलि लाइफ”।
+• हमने आपकी चैट सूची को आसानी से स्क्रॉल करने में आपकी सहायता करने के लिए कई सुधार किए हैं।
