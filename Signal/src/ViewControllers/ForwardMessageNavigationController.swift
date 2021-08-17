@@ -334,7 +334,25 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    func tryToSend() throws {
+    private func tryToSend() throws {
+        let content = self.content
+
+        firstly(on: .main) { () -> Promise<Void> in
+            let promises = content.allItems.map { item in
+                self.tryToSend(item: item)
+            }
+            return when(resolved: promises).asVoid()
+        }.done(on: .main) { threads in
+            let itemViewModels = content.allItems.map { $0.itemViewModel }
+            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
+                                                                       recipientThreads: threads)
+        }.catch(on: .main) { error in
+            owsFailDebug("Error: \(error)")
+            // TODO: Show error?
+        }
+    }
+
+    private func tryToSend(item: Item) -> Promise<Void> {
         switch itemViewModel.messageCellType {
         case .textOnlyMessage:
             guard let body = approvalMessageBody,
@@ -464,9 +482,11 @@ extension ForwardMessageNavigationController {
         ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
     }
 
+    // TODO: Eliminate.
     func send(enqueueBlock: @escaping (TSThread) throws -> Void) {
         AssertIsOnMainThread()
 
+        let content = self.content
         let conversations = self.selectedConversationsForConversationPicker
         firstly {
             self.threads(for: conversations)

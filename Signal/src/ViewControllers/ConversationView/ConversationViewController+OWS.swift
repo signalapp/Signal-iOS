@@ -220,7 +220,7 @@ extension ConversationViewController {
 extension ConversationViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
                                               recipientThreads: [TSThread]) {
-        self.dismiss(animated: true) { [weak self] in
+        self.dismiss(animated: true) {
             ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
                                                                                           recipientThreads: recipientThreads)
         }
