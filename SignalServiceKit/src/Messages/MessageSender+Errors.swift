@@ -19,10 +19,9 @@ public enum MessageSenderError: Int, Error, IsRetryableProvider {
     public var isRetryableProvider: Bool {
         switch self {
         case .prekeyRateLimit:
-            // Don't exacerbate the rate limiting; stop retrying immediately.
-            //
+            // TODO: Retry with backoff.
             // TODO: Can we honor a retry delay hint from the response?
-            return false
+            return true
         case .missingDevice:
             return true
         case .blockedContactRecipient:

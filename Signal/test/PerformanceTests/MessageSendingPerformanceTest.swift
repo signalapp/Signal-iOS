@@ -209,14 +209,14 @@ class StubbableNetworkManager: NetworkManager {
     var block: (TSRequest, NetworkManagerSuccess, NetworkManagerFailure) -> Void = { request, success, _ in
         Logger.info("faking success for request: \(request)")
         let response = HTTPResponseImpl(requestUrl: request.url!,
-                                           status: 200,
-                                           headers: OWSHttpHeaders(),
-                                           bodyData: nil,
-                                           message: nil)
+                                        status: 200,
+                                        headers: OWSHttpHeaders(),
+                                        bodyData: nil)
         success(response)
     }
 
-    public override func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest,
+                                     remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
 
         // This latency is optimistic because I didn't want to slow

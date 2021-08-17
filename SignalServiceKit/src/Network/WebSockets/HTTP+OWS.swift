@@ -259,7 +259,7 @@ extension OWSHttpHeaders {
         return Self.parseRetryAfterHeaderValue(retryAfterString)
     }
 
-    private static func parseRetryAfterHeaderValue(_ rawValue: String?) -> Date? {
+    static func parseRetryAfterHeaderValue(_ rawValue: String?) -> Date? {
         guard let value = rawValue?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty else {
             return nil
         }

@@ -11,10 +11,10 @@ struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }
 
 enum PushNotificationRequestResult: String {
-    case FailTSOnly = "FailTSOnly",
-         FailRPOnly = "FailRPOnly",
-         FailBoth = "FailBoth",
-         Succeed = "Succeed"
+    case failTSOnly = "FailTSOnly"
+    case failRPOnly = "FailRPOnly"
+    case failBoth = "FailBoth"
+    case succeed = "Succeed"
 }
 
 class FailingTSAccountManager: TSAccountManager {
@@ -36,7 +36,7 @@ class FailingTSAccountManager: TSAccountManager {
                                                voipToken: String?,
                                                success successHandler: @escaping () -> Void,
                                                failure failureHandler: @escaping (Error) -> Void) {
-        if pushToken == PushNotificationRequestResult.FailTSOnly.rawValue || pushToken == PushNotificationRequestResult.FailBoth.rawValue {
+        if pushToken == PushNotificationRequestResult.failTSOnly.rawValue || pushToken == PushNotificationRequestResult.failBoth.rawValue {
             failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
         } else {
             successHandler()
@@ -144,7 +144,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever")
+            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.failTSOnly.rawValue, voipToken: "whatever")
         }.done {
             XCTFail("Expected to fail.")
         }.catch { _ in
