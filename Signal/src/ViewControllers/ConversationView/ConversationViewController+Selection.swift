@@ -20,7 +20,32 @@ public struct CVSelectionType: OptionSet {
 public struct CVSelectionItem {
     public let interactionId: String
     public let interactionType: OWSInteractionType
+    public let hasRenderableContent: Bool
     public let selectionType: CVSelectionType
+
+    init(interactionId: String,
+         interactionType: OWSInteractionType,
+         hasRenderableContent: Bool,
+         selectionType: CVSelectionType) {
+
+        self.interactionId = interactionId
+        self.interactionType = interactionType
+        self.hasRenderableContent = hasRenderableContent
+        self.selectionType = selectionType
+    }
+
+    init(interaction: TSInteraction,
+         selectionType: CVSelectionType) {
+
+        self.interactionId = interaction.uniqueId
+        self.interactionType = interaction.interactionType
+        if let message = interaction as? TSMessage {
+            self.hasRenderableContent = message.hasRenderableContent()
+        } else {
+            self.hasRenderableContent = false
+        }
+        self.selectionType = selectionType
+    }
 }
 
 // MARK: -
@@ -55,8 +80,7 @@ public class CVSelectionState: NSObject {
         owsAssertDebug(!isSelected(interactionId, selectionType: selectionType))
 
         if let oldItem = itemMap[interactionId] {
-            let newItem = CVSelectionItem(interactionId: interactionId,
-                                          interactionType: interaction.interactionType,
+            let newItem = CVSelectionItem(interaction: interaction,
                                           selectionType: oldItem.selectionType.union(selectionType))
             owsAssertDebug(!newItem.selectionType.isEmpty)
             owsAssertDebug(oldItem.interactionId == newItem.interactionId)
@@ -67,8 +91,7 @@ public class CVSelectionState: NSObject {
             }
             itemMap[interactionId] = newItem
         } else {
-            let newItem = CVSelectionItem(interactionId: interactionId,
-                                          interactionType: interaction.interactionType,
+            let newItem = CVSelectionItem(interaction: interaction,
                                           selectionType: selectionType)
             itemMap[interactionId] = newItem
         }
@@ -91,8 +114,7 @@ public class CVSelectionState: NSObject {
         owsAssertDebug(isSelected(interactionId, selectionType: selectionType))
 
         if let oldItem = itemMap[interactionId] {
-            let newItem = CVSelectionItem(interactionId: interactionId,
-                                          interactionType: interaction.interactionType,
+            let newItem = CVSelectionItem(interaction: interaction,
                                           selectionType: oldItem.selectionType.subtracting(selectionType))
             owsAssertDebug(oldItem.interactionId == newItem.interactionId)
             owsAssertDebug(oldItem.interactionType == newItem.interactionType)

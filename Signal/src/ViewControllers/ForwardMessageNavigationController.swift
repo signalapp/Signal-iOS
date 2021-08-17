@@ -386,16 +386,31 @@ extension ForwardMessageNavigationController {
         firstly(on: .global()) {
             self.recipientThreads(for: recipientConversations)
         }.then(on: .main) { (recipientThreads: [RecipientThread]) -> Promise<Void> in
-            Self.databaseStorage.write { transaction in
+            try Self.databaseStorage.write { transaction in
                 for recipientThread in recipientThreads {
                     // We're sending a message to this thread, approve any pending message request
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread.thread,
                                                                                                     transaction: transaction)
                 }
+
+                func hasRenderableContent(interaction: TSInteraction) -> Bool {
+                    guard let message = interaction as? TSMessage else {
+                        return false
+                    }
+                    return message.hasRenderableContent()
+                }
+
+                // Make sure the message hasn't been deleted, etc. (e.g. view-once messages h
+                for item in content.allItems {
+                    let interactionId = item.itemViewModel.interaction.uniqueId
+                    guard let latestInteraction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction),
+                          hasRenderableContent(interaction: latestInteraction) else {
+                        throw ForwardError.missingInteraction
+                    }
+                }
             }
 
             // TODO: Ideally we would re-filter mentions at the last minute.
-            // TODO: Verify that messages have not disappeared.
 
             // TODO: Ideally we would enqueue all with a single write tranasction.
             return firstly {
