@@ -96,9 +96,6 @@ public final class CallMessage : ControlMessage {
             SNLog("Couldn't construct call message proto from: \(self).")
             return nil
         }
-        if case .offer = kind {
-            print("[Calls] Converting offer message to proto.")
-        }
         let type: SNProtoCallMessage.SNProtoCallMessageType
         switch kind {
         case .offer: type = .offer

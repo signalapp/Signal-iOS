@@ -105,7 +105,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     
     // MARK: Signaling
     public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        print("[Calls] Initiating call.")
+        print("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
@@ -123,8 +123,11 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                     let message = CallMessage()
                     message.kind = .offer
                     message.sdps = [ sdp.sdp ]
-                    MessageSender.send(message, in: thread, using: transaction)
-                    seal.fulfill(())
+                    MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
+                        seal.fulfill(())
+                    }.catch2 { error in
+                        seal.reject(error)
+                    }
                 }
             }
         }
@@ -132,7 +135,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func sendAnswer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
-        print("[Calls] Accepting call.")
+        print("[Calls] Sending answer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.answer(for: mediaConstraints) { [weak self] sdp, error in
@@ -150,8 +153,11 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                     let message = CallMessage()
                     message.kind = .answer
                     message.sdps = [ sdp.sdp ]
-                    MessageSender.send(message, in: thread, using: transaction)
-                    seal.fulfill(())
+                    MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
+                        seal.fulfill(())
+                    }.catch2 { error in
+                        seal.reject(error)
+                    }
                 }
             }
         }
@@ -160,9 +166,11 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     
     private func queueICECandidateForSending(_ candidate: RTCIceCandidate) {
         queuedICECandidates.append(candidate)
-        iceCandidateSendTimer?.invalidate()
-        iceCandidateSendTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-            self.sendICECandidates()
+        DispatchQueue.main.async {
+            self.iceCandidateSendTimer?.invalidate()
+            self.iceCandidateSendTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                self.sendICECandidates()
+            }
         }
     }
     
@@ -170,6 +178,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
         Storage.write { transaction in
             let candidates = self.queuedICECandidates
             guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
+            print("[Calls] Batch sending \(candidates.count) ICE candidates.")
             let message = CallMessage()
             let sdps = candidates.map { $0.sdp }
             let sdpMLineIndexes = candidates.map { UInt32($0.sdpMLineIndex) }
@@ -177,7 +186,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
             message.kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
             message.sdps = sdps
             self.queuedICECandidates.removeAll()
-            MessageSender.send(message, in: thread, using: transaction)
+            MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
         }
     }
     
@@ -211,7 +220,6 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        print("[Calls] ICE candidate generated.")
         queueICECandidateForSending(candidate)
     }
     
