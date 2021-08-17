@@ -280,7 +280,7 @@ class MediaGallery: Dependencies {
                     return
                 }
                 guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
-                    owsFailDebug("message was unexpectedly nil")
+                    Logger.warn("message was unexpectedly nil")
                     return
                 }
 
