@@ -9,6 +9,6 @@ extension CallVCV2 : CameraManagerDelegate {
         let timestampNs = Int64(timestamp * 1000000000)
         let frame = RTCVideoFrame(buffer: rtcPixelBuffer, rotation: RTCVideoRotation._0, timeStampNs: timestampNs)
         frame.timeStamp = Int32(timestamp)
-        callManager.handleLocalFrameCaptured(frame)
+        webRTCWrapper.handleLocalFrameCaptured(frame)
     }
 }

@@ -182,7 +182,7 @@ static NSTimeInterval launchStartedAt;
     [SNConfiguration performMainSetup];
 
     [SNAppearance switchToSessionAppearance];
-
+    
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
@@ -219,10 +219,11 @@ static NSTimeInterval launchStartedAt;
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
 
-    // Loki - Observe data nuke request notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
     
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
+    
+    [self setUpCallHandling];
 
     return YES;
 }

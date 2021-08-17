@@ -4,10 +4,10 @@ extension WebRTCWrapper {
     
     public func handleICECandidate(_ candidate: RTCIceCandidate) {
         print("[Calls] Received ICE candidate message.")
-        candidateQueue.append(candidate)
+        peerConnection.add(candidate)
     }
     
-    public func handleRemoteSDP(_ sdp: RTCSessionDescription) {
+    public func handleRemoteSDP(_ sdp: RTCSessionDescription, from sessionID: String) {
         print("[Calls] Received remote SDP: \(sdp.sdp).")
         peerConnection.setRemoteDescription(sdp, completionHandler: { [weak self] error in
             if let error = error {
@@ -15,8 +15,10 @@ extension WebRTCWrapper {
             } else {
                 guard let self = self,
                     sdp.type == .offer, self.peerConnection.localDescription == nil else { return }
-                // Answer the call
-                self.answer().retainUntilComplete()
+                // Automatically answer the call
+                Storage.write { transaction in
+                    self.sendAnswer(to: sessionID, using: transaction).retainUntilComplete()
+                }
             }
         })
     }

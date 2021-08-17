@@ -1,15 +1,12 @@
 import WebRTC
+import SessionUIKit
+import SessionMessagingKit
+import SessionUtilitiesKit
 
-final class CallVCV2 : UIViewController {
-    let roomID = "37923672516" // NOTE: You need to change this every time to ensure the room isn't full
-    var room: RoomInfo?
-    var socket: WebSocket?
-    
-    lazy var callManager: WebRTCWrapper = {
-        let result = WebRTCWrapper()
-        result.delegate = self
-        return result
-    }()
+final class CallVCV2 : UIViewController, WebRTCWrapperDelegate {
+    let sessionID: String
+    let mode: Mode
+    let webRTCWrapper: WebRTCWrapper
     
     lazy var cameraManager: CameraManager = {
         let result = CameraManager()
@@ -18,30 +15,53 @@ final class CallVCV2 : UIViewController {
     }()
     
     lazy var videoCapturer: RTCVideoCapturer = {
-        return RTCCameraVideoCapturer(delegate: callManager.localVideoSource)
+        return RTCCameraVideoCapturer(delegate: webRTCWrapper.localVideoSource)
     }()
     
+    // MARK: Mode
+    enum Mode {
+        case offer
+        case answer(sdp: RTCSessionDescription)
+    }
+    
     // MARK: Lifecycle
+    init(for sessionID: String, mode: Mode) {
+        self.sessionID = sessionID
+        self.mode = mode
+        self.webRTCWrapper = WebRTCWrapper.current ?? WebRTCWrapper(for: sessionID)
+        super.init(nibName: nil, bundle: nil)
+        self.webRTCWrapper.delegate = self
+    }
+    
+    required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        WebRTCWrapper.current = webRTCWrapper
         setUpViewHierarchy()
         cameraManager.prepare()
         touch(videoCapturer)
-        autoConnectToTestRoom()
+        if case .offer = mode {
+            Storage.write { transaction in
+                self.webRTCWrapper.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
+            }
+        } else if case let .answer(sdp) = mode {
+            webRTCWrapper.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+        }
     }
     
     func setUpViewHierarchy() {
         // Remote video view
         let remoteVideoView = RTCMTLVideoView()
         remoteVideoView.contentMode = .scaleAspectFill
-        callManager.attachRemoteRenderer(remoteVideoView)
+        webRTCWrapper.attachRemoteRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: view)
         // Local video view
         let localVideoView = RTCMTLVideoView()
         localVideoView.contentMode = .scaleAspectFill
-        callManager.attachLocalRenderer(localVideoView)
+        webRTCWrapper.attachLocalRenderer(localVideoView)
         localVideoView.set(.width, to: 80)
         localVideoView.set(.height, to: 173)
         view.addSubview(localVideoView)
@@ -60,37 +80,7 @@ final class CallVCV2 : UIViewController {
         cameraManager.stop()
     }
     
-    // MARK: General
-    func autoConnectToTestRoom() {
-        // Connect to a random test room
-        TestCallServer.join(roomID: roomID).done2 { [weak self] room in
-            print("[Calls] Connected to test room.")
-            guard let self = self else { return }
-            self.room = room
-            if let messages = room.messages {
-                self.handle(messages)
-            }
-            let socket = WebSocket(url: URL(string: room.wssURL)!)
-            socket.delegate = self
-            socket.connect()
-            self.socket = socket
-        }.catch2 { error in
-            SNLog("Couldn't join room due to error: \(error).")
-        }
-    }
-    
-    func handle(_ messages: [String]) {
-        print("[Calls] Handling messages:")
-        messages.forEach { print("[Calls] \($0)") }
-        messages.forEach { message in
-            let signalingMessage = SignalingMessage.from(message: message)
-            switch signalingMessage {
-            case .candidate(let candidate): callManager.handleICECandidate(candidate)
-            case .answer(let answer): callManager.handleRemoteSDP(answer)
-            case .offer(let offer): callManager.handleRemoteSDP(offer)
-            default: break
-            }
-        }
-        callManager.drainICECandidateQueue()
+    deinit {
+        WebRTCWrapper.current = nil
     }
 }

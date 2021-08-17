@@ -3,15 +3,20 @@ import WebRTC
 
 public protocol WebRTCWrapperDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
-
-    func sendSDP(_ sdp: RTCSessionDescription)
-    func sendICECandidate(_ candidate: RTCIceCandidate)
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
 public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: WebRTCWrapperDelegate?
-    internal var candidateQueue: [RTCIceCandidate] = []
+    private let contactSessionID: String
+    
+    private let defaultICEServers = [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302"
+    ]
     
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
@@ -24,7 +29,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
-        configuration.iceServers = [ RTCIceServer(urlStrings: TestCallConfig.defaultICEServers) ]
+        configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServers) ]
         configuration.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
@@ -74,7 +79,10 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Initialization
-    public override init() {
+    public static var current: WebRTCWrapper?
+    
+    public init(for contactSessionID: String) {
+        self.contactSessionID = contactSessionID
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
         peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
@@ -93,19 +101,10 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
         audioSession.unlockForConfiguration()
     }
     
-    // MARK: General
-    public func drainICECandidateQueue() {
-        print("[Calls] Draining ICE candidate queue.")
-        candidateQueue.forEach { peerConnection.add($0) }
-        candidateQueue.removeAll()
-    }
-    
     // MARK: Call Management
-    public func offer() -> Promise<Void> {
+    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Initiating call.")
-        /*
-        guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
-         */
+        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
@@ -118,26 +117,21 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
-                
-                self.delegate?.sendSDP(sdp)
-                
-                /*
-                let message = CallMessage()
-                message.type = .offer
-                message.sdp = sdp.sdp
-                MessageSender.send(message, in: thread, using: transaction)
-                 */
-                seal.fulfill(())
+                DispatchQueue.main.async {
+                    let message = CallMessage()
+                    message.kind = .offer
+                    message.sdp = sdp.sdp
+                    MessageSender.send(message, in: thread, using: transaction)
+                    seal.fulfill(())
+                }
             }
         }
         return promise
     }
     
-    public func answer() -> Promise<Void> {
+    public func sendAnswer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Accepting call.")
-        /*
-        guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
-         */
+        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         peerConnection.answer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
@@ -150,16 +144,13 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                         return seal.reject(error)
                     }
                 }
-                
-                self.delegate?.sendSDP(sdp)
-                
-                /*
-                let message = CallMessage()
-                message.type = .answer
-                message.sdp = sdp.sdp
-                MessageSender.send(message, in: thread, using: transaction)
-                 */
-                seal.fulfill(())
+                DispatchQueue.main.async {
+                    let message = CallMessage()
+                    message.kind = .answer
+                    message.sdp = sdp.sdp
+                    MessageSender.send(message, in: thread, using: transaction)
+                    seal.fulfill(())
+                }
             }
         }
         return promise
@@ -171,7 +162,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     
     // MARK: Delegate
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCSignalingState) {
-        SNLog("Signaling state changed to: \(state).")
+        print("[Calls] Signaling state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
@@ -187,23 +178,29 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
-        SNLog("ICE connection state changed to: \(state).")
+        print("[Calls] ICE connection state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceGatheringState) {
-        SNLog("ICE gathering state changed to: \(state).")
+        print("[Calls] ICE gathering state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        SNLog("ICE candidate generated.")
-        delegate?.sendICECandidate(candidate)
+        print("[Calls] ICE candidate generated.")
+        Storage.write { transaction in
+            guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
+            let message = CallMessage()
+            message.kind = .iceCandidate(sdpMLineIndex: UInt32(candidate.sdpMLineIndex), sdpMid: candidate.sdpMid!)
+            message.sdp = candidate.sdp
+            MessageSender.send(message, in: thread, using: transaction)
+        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        SNLog("\(candidates.count) ICE candidate(s) removed.")
+        print("[Calls] \(candidates.count) ICE candidate(s) removed.")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        SNLog("Data channel opened.")
+        print("[Calls] Data channel opened.")
     }
 }

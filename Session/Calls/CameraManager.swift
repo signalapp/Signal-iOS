@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import SessionUtilitiesKit
 
 @objc
 protocol CameraManagerDelegate : AnyObject {

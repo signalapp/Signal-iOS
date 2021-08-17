@@ -1,7 +1,8 @@
 import SessionUtilitiesKit
 
 public enum MessageReceiver {
-    private static var lastEncryptionKeyPairRequest: [String:Date] = [:] 
+    private static var lastEncryptionKeyPairRequest: [String:Date] = [:]
+    public static var handleOfferCallMessage: ((CallMessage) -> Void)?
 
     public enum Error : LocalizedError {
         case duplicateMessage
@@ -126,6 +127,7 @@ public enum MessageReceiver {
             if let configurationMessage = ConfigurationMessage.fromProto(proto) { return configurationMessage }
             if let unsendRequest = UnsendRequest.fromProto(proto) { return unsendRequest }
             if let visibleMessage = VisibleMessage.fromProto(proto) { return visibleMessage }
+            if let callMessage = CallMessage.fromProto(proto) { return callMessage }
             return nil
         }()
         if let message = message {

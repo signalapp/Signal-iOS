@@ -1,7 +1,29 @@
 import PromiseKit
+import WebRTC
 
 extension AppDelegate {
 
+    @objc
+    func setUpCallHandling() {
+        MessageReceiver.handleOfferCallMessage = { message in
+            DispatchQueue.main.async {
+                let sdp = RTCSessionDescription(type: .offer, sdp: message.sdp!)
+                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+                let alert = UIAlertController(title: "Incoming Call", message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { _ in
+                    let callVC = CallVCV2(for: message.sender!, mode: .answer(sdp: sdp))
+                    presentingVC.dismiss(animated: true) {
+                        presentingVC.present(callVC, animated: true, completion: nil)
+                    }
+                }))
+                alert.addAction(UIAlertAction(title: "Decline", style: .default, handler: { _ in
+                    // Do nothing
+                }))
+                presentingVC.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+    
     @objc(syncConfigurationIfNeeded)
     func syncConfigurationIfNeeded() {
         guard Storage.shared.getUser()?.name != nil else { return }
@@ -43,7 +65,7 @@ extension AppDelegate {
     
     @objc func getAppModeOrSystemDefault() -> AppMode {
         let userDefaults = UserDefaults.standard
-        
+
         guard userDefaults.dictionaryRepresentation().keys.contains("appMode") else {
             if #available(iOS 13.0, *) {
                 return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light

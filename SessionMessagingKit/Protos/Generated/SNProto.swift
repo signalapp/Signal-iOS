@@ -656,6 +656,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case offer = 1
         case answer = 2
         case provisionalAnswer = 3
+        case iceCandidate = 4
     }
 
     private class func SNProtoCallMessageTypeWrap(_ value: SessionProtos_CallMessage.TypeEnum) -> SNProtoCallMessageType {
@@ -663,6 +664,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .offer: return .offer
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
+        case .iceCandidate: return .iceCandidate
         }
     }
 
@@ -671,6 +673,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .offer: return .offer
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
+        case .iceCandidate: return .iceCandidate
         }
     }
 
@@ -683,6 +686,12 @@ extension SNProtoContent.SNProtoContentBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoCallMessageBuilder {
         let builder = SNProtoCallMessageBuilder(type: type, sdp: sdp)
+        if hasSdpMlineIndex {
+            builder.setSdpMlineIndex(sdpMlineIndex)
+        }
+        if let _value = sdpMid {
+            builder.setSdpMid(_value)
+        }
         return builder
     }
 
@@ -707,6 +716,14 @@ extension SNProtoContent.SNProtoContentBuilder {
             proto.sdp = valueParam
         }
 
+        @objc public func setSdpMlineIndex(_ valueParam: UInt32) {
+            proto.sdpMlineIndex = valueParam
+        }
+
+        @objc public func setSdpMid(_ valueParam: String) {
+            proto.sdpMid = valueParam
+        }
+
         @objc public func build() throws -> SNProtoCallMessage {
             return try SNProtoCallMessage.parseProto(proto)
         }
@@ -721,6 +738,23 @@ extension SNProtoContent.SNProtoContentBuilder {
     @objc public let type: SNProtoCallMessageType
 
     @objc public let sdp: String
+
+    @objc public var sdpMlineIndex: UInt32 {
+        return proto.sdpMlineIndex
+    }
+    @objc public var hasSdpMlineIndex: Bool {
+        return proto.hasSdpMlineIndex
+    }
+
+    @objc public var sdpMid: String? {
+        guard proto.hasSdpMid else {
+            return nil
+        }
+        return proto.sdpMid
+    }
+    @objc public var hasSdpMid: Bool {
+        return proto.hasSdpMid
+    }
 
     private init(proto: SessionProtos_CallMessage,
                  type: SNProtoCallMessageType,

@@ -1,5 +1,6 @@
 import SignalCoreKit
 import SessionSnodeKit
+import WebRTC
 
 extension MessageReceiver {
 
@@ -16,6 +17,7 @@ extension MessageReceiver {
         case let message as ExpirationTimerUpdate: handleExpirationTimerUpdate(message, using: transaction)
         case let message as ConfigurationMessage: handleConfigurationMessage(message, using: transaction)
         case let message as UnsendRequest: handleUnsendRequest(message, using: transaction)
+        case let message as CallMessage: handleCallMessage(message, using: transaction)
         case let message as VisibleMessage: try handleVisibleMessage(message, associatedWithProto: proto, openGroupID: openGroupID, isBackgroundPoll: isBackgroundPoll, using: transaction)
         default: fatalError()
         }
@@ -246,6 +248,33 @@ extension MessageReceiver {
                 }
                 messageToDelete.updateForDeletion(with: transaction)
             }
+        }
+    }
+    
+    
+    
+    // MARK: - Call Messages
+    
+    public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
+        let webRTCWrapper: WebRTCWrapper
+        if let current = WebRTCWrapper.current {
+            webRTCWrapper = current
+        } else {
+            WebRTCWrapper.current = WebRTCWrapper(for: message.sender!)
+            webRTCWrapper = WebRTCWrapper.current!
+        }
+        switch message.kind! {
+        case .offer:
+            print("[Calls] Received offer message.")
+            handleOfferCallMessage?(message)
+        case .answer:
+            print("[Calls] Received answer message.")
+            let sdp = RTCSessionDescription(type: .answer, sdp: message.sdp!)
+            webRTCWrapper.handleRemoteSDP(sdp, from: message.sender!)
+        case .provisionalAnswer: break // TODO: Implement
+        case let .iceCandidate(sdpMLineIndex, sdpMid):
+            let candidate = RTCIceCandidate(sdp: message.sdp!, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
+            webRTCWrapper.handleICECandidate(candidate)
         }
     }
     

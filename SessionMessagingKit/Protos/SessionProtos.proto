@@ -57,12 +57,15 @@ message CallMessage {
       OFFER              = 1;
       ANSWER             = 2;
       PROVISIONAL_ANSWER = 3;
+      ICE_CANDIDATE      = 4;
     }
 
     // @required
-    required Type   type = 1;
+    required Type   type          = 1;
     // @required
-    required string sdp  = 2;
+    required string sdp           = 2;
+    optional uint32 sdpMLineIndex = 3;
+    optional string sdpMid        = 4;
 }
 
 message KeyPair {

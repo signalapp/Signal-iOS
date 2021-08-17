@@ -159,7 +159,6 @@
 		B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */; };
 		B806ECA126C4A7E4008BDA44 /* WebRTCWrapper+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806ECA026C4A7E4008BDA44 /* WebRTCWrapper+UI.swift */; };
 		B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */; };
-		B80F469A26C63DD000DCE243 /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80F469926C63DD000DCE243 /* RoomInfo.swift */; };
 		B817AD9A26436593009DF825 /* SimplifiedConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */; };
 		B817AD9C26436F73009DF825 /* ThreadPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */; };
 		B81D25C426157F40004D1FE1 /* storage-seed-3.crt in Resources */ = {isa = PBXBuildFile; fileRef = B81D25B926157F20004D1FE1 /* storage-seed-3.crt */; };
@@ -202,9 +201,7 @@
 		B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08523399CEF000F5AE3 /* SeedModal.swift */; };
 		B875885A264503A6000E60D0 /* JoinOpenGroupModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8758859264503A6000E60D0 /* JoinOpenGroupModal.swift */; };
 		B877E24226CA12910007970A /* CallVCV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E24126CA12910007970A /* CallVCV2.swift */; };
-		B877E24426CA12F00007970A /* CallVCV2+MessageSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E24326CA12F00007970A /* CallVCV2+MessageSending.swift */; };
 		B877E24626CA13BA0007970A /* CallVCV2+Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E24526CA13BA0007970A /* CallVCV2+Camera.swift */; };
-		B877E24826CA15170007970A /* CallVCV2+WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E24726CA15170007970A /* CallVCV2+WebSocket.swift */; };
 		B8783E9E23EB948D00404FB8 /* UILabel+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */; };
 		B879D449247E1BE300DB3608 /* PathVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B879D448247E1BE300DB3608 /* PathVC.swift */; };
 		B87EF17126367CF800124B3C /* FileServerAPIV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = B87EF17026367CF800124B3C /* FileServerAPIV2.swift */; };
@@ -252,11 +249,7 @@
 		B8B3204E258C15C80020074B /* ContactsMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B32044258C117C0020074B /* ContactsMigration.swift */; };
 		B8B320B7258C30D70020074B /* HTMLMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B320B6258C30D70020074B /* HTMLMetadata.swift */; };
 		B8B558F126C4BB0600693325 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F026C4BB0600693325 /* CameraManager.swift */; };
-		B8B558F326C4CA4600693325 /* TestCallConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558F226C4CA4600693325 /* TestCallConfig.swift */; };
-		B8B558FB26C4D25C00693325 /* WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FA26C4D25C00693325 /* WebSocket.swift */; };
-		B8B558FD26C4D35400693325 /* TestCallServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FC26C4D35400693325 /* TestCallServer.swift */; };
 		B8B558FF26C4E05E00693325 /* WebRTCWrapper+MessageHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FE26C4E05E00693325 /* WebRTCWrapper+MessageHandling.swift */; };
-		B8B5590126C4E2A400693325 /* SignalingMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B5590026C4E2A400693325 /* SignalingMessage.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
@@ -1156,7 +1149,6 @@
 		B8041AA625C90927003C2166 /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
 		B806ECA026C4A7E4008BDA44 /* WebRTCWrapper+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTCWrapper+UI.swift"; sourceTree = "<group>"; };
 		B80A579E23DFF1F300876683 /* NewClosedGroupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewClosedGroupVC.swift; sourceTree = "<group>"; };
-		B80F469926C63DD000DCE243 /* RoomInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
 		B817AD9926436593009DF825 /* SimplifiedConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimplifiedConversationCell.swift; sourceTree = "<group>"; };
 		B817AD9B26436F73009DF825 /* ThreadPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerVC.swift; sourceTree = "<group>"; };
 		B81D25B726157F20004D1FE1 /* storage-seed-1.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "storage-seed-1.crt"; sourceTree = "<group>"; };
@@ -1203,9 +1195,7 @@
 		B87588582644CA9D000E60D0 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8758859264503A6000E60D0 /* JoinOpenGroupModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinOpenGroupModal.swift; sourceTree = "<group>"; };
 		B877E24126CA12910007970A /* CallVCV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallVCV2.swift; sourceTree = "<group>"; };
-		B877E24326CA12F00007970A /* CallVCV2+MessageSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallVCV2+MessageSending.swift"; sourceTree = "<group>"; };
 		B877E24526CA13BA0007970A /* CallVCV2+Camera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallVCV2+Camera.swift"; sourceTree = "<group>"; };
-		B877E24726CA15170007970A /* CallVCV2+WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallVCV2+WebSocket.swift"; sourceTree = "<group>"; };
 		B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+Interaction.swift"; sourceTree = "<group>"; };
 		B879D448247E1BE300DB3608 /* PathVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathVC.swift; sourceTree = "<group>"; };
 		B879D44A247E1D9200DB3608 /* PathStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathStatusView.swift; sourceTree = "<group>"; };
@@ -1230,11 +1220,7 @@
 		B8B32044258C117C0020074B /* ContactsMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsMigration.swift; sourceTree = "<group>"; };
 		B8B320B6258C30D70020074B /* HTMLMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadata.swift; sourceTree = "<group>"; };
 		B8B558F026C4BB0600693325 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
-		B8B558F226C4CA4600693325 /* TestCallConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCallConfig.swift; sourceTree = "<group>"; };
-		B8B558FA26C4D25C00693325 /* WebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocket.swift; sourceTree = "<group>"; };
-		B8B558FC26C4D35400693325 /* TestCallServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestCallServer.swift; sourceTree = "<group>"; };
 		B8B558FE26C4E05E00693325 /* WebRTCWrapper+MessageHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTCWrapper+MessageHandling.swift"; sourceTree = "<group>"; };
-		B8B5590026C4E2A400693325 /* SignalingMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalingMessage.swift; sourceTree = "<group>"; };
 		B8B5BCEB2394D869003823C9 /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		B8BAC75B2695645400EA1759 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8BAC75C2695648500EA1759 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2194,18 +2180,6 @@
 			path = "Message Cells";
 			sourceTree = "<group>";
 		};
-		B877E24026CA11170007970A /* Temp */ = {
-			isa = PBXGroup;
-			children = (
-				B8B5590026C4E2A400693325 /* SignalingMessage.swift */,
-				B8B558FA26C4D25C00693325 /* WebSocket.swift */,
-				B8B558F226C4CA4600693325 /* TestCallConfig.swift */,
-				B8B558FC26C4D35400693325 /* TestCallServer.swift */,
-				B80F469926C63DD000DCE243 /* RoomInfo.swift */,
-			);
-			path = Temp;
-			sourceTree = "<group>";
-		};
 		B887C38125C7C79700E11DAE /* Input View */ = {
 			isa = PBXGroup;
 			children = (
@@ -2348,9 +2322,7 @@
 			isa = PBXGroup;
 			children = (
 				B877E24126CA12910007970A /* CallVCV2.swift */,
-				B877E24326CA12F00007970A /* CallVCV2+MessageSending.swift */,
 				B877E24526CA13BA0007970A /* CallVCV2+Camera.swift */,
-				B877E24726CA15170007970A /* CallVCV2+WebSocket.swift */,
 				B8B558F026C4BB0600693325 /* CameraManager.swift */,
 			);
 			path = Calls;
@@ -2385,7 +2357,6 @@
 		B8DE1FB226C22F1F0079C9CE /* Calls */ = {
 			isa = PBXGroup;
 			children = (
-				B877E24026CA11170007970A /* Temp */,
 				B8DE1FB326C22F2F0079C9CE /* WebRTCWrapper.swift */,
 				B806ECA026C4A7E4008BDA44 /* WebRTCWrapper+UI.swift */,
 				B8B558FE26C4E05E00693325 /* WebRTCWrapper+MessageHandling.swift */,
@@ -4753,7 +4724,6 @@
 				C32C5B3F256DC1DF003C73A2 /* TSQuotedMessage+Conversion.swift in Sources */,
 				B8EB20EE2640F28000773E52 /* VisibleMessage+OpenGroupInvitation.swift in Sources */,
 				C3C2A7712553A41E00C340D1 /* ControlMessage.swift in Sources */,
-				B80F469A26C63DD000DCE243 /* RoomInfo.swift in Sources */,
 				C32C5D19256DD493003C73A2 /* OWSLinkPreview.swift in Sources */,
 				C32C5CF0256DD3E4003C73A2 /* Storage+Shared.swift in Sources */,
 				C300A5BD2554B00D00555489 /* ReadReceipt.swift in Sources */,
@@ -4766,7 +4736,6 @@
 				C3DA9C0725AE7396008F7C7E /* ConfigurationMessage.swift in Sources */,
 				B8856CEE256F1054001CE70E /* OWSAudioPlayer.m in Sources */,
 				C32C5EDC256DF501003C73A2 /* YapDatabaseConnection+OWS.m in Sources */,
-				B8B558FD26C4D35400693325 /* TestCallServer.swift in Sources */,
 				C3BBE0762554CDA60050F1E3 /* Configuration.swift in Sources */,
 				C35D76DB26606304009AA5FB /* ThreadUpdateBatcher.swift in Sources */,
 				B8B32033258B235D0020074B /* Storage+Contacts.swift in Sources */,
@@ -4776,7 +4745,6 @@
 				C32C5AAB256DBE8F003C73A2 /* TSIncomingMessage+Conversion.swift in Sources */,
 				B866CE112581C1A900535CC4 /* Sodium+Conversion.swift in Sources */,
 				C32C5A88256DBCF9003C73A2 /* MessageReceiver+Handling.swift in Sources */,
-				B8B558F326C4CA4600693325 /* TestCallConfig.swift in Sources */,
 				C32C5C1B256DC9E0003C73A2 /* General.swift in Sources */,
 				C32C5A02256DB658003C73A2 /* MessageSender+Convenience.swift in Sources */,
 				B8566C6C256F60F50045A0B9 /* OWSUserProfile.m in Sources */,
@@ -4786,7 +4754,6 @@
 				C32C5BEF256DC8EE003C73A2 /* OWSDisappearingMessagesJob.m in Sources */,
 				C34A977425A3E34A00852C71 /* ClosedGroupControlMessage.swift in Sources */,
 				B88FA7B826045D100049422F /* OpenGroupAPIV2.swift in Sources */,
-				B8B558FB26C4D25C00693325 /* WebSocket.swift in Sources */,
 				C32C5E97256DE0CB003C73A2 /* OWSPrimaryStorage.m in Sources */,
 				C32C5EB9256DE130003C73A2 /* OWSQuotedReplyModel+Conversion.swift in Sources */,
 				C3A71D1F25589AC30043A11F /* WebSocketResources.pb.swift in Sources */,
@@ -4824,7 +4791,6 @@
 				C32C5D23256DD4C0003C73A2 /* Mention.swift in Sources */,
 				C32C5FD6256E0346003C73A2 /* Notification+Thread.swift in Sources */,
 				C3BBE0C72554F1570050F1E3 /* FixedWidthInteger+BigEndian.swift in Sources */,
-				B8B5590126C4E2A400693325 /* SignalingMessage.swift in Sources */,
 				B806ECA126C4A7E4008BDA44 /* WebRTCWrapper+UI.swift in Sources */,
 				C32C5C88256DD0D2003C73A2 /* Storage+Messaging.swift in Sources */,
 				C32C59C7256DB41F003C73A2 /* TSThread.m in Sources */,
@@ -4958,7 +4924,6 @@
 				B8041A9525C8FA1D003C2166 /* MediaLoaderView.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
-				B877E24826CA15170007970A /* CallVCV2+WebSocket.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				C328253025CA55370062D0A7 /* ContextMenuWindow.swift in Sources */,
 				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
@@ -4968,7 +4933,6 @@
 				C328250F25CA06020062D0A7 /* VoiceMessageView.swift in Sources */,
 				B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */,
 				3488F9362191CC4000E524CC /* MediaView.swift in Sources */,
-				B877E24426CA12F00007970A /* CallVCV2+MessageSending.swift in Sources */,
 				B8569AC325CB5D2900DBA3DB /* ConversationVC+Interaction.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				C31D1DE32521718E005D4DA8 /* UserSelectionVC.swift in Sources */,
