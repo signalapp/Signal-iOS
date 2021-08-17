@@ -256,21 +256,27 @@ extension MessageReceiver {
     // MARK: - Call Messages
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
-        let webRTCSession: WebRTCSession
-        if let current = WebRTCSession.current {
-            webRTCSession = current
-        } else {
-            WebRTCSession.current = WebRTCSession(for: message.sender!)
-            webRTCSession = WebRTCSession.current!
+        func getWebRTCSession() -> WebRTCSession {
+            let result: WebRTCSession
+            if let current = WebRTCSession.current {
+                result = current
+            } else {
+                WebRTCSession.current = WebRTCSession(for: message.sender!)
+                result = WebRTCSession.current!
+            }
+            return result
         }
         switch message.kind! {
         case .offer:
             print("[Calls] Received offer message.")
+            // Delegate to the main app, which is expected to show a dialog confirming
+            // that the user wants to pick up the call. When they do, the SDP contained
+            // in the offer message will be passed to WebRTCSession.handleRemoteSDP(_:from:).
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
             let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-            webRTCSession.handleRemoteSDP(sdp, from: message.sender!)
+            getWebRTCSession().handleRemoteSDP(sdp, from: message.sender!)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):
             var candidates: [RTCIceCandidate] = []
@@ -282,7 +288,7 @@ extension MessageReceiver {
                 let candidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
                 candidates.append(candidate)
             }
-            webRTCSession.handleICECandidates(candidates)
+            getWebRTCSession().handleICECandidates(candidates)
         }
     }
     
