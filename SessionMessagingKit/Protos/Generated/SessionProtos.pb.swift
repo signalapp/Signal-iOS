@@ -319,33 +319,11 @@ struct SessionProtos_CallMessage {
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
   mutating func clearType() {self._type = nil}
 
-  /// @required
-  var sdp: String {
-    get {return _sdp ?? String()}
-    set {_sdp = newValue}
-  }
-  /// Returns true if `sdp` has been explicitly set.
-  var hasSdp: Bool {return self._sdp != nil}
-  /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
-  mutating func clearSdp() {self._sdp = nil}
+  var sdps: [String] = []
 
-  var sdpMlineIndex: UInt32 {
-    get {return _sdpMlineIndex ?? 0}
-    set {_sdpMlineIndex = newValue}
-  }
-  /// Returns true if `sdpMlineIndex` has been explicitly set.
-  var hasSdpMlineIndex: Bool {return self._sdpMlineIndex != nil}
-  /// Clears the value of `sdpMlineIndex`. Subsequent reads from it will return its default value.
-  mutating func clearSdpMlineIndex() {self._sdpMlineIndex = nil}
+  var sdpMlineIndexes: [UInt32] = []
 
-  var sdpMid: String {
-    get {return _sdpMid ?? String()}
-    set {_sdpMid = newValue}
-  }
-  /// Returns true if `sdpMid` has been explicitly set.
-  var hasSdpMid: Bool {return self._sdpMid != nil}
-  /// Clears the value of `sdpMid`. Subsequent reads from it will return its default value.
-  mutating func clearSdpMid() {self._sdpMid = nil}
+  var sdpMids: [String] = []
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -354,7 +332,7 @@ struct SessionProtos_CallMessage {
     case offer // = 1
     case answer // = 2
     case provisionalAnswer // = 3
-    case iceCandidate // = 4
+    case iceCandidates // = 4
 
     init() {
       self = .offer
@@ -365,7 +343,7 @@ struct SessionProtos_CallMessage {
       case 1: self = .offer
       case 2: self = .answer
       case 3: self = .provisionalAnswer
-      case 4: self = .iceCandidate
+      case 4: self = .iceCandidates
       default: return nil
       }
     }
@@ -375,7 +353,7 @@ struct SessionProtos_CallMessage {
       case .offer: return 1
       case .answer: return 2
       case .provisionalAnswer: return 3
-      case .iceCandidate: return 4
+      case .iceCandidates: return 4
       }
     }
 
@@ -384,9 +362,6 @@ struct SessionProtos_CallMessage {
   init() {}
 
   fileprivate var _type: SessionProtos_CallMessage.TypeEnum? = nil
-  fileprivate var _sdp: String? = nil
-  fileprivate var _sdpMlineIndex: UInt32? = nil
-  fileprivate var _sdpMid: String? = nil
 }
 
 #if swift(>=4.2)
@@ -1817,14 +1792,13 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
   static let protoMessageName: String = _protobuf_package + ".CallMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
-    2: .same(proto: "sdp"),
-    3: .same(proto: "sdpMLineIndex"),
-    4: .same(proto: "sdpMid"),
+    2: .same(proto: "sdps"),
+    3: .same(proto: "sdpMLineIndexes"),
+    4: .same(proto: "sdpMids"),
   ]
 
   public var isInitialized: Bool {
     if self._type == nil {return false}
-    if self._sdp == nil {return false}
     return true
   }
 
@@ -1835,9 +1809,9 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self._sdp) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._sdpMlineIndex) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._sdpMid) }()
+      case 2: try { try decoder.decodeRepeatedStringField(value: &self.sdps) }()
+      case 3: try { try decoder.decodeRepeatedUInt32Field(value: &self.sdpMlineIndexes) }()
+      case 4: try { try decoder.decodeRepeatedStringField(value: &self.sdpMids) }()
       default: break
       }
     }
@@ -1847,23 +1821,23 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     }
-    if let v = self._sdp {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    if !self.sdps.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.sdps, fieldNumber: 2)
     }
-    if let v = self._sdpMlineIndex {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    if !self.sdpMlineIndexes.isEmpty {
+      try visitor.visitRepeatedUInt32Field(value: self.sdpMlineIndexes, fieldNumber: 3)
     }
-    if let v = self._sdpMid {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    if !self.sdpMids.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.sdpMids, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SessionProtos_CallMessage, rhs: SessionProtos_CallMessage) -> Bool {
     if lhs._type != rhs._type {return false}
-    if lhs._sdp != rhs._sdp {return false}
-    if lhs._sdpMlineIndex != rhs._sdpMlineIndex {return false}
-    if lhs._sdpMid != rhs._sdpMid {return false}
+    if lhs.sdps != rhs.sdps {return false}
+    if lhs.sdpMlineIndexes != rhs.sdpMlineIndexes {return false}
+    if lhs.sdpMids != rhs.sdpMids {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1874,7 +1848,7 @@ extension SessionProtos_CallMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding 
     1: .same(proto: "OFFER"),
     2: .same(proto: "ANSWER"),
     3: .same(proto: "PROVISIONAL_ANSWER"),
-    4: .same(proto: "ICE_CANDIDATE"),
+    4: .same(proto: "ICE_CANDIDATES"),
   ]
 }
 

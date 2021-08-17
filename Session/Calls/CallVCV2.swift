@@ -37,6 +37,7 @@ final class CallVCV2 : UIViewController, WebRTCWrapperDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
         WebRTCWrapper.current = webRTCWrapper
         setUpViewHierarchy()
         cameraManager.prepare()

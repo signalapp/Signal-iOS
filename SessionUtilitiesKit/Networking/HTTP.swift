@@ -109,7 +109,7 @@ public enum HTTP {
         }
     }
 
-    public static func execute(_ verb: Verb, _ url: String, body: Data?, headers: [String:String] = [:], timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
+    public static func execute(_ verb: Verb, _ url: String, body: Data?, timeout: TimeInterval = HTTP.timeout, useSeedNodeURLSession: Bool = false) -> Promise<JSON> {
         var request = URLRequest(url: URL(string: url)!)
         request.httpMethod = verb.rawValue
         request.httpBody = body
@@ -117,9 +117,6 @@ public enum HTTP {
         request.allHTTPHeaderFields?.removeValue(forKey: "User-Agent")
         request.setValue("WhatsApp", forHTTPHeaderField: "User-Agent") // Set a fake value
         request.setValue("en-us", forHTTPHeaderField: "Accept-Language") // Set a fake value
-        headers.forEach { (key, value) in
-            request.setValue(value, forHTTPHeaderField: key)
-        }
         let (promise, seal) = Promise<JSON>.pending()
         let urlSession = useSeedNodeURLSession ? seedNodeURLSession : snodeURLSession
         let task = urlSession.dataTask(with: request) { data, response, error in

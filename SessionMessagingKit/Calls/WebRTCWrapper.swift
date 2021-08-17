@@ -9,6 +9,8 @@ public protocol WebRTCWrapperDelegate : AnyObject {
 public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: WebRTCWrapperDelegate?
     private let contactSessionID: String
+    private var queuedICECandidates: [RTCIceCandidate] = []
+    private var iceCandidateSendTimer: Timer?
     
     private let defaultICEServers = [
         "stun:stun.l.google.com:19302",
@@ -101,7 +103,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
         audioSession.unlockForConfiguration()
     }
     
-    // MARK: Call Management
+    // MARK: Signaling
     public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Initiating call.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
@@ -120,7 +122,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                 DispatchQueue.main.async {
                     let message = CallMessage()
                     message.kind = .offer
-                    message.sdp = sdp.sdp
+                    message.sdps = [ sdp.sdp ]
                     MessageSender.send(message, in: thread, using: transaction)
                     seal.fulfill(())
                 }
@@ -147,13 +149,36 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
                 DispatchQueue.main.async {
                     let message = CallMessage()
                     message.kind = .answer
-                    message.sdp = sdp.sdp
+                    message.sdps = [ sdp.sdp ]
                     MessageSender.send(message, in: thread, using: transaction)
                     seal.fulfill(())
                 }
             }
         }
         return promise
+    }
+    
+    private func queueICECandidateForSending(_ candidate: RTCIceCandidate) {
+        queuedICECandidates.append(candidate)
+        iceCandidateSendTimer?.invalidate()
+        iceCandidateSendTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+            self.sendICECandidates()
+        }
+    }
+    
+    private func sendICECandidates() {
+        Storage.write { transaction in
+            let candidates = self.queuedICECandidates
+            guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
+            let message = CallMessage()
+            let sdps = candidates.map { $0.sdp }
+            let sdpMLineIndexes = candidates.map { UInt32($0.sdpMLineIndex) }
+            let sdpMids = candidates.map { $0.sdpMid! }
+            message.kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
+            message.sdps = sdps
+            self.queuedICECandidates.removeAll()
+            MessageSender.send(message, in: thread, using: transaction)
+        }
     }
     
     public func dropConnection() {
@@ -187,13 +212,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         print("[Calls] ICE candidate generated.")
-        Storage.write { transaction in
-            guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
-            let message = CallMessage()
-            message.kind = .iceCandidate(sdpMLineIndex: UInt32(candidate.sdpMLineIndex), sdpMid: candidate.sdpMid!)
-            message.sdp = candidate.sdp
-            MessageSender.send(message, in: thread, using: transaction)
-        }
+        queueICECandidateForSending(candidate)
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {

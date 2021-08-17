@@ -656,7 +656,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case offer = 1
         case answer = 2
         case provisionalAnswer = 3
-        case iceCandidate = 4
+        case iceCandidates = 4
     }
 
     private class func SNProtoCallMessageTypeWrap(_ value: SessionProtos_CallMessage.TypeEnum) -> SNProtoCallMessageType {
@@ -664,7 +664,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .offer: return .offer
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
-        case .iceCandidate: return .iceCandidate
+        case .iceCandidates: return .iceCandidates
         }
     }
 
@@ -673,25 +673,22 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .offer: return .offer
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
-        case .iceCandidate: return .iceCandidate
+        case .iceCandidates: return .iceCandidates
         }
     }
 
     // MARK: - SNProtoCallMessageBuilder
 
-    @objc public class func builder(type: SNProtoCallMessageType, sdp: String) -> SNProtoCallMessageBuilder {
-        return SNProtoCallMessageBuilder(type: type, sdp: sdp)
+    @objc public class func builder(type: SNProtoCallMessageType) -> SNProtoCallMessageBuilder {
+        return SNProtoCallMessageBuilder(type: type)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoCallMessageBuilder {
-        let builder = SNProtoCallMessageBuilder(type: type, sdp: sdp)
-        if hasSdpMlineIndex {
-            builder.setSdpMlineIndex(sdpMlineIndex)
-        }
-        if let _value = sdpMid {
-            builder.setSdpMid(_value)
-        }
+        let builder = SNProtoCallMessageBuilder(type: type)
+        builder.setSdps(sdps)
+        builder.setSdpMlineIndexes(sdpMlineIndexes)
+        builder.setSdpMids(sdpMids)
         return builder
     }
 
@@ -701,27 +698,44 @@ extension SNProtoContent.SNProtoContentBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(type: SNProtoCallMessageType, sdp: String) {
+        @objc fileprivate init(type: SNProtoCallMessageType) {
             super.init()
 
             setType(type)
-            setSdp(sdp)
         }
 
         @objc public func setType(_ valueParam: SNProtoCallMessageType) {
             proto.type = SNProtoCallMessageTypeUnwrap(valueParam)
         }
 
-        @objc public func setSdp(_ valueParam: String) {
-            proto.sdp = valueParam
+        @objc public func addSdps(_ valueParam: String) {
+            var items = proto.sdps
+            items.append(valueParam)
+            proto.sdps = items
         }
 
-        @objc public func setSdpMlineIndex(_ valueParam: UInt32) {
-            proto.sdpMlineIndex = valueParam
+        @objc public func setSdps(_ wrappedItems: [String]) {
+            proto.sdps = wrappedItems
         }
 
-        @objc public func setSdpMid(_ valueParam: String) {
-            proto.sdpMid = valueParam
+        @objc public func addSdpMlineIndexes(_ valueParam: UInt32) {
+            var items = proto.sdpMlineIndexes
+            items.append(valueParam)
+            proto.sdpMlineIndexes = items
+        }
+
+        @objc public func setSdpMlineIndexes(_ wrappedItems: [UInt32]) {
+            proto.sdpMlineIndexes = wrappedItems
+        }
+
+        @objc public func addSdpMids(_ valueParam: String) {
+            var items = proto.sdpMids
+            items.append(valueParam)
+            proto.sdpMids = items
+        }
+
+        @objc public func setSdpMids(_ wrappedItems: [String]) {
+            proto.sdpMids = wrappedItems
         }
 
         @objc public func build() throws -> SNProtoCallMessage {
@@ -737,31 +751,22 @@ extension SNProtoContent.SNProtoContentBuilder {
 
     @objc public let type: SNProtoCallMessageType
 
-    @objc public let sdp: String
-
-    @objc public var sdpMlineIndex: UInt32 {
-        return proto.sdpMlineIndex
-    }
-    @objc public var hasSdpMlineIndex: Bool {
-        return proto.hasSdpMlineIndex
+    @objc public var sdps: [String] {
+        return proto.sdps
     }
 
-    @objc public var sdpMid: String? {
-        guard proto.hasSdpMid else {
-            return nil
-        }
-        return proto.sdpMid
+    @objc public var sdpMlineIndexes: [UInt32] {
+        return proto.sdpMlineIndexes
     }
-    @objc public var hasSdpMid: Bool {
-        return proto.hasSdpMid
+
+    @objc public var sdpMids: [String] {
+        return proto.sdpMids
     }
 
     private init(proto: SessionProtos_CallMessage,
-                 type: SNProtoCallMessageType,
-                 sdp: String) {
+                 type: SNProtoCallMessageType) {
         self.proto = proto
         self.type = type
-        self.sdp = sdp
     }
 
     @objc
@@ -780,18 +785,12 @@ extension SNProtoContent.SNProtoContentBuilder {
         }
         let type = SNProtoCallMessageTypeWrap(proto.type)
 
-        guard proto.hasSdp else {
-            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
-        }
-        let sdp = proto.sdp
-
         // MARK: - Begin Validation Logic for SNProtoCallMessage -
 
         // MARK: - End Validation Logic for SNProtoCallMessage -
 
         let result = SNProtoCallMessage(proto: proto,
-                                        type: type,
-                                        sdp: sdp)
+                                        type: type)
         return result
     }
 

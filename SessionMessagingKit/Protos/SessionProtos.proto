@@ -57,15 +57,16 @@ message CallMessage {
       OFFER              = 1;
       ANSWER             = 2;
       PROVISIONAL_ANSWER = 3;
-      ICE_CANDIDATE      = 4;
+      ICE_CANDIDATES     = 4;
     }
 
+    // Multiple ICE candidates may be batched together for performance
+
     // @required
-    required Type   type          = 1;
-    // @required
-    required string sdp           = 2;
-    optional uint32 sdpMLineIndex = 3;
-    optional string sdpMid        = 4;
+    required Type   type            = 1;
+    repeated string sdps            = 2;
+    repeated uint32 sdpMLineIndexes = 3;
+    repeated string sdpMids         = 4;
 }
 
 message KeyPair {

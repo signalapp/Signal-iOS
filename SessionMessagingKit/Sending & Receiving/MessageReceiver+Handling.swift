@@ -269,12 +269,20 @@ extension MessageReceiver {
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
-            let sdp = RTCSessionDescription(type: .answer, sdp: message.sdp!)
+            let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
             webRTCWrapper.handleRemoteSDP(sdp, from: message.sender!)
         case .provisionalAnswer: break // TODO: Implement
-        case let .iceCandidate(sdpMLineIndex, sdpMid):
-            let candidate = RTCIceCandidate(sdp: message.sdp!, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
-            webRTCWrapper.handleICECandidate(candidate)
+        case let .iceCandidates(sdpMLineIndexes, sdpMids):
+            var candidates: [RTCIceCandidate] = []
+            let sdps = message.sdps!
+            for i in 0..<sdps.count {
+                let sdp = sdps[i]
+                let sdpMLineIndex = sdpMLineIndexes[i]
+                let sdpMid = sdpMids[i]
+                let candidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
+                candidates.append(candidate)
+            }
+            webRTCWrapper.handleICECandidates(candidates)
         }
     }
     

@@ -1,25 +1,27 @@
 import WebRTC
 
+// NOTE: Multiple ICE candidates may be batched together for performance
+
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 @objc(SNCallMessage)
 public final class CallMessage : ControlMessage {
     public var kind: Kind?
     /// See https://developer.mozilla.org/en-US/docs/Glossary/SDP for more information.
-    public var sdp: String?
+    public var sdps: [String]?
         
     // MARK: Kind
     public enum Kind : Codable, CustomStringConvertible {
         case offer
         case answer
         case provisionalAnswer
-        case iceCandidate(sdpMLineIndex: UInt32, sdpMid: String)
+        case iceCandidates(sdpMLineIndexes: [UInt32], sdpMids: [String])
         
         public var description: String {
             switch self {
             case .offer: return "offer"
             case .answer: return "answer"
             case .provisionalAnswer: return "provisionalAnswer"
-            case .iceCandidate(_, _): return "iceCandidate"
+            case .iceCandidates(_, _): return "iceCandidates"
             }
         }
     }
@@ -27,16 +29,17 @@ public final class CallMessage : ControlMessage {
     // MARK: Initialization
     public override init() { super.init() }
     
-    internal init(kind: Kind, sdp: String) {
+    internal init(kind: Kind, sdps: [String]) {
         super.init()
         self.kind = kind
-        self.sdp = sdp
+        self.sdps = sdps
     }
 
     // MARK: Validation
     public override var isValid: Bool {
         guard super.isValid else { return false }
-        return kind != nil && sdp != nil
+        guard let sdps = sdps, !sdps.isEmpty else { return false }
+        return kind != nil
     }
     
     // MARK: Coding
@@ -47,13 +50,13 @@ public final class CallMessage : ControlMessage {
         case "offer": kind = .offer
         case "answer": kind = .answer
         case "provisionalAnswer": kind = .provisionalAnswer
-        case "iceCandidate":
-            guard let sdpMLineIndex = coder.decodeObject(forKey: "sdpMLineIndex") as? UInt32,
-                let sdpMid = coder.decodeObject(forKey: "sdpMid") as? String else { return nil }
-            kind = .iceCandidate(sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
+        case "iceCandidates":
+            guard let sdpMLineIndexes = coder.decodeObject(forKey: "sdpMLineIndexes") as? [UInt32],
+                let sdpMids = coder.decodeObject(forKey: "sdpMids") as? [String] else { return nil }
+            kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
         default: preconditionFailure()
         }
-        if let sdp = coder.decodeObject(forKey: "sdp") as! String? { self.sdp = sdp }
+        if let sdps = coder.decodeObject(forKey: "sdps") as! [String]? { self.sdps = sdps }
     }
 
     public override func encode(with coder: NSCoder) {
@@ -62,13 +65,13 @@ public final class CallMessage : ControlMessage {
         case .offer: coder.encode("offer", forKey: "kind")
         case .answer: coder.encode("answer", forKey: "kind")
         case .provisionalAnswer: coder.encode("provisionalAnswer", forKey: "kind")
-        case let .iceCandidate(sdpMLineIndex, sdpMid):
-            coder.encode("iceCandidate", forKey: "kind")
-            coder.encode(sdpMLineIndex, forKey: "sdpMLineIndex")
-            coder.encode(sdpMid, forKey: "sdpMid")
+        case let .iceCandidates(sdpMLineIndexes, sdpMids):
+            coder.encode("iceCandidates", forKey: "kind")
+            coder.encode(sdpMLineIndexes, forKey: "sdpMLineIndexes")
+            coder.encode(sdpMids, forKey: "sdpMids")
         default: preconditionFailure()
         }
-        coder.encode(sdp, forKey: "sdp")
+        coder.encode(sdps, forKey: "sdps")
     }
     
     // MARK: Proto Conversion
@@ -79,17 +82,17 @@ public final class CallMessage : ControlMessage {
         case .offer: kind = .offer
         case .answer: kind = .answer
         case .provisionalAnswer: kind = .provisionalAnswer
-        case .iceCandidate:
-            let sdpMLineIndex = callMessageProto.sdpMlineIndex
-            guard let sdpMid = callMessageProto.sdpMid else { return nil }
-            kind = .iceCandidate(sdpMLineIndex: sdpMLineIndex, sdpMid: sdpMid)
+        case .iceCandidates:
+            let sdpMLineIndexes = callMessageProto.sdpMlineIndexes
+            let sdpMids = callMessageProto.sdpMids
+            kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
         }
-        let sdp = callMessageProto.sdp
-        return CallMessage(kind: kind, sdp: sdp)
+        let sdps = callMessageProto.sdps
+        return CallMessage(kind: kind, sdps: sdps)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
-        guard let kind = kind, let sdp = sdp else {
+        guard let kind = kind, let sdps = sdps, !sdps.isEmpty else {
             SNLog("Couldn't construct call message proto from: \(self).")
             return nil
         }
@@ -101,12 +104,13 @@ public final class CallMessage : ControlMessage {
         case .offer: type = .offer
         case .answer: type = .answer
         case .provisionalAnswer: type = .provisionalAnswer
-        case .iceCandidate(_, _): type = .iceCandidate
+        case .iceCandidates(_, _): type = .iceCandidates
         }
-        let callMessageProto = SNProtoCallMessage.builder(type: type, sdp: sdp)
-        if case let .iceCandidate(sdpMLineIndex, sdpMid) = kind {
-            callMessageProto.setSdpMlineIndex(sdpMLineIndex)
-            callMessageProto.setSdpMid(sdpMid)
+        let callMessageProto = SNProtoCallMessage.builder(type: type)
+        callMessageProto.setSdps(sdps)
+        if case let .iceCandidates(sdpMLineIndexes, sdpMids) = kind {
+            callMessageProto.setSdpMlineIndexes(sdpMLineIndexes)
+            callMessageProto.setSdpMids(sdpMids)
         }
         let contentProto = SNProtoContent.builder()
         do {
@@ -123,7 +127,7 @@ public final class CallMessage : ControlMessage {
         """
         CallMessage(
             kind: \(kind?.description ?? "null"),
-            sdp: \(sdp ?? "null")
+            sdps: \(sdps?.description ?? "null")
         )
         """
     }
