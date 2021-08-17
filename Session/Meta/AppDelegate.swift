@@ -13,6 +13,8 @@ extension AppDelegate {
                 alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { _ in
                     let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
                     presentingVC.dismiss(animated: true) {
+                        callVC.modalPresentationStyle = .overFullScreen
+                        callVC.modalTransitionStyle = .crossDissolve
                         presentingVC.present(callVC, animated: true, completion: nil)
                     }
                 }))
@@ -65,17 +67,16 @@ extension AppDelegate {
     
     @objc func getAppModeOrSystemDefault() -> AppMode {
         let userDefaults = UserDefaults.standard
-
-        guard userDefaults.dictionaryRepresentation().keys.contains("appMode") else {
+        if userDefaults.dictionaryRepresentation().keys.contains("appMode") {
+            let mode = userDefaults.integer(forKey: "appMode")
+            return AppMode(rawValue: mode) ?? .light
+        } else {
             if #available(iOS 13.0, *) {
                 return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
             } else {
                 return .light
             }
         }
-        
-        let mode = userDefaults.integer(forKey: "appMode")
-        return AppMode(rawValue: mode) ?? .light
     }
     
 }

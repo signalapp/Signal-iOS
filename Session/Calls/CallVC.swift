@@ -18,6 +18,29 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         return RTCCameraVideoCapturer(delegate: webRTCSession.localVideoSource)
     }()
     
+    // MARK: UI Components
+    private lazy var fadeView: UIView = {
+        let result = UIView()
+        let height: CGFloat = 64
+        var frame = UIScreen.main.bounds
+        frame.size.height = height
+        let layer = CAGradientLayer()
+        layer.frame = frame
+        layer.colors = [ UIColor(hex: 0x000000).withAlphaComponent(0.4).cgColor, UIColor(hex: 0x000000).withAlphaComponent(0).cgColor ]
+        result.layer.insertSublayer(layer, at: 0)
+        result.set(.height, to: height)
+        return result
+    }()
+    
+    private lazy var closeButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "X")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        return result
+    }()
+    
     // MARK: Mode
     enum Mode {
         case offer
@@ -69,6 +92,15 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         localVideoView.pin(.right, to: .right, of: view, withInset: -Values.largeSpacing)
         let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom + Values.largeSpacing
         localVideoView.pin(.bottom, to: .bottom, of: view, withInset: -bottomMargin)
+        // Fade view
+        view.addSubview(fadeView)
+        fadeView.translatesAutoresizingMaskIntoConstraints = false
+        fadeView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
+        // Close button
+        view.addSubview(closeButton)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.pin(.left, to: .left, of: view)
+        closeButton.pin(.top, to: .top, of: view, withInset: 32)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -83,5 +115,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     deinit {
         WebRTCSession.current = nil
+    }
+    
+    // MARK: Interaction
+    @objc private func close() {
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }
