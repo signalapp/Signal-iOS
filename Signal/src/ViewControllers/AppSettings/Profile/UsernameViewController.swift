@@ -152,9 +152,13 @@ class UsernameViewController: OWSTableViewController2 {
         ))
         contents.addSection(section)
 
+        let wasFirstResponder = usernameTextField.isFirstResponder
+
         self.contents = contents
 
-        usernameTextField.becomeFirstResponder()
+        if wasFirstResponder {
+            usernameTextField.becomeFirstResponder()
+        }
     }
 
     override func themeDidChange() {
