@@ -41,6 +41,8 @@ public class CVSelectionState: NSObject {
     // For items in this map, selectionType should never be .none.
     private var itemMap = [String: CVSelectionItem]()
 
+    public var interactionCount: Int { itemMap.count }
+
     public func add(interaction: TSInteraction, selectionType: CVSelectionType) {
         AssertIsOnMainThread()
 
@@ -86,7 +88,7 @@ public class CVSelectionState: NSObject {
         }
 
         let interactionId = interaction.uniqueId
-        owsAssertDebug(!isSelected(interactionId, selectionType: selectionType))
+        owsAssertDebug(isSelected(interactionId, selectionType: selectionType))
 
         if let oldItem = itemMap[interactionId] {
             let newItem = CVSelectionItem(interactionId: interactionId,
@@ -368,6 +370,8 @@ extension ConversationViewController {
             owsFailDebug("Missing selectionToolbar.")
             return
         }
+
+        selectionToolbar.updateContent()
 
         if let deleteButton = selectionToolbar.buttonItem(for: .delete) {
             let hasMultiSelectSelection = (uiMode == .selection &&

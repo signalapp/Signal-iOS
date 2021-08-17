@@ -220,6 +220,10 @@ extension ConversationViewController {
 extension ConversationViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
                                               recipientThreads: [TSThread]) {
+        AssertIsOnMainThread()
+
+        self.uiMode = .normal
+
         self.dismiss(animated: true) {
             ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
                                                                                           recipientThreads: recipientThreads)
@@ -272,6 +276,10 @@ extension ConversationViewController {
 extension ConversationViewController: MessageActionsToolbarDelegate {
     public func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
         executedAction.block(messageActionsToolbar)
+    }
+
+    public var messageActionsToolbarSelectedInteractionCount: Int {
+        self.selectionState.interactionCount
     }
 }
 

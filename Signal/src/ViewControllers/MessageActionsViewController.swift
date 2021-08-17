@@ -430,10 +430,15 @@ extension MessageActionsViewController: MessageActionsToolbarDelegate {
     public func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
         delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: executedAction)
     }
+
+    public var messageActionsToolbarSelectedInteractionCount: Int {
+        0
+    }
 }
 
 public protocol MessageActionsToolbarDelegate: AnyObject {
     func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction)
+    var messageActionsToolbarSelectedInteractionCount: Int { get }
 }
 
 public class MessageActionsToolbar: UIToolbar {
@@ -472,6 +477,10 @@ public class MessageActionsToolbar: UIToolbar {
     }
 
     // MARK: -
+
+    public func updateContent() {
+        buildItems()
+    }
 
     private func buildItems() {
         switch mode {
@@ -517,7 +526,7 @@ public class MessageActionsToolbar: UIToolbar {
         let deleteItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: deleteMessagesAction)
         let forwardItem = MessageActionsToolbarButton(actionsToolbar: self, messageAction: forwardMessagesAction)
 
-        let selectedCount: Int = 0
+        let selectedCount: Int = actionDelegate?.messageActionsToolbarSelectedInteractionCount ?? 0
         let labelTitle: String
         if selectedCount == 0 {
             labelTitle = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_0",
