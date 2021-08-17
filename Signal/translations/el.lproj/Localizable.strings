@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Εντάξει";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Κάποιο μήνυμα, αυτοκόλλητο, αντίδραση, αποδεικτικό ανάγνωσης ή πολυμέσο από τον/την %@ σε αυτή τη συνομιλία δεν μπόρεσε να σου παραδοθεί.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Θέμα κατά την παράδοση";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Λεπτομέρειες μηνύματος";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Προεπισκόπηση μηνύματος";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Φραγή";

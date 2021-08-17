@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "Avfärda";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Stäng kontextmeny";
+"DISMISS_CONTEXT_MENU" = "Avfärda kontextmeny";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Kringgå censur för platsen";

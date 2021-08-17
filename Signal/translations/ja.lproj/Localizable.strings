@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "わかりました";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "このチャットで、 %@ からのメッセージ、ステッカー、メディア、リアクションまたは既読通知をあなたに配信できませんでした。";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "このチャットで %@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配信できませんでした。";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "配信エラー";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配信できませんでした。直接またはグループで、送信しようとしているかもしれません。";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%@ からのメッセージ、ステッカー、リアクション、既読通知またはメディアを、あなたに配信できませんでした。直接またはグループで送信しようとしているかもしれません。";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "破棄する";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "速い, 少ないデータ量";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "メディアの圧縮度";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "メディアの品質";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ へのメッセージ";
@@ -893,7 +893,7 @@
 "CONTEXT_MENU_REPLY" = "返信";
 
 /* Context menu button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "選択して削除";
+"CONTEXT_MENU_SELECT_MESSAGE" = "選択";
 
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "共有";
@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "キャンセル";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "コンテキストメニューを閉じる";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "検閲回避場所";
@@ -2708,7 +2708,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "新しいグループにアップグレードする";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "このグループをアップグレード";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "このグループをアップグレードする";
 
 /* Message for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "このグループは新しいグループにアップデートできませんでした。";
@@ -3185,7 +3185,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "メッセージの詳細";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "メッセージプレビュー";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ブロックする";
@@ -3227,7 +3227,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "削除してグループから抜けますか？";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "申請相手をチェックしてください。Signalには同じ名前の連絡先があります。";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "申請は慎重に確認してください。Signalに同じ名前で別の連絡先があります。";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "あなたの連絡先";
@@ -3257,7 +3257,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ブロックする";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ があなたにメッセージを送り、名前や写真を共有する許可をしますか? ブロックを解除するまでメッセージを受け取れません。";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ にあなたへのメッセージ送信や、名前とプロフィール画像の共有を許可しますか？ブロックを解除するまでメッセージは届きません。";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "このグループのブロックを解除し、あなたの名前と写真を共有しますか？ブロックを解除するまでメッセージは届きません。";
@@ -3281,7 +3281,7 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ からメッセージを受信し、あなたの名前と画像を共有しますか？承認するまで、相手にはあなたがメッセージを見たことははわかりません。";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "このグループに参加し、名前やプロフィール画像を共有しますか? あなたが許可するまで、相手はあなたがメッセージを見たことを知りえません。";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "このグループに参加し、あなたの名前と画像をメンバーと共有しますか？承認するまで、相手にはあなたがメッセージを見たことははわかりません。";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "このグループに参加しますか？招待を受け入れるまで、あなたがメッセージを見たことは他のメンバーにはわかりません。";
@@ -3515,7 +3515,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "オン";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "メッセージを見逃さない";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "連絡先やグループからのメッセージを見逃しません。";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "通知をオンにしますか?";
@@ -4331,10 +4331,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "自己紹介 (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ はプロフィール名を %@ から %@ に変更しました。";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ がプロフィール名を %@ から %@ に変更しました。";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ はプロフィール名を %@ に変更しました。";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ がプロフィール名を %@ に変更しました。";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "あなたの名前";
@@ -5069,13 +5069,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "自動ダウンロードの設定をリセットする";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "メディアの品質";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "送信メディアの品質";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "送信する写真と動画の品質を選択できます。";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "送信する写真と動画の品質を選択してください。";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "メディア";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "送信メディア";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "データ通信量";
@@ -5690,7 +5690,7 @@
 "SETTINGS_SECURITY_TITLE" = "アプリのセキュリティ";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "メディアを送信する際、高画質で送信すると、より多くのデータを消費します。";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "高画質なメディアの送信には、より多くのデータ量を使用します。";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "写真と動画";
