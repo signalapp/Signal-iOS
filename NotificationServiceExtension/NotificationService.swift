@@ -63,16 +63,18 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier)")
 
-        environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
-            guard !mainAppHandledReceipt else {
-                Logger.info("Received notification handled by main application.")
-                self?.completeSilenty()
-                return
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
+                guard !mainAppHandledReceipt else {
+                    Logger.info("Received notification handled by main application.")
+                    self?.completeSilenty()
+                    return
+                }
+
+                Logger.info("Processing received notification.")
+
+                self?.fetchAndProcessMessages()
             }
-
-            Logger.info("Processing received notification.")
-
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { self?.fetchAndProcessMessages() }
         }
     }
 

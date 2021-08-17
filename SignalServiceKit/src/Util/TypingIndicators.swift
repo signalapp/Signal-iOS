@@ -149,7 +149,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
+        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
+            return
+        }
         incomingIndicators.didReceiveTypingStartedMessage()
     }
 
@@ -157,7 +159,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
+        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
+            return
+        }
         incomingIndicators.didReceiveTypingStoppedMessage()
     }
 
@@ -165,7 +169,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     public func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
+        guard let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId) else {
+            return
+        }
         incomingIndicators.didReceiveIncomingMessage()
     }
 
@@ -339,7 +345,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // Map of (thread id)-to-(recipient id and device id)-to-IncomingIndicators.
     private var incomingIndicatorsMap = [String: [AddressWithDeviceId: IncomingIndicators]]()
     private struct AddressWithDeviceId: Hashable {
-        let address: SignalServiceAddress
+        let uuid: UUID
         let deviceId: UInt
     }
 
@@ -347,15 +353,19 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         return String(describing: thread.uniqueId)
     }
 
-    private func incomingIndicatorsKey(address: SignalServiceAddress, deviceId: UInt) -> AddressWithDeviceId {
-        return AddressWithDeviceId(address: address, deviceId: deviceId)
+    private func incomingIndicatorsKey(uuid: UUID, deviceId: UInt) -> AddressWithDeviceId {
+        return AddressWithDeviceId(uuid: uuid, deviceId: deviceId)
     }
 
-    private func ensureIncomingIndicators(forThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) -> IncomingIndicators {
+    private func ensureIncomingIndicators(forThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) -> IncomingIndicators? {
         AssertIsOnMainThread()
 
+        guard let uuid = address.uuid else {
+            owsFailDebug("Missing uuid.")
+            return nil
+        }
         let threadKey = incomingIndicatorsKey(forThread: thread)
-        let deviceKey = incomingIndicatorsKey(address: address, deviceId: deviceId)
+        let deviceKey = incomingIndicatorsKey(uuid: uuid, deviceId: deviceId)
         guard let deviceMap = incomingIndicatorsMap[threadKey] else {
             let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
             incomingIndicatorsMap[threadKey] = [deviceKey: incomingIndicators]

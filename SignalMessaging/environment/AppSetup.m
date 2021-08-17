@@ -49,8 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory
         // is NSFileProtectionComplete
-        BOOL success = [OWSFileSystem protectFileOrFolderAtPath:NSTemporaryDirectory()
-                                             fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
+        BOOL success;
+        NSString *temporaryDirectory = NSTemporaryDirectory();
+        success = [OWSFileSystem ensureDirectoryExists:temporaryDirectory];
+        OWSAssert(success);
+        success = [OWSFileSystem protectFileOrFolderAtPath:temporaryDirectory
+                                        fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
         OWSAssert(success);
 
         OWSPreferences *preferences = [OWSPreferences new];
