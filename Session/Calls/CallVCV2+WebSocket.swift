@@ -1,7 +1,7 @@
 
 extension CallVCV2 : WebSocketDelegate {
         
-    func webSocketDidConnect(_ webSocket: WebSocket) {
+    func handleWebSocketConnected() {
         guard let room = room else { return }
         let json = [
             "cmd" : "register",
@@ -10,18 +10,18 @@ extension CallVCV2 : WebSocketDelegate {
         ]
         guard let data = try? JSONSerialization.data(withJSONObject: json, options: [ .prettyPrinted ]) else { return }
         print("[Calls] Web socket connected. Sending: \(json).")
-        webSocket.send(data)
+        socket?.send(data)
         print("[Calls] Is initiator: \(room.isInitiator).")
         if room.isInitiator {
-            callManager.initiateCall().retainUntilComplete()
+            callManager.offer().retainUntilComplete()
         }
     }
     
-    func webSocketDidDisconnect(_ webSocket: WebSocket) {
-        webSocket.delegate = nil
+    func handleWebSocketDisconnected() {
+        socket?.delegate = nil
     }
     
-    func webSocket(_ webSocket: WebSocket, didReceive message: String) {
+    func handleWebSocketMessage(_ message: String) {
         print("[Calls] Message received through web socket: \(message).")
         handle([ message ])
     }

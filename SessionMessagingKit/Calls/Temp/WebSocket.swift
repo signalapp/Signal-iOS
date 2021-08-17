@@ -3,9 +3,9 @@ import SocketRocket
 
 public protocol WebSocketDelegate : AnyObject {
     
-    func webSocketDidConnect(_ webSocket: WebSocket)
-    func webSocketDidDisconnect(_ webSocket: WebSocket)
-    func webSocket(_ webSocket: WebSocket, didReceive message: String)
+    func handleWebSocketConnected()
+    func handleWebSocketDisconnected()
+    func handleWebSocketMessage(_ message: String)
 }
 
 public final class WebSocket : NSObject, SRWebSocketDelegate {
@@ -27,17 +27,17 @@ public final class WebSocket : NSObject, SRWebSocketDelegate {
     }
     
     public func webSocketDidOpen(_ webSocket: SRWebSocket!) {
-         delegate?.webSocketDidConnect(self)
+         delegate?.handleWebSocketConnected()
      }
     
     public func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
         guard let message = message as? String else { return }
-        delegate?.webSocket(self, didReceive: message)
+        delegate?.handleWebSocketMessage(message)
     }
     
     public func disconnect() {
         socket.close()
-        delegate?.webSocketDidDisconnect(self)
+        delegate?.handleWebSocketDisconnected()
     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {

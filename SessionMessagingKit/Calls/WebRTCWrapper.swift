@@ -1,16 +1,16 @@
 import PromiseKit
 import WebRTC
 
-public protocol CallManagerDelegate : AnyObject {
+public protocol WebRTCWrapperDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
 
     func sendSDP(_ sdp: RTCSessionDescription)
     func sendICECandidate(_ candidate: RTCIceCandidate)
 }
 
-/// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
-public final class CallManager : NSObject, RTCPeerConnectionDelegate {
-    public weak var delegate: CallManagerDelegate?
+/// See https://webrtc.org/getting-started/overview for more information.
+public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
+    public weak var delegate: WebRTCWrapperDelegate?
     internal var candidateQueue: [RTCIceCandidate] = []
     
     internal lazy var factory: RTCPeerConnectionFactory = {
@@ -26,26 +26,21 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
         let configuration = RTCConfiguration()
         configuration.iceServers = [ RTCIceServer(urlStrings: TestCallConfig.defaultICEServers) ]
         configuration.sdpSemantics = .unifiedPlan
-        let pcert = RTCCertificate.generate(withParams: [ "expires": NSNumber(value: 100000), "name": "RSASSA-PKCS1-v1_5" ])
-        configuration.certificate = pcert
-        configuration.iceTransportPolicy = .all
-        let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [ "DtlsSrtpKeyAgreement" : "true" ])
+        let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
     }()
     
-    internal lazy var constraints: RTCMediaConstraints = {
+    internal lazy var mediaConstraints: RTCMediaConstraints = {
         let mandatory: [String:String] = [
             kRTCMediaConstraintsOfferToReceiveAudio : kRTCMediaConstraintsValueTrue,
             kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue
         ]
         let optional: [String:String] = [:]
-        // TODO: Do these constraints make sense?
         return RTCMediaConstraints(mandatoryConstraints: mandatory, optionalConstraints: optional)
     }()
     
     // Audio
     internal lazy var audioSource: RTCAudioSource = {
-        // TODO: Do these constraints make sense?
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.audioSource(with: constraints)
     }()
@@ -106,13 +101,13 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Call Management
-    public func initiateCall() -> Promise<Void> {
+    public func offer() -> Promise<Void> {
         print("[Calls] Initiating call.")
         /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
          */
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.offer(for: constraints) { [weak self] sdp, error in
+        peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
@@ -138,13 +133,13 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
         return promise
     }
     
-    public func acceptCall() -> Promise<Void> {
+    public func answer() -> Promise<Void> {
         print("[Calls] Accepting call.")
         /*
         guard let thread = TSContactThread.fetch(for: publicKey, using: transaction) else { return Promise(error: Error.noThread) }
          */
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.answer(for: constraints) { [weak self] sdp, error in
+        peerConnection.answer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
@@ -170,7 +165,7 @@ public final class CallManager : NSObject, RTCPeerConnectionDelegate {
         return promise
     }
     
-    public func endCall() {
+    public func dropConnection() {
         peerConnection.close()
     }
     

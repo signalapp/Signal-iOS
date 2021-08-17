@@ -1,12 +1,12 @@
 import WebRTC
 
 final class CallVCV2 : UIViewController {
-    let roomID = "37923672515" // NOTE: You need to change this every time to ensure the room isn't full
+    let roomID = "37923672516" // NOTE: You need to change this every time to ensure the room isn't full
     var room: RoomInfo?
     var socket: WebSocket?
     
-    lazy var callManager: CallManager = {
-        let result = CallManager()
+    lazy var callManager: WebRTCWrapper = {
+        let result = WebRTCWrapper()
         result.delegate = self
         return result
     }()
@@ -85,9 +85,9 @@ final class CallVCV2 : UIViewController {
         messages.forEach { message in
             let signalingMessage = SignalingMessage.from(message: message)
             switch signalingMessage {
-            case .candidate(let candidate): callManager.handleCandidateMessage(candidate)
-            case .answer(let answer): callManager.handleRemoteDescription(answer)
-            case .offer(let offer): callManager.handleRemoteDescription(offer)
+            case .candidate(let candidate): callManager.handleICECandidate(candidate)
+            case .answer(let answer): callManager.handleRemoteSDP(answer)
+            case .offer(let offer): callManager.handleRemoteSDP(offer)
             default: break
             }
         }

@@ -1,13 +1,13 @@
 import WebRTC
 
-extension CallManager {
+extension WebRTCWrapper {
     
-    public func handleCandidateMessage(_ candidate: RTCIceCandidate) {
+    public func handleICECandidate(_ candidate: RTCIceCandidate) {
         print("[Calls] Received ICE candidate message.")
         candidateQueue.append(candidate)
     }
     
-    public func handleRemoteDescription(_ sdp: RTCSessionDescription) {
+    public func handleRemoteSDP(_ sdp: RTCSessionDescription) {
         print("[Calls] Received remote SDP: \(sdp.sdp).")
         peerConnection.setRemoteDescription(sdp, completionHandler: { [weak self] error in
             if let error = error {
@@ -15,7 +15,8 @@ extension CallManager {
             } else {
                 guard let self = self,
                     sdp.type == .offer, self.peerConnection.localDescription == nil else { return }
-                self.acceptCall().retainUntilComplete()
+                // Answer the call
+                self.answer().retainUntilComplete()
             }
         })
     }

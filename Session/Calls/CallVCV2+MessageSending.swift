@@ -1,6 +1,6 @@
 import WebRTC
 
-extension CallVCV2 : CallManagerDelegate {
+extension CallVCV2 : WebRTCWrapperDelegate {
     
     /// Invoked by `CallManager` upon initiating or accepting a call. This method sends the SDP to the other
     /// party before streaming starts.

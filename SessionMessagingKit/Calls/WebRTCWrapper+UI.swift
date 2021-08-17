@@ -1,6 +1,6 @@
 import WebRTC
 
-extension CallManager {
+extension WebRTCWrapper {
 
     public func attachLocalRenderer(_ renderer: RTCVideoRenderer) {
         localVideoTrack.add(renderer)
