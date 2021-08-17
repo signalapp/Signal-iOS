@@ -95,7 +95,7 @@ public class MessageSendLog: NSObject {
         let payloads: [Payload]
         do {
             payloads = try Payload
-                .filter(Column("sentTimestamp") == message.timestampDate())
+                .filter(Column("sentTimestamp") == message.timestampDate)
                 .filter(Column("uniqueThreadId") == message.uniqueThreadId)
                 .fetchAll(writeTx.unwrapGrdbRead.database)
         } catch {
@@ -135,7 +135,7 @@ public class MessageSendLog: NSObject {
             var payload = Payload(
                 plaintextContent: plaintext,
                 contentHint: message.contentHint,
-                sentTimestamp: message.timestampDate(),
+                sentTimestamp: message.timestampDate,
                 uniqueThreadId: message.uniqueThreadId,
                 sendComplete: false)
             do {
@@ -208,7 +208,7 @@ public class MessageSendLog: NSObject {
         let payloads: [Payload]
         do {
             payloads = try Payload
-                .filter(Column("sentTimestamp") == message.timestampDate())
+                .filter(Column("sentTimestamp") == message.timestampDate)
                 .filter(Column("uniqueThreadId") == message.uniqueThreadId)
                 .fetchAll(writeTx.unwrapGrdbRead.database)
 

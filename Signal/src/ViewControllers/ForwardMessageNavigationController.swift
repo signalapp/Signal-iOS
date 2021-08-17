@@ -75,16 +75,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         case single(item: Item)
         case multiple(items: [Item])
 
-        var singleItem: Item? {
-            switch self {
-            case .single(let item):
-                return item
-            case .multiple:
-                owsFailDebug("Single item requested in multiple item mode.")
-                return nil
-            }
-        }
-
         var allItems: [Item] {
             switch self {
             case .single(let item):
@@ -108,31 +98,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
                 return .single(item: item)
             } else {
                 return .multiple(items: items)
-            }
-        }
-
-        var needsApproval: Bool {
-            switch self {
-            case .single(let item):
-                let itemViewModel = item.itemViewModel
-                guard ![.audio,
-                        .genericAttachment,
-                        .stickerMessage].contains(itemViewModel.messageCellType) else { return false }
-
-                let isBorderless: Bool = {
-                    let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
-                    guard !bodyMediaAttachmentStreams.isEmpty else {
-                        return false
-                    }
-
-                    return bodyMediaAttachmentStreams.count == 1 && bodyMediaAttachmentStreams.first?.isBorderless == true
-                }()
-
-                guard !isBorderless else { return false }
-
-                return true
-            case .multiple:
-                return false
             }
         }
     }
@@ -180,7 +145,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
         super.init()
 
-        performStep(.selectRecipients)
+        performStep(.firstStep)
     }
 
     @objc
@@ -196,6 +161,8 @@ class ForwardMessageNavigationController: OWSNavigationController {
         case selectRecipients
         case approve
         case send
+
+        static var firstStep: Step { .selectRecipients }
 
         var nextStep: Step {
             switch self {
@@ -256,70 +223,14 @@ extension ForwardMessageNavigationController {
 
     func approveStep() {
         do {
-            if content.needsApproval,
-               let item = content.singleItem {
-                try showApprovalUI(item: item)
-            } else {
-                // Skip approval for these message types.
-                try autoApproveContent()
-            }
+            // Skip approval.
+            try autoApproveContent()
         } catch {
             owsFailDebug("Error: \(error)")
 
+            Self.showAlertForForwardError(error: error, forwardedInteractionCount: self.content.allItems.count)
+
             self.forwardMessageDelegate?.forwardMessageFlowDidCancel()
-        }
-    }
-
-    private func showApprovalUI(item: Item) throws {
-        let itemViewModel = item.itemViewModel
-
-        switch itemViewModel.messageCellType {
-        case .textOnlyMessage:
-            guard let body = item.messageBody,
-                  body.text.count > 0 else {
-                throw OWSAssertionError("Missing body.")
-            }
-
-            let approvalView = TextApprovalViewController(messageBody: body)
-            approvalView.delegate = self
-            pushViewController(approvalView, animated: true)
-        case .contactShare:
-            guard let oldContactShare = itemViewModel.contactShare else {
-                throw OWSAssertionError("Missing contactShareViewModel.")
-            }
-            let newContactShare = oldContactShare.copyForResending()
-            let approvalView = ContactShareApprovalViewController(contactShare: newContactShare)
-            approvalView.delegate = self
-            pushViewController(approvalView, animated: true)
-        case .audio,
-             .genericAttachment,
-             .stickerMessage:
-            throw OWSAssertionError("Message type does not need approval.")
-        case .bodyMedia:
-            let options: AttachmentApprovalViewControllerOptions = .hasCancel
-            let sendButtonImageName = "send-solid-24"
-
-            let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
-            guard !bodyMediaAttachmentStreams.isEmpty else {
-                throw OWSAssertionError("Missing bodyMediaAttachmentStreams.")
-            }
-
-            var attachmentApprovalItems = [AttachmentApprovalItem]()
-            for attachmentStream in bodyMediaAttachmentStreams {
-                let signalAttachment = try attachmentStream.cloneAsSignalAttachment()
-                let attachmentApprovalItem = AttachmentApprovalItem(attachment: signalAttachment, canSave: false)
-                attachmentApprovalItems.append(attachmentApprovalItem)
-            }
-            let approvalViewController = AttachmentApprovalViewController(options: options,
-                                                                          sendButtonImageName: sendButtonImageName,
-                                                                          attachmentApprovalItems: attachmentApprovalItems)
-            approvalViewController.approvalDelegate = self
-            approvalViewController.messageBody = item.messageBody
-
-            pushViewController(approvalViewController, animated: true)
-        case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
-             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
-            throw OWSAssertionError("Invalid message type.")
         }
     }
 
@@ -622,130 +533,7 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     }
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
-        content.needsApproval ? .next : .send
-    }
-}
-
-// MARK: -
-
-extension ForwardMessageNavigationController: TextApprovalViewControllerDelegate {
-    func textApproval(_ textApproval: TextApprovalViewController,
-                      didApproveMessage messageBody: MessageBody?,
-                      linkPreviewDraft: OWSLinkPreviewDraft?) {
-        assert(messageBody?.text.count ?? 0 > 0)
-
-        guard let item = content.singleItem else {
-            return
-        }
-        self.content = .single(item: item.with(messageBody: messageBody).with(linkPreviewDraft: linkPreviewDraft))
-
-        performStep(Step.approve.nextStep)
-    }
-
-    func textApprovalDidCancel(_ textApproval: TextApprovalViewController) {
-        forwardMessageDelegate?.forwardMessageFlowDidCancel()
-    }
-
-    func textApprovalCustomTitle(_ textApproval: TextApprovalViewController) -> String? {
-        return NSLocalizedString("FORWARD_MESSAGE", comment: "Label and title for 'message forwarding' views.")
-    }
-
-    func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
-        let conversations = selectedConversations
-        guard conversations.count > 0 else {
-            return nil
-        }
-        return conversations.map { $0.title }.joined(separator: ", ")
-    }
-
-    func textApprovalMode(_ textApproval: TextApprovalViewController) -> ApprovalMode {
-        return .send
-    }
-}
-
-// MARK: -
-
-extension ForwardMessageNavigationController: ContactShareApprovalViewControllerDelegate {
-    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                             didApproveContactShare contactShare: ContactShareViewModel) {
-        guard let item = content.singleItem else {
-            return
-        }
-        self.content = .single(item: item.with(contactShare: contactShare))
-
-        performStep(Step.approve.nextStep)
-    }
-
-    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
-                             didCancelContactShare contactShare: ContactShareViewModel) {
-        forwardMessageDelegate?.forwardMessageFlowDidCancel()
-    }
-
-    func contactApprovalCustomTitle(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        return NSLocalizedString("FORWARD_CONTACT", comment: "Label and title for 'contact forwarding' views.")
-    }
-
-    func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        let conversations = selectedConversations
-        guard conversations.count > 0 else {
-            return nil
-        }
-        return conversations.map { $0.title }.joined(separator: ", ")
-    }
-
-    func contactApprovalMode(_ contactApproval: ContactShareApprovalViewController) -> ApprovalMode {
-        return .send
-    }
-}
-
-// MARK: -
-
-extension ForwardMessageNavigationController: AttachmentApprovalViewControllerDelegate {
-
-    func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        // We can ignore this event.
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
-        guard let item = content.singleItem else {
-            return
-        }
-        self.content = .single(item: item.with(messageBody: newMessageBody))
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
-        // We can ignore this event.
-    }
-
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didApproveAttachments attachments: [SignalAttachment],
-                            messageBody: MessageBody?) {
-        guard let item = content.singleItem else {
-            return
-        }
-        self.content = .single(item: item.with(messageBody: messageBody).with(attachments: attachments))
-
-        performStep(ForwardMessageNavigationController.Step.approve.nextStep)
-    }
-
-    func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
-        forwardMessageDelegate?.forwardMessageFlowDidCancel()
-    }
-
-    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
-        owsFailDebug("Cannot add more to message forwards.")
-    }
-
-    var attachmentApprovalTextInputContextIdentifier: String? {
-        return nil
-    }
-
-    var attachmentApprovalRecipientNames: [String] {
-        selectedConversations.map { $0.title }
-    }
-
-    var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        currentMentionableAddresses
+        .send
     }
 }
 
