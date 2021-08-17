@@ -1,13 +1,13 @@
 import PromiseKit
 import WebRTC
 
-public protocol WebRTCWrapperDelegate : AnyObject {
+public protocol WebRTCSessionDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
-public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
-    public weak var delegate: WebRTCWrapperDelegate?
+public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
+    public weak var delegate: WebRTCSessionDelegate?
     private let contactSessionID: String
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
@@ -81,7 +81,7 @@ public final class WebRTCWrapper : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Initialization
-    public static var current: WebRTCWrapper?
+    public static var current: WebRTCSession?
     
     public init(for contactSessionID: String) {
         self.contactSessionID = contactSessionID

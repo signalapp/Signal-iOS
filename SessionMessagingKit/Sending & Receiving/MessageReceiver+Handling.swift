@@ -256,12 +256,12 @@ extension MessageReceiver {
     // MARK: - Call Messages
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
-        let webRTCWrapper: WebRTCWrapper
-        if let current = WebRTCWrapper.current {
-            webRTCWrapper = current
+        let webRTCSession: WebRTCSession
+        if let current = WebRTCSession.current {
+            webRTCSession = current
         } else {
-            WebRTCWrapper.current = WebRTCWrapper(for: message.sender!)
-            webRTCWrapper = WebRTCWrapper.current!
+            WebRTCSession.current = WebRTCSession(for: message.sender!)
+            webRTCSession = WebRTCSession.current!
         }
         switch message.kind! {
         case .offer:
@@ -270,7 +270,7 @@ extension MessageReceiver {
         case .answer:
             print("[Calls] Received answer message.")
             let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-            webRTCWrapper.handleRemoteSDP(sdp, from: message.sender!)
+            webRTCSession.handleRemoteSDP(sdp, from: message.sender!)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):
             var candidates: [RTCIceCandidate] = []
@@ -282,7 +282,7 @@ extension MessageReceiver {
                 let candidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
                 candidates.append(candidate)
             }
-            webRTCWrapper.handleICECandidates(candidates)
+            webRTCSession.handleICECandidates(candidates)
         }
     }
     

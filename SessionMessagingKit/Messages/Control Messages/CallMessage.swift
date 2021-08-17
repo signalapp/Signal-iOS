@@ -1,7 +1,5 @@
 import WebRTC
 
-// NOTE: Multiple ICE candidates may be batched together for performance
-
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 @objc(SNCallMessage)
 public final class CallMessage : ControlMessage {
@@ -9,6 +7,8 @@ public final class CallMessage : ControlMessage {
     /// See https://developer.mozilla.org/en-US/docs/Glossary/SDP for more information.
     public var sdps: [String]?
         
+    // NOTE: Multiple ICE candidates may be batched together for performance
+    
     // MARK: Kind
     public enum Kind : Codable, CustomStringConvertible {
         case offer

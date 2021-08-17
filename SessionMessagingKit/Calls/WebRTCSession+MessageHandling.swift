@@ -1,6 +1,6 @@
 import WebRTC
 
-extension WebRTCWrapper {
+extension WebRTCSession {
     
     public func handleICECandidates(_ candidate: [RTCIceCandidate]) {
         print("[Calls] Received ICE candidate message.")

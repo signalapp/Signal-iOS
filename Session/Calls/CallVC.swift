@@ -3,10 +3,10 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-final class CallVC : UIViewController, WebRTCWrapperDelegate {
+final class CallVC : UIViewController, WebRTCSessionDelegate {
     let sessionID: String
     let mode: Mode
-    let webRTCWrapper: WebRTCWrapper
+    let webRTCSession: WebRTCSession
     
     lazy var cameraManager: CameraManager = {
         let result = CameraManager()
@@ -15,7 +15,7 @@ final class CallVC : UIViewController, WebRTCWrapperDelegate {
     }()
     
     lazy var videoCapturer: RTCVideoCapturer = {
-        return RTCCameraVideoCapturer(delegate: webRTCWrapper.localVideoSource)
+        return RTCCameraVideoCapturer(delegate: webRTCSession.localVideoSource)
     }()
     
     // MARK: Mode
@@ -28,9 +28,9 @@ final class CallVC : UIViewController, WebRTCWrapperDelegate {
     init(for sessionID: String, mode: Mode) {
         self.sessionID = sessionID
         self.mode = mode
-        self.webRTCWrapper = WebRTCWrapper.current ?? WebRTCWrapper(for: sessionID)
+        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID)
         super.init(nibName: nil, bundle: nil)
-        self.webRTCWrapper.delegate = self
+        self.webRTCSession.delegate = self
     }
     
     required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }
@@ -38,16 +38,16 @@ final class CallVC : UIViewController, WebRTCWrapperDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        WebRTCWrapper.current = webRTCWrapper
+        WebRTCSession.current = webRTCSession
         setUpViewHierarchy()
         cameraManager.prepare()
         touch(videoCapturer)
         if case .offer = mode {
             Storage.write { transaction in
-                self.webRTCWrapper.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
+                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
             }
         } else if case let .answer(sdp) = mode {
-            webRTCWrapper.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
         }
     }
     
@@ -55,14 +55,14 @@ final class CallVC : UIViewController, WebRTCWrapperDelegate {
         // Remote video view
         let remoteVideoView = RTCMTLVideoView()
         remoteVideoView.contentMode = .scaleAspectFill
-        webRTCWrapper.attachRemoteRenderer(remoteVideoView)
+        webRTCSession.attachRemoteRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: view)
         // Local video view
         let localVideoView = RTCMTLVideoView()
         localVideoView.contentMode = .scaleAspectFill
-        webRTCWrapper.attachLocalRenderer(localVideoView)
+        webRTCSession.attachLocalRenderer(localVideoView)
         localVideoView.set(.width, to: 80)
         localVideoView.set(.height, to: 173)
         view.addSubview(localVideoView)
@@ -82,6 +82,6 @@ final class CallVC : UIViewController, WebRTCWrapperDelegate {
     }
     
     deinit {
-        WebRTCWrapper.current = nil
+        WebRTCSession.current = nil
     }
 }
