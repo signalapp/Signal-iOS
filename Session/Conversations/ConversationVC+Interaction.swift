@@ -28,7 +28,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     @objc func startCall() {
         guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
-        let callVC = CallVCV2(for: contactSessionID, mode: .offer)
+        let callVC = CallVC(for: contactSessionID, mode: .offer)
         navigationController!.pushViewController(callVC, animated: true, completion: nil)
     }
 

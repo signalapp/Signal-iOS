@@ -11,7 +11,7 @@ extension AppDelegate {
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                 let alert = UIAlertController(title: "Incoming Call", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Accept", style: .default, handler: { _ in
-                    let callVC = CallVCV2(for: message.sender!, mode: .answer(sdp: sdp))
+                    let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
                     presentingVC.dismiss(animated: true) {
                         presentingVC.present(callVC, animated: true, completion: nil)
                     }

@@ -3,7 +3,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-final class CallVCV2 : UIViewController, WebRTCWrapperDelegate {
+final class CallVC : UIViewController, WebRTCWrapperDelegate {
     let sessionID: String
     let mode: Mode
     let webRTCWrapper: WebRTCWrapper
