@@ -66,14 +66,14 @@ public class MessageFetcherJob: NSObject {
         return fetchOperationQueue.operationCount
     }
 
-    private let serialQueue = DispatchQueue(label: "org.signal.messageFetcherJob.serialQueue")
+    private let unfairLock = UnfairLock()
 
     private let completionQueue = DispatchQueue(label: "org.signal.messageFetcherJob.completionQueue")
 
-    // This property should only be accessed on serialQueue.
+    // This property should only be accessed with unfairLock acquired.
     private var activeFetchCycles = Set<UUID>()
 
-    // This property should only be accessed on serialQueue.
+    // This property should only be accessed with unfairLock acquired.
     private var completedFetchCyclesCounter: UInt = 0
 
     @objc
@@ -89,7 +89,7 @@ public class MessageFetcherJob: NSObject {
         let promise = fetchOperation.promise
         let fetchCycle = MessageFetchCycle(promise: promise)
 
-        _ = self.serialQueue.sync {
+        _ = self.unfairLock.withLock {
             activeFetchCycles.insert(fetchCycle.uuid)
         }
 
@@ -99,17 +99,21 @@ public class MessageFetcherJob: NSObject {
         // this by having our message fetch operations depend
         // on a no-op operation that flushes the "message ack"
         // operation queue.
-        let flushAckOperation = Operation()
-        flushAckOperation.queuePriority = .normal
-        ackOperationQueue.addOperation(flushAckOperation)
+        let shouldFlush = !FeatureFlags.deprecateREST
+        if shouldFlush {
+            let flushAckOperation = Operation()
+            flushAckOperation.queuePriority = .normal
+            ackOperationQueue.addOperation(flushAckOperation)
 
-        fetchOperation.addDependency(flushAckOperation)
+            fetchOperation.addDependency(flushAckOperation)
+        }
+
         fetchOperationQueue.addOperation(fetchOperation)
 
         completionQueue.async {
             self.fetchOperationQueue.waitUntilAllOperationsAreFinished()
 
-            self.serialQueue.sync {
+            self.unfairLock.withLock {
                 self.activeFetchCycles.remove(fetchCycle.uuid)
                 self.completedFetchCyclesCounter += 1
             }
@@ -125,7 +129,7 @@ public class MessageFetcherJob: NSObject {
     @objc
     @discardableResult
     public func runObjc() -> AnyPromise {
-        return AnyPromise(run().promise)
+        AnyPromise(run().promise)
     }
 
     private func postDidChangeState() {
@@ -133,32 +137,35 @@ public class MessageFetcherJob: NSObject {
     }
 
     public func isFetchCycleComplete(fetchCycle: MessageFetchCycle) -> Bool {
-        return self.serialQueue.sync {
-            return self.activeFetchCycles.contains(fetchCycle.uuid)
+        unfairLock.withLock {
+            self.activeFetchCycles.contains(fetchCycle.uuid)
         }
     }
 
     public var areAllFetchCyclesComplete: Bool {
-        return self.serialQueue.sync {
-            return self.activeFetchCycles.isEmpty
+        unfairLock.withLock {
+            self.activeFetchCycles.isEmpty
         }
     }
 
     public var completedRestFetches: UInt {
-        return self.serialQueue.sync {
-            return self.completedFetchCyclesCounter
+        unfairLock.withLock {
+            self.completedFetchCyclesCounter
         }
     }
 
     public class var shouldUseWebSocket: Bool {
+        if FeatureFlags.deprecateREST {
+            return true
+        }
         return CurrentAppContext().isMainApp && !signalService.isCensorshipCircumventionActive
     }
 
     @objc
     public var hasCompletedInitialFetch: Bool {
         if Self.shouldUseWebSocket {
-            let isWebsocketDrained = (TSSocketManager.shared.socketState() == .open &&
-                                        TSSocketManager.shared.hasEmptiedInitialQueue())
+            let isWebsocketDrained = (socketManager.socketState(forType: .identified) == .open &&
+                                        socketManager.hasEmptiedInitialQueue)
             guard isWebsocketDrained else { return false }
         } else {
             guard completedRestFetches > 0 else { return false }
@@ -169,7 +176,7 @@ public class MessageFetcherJob: NSObject {
     @objc
     @available(swift, obsoleted: 1.0)
     public func fetchingCompletePromise() -> AnyPromise {
-        return AnyPromise(fetchingCompletePromise())
+        AnyPromise(fetchingCompletePromise())
     }
 
     public func fetchingCompletePromise() -> Promise<Void> {
@@ -193,7 +200,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             return NotificationCenter.default.observe(once: .webSocketStateDidChange).then { _ in
-                return self.fetchingCompletePromise()
+                self.fetchingCompletePromise()
             }.asVoid()
         } else {
             guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
@@ -208,7 +215,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             return NotificationCenter.default.observe(once: Self.didChangeStateNotificationName).then { _ in
-                return self.fetchingCompletePromise()
+                self.fetchingCompletePromise()
             }.asVoid()
         }
     }
@@ -220,13 +227,13 @@ public class MessageFetcherJob: NSObject {
 
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady)
-            Logger.warn("not registered")
+            Logger.warn("Not registered.")
             return resolver.fulfill(())
         }
 
         if shouldUseWebSocket {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
-            TSSocketManager.shared.requestSocketOpen()
+            socketManager.requestSocketOpen()
             return resolver.fulfill(())
         } else if CurrentAppContext().shouldProcessIncomingMessages {
             // Main app should use REST if censorship circumvention is active.
@@ -272,8 +279,8 @@ public class MessageFetcherJob: NSObject {
 
         return firstly(on: .global()) {
             fetchBatchViaRest()
-        }.map(on: .global()) { (envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool) -> ([EnvelopeJob], UInt64, Bool) in
-            let envelopeJobs: [EnvelopeJob] = envelopes.compactMap { envelope in
+        }.map(on: .global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
+            let envelopeJobs: [EnvelopeJob] = batch.envelopes.compactMap { envelope in
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
@@ -286,14 +293,19 @@ public class MessageFetcherJob: NSObject {
                     return nil
                 }
             }
-            return (envelopeJobs: envelopeJobs, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more)
-        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, more: Bool) -> Promise<Void> in
+            return (envelopeJobs: envelopeJobs,
+                    serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
+                    hasMore: batch.hasMore)
+        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob],
+                                 serverDeliveryTimestamp: UInt64,
+                                 hasMore: Bool) -> Promise<Void> in
             Self.messageProcessor.processEncryptedEnvelopes(
                 envelopeJobs: envelopeJobs,
-                serverDeliveryTimestamp: serverDeliveryTimestamp
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: .rest
             )
 
-            if more {
+            if hasMore {
                 Logger.info("fetching more messages.")
 
                 return self.fetchMessagesViaRestWhenReady()
@@ -422,33 +434,33 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private class func fetchBatchViaRest() -> Promise<(envelopes: [SSKProtoEnvelope], serverDeliveryTimestamp: UInt64, more: Bool)> {
-        return Promise { resolver in
+    private struct RESTBatch {
+        let envelopes: [SSKProtoEnvelope]
+        let serverDeliveryTimestamp: UInt64
+        let hasMore: Bool
+    }
+
+    private class func fetchBatchViaRest() -> Promise<RESTBatch> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.getMessagesRequest()
-            self.networkManager.makeRequest(
-                request,
-                success: { task, responseObject -> Void in
-                    guard let httpResponse = task.response as? HTTPURLResponse,
-                        let timestampString = httpResponse.allHeaderFields["x-signal-timestamp"] as? String,
-                        let serverDeliveryTimestamp = UInt64(timestampString) else {
-                            return resolver.reject(OWSAssertionError("Unable to parse server delivery timestamp."))
-                    }
+            return self.networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+            guard let timestampString = response.responseHeaders["x-signal-timestamp"],
+                  let serverDeliveryTimestamp = UInt64(timestampString) else {
+                throw OWSAssertionError("Unable to parse server delivery timestamp.")
+            }
 
-                    guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
-                        Logger.error("response object had unexpected content")
-                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                    }
+            guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
+                Logger.error("response object had unexpected content")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
 
-                    resolver.fulfill((envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, more: more))
-                },
-                failure: { (_: URLSessionDataTask?, error: Error?) in
-                    guard let error = error else {
-                        Logger.error("error was surprisingly nil. sheesh rough day.")
-                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-                    }
-
-                    resolver.reject(error)
-            })
+            return RESTBatch(envelopes: envelopes,
+                             serverDeliveryTimestamp: serverDeliveryTimestamp,
+                             hasMore: more)
         }
     }
 
@@ -522,29 +534,20 @@ private class MessageAckOperation: OWSOperation {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)
         } else {
             let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
-            reportError(error.asUnretryableError)
+            reportError(error)
             return
         }
 
         let envelopeInfo = self.envelopeInfo
-        self.networkManager.makeRequest(request,
-                                        success: { (_: URLSessionDataTask?, _: Any?) -> Void in
-                                            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
-                                            self.reportSuccess()
-                                        },
-                                        failure: { (_: URLSessionDataTask?, error: Error?) in
-                                            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + "failed with error: \(String(describing: error))")
-                                            if let error = error {
-                                                if IsNetworkConnectivityFailure(error) {
-                                                    self.reportError(error.asRetryableError)
-                                                } else {
-                                                    self.reportError(error.asUnretryableError)
-                                                }
-                                            } else {
-                                                let error = OWSAssertionError("Unknown error while acknowledging delivery for message.")
-                                                self.reportError(error.asUnretryableError)
-                                            }
-                                        })
+        firstly(on: .global()) {
+            self.networkManager.makePromise(request: request)
+        }.done(on: .global()) { _ in
+            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
+            self.reportSuccess()
+        }.catch(on: .global()) { error in
+            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + " failed with error: \(error)")
+            self.reportError(error)
+        }
     }
 }
 

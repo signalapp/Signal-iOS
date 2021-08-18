@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,13 +10,15 @@ public protocol ProvisioningSocketDelegate: AnyObject {
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error)
 }
 
+// TODO: Do we still need the ProvisioningSocket if we have the unidentified websocket?
 public class ProvisioningSocket {
     let socket: SSKWebSocket
     public weak var delegate: ProvisioningSocketDelegate?
 
     public init() {
         // TODO: Will this work with censorship circumvention?
-        let serviceBaseURL = URL(string: TSConstants.textSecureWebSocketAPI)!
+        // TODO: Should we (sometimes?) use the unidentified service?
+        let serviceBaseURL = URL(string: TSConstants.mainServiceWebSocketAPI_identified)!
         let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSUserAgent)",
                             relativeTo: serviceBaseURL)!
 

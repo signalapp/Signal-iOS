@@ -886,9 +886,15 @@ public class KeyBackupService: NSObject {
 
             return (request, remoteAttestation)
         }.then { request, remoteAttestation in
-            networkManager.makePromise(request: request).map { ($0.responseObject, remoteAttestation) }
-        }.map(on: DispatchQueue.global()) { responseObject, remoteAttestation in
-            guard let parser = ParamParser(responseObject: responseObject) else {
+            networkManager.makePromise(request: request).map { (response) in
+                (response, remoteAttestation)
+            }
+        }.map(on: DispatchQueue.global()) { (response: HTTPResponse, remoteAttestation) in
+            guard let json = response.responseBodyJson else {
+                owsFailDebug("Missing or invalid JSON.")
+                throw KBSError.assertion
+            }
+            guard let parser = ParamParser(responseObject: json) else {
                 owsFailDebug("Failed to parse response object")
                 throw KBSError.assertion
             }
@@ -1172,8 +1178,13 @@ public class KeyBackupService: NSObject {
             cookies: remoteAttestation.cookies
         )
 
-        return networkManager.makePromise(request: request).map(on: DispatchQueue.global()) { _, responseObject in
-            try Token.updateNext(responseObject: responseObject, enclaveName: remoteAttestation.enclaveName)
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON.")
+            }
+            return try Token.updateNext(responseObject: json, enclaveName: remoteAttestation.enclaveName)
         }
     }
 }

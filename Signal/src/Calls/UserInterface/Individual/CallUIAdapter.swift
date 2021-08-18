@@ -157,8 +157,8 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             guard let error = error else { return }
             owsFailDebug("Failed to report incoming call with error \(error)")
 
-            let nsError = error as NSError
-            Logger.warn("nsError: \(nsError.domain), \(nsError.code)")
+            let nsError: NSError = error as NSError
+            Logger.warn("Error: \(nsError.domain), \(nsError.code), error: \(error)")
             if nsError.domain == CXErrorCodeIncomingCallError.errorDomain {
                 switch nsError.code {
                 case CXErrorCodeIncomingCallError.unknown.rawValue:

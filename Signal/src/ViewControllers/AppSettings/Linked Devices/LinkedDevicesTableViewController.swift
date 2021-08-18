@@ -36,15 +36,15 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateSucceeded),
-                                               name: .deviceListUpdateSucceeded,
+                                               name: OWSDevicesService.deviceListUpdateSucceeded,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateFailed),
-                                               name: .deviceListUpdateFailed,
+                                               name: OWSDevicesService.deviceListUpdateFailed,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateModifiedDeviceList),
-                                               name: .deviceListUpdateModifiedDeviceList,
+                                               name: OWSDevicesService.deviceListUpdateModifiedDeviceList,
                                                object: nil)
     }
 

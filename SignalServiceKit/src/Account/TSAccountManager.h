@@ -6,18 +6,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TSRegistrationErrorDomain;
-extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSNotificationName const NSNotificationNameRegistrationStateDidChange;
 extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
+@class NetworkManager;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
-@class TSNetworkManager;
 @class TSRequest;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -122,33 +120,12 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - Register with phone number
 
-- (void)verifyAccountWithRequest:(TSRequest *)request
-                         success:(void (^)(_Nullable id responseObject))successBlock
-                         failure:(void (^)(NSError *error))failureBlock;
-
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegister;
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
-
-#if TARGET_OS_IPHONE
-
-/**
- *  Register's the device's push notification token with the server
- *
- *  @param pushToken Apple's Push Token
- */
-- (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
-                                        voipToken:(nullable NSString *)voipToken
-                                          success:(void (^)(void))successHandler
-                                          failure:(void (^)(NSError *error))failureHandler
-    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
-
-#endif
-
-+ (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock;
 
 #pragma mark - De-Registration
 

@@ -409,43 +409,39 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     }
 
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
-        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+        firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (httpResponse: OWSHTTPResponse) -> (URL, String) in
-            let task = httpResponse.task
-            guard let response = task.response as? HTTPURLResponse,
-                  let respondingUrl = response.url,
-                  response.statusCode >= 200 && response.statusCode < 300 else {
-                Logger.warn("Invalid response: \(type(of: task.response)).")
+        }.map(on: Self.workQueue) { (response: HTTPResponse) -> (URL, String) in
+            let statusCode = response.responseStatusCode
+            guard statusCode >= 200 && statusCode < 300 else {
+                Logger.warn("Invalid response: \(statusCode).")
                 throw LinkPreviewError.fetchFailure
             }
-            guard let data = httpResponse.responseData,
-                  let string = String(data: data, urlResponse: response),
+            guard let string = response.responseBodyString,
                   string.count > 0 else {
                 Logger.warn("Response object could not be parsed")
                 throw LinkPreviewError.invalidPreview
             }
 
-            return (respondingUrl, string)
+            return (response.requestUrl, string)
         }
     }
 
     private func fetchImageResource(from url: URL) -> Promise<Data> {
-        firstly(on: Self.workQueue) { () -> Promise<(OWSHTTPResponse)> in
+        firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
                 .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
 
-        }.map(on: Self.workQueue) { (httpResponse: OWSHTTPResponse) -> Data in
+        }.map(on: Self.workQueue) { (httpResponse: HTTPResponse) -> Data in
             try autoreleasepool {
-                let task = httpResponse.task
-                guard let response = task.response as? HTTPURLResponse,
-                      response.statusCode >= 200 && response.statusCode < 300 else {
-                    Logger.warn("Invalid response: \(type(of: task.response)).")
+                let statusCode = httpResponse.responseStatusCode
+                guard statusCode >= 200 && statusCode < 300 else {
+                    Logger.warn("Invalid response: \(statusCode).")
                     throw LinkPreviewError.fetchFailure
                 }
-                guard let rawData = httpResponse.responseData,
+                guard let rawData = httpResponse.responseBodyData,
                       rawData.count < Self.maxFetchedContentSize else {
                     Logger.warn("Response object could not be parsed")
                     throw LinkPreviewError.invalidPreview

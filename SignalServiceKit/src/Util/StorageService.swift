@@ -33,7 +33,7 @@ public protocol StorageServiceManagerProtocol {
 // MARK: -
 
 public struct StorageService: Dependencies {
-    public enum StorageError: OperationError {
+    public enum StorageError: Error, IsRetryableProvider {
         case assertion
         case retryableAssertion
         case manifestDecryptionFailed(version: UInt64)
@@ -43,7 +43,7 @@ public struct StorageService: Dependencies {
 
         // MARK: 
 
-        public var isRetryable: Bool {
+        public var isRetryableProvider: Bool {
             switch self {
             case .assertion:
                 return false
@@ -62,7 +62,7 @@ public struct StorageService: Dependencies {
         }
 
         public var errorUserInfo: [String: Any] {
-            var userInfo: [String: Any] = [OWSOperationIsRetryableKey: self.isRetryable]
+            var userInfo: [String: Any] = [:]
             if case .networkError(_, let underlyingError) = self {
                 userInfo[NSUnderlyingErrorKey] = underlyingError
             }
@@ -391,7 +391,7 @@ public struct StorageService: Dependencies {
     private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
         return serviceClient.requestStorageAuth().map { username, password in
             Auth(username: username, password: password)
-        }.then(on: .global()) { (auth: Auth) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (auth: Auth) -> Promise<HTTPResponse> in
             if method == .get { assert(body == nil) }
 
             let headers = [
@@ -409,10 +409,11 @@ public struct StorageService: Dependencies {
                                               method: method,
                                               headers: headers,
                                               body: body)
-        }.map(on: .global()) { (response: OWSHTTPResponse) -> StorageResponse in
+        }.map(on: .global()) { (response: HTTPResponse) -> StorageResponse in
             let status: StorageResponse.Status
 
-            switch response.statusCode {
+            let statusCode = response.responseStatusCode
+            switch statusCode {
             case 200:
                 status = .success
             case 204:
@@ -422,12 +423,12 @@ public struct StorageService: Dependencies {
             case 404:
                 status = .notFound
             default:
-                let error = OWSAssertionError("Unexpected statusCode: \(response.statusCode)")
-                throw StorageError.networkError(statusCode: response.statusCode, underlyingError: error)
+                let error = OWSAssertionError("Unexpected statusCode: \(statusCode)")
+                throw StorageError.networkError(statusCode: statusCode, underlyingError: error)
             }
 
             // We should always receive response data, for some responses it will be empty.
-            guard let responseData = response.responseData else {
+            guard let responseData = response.responseBodyData else {
                 owsFailDebug("missing response data")
                 throw StorageError.retryableAssertion
             }

@@ -1173,7 +1173,7 @@ private class MigrateGroupOperation: OWSOperation {
             if GroupsV2Migration.verboseLogging {
                 Logger.info("failure groupId: \(groupId.hexadecimalString), migrationMode: \(migrationMode), error: \(error)")
             }
-            self.reportError(error.asUnretryableError)
+            self.reportError(error)
             self.resolver.reject(error)
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -44,24 +44,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 + (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
 
 - (void)appendToForm:(id<AFMultipartFormData>)formData;
-
-@end
-
-#pragma mark -
-
-typedef void (^UploadProgressBlock)(NSProgress *progress);
-
-// A strong reference should be maintained to this object
-// until it completes.  If it is deallocated, the upload
-// may be cancelled.
-//
-// This class can be safely accessed and used from any thread.
-@interface OWSAvatarUploadV2 : NSObject
-
-// This property is set on success for non-nil uploads.
-@property (nonatomic, nullable) NSString *urlPath;
-
-- (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData;
 
 @end
 

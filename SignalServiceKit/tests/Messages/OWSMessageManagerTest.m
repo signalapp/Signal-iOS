@@ -5,6 +5,7 @@
 #import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/MockSSKEnvironment.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
@@ -15,7 +16,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -60,7 +60,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
                 self.markUrlPathAsCorrupt(urlPath)
 
                 // Fail immediately; do not retry.
-                return self.reportError(error.asUnretryableError)
+                return self.reportError(SSKUnretryableError.stickerDecryptionFailure)
             }
         }.catch(on: DispatchQueue.global()) { [weak self] error in
             guard let self = self else {

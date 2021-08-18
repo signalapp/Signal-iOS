@@ -11,10 +11,10 @@ struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }
 
 enum PushNotificationRequestResult: String {
-    case FailTSOnly = "FailTSOnly",
-    FailRPOnly = "FailRPOnly",
-    FailBoth = "FailBoth",
-    Succeed = "Succeed"
+    case failTSOnly = "FailTSOnly"
+    case failRPOnly = "FailRPOnly"
+    case failBoth = "FailBoth"
+    case succeed = "Succeed"
 }
 
 class FailingTSAccountManager: TSAccountManager {
@@ -26,12 +26,17 @@ class FailingTSAccountManager: TSAccountManager {
         self.phoneNumberAwaitingVerification = "+13235555555"
     }
 
-    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyAccount(request: TSRequest,
+                                success successBlock: @escaping (Any?) -> Void,
+                                failure failureBlock: @escaping (Error) -> Void) {
         failureBlock(VerificationFailedError())
     }
 
-    override func registerForPushNotifications(pushToken: String, voipToken: String?, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
-        if pushToken == PushNotificationRequestResult.FailTSOnly.rawValue || pushToken == PushNotificationRequestResult.FailBoth.rawValue {
+    override func registerForPushNotifications(pushToken: String,
+                                               voipToken: String?,
+                                               success successHandler: @escaping () -> Void,
+                                               failure failureHandler: @escaping (Error) -> Void) {
+        if pushToken == PushNotificationRequestResult.failTSOnly.rawValue || pushToken == PushNotificationRequestResult.failBoth.rawValue {
             failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
         } else {
             successHandler()
@@ -40,10 +45,11 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(with request: TSRequest, success successBlock: @escaping (Any?) -> Void, failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyAccount(request: TSRequest,
+                                success successBlock: @escaping (Any?) -> Void,
+                                failure failureBlock: @escaping (Error) -> Void) {
         successBlock(["uuid": UUID().uuidString])
     }
-
 }
 
 class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
@@ -138,7 +144,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever")
+            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.failTSOnly.rawValue, voipToken: "whatever")
         }.done {
             XCTFail("Expected to fail.")
         }.catch { _ in

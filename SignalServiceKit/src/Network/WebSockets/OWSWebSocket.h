@@ -1,31 +1,43 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-static void *OWSWebSocketStateObservationContext = &OWSWebSocketStateObservationContext;
-
 extern NSNotificationName const NSNotificationWebSocketStateDidChange;
 
-typedef NS_ENUM(NSUInteger, OWSWebSocketState) {
+typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketType) {
+    OWSWebSocketTypeIdentified,
+    OWSWebSocketTypeUnidentified,
+};
+
+NSString *NSStringForOWSWebSocketType(OWSWebSocketType value);
+
+typedef NS_CLOSED_ENUM(NSUInteger, OWSWebSocketState) {
     OWSWebSocketStateClosed,
     OWSWebSocketStateConnecting,
     OWSWebSocketStateOpen,
 };
 
-typedef void (^TSSocketMessageSuccess)(id _Nullable responseObject);
-// statusCode is zero by default, if request never made or failed.
-typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable responseData, NSError *error);
-
+@class OWSHTTPErrorWrapper;
 @class TSRequest;
 
+@protocol HTTPResponse;
+@protocol HTTPFailure;
+
+typedef void (^TSSocketMessageSuccess)(id<HTTPResponse> response);
+typedef void (^TSSocketMessageFailure)(OWSHTTPErrorWrapper *failure);
+
+// TODO: Port to Swift.
 @interface OWSWebSocket : NSObject
 
+@property (nonatomic, readonly) OWSWebSocketType webSocketType;
 @property (nonatomic, readonly) OWSWebSocketState state;
 @property (nonatomic, readonly) BOOL hasEmptiedInitialQueue;
+@property (nonatomic, readonly) BOOL shouldSocketBeOpen;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithWebSocketType:(OWSWebSocketType)webSocketType NS_DESIGNATED_INITIALIZER;
 
 // If the app is in the foreground, we'll try to open the socket unless it's already
 // open or connecting.
@@ -45,9 +57,9 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable r
 
 @property (atomic, readonly) BOOL canMakeRequests;
 
-- (void)makeRequest:(TSRequest *)request
-            success:(TSSocketMessageSuccess)success
-            failure:(TSSocketMessageFailure)failure;
+- (void)makeRequestInternal:(TSRequest *)request
+                    success:(TSSocketMessageSuccess)success
+                    failure:(TSSocketMessageFailure)failure;
 
 @end
 

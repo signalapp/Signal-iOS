@@ -4,7 +4,6 @@
 
 #import "StorageCoordinator.h"
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/YDBStorage.h>
 

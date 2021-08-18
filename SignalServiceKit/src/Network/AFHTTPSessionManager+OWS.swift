@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,7 +56,7 @@ public extension AFHTTPSessionManager {
             } else {
                 if let task = task {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
                     #endif
                 }
             }
@@ -129,7 +129,7 @@ public extension AFHTTPSessionManager {
                                     if let error = error {
                                         #if TESTABLE_BUILD
                                         if let task = taskReference {
-                                            TSNetworkManager.logCurl(for: task)
+                                            HTTPUtils.logCurl(for: task)
                                         }
                                         #endif
                                         resolver.reject(error)

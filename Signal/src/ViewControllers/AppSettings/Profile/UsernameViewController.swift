@@ -225,7 +225,9 @@ class UsernameViewController: OWSTableViewController2 {
                 usernameRequest = OWSRequestFactory.usernameDeleteRequest()
             }
 
-            Self.networkManager.makePromise(request: usernameRequest).done { _ in
+            firstly(on: .global()) {
+                Self.networkManager.makePromise(request: usernameRequest)
+            }.done(on: .main) { _ in
                 self.databaseStorage.write { transaction in
                     Self.profileManagerImpl.updateLocalUsername(usernameToUse,
                                                                 userProfileWriter: .localUser,

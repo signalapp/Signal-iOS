@@ -231,7 +231,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 
                     modal.dismiss {
                         guard let recipient = recipients.first else {
-                            return OWSActionSheets.showErrorAlert(message: OWSErrorMakeNoSuchSignalRecipientError().localizedDescription)
+                            return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().localizedDescription)
                         }
 
                         self.delegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)

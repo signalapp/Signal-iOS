@@ -3,14 +3,12 @@
 //
 
 #import "OWS2FAManager.h"
-#import "NSNotificationCenter+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -199,31 +197,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 });
             break;
         }
-        case OWS2FAMode_V1: {
-            // Convert the pin to arabic numerals, we never want to
-            // operate with pins in other numbering systems.
-            TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin.ensureArabicNumerals];
-            [self.networkManager makeRequest:request
-                success:^(NSURLSessionDataTask *task, id responseObject) {
-                    OWSAssertIsOnMainThread();
-
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self markEnabledWithPin:pin transaction:transaction];
-                    });
-
-                    if (success) {
-                        success();
-                    }
-                }
-                failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    OWSAssertIsOnMainThread();
-
-                    if (failure) {
-                        failure(error);
-                    }
-                }];
+        case OWS2FAMode_V1:
+            [self enable2FAV1WithPin:pin success:success failure:failure];
             break;
-        }
         case OWS2FAMode_Disabled:
             OWSFailDebug(@"Unexpectedly attempting to enable 2fa for disabled mode");
             break;
@@ -263,30 +239,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             break;
         }
         case OWS2FAMode_V1:
-        {
-            TSRequest *request = [OWSRequestFactory disable2FARequest];
-            [self.networkManager makeRequest:request
-                                     success:^(NSURLSessionDataTask *task, id responseObject) {
-                                         OWSAssertIsOnMainThread();
-
-                                         DatabaseStorageWrite(
-                                             self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                                 [self markDisabledWithTransaction:transaction];
-                                             });
-
-                                         if (success) {
-                                             success();
-                                         }
-                                     }
-                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                         OWSAssertIsOnMainThread();
-
-                                         if (failure) {
-                                             failure(error);
-                                         }
-                                     }];
+            [self disable2FAV1WithSuccess:success failure:failure];
             break;
-        }
         case OWS2FAMode_Disabled:
             OWSFailDebug(@"Unexpectedly attempting to disable 2fa for disabled mode");
             break;

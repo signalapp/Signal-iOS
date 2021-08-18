@@ -409,12 +409,8 @@ extension SharingThreadPickerViewController {
 
         let failureTitle = NSLocalizedString("SHARE_EXTENSION_SENDING_FAILURE_TITLE", comment: "Alert title")
 
-        let nsError = error as NSError
-        if nsError.domain == OWSSignalServiceKitErrorDomain, nsError.code == OWSErrorCode.untrustedIdentity.rawValue {
-            guard let untrustedAddress = nsError.userInfo[OWSErrorRecipientAddressKey] as? SignalServiceAddress else {
-                return owsFailDebug("Missing address")
-            }
-
+        if let untrustedIdentityError = error as? UntrustedIdentityError {
+            let untrustedAddress = untrustedIdentityError.address
             let failureFormat = NSLocalizedString("SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
                                                   comment: "alert body when sharing file failed because of untrusted/changed identity keys")
             let displayName = self.contactsManager.displayName(for: untrustedAddress)

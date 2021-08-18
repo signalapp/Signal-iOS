@@ -52,28 +52,6 @@ public enum HTTPMethod {
 
 // MARK: -
 
-public enum OWSHTTPError: Error {
-    case requestError(statusCode: Int, httpUrlResponse: HTTPURLResponse, responseData: Data?)
-}
-
-// MARK: -
-
-public struct OWSHTTPResponse {
-    public let task: URLSessionTask
-    public let httpUrlResponse: HTTPURLResponse
-    public let responseData: Data?
-
-    public var statusCode: Int {
-        httpUrlResponse.statusCode
-    }
-
-    public var allHeaderFields: [AnyHashable: Any] {
-        httpUrlResponse.allHeaderFields
-    }
-}
-
-// MARK: -
-
 public struct OWSUrlDownloadResponse {
     public let task: URLSessionTask
     public let httpUrlResponse: HTTPURLResponse
@@ -260,27 +238,29 @@ public class OWSURLSession: NSObject {
 
     private struct RequestConfig {
         let task: URLSessionTask
+        let requestUrl: URL
         let require2xxOr3xx: Bool
         let failOnError: Bool
         let shouldHandleRemoteDeprecation: Bool
     }
 
-    private func requestConfig(forTask task: URLSessionTask) -> RequestConfig {
+    private func requestConfig(forTask task: URLSessionTask, requestUrl: URL) -> RequestConfig {
         // Snapshot session state at time request is made.
         RequestConfig(task: task,
+                      requestUrl: requestUrl,
                       require2xxOr3xx: require2xxOr3xx,
                       failOnError: failOnError,
                       shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation)
     }
 
     private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig,
-                                                         responseData: Data?) -> Promise<OWSHTTPResponse> {
+                                                         responseData: Data?) -> Promise<HTTPResponse> {
         firstly {
             baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
-        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSHTTPResponse in
-            OWSHTTPResponse(task: requestConfig.task,
-                            httpUrlResponse: httpUrlResponse,
-                            responseData: responseData)
+        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
+            HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
+                                      httpUrlResponse: httpUrlResponse,
+                                      bodyData: responseData)
         }
     }
 
@@ -310,7 +290,7 @@ public class OWSURLSession: NSObject {
                     Logger.warn("Request failed: \(error)")
                 } else {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
 
                     if let responseData = responseData,
                        let httpUrlResponse = task.response as? HTTPURLResponse,
@@ -338,17 +318,27 @@ public class OWSURLSession: NSObject {
                 let statusCode = httpUrlResponse.statusCode
                 guard statusCode >= 200, statusCode < 400 else {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
                     Logger.verbose("Status code: \(statusCode)")
                     #endif
 
-                    throw OWSHTTPError.requestError(statusCode: statusCode, httpUrlResponse: httpUrlResponse, responseData: responseData)
+                    let requestUrl = requestConfig.requestUrl
+                    if statusCode > 0 {
+                        let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
+                        throw OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
+                                                              responseStatus: statusCode,
+                                                              responseHeaders: responseHeaders,
+                                                              responseError: nil,
+                                                              responseData: responseData)
+                    } else {
+                        throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
+                    }
                 }
             }
 
             #if TESTABLE_BUILD
             if DebugFlags.logCurlOnSuccess {
-                TSNetworkManager.logCurl(for: task)
+                HTTPUtils.logCurl(for: task)
             }
             #endif
 
@@ -743,8 +733,8 @@ public extension OWSURLSession {
                            method: HTTPMethod,
                            headers: [String: String]? = nil,
                            data requestData: Data,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
         }
@@ -752,7 +742,7 @@ public extension OWSURLSession {
 
     func uploadTaskPromise(request: URLRequest,
                            data requestData: Data,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
@@ -768,16 +758,20 @@ public extension OWSURLSession {
             self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 
@@ -785,8 +779,8 @@ public extension OWSURLSession {
                            method: HTTPMethod,
                            headers: [String: String]? = nil,
                            dataUrl: URL,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, dataUrl: dataUrl, progress: progressBlock)
         }
@@ -794,7 +788,7 @@ public extension OWSURLSession {
 
     func uploadTaskPromise(request: URLRequest,
                            dataUrl: URL,
-                           progress progressBlock: ProgressBlock? = nil) -> Promise<OWSHTTPResponse> {
+                           progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
@@ -810,16 +804,20 @@ public extension OWSURLSession {
             self?.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 
@@ -828,14 +826,14 @@ public extension OWSURLSession {
     func dataTaskPromise(_ urlString: String,
                          method: HTTPMethod,
                          headers: [String: String]? = nil,
-                         body: Data? = nil) -> Promise<OWSHTTPResponse> {
-        firstly(on: .global()) { () -> Promise<OWSHTTPResponse> in
+                         body: Data? = nil) -> Promise<HTTPResponse> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.dataTaskPromise(request: request)
         }
     }
 
-    func dataTaskPromise(request: URLRequest) -> Promise<OWSHTTPResponse> {
+    func dataTaskPromise(request: URLRequest) -> Promise<HTTPResponse> {
 
         guard !Self.appExpiry.isExpired else {
             return Promise(error: OWSAssertionError("App is expired."))
@@ -862,16 +860,20 @@ public extension OWSURLSession {
             self.uploadOrDataTaskDidSucceed(requestConfig.task, responseData: responseData)
         }
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = request.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<OWSHTTPResponse> in
+        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
-            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
+            return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig,
+                                                          responseData: responseData)
         }
     }
 
@@ -916,7 +918,10 @@ public extension OWSURLSession {
         var requestConfig: RequestConfig?
         let task = taskBlock()
         addTask(task, taskState: taskState)
-        requestConfig = self.requestConfig(forTask: task)
+        guard let requestUrl = task.originalRequest?.url else {
+            owsFail("Request missing url.")
+        }
+        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
@@ -932,6 +937,9 @@ public extension OWSURLSession {
 
 // MARK: - HTTP Headers
 
+// This class can be used to build "outgoing" headers for requests
+// or to parse "incoming" headers for responses.
+//
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
 @objc
@@ -944,6 +952,18 @@ public class OWSHttpHeaders: NSObject {
 
     @objc
     public init(httpHeaders: [String: String]?) {}
+
+    @objc
+    public init(response: HTTPURLResponse) {
+        for (key, value) in response.allHeaderFields {
+           guard let key = key as? String,
+                 let value = value as? String else {
+            owsFailDebug("Invalid response header, key: \(key), value: \(value).")
+            continue
+           }
+            headers[key] = value
+        }
+    }
 
     @objc
     public func hasValueForHeader(_ header: String) -> Bool {

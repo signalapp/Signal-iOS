@@ -87,11 +87,59 @@ extension RemoteAttestation {
 
     // MARK: -
 
-    private static func getAuth(for service: RemoteAttestationService) -> Promise<RemoteAttestationAuth> {
-        return Promise { resolver in
-            self.getAuthFor(service, success: resolver.fulfill, failure: resolver.reject)
+    private static func getRemoteAttestationAuth(forService service: RemoteAttestationService) -> Promise<RemoteAttestationAuth> {
+        Promise { resolver in
+            self.getRemoteAttestationAuth(forService: service, success: resolver.fulfill, failure: resolver.reject)
         }
     }
+
+    @objc
+    public static func getRemoteAttestationAuth(forService service: RemoteAttestationService,
+                                                success: @escaping (RemoteAttestationAuth) -> Void,
+                                                failure: @escaping (Error) -> Void) {
+        guard tsAccountManager.isRegisteredAndReady else {
+            failure(OWSGenericError("Not registered."))
+            return
+        }
+
+        if DebugFlags.internalLogging {
+            Logger.info("service: \(NSStringForRemoteAttestationService(service))")
+        }
+
+        let request = OWSRequestFactory.remoteAttestationAuthRequest(for: service)
+        firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            if DebugFlags.internalLogging {
+                let statusCode = response.responseStatusCode
+                Logger.info("statusCode: \(statusCode)")
+                for (header, headerValue) in response.responseHeaders {
+                    Logger.info("Header: \(header) -> \(headerValue)")
+                }
+
+                #if TESTABLE_BUILD
+                 HTTPUtils.logCurl(for: request as URLRequest)
+                #endif
+            }
+
+            guard let json = response.responseBodyJson else {
+                failure(OWSAssertionError("Missing or invalid JSON"))
+                return
+            }
+            guard let auth = self.parseAuthParams(json) else {
+                owsFailDebug("Remote attestation auth could not be parsed: \(json)")
+                let error = OWSErrorMakeUnableToProcessServerResponseError()
+                failure(error)
+                return
+            }
+            success(auth)
+        }.catch(on: .global()) { error in
+            let statusCode = HTTPStatusCodeForError(error) ?? 0
+            Logger.verbose("Remote attestation auth failure: \(statusCode)")
+        }
+    }
+
+    // MARK: -
 
     private struct AttestationResponse {
         let responseBody: ParamParser
@@ -110,7 +158,7 @@ extension RemoteAttestation {
             if let auth = auth {
                 return Promise.value(auth)
             } else {
-                return getAuth(for: service)
+                return getRemoteAttestationAuth(forService: service)
             }
         }.then(on: .global()) { auth -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
@@ -121,20 +169,17 @@ extension RemoteAttestation {
                                                    authUsername: auth.username,
                                                    authPassword: auth.password,
                                                    clientEphemeralKeyPair: clientEphemeralKeyPair)
-
-            return self.networkManager.makePromise(request: request).map { task, body in
-                guard let paramParser = ParamParser(responseObject: body) else {
+            return firstly {
+                networkManager.makePromise(request: request)
+            }.map(on: .global()) { (response: HTTPResponse) in
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON.")
+                }
+                guard let paramParser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("paramParser was unexpectedly nil")
                 }
-                guard let response = task.response as? HTTPURLResponse else {
-                    throw OWSAssertionError("task.response was unexpectedly nil")
-                }
-                guard let headerFields = response.allHeaderFields as? [String: String] else {
-                    throw OWSAssertionError("invalid response.allHeaderFields: \(response.allHeaderFields)")
-                }
-                guard let responseUrl = response.url else {
-                    throw OWSAssertionError("responseUrl was unexpectedly nil")
-                }
+                let headerFields = response.responseHeaders
+                let responseUrl = response.requestUrl
                 let cookies = HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: responseUrl)
 
                 return AttestationResponse(responseBody: paramParser,
@@ -165,10 +210,10 @@ extension RemoteAttestation {
         request.customHost = host
         request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
-        // Don't bother with the default cookie store;
+        // Don't bother with the default cookie store
         // these cookies are ephemeral.
         //
-        // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+        // NOTE: NetworkManager now separately disables default cookie handling for all requests.
         request.httpShouldHandleCookies = false
 
         return request
@@ -221,6 +266,7 @@ extension RemoteAttestation {
     }
 }
 
+// MARK: -
 extension RemoteAttestationError {
     public var reason: String? {
         return userInfo[RemoteAttestationErrorKey_Reason] as? String
@@ -231,6 +277,8 @@ extension RemoteAttestationError {
         self.init(code, userInfo: [RemoteAttestationErrorKey_Reason: reason])
     }
 }
+
+// MARK: -
 
 @objc
 public class RemoteAttestationKeys: NSObject {

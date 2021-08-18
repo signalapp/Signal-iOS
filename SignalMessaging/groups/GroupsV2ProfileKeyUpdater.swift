@@ -165,7 +165,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 case GroupsV2Error.localUserNotInGroup:
                     // If the update is no longer necessary, skip it.
                     self.markAsComplete(groupId: groupId)
-                case is NetworkManagerError:
+                case is OWSHTTPError:
                     if let statusCode = error.httpStatusCode,
                        400 <= statusCode && statusCode <= 599 {
                         // If a non-recoverable error occurs (e.g. we've been kicked

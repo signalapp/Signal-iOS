@@ -65,20 +65,20 @@ open class CDNDownloadOperation: OWSOperation {
                                                                                     hasCheckedContentLength: hasCheckedContentLength)
             }
         }.recover(on: .global()) { (error: Error) -> Promise<OWSUrlDownloadResponse> in
-            throw error.withDefaultRetry
+            throw error
         }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
             guard let _ = self else {
-                throw OWSAssertionError("Operation has been deallocated.").asUnretryableError
+                throw OWSAssertionError("Operation has been deallocated.")
             }
             let downloadUrl = response.downloadUrl
             guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
                 owsFailDebug("Couldn't determine file size.")
-                throw StickerError.assertionFailure.asUnretryableError
+                throw SSKUnretryableError.stickerMissingFile
             }
             if let maxDownloadSize = maxDownloadSize {
                 guard fileSize.uint64Value <= maxDownloadSize else {
                     owsFailDebug("Download length exceeds max size.")
-                    throw StickerError.assertionFailure.asUnretryableError
+                    throw SSKUnretryableError.stickerOversizeFile
                 }
             }
 
@@ -89,7 +89,7 @@ open class CDNDownloadOperation: OWSOperation {
             } catch {
                 owsFailDebug("Could not move to temporary file: \(error)")
                 // Fail immediately; do not retry.
-                throw error.asUnretryableError
+                throw SSKUnretryableError.downloadCouldNotMoveFile
             }
         }.catch(on: .global()) { (error: Error) in
             Logger.warn("Download failed: \(error)")
@@ -108,7 +108,7 @@ open class CDNDownloadOperation: OWSOperation {
             } catch {
                 owsFailDebug("Could not load data failed: \(error)")
                 // Fail immediately; do not retry.
-                throw error.asUnretryableError
+                throw SSKUnretryableError.downloadCouldNotDeleteFile
             }
         }
     }

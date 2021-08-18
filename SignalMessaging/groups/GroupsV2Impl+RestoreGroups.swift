@@ -237,7 +237,7 @@ public extension GroupsV2Impl {
             }.catch(on: .global()) { (error) in
                 // tryToRestoreNextGroup() should never fail.
                 owsFailDebug("Group restore failed: \(error)")
-                self.reportError(error.asUnretryableError)
+                self.reportError(SSKUnretryableError.restoreGroupFailed)
             }
         }
 

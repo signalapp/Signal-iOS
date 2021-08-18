@@ -107,7 +107,7 @@ public class OWSAttachmentUploadV2: NSObject {
     }
 
     private func attachmentMetadata() -> Promise<(url: URL, length: Int)> {
-        return firstly(on: Self.serialQueue) {
+        firstly(on: Self.serialQueue) {
             let temporaryFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let metadata = try Cryptography.encryptAttachment(at: self.attachmentStream.originalMediaURL!, output: temporaryFile)
 
@@ -120,7 +120,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
             guard plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
                   length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
-                throw OWSAssertionError("Data is too large: \(length).").asUnretryableError
+                throw OWSAssertionError("Data is too large: \(length).")
             }
 
             return (temporaryFile, length)
@@ -130,7 +130,7 @@ public class OWSAttachmentUploadV2: NSObject {
     private func attachmentData() -> Promise<Data> {
         // TODO: Eliminate the need for ever loading the attachment data into memory.
         // Right now, this is only used when updating group avatars.
-        return attachmentMetadata().map { try Data(contentsOf: $0.url) }
+        attachmentMetadata().map { try Data(contentsOf: $0.url) }
     }
 
     @objc
@@ -147,24 +147,33 @@ public class OWSAttachmentUploadV2: NSObject {
 
     // Performs a request, trying to use the websocket
     // and failing over to REST.
+    //
+    // TODO: Remove skipWebsocket.
     private func performRequest(skipWebsocket: Bool = false,
-                                requestBlock: @escaping () -> TSRequest) -> Promise<Any?> {
-        return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
+                                requestBlock: @escaping () -> TSRequest) -> Promise<HTTPResponse> {
+        firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let formRequest = requestBlock()
-            let shouldUseWebsocket = OWSUpload.socketManager.canMakeRequests() && !skipWebsocket
+            let shouldUseWebsocket: Bool
+            if FeatureFlags.deprecateREST {
+                shouldUseWebsocket = true
+            } else {
+                shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&
+                                        !skipWebsocket)
+            }
             if shouldUseWebsocket {
-                return firstly(on: Self.serialQueue) { () -> Promise<Any?> in
-                    OWSUpload.socketManager.makeRequestPromise(request: formRequest)
-                }.recover(on: Self.serialQueue) { (_) -> Promise<Any?> in
-                    // Failover to REST request.
-                    self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
+                return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
+                    owsAssertDebug(!formRequest.isUDRequest)
+                    return Self.socketManager.makeRequestPromise(request: formRequest)
+                }.recover(on: Self.serialQueue) { error -> Promise<HTTPResponse> in
+                    if FeatureFlags.deprecateREST {
+                        throw error
+                    } else {
+                        // Failover to REST request.
+                        return self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
+                    }
                 }
             } else {
-                return firstly(on: Self.serialQueue) {
-                    return OWSUpload.networkManager.makePromise(request: formRequest)
-                }.map(on: Self.serialQueue) { (_: URLSessionDataTask, responseObject: Any?) -> Any? in
-                    return responseObject
-                }
+                return Self.networkManager.makePromise(request: formRequest)
             }
         }
     }
@@ -172,18 +181,21 @@ public class OWSAttachmentUploadV2: NSObject {
     // MARK: - V2
 
     public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
-        return firstly(on: Self.serialQueue) {
+        firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
-            return self.performRequest {
+            self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV2()
             }
-        }.then(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Promise<OWSUploadFormV2> in
+        }.then(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Promise<OWSUploadFormV2> in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
-            return self.parseUploadFormV2(formResponseObject: formResponseObject)
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            return self.parseUploadFormV2(formResponseObject: json)
         }.then(on: Self.serialQueue) { (form: OWSUploadFormV2) -> Promise<(form: OWSUploadFormV2, attachmentData: Data)> in
-            return firstly {
+            firstly {
                 return self.attachmentData()
             }.map(on: Self.serialQueue) { (attachmentData: Data) in
                 return (form, attachmentData)
@@ -201,7 +213,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
     private func parseUploadFormV2(formResponseObject: Any?) -> Promise<OWSUploadFormV2> {
 
-        return firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
+        firstly(on: Self.serialQueue) { () -> OWSUploadFormV2 in
             guard let formDictionary = formResponseObject as? [AnyHashable: Any] else {
                 Logger.warn("formResponseObject: \(String(describing: formResponseObject))")
                 throw OWSAssertionError("Invalid form.")
@@ -234,12 +246,15 @@ public class OWSAttachmentUploadV2: NSObject {
             return self.performRequest {
                 return OWSRequestFactory.allocAttachmentRequestV3()
             }
-        }.map(on: Self.serialQueue) { [weak self] (formResponseObject: Any?) -> Void in
+        }.map(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Void in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
             }
             // Parse upload form.
-            let uploadForm = try OWSUploadFormV3(responseObject: formResponseObject)
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            let uploadForm = try OWSUploadFormV3(responseObject: json)
             self.cdnKey = uploadForm.cdnKey
             self.cdnNumber = uploadForm.cdnNumber
             form = uploadForm
@@ -356,7 +371,7 @@ public class OWSAttachmentUploadV2: NSObject {
             Logger.info("attemptCount: \(attemptCount)")
         }
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
@@ -372,11 +387,12 @@ public class OWSAttachmentUploadV2: NSObject {
             let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
-        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
-            guard response.statusCode == 201 else {
-                throw OWSAssertionError("Invalid statusCode: \(response.statusCode).")
+        }.map(on: Self.serialQueue) { (response: HTTPResponse) in
+            let statusCode = response.responseStatusCode
+            guard statusCode == 201 else {
+                throw OWSAssertionError("Invalid statusCode: \(statusCode).")
             }
-            guard let locationHeader = response.allHeaderFields["Location"] as? String else {
+            guard let locationHeader = response.responseHeaders["Location"] else {
                 throw OWSAssertionError("Missing location header.")
             }
             guard locationHeader.lowercased().hasPrefix("http") else {
@@ -586,7 +602,7 @@ public class OWSAttachmentUploadV2: NSObject {
                                                      uploadV3Metadata: UploadV3Metadata,
                                                      locationUrl: URL) -> Promise<Int> {
 
-        return firstly(on: Self.serialQueue) { () -> Promise<OWSHTTPResponse> in
+        return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let urlString = locationUrl.absoluteString
 
             var headers = [String: String]()
@@ -598,10 +614,10 @@ public class OWSAttachmentUploadV2: NSObject {
             let body = "".data(using: .utf8)
 
             return urlSession.dataTaskPromise(urlString, method: .put, headers: headers, body: body)
-        }.map(on: Self.serialQueue) { (response: OWSHTTPResponse) in
-
-            if response.statusCode != 308 {
-                owsFailDebug("Invalid status code: \(response.statusCode).")
+        }.map(on: Self.serialQueue) { (response: HTTPResponse) in
+            let statusCode = response.responseStatusCode
+            if statusCode != 308 {
+                owsFailDebug("Invalid status code: \(statusCode).")
                 // Return zero to restart the upload.
                 return 0
             }
@@ -616,7 +632,7 @@ public class OWSAttachmentUploadV2: NSObject {
             //
             // * https://cloud.google.com/storage/docs/performing-resumable-uploads#resume-upload
             // * https://cloud.google.com/storage/docs/resumable-uploads
-            guard let rangeHeader = response.allHeaderFields["Range"] as? String else {
+            guard let rangeHeader = response.responseHeaders["Range"] else {
                 Logger.warn("Missing Range header.")
 
                 throw OWSUploadError.missingRangeHeader
@@ -693,14 +709,14 @@ public extension OWSUpload {
             }, failure: { (task, error) in
                 if let task = task {
                     #if TESTABLE_BUILD
-                    TSNetworkManager.logCurl(for: task)
+                    HTTPUtils.logCurl(for: task)
                     #endif
                 } else {
                     owsFailDebug("Missing task.")
                 }
 
-                if let statusCode = HTTPStatusCodeForError(error),
-                statusCode.intValue == AppExpiry.appExpiredStatusCode {
+                if let statusCode = error.httpStatusCode,
+                   statusCode == AppExpiry.appExpiredStatusCode {
                     AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
                 }
 

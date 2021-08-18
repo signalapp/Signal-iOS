@@ -2,11 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSNotificationCenter+OWS.h"
+#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
-#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSConstants.h>

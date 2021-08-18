@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "Tue, 11 Aug 2020 05:54:39 GMT"
         ]
         strings.forEach { string in
-            XCTAssertEqual(HTTPURLResponse.parseRetryAfter(from: string), Date.ows_parseFromHTTPDateString(string)!)
+            XCTAssertEqual(OWSHttpHeaders.parseRetryAfterHeaderValue(string), Date.ows_parseFromHTTPDateString(string)!)
         }
     }
 
@@ -36,7 +36,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "2020-08-11T05:54:39+0000"
         ]
         strings.forEach { string in
-            XCTAssertEqual(HTTPURLResponse.parseRetryAfter(from: string), Date.ows_parseFromISO8601String(string)!)
+            XCTAssertEqual(OWSHttpHeaders.parseRetryAfterHeaderValue(string), Date.ows_parseFromISO8601String(string)!)
         }
     }
 
@@ -54,7 +54,7 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             " \t  \t86400.000\t  \t  "
         ]
         delayStrings.forEach { (string) in
-            let date = HTTPURLResponse.parseRetryAfter(from: string)
+            let date = OWSHttpHeaders.parseRetryAfterHeaderValue(string)
             XCTAssertEqual(
                 date!.timeIntervalSinceNow,
                 Double(string.trimmingCharacters(in: .whitespacesAndNewlines))!,
@@ -72,15 +72,15 @@ class NSHTTPURLResponseTests: SSKBaseTestSwift {
             "later"
         ]
         invalidStrings.forEach { (string) in
-            let date = HTTPURLResponse.parseRetryAfter(from: string)
+            let date = OWSHttpHeaders.parseRetryAfterHeaderValue(string)
             XCTAssertEqual(date!.timeIntervalSinceNow, 60, accuracy: 0.1)
         }
     }
 
     func testEmptyRetryAfter() {
-        XCTAssertNil(HTTPURLResponse.parseRetryAfter(from: nil))
-        XCTAssertNil(HTTPURLResponse.parseRetryAfter(from: ""))
-        XCTAssertNil(HTTPURLResponse.parseRetryAfter(from: "      "))
-        XCTAssertNil(HTTPURLResponse.parseRetryAfter(from: "\n"))
+        XCTAssertNil(OWSHttpHeaders.parseRetryAfterHeaderValue(nil))
+        XCTAssertNil(OWSHttpHeaders.parseRetryAfterHeaderValue(""))
+        XCTAssertNil(OWSHttpHeaders.parseRetryAfterHeaderValue("      "))
+        XCTAssertNil(OWSHttpHeaders.parseRetryAfterHeaderValue("\n"))
     }
 }

@@ -3,18 +3,16 @@
 //
 
 #import <SignalServiceKit/RemoteAttestation.h>
-#import "NSError+OWSOperation.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/RemoteAttestationQuote.h>
 #import <SignalServiceKit/RemoteAttestationSigningCertificate.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -150,59 +148,6 @@ NSString *NSStringForRemoteAttestationService(RemoteAttestationService value) {
     _auth = auth;
 
     return self;
-}
-
-+ (void)getRemoteAttestationAuthForService:(RemoteAttestationService)service
-                                   success:(void (^)(RemoteAttestationAuth *))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler
-{
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return failureHandler(OWSErrorMakeGenericError(@"Not registered."));
-    }
-
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"service: %@", NSStringForRemoteAttestationService(service));
-    }
-
-    TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequestForService:service];
-    [[TSNetworkManager shared] makeRequest:request
-      success:^(NSURLSessionDataTask *task, id responseDict) {
-
-        if (SSKDebugFlags.internalLogging) {
-            OWSAssertDebug([task.response isKindOfClass:NSHTTPURLResponse.class]);
-            NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-            OWSLogInfo(@"statusCode: %lu", (unsigned long) response.statusCode);
-            for (NSString *header in response.allHeaderFields) {
-                if ([response respondsToSelector:@selector(valueForHTTPHeaderField:)]) {
-                    NSString *_Nullable headerValue = [response valueForHTTPHeaderField:header];
-                    OWSLogInfo(@"Header: %@ -> %@", header, headerValue);
-                } else {
-                    OWSLogInfo(@"Header: %@", header);
-                }
-            }
-            
-#if TESTABLE_BUILD
-            [TSNetworkManager logCurlForTask:task];
-#endif
-        }
-
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-              RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
-              if (!auth) {
-                  OWSLogError(@"remote attestation auth could not be parsed: %@", responseDict);
-                  NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                  failureHandler(error);
-                  return;
-              }
-
-              successHandler(auth);
-          });
-      }
-      failure:^(NSURLSessionDataTask *task, NSError *error) {
-          NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-          OWSLogVerbose(@"remote attestation auth failure: %lu", (unsigned long)response.statusCode);
-          failureHandler(error);
-      }];
 }
 
 + (nullable RemoteAttestationAuth *)parseAuthParams:(id)response

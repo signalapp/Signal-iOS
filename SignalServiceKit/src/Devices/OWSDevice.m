@@ -3,7 +3,6 @@
 //
 
 #import "OWSDevice.h"
-#import "NSNotificationCenter+OWS.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppReadiness.h>

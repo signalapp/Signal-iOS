@@ -3,7 +3,6 @@
 //
 
 #import "OWSIdentityManager.h"
-#import "NSNotificationCenter+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -749,7 +748,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             })
             .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed to send verification state NullMessage with error: %@", error);
-                if (error.code == OWSErrorCodeNoSuchSignalRecipient) {
+                if ([MessageSenderNoSuchSignalRecipientError isNoSuchSignalRecipientError:error]) {
                     OWSLogInfo(
                         @"Removing retries for syncing verification state, since user is no longer registered: %@",
                         message.verificationForRecipientAddress);

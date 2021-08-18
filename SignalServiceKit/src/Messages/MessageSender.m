@@ -5,7 +5,6 @@
 #import "MessageSender.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
-#import "NSError+OWSOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
 #import <PromiseKit/AnyPromise.h>
@@ -17,6 +16,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/FunctionalUtil.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
@@ -30,7 +30,6 @@
 #import <SignalServiceKit/OWSOutgoingReactionMessage.h>
 #import <SignalServiceKit/OWSOutgoingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -44,12 +43,10 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSRequest.h>
-#import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -212,19 +209,19 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (TSAttachment *attachment in [self.message allAttachmentsWithTransaction:transaction.unwrapGrdbRead]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    error = [OWSUnretryableMessageSenderError asNSError];
                     break;
                 }
 
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                 if (!attachmentStream.serverId && attachmentStream.cdnKey.length < 1) {
                     OWSFailDebug(@"Attachment missing upload state.");
-                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    error = [OWSUnretryableMessageSenderError asNSError];
                     break;
                 }
                 if (!attachmentStream.isUploaded) {
                     OWSFailDebug(@"Attachment not uploaded.");
-                    error = OWSErrorMakeFailedToSendOutgoingMessageError();
+                    error = [OWSUnretryableMessageSenderError asNSError];
                     break;
                 }
             }
@@ -238,23 +235,14 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 {
     if (AppExpiry.shared.isExpired) {
         OWSLogWarn(@"Unable to send because the application has expired.");
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExpired,
-            NSLocalizedString(
-                @"ERROR_SENDING_EXPIRED", @"Error indicating a send failure due to an expired application."));
-        error.isRetryable = NO;
+        NSError *error = [AppExpiredError asNSError];
         [self reportError:error];
         return;
     }
 
     if (TSAccountManager.shared.isDeregistered) {
         OWSLogWarn(@"Unable to send because the application is deregistered.");
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppDeregistered,
-            TSAccountManager.shared.isPrimaryDevice
-                ? NSLocalizedString(@"ERROR_SENDING_DEREGISTERED",
-                    @"Error indicating a send failure due to a deregistered application.")
-                : NSLocalizedString(
-                    @"ERROR_SENDING_DELINKED", @"Error indicating a send failure due to a delinked application."));
-        error.isRetryable = NO;
+        NSError *error = [AppDeregisteredError asNSError];
         [self reportError:error];
         return;
     }
@@ -270,10 +258,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     }
     if ((self.message.shouldBeSaved && latestCopy == nil) || messageWasRemotelyDeleted) {
         OWSLogInfo(@"aborting message send; message deleted.");
-        NSError *error = OWSErrorWithCodeDescription(
-            OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
-        error.isFatal = YES;
-        error.isRetryable = NO;
+        NSError *error = [MessageDeletedBeforeSentError asNSError];
         [self reportError:error];
         return;
     }
@@ -542,8 +527,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     OWSAssertDebug(!NSThread.isMainThread);
 
     if (SSKDebugFlags.messageSendsFail.get) {
-        NSError *error = OWSErrorMakeGenericError(@"Simulated message send failure.");
-        error.isRetryable = NO;
+        NSError *error = [OWSUnretryableMessageSenderError asNSError];
         failure(error);
         return;
     }
@@ -842,7 +826,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 // group send retry is all-or-nothing, we need to fail
                 // immediately even if some of the other recipients had
                 // retryable errors.
-                if ([error isFatal]) {
+                if ([error isFatalError]) {
                     failureHandler(error);
                     return;
                 }
@@ -865,10 +849,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 // consider this send a success, unless the message could
                 // not be sent to any recipient.
                 if (message.sentRecipientsCount == 0) {
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
-                        NSLocalizedString(@"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
-                            @"Error indicating that an outgoing message had no valid recipients."));
-                    [error setIsRetryable:NO];
+                    NSError *error = [MessageSenderErrorNoValidRecipients asNSError];
                     failureHandler(error);
                 } else {
                     successHandler();
@@ -933,68 +914,41 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             // indicators) to cause users to hit the prekey fetch rate limit.  So
             // we silently discard these message if there is no pre-existing session
             // for the recipient.
-            NSError *error = OWSErrorWithCodeDescription(
-                OWSErrorCodeNoSessionForTransientMessage, @"No session for transient message.");
-            [error setIsRetryable:NO];
-            [error setIsFatal:YES];
+            NSError *error = MessageSenderNoSessionForTransientMessageError.asNSError;
             *errorHandle = error;
             return nil;
-        } else if ([MessageSender isUntrustedIdentityError:exception.userInfo[NSUnderlyingErrorKey]]) {
+        } else if ([UntrustedIdentityError isUntrustedIdentityError:exception.userInfo[NSUnderlyingErrorKey]]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
             OWSProdInfo([OWSAnalyticsEvents messageSendErrorFailedDueToUntrustedKey]);
 
-            NSString *localizedErrorDescriptionFormat
-                = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
-                    @"action sheet header when re-sending message which failed because of untrusted identity keys");
-
-            NSString *localizedErrorDescription = [NSString
-                stringWithFormat:localizedErrorDescriptionFormat, [self.contactsManager displayNameForAddress:address]];
-            NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, address);
-
-            // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
-            // rate limit.
-            [error setIsRetryable:NO];
-            // Avoid the "Too many failures with this contact" error rate limiting.
-            [error setIsFatal:YES];
+            NSError *error = [UntrustedIdentityError asNSErrorWithAddress:address];
             *errorHandle = error;
 
             return nil;
         }
 
         if ([exception.name isEqualToString:MessageSenderRateLimitedException]) {
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceRateLimited,
-                NSLocalizedString(@"FAILED_SENDING_BECAUSE_RATE_LIMIT",
-                    @"action sheet header when re-sending message which failed because of too many attempts"));
-            // We're already rate-limited. No need to exacerbate the problem.
-            [error setIsRetryable:NO];
-            // Avoid exacerbating the rate limiting.
-            [error setIsFatal:YES];
+            NSError *error = [SignalServiceRateLimitedError asNSError];
             *errorHandle = error;
             return nil;
         }
 
-        if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException] ||
-            [exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
-
-            NSString *description = NSLocalizedString(@"ERROR_DESCRIPTION_SUSPECTED_SPAM",
-                @"Description for errors returned from the server due to suspected spam.");
-            NSUInteger code = OWSErrorCodeServerRejectedSuspectedSpam;
-            NSError *error = OWSErrorWithCodeDescription(code, description);
-
-            BOOL didResolve = [exception.name isEqualToString:MessageSenderSpamChallengeResolvedException];
-            [error setIsRetryable:didResolve];
-            [error setIsFatal:NO];
+        if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException]) {
+            NSError *error = [SpamChallengeResolvedError asNSError];
             *errorHandle = error;
             return nil;
         }
-
+        if ([exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
+            NSError *error = [SpamChallengeRequiredError asNSError];
+            *errorHandle = error;
+            return nil;
+        }
 
         OWSLogWarn(@"Could not build device messages: %@", exception);
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        [error setIsRetryable:YES];
+        NSError *error = [OWSRetryableMessageSenderError asNSError];
         *errorHandle = error;
         return nil;
     }
@@ -1039,8 +993,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         // We should always fail with a specific error.
         OWSProdFail([OWSAnalyticsEvents messageSenderErrorGenericSendFailure]);
 
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        [error setIsRetryable:YES];
+        NSError *error = [OWSRetryableMessageSenderError asNSError];
         return messageSend.failure(error);
     }
 
@@ -1167,8 +1120,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
         if (!hasValidMessageType) {
             OWSFailDebug(@"Invalid message type: %ld", (long)messageType);
-            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-            [error setIsRetryable:NO];
+            NSError *error = [OWSUnretryableMessageSenderError asNSError];
             return messageSend.failure(error);
         }
     }
@@ -1440,17 +1392,17 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 exception = [NSException exceptionWithName:MessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:@{ NSUnderlyingErrorKey : error }];
-            } else if ([MessageSender isSpamChallengeRequiredError:error]) {
+            } else if ([SpamChallengeRequiredError isSpamChallengeRequiredError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderSpamChallengeRequiredException
                                                     reason:@"Spam challenge required"
                                                   userInfo:@ { NSUnderlyingErrorKey : error }];
-            } else if ([MessageSender isSpamChallengeResolvedError:error]) {
+            } else if ([SpamChallengeResolvedError isSpamChallengeResolvedError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:MessageSenderSpamChallengeResolvedException
                                                     reason:@"Spam challenge resolved"
                                                   userInfo:@ { NSUnderlyingErrorKey : error }];
-            } else if ([MessageSender isUntrustedIdentityError:error]) {
+            } else if ([UntrustedIdentityError isUntrustedIdentityError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
                                                     reason:@"Identity key is not valid"

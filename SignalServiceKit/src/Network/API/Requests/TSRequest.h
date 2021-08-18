@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SMKUDAccessKey;
 
+// TODO: Rework to _not_ extend NSMutableURLRequest.
 @interface TSRequest : NSMutableURLRequest
 
 @property (nonatomic) BOOL isUDRequest;

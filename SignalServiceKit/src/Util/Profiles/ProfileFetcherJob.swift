@@ -323,10 +323,13 @@ public class ProfileFetcherJob: NSObject {
         }
 
         let request = OWSRequestFactory.getProfileRequest(withUsername: username)
-        return firstly {
-            return networkManager.makePromise(request: request)
-        }.map(on: Self.queueCluster.next()) {
-            let profile = try SignalServiceProfile(address: nil, responseObject: $1)
+        return firstly { () -> Promise<HTTPResponse> in
+            networkManager.makePromise(request: request)
+        }.map(on: Self.queueCluster.next()) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing or invalid JSON.")
+            }
+            let profile = try SignalServiceProfile(address: nil, responseObject: json)
             let profileKey = self.profileKey(forProfile: profile,
                                              versionedProfileRequest: nil)
             return FetchedProfile(profile: profile,
@@ -391,7 +394,7 @@ public class ProfileFetcherJob: NSObject {
         return firstly {
             return requestMaker.makeRequest()
         }.map(on: Self.queueCluster.next()) { (result: RequestMakerResult) -> FetchedProfile in
-            let profile = try SignalServiceProfile(address: address, responseObject: result.responseObject)
+            let profile = try SignalServiceProfile(address: address, responseObject: result.responseJson)
             let profileKey = self.profileKey(forProfile: profile,
                                              versionedProfileRequest: currentVersionedProfileRequest)
             return FetchedProfile(profile: profile,
@@ -458,7 +461,7 @@ public class ProfileFetcherJob: NSObject {
                     // To avoid these conflicts we treat "partial"
                     // profile fetches (where we download the profile
                     // but not the associated avatar) as failures.
-                    throw error.asUnretryableError
+                    throw SSKUnretryableError.partialLocalProfileFetch
                 }
             } else {
                 // This should be very rare. It might reflect:

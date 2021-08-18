@@ -195,6 +195,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
             processEncryptedEnvelopeData:errorMessage.envelopeData
                        encryptedEnvelope:nil
                  serverDeliveryTimestamp:0
+                          envelopeSource:EnvelopeSourceIdentityChangeError
                               completion:^(NSError *error) {
                                   // Here we remove the existing error message because handleReceivedEnvelope will
                                   // either

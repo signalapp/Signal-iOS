@@ -65,7 +65,7 @@ public extension ConversationViewController {
                                 ? TSOutgoingDeleteMessage(thread: thread, message: message)
                                 : message)
 
-        let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: .untrustedIdentity)
+        let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
         if !recipientsWithChangedSafetyNumber.isEmpty {
             // Show special safety number change dialog
             let sheet = SafetyNumberConfirmationSheet(addressesToConfirm: recipientsWithChangedSafetyNumber,

@@ -4,6 +4,7 @@
 
 #import "OWSRecordTranscriptJob.h"
 #import <SignalServiceKit/FunctionalUtil.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
@@ -13,7 +14,6 @@
 #import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>

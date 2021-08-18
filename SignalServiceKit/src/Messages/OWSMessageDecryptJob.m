@@ -2,15 +2,14 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/OWSMessageDecryptJob.h>
 #import "NSArray+OWS.h"
-#import "NSNotificationCenter+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/NotificationsProtocol.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSMessageDecryptJob.h>
 #import <SignalServiceKit/OWSQueues.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>

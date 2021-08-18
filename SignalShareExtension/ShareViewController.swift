@@ -170,7 +170,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             // We don't need to update the app icon badge number in the SAE.
 
-            // We don't need to prod the TSSocketManager in the SAE.
+            // We don't need to prod the SocketManager in the SAE.
         }
 
         if tsAccountManager.isRegistered {
@@ -178,7 +178,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 guard let _ = self else { return }
                 Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localAddress))")
 
-                // We don't need to use the TSSocketManager in the SAE.
+                // We don't need to use the SocketManager in the SAE.
 
                 // TODO: Re-enable when system contact fetching uses less memory.
                 // Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()

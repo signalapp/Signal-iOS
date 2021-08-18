@@ -5,97 +5,97 @@
 import Foundation
 import PromiseKit
 
-public enum NetworkManagerError: Error {
-    /// Wraps TSNetworkManager failure callback params in a single throwable error
-    case taskError(task: URLSessionDataTask, underlyingError: Error)
-}
+// A class used for making HTTP requests against the main service.
+@objc
+public class NetworkManager: NSObject {
+    private let restNetworkManager = RESTNetworkManager()
 
-fileprivate extension NetworkManagerError {
-    // NOTE: This function should only be called from TSNetworkManager.isSwiftNetworkConnectivityError.
-    var isNetworkConnectivityError: Bool {
-        switch self {
-        case .taskError(_, let underlyingError):
-            return IsNetworkConnectivityFailure(underlyingError)
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
+
+    // This method can be called from any thread.
+    public func makePromise(request: TSRequest,
+                            remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+        firstly {
+            FeatureFlags.deprecateREST
+                ? websocketRequestPromise(request: request)
+                : restRequestPromise(request: request)
+        }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+            if error.isRetryable,
+               remainingRetryCount > 0 {
+                // TODO: Backoff?
+                return self.makePromise(request: request,
+                                        remainingRetryCount: remainingRetryCount - 1)
+            } else {
+                throw error
+            }
         }
     }
 
-    // NOTE: This function should only be called from TSNetworkManager.swiftHTTPStatusCodeForError.
-    var statusCode: Int {
-        switch self {
-        case .taskError(let task, _):
-            return task.statusCode()
+    private func isRESTOnlyEndpoint(request: TSRequest) -> Bool {
+        guard let url = request.url else {
+            owsFailDebug("Missing url.")
+            return true
         }
+        guard let urlComponents = URLComponents(string: url.absoluteString) else {
+            owsFailDebug("Missing urlComponents.")
+            return true
+        }
+        let path: String = urlComponents.path
+        let missingEndpoints = [
+            "/v1/payments/auth"
+        ]
+        return missingEndpoints.contains(path)
     }
 
-    // NOTE: This function should only be called from TSNetworkManager.swiftHTTPRetryAfterDateForError.
-    var retryAfterDate: Date? {
-        switch self {
-        case .taskError(let task, _):
-            return task.retryAfterDate()
-        }
+    private func restRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+        restNetworkManager.makePromise(request: request)
     }
 
-    var underlyingError: Error {
-        switch self {
-        case .taskError(_, let underlyingError):
-            return underlyingError
-        }
+    private func websocketRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
+        return Self.socketManager.makeRequestPromise(request: request)
     }
 }
 
 // MARK: -
 
-extension NetworkManagerError: CustomNSError {
-    public var errorCode: Int {
-        return statusCode
-    }
+#if TESTABLE_BUILD
 
-    public var errorUserInfo: [String: Any] {
-        return [NSUnderlyingErrorKey: underlyingError]
-    }
-}
+@objc
+public class OWSFakeNetworkManager: NetworkManager {
 
-// MARK: -
-
-public extension TSNetworkManager {
-    typealias Response = (task: URLSessionDataTask, responseObject: Any?)
-
-    func makePromise(request: TSRequest) -> Promise<Response> {
-        let (promise, resolver) = Promise<Response>.pending()
-
-        self.makeRequest(request,
-                         completionQueue: DispatchQueue.global(),
-                         success: { task, responseObject in
-                            resolver.fulfill((task: task, responseObject: responseObject))
-        },
-                         failure: { task, error in
-                            let nmError = NetworkManagerError.taskError(task: task, underlyingError: error)
-                            let nsError: NSError = nmError as NSError
-                            nsError.isRetryable = (error as NSError).isRetryable
-                            resolver.reject(nsError)
-        })
-
+    public override func makePromise(request: TSRequest, remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+        Logger.info("Ignoring request: \(request)")
+        // Never resolve.
+        let (promise, _) = Promise<HTTPResponse>.pending()
         return promise
     }
 }
 
+#endif
+
 // MARK: -
 
 @objc
-public extension TSNetworkManager {
+public extension NetworkManager {
     // NOTE: This function should only be called from IsNetworkConnectivityFailure().
     static func isSwiftNetworkConnectivityError(_ error: Error?) -> Bool {
         guard let error = error else {
             return false
         }
         switch error {
-        case let networkManagerError as NetworkManagerError:
-            if networkManagerError.isNetworkConnectivityError {
-                return true
-            }
-            return false
-        case RequestMakerError.websocketRequestError(_, _, let underlyingError):
-            return IsNetworkConnectivityFailure(underlyingError)
+        case let httpError as OWSHTTPError:
+            return httpError.isNetworkConnectivityError
+        case GroupsV2Error.timeout:
+            return true
+        case let contactDiscoveryError as ContactDiscoveryError:
+            return contactDiscoveryError.kind == .timeout
+        case PaymentsError.timeout:
+            return true
         default:
             return false
         }
@@ -103,72 +103,51 @@ public extension TSNetworkManager {
 
     // NOTE: This function should only be called from HTTPStatusCodeForError().
     static func swiftHTTPStatusCodeForError(_ error: Error?) -> NSNumber? {
-        guard let error = error else {
-            return nil
-        }
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard networkManagerError.statusCode > 0 else {
-                return nil
-            }
-            return NSNumber(value: networkManagerError.statusCode)
-        case RequestMakerError.websocketRequestError(let statusCode, _, _):
+        if let httpError = error as? OWSHTTPError {
+            let statusCode = httpError.responseStatusCode
             guard statusCode > 0 else {
                 return nil
             }
             return NSNumber(value: statusCode)
-        case OWSHTTPError.requestError(let statusCode, _, _):
-            guard statusCode > 0 else {
-                return nil
-            }
-            return NSNumber(value: statusCode)
-        default:
-            return nil
         }
+        return nil
     }
 
     // NOTE: This function should only be called from HTTPRetryAfterDate().
     static func swiftHTTPRetryAfterDateForError(_ error: Error?) -> Date? {
+        if let httpError = error as? OWSHTTPError {
+            if let retryAfterDate = httpError.customRetryAfterDate {
+                return retryAfterDate
+            }
+            if let retryAfterDate = httpError.responseHeaders?.retryAfterDate {
+                return retryAfterDate
+            }
+            if let responseError = httpError.responseError {
+                return swiftHTTPRetryAfterDateForError(responseError)
+            }
+        }
+        return nil
+    }
+
+    // NOTE: This function should only be called from HTTPResponseDataForError().
+    static func swiftHTTPResponseDataForError(_ error: Error?) -> Data? {
         guard let error = error else {
             return nil
         }
+        if let responseData = (error as NSError).userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data {
+            return responseData
+        }
         switch error {
-        case let networkManagerError as NetworkManagerError:
-            return networkManagerError.retryAfterDate
-
-        case RequestMakerError.websocketRequestError(_, _, _):
-            // TODO: Plumb retry afters through websocket errors
+        case let httpError as OWSHTTPError:
+            if let responseData = httpError.responseBodyData {
+                return responseData
+            }
+            if let responseError = httpError.responseError {
+                return swiftHTTPResponseDataForError(responseError)
+            }
             return nil
-
         default:
             return nil
         }
-    }
-}
-
-// MARK: -
-
-public extension Error {
-    var httpStatusCode: Int? {
-        HTTPStatusCodeForError(self)?.intValue
-    }
-
-    var httpRetryAfterDate: Date? {
-        HTTPRetryAfterDateForError(self)
-    }
-}
-
-// MARK: -
-
-@inlinable
-public func owsFailDebugUnlessNetworkFailure(_ error: Error,
-                                             file: String = #file,
-                                             function: String = #function,
-                                             line: Int = #line) {
-    if IsNetworkConnectivityFailure(error) {
-        // Log but otherwise ignore network failures.
-        Logger.warn("Error: \(error)", file: file, function: function, line: line)
-    } else {
-        owsFailDebug("Error: \(error)", file: file, function: function, line: line)
     }
 }

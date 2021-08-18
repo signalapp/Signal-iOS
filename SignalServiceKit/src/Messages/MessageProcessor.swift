@@ -109,7 +109,9 @@ public class MessageProcessor: NSObject {
                         owsFailDebug("Skipping job with no envelope data")
                         continue
                     }
-                    self.processEncryptedEnvelopeData(envelopeData, serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp) { _ in
+                    self.processEncryptedEnvelopeData(envelopeData,
+                                                      serverDeliveryTimestamp: jobRecord.serverDeliveryTimestamp,
+                                                      envelopeSource: .unknown) { _ in
                         SDSDatabaseStorage.shared.write { jobRecord.anyRemove(transaction: $0) }
                     }
                 }
@@ -125,13 +127,15 @@ public class MessageProcessor: NSObject {
 
     public func processEncryptedEnvelopes(
         envelopeJobs: [EnvelopeJob],
-        serverDeliveryTimestamp: UInt64
+        serverDeliveryTimestamp: UInt64,
+        envelopeSource: EnvelopeSource
     ) {
         for envelopeJob in envelopeJobs {
             processEncryptedEnvelopeData(
                 envelopeJob.encryptedEnvelopeData,
                 encryptedEnvelope: envelopeJob.encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
+                envelopeSource: envelopeSource,
                 completion: envelopeJob.completion
             )
         }
@@ -142,16 +146,17 @@ public class MessageProcessor: NSObject {
         _ encryptedEnvelopeData: Data,
         encryptedEnvelope optionalEncryptedEnvelope: SSKProtoEnvelope? = nil,
         serverDeliveryTimestamp: UInt64,
+        envelopeSource: EnvelopeSource,
         completion: @escaping (Error?) -> Void
     ) {
         guard !encryptedEnvelopeData.isEmpty else {
-            completion(OWSAssertionError("Empty envelope."))
+            completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
         // Drop any too-large messages on the floor. Well behaving clients should never send them.
         guard encryptedEnvelopeData.count <= Self.maxEnvelopeByteCount else {
-            completion(OWSAssertionError("Oversize envelope."))
+            completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
@@ -159,7 +164,7 @@ public class MessageProcessor: NSObject {
         // This likely indicates a misbehaving sending client.
         if encryptedEnvelopeData.count > Self.largeEnvelopeWarningByteCount {
             Logger.verbose("encryptedEnvelopeData: \(encryptedEnvelopeData.count) > : \(Self.largeEnvelopeWarningByteCount)")
-            owsFailDebug("Unexpectedly large envelope.")
+            owsFailDebug("Unexpectedly large envelope, envelopeSource: \(envelopeSource).")
         }
 
         let encryptedEnvelope: SSKProtoEnvelope
@@ -169,7 +174,7 @@ public class MessageProcessor: NSObject {
             do {
                 encryptedEnvelope = try SSKProtoEnvelope(serializedData: encryptedEnvelopeData)
             } catch {
-                owsFailDebug("Failed to parse encrypted envelope \(error)")
+                owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
                 completion(error)
                 return
             }
@@ -422,17 +427,23 @@ public class MessageProcessor: NSObject {
     }
 }
 
+// MARK: -
+
 extension MessageProcessor: MessageProcessingPipelineStage {
     public func supervisorDidResumeMessageProcessing(_ supervisor: MessagePipelineSupervisor) {
         drainPendingEnvelopes()
     }
 }
 
+// MARK: -
+
 private protocol PendingEnvelope {
     var completion: (Error?) -> Void { get }
     var wasReceivedByUD: Bool { get }
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error>
 }
+
+// MARK: -
 
 private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let encryptedEnvelopeData: Data
@@ -471,6 +482,8 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 }
 
+// MARK: -
+
 private struct DecryptedEnvelope: PendingEnvelope {
     let envelopeData: Data
     let plaintextData: Data?
@@ -480,5 +493,40 @@ private struct DecryptedEnvelope: PendingEnvelope {
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
         return .success(self)
+    }
+}
+
+// MARK: -
+
+@objc
+public enum EnvelopeSource: UInt, CustomStringConvertible {
+    case unknown
+    case websocketIdentified
+    case websocketUnidentified
+    case rest
+    // We re-decrypt incoming messages after accepting a safety number change.
+    case identityChangeError
+    case debugUI
+    case tests
+
+    // MARK: - CustomStringConvertible
+
+    public var description: String {
+        switch self {
+        case .unknown:
+            return "unknown"
+        case .websocketIdentified:
+            return "websocketIdentified"
+        case .websocketUnidentified:
+            return "websocketUnidentified"
+        case .rest:
+            return "rest"
+        case .identityChangeError:
+            return "identityChangeError"
+        case .debugUI:
+            return "debugUI"
+        case .tests:
+            return "tests"
+        }
     }
 }

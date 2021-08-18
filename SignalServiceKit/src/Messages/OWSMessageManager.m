@@ -3,7 +3,6 @@
 //
 
 #import "OWSMessageManager.h"
-#import "NSNotificationCenter+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -12,6 +11,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
@@ -19,7 +19,6 @@
 #import <SignalServiceKit/OWSCallMessageHandler.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDevicesService.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -44,7 +43,6 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 

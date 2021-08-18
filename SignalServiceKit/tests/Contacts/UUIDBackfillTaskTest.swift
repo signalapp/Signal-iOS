@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -168,7 +168,7 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
         configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil)
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil)
         ])
 
         // Test
@@ -188,13 +188,13 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
         configureMocks(expectingRegistrationFor: ["+11234567890"],
                        expectingUnregistrationFor: [],
                        forcedFailures: [
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 0, userInfo: nil)
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 0, userInfo: nil)
         ])
 
         // Test
@@ -261,11 +261,11 @@ class UUIDBackfillTaskTest: SSKBaseTestSwift {
                        forcedFailures: [
                             NSError(domain: "TestDomain", code: 1, userInfo: nil),
                             NSError(domain: "TestDomain", code: 2, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 3, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 4, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 5, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 6, userInfo: nil),
-                            NSError(domain: TSNetworkManagerErrorDomain, code: 7, userInfo: nil)
+                            NSError(domain: NetworkManagerErrorDomain, code: 3, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 4, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 5, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 6, userInfo: nil),
+                            NSError(domain: NetworkManagerErrorDomain, code: 7, userInfo: nil)
         ])
 
         // Test

@@ -677,14 +677,14 @@ public extension OWSProfileManager {
             } catch {
                 owsFailDebug("Could not load data failed: \(error)")
                 // Fail immediately; do not retry.
-                throw error.asUnretryableError
+                throw SSKUnretryableError.couldNotLoadFileData
             }
         }.recover(on: .global()) { (error: Error) -> Promise<Data> in
-            throw error.withDefaultRetry
+            throw error
         }.map(on: .global()) { (encryptedData: Data) -> Data in
             guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData,
                                                              profileKey: profileKey) else {
-                throw OWSGenericError("Could not decrypt profile avatar.").asUnretryableError
+                throw OWSGenericError("Could not decrypt profile avatar.")
             }
             return decryptedData
         }.recover { error -> Promise<Data> in

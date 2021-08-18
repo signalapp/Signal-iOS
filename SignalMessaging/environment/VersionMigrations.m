@@ -7,11 +7,10 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

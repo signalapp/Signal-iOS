@@ -8,7 +8,6 @@ import PromiseKit
 public enum GroupsV2Error: Error {
     // By the time we tried to apply the change, it was irrelevant.
     case redundantChange
-    case unauthorized
     case shouldRetry
     case shouldDiscard
     case groupNotInDatabase

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,6 +9,8 @@ import Starscream
 public enum SSKWebSocketState: UInt {
     case open, connecting, disconnected
 }
+
+// MARK: -
 
 extension SSKWebSocketState: CustomStringConvertible {
     public var description: String {
@@ -23,8 +25,15 @@ extension SSKWebSocketState: CustomStringConvertible {
     }
 }
 
+// MARK: -
+
+// TODO: Eliminate.
 @objc
 public class SSKWebSocketError: NSObject, CustomNSError {
+
+    let underlyingError: Starscream.WSError
+
+    public var code: Int { underlyingError.code }
 
     init(underlyingError: Starscream.WSError) {
         self.underlyingError = underlyingError
@@ -37,22 +46,23 @@ public class SSKWebSocketError: NSObject, CustomNSError {
 
     public var errorUserInfo: [String: Any] {
         return [
-            type(of: self).kStatusCodeKey: underlyingError.code,
+            type(of: self).kStatusCodeKey: code,
             NSUnderlyingErrorKey: (underlyingError as NSError)
         ]
     }
 
     // MARK: -
 
+    // TODO: Eliminate.
     @objc
     public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
-
-    let underlyingError: Starscream.WSError
 
     public override var description: String {
         return "SSKWebSocketError - underlyingError: \(underlyingError)"
     }
 }
+
+// MARK: -
 
 @objc
 public protocol SSKWebSocket {
@@ -79,6 +89,8 @@ public protocol SSKWebSocket {
     func sendResponse(for request: WebSocketProtoWebSocketRequestMessage, status: UInt32, message: String) throws
 }
 
+// MARK: -
+
 @objc
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
@@ -88,6 +100,8 @@ public protocol SSKWebSocketDelegate: AnyObject {
     func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage)
 }
 
+// MARK: -
+
 @objc
 public class SSKWebSocketManager: NSObject {
 
@@ -96,6 +110,8 @@ public class SSKWebSocketManager: NSObject {
         return SSKWebSocketImpl(request: request)
     }
 }
+
+// MARK: -
 
 class SSKWebSocketImpl: SSKWebSocket {
 
@@ -167,6 +183,8 @@ class SSKWebSocketImpl: SSKWebSocket {
     }
 }
 
+// MARK: -
+
 extension SSKWebSocketImpl: WebSocketDelegate {
     func websocketDidConnect(socket: WebSocketClient) {
         hasEverConnected = true
@@ -206,10 +224,14 @@ extension SSKWebSocketImpl: WebSocketDelegate {
     }
 }
 
+// MARK: -
+
 private func TextSecureCertificate() -> SSLCert {
     let data = SSKTextSecureServiceCertificateData()
     return SSLCert(data: data)
 }
+
+// MARK: -
 
 private extension StreamSocketSecurityLevel {
     static var tlSv1_2: StreamSocketSecurityLevel {

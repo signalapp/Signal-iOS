@@ -12,6 +12,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
 
+// TODO: Eliminate AFNetworking.
+
 #ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN

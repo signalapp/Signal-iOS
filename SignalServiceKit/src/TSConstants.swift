@@ -3,8 +3,9 @@
 //
 
 private protocol TSConstantsProtocol: AnyObject {
-    var textSecureWebSocketAPI: String { get }
-    var textSecureServerURL: String { get }
+    var mainServiceWebSocketAPI_identified: String { get }
+    var mainServiceWebSocketAPI_unidentified: String { get }
+    var mainServiceURL: String { get }
     var textSecureCDN0ServerURL: String { get }
     var textSecureCDN2ServerURL: String { get }
     var contactDiscoveryURL: String { get }
@@ -52,55 +53,57 @@ public class TSConstants: NSObject {
     private override init() {}
 
     @objc
-    public static var textSecureWebSocketAPI: String { return shared.textSecureWebSocketAPI }
+    public static var mainServiceWebSocketAPI_identified: String { shared.mainServiceWebSocketAPI_identified }
     @objc
-    public static var textSecureServerURL: String { return shared.textSecureServerURL }
+    public static var mainServiceWebSocketAPI_unidentified: String { shared.mainServiceWebSocketAPI_unidentified }
     @objc
-    public static var textSecureCDN0ServerURL: String { return shared.textSecureCDN0ServerURL }
+    public static var mainServiceURL: String { shared.mainServiceURL }
     @objc
-    public static var textSecureCDN2ServerURL: String { return shared.textSecureCDN2ServerURL }
+    public static var textSecureCDN0ServerURL: String { shared.textSecureCDN0ServerURL }
     @objc
-    public static var contactDiscoveryURL: String { return shared.contactDiscoveryURL }
+    public static var textSecureCDN2ServerURL: String { shared.textSecureCDN2ServerURL }
     @objc
-    public static var keyBackupURL: String { return shared.keyBackupURL }
+    public static var contactDiscoveryURL: String { shared.contactDiscoveryURL }
     @objc
-    public static var storageServiceURL: String { return shared.storageServiceURL }
+    public static var keyBackupURL: String { shared.keyBackupURL }
     @objc
-    public static var sfuURL: String { return shared.sfuURL }
+    public static var storageServiceURL: String { shared.storageServiceURL }
     @objc
-    public static var sfuTestURL: String { return shared.sfuTestURL }
+    public static var sfuURL: String { shared.sfuURL }
     @objc
-    public static var kUDTrustRoot: String { return shared.kUDTrustRoot }
+    public static var sfuTestURL: String { shared.sfuTestURL }
+    @objc
+    public static var kUDTrustRoot: String { shared.kUDTrustRoot }
 
     @objc
-    public static var censorshipReflectorHost: String { return shared.censorshipReflectorHost }
+    public static var censorshipReflectorHost: String { shared.censorshipReflectorHost }
 
     @objc
-    public static var serviceCensorshipPrefix: String { return shared.serviceCensorshipPrefix }
+    public static var serviceCensorshipPrefix: String { shared.serviceCensorshipPrefix }
     @objc
-    public static var cdn0CensorshipPrefix: String { return shared.cdn0CensorshipPrefix }
+    public static var cdn0CensorshipPrefix: String { shared.cdn0CensorshipPrefix }
     @objc
-    public static var cdn2CensorshipPrefix: String { return shared.cdn2CensorshipPrefix }
+    public static var cdn2CensorshipPrefix: String { shared.cdn2CensorshipPrefix }
     @objc
-    public static var contactDiscoveryCensorshipPrefix: String { return shared.contactDiscoveryCensorshipPrefix }
+    public static var contactDiscoveryCensorshipPrefix: String { shared.contactDiscoveryCensorshipPrefix }
     @objc
-    public static var keyBackupCensorshipPrefix: String { return shared.keyBackupCensorshipPrefix }
+    public static var keyBackupCensorshipPrefix: String { shared.keyBackupCensorshipPrefix }
     @objc
-    public static var storageServiceCensorshipPrefix: String { return shared.storageServiceCensorshipPrefix }
+    public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
 
     @objc
-    public static var contactDiscoveryEnclaveName: String { return shared.contactDiscoveryEnclaveName }
+    public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryEnclaveName }
     @objc
-    public static var contactDiscoveryMrEnclave: String { return shared.contactDiscoveryMrEnclave }
+    public static var contactDiscoveryMrEnclave: String { shared.contactDiscoveryMrEnclave }
 
     static var keyBackupEnclave: KeyBackupEnclave { shared.keyBackupEnclave }
     static var keyBackupPreviousEnclaves: [KeyBackupEnclave] { shared.keyBackupPreviousEnclaves }
 
     @objc
-    public static var applicationGroup: String { return shared.applicationGroup }
+    public static var applicationGroup: String { shared.applicationGroup }
 
     @objc
-    public static var serverPublicParamsBase64: String { return shared.serverPublicParamsBase64 }
+    public static var serverPublicParamsBase64: String { shared.serverPublicParamsBase64 }
 
     @objc
     public static var isUsingProductionService: Bool {
@@ -157,8 +160,21 @@ public class TSConstants: NSObject {
 
 private class TSConstantsProduction: TSConstantsProtocol {
 
-    public let textSecureWebSocketAPI = "wss://textsecure-service.whispersystems.org/v1/websocket/"
-    public let textSecureServerURL = "https://textsecure-service.whispersystems.org/"
+    public var mainServiceWebSocketAPI_identified: String {
+        FeatureFlags.newHostNames
+            ? "wss://chat.signal.org/v1/websocket/"
+            : "wss://textsecure-service.whispersystems.org/v1/websocket/"
+    }
+    public var mainServiceWebSocketAPI_unidentified: String {
+        FeatureFlags.newHostNames
+            ? "wss://ud-chat.signal.org/v1/websocket/"
+            : "wss://textsecure-service.whispersystems.org/v1/websocket/"
+    }
+    public var mainServiceURL: String {
+        FeatureFlags.newHostNames
+            ? "https://chat.signal.org/"
+            : "https://textsecure-service.whispersystems.org/"
+    }
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let contactDiscoveryURL = "https://api.directory.signal.org"
@@ -205,8 +221,21 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
 private class TSConstantsStaging: TSConstantsProtocol {
 
-    public let textSecureWebSocketAPI = "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-    public let textSecureServerURL = "https://textsecure-service-staging.whispersystems.org/"
+    public var mainServiceWebSocketAPI_identified: String {
+        FeatureFlags.newHostNames
+            ? "wss://chat.staging.signal.org/v1/websocket/"
+            : "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+    }
+    public var mainServiceWebSocketAPI_unidentified: String {
+        FeatureFlags.newHostNames
+            ? "wss://ud-chat.staging.signal.org/v1/websocket/"
+            : "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+    }
+    public var mainServiceURL: String {
+        FeatureFlags.newHostNames
+            ? "https://chat.staging.signal.org/"
+            : "https://textsecure-service-staging.whispersystems.org/"
+    }
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let contactDiscoveryURL = "https://api-staging.directory.signal.org"

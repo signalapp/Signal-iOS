@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -196,6 +196,8 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             return error
         }
 
+        let retryAfterDate = error.httpRetryAfterDate
+
         if let statusCode = error.httpStatusCode {
             switch statusCode {
             case 401:
@@ -203,19 +205,19 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                     kind: .unauthorized,
                     debugDescription: "User is unauthorized",
                     retryable: false,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 404:
                 return ContactDiscoveryError(
                     kind: .unexpectedResponse,
                     debugDescription: "Unknown enclaveID",
                     retryable: false,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 408:
                 return ContactDiscoveryError(
                     kind: .timeout,
                     debugDescription: "Server rejected due to a timeout",
                     retryable: true,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 409:
                 // Conflict on a discovery request indicates that the requestId specified by the client
                 // has been dropped due to a delay or high request rate since the preceding corresponding
@@ -224,31 +226,31 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                     kind: .genericClientError,
                     debugDescription: "RequestID conflict",
                     retryable: false,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 429:
                 return ContactDiscoveryError(
                     kind: .rateLimit,
                     debugDescription: "Rate limit",
                     retryable: true,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 400..<500:
                 return ContactDiscoveryError(
                     kind: .genericClientError,
                     debugDescription: "Client error (\(statusCode)): \(error.localizedDescription)",
                     retryable: false,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             case 500..<600:
                 return ContactDiscoveryError(
                     kind: .genericServerError,
                     debugDescription: "Server error (\(statusCode)): \(error.localizedDescription)",
                     retryable: true,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             default:
                 return ContactDiscoveryError(
                     kind: .generic,
                     debugDescription: "Unknown error (\(statusCode)): \(error.localizedDescription)",
                     retryable: false,
-                    retryAfterDate: error.httpRetryAfterDate)
+                    retryAfterDate: retryAfterDate)
             }
 
         } else {

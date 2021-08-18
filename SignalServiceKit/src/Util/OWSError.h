@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
+// TODO: These error codes are somtimes persisted, so we should
+//       explicitly assign a value to every case in this enum.
 typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeInvalidMethodParameters = 11,
     OWSErrorCodeUnableToProcessServerResponse = 12,
@@ -16,14 +18,14 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
     OWSErrorCodeUntrustedIdentity = 777427,
-    OWSErrorCodeFailedToSendOutgoingMessage = 30,
+    OWSErrorCodeObsolete1 = 30,
     OWSErrorCodeAssertionFailure = 31,
     OWSErrorCodeGenericFailure = 32,
     OWSErrorCodeFailedToDecryptMessage = 100,
     OWSErrorCodeFailedToDecryptUDMessage = 101,
     OWSErrorCodeFailedToEncryptMessage = 110,
     OWSErrorCodeFailedToEncryptUDMessage = 111,
-    OWSErrorCodeSignalServiceFailure = 1001,
+    OWSErrorCodeMessageSendUnauthorized = 1001,
     OWSErrorCodeSignalServiceRateLimited = 1010,
     OWSErrorCodeUserError = 2001,
     OWSErrorCodeNoSuchSignalRecipient = 777404,
@@ -47,8 +49,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     // A non-recoverable while importing or exporting a backup.
     OWSErrorCodeBackupFailure = 777419,
     OWSErrorCodeLocalAuthenticationError = 777420,
-    OWSErrorCodeMessageRequestFailed = 777421,
-    OWSErrorCodeMessageResponseFailed = 777422,
+    OWSErrorCodeObsolete2 = 777421,
+    OWSErrorCodeObsolete3 = 777422,
     OWSErrorCodeInvalidMessage = 777423,
     OWSErrorCodeProfileUpdateFailed = 777424,
     OWSErrorCodeAvatarWriteFailed = 777425,
@@ -65,26 +67,14 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToDecryptDuplicateMessage,
     OWSErrorCodeServerRejectedSuspectedSpam,
     OWSErrorCodeSenderKeyEphemeralFailure,
-    OWSErrorCodeSenderKeyUnavailable
+    OWSErrorCodeSenderKeyUnavailable,
+    OWSErrorCodeMessageSendEncryptionFailure
 };
-
-extern NSString *const OWSErrorRecipientAddressKey;
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
 extern NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo);
-extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, SignalServiceAddress *address);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
-extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
-extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
 extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...);
-extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
-extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
-
-@interface NSError (OWSError)
-
-- (BOOL)ows_isSSKErrorWithCode:(NSUInteger)code;
-
-@end
 
 NS_ASSUME_NONNULL_END

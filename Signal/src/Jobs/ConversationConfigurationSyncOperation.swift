@@ -8,8 +8,10 @@ import PromiseKit
 @objc
 class ConversationConfigurationSyncOperation: OWSOperation {
 
-    enum ColorSyncOperationError: Error {
+    enum ColorSyncOperationError: Error, IsRetryableProvider {
         case assertionError(description: String)
+
+        public var isRetryableProvider: Bool { false }
     }
 
     // MARK: -
@@ -33,7 +35,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func reportAssertionError(description: String) {
-        let error = ColorSyncOperationError.assertionError(description: description).asRetryableError
+        let error = ColorSyncOperationError.assertionError(description: description)
         self.reportError(error)
     }
 
