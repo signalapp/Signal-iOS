@@ -19,11 +19,6 @@ class SyncPushTokensJob: NSObject {
     }
 
     func run() -> Promise<Void> {
-        guard !CurrentAppContext().isRunningTests else {
-            Logger.warn("Skipping for tests.")
-            return Promise.value(())
-        }
-
         Logger.info("Starting.")
 
         return firstly {
