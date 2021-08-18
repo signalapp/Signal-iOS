@@ -252,6 +252,7 @@
 		B8B558FF26C4E05E00693325 /* WebRTCSession+MessageHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8B558FE26C4E05E00693325 /* WebRTCSession+MessageHandling.swift */; };
 		B8BB82A5238F627000BA5194 /* HomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A4238F627000BA5194 /* HomeVC.swift */; };
 		B8BC00C0257D90E30032E807 /* General.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BC00BF257D90E30032E807 /* General.swift */; };
+		B8BF43BA26CC95FB007828D1 /* WebRTC+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BF43B926CC95FB007828D1 /* WebRTC+Utilities.swift */; };
 		B8C2B2C82563685C00551B4D /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B2C72563685C00551B4D /* CircleView.swift */; };
 		B8C2B332256376F000551B4D /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B8C2B331256376F000551B4D /* ThreadUtil.m */; };
 		B8C2B3442563782400551B4D /* ThreadUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = B8C2B33B2563770800551B4D /* ThreadUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1235,6 +1236,7 @@
 		B8BB82B82394911B00BA5194 /* Separator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Separator.swift; sourceTree = "<group>"; };
 		B8BB82BD2394D4CE00BA5194 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		B8BC00BF257D90E30032E807 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
+		B8BF43B926CC95FB007828D1 /* WebRTC+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTC+Utilities.swift"; sourceTree = "<group>"; };
 		B8C2B2C72563685C00551B4D /* CircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
 		B8C2B331256376F000551B4D /* ThreadUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThreadUtil.m; sourceTree = "<group>"; };
 		B8C2B33B2563770800551B4D /* ThreadUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThreadUtil.h; sourceTree = "<group>"; };
@@ -2360,6 +2362,7 @@
 				B8DE1FB326C22F2F0079C9CE /* WebRTCSession.swift */,
 				B806ECA026C4A7E4008BDA44 /* WebRTCSession+UI.swift */,
 				B8B558FE26C4E05E00693325 /* WebRTCSession+MessageHandling.swift */,
+				B8BF43B926CC95FB007828D1 /* WebRTC+Utilities.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4684,6 +4687,7 @@
 				C352A31325574F5200338F3E /* MessageReceiveJob.swift in Sources */,
 				C32C5BDD256DC88D003C73A2 /* OWSReadReceiptManager.m in Sources */,
 				C3D9E3BF25676AD70040E4F3 /* TSAttachmentStream.m in Sources */,
+				B8BF43BA26CC95FB007828D1 /* WebRTC+Utilities.swift in Sources */,
 				C3C2A7562553A3AB00C340D1 /* VisibleMessage+Quote.swift in Sources */,
 				C3227FF6260AAD66006EA627 /* OpenGroupMessageV2.swift in Sources */,
 				B8B32021258B1A650020074B /* Contact.swift in Sources */,
