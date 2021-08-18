@@ -289,7 +289,9 @@ extension MessageReceiver {
                 candidates.append(candidate)
             }
             getWebRTCSession().handleICECandidates(candidates)
-        case .endCall: handleEndCallMessage?(message)
+        case .endCall:
+            print("[Calls] Received end call message.")
+            handleEndCallMessage?(message)
         }
     }
     

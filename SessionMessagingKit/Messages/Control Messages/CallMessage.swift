@@ -40,7 +40,6 @@ public final class CallMessage : ControlMessage {
     // MARK: Validation
     public override var isValid: Bool {
         guard super.isValid else { return false }
-        guard let sdps = sdps, !sdps.isEmpty else { return false }
         return kind != nil
     }
     
@@ -97,7 +96,7 @@ public final class CallMessage : ControlMessage {
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
-        guard let kind = kind, let sdps = sdps, !sdps.isEmpty else {
+        guard let kind = kind else {
             SNLog("Couldn't construct call message proto from: \(self).")
             return nil
         }
@@ -110,7 +109,9 @@ public final class CallMessage : ControlMessage {
         case .endCall: type = .endCall
         }
         let callMessageProto = SNProtoCallMessage.builder(type: type)
-        callMessageProto.setSdps(sdps)
+        if let sdps = sdps, !sdps.isEmpty {
+            callMessageProto.setSdps(sdps)
+        }
         if case let .iceCandidates(sdpMLineIndexes, sdpMids) = kind {
             callMessageProto.setSdpMlineIndexes(sdpMLineIndexes)
             callMessageProto.setSdpMids(sdpMids)

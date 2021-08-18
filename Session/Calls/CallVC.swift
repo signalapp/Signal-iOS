@@ -19,6 +19,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }()
     
     // MARK: UI Components
+    private lazy var remoteVideoView: RTCMTLVideoView = {
+        let result = RTCMTLVideoView()
+        result.contentMode = .scaleAspectFill
+        return result
+    }()
+    
     private lazy var fadeView: UIView = {
         let result = UIView()
         let height: CGFloat = 64
@@ -100,8 +106,6 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     func setUpViewHierarchy() {
         // Remote video view
-        let remoteVideoView = RTCMTLVideoView()
-        remoteVideoView.contentMode = .scaleAspectFill
         webRTCSession.attachRemoteRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
@@ -148,9 +152,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     // MARK: Interaction
     func handleEndCallMessage(_ message: CallMessage) {
+        print("[Calls] Ending call.")
         WebRTCSession.current?.dropConnection()
         WebRTCSession.current = nil
         UIView.animate(withDuration: 0.25) {
+            self.remoteVideoView.alpha = 0
             self.callEndedLabel.alpha = 1
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
