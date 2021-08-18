@@ -24,7 +24,7 @@ protocol ContactDiscovering {
 /// These could be provided by the server or the client. An error of this type will not be returned for network connectivity related reasons.
 /// Usually the code doesn't matter, the accessor properties should provide the info you need.
 @objc(OWSContactDiscoveryError)
-public class ContactDiscoveryError: NSError {
+public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
     static let domain: String = "ContactDiscoveryErrorDomain"
     static let maxRetryAfterInterval = 60 * kMinuteInterval
 
@@ -107,19 +107,13 @@ public class ContactDiscoveryError: NSError {
     }
 
     public override var localizedDescription: String {
-        get {
-            NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
-        }
-        set {
-            notImplemented()
-        }
+        NSLocalizedString("ERROR_DESCRIPTION_SERVER_FAILURE", comment: "Generic server error")
     }
 }
 
 // MARK: - ContactDiscoveryError
 
 extension ContactDiscoveryError: IsRetryableProvider {
-    @objc
     public var isRetryableProvider: Bool {
         retrySuggested
     }

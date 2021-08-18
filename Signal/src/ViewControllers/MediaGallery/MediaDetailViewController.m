@@ -557,7 +557,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
 {
     if (error) {
-        OWSLogWarn(@"There was a problem saving <%@> to camera roll.", error.localizedDescription);
+        OWSLogWarn(@"There was a problem saving <%@> to camera roll.", error.userErrorDescription);
     }
 }
 

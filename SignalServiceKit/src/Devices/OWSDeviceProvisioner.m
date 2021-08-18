@@ -99,7 +99,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable messageBody = [message buildEncryptedMessageBody];
     if (messageBody == nil) {
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToEncryptMessage, @"Failed building provisioning message");
+        NSError *error = [OWSError withError:OWSErrorCodeFailedToEncryptMessage
+                                 description:@"Failed building provisioning message"
+                                 isRetryable:NO];
         failureCallback(error);
         return;
     }

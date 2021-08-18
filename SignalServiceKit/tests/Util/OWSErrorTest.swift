@@ -51,12 +51,195 @@ class OWSErrorTest: SSKBaseTestSwift {
         XCTAssertFalse(error4.shouldBeIgnoredForGroups)
         XCTAssertFalse(error4.isFatalError)
     }
-}
 
-// MARK: -
+    func testOWSError1() {
+        let errorCode1: Int = 999
+        let errorDescription1: String = "abc"
+        let isRetryable1: Bool = true
+        let error1: Error = OWSError(errorCode: errorCode1, description: errorDescription1, isRetryable: isRetryable1)
 
-extension Error {
-    var debugPointerName: String {
-        String(describing: Unmanaged<AnyObject>.passUnretained(self as AnyObject).toOpaque())
+        XCTAssertEqual((error1 as NSError).code, errorCode1)
+        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(error1.hasIsRetryable)
+        XCTAssertEqual(error1.isRetryable, isRetryable1)
+
+        let nsError1: NSError = error1 as NSError
+        XCTAssertEqual(nsError1.code, errorCode1)
+        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasIsRetryable)
+        XCTAssertEqual(nsError1.isRetryable, isRetryable1)
+
+        do {
+            try ErrorThrower(error: error1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+
+        do {
+            try ErrorThrower(error: nsError1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+    }
+
+    func testOWSError2() {
+        let errorCode1: Int = 1001
+        let errorDescription1: String = "Some copy."
+        let isRetryable1: Bool = false
+        let error1: Error = OWSError(errorCode: errorCode1, description: errorDescription1, isRetryable: isRetryable1)
+
+        XCTAssertEqual((error1 as NSError).code, errorCode1)
+        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(error1.hasIsRetryable)
+        XCTAssertEqual(error1.isRetryable, isRetryable1)
+
+        let nsError1: NSError = error1 as NSError
+        XCTAssertEqual(nsError1.code, errorCode1)
+        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasIsRetryable)
+        XCTAssertEqual(nsError1.isRetryable, isRetryable1)
+
+        do {
+            try ErrorThrower(error: error1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+
+        do {
+            try ErrorThrower(error: nsError1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+    }
+
+    func testOWSError3() {
+        let errorCode1: Int = 999
+        let errorDescription1: String = "abc"
+        let isRetryable1: Bool = false
+        let error1: Error = OWSError(errorCode: errorCode1,
+                                     description: errorDescription1,
+                                     isRetryable: isRetryable1)
+
+        XCTAssertEqual((error1 as NSError).code, errorCode1)
+        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(error1.hasIsRetryable)
+        XCTAssertEqual(error1.isRetryable, isRetryable1)
+
+        let nsError1: NSError = error1 as NSError
+        XCTAssertEqual(nsError1.code, errorCode1)
+        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasIsRetryable)
+        XCTAssertEqual(nsError1.isRetryable, isRetryable1)
+
+        do {
+            try ErrorThrower(error: error1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+
+        do {
+            try ErrorThrower(error: nsError1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
+            XCTAssertTrue(error.hasIsRetryable)
+            XCTAssertEqual(error.isRetryable, isRetryable1)
+        }
+    }
+
+    func testOWSError4() {
+        let errorCode1: Int = 999
+        let errorDescription1: String = "abc"
+        let nsError1: NSError = NSError(domain: OWSSignalServiceKitErrorDomain,
+                                        code: errorCode1,
+                                        userInfo: [
+                                            NSLocalizedDescriptionKey: errorDescription1
+                                        ])
+        let error1: Error = nsError1 as Error
+
+        XCTAssertEqual((error1 as NSError).code, errorCode1)
+        XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertFalse(error1.hasUserErrorDescription)
+        XCTAssertFalse(error1.hasIsRetryable)
+
+        XCTAssertEqual(nsError1.code, errorCode1)
+        XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
+        XCTAssertFalse(nsError1.hasUserErrorDescription)
+        XCTAssertFalse(nsError1.hasIsRetryable)
+
+        do {
+            try ErrorThrower(error: error1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertFalse(error.hasUserErrorDescription)
+            XCTAssertFalse(error.hasIsRetryable)
+        }
+
+        do {
+            try ErrorThrower(error: nsError1).performThrow()
+            XCTFail("Thrower did not throw.")
+        } catch {
+            XCTAssertEqual((error as NSError).code, errorCode1)
+            XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
+            XCTAssertFalse(error.hasUserErrorDescription)
+            XCTAssertFalse(error.hasIsRetryable)
+        }
+    }
+
+    // MARK: -
+
+    struct ErrorThrower {
+        let error: Error
+
+        func performThrow() throws {
+            throw error
+        }
     }
 }

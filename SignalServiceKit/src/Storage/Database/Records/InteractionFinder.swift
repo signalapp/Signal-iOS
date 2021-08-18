@@ -236,7 +236,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 transaction: transaction
             )
         } catch {
-            owsFailDebug("Error loading interactions \(error.localizedDescription)")
+            owsFailDebug("Error loading interactions \(error.userErrorDescription)")
             return nil
         }
 

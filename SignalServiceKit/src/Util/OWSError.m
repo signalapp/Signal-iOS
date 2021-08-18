@@ -3,28 +3,11 @@
 //
 
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSSignalServiceKitErrorDomain = @"OWSSignalServiceKitErrorDomain";
-
-NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description)
-{
-    return OWSErrorWithUserInfo(code, @{ NSLocalizedDescriptionKey: description });
-}
-
-NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo)
-{
-    return [NSError errorWithDomain:OWSSignalServiceKitErrorDomain
-                               code:code
-                           userInfo:userInfo];
-}
-
-NSError *OWSErrorMakeUnableToProcessServerResponseError()
-{
-    return OWSErrorWithCodeDescription(OWSErrorCodeUnableToProcessServerResponse,
-        NSLocalizedString(@"ERROR_DESCRIPTION_SERVER_FAILURE", @"Generic server error"));
-}
 
 NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
 {
@@ -33,8 +16,10 @@ NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...)
     NSString *description = [[NSString alloc] initWithFormat:descriptionFormat arguments:args];
     va_end(args);
     OWSCFailDebug(@"Assertion failed: %@", description);
-    return OWSErrorWithCodeDescription(OWSErrorCodeAssertionFailure,
-        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+    return
+        [OWSError withError:OWSErrorCodeAssertionFailure
+                description:NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
+                isRetryable:NO];
 }
 
 NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...)
@@ -44,8 +29,10 @@ NSError *OWSErrorMakeGenericError(NSString *descriptionFormat, ...)
     NSString *description = [[NSString alloc] initWithFormat:descriptionFormat arguments:args];
     va_end(args);
     OWSLogWarn(@"%@", description);
-    return OWSErrorWithCodeDescription(OWSErrorCodeGenericFailure,
-        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+    return
+        [OWSError withError:OWSErrorCodeGenericFailure
+                description:NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message")
+                isRetryable:NO];
 }
 
 NS_ASSUME_NONNULL_END

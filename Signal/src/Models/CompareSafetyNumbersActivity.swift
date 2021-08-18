@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -68,8 +68,9 @@ class CompareSafetyNumbersActivity: UIActivity {
         guard let pasteboardString = pasteboardNumerics,
               pasteboardString.count == 60 else {
             Logger.warn("no valid safety numbers found in pasteboard: \(String(describing: pasteboardNumerics))")
-            let error = OWSErrorWithCodeDescription(OWSErrorCode.userError,
-                                                    NSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"))
+            let error = OWSError(error: .userError,
+                                 description: NSLocalizedString("PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body for user error"),
+                                 isRetryable: false)
 
             delegate.compareSafetyNumbersActivity(self, failedWithError: error)
             return
@@ -82,8 +83,9 @@ class CompareSafetyNumbersActivity: UIActivity {
             delegate.compareSafetyNumbersActivitySucceeded(activity: self)
         } else {
             Logger.warn("local numbers: \(String(describing: mySafetyNumbers)) didn't match pasteboard:\(pasteboardSafetyNumbers)")
-            let error = OWSErrorWithCodeDescription(OWSErrorCode.privacyVerificationFailure,
-                                                    NSLocalizedString("PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body"))
+            let error = OWSError(error: .privacyVerificationFailure,
+                                 description: NSLocalizedString("PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD", comment: "Alert body"),
+                                 isRetryable: false)
             delegate.compareSafetyNumbersActivity(self, failedWithError: error)
         }
     }

@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "SAEScreenLockViewController.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -109,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             [self ensureUI];
 
-            [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
+            [self showScreenLockFailureAlertWithMessage:error.userErrorDescription];
         }
         unexpectedFailure:^(NSError *error) {
             OWSAssertIsOnMainThread();

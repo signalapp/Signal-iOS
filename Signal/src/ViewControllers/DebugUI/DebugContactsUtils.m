@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSFailDebug(@"Error saving fake contacts: %@", saveError);
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [OWSActionSheets showActionSheetWithTitle:@"Error"
-                                                                  message:saveError.localizedDescription];
+                                                                  message:saveError.userErrorDescription];
                             });
                             return;
                         } else {
@@ -196,10 +196,10 @@ NS_ASSUME_NONNULL_BEGIN
                         NSError *saveError = nil;
                         if (!result || fetchError) {
                             OWSLogError(@"error = %@", fetchError);
-                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:fetchError.localizedDescription];
+                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:fetchError.userErrorDescription];
                         } else if (![store executeSaveRequest:request error:&saveError]) {
                             OWSLogError(@"error = %@", saveError);
-                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:saveError.localizedDescription];
+                            [OWSActionSheets showActionSheetWithTitle:@"Error" message:saveError.userErrorDescription];
                         }
                     }];
 }

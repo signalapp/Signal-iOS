@@ -355,8 +355,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
                 if (thread == nil) {
                     OWSFailDebug(@"Missing thread.");
-                    NSError *error
-                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
+                    NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
+                                             description:@"Could not sync contacts."
+                                             isRetryable:NO];
                     return resolve(error);
                 }
 
@@ -372,8 +373,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
                 if (!messageData) {
                     OWSFailDebug(@"Failed to serialize contacts sync message.");
-                    NSError *error
-                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
+                    NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
+                                             description:@"Could not sync contacts."
+                                             isRetryable:NO];
                     return resolve(error);
                 }
                 

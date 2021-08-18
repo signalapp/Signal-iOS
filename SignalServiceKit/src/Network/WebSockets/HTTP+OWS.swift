@@ -53,7 +53,7 @@ public struct HTTPErrorServiceResponse {
 
 // MARK: -
 
-public enum OWSHTTPError: Error, IsRetryableProvider {
+public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
     case invalidAppState(requestUrl: URL)
     case invalidRequest(requestUrl: URL)
     case invalidResponse(requestUrl: URL)
@@ -83,24 +83,36 @@ public enum OWSHTTPError: Error, IsRetryableProvider {
         return .serviceResponse(serviceResponse: serviceResponse)
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     public static var errorDomain: String {
         return "OWSHTTPError"
     }
 
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         var result = [String: Any]()
         if let responseError = self.responseError {
             result[NSUnderlyingErrorKey] = responseError
         }
-        if let customLocalizedRecoverySuggestion = self.customLocalizedRecoverySuggestion {
-            result[NSLocalizedDescriptionKey] = customLocalizedRecoverySuggestion
-        }
+        result[NSLocalizedDescriptionKey] = localizedDescription
         if let customLocalizedRecoverySuggestion = self.customLocalizedRecoverySuggestion {
             result[NSLocalizedRecoverySuggestionErrorKey] = customLocalizedRecoverySuggestion
         }
         return result
+    }
+
+    public var localizedDescription: String {
+        if let customLocalizedRecoverySuggestion = self.customLocalizedRecoverySuggestion {
+            return customLocalizedRecoverySuggestion
+        }
+        switch self {
+        case .invalidAppState, .invalidRequest, .networkFailure:
+            return NSLocalizedString("ERROR_DESCRIPTION_REQUEST_FAILED",
+                                     comment: "Error indicating that a socket request failed.")
+        case .invalidResponse, .serviceResponse:
+            return NSLocalizedString("ERROR_DESCRIPTION_RESPONSE_FAILED",
+                                     comment: "Error indicating that a socket response failed.")
+        }
     }
 
     // MARK: - IsRetryableProvider

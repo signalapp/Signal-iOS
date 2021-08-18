@@ -145,7 +145,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
         let alertTitle = NSLocalizedString("DEVICE_LIST_UPDATE_FAILED_TITLE",
                                            comment: "Alert title that can occur when viewing device manager.")
         let alert = ActionSheetController(title: alertTitle,
-                                          message: error.localizedDescription)
+                                          message: error.userErrorDescription)
         alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                           style: .default) { _ in
                                             self.refreshDevices()
@@ -290,7 +290,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
         let title = NSLocalizedString("UNLINKING_FAILED_ALERT_TITLE",
                                       comment: "Alert title when unlinking device fails")
-        let alert = ActionSheetController(title: title, message: error.localizedDescription)
+        let alert = ActionSheetController(title: title, message: error.userErrorDescription)
         alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                           accessibilityIdentifier: "retry_unlink_device",
                                           style: .default) { [weak self] _ in

@@ -454,8 +454,7 @@ public class MessageFetcherJob: NSObject {
             }
 
             guard let (envelopes, more) = self.parseMessagesResponse(responseObject: json) else {
-                Logger.error("response object had unexpected content")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Invalid response.")
             }
 
             return RESTBatch(envelopes: envelopes,

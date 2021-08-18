@@ -102,9 +102,10 @@ public class AccountManager: NSObject {
 
     func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
         guard verificationCode.count > 0 else {
-            let error = OWSErrorWithCodeDescription(.userError,
-                                                    NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
-                                                                      comment: "alert body during registration"))
+            let error = OWSError(error: .userError,
+                                 description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                                                comment: "alert body during registration"),
+                                 isRetryable: false)
             return Promise(error: error)
         }
 
@@ -355,13 +356,11 @@ public class AccountManager: NSObject {
             }
 
             guard let responseObject = responseObject else {
-                owsFailDebug("unexpectedly missing responseObject")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing responseObject.")
             }
 
             guard let params = ParamParser(responseObject: responseObject) else {
-                owsFailDebug("params was unexpectedly nil")
-                throw OWSErrorMakeUnableToProcessServerResponseError()
+                throw OWSAssertionError("Missing or invalid params.")
             }
 
             var registrationResponse = RegistrationResponse()
@@ -369,8 +368,7 @@ public class AccountManager: NSObject {
             // TODO UUID: this UUID param should be non-optional when the production service is updated
             if let uuidString: String = try params.optional(key: "uuid") {
                 guard let uuid = UUID(uuidString: uuidString) else {
-                    owsFailDebug("invalid uuidString: \(uuidString)")
-                    throw OWSErrorMakeUnableToProcessServerResponseError()
+                    throw OWSAssertionError("Missing or invalid uuid.")
                 }
                 registrationResponse.uuid = uuid
             }

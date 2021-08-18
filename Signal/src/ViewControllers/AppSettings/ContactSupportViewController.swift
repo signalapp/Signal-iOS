@@ -243,7 +243,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
         }.catch(on: .main) { error in
-            let alertTitle = error.localizedDescription
+            let alertTitle = error.userErrorDescription
             let alertMessage = NSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
                                                  comment: "Message for alert dialog presented when a support email failed to send")
             OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)

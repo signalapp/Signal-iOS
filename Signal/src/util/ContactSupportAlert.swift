@@ -85,7 +85,7 @@ public class ContactSupportAlert: NSObject {
         }
 
         let message = NSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY", comment: "Alert body")
-        let actionSheet = ActionSheetController(title: error.localizedDescription, message: message)
+        let actionSheet = ActionSheetController(title: error.userErrorDescription, message: message)
         actionSheet.addAction(retryAction)
         actionSheet.addAction(OWSActionSheets.cancelAction)
 

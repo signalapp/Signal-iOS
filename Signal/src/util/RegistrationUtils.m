@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            message:NSLocalizedString(
                                                                        @"REGISTRATION_NON_VALID_NUMBER", nil)];
                                   } else {
-                                      [OWSActionSheets showActionSheetWithTitle:error.localizedDescription
+                                      [OWSActionSheets showActionSheetWithTitle:error.userErrorDescription
                                                                         message:error.localizedRecoverySuggestion];
                                   }
                               }];

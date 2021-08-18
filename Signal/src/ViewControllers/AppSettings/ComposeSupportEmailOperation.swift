@@ -88,7 +88,7 @@ final class ComposeSupportEmailOperation: NSObject {
     @objc
     class func sendEmailWithDefaultErrorHandling(supportFilter: String, logUrl: URL? = nil) {
         sendEmail(supportFilter: supportFilter, logUrl: logUrl).catch { error in
-            OWSActionSheets.showErrorAlert(message: error.localizedDescription)
+            OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
         }
     }
 
@@ -142,7 +142,7 @@ final class ComposeSupportEmailOperation: NSObject {
                 let emailError = EmailError.logUploadFailure(underlyingError: (error as? LocalizedError))
                 return Promise(error: emailError)
             } else {
-                return .value("[Support note: Log upload failed — \(error.localizedDescription)]")
+                return .value("[Support note: Log upload failed — \(error.userErrorDescription)]")
             }
 
         }.then(on: workQueue) { (debugURLString) -> Promise<URL> in

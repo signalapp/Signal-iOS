@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing if we successfully delivered to anyone. Only cleanup
     // local state if we fail to deliver to anyone.
     if (self.sentRecipientAddresses.count > 0) {
-        OWSLogError(@"Failed to send reaction to some recipients: %@", error.localizedDescription);
+        OWSLogError(@"Failed to send reaction to some recipients: %@", error.userErrorDescription);
         return;
     }
 
@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogError(@"Failed to send reaction to all recipients: %@", error.localizedDescription);
+    OWSLogError(@"Failed to send reaction to all recipients: %@", error.userErrorDescription);
 
     OWSReaction *_Nullable currentReaction = [message reactionForReactor:localAddress transaction:transaction];
 

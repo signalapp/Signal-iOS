@@ -301,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             self.didLastUnlockAttemptFail = YES;
 
-            [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
+            [self showScreenLockFailureAlertWithMessage:error.userErrorDescription];
         }
         unexpectedFailure:^(NSError *error) {
             OWSLogInfo(@"unlock screen lock unexpectedly failed.");

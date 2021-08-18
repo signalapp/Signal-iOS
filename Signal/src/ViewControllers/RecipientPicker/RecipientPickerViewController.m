@@ -782,7 +782,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                                                                           options:0
                                                                                             error:&error];
         if (!startsWithNumberRegex || error) {
-            OWSFailDebug(@"Unexpected error creating regex %@", error.localizedDescription);
+            OWSFailDebug(@"Unexpected error creating regex %@", error.userErrorDescription);
         }
         BOOL startsWithNumber = [startsWithNumberRegex hasMatchWithInput:usernameMatch];
         // If user searches for e164 starting with +, don't treat that as a

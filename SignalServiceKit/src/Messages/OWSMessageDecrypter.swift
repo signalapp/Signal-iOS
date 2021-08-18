@@ -283,7 +283,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         if case SignalError.duplicatedMessage(_) = error {
             Logger.info(logString)
             // Duplicate messages are not recorded in the database.
-            return OWSErrorWithUserInfo(.failedToDecryptDuplicateMessage, [NSUnderlyingErrorKey: error])
+            return OWSError(error: .failedToDecryptDuplicateMessage,
+                            description: "Duplicate message",
+                            isRetryable: false,
+                            userInfo: [NSUnderlyingErrorKey: error])
         }
 
         Logger.error(logString)
@@ -292,7 +295,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         if (error as NSError).domain == OWSSignalServiceKitErrorDomain {
             wrappedError = error
         } else {
-            wrappedError = OWSErrorWithUserInfo(.failedToDecryptMessage, [NSUnderlyingErrorKey: error])
+            wrappedError = OWSError(error: .failedToDecryptMessage,
+                                    description: "Decryption error",
+                                    isRetryable: false,
+                                    userInfo: [NSUnderlyingErrorKey: error])
         }
 
         guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
@@ -495,7 +501,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         do {
             guard let sourceAddress = envelope.sourceAddress else {
                 owsFailDebug("no source address")
-                throw OWSErrorWithCodeDescription(.failedToDecryptMessage, "Envelope has no source address")
+                throw OWSError(error: .failedToDecryptMessage,
+                               description: "Envelope has no source address",
+                               isRetryable: false)
             }
 
             let deviceId = envelope.sourceDevice
@@ -507,7 +515,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                       parameters: nil,
                                       location: "\((#file as NSString).lastPathComponent):\(#function)",
                                       line: #line)
-                throw OWSErrorWithCodeDescription(.failedToDecryptMessage, "Envelope has no content")
+                throw OWSError(error: .failedToDecryptMessage,
+                               description: "Envelope has no content",
+                               isRetryable: false)
             }
 
             let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: deviceId)
@@ -545,8 +555,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             // as a finite enum.
             default:
                 owsFailDebug("Unexpected ciphertext type: \(cipherType.rawValue)")
-                throw OWSErrorWithCodeDescription(.failedToDecryptMessage,
-                                                  "Unexpected ciphertext type: \(cipherType.rawValue)")
+                throw OWSError(error: .failedToDecryptMessage,
+                               description: "Unexpected Ciphertext type.",
+                               isRetryable: false)
             }
 
             let plaintextData = (Data(plaintext) as NSData).removePadding()

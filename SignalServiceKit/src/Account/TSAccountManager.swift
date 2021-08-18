@@ -131,11 +131,11 @@ public extension TSAccountManager {
     // * When reachability changes.
     private func updateAccountAttributesIfNecessaryAttempt() -> Promise<Void> {
         guard isRegisteredAndReady else {
-            Logger.info("Aborting not registered and ready.")
+            Logger.info("Aborting; not registered and ready.")
             return Promise.value(())
         }
         guard AppReadiness.isAppReady else {
-            Logger.info("Aborting app is not ready.")
+            Logger.info("Aborting; app is not ready.")
             return Promise.value(())
         }
 
@@ -164,7 +164,7 @@ public extension TSAccountManager {
             guard lastAppVersion == currentAppVersion else {
                 return true
             }
-            Logger.info("Skipping lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
             return false
         }
         guard shouldUpdateAttributes else {
@@ -276,22 +276,30 @@ extension TSAccountManager {
             case 403:
                 let message = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
                                                 comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
-                failure(OWSErrorWithCodeDescription(.userError, message))
+                failure(OWSError(error: .userError,
+                                 description: message,
+                                 isRetryable: false))
             case 409:
                 let message = NSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
                                                 comment: "Error message indicating that device transfer from another device might be possible.")
-                failure(OWSErrorWithCodeDescription(.registrationTransferAvailable, message))
+                failure(OWSError(error: .registrationTransferAvailable,
+                                 description: message,
+                                 isRetryable: false))
             case 413:
                 // In the case of the "rate limiting" error, we want to show the
                 // "recovery suggestion", not the error's "description."
                 let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
-                failure(OWSErrorWithCodeDescription(.userError, recoverySuggestion))
+                failure(OWSError(error: .userError,
+                                 description: recoverySuggestion,
+                                 isRetryable: false))
             case 423:
                 let localizedMessage = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
                                                          comment: "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.")
                 Logger.error("2FA PIN required: \(error)")
 
-                var userError = OWSErrorWithCodeDescription(.registrationMissing2FAPIN, localizedMessage)
+                var userError: Error = OWSError(error: .registrationMissing2FAPIN,
+                                                description: localizedMessage,
+                                                isRetryable: false)
 
                 guard let json = error.httpResponseJson as? [String: Any] else {
                     failure(OWSAssertionError("Invalid response."))
@@ -310,11 +318,12 @@ extension TSAccountManager {
                     return
                 }
 
-                userError = OWSErrorWithUserInfo(.registrationMissing2FAPIN,
-                                                 [
-                                                    NSLocalizedDescriptionKey: localizedMessage,
-                                                    TSRemoteAttestationAuthErrorKey: auth
-                                                 ])
+                userError = OWSError(error: .registrationMissing2FAPIN,
+                                     description: localizedMessage,
+                                     isRetryable: false,
+                                     userInfo: [
+                                        TSRemoteAttestationAuthErrorKey: auth
+                                     ])
                 failure(userError)
             default:
                 owsFailDebugUnlessNetworkFailure(error)

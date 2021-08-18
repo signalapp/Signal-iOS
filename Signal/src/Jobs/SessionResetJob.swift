@@ -131,7 +131,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             }
             self.reportSuccess()
         }.catch { error in
-            Logger.error("sending error: \(error.localizedDescription)")
+            Logger.error("sending error: \(error.userErrorDescription)")
             self.reportError(withUndefinedRetry: error)
         }
     }
@@ -155,7 +155,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
-        Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
+        Logger.error("failed to send EndSessionMessage with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 

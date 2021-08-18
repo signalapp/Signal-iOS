@@ -540,7 +540,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         Logger.error("error: \(error)")
 
         OWSActionSheets.showActionSheet(title: nil,
-                            message: error.localizedDescription,
+                            message: error.userErrorDescription,
                             buttonTitle: CommonStrings.dismissButton,
                             buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
     }

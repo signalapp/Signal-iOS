@@ -232,7 +232,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     NSError *_Nullable error;
     NSData *_Nullable result = [[self class] identityKeyFromEncodedPreKeySignalMessage:pkwmData error:&error];
     if (!result) {
-        OWSRaiseException(InvalidMessageException, @"%@", error.localizedDescription);
+        OWSRaiseException(InvalidMessageException, @"%@", error.userErrorDescription);
     }
     return result;
 }
