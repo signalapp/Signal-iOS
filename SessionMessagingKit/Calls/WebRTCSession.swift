@@ -40,7 +40,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     internal lazy var mediaConstraints: RTCMediaConstraints = {
         let mandatory: [String:String] = [
             kRTCMediaConstraintsOfferToReceiveAudio : kRTCMediaConstraintsValueTrue,
-            kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue
+            kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue,
         ]
         let optional: [String:String] = [:]
         return RTCMediaConstraints(mandatoryConstraints: mandatory, optionalConstraints: optional)
@@ -58,7 +58,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     // Video
     public lazy var localVideoSource: RTCVideoSource = {
-        return factory.videoSource()
+        let result = factory.videoSource()
+        result.adaptOutputFormat(toWidth: 360, height: 780, fps: 30)
+        return result
     }()
     
     internal lazy var localVideoTrack: RTCVideoTrack = {

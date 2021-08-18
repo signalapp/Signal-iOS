@@ -62,5 +62,7 @@ extension CameraManager : AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptur
         delegate?.handleVideoOutputCaptured(sampleBuffer: sampleBuffer)
     }
     
-    func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) { }
+    func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        print("[Calls] Frame dropped.")
+    }
 }
