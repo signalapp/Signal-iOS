@@ -53,7 +53,7 @@ public struct HTTPErrorServiceResponse {
 
 // MARK: -
 
-public enum OWSHTTPError: Error, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
+public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
     case invalidAppState(requestUrl: URL)
     case invalidRequest(requestUrl: URL)
     case invalidResponse(requestUrl: URL)

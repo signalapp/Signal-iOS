@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *title = NSLocalizedString(@"LINKING_DEVICE_FAILED_TITLE", @"Alert Title");
     ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
-                                                                              message:error.errorLocalizedDescription];
+                                                                              message:error.userErrorDescription];
 
     ActionSheetAction *retryAction = [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
                                                                         style:ActionSheetActionStyleDefault

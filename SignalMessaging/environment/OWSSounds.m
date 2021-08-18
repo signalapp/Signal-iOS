@@ -111,7 +111,7 @@ const NSUInteger OWSCustomSoundShift = 16;
     NSArray *legacySoundFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:legacySoundsDirectory
                                                                                     error:&error];
     if (error) {
-        OWSFailDebug(@"Failed looking up legacy sound files: %@", error.errorLocalizedDescription);
+        OWSFailDebug(@"Failed looking up legacy sound files: %@", error.userErrorDescription);
         return;
     }
 
@@ -121,7 +121,7 @@ const NSUInteger OWSCustomSoundShift = 16;
                                                 toPath:[[self soundsDirectory] stringByAppendingPathComponent:soundFile]
                                                  error:&moveError];
         if (moveError) {
-            OWSFailDebug(@"Failed to migrate legacy sound file: %@", moveError.errorLocalizedDescription);
+            OWSFailDebug(@"Failed to migrate legacy sound file: %@", moveError.userErrorDescription);
             continue;
         }
     }
@@ -538,7 +538,7 @@ const NSUInteger OWSCustomSoundShift = 16;
     NSArray *customSoundFilenames =
         [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[OWSSounds soundsDirectory] error:&error];
     if (error) {
-        OWSFailDebug(@"Failed retrieving custom sound files: %@", error.errorLocalizedDescription);
+        OWSFailDebug(@"Failed retrieving custom sound files: %@", error.userErrorDescription);
         return NULL;
     }
 
@@ -555,7 +555,7 @@ const NSUInteger OWSCustomSoundShift = 16;
     NSArray *customSoundFilenames =
         [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[OWSSounds soundsDirectory] error:&error];
     if (error) {
-        OWSFailDebug(@"Failed retrieving custom sound files: %@", error.errorLocalizedDescription);
+        OWSFailDebug(@"Failed retrieving custom sound files: %@", error.userErrorDescription);
         return @[];
     }
 

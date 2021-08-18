@@ -24,7 +24,7 @@ protocol ContactDiscovering {
 /// These could be provided by the server or the client. An error of this type will not be returned for network connectivity related reasons.
 /// Usually the code doesn't matter, the accessor properties should provide the info you need.
 @objc(OWSContactDiscoveryError)
-public class ContactDiscoveryError: NSError, ErrorLocalizedDescriptionProvider {
+public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
     static let domain: String = "ContactDiscoveryErrorDomain"
     static let maxRetryAfterInterval = 60 * kMinuteInterval
 

@@ -120,7 +120,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             try self.qrCodeView.setQR(url: url)
         }.catch { error in
             let title = NSLocalizedString("SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE", comment: "alert title")
-            let alert = ActionSheetController(title: title, message: error.errorLocalizedDescription)
+            let alert = ActionSheetController(title: title, message: error.userErrorDescription)
 
             let retryAction = ActionSheetAction(title: CommonStrings.retryButton,
                                             accessibilityIdentifier: "alert.retry",

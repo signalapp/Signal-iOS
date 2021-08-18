@@ -101,7 +101,7 @@ public class ProvisioningController: NSObject {
             default:
                 Logger.warn("error: \(error)")
                 let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                                  message: error.errorLocalizedDescription)
+                                                  message: error.userErrorDescription)
                 alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                                   accessibilityIdentifier: "alert.retry",
                                                   style: .default,
@@ -155,7 +155,7 @@ public class ProvisioningController: NSObject {
                     alert.addAction(updateAction)
                 default:
                     let title = NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
-                    let message = error.errorLocalizedDescription
+                    let message = error.userErrorDescription
                     alert = ActionSheetController(title: title, message: message)
                     alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
                                                       accessibilityIdentifier: "alert.retry",

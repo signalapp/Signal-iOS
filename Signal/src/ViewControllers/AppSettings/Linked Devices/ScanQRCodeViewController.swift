@@ -254,7 +254,7 @@ class QRCodeScanViewController: OWSViewController {
         Logger.error("error: \(error)")
 
         OWSActionSheets.showActionSheet(title: nil,
-                                        message: error.errorLocalizedDescription,
+                                        message: error.userErrorDescription,
                                         buttonTitle: CommonStrings.dismissButton,
                                         buttonAction: { [weak self] _ in
                                             guard let self = self else { return }

@@ -5,31 +5,31 @@
 import Foundation
 import ObjectiveC
 
-public protocol ErrorLocalizedDescriptionProvider {
+public protocol UserErrorDescriptionProvider {
     var localizedDescription: String { get }
 }
 
 // MARK: -
 
 extension Error {
-    public var hasErrorLocalizedDescription: Bool { (self as NSError).hasErrorLocalizedDescriptionImpl }
-    public var errorLocalizedDescription: String { (self as NSError).errorLocalizedDescriptionImpl }
+    public var hasUserErrorDescription: Bool { (self as NSError).hasUserErrorDescriptionImpl }
+    public var userErrorDescription: String { (self as NSError).userErrorDescriptionImpl }
 }
 
 // MARK: -
 
 extension NSError {
     @objc
-    public var hasErrorLocalizedDescription: Bool { hasErrorLocalizedDescriptionImpl }
+    public var hasUserErrorDescription: Bool { hasUserErrorDescriptionImpl }
 
     @objc
-    public var errorLocalizedDescription: String { errorLocalizedDescriptionImpl }
+    public var userErrorDescription: String { userErrorDescriptionImpl }
 
-    fileprivate var hasErrorLocalizedDescriptionImpl: Bool {
-        if self is ErrorLocalizedDescriptionProvider {
+    fileprivate var hasUserErrorDescriptionImpl: Bool {
+        if self is UserErrorDescriptionProvider {
             return true
         }
-        if (self as Error) is ErrorLocalizedDescriptionProvider {
+        if (self as Error) is UserErrorDescriptionProvider {
             return true
         }
         if let error = self as? LocalizedError,
@@ -43,7 +43,7 @@ extension NSError {
         return false
     }
 
-    fileprivate var errorLocalizedDescriptionImpl: String {
+    fileprivate var userErrorDescriptionImpl: String {
         // Error and NSError have a special relationship.
         // They can be "cast" back and forth, but are separate objects.
         //
@@ -59,10 +59,10 @@ extension NSError {
         //
         // When trying to cast an error to IsRetryableProvider,
         // we need to try casting both the Error and NSError form.
-        if let error = self as? ErrorLocalizedDescriptionProvider {
+        if let error = self as? UserErrorDescriptionProvider {
             return error.localizedDescription
         }
-        if let error = (self as Error) as? ErrorLocalizedDescriptionProvider {
+        if let error = (self as Error) as? UserErrorDescriptionProvider {
             return error.localizedDescription
         }
         if let error = self as? LocalizedError,

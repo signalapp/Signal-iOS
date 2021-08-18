@@ -514,7 +514,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
 
             let alert = ActionSheetController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                          message: error.errorLocalizedDescription)
+                                          message: error.userErrorDescription)
             alert.addAction(ActionSheetAction(title: CommonStrings.retryButton, style: .default) { _ in
                 self.getFileForCell(cell)
             })

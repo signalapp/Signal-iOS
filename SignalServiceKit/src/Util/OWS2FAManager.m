@@ -65,7 +65,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             [self migrateToRegistrationLockV2]
                 .then(^{ OWSLogInfo(@"Successfully migrated to registration lock V2"); })
                 .catch(^(NSError *error) {
-                    OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.errorLocalizedDescription);
+                    OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.userErrorDescription);
                 });
         }
     });

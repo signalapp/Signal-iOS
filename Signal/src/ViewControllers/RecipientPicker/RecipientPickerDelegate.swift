@@ -144,7 +144,7 @@ extension RecipientPickerViewController {
                 AssertIsOnMainThread()
                 owsFailDebug("Error: \(error)")
                 modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: error.errorLocalizedDescription)
+                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }
             }
         }

@@ -60,16 +60,16 @@ class OWSErrorTest: SSKBaseTestSwift {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(error1.hasErrorLocalizedDescription)
-        XCTAssertEqual(error1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(nsError1.hasErrorLocalizedDescription)
-        XCTAssertEqual(nsError1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -79,8 +79,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -91,8 +91,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -106,16 +106,16 @@ class OWSErrorTest: SSKBaseTestSwift {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(error1.hasErrorLocalizedDescription)
-        XCTAssertEqual(error1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(nsError1.hasErrorLocalizedDescription)
-        XCTAssertEqual(nsError1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -125,8 +125,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -137,8 +137,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -154,16 +154,16 @@ class OWSErrorTest: SSKBaseTestSwift {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(error1.hasErrorLocalizedDescription)
-        XCTAssertEqual(error1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(error1.hasUserErrorDescription)
+        XCTAssertEqual(error1.userErrorDescription, errorDescription1)
         XCTAssertTrue(error1.hasIsRetryable)
         XCTAssertEqual(error1.isRetryable, isRetryable1)
 
         let nsError1: NSError = error1 as NSError
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertTrue(nsError1.hasErrorLocalizedDescription)
-        XCTAssertEqual(nsError1.errorLocalizedDescription, errorDescription1)
+        XCTAssertTrue(nsError1.hasUserErrorDescription)
+        XCTAssertEqual(nsError1.userErrorDescription, errorDescription1)
         XCTAssertTrue(nsError1.hasIsRetryable)
         XCTAssertEqual(nsError1.isRetryable, isRetryable1)
 
@@ -173,8 +173,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -185,8 +185,8 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertTrue(error.hasErrorLocalizedDescription)
-            XCTAssertEqual(error.errorLocalizedDescription, errorDescription1)
+            XCTAssertTrue(error.hasUserErrorDescription)
+            XCTAssertEqual(error.userErrorDescription, errorDescription1)
             XCTAssertTrue(error.hasIsRetryable)
             XCTAssertEqual(error.isRetryable, isRetryable1)
         }
@@ -204,12 +204,12 @@ class OWSErrorTest: SSKBaseTestSwift {
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertFalse(error1.hasErrorLocalizedDescription)
+        XCTAssertFalse(error1.hasUserErrorDescription)
         XCTAssertFalse(error1.hasIsRetryable)
 
         XCTAssertEqual(nsError1.code, errorCode1)
         XCTAssertEqual(nsError1.domain, OWSSignalServiceKitErrorDomain)
-        XCTAssertFalse(nsError1.hasErrorLocalizedDescription)
+        XCTAssertFalse(nsError1.hasUserErrorDescription)
         XCTAssertFalse(nsError1.hasIsRetryable)
 
         do {
@@ -218,7 +218,7 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertFalse(error.hasErrorLocalizedDescription)
+            XCTAssertFalse(error.hasUserErrorDescription)
             XCTAssertFalse(error.hasIsRetryable)
         }
 
@@ -228,7 +228,7 @@ class OWSErrorTest: SSKBaseTestSwift {
         } catch {
             XCTAssertEqual((error as NSError).code, errorCode1)
             XCTAssertEqual((error as NSError).domain, OWSSignalServiceKitErrorDomain)
-            XCTAssertFalse(error.hasErrorLocalizedDescription)
+            XCTAssertFalse(error.hasUserErrorDescription)
             XCTAssertFalse(error.hasIsRetryable)
         }
     }

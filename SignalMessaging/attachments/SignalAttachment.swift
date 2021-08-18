@@ -389,7 +389,7 @@ public class SignalAttachment: NSObject {
             return image
 
         } catch let error {
-            let localizedDescription: String = error.errorLocalizedDescription
+            let localizedDescription: String = error.userErrorDescription
             Logger.verbose("Could not generate video thumbnail: \(localizedDescription)")
             return nil
         }

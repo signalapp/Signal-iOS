@@ -368,7 +368,6 @@ public class AccountManager: NSObject {
             // TODO UUID: this UUID param should be non-optional when the production service is updated
             if let uuidString: String = try params.optional(key: "uuid") {
                 guard let uuid = UUID(uuidString: uuidString) else {
-                    owsFailDebug("invalid uuidString: \(uuidString)")
                     throw OWSAssertionError("Missing or invalid uuid.")
                 }
                 registrationResponse.uuid = uuid

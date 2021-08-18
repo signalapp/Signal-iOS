@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class OWSError: NSObject, CustomNSError, IsRetryableProvider, ErrorLocalizedDescriptionProvider {
+public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
 
     @objc
     public let errorCode: Int

@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             [self ensureUI];
 
-            [self showScreenLockFailureAlertWithMessage:error.errorLocalizedDescription];
+            [self showScreenLockFailureAlertWithMessage:error.userErrorDescription];
         }
         unexpectedFailure:^(NSError *error) {
             OWSAssertIsOnMainThread();
