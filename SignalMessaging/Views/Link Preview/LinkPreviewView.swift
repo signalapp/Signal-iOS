@@ -579,6 +579,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         let cancelButton = OWSButton { [weak linkPreviewView] in
             linkPreviewView?.didTapCancel()
         }
+        cancelButton.accessibilityLabel = MessageStrings.removePreviewButtonLabel
         linkPreviewView.cancelButton = cancelButton
         cancelButton.setTemplateImageName("compose-cancel",
                                           tintColor: Theme.secondaryTextAndIconColor)

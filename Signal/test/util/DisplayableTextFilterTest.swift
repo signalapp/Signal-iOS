@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -124,6 +124,9 @@ class DisplayableTextTest: SignalBaseTest {
         assertNotLinkifies("foo http://asĸ.com")
         assertNotLinkifies("http://asĸ.com")
         assertNotLinkifies("asĸ.com")
+        assertLinkifies("Https://ask.com")
+        assertLinkifies("HTTP://ask.com")
+        assertLinkifies("HttPs://ask.com")
 
         // Mixed latin and cyrillic text, but it's not a link
         // (nothing to linkify, but there's nothing illegal here)
@@ -151,6 +154,7 @@ class DisplayableTextTest: SignalBaseTest {
         assertNotLinkifies("asĸ.com")
         assertNotLinkifies("https://кц.cфm")
         assertNotLinkifies("https://google.cфm")
+        assertNotLinkifies("Https://google.cфm")
 
         assertLinkifies("кц.рф")
         assertLinkifies("кц.рф/some/path")

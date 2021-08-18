@@ -566,11 +566,10 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        builder.setUniversalExpireTimer(
-            OWSDisappearingMessagesConfiguration
-                .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
-                .durationSeconds
-        )
+        let configuration = OWSDisappearingMessagesConfiguration
+            .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+
+        builder.setUniversalExpireTimer(configuration.isEnabled ? configuration.durationSeconds : 0)
 
         return try builder.build()
     }

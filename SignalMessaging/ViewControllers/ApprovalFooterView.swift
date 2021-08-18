@@ -130,7 +130,9 @@ public class ApprovalFooterView: UIView {
 
     var proceedLoadingIndicator = UIActivityIndicatorView(style: .white)
     lazy var proceedButton: OWSButton = {
-        let button = OWSButton.sendButton(imageName: proceedImageName) { [weak self] in
+		let button = OWSButton.sendButton(
+			imageName: self.approvalMode.proceedButtonImageName ?? "arrow-right-24"
+		) { [weak self] in
             guard let self = self else { return }
             self.delegate?.approvalFooterDelegateDidRequestProceed(self)
         }
@@ -142,19 +144,37 @@ public class ApprovalFooterView: UIView {
         return button
     }()
 
-    private var proceedImageName: String {
-        return approvalMode == .send ? "send-solid-24" : "arrow-right-24"
-    }
-
     func updateContents() {
+        proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
+        proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
+
         if approvalMode == .loading {
-            proceedButton.setImage(imageName: nil)
             proceedLoadingIndicator.isHidden = false
             proceedLoadingIndicator.startAnimating()
         } else {
-            proceedButton.setImage(imageName: proceedImageName)
             proceedLoadingIndicator.stopAnimating()
             proceedLoadingIndicator.isHidden = true
         }
     }
+}
+
+fileprivate extension ApprovalMode {
+	var proceedButtonAccessibilityLabel: String? {
+		switch self {
+		case .next: return CommonStrings.nextButton
+		case .send: return MessageStrings.sendButton
+        case .loading: return nil
+		}
+	}
+
+	var proceedButtonImageName: String? {
+		switch self {
+		case .next:
+			return "arrow-right-24"
+		case .send:
+			return "send-solid-24"
+        case .loading:
+            return nil
+		}
+	}
 }

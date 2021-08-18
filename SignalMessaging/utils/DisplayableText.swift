@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -180,7 +180,7 @@ public class DisplayableText: NSObject {
 
     private static let hostRegex: NSRegularExpression? = {
         let pattern = "^(?:https?:\\/\\/)?([^:\\/\\s]+)(.*)?$"
-        return try? NSRegularExpression(pattern: pattern)
+        return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
     }()
 
     @objc

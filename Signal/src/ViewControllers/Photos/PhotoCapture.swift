@@ -232,6 +232,13 @@ class PhotoCapture: NSObject {
         }
     }
 
+    @discardableResult
+    public func resumeCapture() -> Guarantee<Void> {
+        sessionQueue.async(.promise) { [session] in
+            session.startRunning()
+        }
+    }
+
     public func assertIsOnSessionQueue() {
         assertOnQueue(sessionQueue)
     }
