@@ -816,19 +816,16 @@ public class SignalAttachment: NSObject {
 
     // If the proposed attachment already conforms to the
     // file size and content size limits, don't recompress it.
-    private class func isValidOutputOriginalImage(dataSource: DataSource,
-                                                  dataUTI: String,
-                                                  imageQuality: ImageQualityLevel) -> Bool {
-        guard SignalAttachment.outputImageUTISet.contains(dataUTI) else {
-            return false
-        }
-        if !doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) {
-            return false
-        }
-        if dataSource.hasStickerLikeProperties {
-            return true
-        }
-        return false
+    private class func isValidOutputOriginalImage(
+        dataSource: DataSource,
+        dataUTI: String,
+        imageQuality: ImageQualityLevel
+    ) -> Bool {
+        guard SignalAttachment.outputImageUTISet.contains(dataUTI) else { return false }
+        guard dataSource.dataLength <= imageQuality.maxFileSize else { return false }
+        if dataSource.hasStickerLikeProperties { return true }
+        guard dataSource.dataLength <= imageQuality.maxOriginalFileSize else { return false }
+        return true
     }
 
     private class func convertAndCompressImage(dataSource: DataSource, attachment: SignalAttachment, imageQuality: ImageQualityLevel) -> SignalAttachment {
@@ -952,8 +949,7 @@ public class SignalAttachment: NSObject {
             let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
             outputDataSource.sourceFilename = newFilenameWithExtension
 
-            if doesImageHaveAcceptableFileSize(dataSource: outputDataSource, imageQuality: imageQuality) &&
-                outputDataSource.dataLength <= kMaxFileSizeImage {
+            if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= kMaxFileSizeImage {
                 let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataUTI as String)
                 Logger.verbose("Converted \(attachment.mimeType), size: \(outputDataSource.dataLength) to \(ByteCountFormatter.string(fromByteCount: Int64(outputDataSource.dataLength), countStyle: .file)) \(dataMIMEType)")
                 return .signalAttachment(signalAttachment: recompressedAttachment)
@@ -1027,10 +1023,6 @@ public class SignalAttachment: NSObject {
 
             return downsampledImage
         }
-    }
-
-    private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: ImageQualityLevel) -> Bool {
-        return dataSource.dataLength <= imageQuality.maxFileSize
     }
 
     private static let preservedMetadata: [CFString] = [

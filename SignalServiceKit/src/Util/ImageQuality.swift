@@ -40,6 +40,17 @@ public enum ImageQualityLevel: UInt {
         }
     }
 
+    public var maxOriginalFileSize: UInt {
+        switch self {
+        case .one: // 200KiB
+            return 200 * 1024
+        case .two: // 300KiB
+            return 300 * 1024
+        case .three: // 400KiB
+            return 400 * 1024
+        }
+    }
+
     public static var max: ImageQualityLevel {
         if CurrentAppContext().isMainApp {
             return .high
