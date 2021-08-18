@@ -129,7 +129,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)logFrameWithLabel:(NSString *)label;
 - (void)logFrameLater;
 - (void)logFrameLaterWithLabel:(NSString *)label;
+- (void)logHierarchyUpwardWithLabel:(NSString *)label;
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label;
+- (void)logHierarchyDownwardWithLabel:(NSString *)label;
+- (void)logHierarchyDownwardLaterWithLabel:(NSString *)label;
 #endif
 
 @end

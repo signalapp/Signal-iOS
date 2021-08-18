@@ -427,21 +427,36 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                                                           selectionType: .primaryContent)
 
             let selectionWrapper = componentView.selectionWrapper
-            if hasSecondaryContentForSelection {
+            if hasSecondaryContentForSelection,
+               let bodyTextRootView = CVComponentBodyText.findBodyTextRootView(outerContentView) {
                 let secondarySelectionView = componentView.secondarySelectionView
                 secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                                 selectionType: .secondaryContent)
-                // TODO:
-                selectionWrapper.addSubview(primarySelectionView) { _ in
-                    let frame = CGRect(origin: .zero,
-                                       size: MessageSelectionView.contentSize)
-                    primarySelectionView.frame = frame
+
+                let selectionLayoutBlock = { (_: UIView) -> Void in
+                    let size = MessageSelectionView.contentSize
+                    let selectionView = primarySelectionView
+                    guard let superview = selectionView.superview else {
+                        owsFailDebug("Missing superview.")
+                        return
+                    }
+                    let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
+
+                    // Primary should v-align with the center of the area above the body text.
+                    let primaryY = bodyTextFrame.y * 0.5 - size.height * 0.5
+                    primarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: primaryY), size: size)
+                    // Secondary should v-align with the center of the body text.
+                    let secondaryY = bodyTextFrame.midY - size.height * 0.5
+                    secondarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: secondaryY), size: size)
                 }
-                selectionWrapper.addSubview(secondarySelectionView) { _ in
-                    let frame = CGRect(origin: .zero,
-                                       size: MessageSelectionView.contentSize)
-                    secondarySelectionView.frame = frame
-                }
+                // Coordinating layout of "distant cousin" views in a view hierarchy
+                // is trivial with iOS Auto Layout, but hard with manual layout, since
+                // changes to any "intermediary" relative can affect the coordination,
+                // and for a rich view hierarchy it's not practical to
+                selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: { _ in })
+                selectionWrapper.addSubview(secondarySelectionView, withLayoutBlock: { _ in })
+                selectionWrapper.addLayoutBlock(selectionLayoutBlock)
+                outerContentView.addLayoutBlock(selectionLayoutBlock)
             } else {
                 selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
                                                                size: MessageSelectionView.contentSize)
@@ -650,7 +665,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private func configureContentStack(componentView: CVComponentViewMessage,
                                        cellMeasurement: CVCellMeasurement,
-                                       componentDelegate: CVComponentDelegate) -> UIView {
+                                       componentDelegate: CVComponentDelegate) -> ManualLayoutView {
 
         let topFullWidthSubcomponents = subcomponents(forKeys: topFullWidthCVComponentKeys)
         let topNestedSubcomponents = subcomponents(forKeys: topNestedCVComponentKeys)
