@@ -44,9 +44,13 @@ class ForwardMessageNavigationController: OWSNavigationController {
     public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
-        let modal = ForwardMessageNavigationController(content: .build(itemViewModels: itemViewModels))
-        modal.forwardMessageDelegate = delegate
-        fromViewController.presentFormSheet(modal, animated: true)
+        do {
+            let content: Content = try .build(itemViewModels: itemViewModels)
+            present(content: content, from: fromViewController, delegate: delegate)
+        } catch {
+            ForwardMessageNavigationController.showAlertForForwardError(error: error,
+                                                                        forwardedInteractionCount: itemViewModels.count)
+        }
     }
 
     public class func present(forSelectionItems selectionItems: [CVSelectionItem],
@@ -56,18 +60,23 @@ class ForwardMessageNavigationController: OWSNavigationController {
             let content: Content = try Self.databaseStorage.read { transaction in
                 try Content.build(selectionItems: selectionItems, transaction: transaction)
             }
-            let modal = ForwardMessageNavigationController(content: content)
-            modal.forwardMessageDelegate = delegate
-            fromViewController.presentFormSheet(modal, animated: true)
+            present(content: content, from: fromViewController, delegate: delegate)
         } catch {
             ForwardMessageNavigationController.showAlertForForwardError(error: error,
                                                                         forwardedInteractionCount: selectionItems.count)
         }
     }
 
+    private class func present(content: Content,
+                               from fromViewController: UIViewController,
+                               delegate: ForwardMessageDelegate) {
+        let modal = ForwardMessageNavigationController(content: content)
+        modal.forwardMessageDelegate = delegate
+        fromViewController.presentFormSheet(modal, animated: true)
+    }
+
     fileprivate enum Step {
         case selectRecipients
-        case approve
         case send
 
         static var firstStep: Step { .selectRecipients }
@@ -75,8 +84,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         var nextStep: Step {
             switch self {
             case .selectRecipients:
-                return .approve
-            case .approve:
                 return .send
             case .send:
                 owsFailDebug("There is no next step.")
@@ -89,8 +96,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         switch step {
         case .selectRecipients:
             selectRecipientsStep()
-        case .approve:
-            approveStep()
         case .send:
             sendStep()
         }
@@ -121,65 +126,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         } catch {
             owsFailDebug("Error: \(error)")
             self.currentMentionableAddresses = []
-        }
-    }
-}
-
-// MARK: - Approval
-
-extension ForwardMessageNavigationController {
-
-    func approveStep() {
-        do {
-            // Skip approval.
-            try autoApproveContent()
-        } catch {
-            owsFailDebug("Error: \(error)")
-
-            Self.showAlertForForwardError(error: error, forwardedInteractionCount: self.content.allItems.count)
-
-            self.forwardMessageDelegate?.forwardMessageFlowDidCancel()
-        }
-    }
-
-    private func autoApproveContent() throws {
-        let items = try content.allItems.map { try autoApprove(item: $0) }
-        if items.count == 1,
-           let item = items.first {
-            self.content = .single(item: item)
-        } else {
-            self.content = .multiple(items: items)
-        }
-        performStep(Step.approve.nextStep)
-    }
-
-    private func autoApprove(item: Item) throws -> Item {
-        let itemViewModel = item.itemViewModel
-        switch itemViewModel.messageCellType {
-        case .textOnlyMessage:
-            return item
-        case .contactShare:
-            guard let oldContactShare = itemViewModel.contactShare else {
-                return item
-            }
-            let newContactShare = oldContactShare.copyForResending()
-            return item.with(contactShare: newContactShare)
-        case .audio,
-             .genericAttachment,
-             .stickerMessage:
-            return item
-        case .bodyMedia:
-            let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
-            guard !bodyMediaAttachmentStreams.isEmpty else {
-                throw OWSAssertionError("Missing bodyMediaAttachmentStreams.")
-            }
-            let signalAttachments = try bodyMediaAttachmentStreams.map { attachmentStream in
-                try attachmentStream.cloneAsSignalAttachment()
-            }
-            return item.with(attachments: signalAttachments)
-        case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
-             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
-            return item
         }
     }
 }
@@ -545,73 +491,97 @@ private struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
     let itemViewModel: CVItemViewModelImpl
-    let selectionType: CVSelectionType
 
     let attachments: [SignalAttachment]?
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
 
+    private class Builder {
+        let itemViewModel: CVItemViewModelImpl
+
+        var attachments: [SignalAttachment]?
+        var contactShare: ContactShareViewModel?
+        var messageBody: MessageBody?
+        var linkPreviewDraft: OWSLinkPreviewDraft?
+
+        init(itemViewModel: CVItemViewModelImpl) {
+            self.itemViewModel = itemViewModel
+        }
+
+        func build() -> ForwardMessageItem {
+            ForwardMessageItem(itemViewModel: itemViewModel,
+                               attachments: attachments,
+                               contactShare: contactShare,
+                               messageBody: messageBody,
+                               linkPreviewDraft: linkPreviewDraft)
+        }
+    }
+
+    var isEmpty: Bool {
+        if let attachments = attachments,
+           !attachments.isEmpty {
+            return false
+        }
+        if contactShare != nil ||
+            messageBody != nil {
+            return false
+        }
+        return true
+    }
+
     init(itemViewModel: CVItemViewModelImpl,
-         selectionType: CVSelectionType,
          attachments: [SignalAttachment]? = nil,
          contactShare: ContactShareViewModel? = nil,
          messageBody: MessageBody? = nil,
          linkPreviewDraft: OWSLinkPreviewDraft? = nil) {
         self.itemViewModel = itemViewModel
-        self.selectionType = selectionType
         self.attachments = attachments
         self.contactShare = contactShare
         self.messageBody = messageBody
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    static func build(itemViewModel: CVItemViewModelImpl,
-                      selectionType: CVSelectionType = .allContent) -> Item {
-        let item = Item(itemViewModel: itemViewModel, selectionType: selectionType)
-        if let displayableBodyText = itemViewModel.displayableBodyText {
-            let attributedText = displayableBodyText.fullAttributedText
-            let messageBody = MessageBody(attributedString: attributedText)
-            return item.with(messageBody: messageBody)
-        } else {
-            return item
+    static func build(itemViewModel: CVItemViewModelImpl, selectionType: CVSelectionType) throws -> Item {
+
+        let builder = Builder(itemViewModel: itemViewModel)
+
+        let shouldHaveText = (selectionType == .allContent ||
+                                selectionType == .secondaryContent)
+        let shouldHaveAttachments = (selectionType == .allContent ||
+                                        selectionType == .primaryContent)
+
+        guard shouldHaveText || shouldHaveAttachments else {
+            throw ForwardError.invalidInteraction
         }
-    }
 
-    func with(messageBody: MessageBody?) -> Item {
-        Item(itemViewModel: self.itemViewModel,
-             selectionType: self.selectionType,
-             attachments: self.attachments,
-             contactShare: self.contactShare,
-             messageBody: messageBody,
-             linkPreviewDraft: self.linkPreviewDraft)
-    }
+        if shouldHaveText,
+           let displayableBodyText = itemViewModel.displayableBodyText {
+            let attributedText = displayableBodyText.fullAttributedText
+            builder.messageBody = MessageBody(attributedString: attributedText)
 
-    func with(attachments: [SignalAttachment]) -> Item {
-        Item(itemViewModel: self.itemViewModel,
-             selectionType: self.selectionType,
-             attachments: attachments,
-             contactShare: self.contactShare,
-             messageBody: self.messageBody,
-             linkPreviewDraft: self.linkPreviewDraft)
-    }
+            // TODO: linkPreviewDraft
+            // TODO: oversize text.
+        }
 
-    func with(contactShare: ContactShareViewModel) -> Item {
-        Item(itemViewModel: self.itemViewModel,
-             selectionType: self.selectionType,
-             attachments: self.attachments,
-             contactShare: contactShare,
-             messageBody: self.messageBody,
-             linkPreviewDraft: self.linkPreviewDraft)
-    }
+        if shouldHaveAttachments {
+            if let oldContactShare = itemViewModel.contactShare {
+                builder.contactShare = oldContactShare.copyForResending()
+            }
 
-    func with(linkPreviewDraft: OWSLinkPreviewDraft?) -> Item {
-        Item(itemViewModel: self.itemViewModel,
-             selectionType: self.selectionType,
-             attachments: self.attachments,
-             contactShare: self.contactShare,
-             messageBody: self.messageBody,
-             linkPreviewDraft: linkPreviewDraft)
+            let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
+            if !bodyMediaAttachmentStreams.isEmpty {
+                builder.attachments = try bodyMediaAttachmentStreams.map { attachmentStream in
+                    try attachmentStream.cloneAsSignalAttachment()
+                }
+            }
+        }
+
+        let item = builder.build()
+        guard !item.isEmpty else {
+            throw ForwardError.invalidInteraction
+        }
+        return item
     }
 }
 
@@ -640,8 +610,9 @@ private enum ForwardMessageContent {
         }
     }
 
-    static func build(itemViewModels: [CVItemViewModelImpl]) -> ForwardMessageContent {
-        let items: [Item] = itemViewModels.map { Item.build(itemViewModel: $0) }
+    static func build(itemViewModels: [CVItemViewModelImpl]) throws -> ForwardMessageContent {
+        let items: [Item] = try itemViewModels.map { try Item.build(itemViewModel: $0,
+                                                                    selectionType: .allContent) }
         return build(items: items)
     }
 
@@ -650,8 +621,8 @@ private enum ForwardMessageContent {
         let items: [Item] = try selectionItems.map { selectionItem in
             let itemViewModel = try buildItemViewModel(interactionId: selectionItem.interactionId,
                                                        transaction: transaction)
-            return Item.build(itemViewModel: itemViewModel,
-                              selectionType: selectionItem.selectionType)
+            return try Item.build(itemViewModel: itemViewModel,
+                                  selectionType: selectionItem.selectionType)
         }
         return build(items: items)
     }

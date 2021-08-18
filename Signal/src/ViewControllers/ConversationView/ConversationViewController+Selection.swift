@@ -253,30 +253,6 @@ extension CVSelectionState {
         }
         return true
     }
-
-//    public static func hasSecondaryContentForSelection(interaction: TSInteraction,
-//                                                       transaction: SDSAnyReadTransaction) -> Bool {
-//        guard let message = interaction as? TSMessage else {
-//            return false
-//        }
-//        let hasBodyMedia = message.hasMediaAttachments(with: transaction.unwrapGrdbRead)
-//        guard hasBodyMedia else {
-//            return false
-//        }
-//        let hasBodyText: Bool = {
-//            if message.body?.strippedOrNil != nil {
-//                return true
-//            }
-//            if message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) != nil {
-//                return true
-//            }
-//            return false
-//        }()
-//        guard hasBodyText else {
-//            return false
-//        }
-//        return true
-//    }
 }
 
 // MARK: -
