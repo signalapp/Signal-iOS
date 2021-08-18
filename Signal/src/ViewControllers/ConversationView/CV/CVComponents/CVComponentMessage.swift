@@ -431,13 +431,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 let secondarySelectionView = componentView.secondarySelectionView
                 secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                                 selectionType: .secondaryContent)
+                // TODO:
                 selectionWrapper.addSubview(primarySelectionView) { _ in
                     let frame = CGRect(origin: .zero,
                                        size: MessageSelectionView.contentSize)
                     primarySelectionView.frame = frame
                 }
-                selectionWrapper.addSubviewToCenterOnSuperview(secondarySelectionView,
-                                                               size: MessageSelectionView.contentSize)
+                selectionWrapper.addSubview(secondarySelectionView) { _ in
+                    let frame = CGRect(origin: .zero,
+                                       size: MessageSelectionView.contentSize)
+                    secondarySelectionView.frame = frame
+                }
             } else {
                 selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
                                                                size: MessageSelectionView.contentSize)

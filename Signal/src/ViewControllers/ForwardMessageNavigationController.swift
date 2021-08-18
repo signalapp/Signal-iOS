@@ -198,44 +198,13 @@ extension ForwardMessageNavigationController {
         }
     }
 
+    // TODO:
     private func send(item: Item, toRecipientThreads recipientThreads: [RecipientThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let itemViewModel = item.itemViewModel
 
-        switch itemViewModel.messageCellType {
-        case .textOnlyMessage:
-            guard let body = item.messageBody,
-                  body.text.count > 0 else {
-                return Promise(error: OWSAssertionError("Missing body."))
-            }
-
-            let linkPreviewDraft = item.linkPreviewDraft
-
-            return send(toRecipientThreads: recipientThreads) { recipientThread in
-                self.send(body: body, linkPreviewDraft: linkPreviewDraft, thread: recipientThread.thread)
-            }
-        case .contactShare:
-            guard let contactShare = item.contactShare else {
-                return Promise(error: OWSAssertionError("Missing contactShare."))
-            }
-
-            return send(toRecipientThreads: recipientThreads) { recipientThread in
-                //                let contactShareCopy = contactShare.copyForResending()
-
-                if let avatarImage = contactShare.avatarImage {
-                    self.databaseStorage.write { transaction in
-                        contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
-                    }
-                }
-
-                return self.send(contactShare: contactShare, thread: recipientThread.thread)
-            }
-        case .stickerMessage:
-            guard let stickerMetadata = itemViewModel.stickerMetadata else {
-                return Promise(error: OWSAssertionError("Missing stickerInfo."))
-            }
-
+        if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
                 return send(toRecipientThreads: recipientThreads) { recipientThread in
@@ -256,42 +225,33 @@ extension ForwardMessageNavigationController {
                     return Promise(error: error)
                 }
             }
-        case .audio:
-            guard let attachmentStream = itemViewModel.audioAttachmentStream else {
-                return Promise(error: OWSAssertionError("Missing attachmentStream."))
-            }
+        } else if let contactShare = item.contactShare {
             return send(toRecipientThreads: recipientThreads) { recipientThread in
-                do {
-                    let attachment = try attachmentStream.cloneAsSignalAttachment()
-                    return self.send(body: nil, attachment: attachment, thread: recipientThread.thread)
-                } catch {
-                    return Promise(error: error)
+                //                let contactShareCopy = contactShare.copyForResending()
+
+                if let avatarImage = contactShare.avatarImage {
+                    self.databaseStorage.write { transaction in
+                        contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
+                    }
                 }
+                return self.send(contactShare: contactShare, thread: recipientThread.thread)
             }
-        case .genericAttachment:
-            guard let attachmentStream = itemViewModel.genericAttachmentStream else {
-                return Promise(error: OWSAssertionError("Missing attachmentStream."))
-            }
-            return send(toRecipientThreads: recipientThreads) { recipientThread in
-                do {
-                    let attachment = try attachmentStream.cloneAsSignalAttachment()
-                    return self.send(body: nil, attachment: attachment, thread: recipientThread.thread)
-                } catch {
-                    return Promise(error: error)
-                }
-            }
-        case .bodyMedia:
-            // TODO: Why are stickers special-cased here?
-            guard let approvedAttachments = item.attachments else {
-                return Promise(error: OWSAssertionError("Missing approvedAttachments."))
-            }
+        } else if let attachments = item.attachments,
+                  !attachments.isEmpty {
+            // TODO: What about link previews in this case?
             let conversations = selectedConversationsForConversationPicker
             return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
                                                          approvalMessageBody: item.messageBody,
-                                                         approvedAttachments: approvedAttachments).asVoid()
-        case .unknown, .viewOnce, .dateHeader, .unreadIndicator, .typingIndicator,
-             .threadDetails, .systemMessage, .unknownThreadWarning, .defaultDisappearingMessageTimer:
-            return Promise(error: OWSAssertionError("Invalid message type."))
+                                                         approvedAttachments: attachments).asVoid()
+        } else if let messageBody = item.messageBody {
+            let linkPreviewDraft = item.linkPreviewDraft
+            return send(toRecipientThreads: recipientThreads) { recipientThread in
+                self.send(body: messageBody,
+                          linkPreviewDraft: linkPreviewDraft,
+                          thread: recipientThread.thread)
+            }
+        } else {
+            return Promise(error: ForwardError.invalidInteraction)
         }
     }
 
@@ -496,14 +456,16 @@ private struct ForwardMessageItem {
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
+    let stickerMetadata: StickerMetadata?
 
-    private class Builder {
+    fileprivate class Builder {
         let itemViewModel: CVItemViewModelImpl
 
         var attachments: [SignalAttachment]?
         var contactShare: ContactShareViewModel?
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
+        var stickerMetadata: StickerMetadata?
 
         init(itemViewModel: CVItemViewModelImpl) {
             self.itemViewModel = itemViewModel
@@ -514,8 +476,19 @@ private struct ForwardMessageItem {
                                attachments: attachments,
                                contactShare: contactShare,
                                messageBody: messageBody,
-                               linkPreviewDraft: linkPreviewDraft)
+                               linkPreviewDraft: linkPreviewDraft,
+                               stickerMetadata: stickerMetadata)
         }
+    }
+
+    fileprivate var asBuilder: Builder {
+        let builder = Builder(itemViewModel: itemViewModel)
+        builder.attachments = attachments
+        builder.contactShare = contactShare
+        builder.messageBody = messageBody
+        builder.linkPreviewDraft = linkPreviewDraft
+        builder.stickerMetadata = stickerMetadata
+        return builder
     }
 
     var isEmpty: Bool {
@@ -524,22 +497,11 @@ private struct ForwardMessageItem {
             return false
         }
         if contactShare != nil ||
-            messageBody != nil {
+            messageBody != nil ||
+            stickerMetadata != nil {
             return false
         }
         return true
-    }
-
-    init(itemViewModel: CVItemViewModelImpl,
-         attachments: [SignalAttachment]? = nil,
-         contactShare: ContactShareViewModel? = nil,
-         messageBody: MessageBody? = nil,
-         linkPreviewDraft: OWSLinkPreviewDraft? = nil) {
-        self.itemViewModel = itemViewModel
-        self.attachments = attachments
-        self.contactShare = contactShare
-        self.messageBody = messageBody
-        self.linkPreviewDraft = linkPreviewDraft
     }
 
     static func build(itemViewModel: CVItemViewModelImpl, selectionType: CVSelectionType) throws -> Item {
@@ -556,7 +518,9 @@ private struct ForwardMessageItem {
         }
 
         if shouldHaveText,
-           let displayableBodyText = itemViewModel.displayableBodyText {
+           let displayableBodyText = itemViewModel.displayableBodyText,
+           !displayableBodyText.fullAttributedText.isEmpty {
+
             let attributedText = displayableBodyText.fullAttributedText
             builder.messageBody = MessageBody(attributedString: attributedText)
 
@@ -569,12 +533,53 @@ private struct ForwardMessageItem {
                 builder.contactShare = oldContactShare.copyForResending()
             }
 
-            let bodyMediaAttachmentStreams = itemViewModel.bodyMediaAttachmentStreams
-            if !bodyMediaAttachmentStreams.isEmpty {
-                builder.attachments = try bodyMediaAttachmentStreams.map { attachmentStream in
+            var attachmentStreams = [TSAttachmentStream]()
+            attachmentStreams.append(contentsOf: itemViewModel.bodyMediaAttachmentStreams)
+            if let attachmentStream = itemViewModel.audioAttachmentStream {
+                attachmentStreams.append(attachmentStream)
+            }
+            if let attachmentStream = itemViewModel.genericAttachmentStream {
+                attachmentStreams.append(attachmentStream)
+            }
+            // TODO: Sticker.
+//            if let attachmentStream = itemViewModel.stic {
+//                attachmentStreams.append(attachmentStream)
+//            }
+
+            if !attachmentStreams.isEmpty {
+                builder.attachments = try attachmentStreams.map { attachmentStream in
                     try attachmentStream.cloneAsSignalAttachment()
                 }
             }
+
+            if let stickerMetadata = itemViewModel.stickerMetadata {
+                builder.stickerMetadata = stickerMetadata
+            }
+
+//            guard let stickerMetadata = itemViewModel.stickerMetadata else {
+//                return Promise(error: OWSAssertionError("Missing stickerInfo."))
+//            }
+//
+//            let stickerInfo = stickerMetadata.stickerInfo
+//            if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
+//                return send(toRecipientThreads: recipientThreads) { recipientThread in
+//                    self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
+//                }
+//            } else {
+//                guard let stickerAttachment = itemViewModel.stickerAttachment else {
+//                    return Promise(error: OWSAssertionError("Missing stickerAttachment."))
+//                }
+//                do {
+//                    let stickerData = try stickerAttachment.readDataFromFile()
+//                    return send(toRecipientThreads: recipientThreads) { recipientThread in
+//                        self.send(uninstalledSticker: stickerMetadata,
+//                                  stickerData: stickerData,
+//                                  thread: recipientThread.thread)
+//                    }
+//                } catch {
+//                    return Promise(error: error)
+//                }
+//            }
         }
 
         let item = builder.build()
