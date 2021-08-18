@@ -127,7 +127,7 @@ extension RemoteAttestation {
                 return
             }
             guard let auth = self.parseAuthParams(json) else {
-                owsFailDebug("Remote attestation auth could not be parsed: \(json)")
+                Logger.verbose("Remote attestation auth could not be parsed: \(json)")
                 failure(OWSAssertionError("Missing or invalid auth"))
                 return
             }

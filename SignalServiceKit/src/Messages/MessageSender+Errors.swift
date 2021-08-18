@@ -14,8 +14,7 @@ public enum MessageSenderError: Int, Error, IsRetryableProvider, UserErrorDescri
     case blockedContactRecipient
     case threadMissing
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         var result = [String: Any]()
         result[NSLocalizedDescriptionKey] = localizedDescription
@@ -136,22 +135,18 @@ public class MessageSenderNoSuchSignalRecipientError: NSObject, CustomNSError, I
 
     // MARK: - CustomNSError
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.noSuchSignalRecipient.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [ NSLocalizedDescriptionKey: localizedDescription ]
     }
@@ -183,22 +178,18 @@ public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRet
         MessageSenderErrorNoValidRecipients() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.messageSendNoValidRecipients.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -220,18 +211,15 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
         MessageSenderNoSessionForTransientMessageError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.noSessionForTransientMessage.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
@@ -253,18 +241,15 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
         UntrustedIdentityError(address: address) as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.untrustedIdentity.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -275,8 +260,7 @@ public class UntrustedIdentityError: NSObject, CustomNSError, IsRetryableProvide
         return String(format: format, contactsManager.displayName(for: address))
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
@@ -298,18 +282,15 @@ public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryable
         SignalServiceRateLimitedError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.signalServiceRateLimited.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -319,8 +300,7 @@ public class SignalServiceRateLimitedError: NSObject, CustomNSError, IsRetryable
                           comment: "action sheet header when re-sending message which failed because of too many attempts")
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     // We're already rate-limited. No need to exacerbate the problem.
@@ -336,18 +316,15 @@ public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryablePro
         SpamChallengeRequiredError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -357,8 +334,7 @@ public class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryablePro
                           comment: "Description for errors returned from the server due to suspected spam.")
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
@@ -378,18 +354,15 @@ public class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryablePro
         SpamChallengeResolvedError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -399,8 +372,7 @@ public class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryablePro
                           comment: "Description for errors returned from the server due to suspected spam.")
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { true }
@@ -449,18 +421,15 @@ public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, User
         AppExpiredError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.appExpired.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -470,8 +439,7 @@ public class AppExpiredError: NSObject, CustomNSError, IsRetryableProvider, User
                           comment: "Error indicating a send failure due to an expired application.")
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
@@ -486,18 +454,15 @@ public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider,
         AppDeregisteredError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.appDeregistered.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -510,8 +475,7 @@ public class AppDeregisteredError: NSObject, CustomNSError, IsRetryableProvider,
                                 comment: "Error indicating a send failure due to a delinked application.")
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
@@ -526,18 +490,15 @@ public class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryable
         MessageDeletedBeforeSentError() as Error as NSError
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.messageDeletedBeforeSent.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
@@ -553,22 +514,18 @@ public class SenderKeyEphemeralError: NSObject, CustomNSError, IsRetryableProvid
         self.customLocalizedDescription = customLocalizedDescription
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.senderKeyEphemeralFailure.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -588,22 +545,18 @@ public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProv
         self.customLocalizedDescription = customLocalizedDescription
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.senderKeyUnavailable.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -617,22 +570,18 @@ public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProv
 
 @objc
 public class MessageSendUnauthorizedError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.messageSendUnauthorized.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
@@ -660,18 +609,15 @@ public class MessageSendEncryptionError: NSObject, CustomNSError, IsRetryablePro
         self.deviceId = deviceId
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     @objc
     public static var errorCode: Int { OWSErrorCode.messageSendEncryptionFailure.rawValue }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { true }

@@ -72,8 +72,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         }.map(on: .global()) { response in
             Logger.debug("got response")
             guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
-                throw OWSUDError.invalidData(description: "Missing or invalid JSON")
+                throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let params = ParamParser(responseObject: json) else {
                 throw OWSAssertionError("Missing or invalid response.")
@@ -153,7 +152,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
@@ -181,7 +179,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {
@@ -212,7 +209,6 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
             guard let parser = ParamParser(responseObject: json) else {

@@ -83,14 +83,12 @@ public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvid
         return .serviceResponse(serviceResponse: serviceResponse)
     }
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     public static var errorDomain: String {
         return "OWSHTTPError"
     }
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         var result = [String: Any]()
         if let responseError = self.responseError {

@@ -57,13 +57,11 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
 
     // MARK: - CustomNSError
 
-    /// NSError bridging: the domain of the error.
-    /// :nodoc:
+    // NSError bridging: the domain of the error.
     @objc
     public static let errorDomain = OWSSignalServiceKitErrorDomain
 
-    /// NSError bridging: the error code within the given domain.
-    /// :nodoc:
+    // NSError bridging: the error code within the given domain.
     public var errorUserInfo: [String: Any] {
         var result: [String: Any] = customUserInfo ?? [:]
         result[NSLocalizedDescriptionKey] = customLocalizedDescription
