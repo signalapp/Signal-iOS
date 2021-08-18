@@ -67,7 +67,7 @@ jobs:
             exit 1
           }
 
-          fastlane scan --scheme Signal --output_types junit || formatFailures
+          bundle exec fastlane scan --scheme Signal --output_types junit || formatFailures
 
   lint:
     name: Lint
