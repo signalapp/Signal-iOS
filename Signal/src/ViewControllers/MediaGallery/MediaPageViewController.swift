@@ -411,7 +411,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ForwardMessageNavigationController.present(for: [itemViewModel], from: self, delegate: self)
+        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
+                                                   from: self,
+                                                   delegate: self)
     }
 
     @objc

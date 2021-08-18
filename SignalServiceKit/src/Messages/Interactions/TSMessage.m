@@ -336,10 +336,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [NSSet setWithArray:result].allObjects;
 }
 
+- (NSArray<NSString *> *)bodyAttachmentIds
+{
+    return self.attachmentIds;
+}
+
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
     // Note: attachmentIds vs. allAttachmentIds
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.bodyAttachmentIds transaction:transaction];
 }
 
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction

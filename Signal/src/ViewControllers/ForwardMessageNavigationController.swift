@@ -19,88 +19,9 @@ class ForwardMessageNavigationController: OWSNavigationController {
     @objc
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
-    fileprivate struct Item {
-        let itemViewModel: CVItemViewModelImpl
-        let attachments: [SignalAttachment]?
-        let contactShare: ContactShareViewModel?
-        let messageBody: MessageBody?
-        let linkPreviewDraft: OWSLinkPreviewDraft?
-
-        init(itemViewModel: CVItemViewModelImpl,
-             attachments: [SignalAttachment]? = nil,
-             contactShare: ContactShareViewModel? = nil,
-             messageBody: MessageBody? = nil,
-             linkPreviewDraft: OWSLinkPreviewDraft? = nil) {
-            self.itemViewModel = itemViewModel
-            self.attachments = attachments
-            self.contactShare = contactShare
-            self.messageBody = messageBody
-            self.linkPreviewDraft = linkPreviewDraft
-        }
-
-        func with(messageBody: MessageBody?) -> Item {
-            Item(itemViewModel: self.itemViewModel,
-                 attachments: self.attachments,
-                 contactShare: self.contactShare,
-                 messageBody: messageBody,
-                 linkPreviewDraft: self.linkPreviewDraft)
-        }
-
-        func with(attachments: [SignalAttachment]) -> Item {
-            Item(itemViewModel: self.itemViewModel,
-                 attachments: attachments,
-                 contactShare: self.contactShare,
-                 messageBody: self.messageBody,
-                 linkPreviewDraft: self.linkPreviewDraft)
-        }
-
-        func with(contactShare: ContactShareViewModel) -> Item {
-            Item(itemViewModel: self.itemViewModel,
-                 attachments: self.attachments,
-                 contactShare: contactShare,
-                 messageBody: self.messageBody,
-                 linkPreviewDraft: self.linkPreviewDraft)
-        }
-
-        func with(linkPreviewDraft: OWSLinkPreviewDraft?) -> Item {
-            Item(itemViewModel: self.itemViewModel,
-                 attachments: self.attachments,
-                 contactShare: self.contactShare,
-                 messageBody: self.messageBody,
-                 linkPreviewDraft: linkPreviewDraft)
-        }
-    }
-
-    fileprivate enum Content {
-        case single(item: Item)
-        case multiple(items: [Item])
-
-        var allItems: [Item] {
-            switch self {
-            case .single(let item):
-                return [item]
-            case .multiple(let items):
-                return items
-            }
-        }
-
-        static func build(itemViewModels: [CVItemViewModelImpl]) -> Content {
-            let items: [Item] = itemViewModels.map { itemViewModel in
-                if let displayableBodyText = itemViewModel.displayableBodyText {
-                    let attributedText = displayableBodyText.fullAttributedText
-                    let messageBody = MessageBody(attributedString: attributedText)
-                    return Item(itemViewModel: itemViewModel, messageBody: messageBody)
-                } else {
-                    return Item(itemViewModel: itemViewModel)
-                }
-            }
-            if items.count == 1, let item = items.first {
-                return .single(item: item)
-            } else {
-                return .multiple(items: items)
-            }
-        }
-    }
+    fileprivate typealias Item = ForwardMessageItem
+    fileprivate typealias Content = ForwardMessageContent
+    fileprivate typealias RecipientThread = ForwardMessageRecipientThread
 
     fileprivate var content: Content
 
@@ -111,35 +32,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
     }
     fileprivate var currentMentionableAddresses: [SignalServiceAddress] = []
 
-    fileprivate struct RecipientThread {
-        let thread: TSThread
-        let mentionCandidates: [SignalServiceAddress]
-
-        static func build(conversationItem: ConversationItem,
-                          transaction: SDSAnyWriteTransaction) throws -> RecipientThread {
-
-            guard let thread = conversationItem.thread(transaction: transaction) else {
-                owsFailDebug("Missing thread for conversation")
-                throw ForwardError.missingThread
-            }
-
-            let mentionCandidates = self.mentionCandidates(conversationItem: conversationItem,
-                                                           thread: thread,
-                                                           transaction: transaction)
-            return RecipientThread(thread: thread, mentionCandidates: mentionCandidates)
-        }
-
-        private static func mentionCandidates(conversationItem: ConversationItem,
-                                              thread: TSThread,
-                                              transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-            guard let groupThread = thread as? TSGroupThread,
-                  Mention.threadAllowsMentionSend(groupThread) else {
-                return []
-            }
-            return groupThread.recipientAddresses
-        }
-    }
-
     private init(content: Content) {
         self.content = content
 
@@ -149,12 +41,28 @@ class ForwardMessageNavigationController: OWSNavigationController {
     }
 
     @objc
-    public class func present(for itemViewModels: [CVItemViewModelImpl],
+    public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
         let modal = ForwardMessageNavigationController(content: .build(itemViewModels: itemViewModels))
         modal.forwardMessageDelegate = delegate
         fromViewController.presentFormSheet(modal, animated: true)
+    }
+
+    public class func present(forSelectionItems selectionItems: [CVSelectionItem],
+                              from fromViewController: UIViewController,
+                              delegate: ForwardMessageDelegate) {
+        do {
+            let content: Content = try Self.databaseStorage.read { transaction in
+                try Content.build(selectionItems: selectionItems, transaction: transaction)
+            }
+            let modal = ForwardMessageNavigationController(content: content)
+            modal.forwardMessageDelegate = delegate
+            fromViewController.presentFormSheet(modal, animated: true)
+        } catch {
+            ForwardMessageNavigationController.showAlertForForwardError(error: error,
+                                                                        forwardedInteractionCount: selectionItems.count)
+        }
     }
 
     fileprivate enum Step {
@@ -628,5 +536,177 @@ extension ForwardMessageNavigationController {
 
             OWSActionSheets.showErrorAlert(message: genericErrorMessage)
         }
+    }
+}
+
+// MARK: -
+
+private struct ForwardMessageItem {
+    fileprivate typealias Item = ForwardMessageItem
+
+    let itemViewModel: CVItemViewModelImpl
+    let selectionType: CVSelectionType
+
+    let attachments: [SignalAttachment]?
+    let contactShare: ContactShareViewModel?
+    let messageBody: MessageBody?
+    let linkPreviewDraft: OWSLinkPreviewDraft?
+
+    init(itemViewModel: CVItemViewModelImpl,
+         selectionType: CVSelectionType,
+         attachments: [SignalAttachment]? = nil,
+         contactShare: ContactShareViewModel? = nil,
+         messageBody: MessageBody? = nil,
+         linkPreviewDraft: OWSLinkPreviewDraft? = nil) {
+        self.itemViewModel = itemViewModel
+        self.selectionType = selectionType
+        self.attachments = attachments
+        self.contactShare = contactShare
+        self.messageBody = messageBody
+        self.linkPreviewDraft = linkPreviewDraft
+    }
+
+    static func build(itemViewModel: CVItemViewModelImpl,
+                      selectionType: CVSelectionType = .allContent) -> Item {
+        let item = Item(itemViewModel: itemViewModel, selectionType: selectionType)
+        if let displayableBodyText = itemViewModel.displayableBodyText {
+            let attributedText = displayableBodyText.fullAttributedText
+            let messageBody = MessageBody(attributedString: attributedText)
+            return item.with(messageBody: messageBody)
+        } else {
+            return item
+        }
+    }
+
+    func with(messageBody: MessageBody?) -> Item {
+        Item(itemViewModel: self.itemViewModel,
+             selectionType: self.selectionType,
+             attachments: self.attachments,
+             contactShare: self.contactShare,
+             messageBody: messageBody,
+             linkPreviewDraft: self.linkPreviewDraft)
+    }
+
+    func with(attachments: [SignalAttachment]) -> Item {
+        Item(itemViewModel: self.itemViewModel,
+             selectionType: self.selectionType,
+             attachments: attachments,
+             contactShare: self.contactShare,
+             messageBody: self.messageBody,
+             linkPreviewDraft: self.linkPreviewDraft)
+    }
+
+    func with(contactShare: ContactShareViewModel) -> Item {
+        Item(itemViewModel: self.itemViewModel,
+             selectionType: self.selectionType,
+             attachments: self.attachments,
+             contactShare: contactShare,
+             messageBody: self.messageBody,
+             linkPreviewDraft: self.linkPreviewDraft)
+    }
+
+    func with(linkPreviewDraft: OWSLinkPreviewDraft?) -> Item {
+        Item(itemViewModel: self.itemViewModel,
+             selectionType: self.selectionType,
+             attachments: self.attachments,
+             contactShare: self.contactShare,
+             messageBody: self.messageBody,
+             linkPreviewDraft: linkPreviewDraft)
+    }
+}
+
+// MARK: -
+
+private enum ForwardMessageContent {
+    fileprivate typealias Item = ForwardMessageItem
+
+    case single(item: Item)
+    case multiple(items: [Item])
+
+    var allItems: [Item] {
+        switch self {
+        case .single(let item):
+            return [item]
+        case .multiple(let items):
+            return items
+        }
+    }
+
+    static func build(items: [Item]) -> ForwardMessageContent {
+        if items.count == 1, let item = items.first {
+            return .single(item: item)
+        } else {
+            return .multiple(items: items)
+        }
+    }
+
+    static func build(itemViewModels: [CVItemViewModelImpl]) -> ForwardMessageContent {
+        let items: [Item] = itemViewModels.map { Item.build(itemViewModel: $0) }
+        return build(items: items)
+    }
+
+    static func build(selectionItems: [CVSelectionItem],
+                      transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
+        let items: [Item] = try selectionItems.map { selectionItem in
+            let itemViewModel = try buildItemViewModel(interactionId: selectionItem.interactionId,
+                                                       transaction: transaction)
+            return Item.build(itemViewModel: itemViewModel,
+                              selectionType: selectionItem.selectionType)
+        }
+        return build(items: items)
+    }
+
+    private static func buildItemViewModel(interactionId: String,
+                                           transaction: SDSAnyReadTransaction) throws -> CVItemViewModelImpl {
+        guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
+                                                       transaction: transaction) else {
+            throw ForwardError.missingInteraction
+        }
+        guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
+                                             transaction: transaction) else {
+            owsFailDebug("Missing thread.")
+            throw ForwardError.missingThread
+        }
+        // TODO:
+        let containerView = UIView()
+        guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
+                                                                  thread: thread,
+                                                                  containerView: containerView,
+                                                                  transaction: transaction) else {
+            throw ForwardError.invalidInteraction
+        }
+        let item = CVItemViewModelImpl(renderItem: renderItem)
+        return item
+    }
+}
+
+// MARK: -
+
+private struct ForwardMessageRecipientThread {
+    let thread: TSThread
+    let mentionCandidates: [SignalServiceAddress]
+
+    static func build(conversationItem: ConversationItem,
+                      transaction: SDSAnyWriteTransaction) throws -> ForwardMessageRecipientThread {
+
+        guard let thread = conversationItem.thread(transaction: transaction) else {
+            owsFailDebug("Missing thread for conversation")
+            throw ForwardError.missingThread
+        }
+
+        let mentionCandidates = self.mentionCandidates(conversationItem: conversationItem,
+                                                       thread: thread,
+                                                       transaction: transaction)
+        return ForwardMessageRecipientThread(thread: thread, mentionCandidates: mentionCandidates)
+    }
+
+    private static func mentionCandidates(conversationItem: ConversationItem,
+                                          thread: TSThread,
+                                          transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        guard let groupThread = thread as? TSGroupThread,
+              Mention.threadAllowsMentionSend(groupThread) else {
+            return []
+        }
+        return groupThread.recipientAddresses
     }
 }

@@ -21,16 +21,23 @@ public struct CVSelectionItem {
     public let interactionId: String
     public let interactionType: OWSInteractionType
     public let hasRenderableContent: Bool
+    public let isViewOnceComplete: Bool
+    public let wasRemotelyDeleted: Bool
+
     public let selectionType: CVSelectionType
 
     init(interactionId: String,
          interactionType: OWSInteractionType,
          hasRenderableContent: Bool,
+         isViewOnceComplete: Bool,
+         wasRemotelyDeleted: Bool,
          selectionType: CVSelectionType) {
 
         self.interactionId = interactionId
         self.interactionType = interactionType
         self.hasRenderableContent = hasRenderableContent
+        self.isViewOnceComplete = isViewOnceComplete
+        self.wasRemotelyDeleted = wasRemotelyDeleted
         self.selectionType = selectionType
     }
 
@@ -41,8 +48,12 @@ public struct CVSelectionItem {
         self.interactionType = interaction.interactionType
         if let message = interaction as? TSMessage {
             self.hasRenderableContent = message.hasRenderableContent()
+            self.isViewOnceComplete = message.isViewOnceComplete
+            self.wasRemotelyDeleted = message.wasRemotelyDeleted
         } else {
             self.hasRenderableContent = false
+            self.isViewOnceComplete = false
+            self.wasRemotelyDeleted = false
         }
         self.selectionType = selectionType
     }
@@ -186,10 +197,16 @@ public class CVSelectionState: NSObject {
         })
     }
 
-    public var multiSelectSelection: Set<String> {
+    public var selectedInteractionIds: Set<String> {
         AssertIsOnMainThread()
 
         return Set(itemMap.keys)
+    }
+
+    public var selectionItems: [CVSelectionItem] {
+        AssertIsOnMainThread()
+
+        return Array(itemMap.values)
     }
 }
 
@@ -226,6 +243,12 @@ extension CVSelectionState {
             return false
         }
         for item in itemMap.values {
+            guard item.hasRenderableContent,
+                  !item.isViewOnceComplete,
+                  !item.wasRemotelyDeleted else {
+                return false
+            }
+
             switch item.interactionType {
             case .threadDetails, .unknownThreadWarning, .defaultDisappearingMessageTimer, .typingIndicator, .unreadIndicator, .dateHeader:
                 return false
@@ -237,6 +260,30 @@ extension CVSelectionState {
                 owsFailDebug("Unknown interaction type.")
                 return false
             }
+        }
+        return true
+    }
+
+    public static func hasSecondaryContentForSelection(interaction: TSInteraction,
+                                                       transaction: SDSAnyReadTransaction) -> Bool {
+        guard let message = interaction as? TSMessage else {
+            return false
+        }
+        let hasBodyMedia = message.hasMediaAttachments(with: transaction.unwrapGrdbRead)
+        guard hasBodyMedia else {
+            return false
+        }
+        let hasBodyText: Bool = {
+            if message.body?.strippedOrNil != nil {
+                return true
+            }
+            if message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) != nil {
+                return true
+            }
+            return false
+        }()
+        guard hasBodyText else {
+            return false
         }
         return true
     }
@@ -296,7 +343,7 @@ extension ConversationViewController {
     }
 
     func didTapDeleteSelectedItems() {
-        let selectedInteractionIds = self.selectionState.multiSelectSelection
+        let selectedInteractionIds = self.selectionState.selectedInteractionIds
         guard !selectedInteractionIds.isEmpty else {
             owsFailDebug("Invalid selection.")
             return
@@ -347,43 +394,16 @@ extension ConversationViewController {
     }
 
     func didTapForwardSelectedItems() {
-        let selectedInteractionIds = self.selectionState.multiSelectSelection
-        guard !selectedInteractionIds.isEmpty else {
+        let selectionItems = self.selectionState.selectionItems
+        guard !selectionItems.isEmpty else {
             owsFailDebug("Invalid selection.")
             return
         }
         do {
-            let itemViewModels = try self.buildForwardItems(interactionIds: selectedInteractionIds)
-            ForwardMessageNavigationController.present(for: itemViewModels, from: self, delegate: self)
+            ForwardMessageNavigationController.present(forSelectionItems: selectionItems, from: self, delegate: self)
         } catch {
             ForwardMessageNavigationController.showAlertForForwardError(error: error,
-                                                                        forwardedInteractionCount: selectedInteractionIds.count)
-        }
-    }
-
-    private func buildForwardItems(interactionIds: Set<String>) throws -> [CVItemViewModelImpl] {
-        try databaseStorage.read { transaction in
-            var items = [CVItemViewModelImpl]()
-            for interactionId in interactionIds {
-                guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
-                                                               transaction: transaction) else {
-                    throw ForwardError.missingInteraction
-                }
-                guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
-                                                     transaction: transaction) else {
-                    owsFailDebug("Missing thread.")
-                    throw ForwardError.missingThread
-                }
-                guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
-                                                                          thread: thread,
-                                                                          containerView: self.view,
-                                                                          transaction: transaction) else {
-                    throw ForwardError.invalidInteraction
-                }
-                let item = CVItemViewModelImpl(renderItem: renderItem)
-                items.append(item)
-            }
-            return items
+                                                                        forwardedInteractionCount: selectionItems.count)
         }
     }
 
@@ -396,18 +416,16 @@ extension ConversationViewController {
         selectionToolbar.updateContent()
 
         if let deleteButton = selectionToolbar.buttonItem(for: .delete) {
-            let hasMultiSelectSelection = (uiMode == .selection &&
-                                            selectionState.selectionCanBeDeleted)
-            deleteButton.isEnabled = hasMultiSelectSelection
+            deleteButton.isEnabled = (uiMode == .selection &&
+                                        selectionState.selectionCanBeDeleted)
         } else {
             owsFailDebug("deleteButton was unexpectedly nil")
             return
         }
 
         if let forwardButton = selectionToolbar.buttonItem(for: .forward) {
-            let hasMultiSelectSelection = (uiMode == .selection &&
-                                            selectionState.selectionCanBeForwarded)
-            forwardButton.isEnabled = hasMultiSelectSelection
+            forwardButton.isEnabled = (uiMode == .selection &&
+                                        selectionState.selectionCanBeForwarded)
         } else {
             owsFailDebug("forwardButton was unexpectedly nil")
             return
