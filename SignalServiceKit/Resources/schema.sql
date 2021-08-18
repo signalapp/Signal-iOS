@@ -1181,6 +1181,7 @@ CREATE
                     MessageSendLog_Payload
                 WHERE
                     payloadId = old.payloadId
+                    AND sendComplete = TRUE
 ;
 
 END

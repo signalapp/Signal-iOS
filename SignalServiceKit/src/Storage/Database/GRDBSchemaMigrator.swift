@@ -1373,7 +1373,7 @@ public class GRDBSchemaMigrator: NSObject {
                     )
                     BEGIN
                         DELETE FROM MessageSendLog_Payload
-                        WHERE payloadId = old.payloadId;
+                        WHERE payloadId = old.payloadId AND sendComplete = true;
                     END;
 
                     CREATE TRIGGER MSLMessage_payloadCleanup
