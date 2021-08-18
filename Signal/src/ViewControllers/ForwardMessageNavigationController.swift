@@ -183,7 +183,6 @@ extension ForwardMessageNavigationController {
                 }
                 return when(resolved: promises).asVoid()
             }.map(on: .main) {
-                let componentStates = content.allItems.map { $0.componentState }
                 let threads = recipientThreads.map { $0.thread }
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(items: content.allItems,
                                                                            recipientThreads: threads)
@@ -544,10 +543,6 @@ public struct ForwardMessageItem {
             if let attachmentStream = componentState.genericAttachmentStream {
                 attachmentStreams.append(attachmentStream)
             }
-            // TODO: Sticker.
-//            if let attachmentStream = componentState.stic {
-//                attachmentStreams.append(attachmentStream)
-//            }
 
             if !attachmentStreams.isEmpty {
                 builder.attachments = try attachmentStreams.map { attachmentStream in
@@ -558,31 +553,6 @@ public struct ForwardMessageItem {
             if let stickerMetadata = componentState.stickerMetadata {
                 builder.stickerMetadata = stickerMetadata
             }
-
-//            guard let stickerMetadata = componentState.stickerMetadata else {
-//                return Promise(error: OWSAssertionError("Missing stickerInfo."))
-//            }
-//
-//            let stickerInfo = stickerMetadata.stickerInfo
-//            if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-//                return send(toRecipientThreads: recipientThreads) { recipientThread in
-//                    self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
-//                }
-//            } else {
-//                guard let stickerAttachment = componentState.stickerAttachment else {
-//                    return Promise(error: OWSAssertionError("Missing stickerAttachment."))
-//                }
-//                do {
-//                    let stickerData = try stickerAttachment.readDataFromFile()
-//                    return send(toRecipientThreads: recipientThreads) { recipientThread in
-//                        self.send(uninstalledSticker: stickerMetadata,
-//                                  stickerData: stickerData,
-//                                  thread: recipientThread.thread)
-//                    }
-//                } catch {
-//                    return Promise(error: error)
-//                }
-//            }
         }
 
         let item = builder.build()
@@ -655,16 +625,6 @@ private enum ForwardMessageContent {
             throw ForwardError.invalidInteraction
         }
         return componentState
-////        // TODO:
-////        let containerView = UIView(frame: CGRect(origin: .zero, size: .square(800)))
-////        guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
-////                                                                  thread: thread,
-////                                                                  containerView: containerView,
-////                                                                  transaction: transaction) else {
-////            throw ForwardError.invalidInteraction
-////        }
-//        let item = CVComponentState(renderItem: renderItem)
-//        return item
     }
 }
 

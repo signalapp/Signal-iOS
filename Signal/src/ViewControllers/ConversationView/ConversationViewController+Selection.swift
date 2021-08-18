@@ -309,17 +309,17 @@ extension ConversationViewController {
     }
 
     func didTapDeleteSelectedItems() {
-        let selectedInteractionIds = self.selectionState.selectedInteractionIds
-        guard !selectedInteractionIds.isEmpty else {
+        let selectionItems = self.selectionState.selectionItems
+        guard !selectionItems.isEmpty else {
             owsFailDebug("Invalid selection.")
             return
         }
 
         let message: String
-        if selectedInteractionIds.count > 1 {
+        if selectionItems.count > 1 {
             let messageFormat = NSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT",
                                                   comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted.")
-            message = String(format: messageFormat, selectedInteractionIds.count)
+            message = String(format: messageFormat, selectionItems.count)
         } else {
             message = NSLocalizedString("DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT",
                                         comment: "action sheet body")
@@ -333,11 +333,9 @@ extension ConversationViewController {
                 guard let self = self else { return }
 
                 DispatchQueue.main.async {
+                    Self.deleteSelectedItems(selectionItems: selectionItems)
                     modalActivityIndicator.dismiss {
                         self.uiMode = .normal
-                        DispatchQueue.global().async {
-                            self.deleteSelectedItems(selectedInteractionIds: selectedInteractionIds)
-                        }
                     }
                 }
             }
@@ -346,17 +344,59 @@ extension ConversationViewController {
         present(alert, animated: true)
     }
 
-    private func deleteSelectedItems(selectedInteractionIds: Set<String>) {
+    private static func deleteSelectedItems(selectionItems: [CVSelectionItem]) {
         databaseStorage.write { transaction in
-            for interactionId in selectedInteractionIds {
-                guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
-                                                               transaction: transaction) else {
-                    owsFailDebug("Missing interaction.")
-                    continue
-                }
-                interaction.anyRemove(transaction: transaction)
+            for selectionItem in selectionItems {
+                Self.deleteSelectedItem(selectionItem: selectionItem, transaction: transaction)
             }
         }
+    }
+
+    private static func deleteSelectedItem(selectionItem: CVSelectionItem,
+                                           transaction: SDSAnyWriteTransaction) {
+        guard let interaction = TSInteraction.anyFetch(uniqueId: selectionItem.interactionId,
+                                                       transaction: transaction) else {
+            Logger.warn("Missing interaction.")
+            return
+        }
+
+        let selectionType = selectionItem.selectionType
+
+        func tryPartialDelete() -> Bool {
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction: \(type(of: interaction)).")
+                return false
+            }
+            guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
+                                                                              transaction: transaction) else {
+                owsFailDebug("Could not load componentState.")
+                return false
+            }
+            guard componentState.hasPrimaryAndSecondaryContentForSelection else {
+                owsFailDebug("Invalid componentState.")
+                return false
+            }
+            if selectionType == .primaryContent {
+                message.removeNonBodyTextContent(with: transaction)
+            } else {
+                message.removeBodyText(with: transaction)
+            }
+            return true
+        }
+
+        if selectionType == .allContent {
+            // Fall through to delete the entire interaction.
+        } else if selectionType == .primaryContent ||
+                    selectionType == .secondaryContent {
+            // Try to partially delete the interaction.
+            if tryPartialDelete() {
+                return
+            }
+        } else {
+            owsFailDebug("Invalid selectionType: \(selectionType.rawValue).")
+        }
+
+        interaction.anyRemove(transaction: transaction)
     }
 
     func didTapForwardSelectedItems() {
@@ -365,12 +405,7 @@ extension ConversationViewController {
             owsFailDebug("Invalid selection.")
             return
         }
-        do {
-            ForwardMessageNavigationController.present(forSelectionItems: selectionItems, from: self, delegate: self)
-        } catch {
-            ForwardMessageNavigationController.showAlertForForwardError(error: error,
-                                                                        forwardedInteractionCount: selectionItems.count)
-        }
+        ForwardMessageNavigationController.present(forSelectionItems: selectionItems, from: self, delegate: self)
     }
 
     public func updateSelectionButtons() {

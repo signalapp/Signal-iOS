@@ -782,9 +782,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     OWSAssertDebug(!self.isViewOnceComplete);
 
     [self removeAllRenderableContentWithTransaction:transaction
-                                              block:^(TSMessage *message) {
-                                                  message.isViewOnceComplete = YES;
-                                              }];
+                               shouldRemoveBodyText:YES
+                     shouldRemoveNonBodyTextContent:YES
+                                              block:^(TSMessage *message) { message.isViewOnceComplete = YES; }];
 }
 
 #pragma mark - Remote Delete
@@ -797,38 +797,75 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self removeAllReactionsWithTransaction:transaction];
 
     [self removeAllRenderableContentWithTransaction:transaction
-                                              block:^(TSMessage *message) {
-                                                  message.wasRemotelyDeleted = YES;
-                                              }];
+                               shouldRemoveBodyText:YES
+                     shouldRemoveNonBodyTextContent:YES
+                                              block:^(TSMessage *message) { message.wasRemotelyDeleted = YES; }];
 }
 
 - (void)removeAllRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+                             shouldRemoveBodyText:(BOOL)shouldRemoveBodyText
+                   shouldRemoveNonBodyTextContent:(BOOL)shouldRemoveNonBodyTextContent
                                             block:(void (^)(TSMessage *message))block
 {
+    OWSAssertDebug(shouldRemoveBodyText || shouldRemoveNonBodyTextContent);
+
     // We call removeAllAttachmentsWithTransaction() before
     // anyUpdateWithTransaction, because anyUpdateWithTransaction's
     // block can be called twice, once on this instance and once
     // on the copy from the database.  We only want to remove
     // attachments once.
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
-    [self removeAllAttachmentsWithTransaction:transaction];
-    [self removeAllMentionsWithTransaction:transaction];
-    [MessageSendLog deleteAllPayloadsForInteraction:self transaction:transaction];
+
+    if (shouldRemoveNonBodyTextContent) {
+        [self removeAllAttachmentsWithTransaction:transaction];
+    }
+    if (shouldRemoveBodyText) {
+        [self removeAllMentionsWithTransaction:transaction];
+    }
+    // Only remove the MSL payloads if we're removing everything.
+    if (shouldRemoveBodyText && shouldRemoveNonBodyTextContent) {
+        [MessageSendLog deleteAllPayloadsForInteraction:self transaction:transaction];
+    }
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
                                         // Remove renderable content.
-                                        message.body = nil;
-                                        message.bodyRanges = nil;
-                                        message.contactShare = nil;
-                                        message.quotedMessage = nil;
-                                        message.linkPreview = nil;
-                                        message.messageSticker = nil;
-                                        message.attachmentIds = @[];
-                                        OWSAssertDebug(!message.hasRenderableContent);
+                                        if (shouldRemoveBodyText) {
+                                            message.body = nil;
+                                            message.bodyRanges = nil;
+                                            message.linkPreview = nil;
+                                        }
+                                        if (shouldRemoveNonBodyTextContent) {
+                                            message.contactShare = nil;
+                                            message.messageSticker = nil;
+                                            message.attachmentIds = @[];
+                                        }
+                                        // Only remove the quoted message if we're removing everything.
+                                        if (shouldRemoveBodyText && shouldRemoveNonBodyTextContent) {
+                                            message.quotedMessage = nil;
+                                            OWSAssertDebug(!message.hasRenderableContent);
+                                        }
 
                                         block(message);
                                     }];
+}
+
+#pragma mark - Partial Delete
+
+- (void)removeBodyTextWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self removeAllRenderableContentWithTransaction:transaction
+                               shouldRemoveBodyText:YES
+                     shouldRemoveNonBodyTextContent:NO
+                                              block:^(TSMessage *message) {}];
+}
+
+- (void)removeNonBodyTextContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self removeAllRenderableContentWithTransaction:transaction
+                               shouldRemoveBodyText:NO
+                     shouldRemoveNonBodyTextContent:YES
+                                              block:^(TSMessage *message) {}];
 }
 
 @end
