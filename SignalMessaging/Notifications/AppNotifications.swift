@@ -235,7 +235,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         var interaction: INInteraction?
-        if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications, let intent = thread.generateStartCallIntent() {
+        if #available(iOS 15, *),
+           FeatureFlags.communicationStyleNotifications,
+            previewType != .noNameNoPreview,
+            let intent = thread.generateStartCallIntent() {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -282,7 +285,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             : .missedCallWithoutActions)
 
         var interaction: INInteraction?
-        if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications, let intent = thread.generateStartCallIntent() {
+        if #available(iOS 15, *),
+            FeatureFlags.communicationStyleNotifications,
+            previewType != .noNameNoPreview,
+            let intent = thread.generateStartCallIntent() {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -473,7 +479,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         var interaction: INInteraction?
-        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: incomingMessage.authorAddress) {
+        if FeatureFlags.communicationStyleNotifications,
+            previewType != .noNameNoPreview,
+            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: incomingMessage.authorAddress) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -583,7 +591,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         var interaction: INInteraction?
-        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: reaction.reactor) {
+        if FeatureFlags.communicationStyleNotifications,
+            previewType != .noNameNoPreview,
+            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: reaction.reactor) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -732,7 +742,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: preferredDefaultAction.rawValue
         ]
         var interaction: INInteraction?
-        if FeatureFlags.communicationStyleNotifications, let intent = thread.generateSendMessageIntent(transaction: transaction, sender: nil) {
+        if FeatureFlags.communicationStyleNotifications,
+            previewType != .noNameNoPreview,
+            let intent = thread.generateSendMessageIntent(transaction: transaction, sender: nil) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper

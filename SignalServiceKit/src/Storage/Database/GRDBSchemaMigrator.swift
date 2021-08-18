@@ -1457,7 +1457,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.dataMigration_disableSharingSuggestionsForExistingUsers.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
-            SSKPreferences.setAreSharingSuggestionsEnabled(false, transaction: transaction.asAnyWrite)
+            SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction.asAnyWrite)
         }
 
         migrator.registerMigration(MigrationId.dataMigration_removeOversizedGroupAvatars.rawValue) { db in
