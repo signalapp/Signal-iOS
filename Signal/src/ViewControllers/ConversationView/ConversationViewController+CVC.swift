@@ -228,7 +228,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         self.updateLastKnownDistanceFromBottom()
         self.updateInputToolbarLayout()
-        self.ensureSelectionViewState()
         self.showMessageRequestDialogIfRequired()
         self.configureScrollDownButtons()
 
@@ -453,8 +452,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         updateLastKnownDistanceFromBottom()
-
-        ensureSelectionViewState()
     }
 
     private func updateWithDiff(update: CVUpdate,

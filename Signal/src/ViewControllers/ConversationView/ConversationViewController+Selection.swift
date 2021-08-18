@@ -432,63 +432,6 @@ extension ConversationViewController {
             return
         }
     }
-
-    // TODO:
-    public func ensureSelectionViewState() {
-        //        guard isShowingSelectionUI else {
-        //            return
-        //        }
-        //        clearCollectionViewSelection()
-        //
-        //        let selectedInteractionIds = self.selectedInteractionIds
-        //        let selectedIndexPaths = selectedInteractionIds.compactMap { interactionId in
-        //            indexPath(forInteractionUniqueId: interactionId)
-        //        }
-        //        let indexPaths = collectionView.indexPathsForVisibleItems
-        //        for indexPath in indexPaths {
-        //            let isSelected = selectedIndexPaths.contains(indexPath)
-        //            if isSelected {
-        //                collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-        //            } else {
-        //                collectionView.deselectItem(at: indexPath, animated: false)
-        //            }
-        //        }
-    }
-
-    //    public func didSelectMessage(_ message: CVItemViewModel) {
-    //        AssertIsOnMainThread()
-    //        owsAssertDebug(isShowingSelectionUI)
-    //
-    //        let interactionId = message.interaction.uniqueId
-    ////        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
-    ////            owsFailDebug("indexPath was unexpectedly nil")
-    ////            return
-    ////        }
-    ////
-    ////        collectionView.selectItem(at: indexPath,
-    ////                                  animated: false,
-    ////                                  // TODO: Is there a better way to indicate .none?
-    ////                                  scrollPosition: UICollectionView.ScrollPosition(rawValue: 0))
-    //        addToSelection(interactionId)
-    //
-    //        updateSelectionButtons()
-    //    }
-    //
-    //    public func didDeselectMessage(_ message: CVItemViewModel) {
-    //        AssertIsOnMainThread()
-    //        owsAssertDebug(isShowingSelectionUI)
-    //
-    //        let interactionId = message.interaction.uniqueId
-    ////        guard let indexPath = indexPath(forInteractionUniqueId: interactionId) else {
-    ////            owsFailDebug("indexPath was unexpectedly nil")
-    ////            return
-    ////        }
-    ////
-    ////        collectionView.deselectItem(at: indexPath, animated: false)
-    //        removeFromSelection(interactionId)
-    //
-    //        updateSelectionButtons()
-    //    }
 }
 
 // MARK: - Selection

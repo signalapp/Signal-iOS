@@ -42,7 +42,9 @@ class ForwardMessageNavigationController: OWSNavigationController {
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
         do {
-            let content: Content = try .build(itemViewModels: itemViewModels)
+            let content: Content = try Self.databaseStorage.read { transaction in
+                try Content.build(itemViewModels: itemViewModels, transaction: transaction)
+            }
             present(content: content, from: fromViewController, delegate: delegate)
         } catch {
             ForwardMessageNavigationController.showAlertForForwardError(error: error,
@@ -194,7 +196,6 @@ extension ForwardMessageNavigationController {
         }
     }
 
-    // TODO:
     private func send(item: Item, toRecipientThreads recipientThreads: [RecipientThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
@@ -506,7 +507,8 @@ public struct ForwardMessageItem {
 
     fileprivate static func build(interaction: TSInteraction,
                                   componentState: CVComponentState,
-                                  selectionType: CVSelectionType) throws -> Item {
+                                  selectionType: CVSelectionType,
+                                  transaction: SDSAnyReadTransaction) throws -> Item {
 
         let builder = Builder(interaction: interaction, componentState: componentState)
 
@@ -526,8 +528,12 @@ public struct ForwardMessageItem {
             let attributedText = displayableBodyText.fullAttributedText
             builder.messageBody = MessageBody(attributedString: attributedText)
 
-            // TODO: linkPreviewDraft
-            // TODO: oversize text.
+            if let linkPreview = componentState.linkPreviewModel {
+                builder.linkPreviewDraft = Self.tryToCloneLinkPreview(linkPreview: linkPreview,
+                                                                      transaction: transaction)
+            }
+
+            // TODO: Handle oversize text.
         }
 
         if shouldHaveAttachments {
@@ -561,6 +567,52 @@ public struct ForwardMessageItem {
         }
         return item
     }
+
+    private static func tryToCloneLinkPreview(linkPreview: OWSLinkPreview,
+                                              transaction: SDSAnyReadTransaction) -> OWSLinkPreviewDraft? {
+        guard let urlString = linkPreview.urlString,
+              let url = URL(string: urlString) else {
+            owsFailDebug("Missing or invalid urlString.")
+            return nil
+        }
+        struct LinkPreviewImage {
+            let imageData: Data
+            let mimetype: String
+
+            static func load(attachmentId: String,
+                             transaction: SDSAnyReadTransaction) -> LinkPreviewImage? {
+                guard let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId,
+                                                                                   transaction: transaction) else {
+                    owsFailDebug("Missing attachment.")
+                    return nil
+                }
+                guard let mimeType = attachment.contentType.nilIfEmpty else {
+                    owsFailDebug("Missing mimeType.")
+                    return nil
+                }
+                do {
+                    let imageData = try attachment.readDataFromFile()
+                    return LinkPreviewImage(imageData: imageData, mimetype: mimeType)
+                } catch {
+                    owsFailDebug("Error: \(error).")
+                    return nil
+                }
+            }
+        }
+        var linkPreviewImage: LinkPreviewImage?
+        if let imageAttachmentId = linkPreview.imageAttachmentId,
+           let image = LinkPreviewImage.load(attachmentId: imageAttachmentId,
+                                             transaction: transaction) {
+            linkPreviewImage = image
+        }
+        let draft = OWSLinkPreviewDraft(url: url,
+                                        title: linkPreview.title,
+                                        imageData: linkPreviewImage?.imageData,
+                                        imageMimeType: linkPreviewImage?.mimetype)
+        draft.previewDescription = linkPreview.previewDescription
+        draft.date = linkPreview.date
+        return draft
+    }
 }
 
 // MARK: -
@@ -588,11 +640,13 @@ private enum ForwardMessageContent {
         }
     }
 
-    static func build(itemViewModels: [CVItemViewModelImpl]) throws -> ForwardMessageContent {
+    static func build(itemViewModels: [CVItemViewModelImpl],
+                      transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
         let items: [Item] = try itemViewModels.map { itemViewModel in
             try Item.build(interaction: itemViewModel.interaction,
                            componentState: itemViewModel.renderItem.componentState,
-                           selectionType: .allContent)
+                           selectionType: .allContent,
+                           transaction: transaction)
         }
         return build(items: items)
     }
@@ -609,7 +663,8 @@ private enum ForwardMessageContent {
                                                          transaction: transaction)
             return try Item.build(interaction: interaction,
                                   componentState: componentState,
-                                  selectionType: selectionItem.selectionType)
+                                  selectionType: selectionItem.selectionType,
+                                  transaction: transaction)
         }
         return build(items: items)
     }
