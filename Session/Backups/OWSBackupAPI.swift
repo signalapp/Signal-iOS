@@ -613,6 +613,7 @@ import PromiseKit
             case .available:
                 Logger.verbose("CloudKit access okay.")
                 resolver.fulfill(())
+            default: resolver.fulfill(())
             }
         }
         return promise
