@@ -20,7 +20,8 @@ class SyncPushTokensJob: NSObject {
 
     func run() -> Promise<Void> {
         guard !CurrentAppContext().isRunningTests else {
-            return Promise(error: OWSGenericError("Skipping for tests."))
+            Logger.warn("Skipping for tests.")
+            return Promise.value(())
         }
 
         Logger.info("Starting.")
