@@ -162,7 +162,7 @@ extension TSThread {
 
         let sendMessageIntent: INSendMessageIntent
 
-        #if swift(>=5.5) // Temporary for Xcode 12 support.
+        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications {
             sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(transaction: transaction, sender: sender)
         } else {
@@ -175,7 +175,7 @@ extension TSThread {
         return sendMessageIntent
     }
 
-#if swift(>=5.5) // Temporary for Xcode 12 support.
+#if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
     private func generateRichCommunicationNotificationSendMessageIntent(transaction: SDSAnyReadTransaction, sender: SignalServiceAddress?) -> INSendMessageIntent {
         let threadName = contactsManager.displayName(for: self, transaction: transaction)
@@ -236,7 +236,7 @@ extension TSThread {
 
     @available(iOS 15, *)
     public func generateStartCallIntent() -> INStartCallIntent? {
-        #if swift(>=5.5) // Temporary for Xcode 12 support.
+        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         databaseStorage.read { transaction in
             guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return nil }
 
@@ -260,7 +260,7 @@ extension TSThread {
         #endif
     }
 
-#if swift(>=5.5) // Temporary for Xcode 12 support.
+#if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
     private func inPersonForRecipient(_ recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INPerson {
 

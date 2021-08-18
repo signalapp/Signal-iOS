@@ -28,36 +28,42 @@ public class UserNotificationConfig {
     class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
         switch action {
         case .answerCall:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: CallStrings.answerCallButtonTitle,
-                                        options: [.foreground])
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: CallStrings.answerCallButtonTitle,
+                                                    options: [.foreground],
+                                                    systemImage: "phone")
         case .callBack:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: CallStrings.callBackButtonTitle,
-                                        options: [.foreground])
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: CallStrings.callBackButtonTitle,
+                                                    options: [.foreground],
+                                                    systemImage: "phone")
         case .declineCall:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: CallStrings.declineCallButtonTitle,
-                                        options: [])
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: CallStrings.declineCallButtonTitle,
+                                                    options: [],
+                                                    systemImage: "phone.down")
         case .markAsRead:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: MessageStrings.markAsReadNotificationAction,
-                                        options: [])
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: MessageStrings.markAsReadNotificationAction,
+                                                    options: [],
+                                                    systemImage: "message")
         case .reply:
-            return UNTextInputNotificationAction(identifier: action.identifier,
-                                                 title: MessageStrings.replyNotificationAction,
-                                                 options: [],
-                                                 textInputButtonTitle: MessageStrings.sendButton,
-                                                 textInputPlaceholder: "")
+            return textInputNotificationActionWithIdentifier(action.identifier,
+                                                             title: MessageStrings.replyNotificationAction,
+                                                             options: [],
+                                                             textInputButtonTitle: MessageStrings.sendButton,
+                                                             textInputPlaceholder: "",
+                                                             systemImage: "arrowshape.turn.up.left")
         case .showThread:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: CallStrings.showThreadButtonTitle,
-                                        options: [.foreground])
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: CallStrings.showThreadButtonTitle,
+                                                    options: [],
+                                                    systemImage: "bubble.left.and.bubble.right")
         case .reactWithThumbsUp:
-            return UNNotificationAction(identifier: action.identifier,
-                                        title: MessageStrings.reactWithThumbsUpNotificationAction,
-                                        options: [])
-
+            return notificationActionWithIdentifier(action.identifier,
+                                                    title: MessageStrings.reactWithThumbsUpNotificationAction,
+                                                    options: [],
+                                                    systemImage: "hand.thumbsup")
         case .showCallLobby:
             // Currently, .showCallLobby is only used as a default action.
             owsFailDebug("Show call lobby not supported as a UNNotificationAction")
@@ -67,6 +73,62 @@ public class UserNotificationConfig {
             owsFailDebug("Show submit debug logs not supported as a UNNotificationAction")
             return nil
         }
+    }
+
+    private class func notificationActionWithIdentifier(
+        _ identifier: String,
+        title: String,
+        options: UNNotificationActionOptions,
+        systemImage: String?) -> UNNotificationAction {
+        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
+        if #available(iOS 15, *), let systemImage = systemImage {
+            let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
+            return UNNotificationAction(identifier: identifier,
+                                        title: title,
+                                        options: options,
+                                        icon: actionIcon)
+        } else {
+            return UNNotificationAction(identifier: identifier,
+                                        title: title,
+                                        options: options)
+        }
+        #else
+            return UNNotificationAction(identifier: identifier,
+                                        title: title,
+                                        options: options)
+        #endif
+    }
+
+    private class func textInputNotificationActionWithIdentifier(
+        _ identifier: String,
+        title: String,
+        options: UNNotificationActionOptions,
+        textInputButtonTitle: String,
+        textInputPlaceholder: String,
+        systemImage: String?) -> UNNotificationAction {
+        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
+        if #available(iOS 15, *), let systemImage = systemImage {
+            let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
+            return UNTextInputNotificationAction(identifier: identifier,
+                                                 title: title,
+                                                 options: options,
+                                                 icon: actionIcon,
+                                                 textInputButtonTitle: textInputButtonTitle,
+                                                 textInputPlaceholder: textInputPlaceholder)
+        } else {
+            return UNTextInputNotificationAction(identifier: identifier,
+                                                 title: title,
+                                                 options: options,
+                                                 textInputButtonTitle: textInputButtonTitle,
+                                                 textInputPlaceholder: textInputPlaceholder)
+        }
+        #else
+            return UNTextInputNotificationAction(identifier: identifier,
+                                                 title: title,
+                                                 options: options,
+                                                 textInputButtonTitle: textInputButtonTitle,
+                                                 textInputPlaceholder: textInputPlaceholder)
+        #endif
     }
 
     public class func action(identifier: String) -> AppNotificationAction? {
@@ -164,7 +226,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
 
         var contentToUse: UNNotificationContent = content
-        #if swift(>=5.5) // Temporary for Xcode 12 support. 
+        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let interaction = interaction {
             interaction.donate(completion: { error in
                 guard let error = error else {
