@@ -25,6 +25,13 @@ extension AppDelegate {
                 presentingVC.present(alert, animated: true, completion: nil)
             }
         }
+        // Answer messages
+        MessageReceiver.handleAnswerCallMessage = { message in
+            DispatchQueue.main.async {
+                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
+                callVC.handleAnswerMessage(message)
+            }
+        }
         // End call messages
         MessageReceiver.handleEndCallMessage = { message in
             DispatchQueue.main.async {

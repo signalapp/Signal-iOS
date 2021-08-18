@@ -56,12 +56,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         return result
     }()
     
-    private lazy var callEndedLabel: UILabel = {
+    private lazy var callInfoLabel: UILabel = {
         let result = UILabel()
         result.textColor = .white
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.textAlignment = .center
-        result.text = "Call Ended"
         result.alpha = 0
         return result
     }()
@@ -96,6 +95,8 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         }
         titleLabel.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
         if case .offer = mode {
+            callInfoLabel.alpha = 1
+            callInfoLabel.text = "Ringing..."
             Storage.write { transaction in
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
             }
@@ -129,15 +130,15 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.pin(.left, to: .left, of: view)
         closeButton.pin(.top, to: .top, of: view, withInset: 32)
-        // Title view
+        // Title label
         view.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.center(.vertical, in: closeButton)
         titleLabel.center(.horizontal, in: view)
-        // Call ended label
-        view.addSubview(callEndedLabel)
-        callEndedLabel.translatesAutoresizingMaskIntoConstraints = false
-        callEndedLabel.center(in: view)
+        // Call info label
+        view.addSubview(callInfoLabel)
+        callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        callInfoLabel.center(in: view)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -151,13 +152,20 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     // MARK: Interaction
+    func handleAnswerMessage(_ message: CallMessage) {
+        UIView.animate(withDuration: 0.25) {
+            self.callInfoLabel.alpha = 0
+        }
+    }
+    
     func handleEndCallMessage(_ message: CallMessage) {
         print("[Calls] Ending call.")
+        callInfoLabel.text = "Call Ended"
         WebRTCSession.current?.dropConnection()
         WebRTCSession.current = nil
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
-            self.callEndedLabel.alpha = 1
+            self.callInfoLabel.alpha = 1
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
             self.presentingViewController?.dismiss(animated: true, completion: nil)

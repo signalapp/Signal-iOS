@@ -277,6 +277,7 @@ extension MessageReceiver {
             print("[Calls] Received answer message.")
             let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
             getWebRTCSession().handleRemoteSDP(sdp, from: message.sender!)
+            handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):
             var candidates: [RTCIceCandidate] = []
