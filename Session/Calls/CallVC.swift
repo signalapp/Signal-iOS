@@ -42,11 +42,21 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         return result
     }()
     
-    private lazy var titleView: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.textColor = .white
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.textAlignment = .center
+        return result
+    }()
+    
+    private lazy var callEndedLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = .white
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.textAlignment = .center
+        result.text = "Call Ended"
+        result.alpha = 0
         return result
     }()
     
@@ -78,7 +88,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         Storage.read { transaction in
             contact = Storage.shared.getContact(with: self.sessionID)
         }
-        titleView.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
+        titleLabel.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
         if case .offer = mode {
             Storage.write { transaction in
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
@@ -116,10 +126,14 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         closeButton.pin(.left, to: .left, of: view)
         closeButton.pin(.top, to: .top, of: view, withInset: 32)
         // Title view
-        view.addSubview(titleView)
-        titleView.translatesAutoresizingMaskIntoConstraints = false
-        titleView.center(.vertical, in: closeButton)
-        titleView.center(.horizontal, in: view)
+        view.addSubview(titleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.center(.vertical, in: closeButton)
+        titleLabel.center(.horizontal, in: view)
+        // Call ended label
+        view.addSubview(callEndedLabel)
+        callEndedLabel.translatesAutoresizingMaskIntoConstraints = false
+        callEndedLabel.center(in: view)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -132,12 +146,22 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         cameraManager.stop()
     }
     
-    deinit {
+    // MARK: Interaction
+    func handleEndCallMessage(_ message: CallMessage) {
+        WebRTCSession.current?.dropConnection()
         WebRTCSession.current = nil
+        UIView.animate(withDuration: 0.25) {
+            self.callEndedLabel.alpha = 1
+        }
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
+            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        }
     }
     
-    // MARK: Interaction
     @objc private func close() {
+        Storage.write { transaction in
+            WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
+        }
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

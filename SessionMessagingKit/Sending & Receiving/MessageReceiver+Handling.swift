@@ -289,6 +289,7 @@ extension MessageReceiver {
                 candidates.append(candidate)
             }
             getWebRTCSession().handleICECandidates(candidates)
+        case .endCall: handleEndCallMessage?(message)
         }
     }
     

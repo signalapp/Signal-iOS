@@ -190,6 +190,15 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         }
     }
     
+    public func endCall(with sessionID: String, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return }
+        let message = CallMessage()
+        message.kind = .endCall
+        MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+        dropConnection()
+        WebRTCSession.current = nil
+    }
+    
     public func dropConnection() {
         peerConnection.close()
     }

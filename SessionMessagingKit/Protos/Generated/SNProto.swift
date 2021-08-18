@@ -657,6 +657,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case answer = 2
         case provisionalAnswer = 3
         case iceCandidates = 4
+        case endCall = 5
     }
 
     private class func SNProtoCallMessageTypeWrap(_ value: SessionProtos_CallMessage.TypeEnum) -> SNProtoCallMessageType {
@@ -665,6 +666,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
         case .iceCandidates: return .iceCandidates
+        case .endCall: return .endCall
         }
     }
 
@@ -674,6 +676,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .answer: return .answer
         case .provisionalAnswer: return .provisionalAnswer
         case .iceCandidates: return .iceCandidates
+        case .endCall: return .endCall
         }
     }
 

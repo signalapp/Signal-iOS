@@ -58,6 +58,7 @@ message CallMessage {
       ANSWER             = 2;
       PROVISIONAL_ANSWER = 3;
       ICE_CANDIDATES     = 4;
+      END_CALL           = 5;
     }
 
     // Multiple ICE candidates may be batched together for performance

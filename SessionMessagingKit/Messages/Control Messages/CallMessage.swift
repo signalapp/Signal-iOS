@@ -15,6 +15,7 @@ public final class CallMessage : ControlMessage {
         case answer
         case provisionalAnswer
         case iceCandidates(sdpMLineIndexes: [UInt32], sdpMids: [String])
+        case endCall
         
         public var description: String {
             switch self {
@@ -22,6 +23,7 @@ public final class CallMessage : ControlMessage {
             case .answer: return "answer"
             case .provisionalAnswer: return "provisionalAnswer"
             case .iceCandidates(_, _): return "iceCandidates"
+            case .endCall: return "endCall"
             }
         }
     }
@@ -54,6 +56,7 @@ public final class CallMessage : ControlMessage {
             guard let sdpMLineIndexes = coder.decodeObject(forKey: "sdpMLineIndexes") as? [UInt32],
                 let sdpMids = coder.decodeObject(forKey: "sdpMids") as? [String] else { return nil }
             kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
+        case "endCall": kind = .endCall
         default: preconditionFailure()
         }
         if let sdps = coder.decodeObject(forKey: "sdps") as! [String]? { self.sdps = sdps }
@@ -69,6 +72,7 @@ public final class CallMessage : ControlMessage {
             coder.encode("iceCandidates", forKey: "kind")
             coder.encode(sdpMLineIndexes, forKey: "sdpMLineIndexes")
             coder.encode(sdpMids, forKey: "sdpMids")
+        case .endCall: coder.encode("endCall", forKey: "kind")
         default: preconditionFailure()
         }
         coder.encode(sdps, forKey: "sdps")
@@ -86,6 +90,7 @@ public final class CallMessage : ControlMessage {
             let sdpMLineIndexes = callMessageProto.sdpMlineIndexes
             let sdpMids = callMessageProto.sdpMids
             kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
+        case .endCall: kind = .endCall
         }
         let sdps = callMessageProto.sdps
         return CallMessage(kind: kind, sdps: sdps)
@@ -102,6 +107,7 @@ public final class CallMessage : ControlMessage {
         case .answer: type = .answer
         case .provisionalAnswer: type = .provisionalAnswer
         case .iceCandidates(_, _): type = .iceCandidates
+        case .endCall: type = .endCall
         }
         let callMessageProto = SNProtoCallMessage.builder(type: type)
         callMessageProto.setSdps(sdps)

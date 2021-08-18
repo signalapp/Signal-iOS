@@ -3,6 +3,7 @@ import SessionUtilitiesKit
 public enum MessageReceiver {
     private static var lastEncryptionKeyPairRequest: [String:Date] = [:]
     public static var handleOfferCallMessage: ((CallMessage) -> Void)?
+    public static var handleEndCallMessage: ((CallMessage) -> Void)?
 
     public enum Error : LocalizedError {
         case duplicateMessage

@@ -5,6 +5,7 @@ extension AppDelegate {
 
     @objc
     func setUpCallHandling() {
+        // Offer messages
         MessageReceiver.handleOfferCallMessage = { message in
             DispatchQueue.main.async {
                 let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
@@ -22,6 +23,13 @@ extension AppDelegate {
                     // Do nothing
                 }))
                 presentingVC.present(alert, animated: true, completion: nil)
+            }
+        }
+        // End call messages
+        MessageReceiver.handleEndCallMessage = { message in
+            DispatchQueue.main.async {
+                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
+                callVC.handleEndCallMessage(message)
             }
         }
     }

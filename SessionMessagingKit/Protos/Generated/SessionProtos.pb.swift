@@ -333,6 +333,7 @@ struct SessionProtos_CallMessage {
     case answer // = 2
     case provisionalAnswer // = 3
     case iceCandidates // = 4
+    case endCall // = 5
 
     init() {
       self = .offer
@@ -344,6 +345,7 @@ struct SessionProtos_CallMessage {
       case 2: self = .answer
       case 3: self = .provisionalAnswer
       case 4: self = .iceCandidates
+      case 5: self = .endCall
       default: return nil
       }
     }
@@ -354,6 +356,7 @@ struct SessionProtos_CallMessage {
       case .answer: return 2
       case .provisionalAnswer: return 3
       case .iceCandidates: return 4
+      case .endCall: return 5
       }
     }
 
@@ -1849,6 +1852,7 @@ extension SessionProtos_CallMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding 
     2: .same(proto: "ANSWER"),
     3: .same(proto: "PROVISIONAL_ANSWER"),
     4: .same(proto: "ICE_CANDIDATES"),
+    5: .same(proto: "END_CALL"),
   ]
 }
 
