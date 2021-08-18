@@ -184,7 +184,7 @@ public class FeatureFlags: BaseFlags {
     public static let contextMenus = true
 
     @objc
-    public static let communicationStyleNotifications = build.includes(.qa)
+    public static let communicationStyleNotifications = true
 
     @objc
     public static let newLinkDeviceScheme = build.includes(.dev)

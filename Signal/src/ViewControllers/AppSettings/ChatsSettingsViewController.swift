@@ -70,7 +70,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Setting for enabling & disabling iOS contact sharing."
             ),
             isOn: {
-                Self.databaseStorage.read { SSKPreferences.areSharingSuggestionsEnabled(transaction: $0) }
+                Self.databaseStorage.read { SSKPreferences.areIntentDonationsEnabled(transaction: $0) }
             },
             target: self,
             selector: #selector(didToggleSharingSuggestionsEnabled)
@@ -122,7 +122,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         if sender.isOn {
             databaseStorage.write { transaction in
-                SSKPreferences.setAreSharingSuggestionsEnabled(true, transaction: transaction)
+                SSKPreferences.setAreIntentDonationsEnabled(true, transaction: transaction)
             }
         } else {
             INInteraction.deleteAll { error in
@@ -135,7 +135,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                     ))
                 } else {
                     Self.databaseStorage.write { transaction in
-                        SSKPreferences.setAreSharingSuggestionsEnabled(false, transaction: transaction)
+                        SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction)
                     }
                 }
             }

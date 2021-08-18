@@ -140,7 +140,7 @@ extension TSThread {
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return }
 
-        guard SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return }
+        guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return }
 
         guard let sendMessageIntent = generateSendMessageIntent(transaction: transaction, sender: nil) else { return }
 
@@ -158,7 +158,7 @@ extension TSThread {
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return nil }
 
-        guard SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return nil }
+        guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
         let sendMessageIntent: INSendMessageIntent
 
@@ -238,7 +238,7 @@ extension TSThread {
     public func generateStartCallIntent() -> INStartCallIntent? {
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         databaseStorage.read { transaction in
-            guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return nil }
+            guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
             var recipients: [INPerson] = []
             for recipient in self.recipientAddresses {
@@ -252,6 +252,12 @@ extension TSThread {
                                                     destinationType: .normal,
                                                     contacts: recipients,
                                                     callCapability: .unknown)
+
+            if self.isGroupThread {
+                if let image = intentThreadAvatarImage(transaction: transaction) {
+                    startCallIntent.setImage(image, forParameterNamed: \.callRecordToCallBack)
+                }
+            }
 
             return startCallIntent
         }

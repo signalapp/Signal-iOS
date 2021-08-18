@@ -34,7 +34,7 @@ class SharingSuggestionsMegaphone: MegaphoneView {
 
     func dismissAndSetSharingSuggestions(enabled: Bool) {
         SDSDatabaseStorage.shared.write { tx in
-            SSKPreferences.setAreSharingSuggestionsEnabled(enabled, transaction: tx)
+            SSKPreferences.setAreIntentDonationsEnabled(enabled, transaction: tx)
             self.markAsComplete(transaction: tx)
         }
         dismiss()

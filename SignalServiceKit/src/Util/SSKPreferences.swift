@@ -46,16 +46,16 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let areSharingSuggestionsEnabledKey = "areSharingSuggestionsEnabled"
+    private static let areIntentDonationsEnabledKey = "areSharingSuggestionsEnabled"
 
     @objc
-    public static func areSharingSuggestionsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(areSharingSuggestionsEnabledKey, defaultValue: true, transaction: transaction)
+    public static func areIntentDonationsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(areIntentDonationsEnabledKey, defaultValue: true, transaction: transaction)
     }
 
     @objc
-    public static func setAreSharingSuggestionsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: areSharingSuggestionsEnabledKey, transaction: transaction)
+    public static func setAreIntentDonationsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: areIntentDonationsEnabledKey, transaction: transaction)
     }
 
     // MARK: -
