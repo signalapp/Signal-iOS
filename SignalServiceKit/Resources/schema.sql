@@ -1123,7 +1123,7 @@ CREATE
             "payloadId" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"plaintextContent" BLOB NOT NULL
             ,"contentHint" INTEGER NOT NULL
-            ,"sentTimestamp" DATE NOT NULL
+            ,"sentTimestamp" INTEGER NOT NULL
             ,"uniqueThreadId" TEXT NOT NULL
             ,"sendComplete" BOOLEAN NOT NULL DEFAULT 0
         )
@@ -1168,6 +1168,25 @@ CREATE
 ;
 
 CREATE
+    TRIGGER MSLRecipient_deliveryReceiptCleanup AFTER DELETE
+                ON MessageSendLog_Recipient WHEN 0 = (
+                SELECT
+                        COUNT( * )
+                    FROM
+                        MessageSendLog_Recipient
+                    WHERE
+                        payloadId = old.payloadId
+            ) BEGIN DELETE
+                FROM
+                    MessageSendLog_Payload
+                WHERE
+                    payloadId = old.payloadId
+;
+
+END
+;
+
+CREATE
     TRIGGER MSLMessage_payloadCleanup AFTER DELETE
                 ON MessageSendLog_Message BEGIN DELETE
                 FROM
@@ -1189,24 +1208,4 @@ CREATE
     INDEX "MSLMessage_relatedMessageId"
         ON "MessageSendLog_Message"("uniqueId"
 )
-;
-
-CREATE
-    TRIGGER MSLRecipient_deliveryReceiptCleanup AFTER DELETE
-                ON MessageSendLog_Recipient WHEN 0 = (
-                SELECT
-                        COUNT( * )
-                    FROM
-                        MessageSendLog_Recipient
-                    WHERE
-                        payloadId = old.payloadId
-            ) BEGIN DELETE
-                FROM
-                    MessageSendLog_Payload
-                WHERE
-                    payloadId = old.payloadId
-                    AND sendComplete = TRUE
-;
-
-END
 ;

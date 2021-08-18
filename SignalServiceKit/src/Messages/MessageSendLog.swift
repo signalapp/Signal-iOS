@@ -56,10 +56,10 @@ public class MessageSendLog: NSObject {
         static let payload = belongsTo(Payload.self)
 
         private let payloadId: Int64
-        private let recipientUUID: UUID
+        private let recipientUUID: String
         private let recipientDeviceId: Int64
 
-        init(payloadId: Int64, recipientUUID: UUID, recipientDeviceId: Int64) {
+        init(payloadId: Int64, recipientUUID: String, recipientDeviceId: Int64) {
             self.payloadId = payloadId
             self.recipientUUID = recipientUUID
             self.recipientDeviceId = recipientDeviceId
@@ -191,7 +191,7 @@ public class MessageSendLog: NSObject {
             let request = Payload
                 .joining(required: Payload.recipient.aliased(recipientAlias))
                 .filter(Column("sentTimestamp") == timestamp)
-                .filter(recipientAlias[Column("recipientUUID")] == address.uuid)
+                .filter(recipientAlias[Column("recipientUUID")] == address.uuid?.uuidString)
                 .filter(recipientAlias[Column("recipientDeviceId")] == deviceId)
 
             let payloads = try Payload.fetchAll(readTx.unwrapGrdbRead.database, request)
@@ -260,7 +260,7 @@ public class MessageSendLog: NSObject {
         do {
             try Recipient(
                 payloadId: payloadId,
-                recipientUUID: recipientUuid,
+                recipientUUID: recipientUuid.uuidString,
                 recipientDeviceId: recipientDeviceId
             ).insert(writeTx.unwrapGrdbWrite.database)
         } catch {
@@ -284,7 +284,7 @@ public class MessageSendLog: NSObject {
             let targets: [Recipient] = try Recipient
                 .joining(required: Recipient.payload.aliased(payloadAlias))
                 .filter(payloadAlias[Column("sentTimestamp")] == timestamp)
-                .filter(Column("recipientUuid") == recipientUuid)
+                .filter(Column("recipientUuid") == recipientUuid.uuidString)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
                 .fetchAll(writeTx.unwrapGrdbWrite.database)
             try targets.forEach { try $0.delete(writeTx.unwrapGrdbWrite.database) }
