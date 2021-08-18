@@ -38,6 +38,15 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
+        result.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var titleView: UILabel = {
+        let result = UILabel()
+        result.textColor = .white
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.textAlignment = .center
         return result
     }()
     
@@ -65,6 +74,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         setUpViewHierarchy()
         cameraManager.prepare()
         touch(videoCapturer)
+        var contact: Contact?
+        Storage.read { transaction in
+            contact = Storage.shared.getContact(with: self.sessionID)
+        }
+        titleView.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
         if case .offer = mode {
             Storage.write { transaction in
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
@@ -101,6 +115,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.pin(.left, to: .left, of: view)
         closeButton.pin(.top, to: .top, of: view, withInset: 32)
+        // Title view
+        view.addSubview(titleView)
+        titleView.translatesAutoresizingMaskIntoConstraints = false
+        titleView.center(.vertical, in: closeButton)
+        titleView.center(.horizontal, in: view)
     }
     
     override func viewDidAppear(_ animated: Bool) {
