@@ -297,6 +297,38 @@ public class CVLoader: NSObject {
                                     itemModel: itemModel)
     }
 
+    public static func buildStandaloneComponentState(interaction: TSInteraction,
+                                                     transaction: SDSAnyReadTransaction) -> CVComponentState? {
+        AssertIsOnMainThread()
+
+        let thread = interaction.thread(transaction: transaction)
+        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
+        let mockViewWidth: CGFloat = 800
+        let conversationStyle = ConversationStyle(type: .`default`,
+                                                  thread: thread,
+                                                  viewWidth: mockViewWidth,
+                                                  hasWallpaper: false,
+                                                  chatColor: chatColor)
+        let coreState = CVCoreState(conversationStyle: conversationStyle,
+                                    mediaCache: CVMediaCache())
+        let threadViewModel = ThreadViewModel(thread: thread,
+                                              forHomeView: false,
+                                              transaction: transaction)
+        let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(coreState: coreState)
+        let avatarBuilder = CVAvatarBuilder(transaction: transaction)
+        let itemBuildingContext = CVItemBuildingContextImpl(threadViewModel: threadViewModel,
+                                                            viewStateSnapshot: viewStateSnapshot,
+                                                            transaction: transaction,
+                                                            avatarBuilder: avatarBuilder)
+        do {
+            return try CVComponentState.build(interaction: interaction,
+                                              itemBuildingContext: itemBuildingContext)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
     private static func buildRenderItem(itemBuildingContext: CVItemBuildingContext,
                                         itemModel: CVItemModel) -> CVRenderItem? {
 

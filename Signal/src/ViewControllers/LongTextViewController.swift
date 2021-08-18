@@ -206,10 +206,10 @@ extension LongTextViewController: DatabaseChangeDelegate {
 // MARK: -
 
 extension LongTextViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
+            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
                                                                                           recipientThreads: recipientThreads)
         }
     }

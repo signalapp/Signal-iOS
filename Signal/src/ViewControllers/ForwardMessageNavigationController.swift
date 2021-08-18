@@ -4,9 +4,8 @@
 
 import PromiseKit
 
-@objc
 public protocol ForwardMessageDelegate: AnyObject {
-    func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+    func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                        recipientThreads: [TSThread])
     func forwardMessageFlowDidCancel()
 }
@@ -16,10 +15,9 @@ public protocol ForwardMessageDelegate: AnyObject {
 @objc
 class ForwardMessageNavigationController: OWSNavigationController {
 
-    @objc
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
-    fileprivate typealias Item = ForwardMessageItem
+    public typealias Item = ForwardMessageItem
     fileprivate typealias Content = ForwardMessageContent
     fileprivate typealias RecipientThread = ForwardMessageRecipientThread
 
@@ -40,7 +38,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         performStep(.firstStep)
     }
 
-    @objc
     public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
@@ -167,7 +164,7 @@ extension ForwardMessageNavigationController {
 
                 // Make sure the message hasn't been deleted, etc. (e.g. view-once messages h
                 for item in content.allItems {
-                    let interactionId = item.itemViewModel.interaction.uniqueId
+                    let interactionId = item.interaction.uniqueId
                     guard let latestInteraction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction),
                           hasRenderableContent(interaction: latestInteraction) else {
                         throw ForwardError.missingInteraction
@@ -179,16 +176,16 @@ extension ForwardMessageNavigationController {
             return firstly {
                 // Maintain order of interactions.
                 let sortedItems = content.allItems.sorted { lhs, rhs in
-                    lhs.itemViewModel.interaction.timestamp < rhs.itemViewModel.interaction.timestamp
+                    lhs.interaction.timestamp < rhs.interaction.timestamp
                 }
                 let promises = sortedItems.map { item in
                     self.send(item: item, toRecipientThreads: recipientThreads)
                 }
                 return when(resolved: promises).asVoid()
             }.map(on: .main) {
-                let itemViewModels = content.allItems.map { $0.itemViewModel }
+                let componentStates = content.allItems.map { $0.componentState }
                 let threads = recipientThreads.map { $0.thread }
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(itemViewModels: itemViewModels,
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(items: content.allItems,
                                                                            recipientThreads: threads)
             }
         }.catch(on: .main) { error in
@@ -202,7 +199,7 @@ extension ForwardMessageNavigationController {
     private func send(item: Item, toRecipientThreads recipientThreads: [RecipientThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let itemViewModel = item.itemViewModel
+        let componentState = item.componentState
 
         if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
@@ -211,7 +208,7 @@ extension ForwardMessageNavigationController {
                     self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
                 }
             } else {
-                guard let stickerAttachment = itemViewModel.stickerAttachment else {
+                guard let stickerAttachment = componentState.stickerAttachment else {
                     return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
                 do {
@@ -384,10 +381,10 @@ extension TSAttachmentStream {
 // MARK: -
 
 extension ForwardMessageNavigationController {
-    public static func presentConversationAfterForwardIfNecessary(itemViewModels: [CVItemViewModelImpl],
+    public static func presentConversationAfterForwardIfNecessary(items: [Item],
                                                                   recipientThreads: [TSThread]) {
-        let srcThreadIds = Set(itemViewModels.compactMap { itemViewModel in
-            itemViewModel.interaction.uniqueThreadId
+        let srcThreadIds = Set(items.compactMap { item in
+            item.interaction.uniqueThreadId
         })
         let dstThreadIds = Set(recipientThreads.compactMap { thread in
             thread.uniqueId
@@ -447,10 +444,11 @@ extension ForwardMessageNavigationController {
 
 // MARK: -
 
-private struct ForwardMessageItem {
+public struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
-    let itemViewModel: CVItemViewModelImpl
+    let interaction: TSInteraction
+    let componentState: CVComponentState
 
     let attachments: [SignalAttachment]?
     let contactShare: ContactShareViewModel?
@@ -459,7 +457,8 @@ private struct ForwardMessageItem {
     let stickerMetadata: StickerMetadata?
 
     fileprivate class Builder {
-        let itemViewModel: CVItemViewModelImpl
+        let interaction: TSInteraction
+        let componentState: CVComponentState
 
         var attachments: [SignalAttachment]?
         var contactShare: ContactShareViewModel?
@@ -467,12 +466,14 @@ private struct ForwardMessageItem {
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: StickerMetadata?
 
-        init(itemViewModel: CVItemViewModelImpl) {
-            self.itemViewModel = itemViewModel
+        init(interaction: TSInteraction, componentState: CVComponentState) {
+            self.interaction = interaction
+            self.componentState = componentState
         }
 
         func build() -> ForwardMessageItem {
-            ForwardMessageItem(itemViewModel: itemViewModel,
+            ForwardMessageItem(interaction: interaction,
+                               componentState: componentState,
                                attachments: attachments,
                                contactShare: contactShare,
                                messageBody: messageBody,
@@ -482,7 +483,7 @@ private struct ForwardMessageItem {
     }
 
     fileprivate var asBuilder: Builder {
-        let builder = Builder(itemViewModel: itemViewModel)
+        let builder = Builder(interaction: interaction, componentState: componentState)
         builder.attachments = attachments
         builder.contactShare = contactShare
         builder.messageBody = messageBody
@@ -504,9 +505,11 @@ private struct ForwardMessageItem {
         return true
     }
 
-    static func build(itemViewModel: CVItemViewModelImpl, selectionType: CVSelectionType) throws -> Item {
+    fileprivate static func build(interaction: TSInteraction,
+                                  componentState: CVComponentState,
+                                  selectionType: CVSelectionType) throws -> Item {
 
-        let builder = Builder(itemViewModel: itemViewModel)
+        let builder = Builder(interaction: interaction, componentState: componentState)
 
         let shouldHaveText = (selectionType == .allContent ||
                                 selectionType == .secondaryContent)
@@ -518,7 +521,7 @@ private struct ForwardMessageItem {
         }
 
         if shouldHaveText,
-           let displayableBodyText = itemViewModel.displayableBodyText,
+           let displayableBodyText = componentState.displayableBodyText,
            !displayableBodyText.fullAttributedText.isEmpty {
 
             let attributedText = displayableBodyText.fullAttributedText
@@ -529,20 +532,20 @@ private struct ForwardMessageItem {
         }
 
         if shouldHaveAttachments {
-            if let oldContactShare = itemViewModel.contactShare {
+            if let oldContactShare = componentState.contactShareModel {
                 builder.contactShare = oldContactShare.copyForResending()
             }
 
             var attachmentStreams = [TSAttachmentStream]()
-            attachmentStreams.append(contentsOf: itemViewModel.bodyMediaAttachmentStreams)
-            if let attachmentStream = itemViewModel.audioAttachmentStream {
+            attachmentStreams.append(contentsOf: componentState.bodyMediaAttachmentStreams)
+            if let attachmentStream = componentState.audioAttachmentStream {
                 attachmentStreams.append(attachmentStream)
             }
-            if let attachmentStream = itemViewModel.genericAttachmentStream {
+            if let attachmentStream = componentState.genericAttachmentStream {
                 attachmentStreams.append(attachmentStream)
             }
             // TODO: Sticker.
-//            if let attachmentStream = itemViewModel.stic {
+//            if let attachmentStream = componentState.stic {
 //                attachmentStreams.append(attachmentStream)
 //            }
 
@@ -552,11 +555,11 @@ private struct ForwardMessageItem {
                 }
             }
 
-            if let stickerMetadata = itemViewModel.stickerMetadata {
+            if let stickerMetadata = componentState.stickerMetadata {
                 builder.stickerMetadata = stickerMetadata
             }
 
-//            guard let stickerMetadata = itemViewModel.stickerMetadata else {
+//            guard let stickerMetadata = componentState.stickerMetadata else {
 //                return Promise(error: OWSAssertionError("Missing stickerInfo."))
 //            }
 //
@@ -566,7 +569,7 @@ private struct ForwardMessageItem {
 //                    self.send(installedSticker: stickerInfo, thread: recipientThread.thread)
 //                }
 //            } else {
-//                guard let stickerAttachment = itemViewModel.stickerAttachment else {
+//                guard let stickerAttachment = componentState.stickerAttachment else {
 //                    return Promise(error: OWSAssertionError("Missing stickerAttachment."))
 //                }
 //                do {
@@ -616,43 +619,52 @@ private enum ForwardMessageContent {
     }
 
     static func build(itemViewModels: [CVItemViewModelImpl]) throws -> ForwardMessageContent {
-        let items: [Item] = try itemViewModels.map { try Item.build(itemViewModel: $0,
-                                                                    selectionType: .allContent) }
+        let items: [Item] = try itemViewModels.map { itemViewModel in
+            try Item.build(interaction: itemViewModel.interaction,
+                           componentState: itemViewModel.renderItem.componentState,
+                           selectionType: .allContent)
+        }
         return build(items: items)
     }
 
     static func build(selectionItems: [CVSelectionItem],
                       transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
         let items: [Item] = try selectionItems.map { selectionItem in
-            let itemViewModel = try buildItemViewModel(interactionId: selectionItem.interactionId,
-                                                       transaction: transaction)
-            return try Item.build(itemViewModel: itemViewModel,
+            let interactionId = selectionItem.interactionId
+            guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
+                                                           transaction: transaction) else {
+                throw ForwardError.invalidInteraction
+            }
+            let componentState = try buildComponentState(interactionId: interactionId,
+                                                         transaction: transaction)
+            return try Item.build(interaction: interaction,
+                                  componentState: componentState,
                                   selectionType: selectionItem.selectionType)
         }
         return build(items: items)
     }
 
-    private static func buildItemViewModel(interactionId: String,
-                                           transaction: SDSAnyReadTransaction) throws -> CVItemViewModelImpl {
+    private static func buildComponentState(interactionId: String,
+                                            transaction: SDSAnyReadTransaction) throws -> CVComponentState {
         guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
                                                        transaction: transaction) else {
             throw ForwardError.missingInteraction
         }
-        guard let thread = TSThread.anyFetch(uniqueId: interaction.uniqueThreadId,
-                                             transaction: transaction) else {
-            owsFailDebug("Missing thread.")
-            throw ForwardError.missingThread
-        }
-        // TODO:
-        let containerView = UIView()
-        guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
-                                                                  thread: thread,
-                                                                  containerView: containerView,
-                                                                  transaction: transaction) else {
+        guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
+                                                                          transaction: transaction) else {
             throw ForwardError.invalidInteraction
         }
-        let item = CVItemViewModelImpl(renderItem: renderItem)
-        return item
+        return componentState
+////        // TODO:
+////        let containerView = UIView(frame: CGRect(origin: .zero, size: .square(800)))
+////        guard let renderItem = CVLoader.buildStandaloneRenderItem(interaction: interaction,
+////                                                                  thread: thread,
+////                                                                  containerView: containerView,
+////                                                                  transaction: transaction) else {
+////            throw ForwardError.invalidInteraction
+////        }
+//        let item = CVComponentState(renderItem: renderItem)
+//        return item
     }
 }
 

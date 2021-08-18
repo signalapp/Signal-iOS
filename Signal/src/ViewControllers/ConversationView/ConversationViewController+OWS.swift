@@ -218,14 +218,14 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModels: [CVItemViewModelImpl],
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         AssertIsOnMainThread()
 
         self.uiMode = .normal
 
         self.dismiss(animated: true) {
-            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(itemViewModels: itemViewModels,
+            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
                                                                                           recipientThreads: recipientThreads)
         }
     }
