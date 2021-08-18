@@ -185,32 +185,7 @@ extension TSThread {
         var inSender: INPerson?
         // Recipients are required for iOS 15 Communication style notifications
         for recipient in self.recipientAddresses {
-
-            // Generate recipient name
-            let contactName = contactsManager.displayName(for: recipient, transaction: transaction)
-            let nameComponents = contactsManager.nameComponents(for: recipient, transaction: transaction)
-
-            // Generate contact handle
-            let handle: INPersonHandle
-            let suggestionType: INPersonSuggestionType
-            if let phoneNumber = recipient.phoneNumber {
-                handle = INPersonHandle(value: phoneNumber, type: .phoneNumber, label: nil)
-                suggestionType = .none
-            } else {
-                handle = INPersonHandle(value: recipient.uuidString, type: .unknown, label: nil)
-                suggestionType = .instantMessageAddress
-            }
-
-            // Generate avatar
-            var image: INImage?
-            if let contactAvatar = avatarBuilder.avatarImage(forAddress: recipient,
-                                                             diameterPoints: 120,
-                                                             localUserDisplayMode: .asUser,
-                                                             transaction: transaction), let contactAvatarPNG = contactAvatar.pngData() {
-                image = INImage(imageData: contactAvatarPNG)
-            }
-
-            let person = INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+            let person = inPersonForRecipient(recipient, transaction: transaction)
 
             if recipient == sender {
                 inSender = person
@@ -230,16 +205,7 @@ extension TSThread {
                                                     attachments: nil)
 
         if isGroupThread {
-            var image: INImage?
-            if let threadAvatar = Self.avatarBuilder.avatarImage(forThread: self,
-                                                                 diameterPoints: 120,
-                                                                 localUserDisplayMode: .noteToSelf,
-                                                                 transaction: transaction),
-            let threadAvatarPng = threadAvatar.pngData() {
-                image = INImage(imageData: threadAvatarPng)
-            }
-
-            if let image = image {
+            if let image = intentThreadAvatarImage(transaction: transaction) {
                 sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
             }
         }
@@ -261,14 +227,87 @@ extension TSThread {
             sender: nil
         )
 
-        if let threadAvatar = Self.avatarBuilder.avatarImage(forThread: self,
-                                                             diameterPoints: 400,
-                                                             localUserDisplayMode: .noteToSelf,
-                                                             transaction: transaction),
-           let threadAvatarPng = threadAvatar.pngData() {
-            let image = INImage(imageData: threadAvatarPng)
+        if let image = intentThreadAvatarImage(transaction: transaction) {
             sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
         }
+
         return sendMessageIntent
+    }
+
+    @available(iOS 15, *)
+    public func generateStartCallIntent() -> INStartCallIntent? {
+        #if swift(>=5.5) // Temporary for Xcode 12 support.
+        databaseStorage.read { transaction in
+            guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areSharingSuggestionsEnabled(transaction: transaction) else { return nil }
+
+            var recipients: [INPerson] = []
+            for recipient in self.recipientAddresses {
+                let person = inPersonForRecipient(recipient, transaction: transaction)
+                recipients.append(person)
+            }
+
+            let startCallIntent = INStartCallIntent(callRecordFilter: nil,
+                                                    callRecordToCallBack: nil,
+                                                    audioRoute: .unknown,
+                                                    destinationType: .normal,
+                                                    contacts: recipients,
+                                                    callCapability: .unknown)
+
+            return startCallIntent
+        }
+        #else
+            return nil
+        #endif
+    }
+
+#if swift(>=5.5) // Temporary for Xcode 12 support.
+    @available(iOS 15, *)
+    private func inPersonForRecipient(_ recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INPerson {
+
+        // Generate recipient name
+        let contactName = contactsManager.displayName(for: recipient, transaction: transaction)
+        let nameComponents = contactsManager.nameComponents(for: recipient, transaction: transaction)
+
+        // Generate contact handle
+        let handle: INPersonHandle
+        let suggestionType: INPersonSuggestionType
+        if let phoneNumber = recipient.phoneNumber {
+            handle = INPersonHandle(value: phoneNumber, type: .phoneNumber, label: nil)
+            suggestionType = .none
+        } else {
+            handle = INPersonHandle(value: recipient.uuidString, type: .unknown, label: nil)
+            suggestionType = .instantMessageAddress
+        }
+
+        // Generate avatar
+        let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
+
+        return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+    }
+
+    private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
+        // Generate avatar
+        var image: INImage?
+        if let contactAvatar = avatarBuilder.avatarImage(forAddress: recipient,
+                                                         diameterPoints: 120,
+                                                         localUserDisplayMode: .asUser,
+                                                         transaction: transaction), let contactAvatarPNG = contactAvatar.pngData() {
+            image = INImage(imageData: contactAvatarPNG)
+        }
+        return image
+    }
+#endif
+
+    private func intentThreadAvatarImage(transaction: SDSAnyReadTransaction) -> INImage? {
+        var image: INImage?
+        if let threadAvatar = avatarBuilder.avatarImage(forThread: self,
+                                                        diameterPoints: 120,
+                                                        localUserDisplayMode: .noteToSelf,
+                                                        transaction: transaction),
+        let threadAvatarPng = threadAvatar.pngData() {
+            image = INImage(imageData: threadAvatarPng)
+        }
+
+        return image
     }
 }

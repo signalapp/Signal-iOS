@@ -234,13 +234,20 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
+        var interaction: INInteraction?
+        if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications, let intent = thread.generateStartCallIntent() {
+            let wrapper = INInteraction(intent: intent, response: nil)
+            wrapper.direction = .incoming
+            interaction = wrapper
+        }
+
         DispatchQueue.main.async {
             self.adaptee.notify(category: .incomingCall,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
-                                interaction: nil, // TODO INStartCallIntent donation here
+                                interaction: interaction,
                                 sound: nil,
                                 replacingIdentifier: call.localId.uuidString)
         }
@@ -273,6 +280,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
             : .missedCallWithoutActions)
+
+        var interaction: INInteraction?
+        if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications, let intent = thread.generateStartCallIntent() {
+            let wrapper = INInteraction(intent: intent, response: nil)
+            wrapper.direction = .incoming
+            interaction = wrapper
+        }
+
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
@@ -280,7 +295,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
                                 userInfo: userInfo,
-                                interaction: nil, // TODO INStartCallIntent donation here
+                                interaction: interaction,
                                 sound: sound,
                                 replacingIdentifier: call.localId.uuidString)
         }

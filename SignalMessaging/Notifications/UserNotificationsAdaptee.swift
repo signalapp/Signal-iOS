@@ -173,7 +173,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                 owsFailDebug("Failed to donate incoming message intent \(error)")
             })
 
-            if let intent = interaction.intent as? INSendMessageIntent {
+            if let intent = interaction.intent as? UNNotificationContentProviding {
                 do {
                     try contentToUse = content.updating(from: intent)
                 } catch {
