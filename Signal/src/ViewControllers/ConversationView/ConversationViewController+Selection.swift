@@ -20,24 +20,18 @@ public struct CVSelectionType: OptionSet {
 public struct CVSelectionItem {
     public let interactionId: String
     public let interactionType: OWSInteractionType
-    public let hasRenderableContent: Bool
-    public let isViewOnceComplete: Bool
-    public let wasRemotelyDeleted: Bool
+    public let isForwardable: Bool
 
     public let selectionType: CVSelectionType
 
     init(interactionId: String,
          interactionType: OWSInteractionType,
-         hasRenderableContent: Bool,
-         isViewOnceComplete: Bool,
-         wasRemotelyDeleted: Bool,
+         isForwardable: Bool,
          selectionType: CVSelectionType) {
 
         self.interactionId = interactionId
         self.interactionType = interactionType
-        self.hasRenderableContent = hasRenderableContent
-        self.isViewOnceComplete = isViewOnceComplete
-        self.wasRemotelyDeleted = wasRemotelyDeleted
+        self.isForwardable = isForwardable
         self.selectionType = selectionType
     }
 
@@ -47,13 +41,11 @@ public struct CVSelectionItem {
         self.interactionId = interaction.uniqueId
         self.interactionType = interaction.interactionType
         if let message = interaction as? TSMessage {
-            self.hasRenderableContent = message.hasRenderableContent()
-            self.isViewOnceComplete = message.isViewOnceComplete
-            self.wasRemotelyDeleted = message.wasRemotelyDeleted
+            self.isForwardable = (message.hasRenderableContent() &&
+                                    !message.isViewOnceMessage &&
+                                    !message.wasRemotelyDeleted)
         } else {
-            self.hasRenderableContent = false
-            self.isViewOnceComplete = false
-            self.wasRemotelyDeleted = false
+            self.isForwardable = false
         }
         self.selectionType = selectionType
     }
@@ -243,9 +235,7 @@ extension CVSelectionState {
             return false
         }
         for item in itemMap.values {
-            guard item.hasRenderableContent,
-                  !item.isViewOnceComplete,
-                  !item.wasRemotelyDeleted else {
+            guard item.isForwardable else {
                 return false
             }
 
@@ -264,29 +254,29 @@ extension CVSelectionState {
         return true
     }
 
-    public static func hasSecondaryContentForSelection(interaction: TSInteraction,
-                                                       transaction: SDSAnyReadTransaction) -> Bool {
-        guard let message = interaction as? TSMessage else {
-            return false
-        }
-        let hasBodyMedia = message.hasMediaAttachments(with: transaction.unwrapGrdbRead)
-        guard hasBodyMedia else {
-            return false
-        }
-        let hasBodyText: Bool = {
-            if message.body?.strippedOrNil != nil {
-                return true
-            }
-            if message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) != nil {
-                return true
-            }
-            return false
-        }()
-        guard hasBodyText else {
-            return false
-        }
-        return true
-    }
+//    public static func hasSecondaryContentForSelection(interaction: TSInteraction,
+//                                                       transaction: SDSAnyReadTransaction) -> Bool {
+//        guard let message = interaction as? TSMessage else {
+//            return false
+//        }
+//        let hasBodyMedia = message.hasMediaAttachments(with: transaction.unwrapGrdbRead)
+//        guard hasBodyMedia else {
+//            return false
+//        }
+//        let hasBodyText: Bool = {
+//            if message.body?.strippedOrNil != nil {
+//                return true
+//            }
+//            if message.oversizeTextAttachment(with: transaction.unwrapGrdbRead) != nil {
+//                return true
+//            }
+//            return false
+//        }()
+//        guard hasBodyText else {
+//            return false
+//        }
+//        return true
+//    }
 }
 
 // MARK: -

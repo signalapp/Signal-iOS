@@ -139,7 +139,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     private var hasSecondaryContentForSelection: Bool {
-        hasBodyMedia && hasBodyText
+        componentState.hasPrimaryAndSecondaryContentForSelection
     }
 
     private var isBubbleTransparent: Bool {

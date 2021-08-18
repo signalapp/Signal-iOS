@@ -1225,3 +1225,39 @@ fileprivate extension CVComponentState {
         return displayableText
     }
 }
+
+// MARK: -
+
+public extension CVComponentState {
+    var hasPrimaryAndSecondaryContentForSelection: Bool {
+        var hasPrimaryContent = false
+
+        // Search for a component that qualifies as "non-body text primary".
+        for key in activeComponentStateKeys {
+            switch key {
+            case .bodyText, .linkPreview:
+                // "Primary" content is not body text.
+                // A link preview is associated with the body text.
+                break
+            case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
+                hasPrimaryContent = true
+            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+                // "Primary" content is not just metadata / UI.
+                break
+            case .viewOnce:
+                // We should never forward view-once messages.
+                break
+            case .systemMessage:
+                // We should never forward system messages.
+                break
+            case .quotedReply:
+                // Quoted replies are never forwarded.
+                break
+            }
+        }
+
+        let hasSecondaryContent = bodyText != nil
+
+        return hasPrimaryContent && hasSecondaryContent
+    }
+}
