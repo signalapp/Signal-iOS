@@ -248,6 +248,11 @@ public class RemoteConfig: BaseFlags {
         interval(.replaceableInteractionExpiration, defaultInterval: kHourInterval)
     }
 
+    @objc
+    public static var messageSendLogEntryLifetime: TimeInterval {
+        interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -466,6 +471,7 @@ private struct Flags {
         case reactiveProfileKeyAttemptInterval
         case standardMediaQualityLevel
         case replaceableInteractionExpiration
+        case messageSendLogEntryLifetime
     }
 }
 
