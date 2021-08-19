@@ -411,9 +411,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
-                                                   from: self,
-                                                   delegate: self)
+        ForwardMessageViewController.present(forItemViewModels: [itemViewModel],
+                                             from: self,
+                                             delegate: self)
     }
 
     @objc
@@ -912,9 +912,9 @@ extension MediaPageViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageNavigationController.finalizeForward(items: items,
-                                                               recipientThreads: recipientThreads,
-                                                               fromViewController: self)
+            ForwardMessageViewController.finalizeForward(items: items,
+                                                         recipientThreads: recipientThreads,
+                                                         fromViewController: self)
         }
     }
 

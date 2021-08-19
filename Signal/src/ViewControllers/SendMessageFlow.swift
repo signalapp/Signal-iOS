@@ -493,6 +493,8 @@ extension SendMessageFlow: ConversationPickerDelegate {
     var conversationPickerHasTextInput: Bool { false }
 
     var conversationPickerTextInputDefaultText: String? { nil }
+
+    func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
 }
 
 // MARK: -

@@ -25,6 +25,8 @@ public protocol ConversationPickerDelegate: AnyObject {
     var conversationPickerHasTextInput: Bool { get }
 
     var conversationPickerTextInputDefaultText: String? { get }
+
+    func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController)
 }
 
 // MARK: -
@@ -90,9 +92,6 @@ open class ConversationPickerViewController: OWSViewController {
         tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         self.autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
 
-        searchBar.sizeToFit()
-        tableView.tableHeaderView = searchBar
-
         if delegate?.conversationPickerCanCancel(self) ?? false {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
             self.navigationItem.leftBarButtonItem = cancelButton
@@ -101,6 +100,32 @@ open class ConversationPickerViewController: OWSViewController {
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        ensureSearchBarVisibility()
+    }
+
+    public var shouldShowSearchBar: Bool = true {
+        didSet {
+            if isViewLoaded {
+                ensureSearchBarVisibility()
+            }
+        }
+    }
+
+    public var shouldHideSearchBarIfCancelled = false
+
+    private func ensureSearchBarVisibility() {
+        AssertIsOnMainThread()
+
+        searchBar.sizeToFit()
+        tableView.tableHeaderView = shouldShowSearchBar ? searchBar : nil
+    }
+
+    public func selectSearchBar() {
+        AssertIsOnMainThread()
+
+        shouldShowSearchBar = true
+        searchBar.becomeFirstResponder()
     }
 
     public override func themeDidChange() {
@@ -630,15 +655,25 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
+        delegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
+        delegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = nil
         searchBar.resignFirstResponder()
+        if shouldHideSearchBarIfCancelled {
+            self.shouldShowSearchBar = false
+        }
+        delegate?.conversationPickerSearchBarActiveDidChange(self)
+    }
+
+    public var isSearchBarActive: Bool {
+        searchBar.isFirstResponder
     }
 }
 

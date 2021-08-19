@@ -696,6 +696,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                           thread: threadViewModel.threadRecord,
                           viewWidth: 0,
                           hasWallpaper: threadViewModel.hasWallpaper,
+                          isWallpaperPhoto: threadViewModel.isWallpaperPhoto,
                           chatColor: .placeholderValue)
     }
 
@@ -705,6 +706,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                           thread: thread,
                           viewWidth: 0,
                           hasWallpaper: false,
+                          isWallpaperPhoto: false,
                           chatColor: .placeholderValue)
     }
 
@@ -712,9 +714,20 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         AssertIsOnMainThread()
 
         var hasWallpaper: Bool = false
+        var isWallpaperPhoto: Bool = false
         var chatColor: ChatColor = .placeholderValue
         databaseStorage.read { transaction in
-            hasWallpaper = Wallpaper.exists(for: self.thread, transaction: transaction)
+            if let wallpaper = Wallpaper.wallpaperForRendering(for: self.thread, transaction: transaction) {
+                hasWallpaper = true
+                if case .photo = wallpaper {
+                    isWallpaperPhoto = true
+                } else {
+                    isWallpaperPhoto = false
+                }
+            } else {
+                hasWallpaper = false
+                isWallpaperPhoto = false
+            }
             chatColor = ChatColors.chatColorForRendering(thread: self.thread, transaction: transaction)
         }
 
@@ -726,6 +739,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                      thread: thread,
                                      viewWidth: viewWidth,
                                      hasWallpaper: hasWallpaper,
+                                     isWallpaperPhoto: isWallpaperPhoto,
                                      chatColor: chatColor)
         }
 
@@ -780,6 +794,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                      thread: thread,
                                      viewWidth: viewWidth,
                                      hasWallpaper: hasWallpaper,
+                                     isWallpaperPhoto: isWallpaperPhoto,
                                      chatColor: chatColor)
         }
     }

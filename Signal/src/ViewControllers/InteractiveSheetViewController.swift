@@ -76,6 +76,11 @@ public class InteractiveSheetViewController: OWSViewController {
         return CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)
     }
 
+    public func maximizeHeight() {
+        heightConstraint?.constant = maximizedHeight
+        view.layoutIfNeeded()
+    }
+
     let maxAnimationDuration: TimeInterval = 0.2
     private var startingHeight: CGFloat?
     private var startingTranslation: CGFloat?

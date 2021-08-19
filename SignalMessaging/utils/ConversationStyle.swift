@@ -43,6 +43,8 @@ public class ConversationStyle: NSObject {
     @objc
     public let hasWallpaper: Bool
 
+    public let isWallpaperPhoto: Bool
+
     private let dynamicBodyTypePointSize: CGFloat
     private let primaryTextColor: UIColor
 
@@ -137,6 +139,7 @@ public class ConversationStyle: NSObject {
                          thread: TSThread,
                          viewWidth: CGFloat,
                          hasWallpaper: Bool,
+                         isWallpaperPhoto: Bool,
                          chatColor: ChatColor) {
 
         self.type = type
@@ -144,6 +147,7 @@ public class ConversationStyle: NSObject {
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
         self.primaryTextColor = Theme.primaryTextColor
         self.hasWallpaper = hasWallpaper
+        self.isWallpaperPhoto = isWallpaperPhoto
         self.chatColor = chatColor
         self.chatColorValue = chatColor.setting.asValue
 
@@ -348,6 +352,7 @@ public class ConversationStyle: NSObject {
             dynamicBodyTypePointSize == other.dynamicBodyTypePointSize &&
             isDarkThemeEnabled == other.isDarkThemeEnabled &&
             hasWallpaper == other.hasWallpaper &&
+            isWallpaperPhoto == other.isWallpaperPhoto &&
             maxMessageWidth == other.maxMessageWidth &&
             maxMediaMessageWidth == other.maxMediaMessageWidth &&
             textInsets == other.textInsets &&
@@ -369,6 +374,8 @@ public class ConversationStyle: NSObject {
             "viewWidth: \(viewWidth), " +
             "dynamicBodyTypePointSize: \(dynamicBodyTypePointSize), " +
             "isDarkThemeEnabled: \(isDarkThemeEnabled), " +
+            "hasWallpaper: \(hasWallpaper), " +
+            "isWallpaperPhoto: \(isWallpaperPhoto), " +
             "maxMessageWidth: \(maxMessageWidth), " +
             "maxMediaMessageWidth: \(maxMediaMessageWidth), " +
             "textInsets: \(textInsets), " +

@@ -165,9 +165,9 @@ public class LongTextViewController: OWSViewController {
 
     @objc
     func forwardButtonPressed() {
-        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
-                                                   from: self,
-                                                   delegate: self)
+        ForwardMessageViewController.present(forItemViewModels: [itemViewModel],
+                                             from: self,
+                                             delegate: self)
     }
 }
 
@@ -209,9 +209,9 @@ extension LongTextViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageNavigationController.finalizeForward(items: items,
-                                                               recipientThreads: recipientThreads,
-                                                               fromViewController: self)
+            ForwardMessageViewController.finalizeForward(items: items,
+                                                         recipientThreads: recipientThreads,
+                                                         fromViewController: self)
         }
     }
 
