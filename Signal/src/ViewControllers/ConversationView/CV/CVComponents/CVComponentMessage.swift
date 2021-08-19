@@ -449,14 +449,28 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     let secondaryY = bodyTextFrame.midY - size.height * 0.5
                     secondarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: secondaryY), size: size)
                 }
+                // When doing "partial" selection, the selection UI needs to
+                // align with the corresponding content views.
+                //
                 // Coordinating layout of "distant cousin" views in a view hierarchy
                 // is trivial with iOS Auto Layout, but hard with manual layout, since
                 // changes to any "intermediary" relative can affect the coordination,
-                // and for a rich view hierarchy it's not practical to
+                // and for a rich view hierarchy it's not practical to observe all of
+                // the "intermediaries".  It's also impractical to calculate their
+                // relative positions using the "measurement/layout" state.
+                //
+                // Therefore, we coordinate their layouts by:
+                //
+                // * Using layout blocks that use the actual final layouts.
+                // * Adding the layout block (selectionLayoutBlock) to both
+                //   the immediate parent (as usual) and to the "oldest common
+                //   ancestor" (unusual).  The latter ensures that we re-layout
+                //   whenever the cell changes size, for example.
                 selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: { _ in })
                 selectionWrapper.addSubview(secondarySelectionView, withLayoutBlock: { _ in })
                 selectionWrapper.addLayoutBlock(selectionLayoutBlock)
                 outerContentView.addLayoutBlock(selectionLayoutBlock)
+                outerContentView.setNeedsLayout()
             } else {
                 selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
                                                                size: MessageSelectionView.contentSize)

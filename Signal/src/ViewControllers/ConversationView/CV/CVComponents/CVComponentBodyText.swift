@@ -762,10 +762,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static let measurementKey_stackView = "CVComponentBodyText.measurementKey_stackView"
 
-    public static func measuredSize(measurement: CVCellMeasurement) -> CGFloat? {
-        measurement.value(key: measurementKey_stackView)
-    }
-
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
