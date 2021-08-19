@@ -124,6 +124,7 @@ class MockConversationView: UIView {
                 thread: self.thread,
                 viewWidth: viewWidth,
                 hasWallpaper: hasWallpaper,
+                isWallpaperPhoto: false,
                 chatColor: chatColor
             )
             for item in model.items {

@@ -152,6 +152,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 thread: thread,
                 viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
                 hasWallpaper: false,
+                isWallpaperPhoto: false,
                 chatColor: chatColor
             )
 

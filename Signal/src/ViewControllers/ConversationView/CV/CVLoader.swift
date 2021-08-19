@@ -248,6 +248,7 @@ public class CVLoader: NSObject {
                                                   thread: thread,
                                                   viewWidth: containerView.width,
                                                   hasWallpaper: false,
+                                                  isWallpaperPhoto: false,
                                                   chatColor: chatColor)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
@@ -308,6 +309,7 @@ public class CVLoader: NSObject {
                                                   thread: thread,
                                                   viewWidth: mockViewWidth,
                                                   hasWallpaper: false,
+                                                  isWallpaperPhoto: false,
                                                   chatColor: chatColor)
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
@@ -383,9 +385,6 @@ public class CVLoader: NSObject {
             rootComponent = CVComponentSystemMessage(itemModel: itemModel, systemMessage: systemMessage)
         case .unknown:
             Logger.warn("Discarding item: \(itemModel.messageCellType).")
-            return nil
-        default:
-            owsFailDebug("Discarding item: \(itemModel.messageCellType).")
             return nil
         }
 

@@ -425,6 +425,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let primarySelectionView = componentView.primarySelectionView
             primarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                           selectionType: .primaryContent)
+            primarySelectionView.updateStyle(conversationStyle: conversationStyle)
 
             let selectionWrapper = componentView.selectionWrapper
             if hasSecondaryContentForSelection,
@@ -432,9 +433,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 let secondarySelectionView = componentView.secondarySelectionView
                 secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                                 selectionType: .secondaryContent)
+                secondarySelectionView.updateStyle(conversationStyle: conversationStyle)
 
                 let selectionLayoutBlock = { (_: UIView) -> Void in
-                    let size = MessageSelectionView.contentSize
+                    let size = MessageSelectionView.totalSize
                     let selectionView = primarySelectionView
                     guard let superview = selectionView.superview else {
                         owsFailDebug("Missing superview.")
@@ -495,7 +497,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 outerContentView.setNeedsLayout()
             } else {
                 selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
-                                                               size: MessageSelectionView.contentSize)
+                                                               size: MessageSelectionView.totalSize)
             }
             hOuterStackSubviews.append(selectionWrapper)
         }

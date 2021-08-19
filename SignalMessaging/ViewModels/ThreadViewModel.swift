@@ -17,6 +17,7 @@ public class ThreadViewModel: NSObject {
     @objc public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
     @objc public let groupCallInProgress: Bool
     @objc public let hasWallpaper: Bool
+    @objc public let isWallpaperPhoto: Bool
 
     @objc
     public var isArchived: Bool { associatedData.isArchived }
@@ -89,7 +90,17 @@ public class ThreadViewModel: NSObject {
             homeViewInfo = nil
         }
 
-        self.hasWallpaper = Wallpaper.exists(for: thread, transaction: transaction)
+        if let wallpaper = Wallpaper.wallpaperForRendering(for: thread, transaction: transaction) {
+            self.hasWallpaper = true
+            if case .photo = wallpaper {
+                self.isWallpaperPhoto = true
+            } else {
+                self.isWallpaperPhoto = false
+            }
+        } else {
+            self.hasWallpaper = false
+            self.isWallpaperPhoto = false
+        }
     }
 
     @objc

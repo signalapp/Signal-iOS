@@ -16,11 +16,9 @@ public class MessageSelectionView: ManualLayoutView {
     public init() {
         super.init(name: "MessageSelectionView")
 
-        addSubview(selectedView)
-        addSubview(unselectedView)
-
-        centerSubviewOnSuperview(selectedView, size: Self.contentSize)
-        centerSubviewOnSuperview(unselectedView, size: Self.contentSize)
+        addSubviewToFillSuperviewEdges(backgroundView)
+        addSubviewToCenterOnSuperview(selectedView, size: Self.uiSize)
+        addSubviewToCenterOnSuperview(unselectedView, size: Self.uiSize)
 
         selectedView.isHidden = true
     }
@@ -30,33 +28,42 @@ public class MessageSelectionView: ManualLayoutView {
         notImplemented()
     }
 
-    public static var contentSize: CGSize {
+    public static var totalSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth)
     }
+    public static var uiSize: CGSize {
+        CGSize(square: ConversationStyle.selectionViewWidth - 2)
+    }
 
-    private lazy var selectedView: UIView = {
-        let wrapper = ManualLayoutView(name: "MessageSelectionView.selectedView")
-
-        // the checkmark shape is transparent, but we want it colored white, even in dark theme
-        let backgroundSize = ConversationStyle.selectionViewWidth - 8
-        let backgroundView = CircleView(diameter: backgroundSize)
-        backgroundView.backgroundColor = .white
-        wrapper.addSubview(backgroundView)
-        wrapper.centerSubviewOnSuperview(backgroundView, size: .square(backgroundSize))
-
-        let image = #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate)
-        let imageView = CVImageView(image: image)
-        imageView.tintColor = .ows_accentBlue
-        wrapper.addSubview(imageView)
-        wrapper.layoutSubviewToFillSuperviewEdges(imageView)
-
-        return wrapper
+    private let selectedView: CVImageView = {
+        let checkmarkView = CVImageView()
+        checkmarkView.setTemplateImageName("check-circle-solid-24", tintColor: .white)
+        return checkmarkView
     }()
 
-    private lazy var unselectedView: UIView = {
-        let view = CircleView(diameter: ConversationStyle.selectionViewWidth)
-        view.layer.borderColor = UIColor.ows_gray25.cgColor
-        view.layer.borderWidth = 1.5
-        return view
+    private let unselectedView: CircleView = {
+        let circleView = CircleView(diameter: MessageSelectionView.uiSize.width)
+        circleView.layer.borderWidth = 1.5
+        return circleView
     }()
+
+    private let backgroundView: UIView = {
+        ManualLayoutViewWithLayer.circleView(name: "selection background")
+    }()
+
+    public func updateStyle(conversationStyle: ConversationStyle) {
+        AssertIsOnMainThread()
+
+        if conversationStyle.isDarkThemeEnabled || conversationStyle.hasWallpaper {
+            selectedView.tintColor = .ows_white
+            unselectedView.layer.borderColor = UIColor.ows_white.cgColor
+            backgroundView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.2)
+            backgroundView.isHidden = (!conversationStyle.hasWallpaper ||
+                                        !conversationStyle.isWallpaperPhoto)
+        } else {
+            selectedView.tintColor = .ows_accentBlue
+            unselectedView.layer.borderColor = UIColor.ows_gray25.cgColor
+            backgroundView.isHidden = true
+        }
+    }
 }
