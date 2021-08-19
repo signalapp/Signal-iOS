@@ -427,50 +427,68 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                                                           selectionType: .primaryContent)
             primarySelectionView.updateStyle(conversationStyle: conversationStyle)
 
+            let bodyTextRootView: UIView? = CVComponentBodyText.findBodyTextRootView(outerContentView)
+
+            struct SelectionLayoutHelper {
+                let outerContentView: UIView
+                let bodyTextRootView: UIView?
+
+                func applyLayout(bottomSelectionView: UIView, topSelectionView: UIView?) {
+                    let size = MessageSelectionView.totalSize
+                    guard let superview = bottomSelectionView.superview else {
+                        owsFailDebug("Missing superview.")
+                        return
+                    }
+
+                    let outerContentFrame = superview.convert(outerContentView.bounds, from: outerContentView)
+
+                    if let topSelectionView = topSelectionView {
+                        if let bodyTextRootView = bodyTextRootView {
+                            // Determine the frame of the body text view in the local
+                            // coordinate system.
+                            let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
+
+                            // "Top" should bottom-align with the area above the body text (with a
+                            // tiny offset) or v-align with the center of the area above the body text,
+                            // whichever is lower.
+                            let topY1 = bodyTextFrame.y * 0.5 - size.height * 0.5
+                            let topOffset: CGFloat = 2 + CVComponentMessage.textViewVSpacing
+                            let topY2 = bodyTextFrame.y - (size.height + topOffset)
+                            let topY = max(topY1, topY2)
+                            topSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: topY), size: size)
+                        } else {
+                            // We should only have a secondary selection UI if there's a body text view.
+                            owsFailDebug("Missing bodyTextRootView.")
+
+                            // Default to a reasonable layout.
+                            let topY = outerContentFrame.y
+                            topSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: topY), size: size)
+                        }
+                    }
+
+                    // "Bottom" should bottom-align with the center of the body text
+                    // (center-aligning with the sender avatar, if any).
+                    //
+                    // This bakes in the assumption that the group sender avatar will
+                    // be bottom-aligned with the bottom of the message bubble.
+                    let avatarHeight = CGFloat(ConversationStyle.groupMessageAvatarDiameter)
+                    let bottomY = outerContentFrame.maxY - avatarHeight * 0.5 - size.height * 0.5
+                    bottomSelectionView.frame = CGRect(origin: CGPoint(x: 0, y: bottomY), size: size)
+                }
+            }
+            let selectionLayoutHelper = SelectionLayoutHelper(outerContentView: outerContentView,
+                                                              bodyTextRootView: bodyTextRootView)
+
             let selectionWrapper = componentView.selectionWrapper
-            if hasSecondaryContentForSelection,
-               let bodyTextRootView = CVComponentBodyText.findBodyTextRootView(outerContentView) {
+            if hasSecondaryContentForSelection {
                 let secondarySelectionView = componentView.secondarySelectionView
                 secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
                                                                                                 selectionType: .secondaryContent)
                 secondarySelectionView.updateStyle(conversationStyle: conversationStyle)
 
                 let selectionLayoutBlock = { (_: UIView) -> Void in
-                    let size = MessageSelectionView.totalSize
-                    let selectionView = primarySelectionView
-                    guard let superview = selectionView.superview else {
-                        owsFailDebug("Missing superview.")
-                        return
-                    }
-                    // Determine the frame of the body text view in the local
-                    // coordinate system.
-                    let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
-
-                    // We need to align the "secondary" selection view with the
-                    // bottom of the _superview_ of the body text view.  Find that view
-                    // and determine its frame in the local coordinate system.
-                    var bodyTextBottomFrame = bodyTextFrame
-                    if let bodyTextSuperview = bodyTextRootView.superview {
-                        bodyTextBottomFrame = superview.convert(bodyTextSuperview.bounds, from: bodyTextSuperview)
-                    }
-
-                    // Primary should bottom-align with the area above the body text (with a
-                    // tiny offset) or v-align with the center of the area above the body text,
-                    // whichever is lower.
-                    let primaryY1 = bodyTextFrame.y * 0.5 - size.height * 0.5
-                    let primaryOffset: CGFloat = 2 + Self.textViewVSpacing
-                    let primaryY2 = bodyTextFrame.y - (size.height + primaryOffset)
-                    let primaryY = max(primaryY1, primaryY2)
-                    primarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: primaryY), size: size)
-
-                    // Secondary should bottom-align with the center of the body text
-                    // (center-aligning with the sender avatar, if any)
-                    // or v-align with the center of the body text, whichever is lower.
-                    let secondaryY1 = bodyTextFrame.midY - size.height * 0.5
-                    let avatarHeight = CGFloat(ConversationStyle.groupMessageAvatarDiameter)
-                    let secondaryY2 = bodyTextBottomFrame.maxY - avatarHeight * 0.5 - size.height * 0.5
-                    let secondaryY = max(secondaryY1, secondaryY2)
-                    secondarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: secondaryY), size: size)
+                    selectionLayoutHelper.applyLayout(bottomSelectionView: secondarySelectionView,
+                                                      topSelectionView: primarySelectionView)
                 }
 
                 // When doing "partial" selection, the selection UI needs to
@@ -496,8 +514,15 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 outerContentView.addLayoutBlock(selectionLayoutBlock)
                 outerContentView.setNeedsLayout()
             } else {
-                selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
-                                                               size: MessageSelectionView.totalSize)
+                let selectionLayoutBlock = { (_: UIView) -> Void in
+                    selectionLayoutHelper.applyLayout(bottomSelectionView: primarySelectionView,
+                                                      topSelectionView: nil)
+                }
+
+                // See above.
+                selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: selectionLayoutBlock)
+                outerContentView.addLayoutBlock(selectionLayoutBlock)
+                outerContentView.setNeedsLayout()
             }
             hOuterStackSubviews.append(selectionWrapper)
         }

@@ -31,7 +31,7 @@ public class MessageSelectionView: ManualLayoutView {
     public static var totalSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth)
     }
-    public static var uiSize: CGSize {
+    private static var uiSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth - 2)
     }
 
