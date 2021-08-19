@@ -367,7 +367,7 @@ extension ConversationViewController {
             owsFailDebug("Invalid selection.")
             return
         }
-        ForwardMessageNavigationController.present(forSelectionItems: selectionItems, from: self, delegate: self)
+        ForwardMessageViewController.present(forSelectionItems: selectionItems, from: self, delegate: self)
     }
 
     public func updateSelectionButtons() {

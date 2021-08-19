@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSSheetViewController)
-public class SheetViewController: UIViewController {
+open class SheetViewController: UIViewController {
 
     public var dismissHandler: ((SheetViewController) -> Void)?
 

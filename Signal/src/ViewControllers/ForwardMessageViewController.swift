@@ -13,7 +13,7 @@ public protocol ForwardMessageDelegate: AnyObject {
 // MARK: -
 
 @objc
-class ForwardMessageNavigationController: OWSNavigationController {
+class ForwardMessageViewController: InteractiveSheetViewController {
 
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
@@ -40,6 +40,20 @@ class ForwardMessageNavigationController: OWSNavigationController {
         selectRecipientsStep()
     }
 
+    required init() {
+        fatalError("init() has not been implemented")
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func willDismissInteractively() {
+        AssertIsOnMainThread()
+
+        forwardMessageDelegate?.forwardMessageFlowDidCancel()
+    }
+
     public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
                               from fromViewController: UIViewController,
                               delegate: ForwardMessageDelegate) {
@@ -49,7 +63,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
             }
             present(content: content, from: fromViewController, delegate: delegate)
         } catch {
-            ForwardMessageNavigationController.showAlertForForwardError(error: error,
+            ForwardMessageViewController.showAlertForForwardError(error: error,
                                                                         forwardedInteractionCount: itemViewModels.count)
         }
     }
@@ -63,7 +77,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
             }
             present(content: content, from: fromViewController, delegate: delegate)
         } catch {
-            ForwardMessageNavigationController.showAlertForForwardError(error: error,
+            ForwardMessageViewController.showAlertForForwardError(error: error,
                                                                         forwardedInteractionCount: selectionItems.count)
         }
     }
@@ -71,18 +85,22 @@ class ForwardMessageNavigationController: OWSNavigationController {
     private class func present(content: Content,
                                from fromViewController: UIViewController,
                                delegate: ForwardMessageDelegate) {
-        let modal = ForwardMessageNavigationController(content: content)
-        modal.forwardMessageDelegate = delegate
-        fromViewController.presentFormSheet(modal, animated: true)
+        let sheet = ForwardMessageViewController(content: content)
+        sheet.forwardMessageDelegate = delegate
+        fromViewController.present(sheet, animated: true, completion: nil)
     }
+
+    private var pickerVC: ConversationPickerViewController?
 
     private func selectRecipientsStep() {
         let pickerVC = ConversationPickerViewController()
         pickerVC.delegate = self
+        self.pickerVC = pickerVC
+        self.addChild(pickerVC)
 
-        setViewControllers([
-            pickerVC
-        ], animated: false)
+        let view = pickerVC.view!
+        self.contentView.addSubview(view)
+        view.autoPinEdgesToSuperviewEdges()
     }
 
     fileprivate func updateCurrentMentionableAddresses() {
@@ -107,7 +125,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
 // MARK: - Sending
 
-extension ForwardMessageNavigationController {
+extension ForwardMessageViewController {
 
     func sendStep() {
         do {
@@ -298,7 +316,7 @@ extension ForwardMessageNavigationController {
 
 // MARK: -
 
-extension ForwardMessageNavigationController: ConversationPickerDelegate {
+extension ForwardMessageViewController: ConversationPickerDelegate {
     var selectedConversationsForConversationPicker: [ConversationItem] {
         selectedConversations
     }
@@ -373,7 +391,7 @@ extension TSAttachmentStream {
 
 // MARK: -
 
-extension ForwardMessageNavigationController {
+extension ForwardMessageViewController {
     public static func finalizeForward(items: [Item],
                                        recipientThreads: [TSThread],
                                        fromViewController: UIViewController) {
@@ -399,7 +417,7 @@ public enum ForwardError: Error {
 
 // MARK: -
 
-extension ForwardMessageNavigationController {
+extension ForwardMessageViewController {
 
     public static func showAlertForForwardError(error: Error,
                                                 forwardedInteractionCount: Int) {

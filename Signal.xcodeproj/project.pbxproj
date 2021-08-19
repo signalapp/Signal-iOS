@@ -897,7 +897,7 @@
 		88EFF4F425AD1AC6000FAFBA /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C46361222EE680700185951 /* ConversationPicker.swift */; };
 		88EFF4F525AD1ACB000FAFBA /* ConversationItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6354FF22F15A1E00A8ECE6 /* ConversationItem.swift */; };
 		88EFF4F625AD1C82000FAFBA /* ThemeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */; };
-		88EFF4F825AD1F0D000FAFBA /* ForwardMessageNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */; };
+		88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */; };
 		88EFF4FC25AD4230000FAFBA /* SharingThreadPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88EFF4FB25AD4230000FAFBA /* SharingThreadPickerViewController.swift */; };
 		88F15F9925AD4A9B008ABD47 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340E9AC3236095CC00FA362C /* AttachmentMultisend.swift */; };
 		88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
@@ -1119,7 +1119,7 @@
 		340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "StorageService+GroupsV2.swift"; sourceTree = "<group>"; };
 		340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2UpdatesImpl.swift; sourceTree = "<group>"; };
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
-		340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageNavigationController.swift; sourceTree = "<group>"; };
+		340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageViewController.swift; sourceTree = "<group>"; };
 		340E9AC3236095CC00FA362C /* AttachmentMultisend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
@@ -2982,7 +2982,7 @@
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				88A4CC13246CE41E0082211F /* Device Transfer */,
-				340E9ABF235F876800FA362C /* ForwardMessageNavigationController.swift */,
+				340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */,
 				327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
@@ -5645,7 +5645,7 @@
 				88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */,
 				8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */,
 				4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */,
-				88EFF4F825AD1F0D000FAFBA /* ForwardMessageNavigationController.swift in Sources */,
+				88EFF4F825AD1F0D000FAFBA /* ForwardMessageViewController.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				348815CE25545B1000D4F4C4 /* CVComponentGenericAttachment.swift in Sources */,
