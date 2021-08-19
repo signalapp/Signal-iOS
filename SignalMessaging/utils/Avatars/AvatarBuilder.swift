@@ -539,8 +539,18 @@ public class AvatarBuilder: NSObject {
             return avatarContent
         }
 
-        let avatarContent = Self.buildAvatarContent(forRequest: request,
-                                                    transaction: transaction)
+        let avatarContent = Self.buildAvatarContent(forRequest: request, transaction: transaction)
+
+        if DebugFlags.internalLogging {
+            switch request.requestType {
+            case .contactAddress(let address, _):
+                if address.isLocalAddress {
+                    Logger.info("Building avatar for local user: \(avatarContent.contentType.cacheKey)")
+                }
+            default:
+                break
+            }
+        }
 
         if let cacheKey = request.cacheKey {
             requestToContentCache.setObject(avatarContent, forKey: cacheKey)
