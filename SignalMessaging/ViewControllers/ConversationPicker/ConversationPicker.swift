@@ -21,7 +21,13 @@ public protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode
+
+    var conversationPickerHasTextInput: Bool { get }
+
+    var conversationPickerTextInputDefaultText: String? { get }
 }
+
+// MARK: -
 
 @objc
 open class ConversationPickerViewController: OWSViewController {
@@ -44,6 +50,10 @@ open class ConversationPickerViewController: OWSViewController {
         searchBar.delegate = self
         return searchBar
     }()
+
+    public var textInput: String? {
+        footerView.textInput
+    }
 
     // MARK: - UIViewController
 
@@ -91,6 +101,12 @@ open class ConversationPickerViewController: OWSViewController {
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
+    }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        tableView.reloadData()
     }
 
     public override func viewDidLoad() {
@@ -517,6 +533,10 @@ extension ConversationPickerViewController: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let delegate = delegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
         guard let conversation = conversation(for: indexPath) else {
             owsFailDebug("conversation was unexpectedly nil")
             return
@@ -533,7 +553,7 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return
         }
 
-        delegate?.conversationPicker(self, didSelectConversation: conversation)
+        delegate.conversationPicker(self, didSelectConversation: conversation)
         updateUIForCurrentSelection(animated: true)
     }
 
@@ -632,7 +652,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
         }
         let conversations = delegate.selectedConversationsForConversationPicker
         guard conversations.count > 0 else {
-            owsFailDebug("No conversations selected.")
+            Logger.warn("No conversations selected.")
             return
         }
         delegate.conversationPickerDidCompleteSelection(self)
@@ -640,6 +660,14 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
+    }
+
+    public var approvalFooterHasTextInput: Bool {
+        delegate?.conversationPickerHasTextInput ?? false
+    }
+
+    public var approvalFooterTextInputDefaultText: String? {
+        delegate?.conversationPickerTextInputDefaultText ?? nil
     }
 }
 

@@ -128,7 +128,7 @@ struct GalleryDate: Hashable, Comparable, Equatable {
     let interval: DateInterval
 
     init(message: TSMessage) {
-        let date = message.receivedAtDate()
+        let date = message.receivedAtDate
         self.init(date: date)
     }
 

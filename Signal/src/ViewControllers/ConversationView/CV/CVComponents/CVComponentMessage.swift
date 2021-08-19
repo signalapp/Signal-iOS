@@ -138,6 +138,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return componentState.bodyText != nil
     }
 
+    private var hasSecondaryContentForSelection: Bool {
+        componentState.hasPrimaryAndSecondaryContentForSelection
+    }
+
     private var isBubbleTransparent: Bool {
         if wasRemotelyDeleted {
             return false
@@ -272,7 +276,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     public func configureCellRootComponent(cellView: UIView,
                                            cellMeasurement: CVCellMeasurement,
                                            componentDelegate: CVComponentDelegate,
-                                           cellSelection: CVCellSelection,
                                            messageSwipeActionState: CVMessageSwipeActionState,
                                            componentView: CVComponentView) {
 
@@ -419,9 +422,60 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         var hOuterStackSubviews = [UIView]()
         if isShowingSelectionUI || wasShowingSelectionUI {
-            let selectionView = componentView.selectionView
-            selectionView.isSelected = componentDelegate.cvc_isMessageSelected(interaction)
-            hOuterStackSubviews.append(selectionView)
+            let primarySelectionView = componentView.primarySelectionView
+            primarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
+                                                                                          selectionType: .primaryContent)
+
+            let selectionWrapper = componentView.selectionWrapper
+            if hasSecondaryContentForSelection,
+               let bodyTextRootView = CVComponentBodyText.findBodyTextRootView(outerContentView) {
+                let secondarySelectionView = componentView.secondarySelectionView
+                secondarySelectionView.isSelected = componentDelegate.selectionState.isSelected(interaction.uniqueId,
+                                                                                                selectionType: .secondaryContent)
+
+                let selectionLayoutBlock = { (_: UIView) -> Void in
+                    let size = MessageSelectionView.contentSize
+                    let selectionView = primarySelectionView
+                    guard let superview = selectionView.superview else {
+                        owsFailDebug("Missing superview.")
+                        return
+                    }
+                    let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
+
+                    // Primary should v-align with the center of the area above the body text.
+                    let primaryY = bodyTextFrame.y * 0.5 - size.height * 0.5
+                    primarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: primaryY), size: size)
+                    // Secondary should v-align with the center of the body text.
+                    let secondaryY = bodyTextFrame.midY - size.height * 0.5
+                    secondarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: secondaryY), size: size)
+                }
+                // When doing "partial" selection, the selection UI needs to
+                // align with the corresponding content views.
+                //
+                // Coordinating layout of "distant cousin" views in a view hierarchy
+                // is trivial with iOS Auto Layout, but hard with manual layout, since
+                // changes to any "intermediary" relative can affect the coordination,
+                // and for a rich view hierarchy it's not practical to observe all of
+                // the "intermediaries".  It's also impractical to calculate their
+                // relative positions using the "measurement/layout" state.
+                //
+                // Therefore, we coordinate their layouts by:
+                //
+                // * Using layout blocks that use the actual final layouts.
+                // * Adding the layout block (selectionLayoutBlock) to both
+                //   the immediate parent (as usual) and to the "oldest common
+                //   ancestor" (unusual).  The latter ensures that we re-layout
+                //   whenever the cell changes size, for example.
+                selectionWrapper.addSubview(primarySelectionView, withLayoutBlock: { _ in })
+                selectionWrapper.addSubview(secondarySelectionView, withLayoutBlock: { _ in })
+                selectionWrapper.addLayoutBlock(selectionLayoutBlock)
+                outerContentView.addLayoutBlock(selectionLayoutBlock)
+                outerContentView.setNeedsLayout()
+            } else {
+                selectionWrapper.addSubviewToCenterOnSuperview(primarySelectionView,
+                                                               size: MessageSelectionView.contentSize)
+            }
+            hOuterStackSubviews.append(selectionWrapper)
         }
 
         if isOutgoing {
@@ -549,22 +603,28 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         componentView.hInnerStack.accessibilityLabel = buildAccessibilityLabel(componentView: componentView)
         componentView.hInnerStack.isAccessibilityElement = true
 
+        var selectionViews: [ManualLayoutView] = [ componentView.primarySelectionView ]
+        if hasSecondaryContentForSelection {
+            selectionViews.append(componentView.secondarySelectionView)
+        }
+
         // Configure hOuterStack/hInnerStack animations animations
         if isShowingSelectionUI || wasShowingSelectionUI {
             // Configure selection animations
-            let selectionView = componentView.selectionView
             let selectionViewWidth = ConversationStyle.selectionViewWidth
             let layoutMargins = CurrentAppContext().isRTL ? hOuterStackConfig.layoutMargins.right : hOuterStackConfig.layoutMargins.left
             let selectionOffset = -(layoutMargins + selectionViewWidth)
             let hInnerStackOffset = -(hOuterStackConfig.spacing + selectionViewWidth)
             if isShowingSelectionUI && !wasShowingSelectionUI { // Animate in
-                selectionView.addTransformBlock { view in
-                    let animation = CABasicAnimation(keyPath: "transform.translation.x")
-                    animation.fromValue = selectionOffset
-                    animation.toValue = 0
-                    animation.duration = CVComponentMessage.selectionAnimationDuration
-                    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-                    view.layer.add(animation, forKey: "insert")
+                for selectionView in selectionViews {
+                    selectionView.addTransformBlock { view in
+                        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                        animation.fromValue = selectionOffset
+                        animation.toValue = 0
+                        animation.duration = CVComponentMessage.selectionAnimationDuration
+                        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                        view.layer.add(animation, forKey: "insert")
+                    }
                 }
 
                 if isIncoming {
@@ -578,16 +638,18 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             } else if !isShowingSelectionUI && wasShowingSelectionUI { // Animate out
-                selectionView.addTransformBlock { view in
-                    let animation = CABasicAnimation(keyPath: "transform.translation.x")
-                    animation.fromValue = 0
-                    animation.toValue = selectionOffset
-                    animation.duration = CVComponentMessage.selectionAnimationDuration
-                    animation.isRemovedOnCompletion = false
-                    animation.repeatCount = 0
-                    animation.fillMode = CAMediaTimingFillMode.forwards
-                    animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-                    view.layer.add(animation, forKey: "remove")
+                for selectionView in selectionViews {
+                    selectionView.addTransformBlock { view in
+                        let animation = CABasicAnimation(keyPath: "transform.translation.x")
+                        animation.fromValue = 0
+                        animation.toValue = selectionOffset
+                        animation.duration = CVComponentMessage.selectionAnimationDuration
+                        animation.isRemovedOnCompletion = false
+                        animation.repeatCount = 0
+                        animation.fillMode = CAMediaTimingFillMode.forwards
+                        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                        view.layer.add(animation, forKey: "remove")
+                    }
                 }
 
                 if isIncoming {
@@ -606,8 +668,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         } else {
             // Remove outstanding animations if needed
-            let selectionView = componentView.selectionView
-            selectionView.invalidateTransformBlocks()
+            for selectionView in selectionViews {
+                selectionView.invalidateTransformBlocks()
+            }
             hInnerStack.invalidateTransformBlocks()
         }
 
@@ -616,7 +679,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private func configureContentStack(componentView: CVComponentViewMessage,
                                        cellMeasurement: CVCellMeasurement,
-                                       componentDelegate: CVComponentDelegate) -> UIView {
+                                       componentDelegate: CVComponentDelegate) -> ManualLayoutView {
 
         let topFullWidthSubcomponents = subcomponents(forKeys: topFullWidthCVComponentKeys)
         let topNestedSubcomponents = subcomponents(forKeys: topNestedCVComponentKeys)
@@ -1053,15 +1116,43 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
 
         if isShowingSelectionUI {
-            let selectionView = componentView.selectionView
+            // By default, use primarySelectionView to handle .allContent...
+            let primarySelectionView = componentView.primarySelectionView
+            var selectionView = primarySelectionView
+            var selectionType: CVSelectionType = .allContent
+
+            // ...but we might have separate "primary" and "secondary" selections.
+            // "Primary" is "everything but body text" and "secondary" is "just body text".
+            if hasSecondaryContentForSelection {
+                let secondarySelectionView = componentView.secondarySelectionView
+                func distanceToViewCenter(_ view: UIView) -> CGFloat {
+                    let tapLocation = sender.location(in: view)
+                    let viewCenter = view.bounds.center
+                    return tapLocation.distance(viewCenter)
+                }
+                let primaryDistance = distanceToViewCenter(primarySelectionView)
+                let secondaryDistance = distanceToViewCenter(secondarySelectionView)
+                if primaryDistance < secondaryDistance {
+                    selectionView = primarySelectionView
+                    selectionType = .primaryContent
+                } else {
+                    selectionView = secondarySelectionView
+                    selectionType = .secondaryContent
+                }
+            }
+
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if componentDelegate.cvc_isMessageSelected(interaction) {
+            let selectionState = componentDelegate.selectionState
+            if selectionState.isSelected(interaction.uniqueId, selectionType: selectionType) {
                 selectionView.isSelected = false
-                componentDelegate.cvc_didDeselectViewItem(itemViewModel)
+                componentDelegate.selectionState.remove(itemViewModel: itemViewModel,
+                                                        selectionType: selectionType)
             } else {
                 selectionView.isSelected = true
-                componentDelegate.cvc_didSelectViewItem(itemViewModel)
+                componentDelegate.selectionState.add(itemViewModel: itemViewModel,
+                                                     selectionType: selectionType)
             }
+
             // Suppress other tap handling during selection mode.
             return true
         }
@@ -1268,7 +1359,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let bottomFullWidthStackView = ManualStackView(name: "message.bottomFullWidthStackView")
         fileprivate let bottomNestedStackView = ManualStackView(name: "message.bottomNestedStackView")
 
-        fileprivate let selectionView = MessageSelectionView()
+        // If hasSecondaryContentForSelection is false, this is used to select
+        // all content.
+        //
+        // If hasSecondaryContentForSelection is true, this is used to select
+        // everything except the body text, e.g. the body media or generic attachment.
+        fileprivate lazy var primarySelectionView = MessageSelectionView()
+        // If hasSecondaryContentForSelection is true, this is used to select
+        // just the body text.
+        fileprivate lazy var secondarySelectionView = MessageSelectionView()
+        fileprivate let selectionWrapper = ManualLayoutView(name: "message.selectionWrapper")
 
         fileprivate let swipeToReplyIconView = CVImageView.circleView()
 
@@ -1448,6 +1548,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             }
+
+            selectionWrapper.reset()
 
             chatColorView.removeFromSuperview()
             chatColorView.reset()

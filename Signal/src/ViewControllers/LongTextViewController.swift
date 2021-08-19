@@ -165,7 +165,9 @@ public class LongTextViewController: OWSViewController {
 
     @objc
     func forwardButtonPressed() {
-        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
+                                                   from: self,
+                                                   delegate: self)
     }
 }
 
@@ -204,28 +206,16 @@ extension LongTextViewController: DatabaseChangeDelegate {
 // MARK: -
 
 extension LongTextViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
-                                              threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
+                                              recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            self.didForwardMessage(threads: threads)
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
-    }
-
-    func didForwardMessage(threads: [TSThread]) {
-        guard threads.count == 1 else {
-            return
-        }
-        guard let thread = threads.first else {
-            owsFailDebug("Missing thread.")
-            return
-        }
-        guard thread.uniqueId != itemViewModel.interaction.uniqueThreadId else {
-            return
-        }
-        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

@@ -162,8 +162,8 @@ extension ConversationViewController: ContactShareApprovalViewControllerDelegate
 
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in
-            let didAddToProfileWhitelist = ThreadUtil.addThread(toProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer: thread,
-                                                                transaction: transaction)
+            let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
+                                                                                                                           transaction: transaction)
 
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE

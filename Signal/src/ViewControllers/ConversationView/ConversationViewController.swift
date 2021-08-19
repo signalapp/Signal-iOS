@@ -8,6 +8,16 @@ public enum ConversationUIMode: UInt {
     case normal
     case search
     case selection
+
+    // These two modes are used to select interactions.
+    public var hasSelectionUI: Bool {
+        switch self {
+        case .normal, .search:
+            return false
+        case .selection:
+            return true
+        }
+    }
 }
 
 // MARK: -
@@ -47,6 +57,7 @@ public class ConversationViewController: OWSViewController {
         super.init()
 
         self.viewState.delegate = self
+        self.viewState.selectionState.delegate = self
 
         #if TESTABLE_BUILD
         self.initialLoadBenchSteps.step("Init CVC")

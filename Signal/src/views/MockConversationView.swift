@@ -357,13 +357,7 @@ extension MockConversationView: CVComponentDelegate {
 
     // MARK: - Selection
 
-    var isShowingSelectionUI: Bool { false }
-
-    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool { false }
-
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
-
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl) {}
+    public var selectionState: CVSelectionState { CVSelectionState() }
 
     // MARK: - System Cell
 

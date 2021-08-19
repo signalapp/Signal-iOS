@@ -218,16 +218,16 @@ extension ConversationViewController {
 // MARK: - ForwardMessageDelegate
 
 extension ConversationViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl, threads: [TSThread]) {
-        self.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
+                                              recipientThreads: [TSThread]) {
+        AssertIsOnMainThread()
 
-            guard let thread = threads.first,
-                  thread.uniqueId != self.thread.uniqueId else {
-                return
-            }
+        self.uiMode = .normal
 
-            SignalApp.shared().presentConversation(for: thread, animated: true)
+        self.dismiss(animated: true) {
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 
@@ -278,6 +278,10 @@ extension ConversationViewController: MessageActionsToolbarDelegate {
     public func messageActionsToolbar(_ messageActionsToolbar: MessageActionsToolbar, executedAction: MessageAction) {
         executedAction.block(messageActionsToolbar)
     }
+
+    public var messageActionsToolbarSelectedInteractionCount: Int {
+        self.selectionState.interactionCount
+    }
 }
 
 // MARK: -
@@ -303,11 +307,7 @@ extension ConversationViewController: GroupViewHelperDelegate {
 
 extension ConversationViewController {
     func uiModeDidChange(oldValue: ConversationUIMode) {
-        switch oldValue {
-        case .normal:
-            // no-op
-            break
-        case .search:
+        if oldValue == .search {
             if #available(iOS 13.0, *) {
                 navigationItem.searchController = nil
                 // HACK: For some reason at this point the OWSNavbar retains the extra space it
@@ -315,8 +315,6 @@ extension ConversationViewController {
                 // the search UI when scrolled to the very top of the conversation.
                 navigationController?.navigationBar.sizeToFit()
             }
-        case .selection:
-            break
         }
 
         switch uiMode {

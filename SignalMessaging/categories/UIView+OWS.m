@@ -468,8 +468,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)logFrameWithLabel:(NSString *)label
 {
-    OWSLogVerbose(@"%@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
+    OWSLogVerbose(@"%@ %@ %@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
         label,
+        self.class,
+        self.accessibilityLabel,
         NSStringFromCGRect(self.frame),
         self.hidden,
         self.layer.opacity,
@@ -488,13 +490,40 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     });
 }
 
+- (void)logHierarchyUpwardWithLabel:(NSString *)label
+{
+    NSString *prefix = [NSString stringWithFormat:@"%@ ----", label];
+    dispatch_async(dispatch_get_main_queue(), ^{ OWSLogVerbose(@"%@", prefix); });
+
+    [self traverseViewHierarchyUpwardWithVisitor:^(
+        UIView *subview) { [subview logFrameWithLabel:[prefix stringByAppendingString:@"\t"]]; }];
+}
+
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        OWSLogVerbose(@"%@ ----", label);
-    });
+    NSString *prefix = [NSString stringWithFormat:@"%@ ----", label];
+    dispatch_async(dispatch_get_main_queue(), ^{ OWSLogVerbose(@"%@", prefix); });
 
-    [self traverseViewHierarchyUpwardWithVisitor:^(UIView *subview) { [subview logFrameLaterWithLabel:@"\t"]; }];
+    [self traverseViewHierarchyUpwardWithVisitor:^(
+        UIView *subview) { [subview logFrameLaterWithLabel:[prefix stringByAppendingString:@"\t"]]; }];
+}
+
+- (void)logHierarchyDownwardWithLabel:(NSString *)label
+{
+    NSString *prefix = [NSString stringWithFormat:@"%@ ----", label];
+    dispatch_async(dispatch_get_main_queue(), ^{ OWSLogVerbose(@"%@", prefix); });
+
+    [self traverseViewHierarchyDownwardWithVisitor:^(
+        UIView *subview) { [subview logFrameWithLabel:[prefix stringByAppendingString:@"\t"]]; }];
+}
+
+- (void)logHierarchyDownwardLaterWithLabel:(NSString *)label
+{
+    NSString *prefix = [NSString stringWithFormat:@"%@ ----", label];
+    dispatch_async(dispatch_get_main_queue(), ^{ OWSLogVerbose(@"%@", prefix); });
+
+    [self traverseViewHierarchyDownwardWithVisitor:^(
+        UIView *subview) { [subview logFrameLaterWithLabel:[prefix stringByAppendingString:@"\t"]]; }];
 }
 
 - (void)traverseViewHierarchyUpwardWithVisitor:(UIViewVisitorBlock)visitor

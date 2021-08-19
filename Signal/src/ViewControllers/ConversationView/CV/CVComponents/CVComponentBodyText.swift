@@ -847,13 +847,29 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     // MARK: -
 
+    fileprivate class BodyTextRootView: ManualStackView {}
+
+    public static func findBodyTextRootView(_ view: UIView) -> UIView? {
+        if view is BodyTextRootView {
+            return view
+        }
+        for subview in view.subviews {
+            if let rootView = findBodyTextRootView(subview) {
+                return rootView
+            }
+        }
+        return nil
+    }
+
+    // MARK: -
+
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
     public class CVComponentViewBodyText: NSObject, CVComponentView {
 
         public weak var componentDelegate: CVComponentDelegate?
 
-        fileprivate let stackView = ManualStackView(name: "bodyText")
+        fileprivate let stackView = BodyTextRootView(name: "bodyText")
 
         private var _bodyTextLabel: CVBodyTextLabel?
         fileprivate var possibleBodyTextLabel: CVBodyTextLabel? { _bodyTextLabel }

@@ -427,7 +427,7 @@ extension SendMessageFlow {
                 try enqueueBlock(thread)
 
                 // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
             return threads
         }
@@ -489,6 +489,10 @@ extension SendMessageFlow: ConversationPickerDelegate {
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return unapprovedContent.needsApproval ? .next : .send
     }
+
+    var conversationPickerHasTextInput: Bool { false }
+
+    var conversationPickerTextInputDefaultText: String? { nil }
 }
 
 // MARK: -

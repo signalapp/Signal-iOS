@@ -619,7 +619,7 @@ fileprivate extension CVComponentState.Builder {
 
         self.failedOrPendingDownloads = tryToBuildFailedOrPendingDownloads()
 
-        switch interaction.interactionType() {
+        switch interaction.interactionType {
         case .threadDetails:
             self.threadDetails = buildThreadDetails()
             return build()
@@ -674,7 +674,7 @@ fileprivate extension CVComponentState.Builder {
             owsFailDebug("Unknown interaction type.")
             return build()
         default:
-            owsFailDebug("Invalid interaction type: \(NSStringFromOWSInteractionType(interaction.interactionType()))")
+            owsFailDebug("Invalid interaction type: \(NSStringFromOWSInteractionType(interaction.interactionType))")
             return build()
         }
     }
@@ -1223,5 +1223,41 @@ fileprivate extension CVComponentState {
                                                               transaction: transaction)
         displayableTextCache.setObject(displayableText, forKey: cacheKey)
         return displayableText
+    }
+}
+
+// MARK: -
+
+public extension CVComponentState {
+    var hasPrimaryAndSecondaryContentForSelection: Bool {
+        var hasPrimaryContent = false
+
+        // Search for a component that qualifies as "non-body text primary".
+        for key in activeComponentStateKeys {
+            switch key {
+            case .bodyText, .linkPreview:
+                // "Primary" content is not body text.
+                // A link preview is associated with the body text.
+                break
+            case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
+                hasPrimaryContent = true
+            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+                // "Primary" content is not just metadata / UI.
+                break
+            case .viewOnce:
+                // We should never forward view-once messages.
+                break
+            case .systemMessage:
+                // We should never forward system messages.
+                break
+            case .quotedReply:
+                // Quoted replies are never forwarded.
+                break
+            }
+        }
+
+        let hasSecondaryContent = bodyText != nil
+
+        return hasPrimaryContent && hasSecondaryContent
     }
 }

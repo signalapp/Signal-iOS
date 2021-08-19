@@ -43,7 +43,7 @@ extension TSInteraction {
     /// `mostRecentInteractionForInbox(transaction:)` implementations in InteractionFinder.swift.
     @objc
     public func shouldAppearInInbox(transaction: SDSAnyReadTransaction) -> Bool {
-        if !shouldBeSaved || isDynamicInteraction() || self is OWSOutgoingSyncMessage {
+        if !shouldBeSaved || isDynamicInteraction || self is OWSOutgoingSyncMessage {
             owsFailDebug("Unexpected interaction type: \(type(of: self))")
             return false
         }

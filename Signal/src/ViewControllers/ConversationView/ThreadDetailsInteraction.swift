@@ -7,12 +7,12 @@ import Foundation
 @objc(OWSThreadDetailsInteraction)
 public class ThreadDetailsInteraction: TSInteraction {
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .threadDetails
+    public override var interactionType: OWSInteractionType {
+        .threadDetails
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

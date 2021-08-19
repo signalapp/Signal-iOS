@@ -320,11 +320,11 @@ extension HVTableDataSource: UITableViewDelegate {
         guard viewController.canPresentPreview(fromIndexPath: indexPath) else {
             return nil
         }
-        guard let threadId = renderState.thread(forIndexPath: indexPath) else {
+        guard let thread = renderState.thread(forIndexPath: indexPath) else {
             return nil
         }
 
-        return UIContextMenuConfiguration(identifier: threadId,
+        return UIContextMenuConfiguration(identifier: thread.uniqueId as NSString,
                                           previewProvider: { [weak viewController] in
                                             viewController?.createPreviewController(atIndexPath: indexPath)
                                           },

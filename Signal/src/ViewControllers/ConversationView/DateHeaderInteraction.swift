@@ -7,12 +7,12 @@ import Foundation
 @objc(OWSDateHeaderInteraction)
 public class DateHeaderInteraction: TSInteraction {
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .dateHeader
+    public override var interactionType: OWSInteractionType {
+        .dateHeader
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

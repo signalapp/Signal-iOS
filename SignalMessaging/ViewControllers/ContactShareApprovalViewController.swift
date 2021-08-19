@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -562,4 +562,8 @@ extension ContactShareApprovalViewController: ApprovalFooterDelegate {
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
     }
+
+    public var approvalFooterHasTextInput: Bool { false }
+
+    public var approvalFooterTextInputDefaultText: String? { nil }
 }

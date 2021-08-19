@@ -588,7 +588,7 @@ extension ConversationHeaderDelegate {
             }
         } else if let groupThread = thread as? TSGroupThread {
             // We initiated a call, so if there was a pending message request we should accept it.
-            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             GroupCallViewController.presentLobby(thread: groupThread)
         } else if let contactThread = thread as? TSContactThread {
 
@@ -603,7 +603,7 @@ extension ConversationHeaderDelegate {
             guard !didShowSNAlert else { return }
 
             // We initiated a call, so if there was a pending message request we should accept it.
-            ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
 
             outboundIndividualCallInitiator.initiateCall(address: contactThread.contactAddress, isVideo: withVideo)
         }

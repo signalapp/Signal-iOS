@@ -316,8 +316,8 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     public override func menuAccessory(configuration: ContextMenuConfiguration) -> ContextMenuActionsAccessory {
         let isRTL = CurrentAppContext().isRTL
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
-        let isIncomingMessage = itemViewModel.interaction.interactionType() == .incomingMessage
-        let isMessageType = itemViewModel.interaction.interactionType() == .outgoingMessage || isIncomingMessage
+        let isIncomingMessage = itemViewModel.interaction.interactionType == .incomingMessage
+        let isMessageType = itemViewModel.interaction.interactionType == .outgoingMessage || isIncomingMessage
         let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isIncomingMessage ? (isRTL ? .trailing : .leading) : (isRTL ? .leading : .trailing)
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.bottom, .exterior), (horizontalEdgeAlignment, .interior)], alignmentOffset: CGPoint(x: 0, y: 12))
         let accessory = ContextMenuActionsAccessory(menu: menu, accessoryAlignment: alignment)

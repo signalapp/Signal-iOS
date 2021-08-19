@@ -81,13 +81,15 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl) {
-        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
+                                                   from: self,
+                                                   delegate: self)
     }
 
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl) {
         uiMode = .selection
 
-        self.addToSelection(itemViewModel.interaction.uniqueId)
+        selectionState.add(itemViewModel: itemViewModel, selectionType: .allContent)
     }
 
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl) {

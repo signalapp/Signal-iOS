@@ -22,7 +22,7 @@ public class ContextMenuRectionBarAccessory: ContextMenuTargetedPreviewAccessory
 
         reactionPicker = MessageReactionPicker(selectedEmoji: itemViewModel?.reactionState?.localUserEmoji, delegate: nil)
         let isRTL = CurrentAppContext().isRTL
-        let isIncomingMessage = itemViewModel?.interaction.interactionType() == .incomingMessage
+        let isIncomingMessage = itemViewModel?.interaction.interactionType == .incomingMessage
         let alignmnetOffset = isIncomingMessage && thread.isGroupThread ? (isRTL ? 22 : -22) : 0
         let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isIncomingMessage ? (isRTL ? .trailing : .leading) : (isRTL ? .leading : .trailing)
         let alignment = ContextMenuTargetedPreviewAccessory.AccessoryAlignment(alignments: [(.top, .exterior), (horizontalEdgeAlignment, .interior)], alignmentOffset: CGPoint(x: alignmnetOffset, y: -12))

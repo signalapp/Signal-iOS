@@ -67,7 +67,7 @@ public protocol CVNode {
 // Represents some _renderable_ portion of an Conversation View item.
 // It could be the entire item or some part thereof.
 extension CVNode {
-    var interactionType: OWSInteractionType { interaction.interactionType() }
+    var interactionType: OWSInteractionType { interaction.interactionType }
 
     var isIncoming: Bool {
         interaction as? TSIncomingMessage != nil
@@ -89,8 +89,8 @@ extension CVNode {
     }
 
     var hasPerConversationExpiration: Bool {
-        guard interaction.interactionType() == .incomingMessage ||
-                interaction.interactionType() == .outgoingMessage else {
+        guard interaction.interactionType == .incomingMessage ||
+                interaction.interactionType == .outgoingMessage else {
             return false
         }
         guard let message = interaction as? TSMessage else {

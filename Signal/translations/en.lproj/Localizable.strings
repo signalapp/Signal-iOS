@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
 
@@ -1734,6 +1746,15 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Forward Message";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
@@ -3094,6 +3115,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
 
@@ -3129,6 +3153,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Sticker Pack";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";

@@ -46,7 +46,7 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
     public var displayableBodyText: DisplayableText? {
         AssertIsOnMainThread()
 
-        return componentState.bodyText?.displayableText
+        return componentState.displayableBodyText
     }
 
     public var isViewOnce: Bool {
@@ -67,55 +67,49 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
     public var audioAttachmentStream: TSAttachmentStream? {
         AssertIsOnMainThread()
 
-        return componentState.audioAttachment?.attachmentStream
+        return componentState.audioAttachmentStream
     }
 
     public var genericAttachmentStream: TSAttachmentStream? {
         AssertIsOnMainThread()
 
-        return componentState.genericAttachment?.attachmentStream
+        return componentState.genericAttachmentStream
     }
 
     public var bodyMediaAttachmentStreams: [TSAttachmentStream] {
         AssertIsOnMainThread()
 
-        guard let bodyMedia = componentState.bodyMedia else {
-            return []
-        }
-        return bodyMedia.items.compactMap { $0.attachmentStream }
+        return componentState.bodyMediaAttachmentStreams
     }
 
     public var contactShare: ContactShareViewModel? {
         AssertIsOnMainThread()
 
-        guard let contactShare = componentState.contactShare else {
-            return nil
-        }
-        return contactShare.state.contactShare
+        return componentState.contactShareModel
     }
 
     public var stickerMetadata: StickerMetadata? {
         AssertIsOnMainThread()
 
-        return componentState.sticker?.stickerMetadata
+        return componentState.stickerMetadata
     }
 
     public var stickerAttachment: TSAttachmentStream? {
         AssertIsOnMainThread()
 
-        return componentState.sticker?.attachmentStream
+        return componentState.stickerAttachment
     }
 
     public var stickerInfo: StickerInfo? {
         AssertIsOnMainThread()
 
-        return componentState.sticker?.stickerMetadata?.stickerInfo
+        return componentState.stickerInfo
     }
 
     public var linkPreview: OWSLinkPreview? {
         AssertIsOnMainThread()
 
-        return componentState.linkPreview?.linkPreview
+        return componentState.linkPreviewModel
     }
 
     public var linkPreviewAttachment: TSAttachment? {
@@ -239,5 +233,52 @@ extension CVItemViewModelImpl {
         databaseStorage.asyncWrite { transaction in
             interaction.anyRemove(transaction: transaction)
         }
+    }
+}
+
+// MARK: -
+
+public extension CVComponentState {
+
+    var displayableBodyText: DisplayableText? {
+        bodyText?.displayableText
+    }
+
+    var audioAttachmentStream: TSAttachmentStream? {
+        audioAttachment?.attachmentStream
+    }
+
+    var genericAttachmentStream: TSAttachmentStream? {
+        genericAttachment?.attachmentStream
+    }
+
+    var bodyMediaAttachmentStreams: [TSAttachmentStream] {
+        guard let bodyMedia = self.bodyMedia else {
+            return []
+        }
+        return bodyMedia.items.compactMap { $0.attachmentStream }
+    }
+
+    var contactShareModel: ContactShareViewModel? {
+        guard let contactShare = self.contactShare else {
+            return nil
+        }
+        return contactShare.state.contactShare
+    }
+
+    var stickerMetadata: StickerMetadata? {
+        sticker?.stickerMetadata
+    }
+
+    var stickerAttachment: TSAttachmentStream? {
+        sticker?.attachmentStream
+    }
+
+    var stickerInfo: StickerInfo? {
+        sticker?.stickerMetadata?.stickerInfo
+    }
+
+    var linkPreviewModel: OWSLinkPreview? {
+        linkPreview?.linkPreview
     }
 }

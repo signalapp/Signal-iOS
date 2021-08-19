@@ -103,13 +103,7 @@ public protocol CVComponentDelegate {
 
     // MARK: - Selection
 
-    var isShowingSelectionUI: Bool { get }
-
-    func cvc_isMessageSelected(_ interaction: TSInteraction) -> Bool
-
-    func cvc_didSelectViewItem(_ itemViewModel: CVItemViewModelImpl)
-
-    func cvc_didDeselectViewItem(_ itemViewModel: CVItemViewModelImpl)
+    var selectionState: CVSelectionState { get }
 
     // MARK: - System Cell
 

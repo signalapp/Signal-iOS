@@ -357,7 +357,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                     )
                 }.map(on: .global()) {
                     // We're sending a message, so we're accepting any pending message request.
-                    ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: self.thread)
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: self.thread)
                 }.then { () -> Promise<Void> in
                     if self.newAccessMembers != self.oldAccessMembers {
                         return GroupManager.changeGroupMembershipAccessV2(

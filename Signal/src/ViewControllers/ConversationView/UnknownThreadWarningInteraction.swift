@@ -7,12 +7,12 @@ import Foundation
 @objc(OWSUnknownThreadWarningInteraction)
 public class UnknownThreadWarningInteraction: TSInteraction {
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .unknownThreadWarning
+    public override var interactionType: OWSInteractionType {
+        .unknownThreadWarning
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

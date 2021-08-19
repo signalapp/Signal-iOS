@@ -8,12 +8,12 @@ import Foundation
 public class TypingIndicatorInteraction: TSInteraction {
     public static let TypingIndicatorId = "TypingIndicator"
 
-    public override func isDynamicInteraction() -> Bool {
-        return true
+    public override var isDynamicInteraction: Bool {
+        true
     }
 
-    public override func interactionType() -> OWSInteractionType {
-        return .typingIndicator
+    public override var interactionType: OWSInteractionType {
+        .typingIndicator
     }
 
     @available(*, unavailable, message: "use other constructor instead.")

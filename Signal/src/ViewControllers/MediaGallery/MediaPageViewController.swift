@@ -335,7 +335,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy var videoPauseBarButton: UIBarButtonItem = {
         let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
-            #selector(didPressPauseBarButton))
+                                                    #selector(didPressPauseBarButton))
         videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPauseBarButton
     }()
@@ -411,7 +411,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ForwardMessageNavigationController.present(for: itemViewModel, from: self, delegate: self)
+        ForwardMessageNavigationController.present(forItemViewModels: [itemViewModel],
+                                                   from: self,
+                                                   delegate: self)
     }
 
     @objc
@@ -423,9 +425,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
         let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
-                                         style: .destructive) { _ in
-                                            let deletedItem = currentViewController.galleryItem
-                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
+                                             style: .destructive) { _ in
+            let deletedItem = currentViewController.galleryItem
+            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -895,10 +897,10 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         guard let animator = animator as? MediaDismissAnimationController,
-            let interactionController = animator.interactionController,
-            interactionController.interactionInProgress
-            else {
-                return nil
+              let interactionController = animator.interactionController,
+              interactionController.interactionInProgress
+        else {
+            return nil
         }
         return interactionController
     }
@@ -907,29 +909,16 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 // MARK: -
 
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(itemViewModel: CVItemViewModelImpl,
-                                              threads: [TSThread]) {
+    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
+                                              recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            self.didForwardMessage(itemViewModel: itemViewModel, threads: threads)
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
-    }
-
-    func didForwardMessage(itemViewModel: CVItemViewModelImpl,
-                           threads: [TSThread]) {
-        guard threads.count == 1 else {
-            return
-        }
-        guard let thread = threads.first else {
-            owsFailDebug("Missing thread.")
-            return
-        }
-        guard thread.uniqueId != itemViewModel.interaction.uniqueThreadId else {
-            return
-        }
-        SignalApp.shared().presentConversation(for: thread, animated: true)
     }
 }

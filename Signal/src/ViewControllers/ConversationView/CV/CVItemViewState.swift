@@ -28,8 +28,11 @@ public struct CVItemViewState: Equatable {
     let bodyTextState: CVComponentBodyText.State?
     let nextAudioAttachment: AudioAttachment?
 
-    let isShowingSelectionUI: Bool
-    let wasShowingSelectionUI: Bool
+    let uiMode: ConversationUIMode
+    let previousUIMode: ConversationUIMode
+
+    public var isShowingSelectionUI: Bool { uiMode.hasSelectionUI }
+    public var wasShowingSelectionUI: Bool { previousUIMode.hasSelectionUI }
 
     public class Builder {
         var shouldShowSenderAvatar = false
@@ -43,8 +46,8 @@ public struct CVItemViewState: Equatable {
         var dateHeaderState: CVComponentDateHeader.State?
         var bodyTextState: CVComponentBodyText.State?
         var nextAudioAttachment: AudioAttachment?
-        var isShowingSelectionUI = false
-        var wasShowingSelectionUI = false
+        var uiMode: ConversationUIMode = .normal
+        var previousUIMode: ConversationUIMode = .normal
 
         func build() -> CVItemViewState {
             CVItemViewState(shouldShowSenderAvatar: shouldShowSenderAvatar,
@@ -58,8 +61,8 @@ public struct CVItemViewState: Equatable {
                             dateHeaderState: dateHeaderState,
                             bodyTextState: bodyTextState,
                             nextAudioAttachment: nextAudioAttachment,
-                            isShowingSelectionUI: isShowingSelectionUI,
-                            wasShowingSelectionUI: wasShowingSelectionUI)
+                            uiMode: uiMode,
+                            previousUIMode: previousUIMode)
         }
     }
 }
@@ -244,7 +247,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         itemViewState.footerState = CVComponentFooter.buildState(interaction: interaction,
                                                                  hasTapForMore: hasTapForMore)
 
-        if interaction.interactionType() == .dateHeader {
+        if interaction.interactionType == .dateHeader {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)
         }
         if let bodyText = item.componentState.bodyText {
@@ -254,8 +257,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                                          hasTapForMore: hasTapForMore,
                                                                          hasPendingMessageRequest: threadViewModel.hasPendingMessageRequest)
         }
-        itemViewState.wasShowingSelectionUI = viewStateSnapshot.wasShowingSelectionUI
-        itemViewState.isShowingSelectionUI = viewStateSnapshot.isShowingSelectionUI
+        itemViewState.uiMode = viewStateSnapshot.uiMode
+        itemViewState.previousUIMode = viewStateSnapshot.previousUIMode
 
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
@@ -372,13 +375,13 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                     transaction: transaction)
             }
 
-        } else if [.call, .info, .error].contains(interaction.interactionType()) {
+        } else if [.call, .info, .error].contains(interaction.interactionType) {
             // clustering
 
             if let previousItem = previousItem,
-               interaction.interactionType() == previousItem.interaction.interactionType() {
+               interaction.interactionType == previousItem.interaction.interactionType {
 
-                switch previousItem.interaction.interactionType() {
+                switch previousItem.interaction.interactionType {
                 case .error:
                     if let errorMessage = interaction as? TSErrorMessage,
                        let previousErrorMessage = previousItem.interaction as? TSErrorMessage,
@@ -407,8 +410,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             }
 
             if let nextItem = nextItem,
-               interaction.interactionType() == nextItem.interaction.interactionType() {
-                switch nextItem.interaction.interactionType() {
+               interaction.interactionType == nextItem.interaction.interactionType {
+                switch nextItem.interaction.interactionType {
                 case .error:
                     if let errorMessage = interaction as? TSErrorMessage,
                        let nextErrorMessage = nextItem.interaction as? TSErrorMessage,
@@ -671,11 +674,11 @@ private class ItemBuilder {
     }
 
     var interactionType: OWSInteractionType {
-        interaction.interactionType()
+        interaction.interactionType
     }
 
     var canShowDate: Bool {
-        switch interaction.interactionType() {
+        switch interaction.interactionType {
         case .unknown, .typingIndicator, .threadDetails, .dateHeader, .unknownThreadWarning, .defaultDisappearingMessageTimer:
             return false
         case .info:
