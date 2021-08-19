@@ -20,6 +20,10 @@
 	<string>5.19.0</string>
 	<key>CFBundleVersion</key>
 	<string>5.19.0.33</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>Inter-Medium.otf</string>
+    </array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
