@@ -21,7 +21,12 @@ class UsernameViewController: OWSTableViewController2 {
         case startsWithNumber
     }
     private var validationState: ValidationState = .valid {
-        didSet { updateTableContents() }
+        didSet {
+            let didChange = oldValue != validationState
+            if didChange, isViewLoaded {
+                updateTableContents()
+            }
+        }
     }
 
     required init(username: String?) {
@@ -97,7 +102,7 @@ class UsernameViewController: OWSTableViewController2 {
 
         updateNavigation()
 
-        // TODO: First responder
+        usernameTextField.becomeFirstResponder()
     }
 
     private func createViews() {
@@ -147,7 +152,13 @@ class UsernameViewController: OWSTableViewController2 {
         ))
         contents.addSection(section)
 
+        let wasFirstResponder = usernameTextField.isFirstResponder
+
         self.contents = contents
+
+        if wasFirstResponder {
+            usernameTextField.becomeFirstResponder()
+        }
     }
 
     override func themeDidChange() {
@@ -297,7 +308,7 @@ extension UsernameViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField,
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
-        return TextFieldHelper.textField(
+        TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string,
