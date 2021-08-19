@@ -884,19 +884,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    NSMutableSet<NSString *> *quotedReplyAttachmentIds = [NSMutableSet new];
-    if (self.quotedMessage.thumbnailAttachmentStreamIds != nil) {
-        [quotedReplyAttachmentIds addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
+    if (self.quotedMessage.thumbnailAttachmentId) {
+        [unknownAttachmentIds removeObject:self.quotedMessage.thumbnailAttachmentId];
     }
-    if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
-        [quotedReplyAttachmentIds addObject:self.quotedMessage.thumbnailAttachmentPointerId];
-    }
-    [unknownAttachmentIds minusSet:quotedReplyAttachmentIds];
-    if (shouldRemoveQuotedReply) {
-        for (NSString *attachmentId in quotedReplyAttachmentIds) {
-            OWSLogVerbose(@"Removing quoted reply attachment.");
-            [self removeAttachmentWithId:attachmentId transaction:transaction];
-        }
+    if (shouldRemoveQuotedReply && self.quotedMessage.thumbnailAttachmentId) {
+        OWSLogVerbose(@"Removing quoted reply attachment.");
+        [self removeAttachmentWithId:self.quotedMessage.thumbnailAttachmentId transaction:transaction];
     }
 
     // Err on the side of cleaning up unknown attachments.

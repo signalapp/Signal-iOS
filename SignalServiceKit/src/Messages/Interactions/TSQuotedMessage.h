@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class MessageBodyRanges;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SignalServiceAddress;
