@@ -332,14 +332,18 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
             return;
         }
 
+        BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
+
         if (fileNameDidChange && _avatarFileName.length > 0) {
             NSString *oldAvatarFilePath = [OWSUserProfile profileAvatarFilepathWithFilename:_avatarFileName];
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (isLocalUserProfile) {
+                    OWSLogInfo(@"Deleting local avatarFileName (%@)", NSStringForUserProfileWriter(userProfileWriter));
+                }
                 [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
             });
         }
 
-        BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
             OWSLogInfo(@"local avatarUrlPath (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
@@ -404,14 +408,18 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
             return;
         }
 
+        BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
+
         if (_avatarFileName) {
             NSString *oldAvatarFilePath = [OWSUserProfile profileAvatarFilepathWithFilename:_avatarFileName];
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (isLocalUserProfile) {
+                    OWSLogInfo(@"Deleting local avatarFileName (%@)", NSStringForUserProfileWriter(userProfileWriter));
+                }
                 [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
             });
         }
 
-        BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
             OWSLogInfo(@"local avatarFileName (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
