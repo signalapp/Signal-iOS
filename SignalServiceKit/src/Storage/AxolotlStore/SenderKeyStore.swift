@@ -10,8 +10,8 @@ public class SenderKeyStore: NSObject {
 
     // MARK: - Storage properties
     private let storageLock = UnfairLock()
-    private var sendingDistributionIdCache: [ThreadUniqueId: DistributionId] = [:]
-    private var keyCache: [DistributionId: KeyMetadata] = [:]
+    private var sendingDistributionIdCache: LRUCache<ThreadUniqueId, DistributionId> = LRUCache(maxSize: 100)
+    private var keyCache: LRUCache<DistributionId, KeyMetadata> = LRUCache(maxSize: 100)
 
     public override init() {
         super.init()
@@ -120,8 +120,8 @@ public class SenderKeyStore: NSObject {
     @objc
     public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            sendingDistributionIdCache = [:]
-            keyCache = [:]
+            sendingDistributionIdCache.clear()
+            keyCache.clear()
             keyMetadataStore.removeAll(transaction: writeTx)
             sendingDistributionIdStore.removeAll(transaction: writeTx)
         }

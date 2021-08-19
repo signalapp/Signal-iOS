@@ -6,7 +6,7 @@ import SignalClient
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
-public enum SealedSenderContentHint: Int {
+public enum SealedSenderContentHint: Int, CustomStringConvertible {
     /// Indicates that the content of a message is user-visible and will not be resent.
     /// Insert a placeholder: No
     /// Show error to user: Yes, immediately
@@ -39,6 +39,14 @@ public enum SealedSenderContentHint: Int {
         case .default: return .default
         case .resendable: return .resendable
         case .implicit: return .implicit
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .default: return "default"
+        case .resendable: return "resendable"
+        case .implicit: return "implicit"
         }
     }
 }

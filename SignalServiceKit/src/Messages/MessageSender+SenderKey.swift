@@ -163,7 +163,7 @@ extension MessageSender {
             }
 
             return firstly { () -> Promise<SenderKeySendResult> in
-                Logger.info("Sending sender key message to \(senderKeyRecipients)")
+                Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(senderKeyRecipients)")
                 return self.sendSenderKeyRequest(
                     message: message,
                     plaintext: plaintextContent,
@@ -172,7 +172,7 @@ extension MessageSender {
                     udAccessMap: udAccessMap,
                     senderCertificate: senderCertificates.uuidOnlyCert)
             }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
-                Logger.info("Sender key message sent! Recipients: \(sendResult.successAddresses). Unregistered: \(sendResult.unregisteredAddresses)")
+                Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successAddresses). Unregistered: \(sendResult.unregisteredAddresses)")
 
                 return try self.databaseStorage.write { writeTx in
                     sendResult.unregisteredAddresses.forEach { address in
@@ -558,7 +558,7 @@ extension MessageSender {
         var urlComponents = URLComponents(string: "v1/messages/multi_recipient")
         urlComponents?.queryItems = [
             .init(name: "ts", value: "\(timestamp)"),
-            .init(name: "isOnline", value: "\(isOnline)")
+            .init(name: "online", value: "\(isOnline)")
         ]
 
         guard let urlString = urlComponents?.string else {

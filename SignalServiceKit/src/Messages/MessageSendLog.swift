@@ -8,9 +8,9 @@ import GRDB
 @objc
 public class MessageSendLog: NSObject {
 
-    private static let payloadLifetime = -kDayInterval
+    private static let payloadLifetime = RemoteConfig.messageSendLogEntryLifetime
     private static var payloadExpirationDate: Date {
-        Date(timeIntervalSinceNow: payloadLifetime)
+        Date(timeIntervalSinceNow: -payloadLifetime)
     }
 
     @objc
