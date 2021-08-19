@@ -37,7 +37,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
         super.init()
 
-        performStep(.firstStep)
+        selectRecipientsStep()
     }
 
     public class func present(forItemViewModels itemViewModels: [CVItemViewModelImpl],
@@ -74,32 +74,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         let modal = ForwardMessageNavigationController(content: content)
         modal.forwardMessageDelegate = delegate
         fromViewController.presentFormSheet(modal, animated: true)
-    }
-
-    fileprivate enum Step {
-        case selectRecipients
-        case send
-
-        static var firstStep: Step { .selectRecipients }
-
-        var nextStep: Step {
-            switch self {
-            case .selectRecipients:
-                return .send
-            case .send:
-                owsFailDebug("There is no next step.")
-                return .send
-            }
-        }
-    }
-
-    private func performStep(_ step: Step) {
-        switch step {
-        case .selectRecipients:
-            selectRecipientsStep()
-        case .send:
-            sendStep()
-        }
     }
 
     private func selectRecipientsStep() {
@@ -236,8 +210,6 @@ extension ForwardMessageNavigationController {
             }
         } else if let contactShare = item.contactShare {
             return send(toRecipientThreads: recipientThreads) { recipientThread in
-                //                let contactShareCopy = contactShare.copyForResending()
-
                 if let avatarImage = contactShare.avatarImage {
                     self.databaseStorage.write { transaction in
                         contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
@@ -346,7 +318,7 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
         self.textMessage = conversationPickerViewController.textInput?.strippedOrNil
 
-        performStep(Step.selectRecipients.nextStep)
+        sendStep()
     }
 
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {

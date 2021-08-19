@@ -177,24 +177,6 @@ public class CVSelectionState: NSObject {
         delegate?.selectionStateDidChange()
     }
 
-    fileprivate func selectedInteractionIds(withSelectionType filterSelectionType: CVSelectionType) -> Set<String> {
-        AssertIsOnMainThread()
-
-        return Set(itemMap.values.compactMap { (item: CVSelectionItem) -> String? in
-            if item.selectionType.intersection(filterSelectionType).isEmpty {
-                return nil
-            } else {
-                return item.interactionId
-            }
-        })
-    }
-
-    public var selectedInteractionIds: Set<String> {
-        AssertIsOnMainThread()
-
-        return Set(itemMap.keys)
-    }
-
     public var selectionItems: [CVSelectionItem] {
         AssertIsOnMainThread()
 
@@ -258,26 +240,6 @@ extension CVSelectionState {
 // MARK: -
 
 extension ConversationViewController {
-
-    //    func clearSelection() {
-    //        cellSelection.reset()
-    //        clearCollectionViewSelection()
-    //    }
-    //
-    //    func clearCollectionViewSelection() {
-    //        guard let selectedIndices = collectionView.indexPathsForSelectedItems else {
-    //            owsFailDebug("selectedIndices was unexpectedly nil")
-    //            return
-    //        }
-    //
-    //        for index in selectedIndices {
-    //            collectionView.deselectItem(at: index, animated: false)
-    //            guard let cell = collectionView.cellForItem(at: index) else {
-    //                continue
-    //            }
-    //            cell.isSelected = false
-    //        }
-    //    }
 
     public func buildSelectionToolbar() -> MessageActionsToolbar {
         let deleteMessagesAction = MessageAction(
