@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSQuotedMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachment.h>
@@ -10,7 +11,6 @@
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,14 +20,12 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     OWSAttachmentInfoReferenceUnset = 0,
 
     /// An attachment ID referencing original media
-    /// This should only be used prior to sending a new quoted message. After sending, a copy of the source media should be thumbnailed
-    /// and saved in its own attachment.
-    /// An attachment ID referencing original media
-    /// Indicates a valid handle to the original media, this may be a pointer to a pending download, or a stream.
-    /// If a pointer, we should show the blurhash. If it's a stream, we should thumbnail the original and save in a separate attachment.
-    /// An attachment ID referencing the quoted thumbnail
-    /// This thumbnail may have been generated locally, or it may have been fetched remotely from the sender of the quoted message.
-    /// An attachment ID referencing
+    /// This should only be used prior to sending a new quoted message. After sending, a copy of the source media should
+    /// be thumbnailed and saved in its own attachment. An attachment ID referencing original media Indicates a valid
+    /// handle to the original media, this may be a pointer to a pending download, or a stream. If a pointer, we should
+    /// show the blurhash. If it's a stream, we should thumbnail the original and save in a separate attachment. An
+    /// attachment ID referencing the quoted thumbnail This thumbnail may have been generated locally, or it may have
+    /// been fetched remotely from the sender of the quoted message. An attachment ID referencing
 
     OWSAttachmentInfoReferenceOriginalForSend = 1,
     OWSAttachmentInfoReferenceOriginal,
@@ -78,7 +76,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     return self;
 }
 
-+ (NSUInteger)currentSchemaVersion {
++ (NSUInteger)currentSchemaVersion
+{
     return 1;
 }
 
@@ -90,8 +89,10 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     }
 
     if (_schemaVersion == 0) {
-        NSString *_Nullable oldStreamId = [coder decodeObjectOfClass:[NSString class] forKey:@"thumbnailAttachmentStreamId"];
-        NSString *_Nullable oldPointerId = [coder decodeObjectOfClass:[NSString class] forKey:@"thumbnailAttachmentPointerId"];
+        NSString *_Nullable oldStreamId = [coder decodeObjectOfClass:[NSString class]
+                                                              forKey:@"thumbnailAttachmentStreamId"];
+        NSString *_Nullable oldPointerId = [coder decodeObjectOfClass:[NSString class]
+                                                               forKey:@"thumbnailAttachmentPointerId"];
         NSString *_Nullable oldSourceAttachmentId = [coder decodeObjectOfClass:[NSString class] forKey:@"attachmentId"];
 
         // Before, we maintained each of these IDs in parallel, though in practice only one in use at a time.
@@ -184,7 +185,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     }
 
     if (_quotedAttachment == nil) {
-        NSSet *expectedClasses = [NSSet setWithArray:@[[NSArray class], [OWSAttachmentInfo class]]];
+        NSSet *expectedClasses = [NSSet setWithArray:@[ [NSArray class], [OWSAttachmentInfo class] ]];
         NSArray *_Nullable attachmentInfos = [coder decodeObjectOfClasses:expectedClasses forKey:@"quotedAttachments"];
 
         if ([attachmentInfos.firstObject isKindOfClass:[OWSAttachmentInfo class]]) {
@@ -231,7 +232,9 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                                            transaction:transaction];
     if (originalMessage) {
         // Prefer to generate the quoted content locally if available.
-        quotedMessage = [self localQuotedMessageFromSourceMessage:originalMessage quoteProto:quoteProto transaction:transaction];
+        quotedMessage = [self localQuotedMessageFromSourceMessage:originalMessage
+                                                       quoteProto:quoteProto
+                                                      transaction:transaction];
     }
     if (!quotedMessage) {
         // If we couldn't generate the quoted content from locally available info, we can generate it from the proto.
@@ -265,8 +268,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 {
     if (quotedMessage.isViewOnceMessage) {
         // We construct a quote that does not include any of the quoted message's renderable content.
-        NSString *body = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE",
-                                           @"Label for outgoing view-once messages.");
+        NSString *body
+            = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing view-once messages.");
         return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
                                             authorAddress:proto.authorAddress
                                                      body:body
@@ -332,8 +335,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 }
 
 /// Builds a remote message from the proto payload
-/// @note Quoted messages constructed from proto material may not be representative of the original source content. This should be flagged
-/// to the user. (See: -[OWSQuotedReplyModel isRemotelySourced])
+/// @note Quoted messages constructed from proto material may not be representative of the original source content. This
+/// should be flagged to the user. (See: -[OWSQuotedReplyModel isRemotelySourced])
 + (nullable TSQuotedMessage *)remoteQuotedMessageFromQuoteProto:(SSKProtoDataMessageQuote *)proto
                                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -389,16 +392,17 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     // If we have an attachment stream, we should've already thumbnailed the image.
     // TODO: This will fail if we've downloaded the original source media. We need to add a hook to flag
     // that we need to thumbnail the source to our own local copy
-//
-//    BOOL needsThumbnailing = (attachmentType == OWSAttachmentInfoReferenceUntrustedPointer) ||
-//                             (attachmentType == OWSAttachmentInfoReferenceOriginal);
-//    OWSAssertDebug(![attachment isKindOfClass:[TSAttachmentStream class]] || !needsThumbnailing);
+    //
+    //    BOOL needsThumbnailing = (attachmentType == OWSAttachmentInfoReferenceUntrustedPointer) ||
+    //                             (attachmentType == OWSAttachmentInfoReferenceOriginal);
+    //    OWSAssertDebug(![attachment isKindOfClass:[TSAttachmentStream class]] || !needsThumbnailing);
     return attachment;
 }
 
 - (BOOL)isThumbnailOwned
 {
-    return (self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceUntrustedPointer || self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail);
+    return (self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceUntrustedPointer
+        || self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail);
 }
 
 - (NSString *)contentType

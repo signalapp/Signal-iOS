@@ -696,13 +696,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _body.filterStringForDisplay;
 }
 
-- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
     OWSAssertDebug(self.quotedMessage);
-    [self anyUpdateMessageWithTransaction:transaction block:^(TSMessage *message) {
-        [message.quotedMessage setThumbnailAttachmentStream:attachmentStream];
-    }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message.quotedMessage setThumbnailAttachmentStream:attachmentStream];
+                                    }];
 }
 
 #pragma mark - Update With... Methods

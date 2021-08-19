@@ -1481,14 +1481,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     if (message.quotedMessage) {
         // We need to update the message record here to reflect the new attachments we may create.
-        [message
-            anyUpdateOutgoingMessageWithTransaction:transaction
-                                              block:^(TSOutgoingMessage *message) {
-                                                  TSAttachmentStream *thumbnail = [message.quotedMessage createThumbnailIfNecessaryWithTransaction:transaction];
-            if (thumbnail.uniqueId) {
-                                                  [attachmentIds addObject:thumbnail.uniqueId];
-            }
-                                              }];
+        [message anyUpdateOutgoingMessageWithTransaction:transaction
+                                                   block:^(TSOutgoingMessage *message) {
+                                                       TSAttachmentStream *thumbnail = [message.quotedMessage
+                                                           createThumbnailIfNecessaryWithTransaction:transaction];
+                                                       if (thumbnail.uniqueId) {
+                                                           [attachmentIds addObject:thumbnail.uniqueId];
+                                                       }
+                                                   }];
     }
 
     if (message.contactShare.avatarAttachmentId != nil) {

@@ -1407,14 +1407,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     if (quotedMessage.isThumbnailOwned && quotedMessage.thumbnailAttachmentId) {
         NSString *attachmentId = quotedMessage.thumbnailAttachmentId;
-        SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder = [SSKProtoDataMessageQuoteQuotedAttachment builder];
+        SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
+            [SSKProtoDataMessageQuoteQuotedAttachment builder];
         quotedAttachmentBuilder.contentType = quotedMessage.contentType;
         quotedAttachmentBuilder.fileName = quotedMessage.sourceFilename;
         quotedAttachmentBuilder.thumbnail = [TSAttachmentStream buildProtoForAttachmentId:attachmentId
                                                                               transaction:transaction];
 
         NSError *error;
-        SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage = [quotedAttachmentBuilder buildAndReturnError:&error];
+        SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
+            [quotedAttachmentBuilder buildAndReturnError:&error];
         if (error || !quotedAttachmentMessage) {
             OWSFailDebug(@"could not build protobuf: %@", error);
             return nil;
