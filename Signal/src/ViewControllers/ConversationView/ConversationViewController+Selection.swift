@@ -339,9 +339,9 @@ extension ConversationViewController {
                 return false
             }
             if selectionType == .primaryContent {
-                message.removeNonBodyTextContent(with: transaction)
+                message.removeMediaAndShareAttachments(transaction: transaction)
             } else {
-                message.removeBodyText(with: transaction)
+                message.removeBodyText(transaction: transaction)
             }
             return true
         }

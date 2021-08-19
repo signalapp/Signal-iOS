@@ -335,7 +335,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy var videoPauseBarButton: UIBarButtonItem = {
         let videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action:
-            #selector(didPressPauseBarButton))
+                                                    #selector(didPressPauseBarButton))
         videoPauseBarButton.tintColor = Theme.darkThemePrimaryColor
         return videoPauseBarButton
     }()
@@ -425,9 +425,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
         let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
-                                         style: .destructive) { _ in
-                                            let deletedItem = currentViewController.galleryItem
-                                            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
+                                             style: .destructive) { _ in
+            let deletedItem = currentViewController.galleryItem
+            self.mediaGallery.delete(items: [deletedItem], initiatedBy: self, deleteFromDB: true)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -897,10 +897,10 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         guard let animator = animator as? MediaDismissAnimationController,
-            let interactionController = animator.interactionController,
-            interactionController.interactionInProgress
-            else {
-                return nil
+              let interactionController = animator.interactionController,
+              interactionController.interactionInProgress
+        else {
+            return nil
         }
         return interactionController
     }
@@ -912,9 +912,9 @@ extension MediaPageViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
-                                                                                          recipientThreads: recipientThreads,
-                                                                                          fromViewController: self)
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 

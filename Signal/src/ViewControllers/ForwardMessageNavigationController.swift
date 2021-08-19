@@ -374,34 +374,18 @@ extension TSAttachmentStream {
 // MARK: -
 
 extension ForwardMessageNavigationController {
-    public static func presentConversationAfterForwardIfNecessary(items: [Item],
-                                                                  recipientThreads: [TSThread],
-                                                                  fromViewController: UIViewController) {
-        let srcThreadIds = Set(items.compactMap { item in
-            item.interaction.uniqueThreadId
-        })
-        let dstThreadIds = Set(recipientThreads.compactMap { thread in
-            thread.uniqueId
-        })
-        // If the user forwarded to just one recipient thread, and it's different from
-        // the current thread, navigate to the recipient thread.
-        guard srcThreadIds != dstThreadIds,
-              dstThreadIds.count == 1,
-              let thread = recipientThreads.first else {
-
-            let toast: String
-            if items.count > 1 {
-                toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
-                                          comment: "Indicates that multiple messages were forwarded.")
-            } else {
-                toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_1",
-                                          comment: "Indicates that a single message was forwarded.")
-            }
-            fromViewController.presentToast(text: toast)
-
-            return
+    public static func finalizeForward(items: [Item],
+                                       recipientThreads: [TSThread],
+                                       fromViewController: UIViewController) {
+        let toast: String
+        if items.count > 1 {
+            toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
+                                      comment: "Indicates that multiple messages were forwarded.")
+        } else {
+            toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_1",
+                                      comment: "Indicates that a single message was forwarded.")
         }
-        SignalApp.shared().presentConversation(for: thread, animated: true)
+        fromViewController.presentToast(text: toast)
     }
 }
 

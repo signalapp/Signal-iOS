@@ -225,9 +225,9 @@ extension ConversationViewController: ForwardMessageDelegate {
         self.uiMode = .normal
 
         self.dismiss(animated: true) {
-            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
-                                                                                          recipientThreads: recipientThreads,
-                                                                                          fromViewController: self)
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 

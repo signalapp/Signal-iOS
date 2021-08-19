@@ -209,9 +209,9 @@ extension LongTextViewController: ForwardMessageDelegate {
     public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
-            ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
-                                                                                          recipientThreads: recipientThreads,
-                                                                                          fromViewController: self)
+            ForwardMessageNavigationController.finalizeForward(items: items,
+                                                               recipientThreads: recipientThreads,
+                                                               fromViewController: self)
         }
     }
 
