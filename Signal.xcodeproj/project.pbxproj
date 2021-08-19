@@ -400,6 +400,7 @@
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
 		34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */; };
+		34B85C2826CEE79300FF0DF7 /* Inter-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 883A7FC4269F58F600841DF9 /* Inter-Medium.otf */; };
 		34BB3C5D23C6644B001651FC /* GroupsV2Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5823C6644B001651FC /* GroupsV2Utils.swift */; };
 		34BB3C5E23C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5923C6644B001651FC /* GroupsV2OutgoingChangesImpl.swift */; };
 		34BB3C5F23C6644B001651FC /* GroupV2SnapshotImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB3C5A23C6644B001651FC /* GroupV2SnapshotImpl.swift */; };
@@ -4647,6 +4648,7 @@
 				883A7FB92698DB2E00841DF9 /* circles.aifc in Resources */,
 				883A7FBB2698DB2E00841DF9 /* classic.aifc in Resources */,
 				883A7FB52698DB2E00841DF9 /* synth.aifc in Resources */,
+				34B85C2826CEE79300FF0DF7 /* Inter-Medium.otf in Resources */,
 				883A7FBE2698DB2E00841DF9 /* popcorn.aifc in Resources */,
 				883A7FB42698DB2E00841DF9 /* input.aifc in Resources */,
 				883A7FB72698DB2E00841DF9 /* complete.aifc in Resources */,
