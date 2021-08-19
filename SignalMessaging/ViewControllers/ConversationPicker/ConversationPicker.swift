@@ -21,7 +21,13 @@ public protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController)
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode
+
+    var conversationPickerHasTextInput: Bool { get }
+
+    var conversationPickerTextInputDefaultText: String? { get }
 }
+
+// MARK: -
 
 @objc
 open class ConversationPickerViewController: OWSViewController {
@@ -44,6 +50,10 @@ open class ConversationPickerViewController: OWSViewController {
         searchBar.delegate = self
         return searchBar
     }()
+
+    public var textInput: String? {
+        footerView.textInput
+    }
 
     // MARK: - UIViewController
 
@@ -636,7 +646,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
         }
         let conversations = delegate.selectedConversationsForConversationPicker
         guard conversations.count > 0 else {
-            owsFailDebug("No conversations selected.")
+            Logger.warn("No conversations selected.")
             return
         }
         delegate.conversationPickerDidCompleteSelection(self)
@@ -644,6 +654,14 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
+    }
+
+    public var approvalFooterHasTextInput: Bool {
+        delegate?.conversationPickerHasTextInput ?? false
+    }
+
+    public var approvalFooterTextInputDefaultText: String? {
+        delegate?.conversationPickerTextInputDefaultText ?? nil
     }
 }
 

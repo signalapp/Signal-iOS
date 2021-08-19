@@ -138,4 +138,8 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
     public func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return .send
     }
+
+    public var conversationPickerHasTextInput: Bool { false }
+
+    public var conversationPickerTextInputDefaultText: String? { nil }
 }

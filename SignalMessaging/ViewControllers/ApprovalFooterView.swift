@@ -21,6 +21,10 @@ public protocol ApprovalFooterDelegate: AnyObject {
     func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView)
 
     func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode
+
+    var approvalFooterHasTextInput: Bool { get }
+
+    var approvalFooterTextInputDefaultText: String? { get }
 }
 
 // MARK: -
@@ -30,6 +34,10 @@ public class ApprovalFooterView: UIView {
         didSet {
             updateContents()
         }
+    }
+
+    public var textInput: String? {
+        textfield.text
     }
 
     private var approvalMode: ApprovalMode {
@@ -61,11 +69,17 @@ public class ApprovalFooterView: UIView {
         topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
 
-        let stackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
-        stackView.spacing = 12
-        stackView.alignment = .center
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        let hStackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
+        hStackView.axis = .horizontal
+        hStackView.spacing = 12
+        hStackView.alignment = .center
+
+        let vStackView = UIStackView(arrangedSubviews: [textfieldStack, hStackView])
+        vStackView.axis = .vertical
+        vStackView.spacing = 16
+        vStackView.alignment = .fill
+        addSubview(vStackView)
+        vStackView.autoPinEdgesToSuperviewMargins()
 
         updateContents()
     }
@@ -128,6 +142,24 @@ public class ApprovalFooterView: UIView {
         return label
     }()
 
+    lazy var textfield: UITextField = {
+        let textfield = UITextField()
+        textfield.font = UIFont.ows_dynamicTypeBody
+        textfield.textColor = Theme.secondaryTextAndIconColor
+        return textfield
+    }()
+
+    lazy var textfieldStack: UIStackView = {
+        let textfieldStack = UIStackView(arrangedSubviews: [textfield])
+        textfieldStack.axis = .vertical
+        textfieldStack.alignment = .fill
+        textfieldStack.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
+        textfieldStack.isLayoutMarginsRelativeArrangement = true
+        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        textfieldBackgroundView.layer.cornerRadius = 10
+        return textfieldStack
+    }()
+
     var proceedLoadingIndicator = UIActivityIndicatorView(style: .white)
     lazy var proceedButton: OWSButton = {
 		let button = OWSButton.sendButton(
@@ -147,6 +179,10 @@ public class ApprovalFooterView: UIView {
     func updateContents() {
         proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
+
+        let hasTextInput = delegate?.approvalFooterHasTextInput ?? false
+        textfieldStack.isHidden = !hasTextInput
+        textfield.placeholder = delegate?.approvalFooterTextInputDefaultText
 
         if approvalMode == .loading {
             proceedLoadingIndicator.isHidden = false

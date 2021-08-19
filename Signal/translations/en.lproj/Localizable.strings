@@ -922,9 +922,6 @@
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Choose Recipients";
 
-/* Message indicating that the maximum number of recipients has been reached. */
-"CONVERSATION_PICKER_TOO_MANY_RECIPIENTS" = "Too many recipients.";
-
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
 
@@ -1603,17 +1600,14 @@
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
 
-/* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
-
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
 
-/* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_UNKNOWN_ERROR" = "ERROR_COULD_NOT_FORWARD_MESSAGES_UNKNOWN_ERROR";
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
@@ -1752,6 +1746,9 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Forward Message";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";

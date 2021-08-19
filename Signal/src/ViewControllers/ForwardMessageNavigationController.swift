@@ -23,6 +23,8 @@ class ForwardMessageNavigationController: OWSNavigationController {
 
     fileprivate var content: Content
 
+    fileprivate var textMessage: String?
+
     fileprivate var selectedConversations: [ConversationItem] = [] {
         didSet {
             updateCurrentMentionableAddresses()
@@ -145,6 +147,7 @@ extension ForwardMessageNavigationController {
 
     private func tryToSend() throws {
         let content = self.content
+        let textMessage = self.textMessage?.strippedOrNil
 
         let recipientConversations = self.selectedConversations
         firstly(on: .global()) {
@@ -180,8 +183,17 @@ extension ForwardMessageNavigationController {
                 let sortedItems = content.allItems.sorted { lhs, rhs in
                     lhs.interaction.timestamp < rhs.interaction.timestamp
                 }
-                let promises = sortedItems.map { item in
+                var promises: [Promise<Void>] = sortedItems.map { item in
                     self.send(item: item, toRecipientThreads: recipientThreads)
+                }
+                if let textMessage = textMessage {
+                    let messageBody = MessageBody(text: textMessage, ranges: .empty)
+                    let textMessagePromise = self.send(toRecipientThreads: recipientThreads) { recipientThread in
+                        self.send(body: messageBody,
+                                  linkPreviewDraft: nil,
+                                  thread: recipientThread.thread)
+                    }
+                    promises.append(textMessagePromise)
                 }
                 return when(resolved: promises).asVoid()
             }.map(on: .main) {
@@ -332,6 +344,8 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+        self.textMessage = conversationPickerViewController.textInput?.strippedOrNil
+
         performStep(Step.selectRecipients.nextStep)
     }
 
@@ -345,6 +359,13 @@ extension ForwardMessageNavigationController: ConversationPickerDelegate {
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         .send
+    }
+
+    var conversationPickerHasTextInput: Bool { true }
+
+    var conversationPickerTextInputDefaultText: String? {
+        NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
+                          comment: "Indicates that the user can add a text message to forwarded messages.")
     }
 }
 

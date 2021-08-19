@@ -535,6 +535,10 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         return attachments?.isEmpty != false ? .loading : .next
     }
+
+    var conversationPickerHasTextInput: Bool { false }
+
+    var conversationPickerTextInputDefaultText: String? { nil }
 }
 
 // MARK: -

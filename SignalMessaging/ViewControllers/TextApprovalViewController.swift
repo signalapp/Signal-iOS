@@ -239,7 +239,13 @@ extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
     }
+
+    public var approvalFooterHasTextInput: Bool { false }
+
+    public var approvalFooterTextInputDefaultText: String? { nil }
 }
+
+// MARK: -
 
 extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
     public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
@@ -281,6 +287,8 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
         view.layoutIfNeeded()
     }
 }
+
+// MARK: -
 
 extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
     public func linkPreviewDidCancel() {
