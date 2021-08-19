@@ -198,7 +198,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 recipientDeviceId: 0,
                 transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: newMessage.timestampDate(),
+                timestamp: newMessage.timestampDate,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -333,7 +333,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 transaction: writeTx)
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: newMessage.timestampDate(),
+                timestamp: newMessage.timestampDate,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
                 transaction: writeTx)
