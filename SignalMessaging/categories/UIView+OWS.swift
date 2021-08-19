@@ -1184,10 +1184,6 @@ public extension CGFloat {
         self * UIScreen.main.scale
     }
 
-    var sqr: CGFloat {
-        self * self
-    }
-
     // An epsilon is a small, non-zero value.
     //
     // This value is _NOT_ an appropriate tolerance for fuzzy comparison,
