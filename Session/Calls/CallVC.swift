@@ -61,7 +61,6 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.textColor = .white
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.textAlignment = .center
-        result.alpha = 0
         return result
     }()
     
@@ -95,17 +94,21 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         }
         titleLabel.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
         if case .offer = mode {
-            callInfoLabel.alpha = 1
             callInfoLabel.text = "Ringing..."
             Storage.write { transaction in
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
             }
         } else if case let .answer(sdp) = mode {
+            callInfoLabel.text = "Connecting..."
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
         }
     }
     
     func setUpViewHierarchy() {
+        // Call info label
+        view.addSubview(callInfoLabel)
+        callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        callInfoLabel.center(in: view)
         // Remote video view
         webRTCSession.attachRemoteRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
@@ -135,10 +138,6 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.center(.vertical, in: closeButton)
         titleLabel.center(.horizontal, in: view)
-        // Call info label
-        view.addSubview(callInfoLabel)
-        callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
-        callInfoLabel.center(in: view)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -153,9 +152,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     // MARK: Interaction
     func handleAnswerMessage(_ message: CallMessage) {
-        UIView.animate(withDuration: 0.25) {
-            self.callInfoLabel.alpha = 0
-        }
+        callInfoLabel.text = "Connecting..."
     }
     
     func handleEndCallMessage(_ message: CallMessage) {
@@ -165,7 +162,6 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         WebRTCSession.current = nil
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
-            self.callInfoLabel.alpha = 1
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
             self.presentingViewController?.dismiss(animated: true, completion: nil)
