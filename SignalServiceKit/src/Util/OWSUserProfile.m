@@ -341,11 +341,11 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"local avatarUrlPath %@: %d -> %d",
+            OWSLogInfo(@"local avatarUrlPath (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
                 _avatarUrlPath.length > 0,
                 avatarUrlPath.length > 0);
-            OWSLogInfo(@"local avatarFileName %@: %d -> %d",
+            OWSLogInfo(@"local avatarFileName (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
                 _avatarFileName.length > 0,
                 avatarFileName.length > 0);
@@ -379,7 +379,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"local avatarUrlPath %@: %d -> %d",
+            OWSLogInfo(@"local avatarUrlPath (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
                 _avatarUrlPath.length > 0,
                 avatarUrlPath.length > 0);
@@ -413,7 +413,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"local avatarFileName %@: %d -> %d",
+            OWSLogInfo(@"local avatarFileName (%@): %d -> %d",
                 NSStringForUserProfileWriter(userProfileWriter),
                 _avatarFileName.length > 0,
                 avatarFileName.length > 0);
