@@ -440,15 +440,37 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                         owsFailDebug("Missing superview.")
                         return
                     }
+                    // Determine the frame of the body text view in the local
+                    // coordinate system.
                     let bodyTextFrame = superview.convert(bodyTextRootView.bounds, from: bodyTextRootView)
 
-                    // Primary should v-align with the center of the area above the body text.
-                    let primaryY = bodyTextFrame.y * 0.5 - size.height * 0.5
+                    // We need to align the "secondary" selection view with the
+                    // bottom of the _superview_ of the body text view.  Find that view
+                    // and determine its frame in the local coordinate system.
+                    var bodyTextBottomFrame = bodyTextFrame
+                    if let bodyTextSuperview = bodyTextRootView.superview {
+                        bodyTextBottomFrame = superview.convert(bodyTextSuperview.bounds, from: bodyTextSuperview)
+                    }
+
+                    // Primary should bottom-align with the area above the body text (with a
+                    // tiny offset) or v-align with the center of the area above the body text,
+                    // whichever is lower.
+                    let primaryY1 = bodyTextFrame.y * 0.5 - size.height * 0.5
+                    let primaryOffset: CGFloat = 2 + Self.textViewVSpacing
+                    let primaryY2 = bodyTextFrame.y - (size.height + primaryOffset)
+                    let primaryY = max(primaryY1, primaryY2)
                     primarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: primaryY), size: size)
-                    // Secondary should v-align with the center of the body text.
-                    let secondaryY = bodyTextFrame.midY - size.height * 0.5
+
+                    // Secondary should bottom-align with the center of the body text
+                    // (center-aligning with the sender avatar, if any)
+                    // or v-align with the center of the body text, whichever is lower.
+                    let secondaryY1 = bodyTextFrame.midY - size.height * 0.5
+                    let avatarHeight = CGFloat(ConversationStyle.groupMessageAvatarDiameter)
+                    let secondaryY2 = bodyTextBottomFrame.maxY - avatarHeight * 0.5 - size.height * 0.5
+                    let secondaryY = max(secondaryY1, secondaryY2)
                     secondarySelectionView.frame = CGRect(origin: CGPoint(x: 0, y: secondaryY), size: size)
                 }
+
                 // When doing "partial" selection, the selection UI needs to
                 // align with the corresponding content views.
                 //
