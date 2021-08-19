@@ -185,6 +185,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     override var renderExternalHandle: Bool { false }
+    override var minHeight: CGFloat { 576 }
 
     fileprivate func updateCurrentMentionableAddresses() {
         guard selectedConversations.count == 1,
