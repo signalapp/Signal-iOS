@@ -19,11 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.19.0</string>
 	<key>CFBundleVersion</key>
-	<string>5.19.0.33</string>
-    <key>UIAppFonts</key>
-    <array>
-        <string>Inter-Medium.otf</string>
-    </array>
+	<string>5.19.0.34</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -58,5 +54,9 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inter-Medium.otf</string>
+	</array>
 </dict>
 </plist>
