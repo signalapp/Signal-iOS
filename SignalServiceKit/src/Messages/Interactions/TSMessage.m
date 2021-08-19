@@ -336,15 +336,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [NSSet setWithArray:result].allObjects;
 }
 
-- (NSArray<NSString *> *)bodyAttachmentIds
-{
-    return self.attachmentIds;
-}
-
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
     // Note: attachmentIds vs. allAttachmentIds
-    return [AttachmentFinder attachmentsWithAttachmentIds:self.bodyAttachmentIds transaction:transaction];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
 }
 
 - (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
@@ -847,7 +842,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     NSMutableSet<NSString *> *unknownAttachmentIds = [NSMutableSet setWithArray:self.allAttachmentIds];
 
     // "Body attachments" includes body media, stickers, audio & generic attachments.
-    NSMutableSet<NSString *> *bodyAttachmentIds = [NSMutableSet setWithArray:self.bodyAttachmentIds];
+    // It can also contain the "oversize text" attachment, which we special-case below.
+    NSMutableSet<NSString *> *bodyAttachmentIds = [NSMutableSet setWithArray:self.attachmentIds];
     NSMutableSet<NSString *> *removedBodyAttachmentIds = [NSMutableSet new];
     if (self.messageSticker.attachmentId != nil) {
         [bodyAttachmentIds addObject:self.messageSticker.attachmentId];
@@ -890,7 +886,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    NSMutableSet<NSString *> *quotedReplyAttachmentIds = [NSMutableSet setWithArray:self.bodyAttachmentIds];
+    NSMutableSet<NSString *> *quotedReplyAttachmentIds = [NSMutableSet new];
     if (self.quotedMessage.thumbnailAttachmentStreamIds != nil) {
         [quotedReplyAttachmentIds addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
     }
