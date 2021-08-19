@@ -21,16 +21,19 @@ class ConversationViewTest: SignalBaseTest {
                                        thread: thread,
                                        viewWidth: 100,
                                        hasWallpaper: false,
+                                       isWallpaperPhoto: false,
                                        chatColor: .placeholderValue)
         let style2 = ConversationStyle(type: .`default`,
                                        thread: thread,
                                        viewWidth: 100,
                                        hasWallpaper: false,
+                                       isWallpaperPhoto: false,
                                        chatColor: .placeholderValue)
         let style3 = ConversationStyle(type: .`default`,
                                        thread: thread,
                                        viewWidth: 101,
                                        hasWallpaper: false,
+                                       isWallpaperPhoto: false,
                                        chatColor: .placeholderValue)
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
@@ -48,6 +51,7 @@ class ConversationViewTest: SignalBaseTest {
                                        thread: thread,
                                        viewWidth: 100,
                                        hasWallpaper: false,
+                                       isWallpaperPhoto: false,
                                        chatColor: .placeholderValue)
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
