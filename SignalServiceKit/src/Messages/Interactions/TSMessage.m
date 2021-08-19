@@ -312,12 +312,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObjectsFromArray:self.attachmentIds];
     }
 
-    if (self.quotedMessage) {
-        [result addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
-
-        if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
-            [result addObject:self.quotedMessage.thumbnailAttachmentPointerId];
-        }
+    if (self.quotedMessage.thumbnailAttachmentId) {
+        [result addObject:self.quotedMessage.thumbnailAttachmentId];
     }
 
     if (self.contactShare.avatarAttachmentId) {
@@ -700,13 +696,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _body.filterStringForDisplay;
 }
 
-- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
     OWSAssertDebug(self.quotedMessage);
-    OWSAssertDebug(self.quotedMessage.quotedAttachments.count == 1);
-
-    [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
+    [self anyUpdateMessageWithTransaction:transaction block:^(TSMessage *message) {
+        [message.quotedMessage setThumbnailAttachmentStream:attachmentStream];
+    }];
 }
 
 #pragma mark - Update With... Methods

@@ -77,31 +77,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
-    OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
-
-    BOOL thumbnailDownloadFailed = NO;
     UIImage *_Nullable thumbnailImage;
-    TSAttachmentPointer *attachmentPointer;
-    if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+    TSAttachment *_Nullable attachment = [quotedMessage fetchThumbnailWithTransaction:transaction];
+    TSAttachmentPointer *_Nullable failedAttachmentPointer = nil;
 
-        TSAttachmentStream *attachmentStream;
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            attachmentStream = (TSAttachmentStream *)attachment;
-            thumbnailImage = attachmentStream.thumbnailImageSmallSync;
-        }
-    } else if (attachmentInfo.thumbnailAttachmentPointerId) {
-        // download failed, or hasn't completed yet.
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
-
+    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+        thumbnailImage = [(TSAttachmentStream *)attachment thumbnailImageSmallSync];
+    } else if (!quotedMessage.isThumbnailOwned) {
+        // If the quoted message isn't owning the thumbnail attachment, it's going to be referencing
+        // some other attachment (e.g. undownloaded media). In this case, let's just use the blur hash
+        thumbnailImage = attachment.blurHash ? [BlurHash imageForBlurHash:attachment.blurHash] : nil;
+    } else {
+        // If the quoted message has ownership of the thumbnail, but it hasn't been downloaded yet,
+        // we shoud surface this in the view.
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            attachmentPointer = (TSAttachmentPointer *)attachment;
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                thumbnailDownloadFailed = YES;
-            }
+            failedAttachmentPointer = (TSAttachmentPointer *)attachment;
         }
     }
 
@@ -111,11 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
                                 bodyRanges:quotedMessage.bodyRanges
                                 bodySource:quotedMessage.bodySource
                             thumbnailImage:thumbnailImage
-                               contentType:attachmentInfo.contentType
-                            sourceFilename:attachmentInfo.sourceFilename
+                               contentType:quotedMessage.contentType
+                            sourceFilename:quotedMessage.sourceFilename
                           attachmentStream:nil
-                thumbnailAttachmentPointer:attachmentPointer
-                   thumbnailDownloadFailed:thumbnailDownloadFailed];
+                thumbnailAttachmentPointer:failedAttachmentPointer
+                   thumbnailDownloadFailed:(failedAttachmentPointer != nil)];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
@@ -361,14 +351,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSQuotedMessage *)buildQuotedMessageForSending
 {
-    NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
-
     // Legit usage of senderTimestamp to reference existing message
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                         authorAddress:self.authorAddress
                                                  body:self.body
                                            bodyRanges:self.bodyRanges
-                          quotedAttachmentsForSending:attachments];
+                           quotedAttachmentForSending:self.attachmentStream];
 }
 
 - (BOOL)isRemotelySourced

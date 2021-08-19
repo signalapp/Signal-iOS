@@ -1405,31 +1405,25 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
-    if (quotedMessage.quotedAttachments) {
-        for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
-            hasQuotedAttachment = YES;
+    if (quotedMessage.isThumbnailOwned && quotedMessage.thumbnailAttachmentId) {
+        NSString *attachmentId = quotedMessage.thumbnailAttachmentId;
+        SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder = [SSKProtoDataMessageQuoteQuotedAttachment builder];
+        quotedAttachmentBuilder.contentType = quotedMessage.contentType;
+        quotedAttachmentBuilder.fileName = quotedMessage.sourceFilename;
+        quotedAttachmentBuilder.thumbnail = [TSAttachmentStream buildProtoForAttachmentId:attachmentId
+                                                                              transaction:transaction];
 
-            SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-                [SSKProtoDataMessageQuoteQuotedAttachment builder];
-
-            quotedAttachmentBuilder.contentType = attachment.contentType;
-            quotedAttachmentBuilder.fileName = attachment.sourceFilename;
-            if (attachment.thumbnailAttachmentStreamId) {
-                quotedAttachmentBuilder.thumbnail =
-                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId
-                                                      transaction:transaction];
-            }
-
-            NSError *error;
-            SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
-                [quotedAttachmentBuilder buildAndReturnError:&error];
-            if (error || !quotedAttachmentMessage) {
-                OWSFailDebug(@"could not build protobuf: %@", error);
-                return nil;
-            }
-
-            [quoteBuilder addAttachments:quotedAttachmentMessage];
+        NSError *error;
+        SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage = [quotedAttachmentBuilder buildAndReturnError:&error];
+        if (error || !quotedAttachmentMessage) {
+            OWSFailDebug(@"could not build protobuf: %@", error);
+            return nil;
         }
+
+        [quoteBuilder addAttachments:quotedAttachmentMessage];
+        hasQuotedAttachment = YES;
+    } else if (quotedMessage.thumbnailAttachmentId) {
+        OWSFailDebug(@"Referencing an attachment that isn't owned by the quoted message. Was this never thumbnailed?");
     }
 
     if (hasQuotedText || hasQuotedAttachment) {

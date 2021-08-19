@@ -112,7 +112,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // quoted reply thumbnails, contact share avatars, link preview images, etc.
 - (NSArray<NSString *> *)allAttachmentIds;
 
-- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
+- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 // The raw body contains placeholders for things like mentions and is not
 // user friendly. If you want a constant string representing the body of

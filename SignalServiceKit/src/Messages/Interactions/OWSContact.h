@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
-@class OWSAttachmentInfo;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
