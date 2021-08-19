@@ -1747,6 +1747,12 @@
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Forward Message";
 
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
 

@@ -403,7 +403,8 @@ extension TSAttachmentStream {
 
 extension ForwardMessageNavigationController {
     public static func presentConversationAfterForwardIfNecessary(items: [Item],
-                                                                  recipientThreads: [TSThread]) {
+                                                                  recipientThreads: [TSThread],
+                                                                  fromViewController: UIViewController) {
         let srcThreadIds = Set(items.compactMap { item in
             item.interaction.uniqueThreadId
         })
@@ -415,6 +416,17 @@ extension ForwardMessageNavigationController {
         guard srcThreadIds != dstThreadIds,
               dstThreadIds.count == 1,
               let thread = recipientThreads.first else {
+
+            let toast: String
+            if items.count > 1 {
+                toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_N",
+                                          comment: "Indicates that multiple messages were forwarded.")
+            } else {
+                toast = NSLocalizedString("FORWARD_MESSAGE_MESSAGES_SENT_1",
+                                          comment: "Indicates that a single message was forwarded.")
+            }
+            fromViewController.presentToast(text: toast)
+
             return
         }
         SignalApp.shared().presentConversation(for: thread, animated: true)

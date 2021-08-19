@@ -210,7 +210,8 @@ extension LongTextViewController: ForwardMessageDelegate {
                                               recipientThreads: [TSThread]) {
         dismiss(animated: true) {
             ForwardMessageNavigationController.presentConversationAfterForwardIfNecessary(items: items,
-                                                                                          recipientThreads: recipientThreads)
+                                                                                          recipientThreads: recipientThreads,
+                                                                                          fromViewController: self)
         }
     }
 

@@ -103,6 +103,12 @@ open class ConversationPickerViewController: OWSViewController {
         bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        tableView.reloadData()
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
