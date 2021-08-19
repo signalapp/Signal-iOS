@@ -319,7 +319,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 }
 
 // When possible, update the avatar properties in lockstep.
-- (void)updateAvatarUrlPath:(nullable NSString *)avatarUrlPath avatarFileName:(nullable NSString *)avatarFileName
+- (void)updateAvatarUrlPath:(nullable NSString *)avatarUrlPath
+             avatarFileName:(nullable NSString *)avatarFileName
+          userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     @synchronized(self) {
         BOOL urlPathDidChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
@@ -339,8 +341,14 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"avatarUrlPath: %d -> %d", _avatarUrlPath.length > 0, avatarUrlPath.length > 0);
-            OWSLogInfo(@"avatarFileName: %d -> %d", _avatarFileName.length > 0, avatarFileName.length > 0);
+            OWSLogInfo(@"local avatarUrlPath %@: %d -> %d",
+                NSStringForUserProfileWriter(userProfileWriter),
+                _avatarUrlPath.length > 0,
+                avatarUrlPath.length > 0);
+            OWSLogInfo(@"local avatarFileName %@: %d -> %d",
+                NSStringForUserProfileWriter(userProfileWriter),
+                _avatarFileName.length > 0,
+                avatarFileName.length > 0);
         }
 
         _avatarUrlPath = avatarUrlPath;
@@ -355,7 +363,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
 }
 
-- (void)updateAvatarUrlPath:(nullable NSString *)avatarUrlPath
+- (void)updateAvatarUrlPath:(nullable NSString *)avatarUrlPath userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     @synchronized(self) {
         if (_avatarUrlPath != nil && ![_avatarUrlPath isEqual:avatarUrlPath]) {
@@ -366,12 +374,15 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
             // avatarFileName during initialization. If it were *actually* nil, as opposed
             // to just transiently nil during `initWithCoder` , there'd be no avatarFileName
             // to clean up anyway.
-            [self updateAvatarFileName:nil];
+            [self updateAvatarFileName:nil userProfileWriter:userProfileWriter];
         }
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"avatarUrlPath: %d -> %d", _avatarUrlPath.length > 0, avatarUrlPath.length > 0);
+            OWSLogInfo(@"local avatarUrlPath %@: %d -> %d",
+                NSStringForUserProfileWriter(userProfileWriter),
+                _avatarUrlPath.length > 0,
+                avatarUrlPath.length > 0);
         }
 
         _avatarUrlPath = avatarUrlPath;
@@ -385,7 +396,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
 }
 
-- (void)updateAvatarFileName:(nullable NSString *)avatarFileName
+- (void)updateAvatarFileName:(nullable NSString *)avatarFileName userProfileWriter:(UserProfileWriter)userProfileWriter
 {
     @synchronized(self) {
         BOOL didChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
@@ -402,7 +413,10 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
         BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
         if (isLocalUserProfile) {
-            OWSLogInfo(@"avatarFileName: %d -> %d", _avatarFileName.length > 0, avatarFileName.length > 0);
+            OWSLogInfo(@"local avatarFileName %@: %d -> %d",
+                NSStringForUserProfileWriter(userProfileWriter),
+                _avatarFileName.length > 0,
+                avatarFileName.length > 0);
         }
 
         _avatarFileName = avatarFileName;
@@ -518,12 +532,14 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     // Update the avatar properties in lockstep.
     if (changes.avatarUrlPath != nil && changes.avatarFileName != nil && canModifyStorageServiceProperties) {
-        [profile updateAvatarUrlPath:changes.avatarUrlPath.value avatarFileName:changes.avatarFileName.value];
+        [profile updateAvatarUrlPath:changes.avatarUrlPath.value
+                      avatarFileName:changes.avatarFileName.value
+                   userProfileWriter:userProfileWriter];
     } else if (changes.avatarUrlPath != nil && canModifyStorageServiceProperties) {
         // The "avatar url path" (but not the "avatar file name") is stored in the storage service.
-        [profile updateAvatarUrlPath:changes.avatarUrlPath.value];
+        [profile updateAvatarUrlPath:changes.avatarUrlPath.value userProfileWriter:userProfileWriter];
     } else if (changes.avatarFileName != nil) {
-        [profile updateAvatarFileName:changes.avatarFileName.value];
+        [profile updateAvatarFileName:changes.avatarFileName.value userProfileWriter:userProfileWriter];
     }
 
     if (changes.lastFetchDate != nil) {
