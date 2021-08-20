@@ -63,7 +63,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         self.selectionBehavior = .toggleSelectionWithAction
         self.shouldAvoidKeyboard = true
-        searchBar.sizeToFit()
         searchBarWrapper.addArrangedSubview(searchBar)
         self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
@@ -89,8 +88,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         searchBar.isHidden = !shouldShowSearchBar
-        searchBar.superview?.setNeedsLayout()
-        view.setNeedsLayout()
     }
 
     public func selectSearchBar() {
@@ -149,7 +146,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return Promise.value(nil)
         }
 
-        return DispatchQueue.global().async(.promise) {
+        return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
                 self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
                                                              omitLocalUser: false,
@@ -276,7 +273,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return Promise.value(buildConversationCollection())
         }
 
-        return DispatchQueue.global().async(.promise) {
+        return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
                     guard groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
@@ -581,6 +578,7 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
         AssertIsOnMainThread()
 
         pickerDelegate?.conversationPickerDidBeginEditingText()
+        shouldShowSearchBar = false
     }
 }
 

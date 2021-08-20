@@ -1117,8 +1117,4 @@ public class OWSTableView: UITableView {
             }
         }
     }
-
-    public override func deselectRow(at indexPath: IndexPath, animated: Bool) {
-        super.deselectRow(at: indexPath, animated: animated)
-    }
 }
