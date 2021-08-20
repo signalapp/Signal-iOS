@@ -32,7 +32,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public weak var pickerDelegate: ConversationPickerDelegate?
 
-    let kMaxPickerSelection = 5
+    private let kMaxPickerSelection = 5
 
     public let selection: ConversationPickerSelection
 
@@ -67,23 +67,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         searchBarWrapper.addArrangedSubview(searchBar)
         self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
-    }
-
-    // MARK: - UIViewController
-
-    private lazy var inputAccessoryPlaceholder: InputAccessoryViewPlaceholder = {
-        let placeholder = InputAccessoryViewPlaceholder()
-        placeholder.delegate = self
-        placeholder.referenceView = view
-        return placeholder
-    }()
-
-    public override var canBecomeFirstResponder: Bool {
-        return true
-    }
-
-    public override var inputAccessoryView: UIView? {
-        return inputAccessoryPlaceholder
     }
 
     private var approvalMode: ApprovalMode {
@@ -394,63 +377,61 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    // TODO:
+    public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let indexPath = super.tableView(tableView, willSelectRowAt: indexPath) else {
+            return nil
+        }
 
-//    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-//        guard let delegate = delegate else { return nil }
-//
-//        guard let item = conversation(for: indexPath) else {
-//            owsFailDebug("item was unexpectedly nil")
-//            return nil
-//        }
-//
-//        guard delegate.selectedConversationsForConversationPicker.count < kMaxPickerSelection else {
-//            showTooManySelectedToast()
-//            return nil
-//        }
-//
-//        guard !item.isBlocked else {
-//            // TODO remove these passed in dependencies.
-//            switch item.messageRecipient {
-//            case .contact(let address):
-//                BlockListUIUtils.showUnblockAddressActionSheet(address,
-//                                                               from: self) { isStillBlocked in
-//                                                                AssertIsOnMainThread()
-//
-//                                                                guard !isStillBlocked else {
-//                                                                    return
-//                                                                }
-//
-//                                                                self.conversationCollection = self.buildConversationCollection()
-//                                                                tableView.reloadData()
-//                                                                self.restoreSelection(tableView: tableView)
-//                }
-//            case .group(let groupThreadId):
-//                guard let groupThread = databaseStorage.read(block: { transaction in
-//                    return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-//                }) else {
-//                    owsFailDebug("Missing group thread for blocked thread")
-//                    return nil
-//                }
-//                BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
-//                                                              from: self) { isStillBlocked in
-//                                                                AssertIsOnMainThread()
-//
-//                                                                guard !isStillBlocked else {
-//                                                                    return
-//                                                                }
-//
-//                                                                self.conversationCollection = self.buildConversationCollection()
-//                                                                tableView.reloadData()
-//                                                                self.restoreSelection(tableView: tableView)
-//                }
-//            }
-//
-//            return nil
-//        }
-//
-//        return indexPath
-    //    }
+        guard selection.conversations.count < kMaxPickerSelection else {
+            showTooManySelectedToast()
+            return nil
+        }
+
+        guard let conversation = conversation(for: indexPath) else {
+            owsFailDebug("item was unexpectedly nil")
+            return nil
+        }
+
+        guard !conversation.isBlocked else {
+            showUnblockUI(conversation: conversation)
+            return nil
+        }
+
+        return indexPath
+    }
+
+    private func showUnblockUI(conversation: ConversationItem) {
+        switch conversation.messageRecipient {
+        case .contact(let address):
+            BlockListUIUtils.showUnblockAddressActionSheet(address,
+                                                           from: self) { isStillBlocked in
+                AssertIsOnMainThread()
+
+                guard !isStillBlocked else {
+                    return
+                }
+
+                self.conversationCollection = self.buildConversationCollection()
+            }
+        case .group(let groupThreadId):
+            guard let groupThread = databaseStorage.read(block: { transaction in
+                return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+            }) else {
+                owsFailDebug("Missing group thread for blocked thread")
+                return
+            }
+            BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
+                                                          from: self) { isStillBlocked in
+                AssertIsOnMainThread()
+
+                guard !isStillBlocked else {
+                    return
+                }
+
+                self.conversationCollection = self.buildConversationCollection()
+            }
+        }
+    }
 
     fileprivate func didToggleSection(conversation: ConversationItem) {
         AssertIsOnMainThread()
@@ -720,30 +701,6 @@ private class ConversationPickerCell: ContactTableViewCell {
         imageView.tintColor = .ows_accentBlue
         return imageView
     }()
-}
-
-// MARK: -
-
-extension ConversationPickerViewController: InputAccessoryViewPlaceholderDelegate {
-    public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidPresent() {
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
-    }
-
-    public func inputAccessoryPlaceholderKeyboardDidDismiss() {
-    }
-
-    public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
-    }
-
-    func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-    }
 }
 
 // MARK: -
