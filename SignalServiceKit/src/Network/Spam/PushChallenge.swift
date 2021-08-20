@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-class PushChallenge: SpamChallenge {
+class PushChallenge: SpamChallenge, Dependencies {
 
     private var failureCount: UInt = 0
     private let kMaxFailures = 15
@@ -137,8 +137,4 @@ class PushChallenge: SpamChallenge {
         try container.encode(failureCount, forKey: .failureCount)
         try super.encode(to: container.superEncoder())
     }
-
-    // MARK: - Dependencies
-
-    var networkManager: NetworkManager { SSKEnvironment.shared.networkManager }
 }

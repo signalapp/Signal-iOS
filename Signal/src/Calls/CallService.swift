@@ -499,7 +499,6 @@ public final class CallService: NSObject {
         // If we're not yet connected, connect now. This may happen if, for
         // example, the call ended unexpectedly.
         if call.groupCall.localDeviceState.connectionState == .notConnected {
-            // TODO: Should we return nil if connect() return false?
             guard call.groupCall.connect() else {
                 terminate(call: call)
                 return

@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-class CaptchaChallenge: SpamChallenge {
+class CaptchaChallenge: SpamChallenge, Dependencies {
     let token: String
     var captchaToken: String? {
         didSet {
@@ -113,8 +113,4 @@ class CaptchaChallenge: SpamChallenge {
         try container.encode(failureCount, forKey: .failureCount)
         try super.encode(to: container.superEncoder())
     }
-
-    // MARK: - Dependencies
-
-    var networkManager: NetworkManager { SSKEnvironment.shared.networkManager }
 }

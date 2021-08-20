@@ -3131,7 +3131,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
