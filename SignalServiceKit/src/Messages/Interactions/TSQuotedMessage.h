@@ -35,8 +35,9 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 #pragma mark - Attachments
 
-/// Is the quoted thumbnail currently owned by the quoted message model? Or is it referencing an existing attachment
 @property (nonatomic, readonly) NSString *thumbnailAttachmentId;
+/// Returns YES if the thumbnail is something maintained by the quoted reply itself (as opposed to to media in some
+/// other message)
 @property (nonatomic, readonly) BOOL isThumbnailOwned;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly) NSString *sourceFilename;

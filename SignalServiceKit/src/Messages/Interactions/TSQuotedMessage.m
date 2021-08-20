@@ -18,18 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// Indicates the sort of attachment ID included in the attachment info
 typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     OWSAttachmentInfoReferenceUnset = 0,
-
-    /// An attachment ID referencing original media
-    /// This should only be used prior to sending a new quoted message. After sending, a copy of the source media should
-    /// be thumbnailed and saved in its own attachment. An attachment ID referencing original media Indicates a valid
-    /// handle to the original media, this may be a pointer to a pending download, or a stream. If a pointer, we should
-    /// show the blurhash. If it's a stream, we should thumbnail the original and save in a separate attachment. An
-    /// attachment ID referencing the quoted thumbnail This thumbnail may have been generated locally, or it may have
-    /// been fetched remotely from the sender of the quoted message. An attachment ID referencing
-
+    /// An original attachment for a quoted reply draft. This needs to be thumbnailed before it is sent.
     OWSAttachmentInfoReferenceOriginalForSend = 1,
+    /// A reference to an original attachment in a quoted reply we've received. If this ever manifests as a stream
+    /// we should clone it as a private thumbnail
     OWSAttachmentInfoReferenceOriginal,
+    /// A private thumbnail that we (the quoted reply) have ownership of
     OWSAttachmentInfoReferenceThumbnail,
+    /// An untrusted pointer to a thumbnail. This was included in the proto of a message we've received.
     OWSAttachmentInfoReferenceUntrustedPointer,
 };
 
@@ -451,7 +447,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         self.quotedAttachment.rawAttachmentId = thumbnail.uniqueId;
         return thumbnail;
     } else {
-        OWSFailDebug(@"");
+        OWSFailDebug(@"Failed to clone a quoted reply thumbnail from original media");
         self.quotedAttachment = nil;
         return nil;
     }
