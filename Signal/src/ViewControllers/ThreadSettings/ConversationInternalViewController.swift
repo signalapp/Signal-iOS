@@ -35,14 +35,9 @@ public class ConversationInternalViewController: OWSTableViewController2 {
         func addCopyableItem(title: String,
                              value: String?,
                              accessibilityIdentifier: String) {
-            section.add(.actionItem(name: title,
-                                    accessoryText: value ?? "Unknown",
-                                    accessibilityIdentifier: accessibilityIdentifier) { [weak self] in
-                                        if let value = value {
-                                            UIPasteboard.general.string = value
-                                            self?.presentToast(text: "Copied to Pasteboard")
-                                        }
-                                    })
+            section.add(.copyableItem(label: title,
+                                      value: value,
+                                      accessibilityIdentifier: accessibilityIdentifier))
         }
 
         let thread = self.thread

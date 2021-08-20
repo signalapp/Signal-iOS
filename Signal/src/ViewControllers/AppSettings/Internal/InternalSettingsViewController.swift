@@ -63,17 +63,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
         let infoSection = OWSTableSection()
 
         func addCopyableItem(label: String, value: String?) {
-            infoSection.add(.item(
-                name: label,
-                accessoryText: value ?? "None",
-                                accessibilityIdentifier: "internal." + label,
-                actionBlock: {
-                    if let value = value {
-                        UIPasteboard.general.string = value
-                    }
-                }
-            ))
+            infoSection.add(.copyableItem(label: label, value: value))
         }
+
+        addCopyableItem(label: "Version", value: AppVersion.shared().currentAppVersionLong)
+        // The first version of the app that was run on this device.
+        addCopyableItem(label: "First Version", value: AppVersion.shared().firstAppVersion)
 
         addCopyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber)
 
@@ -131,6 +126,16 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 addCopyableItem(label: "Payments Address b58", value: walletAddressBase58)
             }
         }
+
+        addCopyableItem(label: "iOS Version", value: AppVersion.iOSVersionString)
+        addCopyableItem(label: "Device Model", value: AppVersion.hardwareInfoString)
+
+        addCopyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty)
+        let countryCode = (Locale.current as NSLocale).object(forKey: .countryCode) as? String
+        addCopyableItem(label: "Country Code", value: countryCode?.nilIfEmpty)
+        addCopyableItem(label: "Language Code", value: Locale.current.languageCode?.nilIfEmpty)
+        addCopyableItem(label: "Region Code", value: Locale.current.regionCode?.nilIfEmpty)
+        addCopyableItem(label: "Currency Code", value: Locale.current.currencyCode?.nilIfEmpty)
 
         contents.addSection(infoSection)
 
