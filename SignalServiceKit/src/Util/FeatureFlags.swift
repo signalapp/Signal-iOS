@@ -202,7 +202,7 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let newHostNames = build.includes(.qa)
+    public static let newHostNames = build.includes(.beta)
 
     @objc
     public static var notificationServiceExtension: Bool {
