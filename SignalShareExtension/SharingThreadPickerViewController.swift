@@ -35,17 +35,16 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     }
 
     var mentionCandidates: [SignalServiceAddress] = []
-    var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateMentionCandidates()
-        }
-    }
+
+    var selectedConversations: [ConversationItem] { selection.conversations }
 
     @objc
     public init(shareViewDelegate: ShareViewDelegate) {
         self.shareViewDelegate = shareViewDelegate
-        super.init()
-        delegate = self
+
+        super.init(selection: ConversationPickerSelection())
+
+        pickerDelegate = self
     }
 
     public func presentActionSheetOnNavigationController(_ alert: ActionSheetController) {
@@ -97,7 +96,7 @@ extension SharingThreadPickerViewController {
         guard let conversationItem = conversation(for: thread) else {
             throw OWSAssertionError("Unexpectedly missing conversation for selected thread")
         }
-        selectedConversations.append(conversationItem)
+        selection.add(conversationItem)
         return try buildApprovalViewController()
     }
 
@@ -327,7 +326,7 @@ extension SharingThreadPickerViewController {
         AssertIsOnMainThread()
 
         let dismissSendProgress = showSendProgress()
-        let conversations = self.selectedConversationsForConversationPicker
+        let conversations = self.selectedConversations
         firstly {
             enqueueBlock(conversations)
         }.done { threads in
@@ -347,7 +346,7 @@ extension SharingThreadPickerViewController {
         AssertIsOnMainThread()
 
         let dismissSendProgress = showSendProgress()
-        let conversations = self.selectedConversationsForConversationPicker
+        let conversations = self.selectedConversations
         firstly {
             self.threads(for: conversations)
         }.then { (threads: [TSThread]) -> Promise<Void> in
@@ -506,18 +505,8 @@ extension SharingThreadPickerViewController {
 // MARK: -
 
 extension SharingThreadPickerViewController: ConversationPickerDelegate {
-    var selectedConversationsForConversationPicker: [ConversationItem] {
-        return selectedConversations
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem) {
-        selectedConversations.append(conversation)
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem) {
-        selectedConversations.removeAll { $0.messageRecipient == conversation.messageRecipient }
+    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
+        updateMentionCandidates()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -564,7 +553,7 @@ extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate 
     }
 
     func textApprovalRecipientsDescription(_ textApproval: TextApprovalViewController) -> String? {
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = selectedConversations
         guard conversations.count > 0 else {
             return nil
         }
@@ -596,7 +585,7 @@ extension SharingThreadPickerViewController: ContactShareApprovalViewControllerD
     }
 
     func contactApprovalRecipientsDescription(_ contactApproval: ContactShareApprovalViewController) -> String? {
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = selectedConversations
         guard conversations.count > 0 else {
             return nil
         }
@@ -644,7 +633,7 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        selectedConversationsForConversationPicker.map { $0.title }
+        selectedConversations.map { $0.title }
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {

@@ -20,11 +20,9 @@ public class CameraFirstCaptureSendFlow: NSObject {
     var approvalMessageBody: MessageBody?
 
     var mentionCandidates: [SignalServiceAddress] = []
-    var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateMentionCandidates()
-        }
-    }
+
+    private let selection = ConversationPickerSelection()
+    var selectedConversations: [ConversationItem] { selection.conversations }
 
     private func updateMentionCandidates() {
         AssertIsOnMainThread()
@@ -57,8 +55,8 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         self.approvedAttachments = attachments
         self.approvalMessageBody = messageBody
 
-        let pickerVC = ConversationPickerViewController()
-        pickerVC.delegate = self
+        let pickerVC = ConversationPickerViewController(selection: selection)
+        pickerVC.pickerDelegate = self
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
@@ -91,21 +89,11 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     }
 }
 
+// MARK: -
+
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
-    public var selectedConversationsForConversationPicker: [ConversationItem] {
-        return selectedConversations
-    }
-
-    public func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem) {
-        self.selectedConversations.append(conversation)
-    }
-
-    public func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem) {
-        self.selectedConversations = self.selectedConversations.filter {
-            $0.messageRecipient != conversation.messageRecipient
-        }
+    public func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
+        updateMentionCandidates()
     }
 
     public func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -115,7 +103,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
             return
         }
 
-        let conversations = selectedConversationsForConversationPicker
+        let conversations = selectedConversations
         firstly {
             AttachmentMultisend.sendApprovedMedia(conversations: conversations,
                                                   approvalMessageBody: self.approvalMessageBody,

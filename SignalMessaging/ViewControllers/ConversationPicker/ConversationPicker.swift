@@ -6,13 +6,7 @@ import Foundation
 import PromiseKit
 
 public protocol ConversationPickerDelegate: AnyObject {
-    var selectedConversationsForConversationPicker: [ConversationItem] { get }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem)
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem)
+    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController)
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController)
 
@@ -32,19 +26,29 @@ public protocol ConversationPickerDelegate: AnyObject {
 // MARK: -
 
 @objc
-open class ConversationPickerViewController: OWSViewController {
+open class ConversationPickerViewController: OWSTableViewController2 {
 
-    public weak var delegate: ConversationPickerDelegate?
-
-    enum Section: Int, CaseIterable {
-        case recents, signalContacts, groups
-    }
+    public weak var pickerDelegate: ConversationPickerDelegate?
 
     let kMaxPickerSelection = 5
 
-    private let tableView = UITableView()
+    public let selection: ConversationPickerSelection
+
+    // TODO:
     private let footerView = ApprovalFooterView()
-    private var bottomConstraint: NSLayoutConstraint?
+
+//    // TODO:
+//    public override var topHeader: UIView? {
+//        get { nil }
+//        set { owsFailDebug(<#T##logMessage: String##String#>)}
+//        nil
+//    }
+//
+//    public override var bottomFooter: UIView? {
+//        footerView
+//    }
+
+//    private var bottomConstraint: NSLayoutConstraint?
 
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
@@ -55,6 +59,15 @@ open class ConversationPickerViewController: OWSViewController {
 
     public var textInput: String? {
         footerView.textInput
+    }
+
+    public init(selection: ConversationPickerSelection) {
+        self.selection = selection
+
+        super.init()
+
+        self.selectionBehavior = .toggleSelectionWithAction
+        self.bottomFooter = footerView
     }
 
     // MARK: - UIViewController
@@ -75,34 +88,10 @@ open class ConversationPickerViewController: OWSViewController {
     }
 
     private var approvalMode: ApprovalMode {
-        guard let delegate = delegate else {
-            return .send
-        }
-        return delegate.approvalMode(self)
+        pickerDelegate?.approvalMode(self) ?? .send
     }
 
     public func updateApprovalMode() { footerView.updateContents() }
-
-    public override func loadView() {
-        self.view = UIView()
-        view.backgroundColor = Theme.backgroundColor
-        view.addSubview(tableView)
-        tableView.separatorColor = Theme.cellSeparatorColor
-        tableView.backgroundColor = Theme.backgroundColor
-        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
-
-        if delegate?.conversationPickerCanCancel(self) ?? false {
-            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
-            self.navigationItem.leftBarButtonItem = cancelButton
-        }
-
-        view.addSubview(footerView)
-        footerView.autoPinWidthToSuperview()
-        bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
-
-        ensureSearchBarVisibility()
-    }
 
     public var shouldShowSearchBar: Bool = true {
         didSet {
@@ -117,8 +106,9 @@ open class ConversationPickerViewController: OWSViewController {
     private func ensureSearchBarVisibility() {
         AssertIsOnMainThread()
 
-        searchBar.sizeToFit()
-        tableView.tableHeaderView = shouldShowSearchBar ? searchBar : nil
+        // TODO:
+//        searchBar.sizeToFit()
+//        tableView.tableHeaderView = shouldShowSearchBar ? searchBar : nil
     }
 
     public func selectSearchBar() {
@@ -128,26 +118,51 @@ open class ConversationPickerViewController: OWSViewController {
         searchBar.becomeFirstResponder()
     }
 
-    public override func themeDidChange() {
-        super.themeDidChange()
+//    public override func themeDidChange() {
+//        super.themeDidChange()
+//
+//        tableView.reloadData()
+//    }
 
-        tableView.reloadData()
-    }
-
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
 
+        //    public override func loadView() {
+        //        self.view = UIView()
+        //        view.backgroundColor = Theme.backgroundColor
+        //        view.addSubview(tableView)
+        //        tableView.separatorColor = Theme.cellSeparatorColor
+        //        tableView.backgroundColor = Theme.backgroundColor
+        //        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        //        self.autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+
+        if pickerDelegate?.conversationPickerCanCancel(self) ?? false {
+            let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
+            self.navigationItem.leftBarButtonItem = cancelButton
+        }
+
+        // TODO:
+        //        view.addSubview(footerView)
+        //        footerView.autoPinWidthToSuperview()
+        //        bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        ensureSearchBarVisibility()
+//    }
+//
+//    public override func viewDidLoad() {
+//        super.viewDidLoad()
+
         title = Strings.title
-        tableView.dataSource = self
-        tableView.delegate = self
+        // TODO:
+//        tableView.dataSource = self
+//        tableView.delegate = self
         tableView.allowsMultipleSelection = true
         tableView.register(ConversationPickerCell.self, forCellReuseIdentifier: ConversationPickerCell.reuseIdentifier)
-        tableView.register(DarkThemeTableSectionHeader.self, forHeaderFooterViewReuseIdentifier: DarkThemeTableSectionHeader.reuseIdentifier)
+//        tableView.register(DarkThemeTableSectionHeader.self, forHeaderFooterViewReuseIdentifier: DarkThemeTableSectionHeader.reuseIdentifier)
 
         footerView.delegate = self
 
         conversationCollection = buildConversationCollection()
-        restoreSelection(tableView: tableView)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(blockListDidChange),
@@ -157,12 +172,12 @@ open class ConversationPickerViewController: OWSViewController {
 
     // MARK: - ConversationCollection
 
-    func restoreSelection(tableView: UITableView) {
-        guard let delegate = delegate else { return }
+    private func restoreSelection() {
+        AssertIsOnMainThread()
 
         tableView.indexPathsForSelectedRows?.forEach { tableView.deselectRow(at: $0, animated: false) }
 
-        for selectedConversation in delegate.selectedConversationsForConversationPicker {
+        for selectedConversation in selection.conversations {
             guard let index = conversationCollection.indexPath(conversation: selectedConversation) else {
                 // This can happen when restoring selection while the currently displayed results
                 // are filtered.
@@ -170,6 +185,7 @@ open class ConversationPickerViewController: OWSViewController {
             }
             tableView.selectRow(at: index, animated: false, scrollPosition: .none)
         }
+
         updateUIForCurrentSelection(animated: false)
     }
 
@@ -179,10 +195,10 @@ open class ConversationPickerViewController: OWSViewController {
         }
 
         return DispatchQueue.global().async(.promise) {
-            return self.databaseStorage.read { transaction in
-                return self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
-                                                                    omitLocalUser: false,
-                                                                    transaction: transaction)
+            Self.databaseStorage.read { transaction in
+                self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
+                                                             omitLocalUser: false,
+                                                             transaction: transaction)
             }
         }
     }
@@ -212,8 +228,8 @@ open class ConversationPickerViewController: OWSViewController {
                                        comparableName: comparableName)
     }
 
-    func buildConversationCollection() -> ConversationCollection {
-        return self.databaseStorage.read { transaction in
+    fileprivate func buildConversationCollection() -> ConversationCollection {
+        self.databaseStorage.read { transaction in
             var pinnedItemsByThreadId: [String: RecentConversationItem] = [:]
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
@@ -300,13 +316,13 @@ open class ConversationPickerViewController: OWSViewController {
         }
     }
 
-    func buildConversationCollection(searchResults: ComposeScreenSearchResultSet?) -> Promise<ConversationCollection> {
+    fileprivate func buildConversationCollection(searchResults: ComposeScreenSearchResultSet?) -> Promise<ConversationCollection> {
         guard let searchResults = searchResults else {
             return Promise.value(buildConversationCollection())
         }
 
         return DispatchQueue.global().async(.promise) {
-            return self.databaseStorage.read { transaction in
+            Self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
                     guard groupThread.canSendChatMessagesToThread(ignoreAnnouncementOnly: true) else {
                         return nil
@@ -322,78 +338,24 @@ open class ConversationPickerViewController: OWSViewController {
         }
     }
 
-    func conversation(for indexPath: IndexPath) -> ConversationItem? {
-        guard let section = Section(rawValue: indexPath.section) else {
-            owsFailDebug("section was unexpectedly nil")
-            return nil
-        }
-
-        return conversationCollection.conversations(section: section)[indexPath.row]
+    public func conversation(for indexPath: IndexPath) -> ConversationItem? {
+        conversationCollection.conversation(for: indexPath)
     }
 
     public func conversation(for thread: TSThread) -> ConversationItem? {
-        return conversationCollection.allConversations.first { item in
-            if let thread = thread as? TSGroupThread, case .group(let otherThreadId) = item.messageRecipient {
-                return thread.uniqueId == otherThreadId
-            } else if let thread = thread as? TSContactThread, case .contact(let otherAddress) = item.messageRecipient {
-                return thread.contactAddress == otherAddress
-            } else {
-                return false
-            }
-        }
+        conversationCollection.conversation(for: thread)
     }
 
-    var conversationCollection: ConversationCollection = .empty
-
-    struct ConversationCollection {
-        static let empty: ConversationCollection = ConversationCollection(contactConversations: [],
-                                                                          recentConversations: [],
-                                                                          groupConversations: [])
-        let contactConversations: [ConversationItem]
-        let recentConversations: [ConversationItem]
-        let groupConversations: [ConversationItem]
-
-        var allConversations: [ConversationItem] {
-            recentConversations + contactConversations + groupConversations
-        }
-
-        func conversations(section: Section) -> [ConversationItem] {
-            switch section {
-            case .recents:
-                return recentConversations
-            case .signalContacts:
-                return contactConversations
-            case .groups:
-                return groupConversations
-            }
-        }
-
-        func indexPath(conversation: ConversationItem) -> IndexPath? {
-            switch conversation.messageRecipient {
-            case .contact:
-                if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                    return IndexPath(row: row, section: Section.recents.rawValue)
-                } else if let row = (contactConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                    return IndexPath(row: row, section: Section.signalContacts.rawValue)
-                } else {
-                    return nil
-                }
-            case .group:
-                if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                    return IndexPath(row: row, section: Section.recents.rawValue)
-                } else if let row = (groupConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
-                    return IndexPath(row: row, section: Section.groups.rawValue)
-                } else {
-                    return nil
-                }
-            }
+    private var conversationCollection: ConversationCollection = .empty {
+        didSet {
+            updateTableContents()
         }
     }
 
     // MARK: - Button Actions
 
     @objc func onTouchCancelButton() {
-        delegate?.conversationPickerDidCancel(self)
+        pickerDelegate?.conversationPickerDidCancel(self)
     }
 
     @objc
@@ -402,170 +364,174 @@ open class ConversationPickerViewController: OWSViewController {
 
         self.conversationCollection = buildConversationCollection()
     }
-}
 
+    private func updateTableContents() {
+        AssertIsOnMainThread()
+
+        let conversationCollection = self.conversationCollection
+//        conversationCollection: ConversationCollection
+
+        let contents = OWSTableContents()
+
+        // Section 1: Recents
+        do {
+            let section = OWSTableSection()
+            section.headerTitle = Strings.recentsSection
+            addConversations(toSection: section,
+                                  conversations: conversationCollection.recentConversations)
+            contents.addSection(section)
+        }
+
+        // Section 2: Signal Contacts
+        do {
+            let section = OWSTableSection()
+            section.headerTitle = Strings.signalContactsSection
+            addConversations(toSection: section,
+                                  conversations: conversationCollection.contactConversations)
+            contents.addSection(section)
+        }
+
+        // Section 3: Groups
+        do {
+            let section = OWSTableSection()
+            section.headerTitle = Strings.groupsSection
+            addConversations(toSection: section,
+                                  conversations: conversationCollection.groupConversations)
+            contents.addSection(section)
+        }
+
+        self.contents = contents
+        restoreSelection()
+    }
+
+    private func addConversations(toSection section: OWSTableSection,
+                                  conversations: [ConversationItem]) {
+        for conversation in conversations {
+            section.add(OWSTableItem(dequeueCellBlock: { tableView in
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier) as? ConversationPickerCell else {
+                    owsFailDebug("Missing cell.")
+                    return UITableViewCell()
+                }
+                Self.databaseStorage.read { transaction in
+                    cell.configure(conversationItem: conversation, transaction: transaction)
+                }
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.didToggleSection(conversation: conversation)
+            }))
+        }
+    }
+
+//    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        guard Theme.isDarkThemeEnabled else {
+//            return nil
+//        }
+//
+//        guard let title = titleForHeader(inSection: section) else {
+//            // empty sections will have no title - don't show a header.
+//            let dummyView = UIView()
+//            dummyView.backgroundColor = .yellow
+//            return dummyView
+//        }
+//
+//        guard let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: DarkThemeTableSectionHeader.reuseIdentifier) as? DarkThemeTableSectionHeader else {
+//            owsFailDebug("unable to build section header for section: \(section)")
+//            return nil
+//        }
+//
+//        sectionHeader.configure(title: title)
+//
+//        return sectionHeader
+//    }
+
+//    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        guard titleForHeader(inSection: section) != nil else {
+//            // empty sections will have no title - don't show a header.
+//            return 0
+//        }
+//
+//        return ThemeHeaderView.desiredHeight
+//    }
+// }
+//
 // MARK: -
+//
+// extension ConversationPickerViewController: UITableViewDelegate {
 
-extension ConversationPickerViewController: UITableViewDataSource {
-    public func numberOfSections(in tableView: UITableView) -> Int {
-        return Section.allCases.count
+    // TODO:
+
+//    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+//        guard let delegate = delegate else { return nil }
+//
+//        guard let item = conversation(for: indexPath) else {
+//            owsFailDebug("item was unexpectedly nil")
+//            return nil
+//        }
+//
+//        guard delegate.selectedConversationsForConversationPicker.count < kMaxPickerSelection else {
+//            showTooManySelectedToast()
+//            return nil
+//        }
+//
+//        guard !item.isBlocked else {
+//            // TODO remove these passed in dependencies.
+//            switch item.messageRecipient {
+//            case .contact(let address):
+//                BlockListUIUtils.showUnblockAddressActionSheet(address,
+//                                                               from: self) { isStillBlocked in
+//                                                                AssertIsOnMainThread()
+//
+//                                                                guard !isStillBlocked else {
+//                                                                    return
+//                                                                }
+//
+//                                                                self.conversationCollection = self.buildConversationCollection()
+//                                                                tableView.reloadData()
+//                                                                self.restoreSelection(tableView: tableView)
+//                }
+//            case .group(let groupThreadId):
+//                guard let groupThread = databaseStorage.read(block: { transaction in
+//                    return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
+//                }) else {
+//                    owsFailDebug("Missing group thread for blocked thread")
+//                    return nil
+//                }
+//                BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
+//                                                              from: self) { isStillBlocked in
+//                                                                AssertIsOnMainThread()
+//
+//                                                                guard !isStillBlocked else {
+//                                                                    return
+//                                                                }
+//
+//                                                                self.conversationCollection = self.buildConversationCollection()
+//                                                                tableView.reloadData()
+//                                                                self.restoreSelection(tableView: tableView)
+//                }
+//            }
+//
+//            return nil
+//        }
+//
+//        return indexPath
+    //    }
+
+    fileprivate func didToggleSection(conversation: ConversationItem) {
+        AssertIsOnMainThread()
+
+        Logger.verbose("---- indexPathsForSelectedRows 1: \(tableView.indexPathsForSelectedRows)")
+        if selection.isSelected(conversation: conversation) {
+            didDeselect(conversation: conversation)
+        } else {
+            didSelect(conversation: conversation)
+        }
+        Logger.verbose("---- indexPathsForSelectedRows 2: \(tableView.indexPathsForSelectedRows)")
     }
 
-    public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard !Theme.isDarkThemeEnabled else {
-            // we build a custom header for dark theme
-            return nil
-        }
+    private func didSelect(conversation: ConversationItem) {
+        AssertIsOnMainThread()
 
-        return titleForHeader(inSection: section)
-    }
-
-    func titleForHeader(inSection section: Int) -> String? {
-        guard let section = Section(rawValue: section) else {
-            owsFailDebug("section was unexpectedly nil")
-            return nil
-        }
-
-        guard conversationCollection.conversations(section: section).count > 0 else {
-            return nil
-        }
-
-        switch section {
-        case .recents:
-            return Strings.recentsSection
-        case .signalContacts:
-            return Strings.signalContactsSection
-        case .groups:
-            return Strings.groupsSection
-        }
-    }
-
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let section = Section(rawValue: section) else {
-            owsFailDebug("section was unexpectedly nil")
-            return 0
-        }
-
-        return conversationCollection.conversations(section: section).count
-    }
-
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let conversationItem = conversation(for: indexPath) else {
-            owsFail("conversation was unexpectedly nil")
-        }
-
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPickerCell.reuseIdentifier,
-                                                       for: indexPath) as? ConversationPickerCell else {
-            owsFail("cell was unexpectedly nil for indexPath: \(indexPath)")
-        }
-
-        databaseStorage.read { transaction in
-            cell.configure(conversationItem: conversationItem, transaction: transaction)
-        }
-
-        return cell
-    }
-
-    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard Theme.isDarkThemeEnabled else {
-            return nil
-        }
-
-        guard let title = titleForHeader(inSection: section) else {
-            // empty sections will have no title - don't show a header.
-            let dummyView = UIView()
-            dummyView.backgroundColor = .yellow
-            return dummyView
-        }
-
-        guard let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: DarkThemeTableSectionHeader.reuseIdentifier) as? DarkThemeTableSectionHeader else {
-            owsFailDebug("unable to build section header for section: \(section)")
-            return nil
-        }
-
-        sectionHeader.configure(title: title)
-
-        return sectionHeader
-    }
-
-    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        guard titleForHeader(inSection: section) != nil else {
-            // empty sections will have no title - don't show a header.
-            return 0
-        }
-
-        return ThemeHeaderView.desiredHeight
-    }
-}
-
-// MARK: -
-
-extension ConversationPickerViewController: UITableViewDelegate {
-    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let delegate = delegate else { return nil }
-
-        guard let item = conversation(for: indexPath) else {
-            owsFailDebug("item was unexpectedly nil")
-            return nil
-        }
-
-        guard delegate.selectedConversationsForConversationPicker.count < kMaxPickerSelection else {
-            showTooManySelectedToast()
-            return nil
-        }
-
-        guard !item.isBlocked else {
-            // TODO remove these passed in dependencies.
-            switch item.messageRecipient {
-            case .contact(let address):
-                BlockListUIUtils.showUnblockAddressActionSheet(address,
-                                                               from: self) { isStillBlocked in
-                                                                AssertIsOnMainThread()
-
-                                                                guard !isStillBlocked else {
-                                                                    return
-                                                                }
-
-                                                                self.conversationCollection = self.buildConversationCollection()
-                                                                tableView.reloadData()
-                                                                self.restoreSelection(tableView: tableView)
-                }
-            case .group(let groupThreadId):
-                guard let groupThread = databaseStorage.read(block: { transaction in
-                    return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
-                }) else {
-                    owsFailDebug("Missing group thread for blocked thread")
-                    return nil
-                }
-                BlockListUIUtils.showUnblockThreadActionSheet(groupThread,
-                                                              from: self) { isStillBlocked in
-                                                                AssertIsOnMainThread()
-
-                                                                guard !isStillBlocked else {
-                                                                    return
-                                                                }
-
-                                                                self.conversationCollection = self.buildConversationCollection()
-                                                                tableView.reloadData()
-                                                                self.restoreSelection(tableView: tableView)
-                }
-            }
-
-            return nil
-        }
-
-        return indexPath
-    }
-
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let delegate = delegate else {
-            owsFailDebug("Missing delegate.")
-            return
-        }
-        guard let conversation = conversation(for: indexPath) else {
-            owsFailDebug("conversation was unexpectedly nil")
-            return
-        }
         let isBlocked: Bool = databaseStorage.write { transaction in
             guard let thread = conversation.thread(transaction: transaction) else {
                 return false
@@ -573,12 +539,11 @@ extension ConversationPickerViewController: UITableViewDelegate {
             return !thread.canSendChatMessagesToThread(ignoreAnnouncementOnly: false)
         }
         guard !isBlocked else {
-            tableView.deselectRow(at: indexPath, animated: false)
+            restoreSelection()
             showBlockedByAnnouncementOnlyToast()
             return
         }
-
-        delegate.conversationPicker(self, didSelectConversation: conversation)
+        selection.add(conversation)
         updateUIForCurrentSelection(animated: true)
     }
 
@@ -592,19 +557,15 @@ extension ConversationPickerViewController: UITableViewDelegate {
         showToast(message: toastText)
     }
 
-    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        guard let conversation = conversation(for: indexPath) else {
-            owsFailDebug("conversation was unexpectedly nil")
-            return
-        }
-        delegate?.conversationPicker(self, didDeselectConversation: conversation)
+    private func didDeselect(conversation: ConversationItem) {
+        AssertIsOnMainThread()
+
+        selection.remove(conversation)
         updateUIForCurrentSelection(animated: true)
     }
 
     private func updateUIForCurrentSelection(animated: Bool) {
-        guard let delegate = delegate else { return }
-
-        let conversations = delegate.selectedConversationsForConversationPicker
+        let conversations = selection.conversations
         let labelText = conversations.map { $0.title }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
     }
@@ -640,14 +601,11 @@ extension ConversationPickerViewController: UISearchBarDelegate {
             guard let self = self else {
                 throw PMKError.cancelled
             }
-
             return self.buildConversationCollection(searchResults: searchResults)
         }.done { [weak self] conversationCollection in
             guard let self = self else { return }
 
             self.conversationCollection = conversationCollection
-            self.tableView.reloadData()
-            self.restoreSelection(tableView: self.tableView)
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }
@@ -655,12 +613,12 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
-        delegate?.conversationPickerSearchBarActiveDidChange(self)
+        pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
-        delegate?.conversationPickerSearchBarActiveDidChange(self)
+        pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -669,7 +627,7 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         if shouldHideSearchBarIfCancelled {
             self.shouldShowSearchBar = false
         }
-        delegate?.conversationPickerSearchBarActiveDidChange(self)
+        pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
     public var isSearchBarActive: Bool {
@@ -681,16 +639,16 @@ extension ConversationPickerViewController: UISearchBarDelegate {
 
 extension ConversationPickerViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        guard let delegate = delegate else {
+        guard let pickerDelegate = pickerDelegate else {
             owsFailDebug("Missing delegate.")
             return
         }
-        let conversations = delegate.selectedConversationsForConversationPicker
+        let conversations = selection.conversations
         guard conversations.count > 0 else {
             Logger.warn("No conversations selected.")
             return
         }
-        delegate.conversationPickerDidCompleteSelection(self)
+        pickerDelegate.conversationPickerDidCompleteSelection(self)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
@@ -698,11 +656,11 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
     }
 
     public var approvalFooterHasTextInput: Bool {
-        delegate?.conversationPickerHasTextInput ?? false
+        pickerDelegate?.conversationPickerHasTextInput ?? false
     }
 
     public var approvalFooterTextInputDefaultText: String? {
-        delegate?.conversationPickerTextInputDefaultText ?? nil
+        pickerDelegate?.conversationPickerTextInputDefaultText ?? nil
     }
 }
 
@@ -756,7 +714,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         }
         super.configure(configuration: configuration, transaction: transaction)
 
-        selectionStyle = .none
+//        selectionStyle = .none
     }
 
     // MARK: - Subviews
@@ -858,10 +816,122 @@ extension ConversationPickerViewController: InputAccessoryViewPlaceholderDelegat
     }
 
     func updateFooterViewPosition() {
-        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+//        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
+//
+//        // We always want to apply the new bottom bar position immediately,
+//        // as this only happens during animations (interactive or otherwise)
+//        view.layoutIfNeeded()
+    }
+}
 
-        // We always want to apply the new bottom bar position immediately,
-        // as this only happens during animations (interactive or otherwise)
-        view.layoutIfNeeded()
+// MARK: -
+
+extension ConversationPickerViewController: ConversationPickerSelectionDelegate {
+    func conversationPickerSelectionDidChange() {
+        AssertIsOnMainThread()
+
+        pickerDelegate?.conversationPickerSelectionDidChange(self)
+    }
+}
+
+// MARK: -
+
+protocol ConversationPickerSelectionDelegate: AnyObject {
+    func conversationPickerSelectionDidChange()
+}
+
+// MARK: -
+
+public class ConversationPickerSelection {
+    fileprivate weak var delegate: ConversationPickerSelectionDelegate?
+
+    public private(set) var conversations: [ConversationItem] = []
+
+    public required init() {}
+
+    public func add(_ conversation: ConversationItem) {
+        conversations.append(conversation)
+        delegate?.conversationPickerSelectionDidChange()
+    }
+
+    public func remove(_ conversation: ConversationItem) {
+        conversations.removeAll { $0.messageRecipient == conversation.messageRecipient }
+        delegate?.conversationPickerSelectionDidChange()
+    }
+
+    public func isSelected(conversation: ConversationItem) -> Bool {
+        !conversations.filter { $0.messageRecipient == conversation.messageRecipient }.isEmpty
+    }
+}
+
+// MARK: -
+
+private struct ConversationCollection {
+    static let empty: ConversationCollection = ConversationCollection(contactConversations: [],
+                                                                      recentConversations: [],
+                                                                      groupConversations: [])
+
+    let contactConversations: [ConversationItem]
+    let recentConversations: [ConversationItem]
+    let groupConversations: [ConversationItem]
+
+    var allConversations: [ConversationItem] {
+        recentConversations + contactConversations + groupConversations
+    }
+
+    private func conversations(section: Section) -> [ConversationItem] {
+        switch section {
+        case .recents:
+            return recentConversations
+        case .signalContacts:
+            return contactConversations
+        case .groups:
+            return groupConversations
+        }
+    }
+
+    private enum Section: Int, CaseIterable {
+        case recents, signalContacts, groups
+    }
+
+    fileprivate func indexPath(conversation: ConversationItem) -> IndexPath? {
+        switch conversation.messageRecipient {
+        case .contact:
+            if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: Section.recents.rawValue)
+            } else if let row = (contactConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: Section.signalContacts.rawValue)
+            } else {
+                return nil
+            }
+        case .group:
+            if let row = (recentConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: Section.recents.rawValue)
+            } else if let row = (groupConversations.map { $0.messageRecipient }).firstIndex(of: conversation.messageRecipient) {
+                return IndexPath(row: row, section: Section.groups.rawValue)
+            } else {
+                return nil
+            }
+        }
+    }
+
+    fileprivate func conversation(for indexPath: IndexPath) -> ConversationItem? {
+        guard let section = Section(rawValue: indexPath.section) else {
+            owsFailDebug("section was unexpectedly nil")
+            return nil
+        }
+        return conversations(section: section)[indexPath.row]
+    }
+
+    fileprivate func conversation(for thread: TSThread) -> ConversationItem? {
+        allConversations.first { item in
+            if let thread = thread as? TSGroupThread, case .group(let otherThreadId) = item.messageRecipient {
+                return thread.uniqueId == otherThreadId
+            } else if let thread = thread as? TSContactThread, case .contact(let otherAddress) = item.messageRecipient {
+                return thread.contactAddress == otherAddress
+            } else {
+                return false
+            }
+        }
     }
 }

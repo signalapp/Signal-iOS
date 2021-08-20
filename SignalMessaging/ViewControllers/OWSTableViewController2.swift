@@ -71,6 +71,12 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     public var shouldAvoidKeyboard = false
 
+    public enum SelectionBehavior {
+        case actionWithAutoDeselect
+        case toggleSelectionWithAction
+    }
+    public var selectionBehavior: SelectionBehavior = .actionWithAutoDeselect
+
     public var defaultHeaderHeight: CGFloat? = 0
     public var defaultFooterHeight: CGFloat? = 0
     public var defaultSpacingBetweenSections: CGFloat? = 20
@@ -750,8 +756,26 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: false)
+        switch selectionBehavior {
+        case .actionWithAutoDeselect:
+            tableView.deselectRow(at: indexPath, animated: false)
+        case .toggleSelectionWithAction:
+            break
+        }
 
+        performAction(indexPath: indexPath)
+    }
+
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        switch selectionBehavior {
+        case .actionWithAutoDeselect:
+            return
+        case .toggleSelectionWithAction:
+            performAction(indexPath: indexPath)
+        }
+    }
+
+    private func performAction(indexPath: IndexPath) {
         guard let item = self.item(for: indexPath) else {
             owsFailDebug("Missing item: \(indexPath)")
             return
@@ -1092,5 +1116,9 @@ public class OWSTableView: UITableView {
                 tableViewDelegate?.tableViewDidChangeWidth()
             }
         }
+    }
+
+    public override func deselectRow(at indexPath: IndexPath, animated: Bool) {
+        super.deselectRow(at: indexPath, animated: animated)
     }
 }

@@ -150,11 +150,9 @@ class SendMessageFlow: NSObject {
     var unapprovedContent: SendMessageUnapprovedContent
 
     var mentionCandidates: [SignalServiceAddress] = []
-    var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateMentionCandidates()
-        }
-    }
+
+    private let selection = ConversationPickerSelection()
+    var selectedConversations: [ConversationItem] { selection.conversations }
 
     public init(flowType: SendMessageFlowType,
                 unapprovedContent: SendMessageUnapprovedContent,
@@ -169,8 +167,8 @@ class SendMessageFlow: NSObject {
 
         super.init()
 
-        let conversationPicker = ConversationPickerViewController()
-        conversationPicker.delegate = self
+        let conversationPicker = ConversationPickerViewController(selection: selection)
+        conversationPicker.pickerDelegate = self
 
         if navigationController.viewControllers.isEmpty {
             navigationController.setViewControllers([
@@ -458,20 +456,9 @@ extension SendMessageFlow {
 // MARK: -
 
 extension SendMessageFlow: ConversationPickerDelegate {
-    var selectedConversationsForConversationPicker: [ConversationItem] {
-        return selectedConversations
-    }
 
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem) {
-        self.selectedConversations.append(conversation)
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem) {
-        self.selectedConversations = self.selectedConversations.filter {
-            $0.messageRecipient != conversation.messageRecipient
-        }
+    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
+        updateMentionCandidates()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {

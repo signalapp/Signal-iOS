@@ -108,36 +108,36 @@ public class ThemeCollectionViewSectionHeader: UICollectionReusableView {
     }
 }
 
-public class DarkThemeCollectionViewSectionHeader: ThemeCollectionViewSectionHeader {
-    public override class var reuseIdentifier: String { return "DarkThemeCollectionViewSectionHeader" }
+// public class DarkThemeCollectionViewSectionHeader: ThemeCollectionViewSectionHeader {
+//    public override class var reuseIdentifier: String { return "DarkThemeCollectionViewSectionHeader" }
+//
+//    override func buildHeaderView() -> ThemeHeaderView {
+//        return ThemeHeaderView(alwaysDark: true)
+//    }
+// }
 
-    override func buildHeaderView() -> ThemeHeaderView {
-        return ThemeHeaderView(alwaysDark: true)
-    }
-}
-
-public class DarkThemeTableSectionHeader: UITableViewHeaderFooterView {
-    public static let reuseIdentifier = "DarkThemeTableSectionHeader"
-    private let headerView: ThemeHeaderView
-
-    public override init(reuseIdentifier: String?) {
-        self.headerView = ThemeHeaderView(alwaysDark: true)
-        super.init(reuseIdentifier: reuseIdentifier)
-        preservesSuperviewLayoutMargins = true
-        contentView.addSubview(headerView)
-        headerView.autoPinEdgesToSuperviewEdges()
-    }
-
-    public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    public override func prepareForReuse() {
-        super.prepareForReuse()
-        headerView.prepareForReuse()
-    }
-
-    public func configure(title: String) {
-        headerView.configure(title: title)
-    }
-}
+// public class DarkThemeTableSectionHeader: UITableViewHeaderFooterView {
+//    public static let reuseIdentifier = "DarkThemeTableSectionHeader"
+//    private let headerView: ThemeHeaderView
+//
+//    public override init(reuseIdentifier: String?) {
+//        self.headerView = ThemeHeaderView(alwaysDark: true)
+//        super.init(reuseIdentifier: reuseIdentifier)
+//        preservesSuperviewLayoutMargins = true
+//        contentView.addSubview(headerView)
+//        headerView.autoPinEdgesToSuperviewEdges()
+//    }
+//
+//    public required init?(coder aDecoder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
+//
+//    public override func prepareForReuse() {
+//        super.prepareForReuse()
+//        headerView.prepareForReuse()
+//    }
+//
+//    public func configure(title: String) {
+//        headerView.configure(title: title)
+//    }
+// }

@@ -25,11 +25,9 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     fileprivate var textMessage: String?
 
-    fileprivate var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateCurrentMentionableAddresses()
-        }
-    }
+    private let selection = ConversationPickerSelection()
+    var selectedConversations: [ConversationItem] { selection.conversations }
+
     fileprivate var currentMentionableAddresses: [SignalServiceAddress] = []
 
     private init(content: Content) {
@@ -138,10 +136,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         header.isLayoutMarginsRelativeArrangement = true
         header.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
-        let pickerVC = ConversationPickerViewController()
+        let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
-        pickerVC.delegate = self
+        pickerVC.pickerDelegate = self
         self.pickerVC = pickerVC
         self.addChild(pickerVC)
         let pickerView = pickerVC.view!
@@ -372,7 +370,7 @@ extension ForwardMessageViewController {
         } else if let attachments = item.attachments,
                   !attachments.isEmpty {
             // TODO: What about link previews in this case?
-            let conversations = selectedConversationsForConversationPicker
+            let conversations = selectedConversations
             return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
                                                          approvalMessageBody: item.messageBody,
                                                          approvedAttachments: attachments).asVoid()
@@ -451,20 +449,8 @@ extension ForwardMessageViewController {
 // MARK: -
 
 extension ForwardMessageViewController: ConversationPickerDelegate {
-    var selectedConversationsForConversationPicker: [ConversationItem] {
-        selectedConversations
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem) {
-        selectedConversations.append(conversation)
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem) {
-        self.selectedConversations = self.selectedConversations.filter {
-            $0.messageRecipient != conversation.messageRecipient
-        }
+    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
+        updateCurrentMentionableAddresses()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
