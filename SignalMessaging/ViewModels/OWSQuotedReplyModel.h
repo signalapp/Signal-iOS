@@ -28,8 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
-@property (nonatomic, readonly, nullable) TSAttachmentPointer *thumbnailAttachmentPointer;
-@property (nonatomic, readonly) BOOL thumbnailDownloadFailed;
+@property (nonatomic, readonly, nullable) TSAttachmentPointer *failedThumbnailAttachmentPointer;
 
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
@@ -50,8 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 // Used for persisted quoted replies, both incoming and outgoing.
-+ (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(SDSAnyReadTransaction *)transaction;
++ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message
+                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item

@@ -250,7 +250,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                 [quotedAttachmentView addSubview:contentImageView];
                 [contentImageView autoCenterInSuperview];
             }
-        } else if (self.quotedMessage.thumbnailDownloadFailed) {
+        } else if (self.quotedMessage.failedThumbnailAttachmentPointer) {
             // TODO design review icon and color
             UIImage *contentIcon =
                 [[UIImage imageNamed:@"btnRefresh--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -385,18 +385,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSLogDebug(@"in didTapFailedThumbnailDownload");
 
-    if (!self.quotedMessage.thumbnailDownloadFailed) {
-        OWSFailDebug(@"thumbnailDownloadFailed was unexpectedly false");
-        return;
-    }
-
-    if (!self.quotedMessage.thumbnailAttachmentPointer) {
+    if (!self.quotedMessage.failedThumbnailAttachmentPointer) {
         OWSFailDebug(@"thumbnailAttachmentPointer was unexpectedly nil");
         return;
     }
 
     [self.delegate didTapQuotedReply:self.quotedMessage
-        failedThumbnailDownloadAttachmentPointer:self.quotedMessage.thumbnailAttachmentPointer];
+        failedThumbnailDownloadAttachmentPointer:self.quotedMessage.failedThumbnailAttachmentPointer];
 }
 
 - (nullable UIImage *)tryToLoadThumbnailImage

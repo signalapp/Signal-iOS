@@ -44,16 +44,35 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 @implementation OWSAttachmentInfo
 
+- (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType
+                                     sourceFilename:(NSString *)sourceFilename
+{
+    self = [super init];
+    if (self) {
+        _schemaVersion = self.class.currentSchemaVersion;
+        _rawAttachmentId = nil;
+        _attachmentType = OWSAttachmentInfoReferenceUnset;
+        _contentType = contentType;
+        _sourceFilename = sourceFilename;
+    }
+    return self;
+}
+
 - (instancetype)initWithOriginalAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
     OWSAssertDebug(attachmentStream.uniqueId);
     OWSAssertDebug(attachmentStream.contentType);
 
-    return [self initWithAttachmentId:attachmentStream.uniqueId
-                               ofType:OWSAttachmentInfoReferenceOriginalForSend
-                          contentType:attachmentStream.contentType
-                       sourceFilename:attachmentStream.sourceFilename];
+    if ([TSAttachmentStream hasThumbnailForMimeType:attachmentStream.contentType]) {
+        return [self initWithAttachmentId:attachmentStream.uniqueId
+                                   ofType:OWSAttachmentInfoReferenceOriginalForSend
+                              contentType:attachmentStream.contentType
+                           sourceFilename:attachmentStream.sourceFilename];
+    } else {
+        return [self initWithoutThumbnailWithContentType:attachmentStream.contentType
+                                          sourceFilename:attachmentStream.sourceFilename];
+    }
 }
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
@@ -105,6 +124,9 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         } else if (oldSourceAttachmentId) {
             _attachmentType = OWSAttachmentInfoReferenceOriginalForSend;
             _rawAttachmentId = oldSourceAttachmentId;
+        } else {
+            _attachmentType = OWSAttachmentInfoReferenceUnset;
+            _rawAttachmentId = nil;
         }
     }
     _schemaVersion = self.class.currentSchemaVersion;
@@ -265,7 +287,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     if (quotedMessage.isViewOnceMessage) {
         // We construct a quote that does not include any of the quoted message's renderable content.
         NSString *body
-            = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing view-once messages.");
+        = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE", @"inbox cell and notification text for an already viewed view-once media message.");
         return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
                                             authorAddress:proto.authorAddress
                                                      body:body
@@ -290,26 +312,30 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
     SSKProtoDataMessageQuoteQuotedAttachment *_Nullable firstAttachmentProto = proto.attachments.firstObject;
 
-    // TODO: Why are we trusting the contentType in the proto? Why does the filename matter?
-    if (firstAttachmentProto && [TSAttachmentStream hasThumbnailForMimeType:firstAttachmentProto.contentType]) {
+    if (firstAttachmentProto) {
         TSAttachment *toQuote = [self quotedAttachmentFromOriginalMessage:quotedMessage transaction:transaction];
+        BOOL shouldThumbnail = [TSAttachmentStream hasThumbnailForMimeType:toQuote.contentType];
 
-        if ([toQuote isKindOfClass:[TSAttachmentStream class]]) {
+        if ([toQuote isKindOfClass:[TSAttachmentStream class]] && shouldThumbnail) {
             // We found an attachment stream on the original message! Use it as our quoted attachment
             TSAttachmentStream *thumbnail = [(TSAttachmentStream *)toQuote cloneAsThumbnail];
             [thumbnail anyInsertWithTransaction:transaction];
 
             attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:thumbnail.uniqueId
                                                                       ofType:OWSAttachmentInfoReferenceThumbnail
-                                                                 contentType:firstAttachmentProto.contentType
-                                                              sourceFilename:firstAttachmentProto.fileName];
+                                                                 contentType:toQuote.contentType
+                                                              sourceFilename:toQuote.sourceFilename];
 
-        } else if ([toQuote isKindOfClass:[TSAttachmentPointer class]]) {
+        } else if ([toQuote isKindOfClass:[TSAttachmentPointer class]] && shouldThumbnail) {
             // No attachment stream, but we have a pointer. It's likely this media hasn't finished downloading yet.
             attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:toQuote.uniqueId
                                                                       ofType:OWSAttachmentInfoReferenceOriginal
-                                                                 contentType:firstAttachmentProto.contentType
-                                                              sourceFilename:firstAttachmentProto.fileName];
+                                                                 contentType:toQuote.contentType
+                                                              sourceFilename:toQuote.sourceFilename];
+        } else if (toQuote) {
+            // We have an attachment in the original message, but it doesn't support thumbnailing
+            attachmentInfo = [[OWSAttachmentInfo alloc] initWithoutThumbnailWithContentType:toQuote.contentType
+                                                                             sourceFilename:toQuote.sourceFilename];
         } else {
             // This could happen if a sender spoofs their quoted message proto.
             // Our quoted message will include no thumbnails.
@@ -322,8 +348,18 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         return nil;
     }
 
+    SignalServiceAddress *address = nil;
+    if ([quotedMessage isKindOfClass:[TSIncomingMessage class]]) {
+        address = ((TSIncomingMessage *)quotedMessage).authorAddress;
+    } else if ([quotedMessage isKindOfClass:[TSOutgoingMessage class]]) {
+        address = [TSAccountManager localAddress];
+    } else {
+        OWSFailDebug(@"Received message of type: %@", NSStringFromClass(quotedMessage.class));
+        return nil;
+    }
+
     return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
-                                        authorAddress:proto.authorAddress
+                                        authorAddress:address
                                                  body:body
                                            bodyRanges:bodyRanges
                                            bodySource:TSQuotedMessageContentSourceLocal
@@ -359,7 +395,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
                                                                  contentType:thumbnailProto.contentType
                                                               sourceFilename:thumbnailProto.fileName];
         } else {
-            OWSFailDebug(@"Invalid remote thumbnail attachment.");
+            attachmentInfo = [[OWSAttachmentInfo alloc] initWithoutThumbnailWithContentType:thumbnailProto.contentType
+                                                                             sourceFilename:thumbnailProto.fileName];
         }
     }
 
@@ -378,6 +415,11 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 #pragma mark - Attachment (not necessarily with a thumbnail)
 
+- (BOOL)hasAttachment
+{
+    return (self.quotedAttachment != nil);
+}
+
 - (nullable TSAttachment *)fetchThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *attachmentId = self.quotedAttachment.rawAttachmentId;
@@ -385,14 +427,6 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     if (attachmentId) {
         attachment = [TSAttachment anyFetchWithUniqueId:self.quotedAttachment.rawAttachmentId transaction:transaction];
     }
-
-    // If we have an attachment stream, we should've already thumbnailed the image.
-    // TODO: This will fail if we've downloaded the original source media. We need to add a hook to flag
-    // that we need to thumbnail the source to our own local copy
-    //
-    //    BOOL needsThumbnailing = (attachmentType == OWSAttachmentInfoReferenceUntrustedPointer) ||
-    //                             (attachmentType == OWSAttachmentInfoReferenceOriginal);
-    //    OWSAssertDebug(![attachment isKindOfClass:[TSAttachmentStream class]] || !needsThumbnailing);
     return attachment;
 }
 
@@ -402,17 +436,17 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         || self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail);
 }
 
-- (NSString *)contentType
+- (nullable NSString *)contentType
 {
     return self.quotedAttachment.contentType;
 }
 
-- (NSString *)sourceFilename
+- (nullable NSString *)sourceFilename
 {
     return self.quotedAttachment.sourceFilename;
 }
 
-- (NSString *)thumbnailAttachmentId
+- (nullable NSString *)thumbnailAttachmentId
 {
     return self.quotedAttachment.rawAttachmentId;
 }
@@ -432,25 +466,35 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 - (nullable TSAttachmentStream *)createThumbnailIfNecessaryWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    // We want to clone the existing attachment to a new attachment if necessary. This means:
+    // - Fetching the attachment and making sure it's an attachment stream
+    // - If we already own the attachment, we've already cloned it!
+    // - Otherwise, we should copy the attachment stream to a new attachment
+    // - Updating our state to now point to the new attachment
     NSString *_Nullable attachmentId = self.quotedAttachment.rawAttachmentId;
     if (!attachmentId) {
         return nil;
     }
 
+    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        // Nothing to clone
+        return nil;
+    }
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
     TSAttachmentStream *_Nullable thumbnail = nil;
-    TSAttachmentStream *_Nullable attachment = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId
-                                                                                            transaction:transaction];
-    if (attachment && self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceOriginalForSend) {
-        OWSLogInfo(@"Cloning source attachment to thumbnail for send.");
-        thumbnail = [attachment cloneAsThumbnail];
+
+    // We don't expect to be here in this state. Remote pointers are set via -setThumbnailAttachmentStream:
+    // If we have a stream and we're still in this state, something went wrong.
+    OWSAssertDebug(self.quotedAttachment.attachmentType != OWSAttachmentInfoReferenceUntrustedPointer);
+    if (!self.isThumbnailOwned) {
+        OWSLogInfo(@"Cloning attachment to thumbnail");
+        thumbnail = [attachmentStream cloneAsThumbnail];
         [thumbnail anyInsertWithTransaction:transaction];
         self.quotedAttachment.rawAttachmentId = thumbnail.uniqueId;
         self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
-
-    } else if (attachment && self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail) {
-        thumbnail = attachment;
     } else {
-        OWSFailDebug(@"Unexpected attachment state. Current state: %lu. Fetched: %@", self.quotedAttachment.attachmentType, attachment.uniqueId);;
+        thumbnail = attachmentStream;
     }
     return thumbnail;
 }

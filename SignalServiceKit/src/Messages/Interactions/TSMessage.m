@@ -696,6 +696,32 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _body.filterStringForDisplay;
 }
 
+- (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSAttachment *_Nullable attachment = [self.quotedMessage fetchThumbnailWithTransaction:transaction];
+
+    // We should clone the attachment if it's been downloaded but our quotedMessage doesn't have its own copy.
+    BOOL needsClone = [attachment isKindOfClass:[TSAttachmentStream class]] && !self.quotedMessage.isThumbnailOwned;
+    TSAttachment *(^saveUpdatedThumbnail)(SDSAnyWriteTransaction *) = ^TSAttachment *(SDSAnyWriteTransaction *writeTx) {
+        __block TSAttachment *_Nullable attachment = nil;
+        [self anyUpdateMessageWithTransaction:writeTx block:^(TSMessage *message) {
+            attachment = [message.quotedMessage createThumbnailIfNecessaryWithTransaction:writeTx];
+        }];
+        return attachment;
+    };
+
+    // If we happen to be handed a write transaction, we can perform the clone synchronously
+    // Otherwise, just hand the caller what we have. We'll clone it async.
+    if (needsClone && [transaction isKindOfClass:[SDSAnyWriteTransaction class]]) {
+        attachment = saveUpdatedThumbnail((SDSAnyWriteTransaction *)transaction);
+    } else if (needsClone) {
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx){
+            saveUpdatedThumbnail(writeTx);
+        });
+    }
+    return attachment;
+}
+
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {

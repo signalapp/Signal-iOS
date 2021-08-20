@@ -435,7 +435,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                 }
                 return wrapper
-            } else if quotedReplyModel.thumbnailDownloadFailed {
+            } else if quotedReplyModel.failedThumbnailAttachmentPointer != nil {
                 let wrapper = ManualLayoutViewWithLayer(name: "thumbnailDownloadFailedWrapper")
                 wrapper.backgroundColor = configurator.highlightColor
 
@@ -648,12 +648,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
         let quotedReplyModel = state.quotedReplyModel
 
-        if !quotedReplyModel.thumbnailDownloadFailed {
-            owsFailDebug("thumbnailDownloadFailed was unexpectedly false")
-            return
-        }
-
-        guard let thumbnailAttachmentPointer = quotedReplyModel.thumbnailAttachmentPointer else {
+        guard let thumbnailAttachmentPointer = quotedReplyModel.failedThumbnailAttachmentPointer else {
             owsFailDebug("thumbnailAttachmentPointer was unexpectedly nil")
             return
         }

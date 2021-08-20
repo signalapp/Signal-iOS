@@ -30,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                       contentType:(nullable NSString *)contentType
                    sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
+ failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -49,8 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
                       contentType:(nullable NSString *)contentType
                    sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
+ failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
 {
     self = [super init];
     if (!self) {
@@ -66,19 +64,23 @@ NS_ASSUME_NONNULL_BEGIN
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _attachmentStream = attachmentStream;
-    _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
-    _thumbnailDownloadFailed = thumbnailDownloadFailed;
+    _failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer;
 
     return self;
 }
 
 #pragma mark - Factory Methods
 
-+ (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message
+                                    transaction:(SDSAnyReadTransaction *)transaction
 {
+    TSQuotedMessage *quotedMessage = message.quotedMessage;
+    if (!quotedMessage) {
+        return nil;
+    }
+
     UIImage *_Nullable thumbnailImage;
-    TSAttachment *_Nullable attachment = [quotedMessage fetchThumbnailWithTransaction:transaction];
+    TSAttachment *_Nullable attachment = [message fetchQuotedMessageThumbnailWithTransaction:transaction];
     TSAttachmentPointer *_Nullable failedAttachmentPointer = nil;
 
     if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -104,8 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                                contentType:quotedMessage.contentType
                             sourceFilename:quotedMessage.sourceFilename
                           attachmentStream:nil
-                thumbnailAttachmentPointer:failedAttachmentPointer
-                   thumbnailDownloadFailed:(failedAttachmentPointer != nil)];
+          failedThumbnailAttachmentPointer:failedAttachmentPointer];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
@@ -151,8 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:nil
                                 sourceFilename:nil
                               attachmentStream:nil
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     if (item.contactShare) {
@@ -171,8 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:nil
                                 sourceFilename:nil
                               attachmentStream:nil
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     if (item.stickerInfo || item.stickerAttachment || item.stickerMetadata) {
@@ -260,8 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:contentType
                                 sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     NSString *_Nullable quotedText = message.body;
@@ -343,8 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
-                thumbnailAttachmentPointer:nil
-                   thumbnailDownloadFailed:NO];
+          failedThumbnailAttachmentPointer:nil];
 }
 
 #pragma mark - Instance Methods

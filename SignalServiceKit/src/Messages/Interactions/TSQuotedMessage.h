@@ -35,12 +35,15 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 #pragma mark - Attachments
 
-@property (nonatomic, readonly) NSString *thumbnailAttachmentId;
-/// Returns YES if the thumbnail is something maintained by the quoted reply itself (as opposed to to media in some
-/// other message)
+@property (nonatomic, readonly) BOOL hasAttachment;
+
+/// Returns YES if the thumbnail is something maintained by the quoted reply itself (as opposed to to media in some other message)
 @property (nonatomic, readonly) BOOL isThumbnailOwned;
-@property (nonatomic, readonly) NSString *contentType;
-@property (nonatomic, readonly) NSString *sourceFilename;
+@property (nonatomic, readonly, nullable) NSString *thumbnailAttachmentId;
+@property (nonatomic, readonly, nullable) NSString *contentType;
+@property (nonatomic, readonly, nullable) NSString *sourceFilename;
+
+// Should only be called by TSMessage. May perform a sneaky write if necessary
 - (nullable TSAttachment *)fetchThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // References an already downloaded or locally generated thumbnail file

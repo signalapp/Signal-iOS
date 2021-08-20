@@ -112,6 +112,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // quoted reply thumbnails, contact share avatars, link preview images, etc.
 - (NSArray<NSString *> *)allAttachmentIds;
 
+- (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 

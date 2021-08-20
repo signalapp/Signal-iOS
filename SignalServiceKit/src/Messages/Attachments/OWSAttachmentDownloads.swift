@@ -1040,8 +1040,13 @@ public extension OWSAttachmentDownloads {
             return jobRequests
         }
 
-        if let quotedMessage = message.quotedMessage, quotedMessage.isThumbnailOwned {
-            addJobRequest(attachmentId: quotedMessage.thumbnailAttachmentId, category: .quotedReplyThumbnail)
+        // We only want to kick off a thumbnail fetching job if:
+        // - The thumbnail attachment is owned by the quoted message content (so it's solely responsible for fetching)
+        // - It's an unfetched pointer
+        if message.quotedMessage?.isThumbnailOwned == true,
+           let attachment = message.quotedMessage?.fetchThumbnail(with: transaction),
+           attachment is TSAttachmentPointer {
+            addJobRequest(attachment: attachment, category: .quotedReplyThumbnail)
         }
 
         if let attachmentId = message.contactShare?.avatarAttachmentId {

@@ -952,10 +952,9 @@ fileprivate extension CVComponentState.Builder {
 
     // TODO: Should we validate and throw errors?
     mutating func buildQuotedReply(message: TSMessage) {
-        guard let quotedMessage = message.quotedMessage else {
+        guard let quotedReplyModel = OWSQuotedReplyModel.quotedReply(from: message, transaction: transaction) else {
             return
         }
-        let quotedReplyModel = OWSQuotedReplyModel.quotedReply(with: quotedMessage, transaction: transaction)
         var displayableQuotedText: DisplayableText?
         if let quotedBody = quotedReplyModel.body,
            !quotedBody.isEmpty {
