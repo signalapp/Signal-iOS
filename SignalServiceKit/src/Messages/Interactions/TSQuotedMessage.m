@@ -44,8 +44,7 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 @implementation OWSAttachmentInfo
 
-- (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType
-                                     sourceFilename:(NSString *)sourceFilename
+- (instancetype)initWithoutThumbnailWithContentType:(NSString *)contentType sourceFilename:(NSString *)sourceFilename
 {
     self = [super init];
     if (self) {
@@ -286,8 +285,8 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 {
     if (quotedMessage.isViewOnceMessage) {
         // We construct a quote that does not include any of the quoted message's renderable content.
-        NSString *body
-        = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE", @"inbox cell and notification text for an already viewed view-once media message.");
+        NSString *body = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
+            @"inbox cell and notification text for an already viewed view-once media message.");
         return [[TSQuotedMessage alloc] initWithTimestamp:quotedMessage.timestamp
                                             authorAddress:proto.authorAddress
                                                      body:body

@@ -37,7 +37,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 @property (nonatomic, readonly) BOOL hasAttachment;
 
-/// Returns YES if the thumbnail is something maintained by the quoted reply itself (as opposed to to media in some other message)
+/// Returns YES if the thumbnail is something maintained by the quoted reply itself (as opposed to to media in some
+/// other message)
 @property (nonatomic, readonly) BOOL isThumbnailOwned;
 @property (nonatomic, readonly, nullable) NSString *thumbnailAttachmentId;
 @property (nonatomic, readonly, nullable) NSString *contentType;

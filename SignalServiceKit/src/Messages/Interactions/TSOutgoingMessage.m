@@ -1407,7 +1407,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     if (quotedMessage.hasAttachment) {
         SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-        [SSKProtoDataMessageQuoteQuotedAttachment builder];
+            [SSKProtoDataMessageQuoteQuotedAttachment builder];
         quotedAttachmentBuilder.contentType = quotedMessage.contentType;
         quotedAttachmentBuilder.fileName = quotedMessage.sourceFilename;
 
@@ -1421,7 +1421,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
         NSError *error;
         SSKProtoDataMessageQuoteQuotedAttachment *_Nullable quotedAttachmentMessage =
-        [quotedAttachmentBuilder buildAndReturnError:&error];
+            [quotedAttachmentBuilder buildAndReturnError:&error];
         if (error || !quotedAttachmentMessage) {
             OWSFailDebug(@"could not build protobuf: %@", error);
             return nil;

@@ -22,15 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                    authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(nullable NSString *)body
-                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                       bodySource:(TSQuotedMessageContentSource)bodySource
-                   thumbnailImage:(nullable UIImage *)thumbnailImage
-                      contentType:(nullable NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
- failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer NS_DESIGNATED_INITIALIZER;
+                       authorAddress:(SignalServiceAddress *)authorAddress
+                                body:(nullable NSString *)body
+                          bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                          bodySource:(TSQuotedMessageContentSource)bodySource
+                      thumbnailImage:(nullable UIImage *)thumbnailImage
+                         contentType:(nullable NSString *)contentType
+                      sourceFilename:(nullable NSString *)sourceFilename
+                    attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+    failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -40,15 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Initializers
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                    authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(nullable NSString *)body
-                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                       bodySource:(TSQuotedMessageContentSource)bodySource
-                   thumbnailImage:(nullable UIImage *)thumbnailImage
-                      contentType:(nullable NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
- failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
+                       authorAddress:(SignalServiceAddress *)authorAddress
+                                body:(nullable NSString *)body
+                          bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                          bodySource:(TSQuotedMessageContentSource)bodySource
+                      thumbnailImage:(nullable UIImage *)thumbnailImage
+                         contentType:(nullable NSString *)contentType
+                      sourceFilename:(nullable NSString *)sourceFilename
+                    attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+    failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
 {
     self = [super init];
     if (!self) {
@@ -71,8 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Factory Methods
 
-+ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message
-                                    transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     TSQuotedMessage *quotedMessage = message.quotedMessage;
     if (!quotedMessage) {

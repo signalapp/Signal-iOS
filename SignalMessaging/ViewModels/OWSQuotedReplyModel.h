@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "CVItemViewModel.h"
@@ -49,8 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 // Used for persisted quoted replies, both incoming and outgoing.
-+ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message
-                                    transaction:(SDSAnyReadTransaction *)transaction;
++ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
