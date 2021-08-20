@@ -313,8 +313,8 @@ public extension OWSContactsManager {
         let groupId = groupThread.groupId
         let groupUniqueId = groupThread.uniqueId
         guard !Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
-                                                       defaultValue: false,
-                                                       transaction: transaction) else {
+                                                              defaultValue: false,
+                                                              transaction: transaction) else {
             owsFailDebug("Value did not change.")
             return
         }
