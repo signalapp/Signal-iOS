@@ -25,10 +25,9 @@
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    NSDate *originalSentDate = [NSDate ows_dateWithMillisecondsSince1970:failedTimestamp];
     Payload *payloadRecord = [MessageSendLog fetchPayloadWithAddress:address
                                                             deviceId:deviceId
-                                                           timestamp:originalSentDate
+                                                           timestamp:failedTimestamp
                                                          transaction:transaction];
 
     TSThread *originalThread = [TSThread anyFetchWithUniqueId:payloadRecord.uniqueThreadId transaction:transaction];
@@ -39,7 +38,7 @@
         OWSLogInfo(@"Found an MSL record for resend request: %lli", failedTimestamp);
         // We should inherit the timestamp of the failed message. This allows the recipient of this message
         // to correlate the resend response with the original failed message.
-        builder.timestamp = payloadRecord.sentTimestamp.ows_millisecondsSince1970;
+        builder.timestamp = payloadRecord.sentTimestamp;
         // We also want to reset the delivery record for the failing address if this was a sender key group
         // This will be re-marked as delivered on success if we included an SKDM in the resend response
         [self resetSenderKeyDeliveryRecordIfNecessaryForThreadId:payloadRecord.uniqueThreadId

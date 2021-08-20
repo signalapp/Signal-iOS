@@ -36,7 +36,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let fetchedPayload = MessageSendLog.fetchPayload(
                 address: recipientAddress,
                 deviceId: deviceId,
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 transaction: writeTx)!
 
             XCTAssertEqual(fetchedPayload.contentHint, .implicit)
@@ -65,14 +65,14 @@ class MessageSendLogTests: SSKBaseTestSwift {
             XCTAssertNil(MessageSendLog.fetchPayload(
                 address: recipientAddress,
                 deviceId: deviceId+1,
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 transaction: writeTx))
 
             // Expect no results when re-fetching the payload with a different address
             XCTAssertNil(MessageSendLog.fetchPayload(
                             address: CommonGenerator.address(),
                             deviceId: deviceId,
-                            timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                            timestamp: newMessage.timestamp,
                             transaction: writeTx))
         }
     }
@@ -96,7 +96,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Mark the payload as "delivered" to the first device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -105,14 +105,14 @@ class MessageSendLogTests: SSKBaseTestSwift {
             XCTAssertNil(MessageSendLog.fetchPayload(
                             address: recipientAddress,
                             deviceId: 0,
-                            timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                            timestamp: newMessage.timestamp,
                             transaction: writeTx))
 
             // Expect some results when re-fetching the payload for the second device
             XCTAssertNotNil(MessageSendLog.fetchPayload(
                                 address: recipientAddress,
                                 deviceId: 1,
-                                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                                timestamp: newMessage.timestamp,
                                 transaction: writeTx))
         }
     }
@@ -137,7 +137,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             XCTAssertNil(MessageSendLog.fetchPayload(
                             address: recipientAddress,
                             deviceId: deviceId,
-                            timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                            timestamp: newMessage.timestamp,
                             transaction: writeTx))
         }
     }
@@ -162,7 +162,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to first device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -172,7 +172,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to second device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
                 transaction: writeTx)
@@ -198,7 +198,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 recipientDeviceId: 0,
                 transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: newMessage.timestampDate,
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -218,7 +218,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to second device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
                 transaction: writeTx)
@@ -228,7 +228,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to third device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 2,
                 transaction: writeTx)
@@ -274,7 +274,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to first device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -284,7 +284,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
 
             // Deliver to second device
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
                 transaction: writeTx)
@@ -312,7 +312,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 recipientDeviceId: 0,
                 transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: Date(millisecondsSince1970: newMessage.timestamp),
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
                 transaction: writeTx)
@@ -333,7 +333,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 transaction: writeTx)
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
-                timestamp: newMessage.timestampDate,
+                timestamp: newMessage.timestamp,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
                 transaction: writeTx)
@@ -447,6 +447,33 @@ class MessageSendLogTests: SSKBaseTestSwift {
             // Verify only the old message was deleted
             XCTAssertFalse(isPayloadAlive(index: oldIndex, transaction: writeTx))
             XCTAssertTrue(isPayloadAlive(index: newIndex, transaction: writeTx))
+        }
+    }
+
+    func testTimestampMismatch() {
+        // IOS-1762: Greyson reported an issue where a resent message would have a timestamp mismatch on the outside vs
+        // inside of the envelope. In his case, the outside had a timestamp of 1629210680139 versus the inside
+        // which had 1629210680140.
+        //
+        // Casting back and forth from Date/TimeInterval and millisecond timestamps would lead to float math
+        // incorrectly coercing to the wrong timestamp. In this case, constructing a Date from that millisecond
+        // timestamp would result in a time interval of 1629210680.1399999. Reconverting back to a timestamp and
+        // we get 1629210680139.
+        databaseStorage.write { writeTx in
+            let originalTimestamp: UInt64 = 1629210680140
+            let originalDate = Date(millisecondsSince1970: originalTimestamp)
+            XCTAssertEqual(originalDate.ows_millisecondsSince1970, originalTimestamp)
+
+            let address = CommonGenerator.address()
+            let message = createOutgoingMessage(date: originalDate, transaction: writeTx)
+            let data = CommonGenerator.sentence.data(using: .utf8)!
+            XCTAssertEqual(message.timestamp, originalTimestamp)
+
+            let index = MessageSendLog.recordPayload(data, forMessageBeingSent: message, transaction: writeTx)!.int64Value
+            MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, transaction: writeTx)
+
+            let fetchedPayload = MessageSendLog.fetchPayload(address: address, deviceId: 1, timestamp: originalTimestamp, transaction: writeTx)
+            XCTAssertEqual(fetchedPayload?.sentTimestamp, originalTimestamp)
         }
     }
 

@@ -9,8 +9,8 @@ import GRDB
 public class MessageSendLog: NSObject {
 
     private static let payloadLifetime = RemoteConfig.messageSendLogEntryLifetime
-    private static var payloadExpirationDate: Date {
-        Date(timeIntervalSinceNow: -payloadLifetime)
+    private static var expiredPayloadTimestamp: UInt64 {
+        Date(timeIntervalSinceNow: -payloadLifetime).ows_millisecondsSince1970
     }
 
     @objc
@@ -23,7 +23,7 @@ public class MessageSendLog: NSObject {
         let plaintextContent: Data
         let contentHint: SealedSenderContentHint
         @objc
-        let sentTimestamp: Date
+        let sentTimestamp: UInt64
         @objc
         let uniqueThreadId: String
         // Indicates whether or not this payload is in the process of being sent.
@@ -34,7 +34,7 @@ public class MessageSendLog: NSObject {
         init(
             plaintextContent: Data,
             contentHint: SealedSenderContentHint,
-            sentTimestamp: Date,
+            sentTimestamp: UInt64,
             uniqueThreadId: String,
             sendComplete: Bool
         ) {
@@ -56,10 +56,10 @@ public class MessageSendLog: NSObject {
         static let payload = belongsTo(Payload.self)
 
         private let payloadId: Int64
-        private let recipientUUID: UUID
+        private let recipientUUID: String
         private let recipientDeviceId: Int64
 
-        init(payloadId: Int64, recipientUUID: UUID, recipientDeviceId: Int64) {
+        init(payloadId: Int64, recipientUUID: String, recipientDeviceId: Int64) {
             self.payloadId = payloadId
             self.recipientUUID = recipientUUID
             self.recipientDeviceId = recipientDeviceId
@@ -95,7 +95,7 @@ public class MessageSendLog: NSObject {
         let payloads: [Payload]
         do {
             payloads = try Payload
-                .filter(Column("sentTimestamp") == message.timestampDate)
+                .filter(Column("sentTimestamp") == message.timestamp)
                 .filter(Column("uniqueThreadId") == message.uniqueThreadId)
                 .fetchAll(writeTx.unwrapGrdbRead.database)
         } catch {
@@ -123,7 +123,16 @@ public class MessageSendLog: NSObject {
                 }
 
                 return NSNumber(value: payloadId)
+            } else if message.isSyncMessage {
+                // If a sync message aliases with another message, it's not great but it's not a major issue.
+                // The MSL is critical for correct behavior of sender key messages. For non sender key messages, it's
+                // a nice-to-have in case some unforseen decryption failure happens.
+                //
+                // Since sync messages aren't ever sent through sender key, just note that we aliased and continue.
+                Logger.warn("Sync message: \(message) aliased with existing payload entry. Skipping MSL record")
+                return nil
             } else {
+                // This failure is only serious if it's a non-sync message. Fail debug to get our attention.
                 owsAssertDebug(payloads.count == 1)
                 owsAssertDebug(existingPayload.plaintextContent == plaintext)
                 owsAssertDebug(existingPayload.payloadId != nil)
@@ -135,7 +144,7 @@ public class MessageSendLog: NSObject {
             var payload = Payload(
                 plaintextContent: plaintext,
                 contentHint: message.contentHint,
-                sentTimestamp: message.timestampDate,
+                sentTimestamp: message.timestamp,
                 uniqueThreadId: message.uniqueThreadId,
                 sendComplete: false)
             do {
@@ -163,7 +172,7 @@ public class MessageSendLog: NSObject {
     static func fetchPayload(
         address: SignalServiceAddress,
         deviceId: Int64,
-        timestamp: Date,
+        timestamp: UInt64,
         transaction readTx: SDSAnyReadTransaction
     ) -> Payload? {
 
@@ -172,7 +181,7 @@ public class MessageSendLog: NSObject {
             return nil
         }
 
-        guard timestamp.isAfter(payloadExpirationDate) else {
+        guard timestamp > expiredPayloadTimestamp else {
             Logger.info("Ignoring payload lookup for timestamp before expiration")
             return nil
         }
@@ -182,7 +191,7 @@ public class MessageSendLog: NSObject {
             let request = Payload
                 .joining(required: Payload.recipient.aliased(recipientAlias))
                 .filter(Column("sentTimestamp") == timestamp)
-                .filter(recipientAlias[Column("recipientUUID")] == address.uuid)
+                .filter(recipientAlias[Column("recipientUUID")] == address.uuid?.uuidString)
                 .filter(recipientAlias[Column("recipientDeviceId")] == deviceId)
 
             let payloads = try Payload.fetchAll(readTx.unwrapGrdbRead.database, request)
@@ -208,7 +217,7 @@ public class MessageSendLog: NSObject {
         let payloads: [Payload]
         do {
             payloads = try Payload
-                .filter(Column("sentTimestamp") == message.timestampDate)
+                .filter(Column("sentTimestamp") == message.timestamp)
                 .filter(Column("uniqueThreadId") == message.uniqueThreadId)
                 .fetchAll(writeTx.unwrapGrdbRead.database)
 
@@ -251,7 +260,7 @@ public class MessageSendLog: NSObject {
         do {
             try Recipient(
                 payloadId: payloadId,
-                recipientUUID: recipientUuid,
+                recipientUUID: recipientUuid.uuidString,
                 recipientDeviceId: recipientDeviceId
             ).insert(writeTx.unwrapGrdbWrite.database)
         } catch {
@@ -261,7 +270,7 @@ public class MessageSendLog: NSObject {
 
     @objc
     public static func recordSuccessfulDelivery(
-        timestamp: Date,
+        timestamp: UInt64,
         recipientUuid: UUID,
         recipientDeviceId: Int64,
         transaction writeTx: SDSAnyWriteTransaction
@@ -275,7 +284,7 @@ public class MessageSendLog: NSObject {
             let targets: [Recipient] = try Recipient
                 .joining(required: Recipient.payload.aliased(payloadAlias))
                 .filter(payloadAlias[Column("sentTimestamp")] == timestamp)
-                .filter(Column("recipientUuid") == recipientUuid)
+                .filter(Column("recipientUuid") == recipientUuid.uuidString)
                 .filter(Column("recipientDeviceId") == recipientDeviceId)
                 .fetchAll(writeTx.unwrapGrdbWrite.database)
             try targets.forEach { try $0.delete(writeTx.unwrapGrdbWrite.database) }
@@ -323,7 +332,7 @@ public class MessageSendLog: NSObject {
     private static func forceCleanupStaleEntries(transaction: SDSAnyWriteTransaction) {
         do {
             try Payload
-                .filter(Column("sentTimestamp") < payloadExpirationDate)
+                .filter(Column("sentTimestamp") < expiredPayloadTimestamp)
                 .deleteAll(transaction.unwrapGrdbWrite.database)
             Logger.info("Trimmed stale entries of MSL")
         } catch {

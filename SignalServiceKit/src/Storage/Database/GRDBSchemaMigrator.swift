@@ -110,6 +110,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updatePendingReadReceipts
         case addSendCompletionToMessageSendLog
         case addExclusiveProcessIdentifierAndHighPriorityToJobRecord
+        case updateMessageSendLogColumnTypes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1303,6 +1304,95 @@ public class GRDBSchemaMigrator: NSObject {
                     table.add(column: "isHighPriority", .boolean)
                 }
                 try db.execute(sql: "UPDATE model_SSKJobRecord SET isHighPriority = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.updateMessageSendLogColumnTypes.rawValue) { db in
+            do {
+                // Since the MessageSendLog hasn't shipped yet, we can get away with just dropping and rebuilding
+                // the tables instead of performing a more expensive migration.
+                try db.drop(table: "MessageSendLog_Payload")
+                try db.drop(table: "MessageSendLog_Message")
+                try db.drop(table: "MessageSendLog_Recipient")
+
+                try db.create(table: "MessageSendLog_Payload") { table in
+                    table.autoIncrementedPrimaryKey("payloadId")
+                        .notNull()
+                    table.column("plaintextContent", .blob)
+                        .notNull()
+                    table.column("contentHint", .integer)
+                        .notNull()
+                    table.column("sentTimestamp", .integer)
+                        .notNull()
+                    table.column("uniqueThreadId", .text)
+                        .notNull()
+                    table.column("sendComplete", .boolean)
+                        .notNull().defaults(to: false)
+                }
+
+                try db.create(table: "MessageSendLog_Message") { table in
+                    table.column("payloadId", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+
+                    table.primaryKey(["payloadId", "uniqueId"])
+                    table.foreignKey(
+                        ["payloadId"],
+                        references: "MessageSendLog_Payload",
+                        columns: ["payloadId"],
+                        onDelete: .cascade,
+                        onUpdate: .cascade)
+                }
+
+                try db.create(table: "MessageSendLog_Recipient") { table in
+                    table.column("payloadId", .integer)
+                        .notNull()
+                    table.column("recipientUUID", .text)
+                        .notNull()
+                    table.column("recipientDeviceId", .integer)
+                        .notNull()
+
+                    table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
+                    table.foreignKey(
+                        ["payloadId"],
+                        references: "MessageSendLog_Payload",
+                        columns: ["payloadId"],
+                        onDelete: .cascade,
+                        onUpdate: .cascade)
+                }
+
+                try db.execute(sql: """
+                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                    AFTER DELETE ON MessageSendLog_Recipient
+                    WHEN 0 = (
+                        SELECT COUNT(*) FROM MessageSendLog_Recipient
+                        WHERE payloadId = old.payloadId
+                    )
+                    BEGIN
+                        DELETE FROM MessageSendLog_Payload
+                        WHERE payloadId = old.payloadId AND sendComplete = true;
+                    END;
+
+                    CREATE TRIGGER MSLMessage_payloadCleanup
+                    AFTER DELETE ON MessageSendLog_Message
+                    BEGIN
+                        DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
+                    END;
+                """)
+
+                try db.create(
+                    index: "MSLPayload_sentTimestampIndex",
+                    on: "MessageSendLog_Payload",
+                    columns: ["sentTimestamp"]
+                )
+                try db.create(
+                    index: "MSLMessage_relatedMessageId",
+                    on: "MessageSendLog_Message",
+                    columns: ["uniqueId"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }

@@ -1005,9 +1005,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     // MSL entries will only exist for addresses with UUIDs
     if (address.uuid) {
-        NSDate *interactionTimestamp = [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
-
-        [MessageSendLog recordSuccessfulDeliveryWithTimestamp:interactionTimestamp
+        [MessageSendLog recordSuccessfulDeliveryWithTimestamp:self.timestamp
                                                 recipientUuid:address.uuid
                                             recipientDeviceId:deviceId
                                                   transaction:transaction];
