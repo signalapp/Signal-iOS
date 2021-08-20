@@ -270,6 +270,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             [quotedAttachmentView addGestureRecognizer:tapGesture];
             quotedAttachmentView.userInteractionEnabled = YES;
         } else {
+            // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment
             UIImage *contentIcon = [UIImage imageNamed:@"generic-attachment"];
             UIImageView *contentImageView = [self imageViewForImage:contentIcon];
             contentImageView.contentMode = UIViewContentModeScaleAspectFit;

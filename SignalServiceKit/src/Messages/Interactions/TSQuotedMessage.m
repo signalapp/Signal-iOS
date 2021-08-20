@@ -346,9 +346,10 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
     if (proto.bodyRanges.count > 0) {
         bodyRanges = [[MessageBodyRanges alloc] initWithProtos:proto.bodyRanges];
     }
-    if (proto.attachments.count > 0) {
-        // We only look at the first attachment
-        SSKProtoAttachmentPointer *thumbnailProto = proto.attachments.firstObject.thumbnail;
+
+    // We're only interested in the first attachment
+    SSKProtoAttachmentPointer *thumbnailProto = proto.attachments.firstObject.thumbnail;
+    if (thumbnailProto) {
         TSAttachmentPointer *_Nullable attachment = [TSAttachmentPointer attachmentPointerFromProto:thumbnailProto
                                                                                        albumMessage:nil];
         if (attachment) {
@@ -431,26 +432,27 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
 
 - (nullable TSAttachmentStream *)createThumbnailIfNecessaryWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!self.quotedAttachment.rawAttachmentId) {
+    NSString *_Nullable attachmentId = self.quotedAttachment.rawAttachmentId;
+    if (!attachmentId) {
         return nil;
     }
 
-    OWSAssertDebug(self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceOriginalForSend);
-    NSString *attachmentId = self.quotedAttachment.rawAttachmentId;
-    TSAttachmentStream *attachment = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId
-                                                                                  transaction:transaction];
-    TSAttachmentStream *thumbnail = [attachment cloneAsThumbnail];
-    [thumbnail anyInsertWithTransaction:transaction];
-
-    if (thumbnail) {
-        self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
+    TSAttachmentStream *_Nullable thumbnail = nil;
+    TSAttachmentStream *_Nullable attachment = [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId
+                                                                                            transaction:transaction];
+    if (attachment && self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceOriginalForSend) {
+        OWSLogInfo(@"Cloning source attachment to thumbnail for send.");
+        thumbnail = [attachment cloneAsThumbnail];
+        [thumbnail anyInsertWithTransaction:transaction];
         self.quotedAttachment.rawAttachmentId = thumbnail.uniqueId;
-        return thumbnail;
+        self.quotedAttachment.attachmentType = OWSAttachmentInfoReferenceThumbnail;
+
+    } else if (attachment && self.quotedAttachment.attachmentType == OWSAttachmentInfoReferenceThumbnail) {
+        thumbnail = attachment;
     } else {
-        OWSFailDebug(@"Failed to clone a quoted reply thumbnail from original media");
-        self.quotedAttachment = nil;
-        return nil;
+        OWSFailDebug(@"Unexpected attachment state. Current state: %lu. Fetched: %@", self.quotedAttachment.attachmentType, attachment.uniqueId);;
     }
+    return thumbnail;
 }
 
 @end

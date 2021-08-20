@@ -452,6 +452,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
                 return wrapper
             } else {
+                // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment
                 quotedImageView.setTemplateImageName("generic-attachment", tintColor: .clear)
                 quotedImageView.contentMode = .scaleAspectFit
                 quotedImageView.clipsToBounds = false
