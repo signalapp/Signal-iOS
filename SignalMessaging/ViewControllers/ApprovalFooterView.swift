@@ -25,6 +25,8 @@ public protocol ApprovalFooterDelegate: AnyObject {
     var approvalFooterHasTextInput: Bool { get }
 
     var approvalFooterTextInputDefaultText: String? { get }
+
+    func approvalFooterDidBeginEditingText()
 }
 
 // MARK: -
@@ -176,6 +178,8 @@ public class ApprovalFooterView: UIView {
         return button
     }()
 
+    private var textfieldHeightConstraint: NSLayoutConstraint?
+
     func updateContents() {
         proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
@@ -183,6 +187,13 @@ public class ApprovalFooterView: UIView {
         let hasTextInput = delegate?.approvalFooterHasTextInput ?? false
         textfieldStack.isHidden = !hasTextInput
         textfield.placeholder = delegate?.approvalFooterTextInputDefaultText
+        textfield.delegate = self
+        let textfieldHeight = textfield.intrinsicContentSize.height
+        if let textfieldHeightConstraint = self.textfieldHeightConstraint {
+            textfieldHeightConstraint.constant = textfieldHeight
+        } else {
+            textfieldHeightConstraint = textfield.autoSetDimension(.height, toSize: textfieldHeight)
+        }
 
         if approvalMode == .loading {
             proceedLoadingIndicator.isHidden = false
@@ -193,6 +204,8 @@ public class ApprovalFooterView: UIView {
         }
     }
 }
+
+// MARK: -
 
 fileprivate extension ApprovalMode {
 	var proceedButtonAccessibilityLabel: String? {
@@ -213,4 +226,16 @@ fileprivate extension ApprovalMode {
             return nil
 		}
 	}
+}
+
+// MARK: -
+
+extension ApprovalFooterView: UITextFieldDelegate {
+    public func textFieldDidBeginEditing(_ textField: UITextField) {
+        delegate?.approvalFooterDidBeginEditingText()
+    }
+
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return true
+    }
 }

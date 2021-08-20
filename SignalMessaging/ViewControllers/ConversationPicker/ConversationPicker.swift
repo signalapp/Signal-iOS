@@ -20,6 +20,8 @@ public protocol ConversationPickerDelegate: AnyObject {
 
     var conversationPickerTextInputDefaultText: String? { get }
 
+    func conversationPickerDidBeginEditingText()
+
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController)
 }
 
@@ -34,27 +36,20 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public let selection: ConversationPickerSelection
 
-    // TODO:
     private let footerView = ApprovalFooterView()
-
-//    // TODO:
-//    public override var topHeader: UIView? {
-//        get { nil }
-//        set { owsFailDebug(<#T##logMessage: String##String#>)}
-//        nil
-//    }
-//
-//    public override var bottomFooter: UIView? {
-//        footerView
-//    }
-
-//    private var bottomConstraint: NSLayoutConstraint?
 
     private lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
         searchBar.delegate = self
         return searchBar
+    }()
+
+    private let searchBarWrapper: UIStackView = {
+        let searchBarWrapper = UIStackView()
+        searchBarWrapper.axis = .vertical
+        searchBarWrapper.alignment = .fill
+        return searchBarWrapper
     }()
 
     public var textInput: String? {
@@ -67,6 +62,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         super.init()
 
         self.selectionBehavior = .toggleSelectionWithAction
+        self.shouldAvoidKeyboard = true
+        searchBar.sizeToFit()
+        searchBarWrapper.addArrangedSubview(searchBar)
+        self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
     }
 
@@ -106,9 +105,9 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func ensureSearchBarVisibility() {
         AssertIsOnMainThread()
 
-        // TODO:
-//        searchBar.sizeToFit()
-//        tableView.tableHeaderView = shouldShowSearchBar ? searchBar : nil
+        searchBar.isHidden = !shouldShowSearchBar
+        searchBar.superview?.setNeedsLayout()
+        view.setNeedsLayout()
     }
 
     public func selectSearchBar() {
@@ -118,47 +117,20 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         searchBar.becomeFirstResponder()
     }
 
-//    public override func themeDidChange() {
-//        super.themeDidChange()
-//
-//        tableView.reloadData()
-//    }
-
     open override func viewDidLoad() {
         super.viewDidLoad()
-
-        //    public override func loadView() {
-        //        self.view = UIView()
-        //        view.backgroundColor = Theme.backgroundColor
-        //        view.addSubview(tableView)
-        //        tableView.separatorColor = Theme.cellSeparatorColor
-        //        tableView.backgroundColor = Theme.backgroundColor
-        //        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        //        self.autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
 
         if pickerDelegate?.conversationPickerCanCancel(self) ?? false {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
             self.navigationItem.leftBarButtonItem = cancelButton
         }
 
-        // TODO:
-        //        view.addSubview(footerView)
-        //        footerView.autoPinWidthToSuperview()
-        //        bottomConstraint = footerView.autoPinEdge(toSuperviewEdge: .bottom)
-
         ensureSearchBarVisibility()
-//    }
-//
-//    public override func viewDidLoad() {
-//        super.viewDidLoad()
 
         title = Strings.title
-        // TODO:
-//        tableView.dataSource = self
-//        tableView.delegate = self
+
         tableView.allowsMultipleSelection = true
         tableView.register(ConversationPickerCell.self, forCellReuseIdentifier: ConversationPickerCell.reuseIdentifier)
-//        tableView.register(DarkThemeTableSectionHeader.self, forHeaderFooterViewReuseIdentifier: DarkThemeTableSectionHeader.reuseIdentifier)
 
         footerView.delegate = self
 
@@ -369,7 +341,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         let conversationCollection = self.conversationCollection
-//        conversationCollection: ConversationCollection
 
         let contents = OWSTableContents()
 
@@ -422,42 +393,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             }))
         }
     }
-
-//    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        guard Theme.isDarkThemeEnabled else {
-//            return nil
-//        }
-//
-//        guard let title = titleForHeader(inSection: section) else {
-//            // empty sections will have no title - don't show a header.
-//            let dummyView = UIView()
-//            dummyView.backgroundColor = .yellow
-//            return dummyView
-//        }
-//
-//        guard let sectionHeader = tableView.dequeueReusableHeaderFooterView(withIdentifier: DarkThemeTableSectionHeader.reuseIdentifier) as? DarkThemeTableSectionHeader else {
-//            owsFailDebug("unable to build section header for section: \(section)")
-//            return nil
-//        }
-//
-//        sectionHeader.configure(title: title)
-//
-//        return sectionHeader
-//    }
-
-//    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//        guard titleForHeader(inSection: section) != nil else {
-//            // empty sections will have no title - don't show a header.
-//            return 0
-//        }
-//
-//        return ThemeHeaderView.desiredHeight
-//    }
-// }
-//
-// MARK: -
-//
-// extension ConversationPickerViewController: UITableViewDelegate {
 
     // TODO:
 
@@ -520,13 +455,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     fileprivate func didToggleSection(conversation: ConversationItem) {
         AssertIsOnMainThread()
 
-        Logger.verbose("---- indexPathsForSelectedRows 1: \(tableView.indexPathsForSelectedRows)")
         if selection.isSelected(conversation: conversation) {
             didDeselect(conversation: conversation)
         } else {
             didSelect(conversation: conversation)
         }
-        Logger.verbose("---- indexPathsForSelectedRows 2: \(tableView.indexPathsForSelectedRows)")
     }
 
     private func didSelect(conversation: ConversationItem) {
@@ -662,6 +595,12 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
     public var approvalFooterTextInputDefaultText: String? {
         pickerDelegate?.conversationPickerTextInputDefaultText ?? nil
     }
+
+    public func approvalFooterDidBeginEditingText() {
+        AssertIsOnMainThread()
+
+        pickerDelegate?.conversationPickerDidBeginEditingText()
+    }
 }
 
 // MARK: -
@@ -714,7 +653,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         }
         super.configure(configuration: configuration, transaction: transaction)
 
-//        selectionStyle = .none
+        selectionStyle = .none
     }
 
     // MARK: - Subviews
@@ -783,13 +722,14 @@ private class ConversationPickerCell: ContactTableViewCell {
     }()
 }
 
+// MARK: -
+
 extension ConversationPickerViewController: InputAccessoryViewPlaceholderDelegate {
     public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
 
     public func inputAccessoryPlaceholderKeyboardDidPresent() {
-        updateFooterViewPosition()
     }
 
     public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
@@ -797,30 +737,12 @@ extension ConversationPickerViewController: InputAccessoryViewPlaceholderDelegat
     }
 
     public func inputAccessoryPlaceholderKeyboardDidDismiss() {
-        updateFooterViewPosition()
     }
 
     public func inputAccessoryPlaceholderKeyboardIsDismissingInteractively() {
-        updateFooterViewPosition()
     }
 
     func handleKeyboardStateChange(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
-        guard animationDuration > 0 else { return updateFooterViewPosition() }
-
-        UIView.beginAnimations("keyboardStateChange", context: nil)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationCurve(animationCurve)
-        UIView.setAnimationDuration(animationDuration)
-        updateFooterViewPosition()
-        UIView.commitAnimations()
-    }
-
-    func updateFooterViewPosition() {
-//        bottomConstraint?.constant = -inputAccessoryPlaceholder.keyboardOverlap
-//
-//        // We always want to apply the new bottom bar position immediately,
-//        // as this only happens during animations (interactive or otherwise)
-//        view.layoutIfNeeded()
     }
 }
 

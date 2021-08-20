@@ -243,6 +243,8 @@ extension TextApprovalViewController: ApprovalFooterDelegate {
     public var approvalFooterHasTextInput: Bool { false }
 
     public var approvalFooterTextInputDefaultText: String? { nil }
+
+    public func approvalFooterDidBeginEditingText() {}
 }
 
 // MARK: -

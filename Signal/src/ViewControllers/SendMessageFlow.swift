@@ -481,6 +481,8 @@ extension SendMessageFlow: ConversationPickerDelegate {
 
     var conversationPickerTextInputDefaultText: String? { nil }
 
+    func conversationPickerDidBeginEditingText() {}
+
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
 }
 

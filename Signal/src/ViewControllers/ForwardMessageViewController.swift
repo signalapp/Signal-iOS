@@ -478,6 +478,12 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
                           comment: "Indicates that the user can add a text message to forwarded messages.")
     }
 
+    func conversationPickerDidBeginEditingText() {
+        AssertIsOnMainThread()
+
+        maximizeHeight()
+    }
+
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
         ensureHeaderVisibility()
     }

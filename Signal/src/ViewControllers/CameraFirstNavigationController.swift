@@ -131,5 +131,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
 
     public var conversationPickerTextInputDefaultText: String? { nil }
 
+    public func conversationPickerDidBeginEditingText() {}
+
     public func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
 }
