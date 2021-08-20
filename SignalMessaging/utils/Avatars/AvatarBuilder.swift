@@ -564,6 +564,8 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
+    // This cache needs to be evacuated whenever anything that
+    // would affect AvatarContent for the request changes.
     private let requestToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarImage(forRequest request: Request, transaction: SDSAnyReadTransaction) -> UIImage? {
@@ -577,6 +579,8 @@ public class AvatarBuilder: NSObject {
         return image
     }
 
+    // This cache needs to be evacuated whenever anything that
+    // would affect AvatarContent for the request changes.
     private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarContent(forRequest request: Request,
@@ -605,6 +609,8 @@ public class AvatarBuilder: NSObject {
         return avatarContent
     }
 
+    // This cache never needs to be evacuated. The cache keys will change
+    // whenever state in the content changes that would affect the image.
     private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
