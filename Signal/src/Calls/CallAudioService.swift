@@ -156,31 +156,40 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
     }
 
+    /// Set the AudioSession based on the state of the call. If video is captured locally,
+    /// it is assumed that the speaker should be used. Otherwise audio will be routed
+    /// through the receiver.
+    ///
+    /// Ring tones will be played through the speaker (the default mode). On the caller's
+    /// ringback tones will be played through the receiver for an audio call or speaker
+    /// if video is captured locally.
+    ///
+    /// Note: Force the .allowBluetooth option to ensure linked bluetooth devices are
+    /// included as an available input.
     private func ensureProperAudioSession(call: IndividualCall?) {
         AssertIsOnMainThread()
 
-        guard let call = call, !call.isEnded else {
-            // Revert to ambient audio
+        guard let call = call, !call.isEnded, call.state != .answering else {
+            // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
             return
         }
 
         if call.state == .localRinging {
+            // The AudioSession for playing a ring tone.
             setAudioSession(category: .playback, mode: .default)
-        } else if call.state == .connected || call.state == .reconnecting {
-            // Switch to VoiceChat or VideoChat mode only once we are actually in
-            // a connected state to avoid gain glitches when transitioning from
-            // the ringing state, especially to the speaker.
-            //
-            // Note: Force the .allowBluetooth option to ensure linked bluetooth
-            // devices are included as an available input.
-            if call.hasLocalVideo {
-                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+        } else if call.hasLocalVideo {
+            if call.state == .dialing || call.state == .remoteRinging {
+                // The AudioSession for playing a ringback tone.
+                setAudioSession(category: .playback, mode: .default)
             } else {
-                setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+                // The AudioSession for video calls as long as video is
+                // being captured locally.
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
             }
         } else {
-            setAudioSession(category: .ambient, mode: .default)
+            // The AudioSession for audio calls, through the receiver.
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
         }
     }
 
