@@ -116,6 +116,8 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
+        // Ignore future self-sends
+        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         message.sender = userPublicKey
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
@@ -266,6 +268,8 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
+        // Ignore future self-sends
+        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         message.sender = storage.getUserPublicKey()
         switch destination {
         case .contact(_): preconditionFailure()
@@ -328,8 +332,6 @@ public final class MessageSender : NSObject {
     // MARK: Success & Failure Handling
     public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        // Ignore future self-sends
-        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
             // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
@@ -367,6 +369,8 @@ public final class MessageSender : NSObject {
 
     public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
         guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
+        // Remove the message timestamps if it fails
+        Storage.shared.removeReceivedMessageTimestamps([message.sentTimestamp!], using: transaction)
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         tsMessage.update(sendingError: error, transaction: transaction)
         MessageInvalidator.invalidate(tsMessage, with: transaction)

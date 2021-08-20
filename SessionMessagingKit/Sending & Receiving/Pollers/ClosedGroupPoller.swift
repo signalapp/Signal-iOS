@@ -40,8 +40,11 @@ public final class ClosedGroupPoller : NSObject {
 
     public func startPolling(for groupPublicKey: String) {
         guard !isPolling(for: groupPublicKey) else { return }
-        setUpPolling(for: groupPublicKey)
+        // Might be a race condition that the setUpPolling finishes too soon,
+        // and the timer is not created, if we mark the group as is polling
+        // after setUpPolling. So the poller may not work, thus misses messages.
         isPolling[groupPublicKey] = true
+        setUpPolling(for: groupPublicKey)
     }
 
     @objc public func stop() {
@@ -51,8 +54,8 @@ public final class ClosedGroupPoller : NSObject {
     }
 
     public func stopPolling(for groupPublicKey: String) {
-        timers[groupPublicKey]?.invalidate()
         isPolling[groupPublicKey] = false
+        timers[groupPublicKey]?.invalidate()
     }
 
     // MARK: Private API
