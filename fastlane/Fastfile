@@ -17,7 +17,12 @@ default_platform(:ios)
 
 desc 'Build, Archive, and Upload to ASC'
 lane :release do |options|
-  xcversion(version: '12.5')
+  is_nightly = options[:nightly].to_i > 0
+
+  if is_nightly:
+    xcversion(version: '13 beta 5')
+  else:
+    xcversion(version: '12.5')
 
   app_identifier = ENV['APP_IDENTIFIER']
   scheme = ENV['SCHEME']
@@ -74,7 +79,7 @@ lane :release do |options|
   lock.flock(File::LOCK_EX)
   puts "\e[32mTransporter lock acquired!\e[0m"
 
-  if options[:nightly].to_i > 0
+  if is_nightly
     upload_to_testflight(
       app_identifier: app_identifier,
       ipa: './Signal.ipa',
