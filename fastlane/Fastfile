@@ -20,7 +20,7 @@ lane :release do |options|
   is_nightly = options[:nightly].to_i > 0
 
   if is_nightly
-    xcversion(version: '13 beta 5')
+    xcversion(version: '~> 13.0.0')
   else
     xcversion(version: '12.5')
   end
