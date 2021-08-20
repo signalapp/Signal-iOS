@@ -234,7 +234,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (voipId.length > 0) {
         parameters[@"voipRegistrationId"] = voipId;
     } else {
-        OWSAssertDebug(RemoteConfig.notificationServiceExtension);
+        OWSAssertDebug(SSKFeatureFlags.notificationServiceExtension);
     }
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];

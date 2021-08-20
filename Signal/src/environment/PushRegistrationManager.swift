@@ -106,7 +106,7 @@ public enum PushRegistrationError: Error {
                 preauthChallengeResolver.fulfill(challenge)
                 self.preauthChallengeResolver = nil
             } else {
-                owsAssertDebug(!RemoteConfig.notificationServiceExtension)
+                owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                 self.messageFetcherJob.run()
             }
         }
@@ -234,7 +234,7 @@ public enum PushRegistrationError: Error {
 
         // We never populate voip tokens with the service when
         // using the notification service extension.
-        guard !RemoteConfig.notificationServiceExtension else {
+        guard !FeatureFlags.notificationServiceExtension else {
             Logger.info("Not using VOIP token because NSE is enabled.")
             // We still must create the voip registry to handle voip
             // pushes relayed from the NSE.

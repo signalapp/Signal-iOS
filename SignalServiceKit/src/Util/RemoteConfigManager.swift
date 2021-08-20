@@ -200,13 +200,6 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceAnnouncementOnlyGroupsUI || isEnabled(.announcementOnlyGroupsUI)
     }
 
-    @objc
-    public static var notificationServiceExtension: Bool {
-        // The CallKit APIs for the NSE are only available from iOS 14.5 and on.
-        guard #available(iOS 14.5, *) else { return false }
-        return DebugFlags.forceNotificationServiceExtension || isEnabled(.notificationServiceExtension)
-    }
-
     public static var standardMediaQualityLevel: ImageQualityLevel? {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return nil }
         return remoteConfig.standardMediaQualityLevel
@@ -442,7 +435,6 @@ private struct Flags {
         case giphySendAsMP4
         case viewedReceiptSending
         case announcementOnlyGroupsUI
-        case notificationServiceExtension
         case senderKeyKillSwitch
         case messageResendKillSwitch
         case senderKey

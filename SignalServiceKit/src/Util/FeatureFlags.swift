@@ -204,6 +204,15 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let newHostNames = build.includes(.qa)
 
+    @objc
+    public static var notificationServiceExtension: Bool {
+        // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
+        // however there is a significant bug in iOS 14 where the NSE will not
+        // launch properly after a crash so we only support it in iOS 15.
+        if #available(iOS 15, *) { return true }
+        return build.includes(.dev)
+    }
+
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
             FeatureFlags.value(forKey: key)
@@ -441,9 +450,6 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let forceViewedReceiptSending = true
-
-    @objc
-    public static let forceNotificationServiceExtension = build.includes(.beta)
 
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)
