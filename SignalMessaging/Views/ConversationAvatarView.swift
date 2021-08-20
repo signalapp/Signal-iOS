@@ -241,7 +241,7 @@ public class ConversationAvatarView: AvatarImageView {
     private func themeDidChange() {
         AssertIsOnMainThread()
 
-        updateImageWithSneakyTransaction()
+        updateImageAsyncWithSneakyTransaction()
     }
 
     @objc
@@ -251,7 +251,7 @@ public class ConversationAvatarView: AvatarImageView {
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
 
-        updateImageWithSneakyTransaction()
+        updateImageAsyncWithSneakyTransaction()
     }
 
     @objc
@@ -276,7 +276,7 @@ public class ConversationAvatarView: AvatarImageView {
             return
         }
 
-        updateImageWithSneakyTransaction()
+        updateImageAsyncWithSneakyTransaction()
     }
 
     @objc
@@ -321,7 +321,7 @@ public class ConversationAvatarView: AvatarImageView {
         guard address == content.contactAddress else {
             return
         }
-        updateImageWithSneakyTransaction()
+        updateImageAsyncWithSneakyTransaction()
     }
 
     @objc
@@ -335,24 +335,25 @@ public class ConversationAvatarView: AvatarImageView {
         guard groupUniqueId == content?.groupThreadId else {
             return
         }
-        updateImageWithSneakyTransaction()
+        updateImageAsyncWithSneakyTransaction()
     }
 
     // MARK: -
 
-    public func updateImageWithSneakyTransaction() {
-        updateImageAsync()
+    public func updateImageAsyncWithSneakyTransaction() {
+        updateImageAsync(transaction: nil)
     }
 
     public func updateImage(transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
 
         if shouldLoadAsync {
-            updateImageAsync()
+            updateImageAsync(transaction: transaction)
         } else {
-            self.image = Self.buildImage(configuration: configuration,
-                                         content: content,
-                                         transaction: transaction)
+            self.image = Self.getImage(configuration: configuration,
+                                       content: content,
+                                       buildMode: .build,
+                                       transaction: transaction)
         }
     }
 
@@ -363,7 +364,7 @@ public class ConversationAvatarView: AvatarImageView {
     // the oldest loads are most likely to be unnecessary.
     private static let serialQueue = ReverseDispatchQueue(label: "org.signal.ConversationAvatarView")
 
-    public func updateImageAsync() {
+    public func updateImageAsync(transaction: SDSAnyReadTransaction?) {
         AssertIsOnMainThread()
 
         let configuration = self.configuration
@@ -372,9 +373,28 @@ public class ConversationAvatarView: AvatarImageView {
             self.image = nil
             return
         }
+
+        // To avoid flicker/load delays, sync check for a
+        // pre-cached version of the avatar. We can skip
+        // this if we're reloading in response to a
+        // notification in which case transaction is nil.
+        if let transaction = transaction,
+           let precachedImage = Self.getImage(configuration: configuration,
+                                              content: content,
+                                              buildMode: .precachedOnly,
+                                              transaction: transaction) {
+            self.image = precachedImage
+        }
+
+        // Regardless of whether or not we found a pre-cached avatar,
+        // go through the normal fetch/build flow in case the pre-cached
+        // avatar is stale.
         Self.serialQueue.async { [weak self] in
             let image: UIImage? = Self.databaseStorage.read { transaction in
-                Self.buildImage(configuration: configuration, content: content, transaction: transaction)
+                Self.getImage(configuration: configuration,
+                              content: content,
+                              buildMode: .build,
+                              transaction: transaction)
             }
             DispatchQueue.main.async {
                 guard let self = self else {
@@ -394,9 +414,17 @@ public class ConversationAvatarView: AvatarImageView {
         }
     }
 
-    private static func buildImage(configuration: Configuration,
-                                   content: ConversationContent?,
-                                   transaction: SDSAnyReadTransaction) -> UIImage? {
+    private enum BuildMode {
+        // Get or build an avatar.
+        case build
+        // Only check for pre-cached avatars.
+        case precachedOnly
+    }
+
+    private static func getImage(configuration: Configuration,
+                                 content: ConversationContent?,
+                                 buildMode: BuildMode,
+                                 transaction: SDSAnyReadTransaction) -> UIImage? {
         let diameterPoints = configuration.diameterPoints
         guard diameterPoints > 0,
               let content = content else {
@@ -406,20 +434,25 @@ public class ConversationAvatarView: AvatarImageView {
         guard let image = { () -> UIImage? in
             switch content {
             case .contact(let contactThread):
-                return buildContactAvatar(address: contactThread.contactAddress,
-                                          configuration: configuration,
-                                          transaction: transaction)
-            case .group(let groupThread):
-                return buildGroupAvatar(groupThread: groupThread,
+                return getContactAvatar(address: contactThread.contactAddress,
                                         configuration: configuration,
+                                        buildMode: buildMode,
                                         transaction: transaction)
+            case .group(let groupThread):
+                return getGroupAvatar(groupThread: groupThread,
+                                      configuration: configuration,
+                                      buildMode: buildMode,
+                                      transaction: transaction)
             case .unknownContact(let contactAddress):
-                return buildContactAvatar(address: contactAddress,
-                                          configuration: configuration,
-                                          transaction: transaction)
+                return getContactAvatar(address: contactAddress,
+                                        configuration: configuration,
+                                        buildMode: buildMode,
+                                        transaction: transaction)
             }
         }() else {
-            owsFailDebug("Could not build avatar image.")
+            if buildMode == .build {
+                owsFailDebug("Could not build avatar image.")
+            }
             return nil
         }
         let targetSizePixels = configuration.diameterPixels
@@ -431,21 +464,38 @@ public class ConversationAvatarView: AvatarImageView {
         return image
     }
 
-    private static func buildContactAvatar(address: SignalServiceAddress,
-                                           configuration: Configuration,
-                                           transaction: SDSAnyReadTransaction) -> UIImage? {
-        Self.avatarBuilder.avatarImage(forAddress: address,
-                                       diameterPoints: configuration.diameterPoints,
-                                       localUserDisplayMode: configuration.localUserDisplayMode,
-                                       transaction: transaction)
+    private static func getContactAvatar(address: SignalServiceAddress,
+                                         configuration: Configuration,
+                                         buildMode: BuildMode,
+                                         transaction: SDSAnyReadTransaction) -> UIImage? {
+        switch buildMode {
+        case .build:
+            return Self.avatarBuilder.avatarImage(forAddress: address,
+                                                  diameterPoints: configuration.diameterPoints,
+                                                  localUserDisplayMode: configuration.localUserDisplayMode,
+                                                  transaction: transaction)
+        case .precachedOnly:
+            return Self.avatarBuilder.precachedAvatarImage(forAddress: address,
+                                                           diameterPoints: configuration.diameterPoints,
+                                                           localUserDisplayMode: configuration.localUserDisplayMode,
+                                                           transaction: transaction)
+        }
     }
 
-    private static func buildGroupAvatar(groupThread: TSGroupThread,
-                                         configuration: Configuration,
-                                         transaction: SDSAnyReadTransaction) -> UIImage? {
-        Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
-                                       diameterPoints: configuration.diameterPoints,
-                                       transaction: transaction)
+    private static func getGroupAvatar(groupThread: TSGroupThread,
+                                       configuration: Configuration,
+                                       buildMode: BuildMode,
+                                       transaction: SDSAnyReadTransaction) -> UIImage? {
+        switch buildMode {
+        case .build:
+            return Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
+                                                  diameterPoints: configuration.diameterPoints,
+                                                  transaction: transaction)
+        case .precachedOnly:
+            return Self.avatarBuilder.precachedAvatarImage(forGroupThread: groupThread,
+                                                           diameterPoints: configuration.diameterPoints,
+                                                           transaction: transaction)
+        }
     }
 
     @objc

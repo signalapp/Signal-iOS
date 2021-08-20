@@ -282,12 +282,22 @@ public extension OWSContactsManager {
                                 transaction: SDSAnyWriteTransaction) {
 
         guard let uuid = address.uuid else {
-            owsFailDebug("Missung uuid for user.")
+            owsFailDebug("Missing uuid for user.")
+            return
+        }
+        guard !Self.skipContactAvatarBlurByUuidStore.getBool(uuid.uuidString,
+                                                             defaultValue: false,
+                                                             transaction: transaction) else {
+            owsFailDebug("Value did not change.")
             return
         }
         Self.skipContactAvatarBlurByUuidStore.setBool(true,
                                                       key: uuid.uuidString,
                                                       transaction: transaction)
+        if let contactThread = TSContactThread.getWithContactAddress(address,
+                                                                     transaction: transaction) {
+            databaseStorage.touch(thread: contactThread, shouldReindex: false, transaction: transaction)
+        }
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(Self.skipContactAvatarBlurDidChange,
                                                                  object: nil,
@@ -302,9 +312,17 @@ public extension OWSContactsManager {
 
         let groupId = groupThread.groupId
         let groupUniqueId = groupThread.uniqueId
+        guard !Self.skipGroupAvatarBlurByGroupIdStore.getBool(groupId.hexadecimalString,
+                                                       defaultValue: false,
+                                                       transaction: transaction) else {
+            owsFailDebug("Value did not change.")
+            return
+        }
         Self.skipGroupAvatarBlurByGroupIdStore.setBool(true,
                                                        key: groupId.hexadecimalString,
                                                        transaction: transaction)
+        databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: transaction)
+
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(Self.skipGroupAvatarBlurDidChange,
                                                                  object: nil,
