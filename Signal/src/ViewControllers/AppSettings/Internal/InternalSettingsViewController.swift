@@ -62,19 +62,15 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let infoSection = OWSTableSection()
 
-        func addCopyableItem(label: String, value: String?) {
-            infoSection.add(.copyableItem(label: label, value: value))
-        }
-
-        addCopyableItem(label: "Version", value: AppVersion.shared().currentAppVersionLong)
+        infoSection.add(.copyableItem(label: "Version", value: AppVersion.shared().currentAppVersionLong))
         // The first version of the app that was run on this device.
-        addCopyableItem(label: "First Version", value: AppVersion.shared().firstAppVersion)
+        infoSection.add(.copyableItem(label: "First Version", value: AppVersion.shared().firstAppVersion))
 
-        addCopyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber)
+        infoSection.add(.copyableItem(label: "Local Phone Number", value: tsAccountManager.localNumber))
 
-        addCopyableItem(label: "Local UUID", value: tsAccountManager.localUuid?.uuidString)
+        infoSection.add(.copyableItem(label: "Local UUID", value: tsAccountManager.localUuid?.uuidString))
 
-        addCopyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId())")
+        infoSection.add(.copyableItem(label: "Device ID", value: "\(tsAccountManager.storedDeviceId())"))
         if let deviceName = tsAccountManager.storedDeviceName() {
             infoSection.add(.label(withText: "Device Name: \(deviceName)"))
         }
@@ -109,8 +105,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "didEverUseYdb: \(SSKPreferences.didEverUseYdb())"))
         infoSection.add(.label(withText: "Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount))"))
 
-        addCopyableItem(label: "Push Token", value: preferences.getPushToken())
-        addCopyableItem(label: "VOIP Token", value: preferences.getVoipToken())
+        infoSection.add(.copyableItem(label: "Push Token", value: preferences.getPushToken()))
+        infoSection.add(.copyableItem(label: "VOIP Token", value: preferences.getVoipToken()))
 
         infoSection.add(.label(withText: "Audio Category: \(AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: ""))"))
         infoSection.add(.label(withText: "Local Profile Key: \(profileManager.localProfileKey().keyData.hexadecimalString)"))
@@ -118,24 +114,24 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "MobileCoin Environment: \(MobileCoinAPI.Environment.current)"))
         infoSection.add(.label(withText: "Payments EnabledKey: \(payments.arePaymentsEnabled ? "Yes" : "No")"))
         if let paymentsEntropy = paymentsSwift.paymentsEntropy {
-            addCopyableItem(label: "Payments Entropy", value: paymentsEntropy.hexadecimalString)
+            infoSection.add(.copyableItem(label: "Payments Entropy", value: paymentsEntropy.hexadecimalString))
             if let passphrase = paymentsSwift.passphrase {
-                addCopyableItem(label: "Payments mnemonic", value: passphrase.asPassphrase)
+                infoSection.add(.copyableItem(label: "Payments mnemonic", value: passphrase.asPassphrase))
             }
             if let walletAddressBase58 = paymentsSwift.walletAddressBase58() {
-                addCopyableItem(label: "Payments Address b58", value: walletAddressBase58)
+                infoSection.add(.copyableItem(label: "Payments Address b58", value: walletAddressBase58))
             }
         }
 
-        addCopyableItem(label: "iOS Version", value: AppVersion.iOSVersionString)
-        addCopyableItem(label: "Device Model", value: AppVersion.hardwareInfoString)
+        infoSection.add(.copyableItem(label: "iOS Version", value: AppVersion.iOSVersionString))
+        infoSection.add(.copyableItem(label: "Device Model", value: AppVersion.hardwareInfoString))
 
-        addCopyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty)
+        infoSection.add(.copyableItem(label: "Locale Identifier", value: Locale.current.identifier.nilIfEmpty))
         let countryCode = (Locale.current as NSLocale).object(forKey: .countryCode) as? String
-        addCopyableItem(label: "Country Code", value: countryCode?.nilIfEmpty)
-        addCopyableItem(label: "Language Code", value: Locale.current.languageCode?.nilIfEmpty)
-        addCopyableItem(label: "Region Code", value: Locale.current.regionCode?.nilIfEmpty)
-        addCopyableItem(label: "Currency Code", value: Locale.current.currencyCode?.nilIfEmpty)
+        infoSection.add(.copyableItem(label: "Country Code", value: countryCode?.nilIfEmpty))
+        infoSection.add(.copyableItem(label: "Language Code", value: Locale.current.languageCode?.nilIfEmpty))
+        infoSection.add(.copyableItem(label: "Region Code", value: Locale.current.regionCode?.nilIfEmpty))
+        infoSection.add(.copyableItem(label: "Currency Code", value: Locale.current.currencyCode?.nilIfEmpty))
 
         contents.addSection(infoSection)
 
