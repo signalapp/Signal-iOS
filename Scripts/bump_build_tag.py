@@ -46,8 +46,14 @@ def find_project_root():
     fail('Could not find project root path')
 
 
+def is_valid_version_3(value):
+    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
+    match = regex.search(value)
+    return match is not None
+
+
 def set_versions(plist_file_path, release_version, build_version):
-    if not is_valid_release_version(release_version):
+    if not is_valid_version_3(release_version):
         fail('Invalid release version: %s' % release_version)
     if not is_valid_build_version(build_version):
         fail('Invalid build version: %s' % build_version)
@@ -82,8 +88,8 @@ def set_versions(plist_file_path, release_version, build_version):
         f.write(text)
 
 
-
-class Version:
+# Represents a version string with 3 dotted values, e.g. 1.2.3.
+class Version3:
     def __init__(self, major, minor, patch):
         self.major = major
         self.minor = minor
@@ -93,7 +99,7 @@ class Version:
         return str(self.major) + "." + str(self.minor) + "." + str(self.patch)
 
 
-def parse_3_dot_version(text):
+def parse_version_3(text):
    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
    match = regex.search(text)
    # print 'match', match
@@ -105,7 +111,7 @@ def parse_3_dot_version(text):
    minor = int(match.group(2))
    patch = int(match.group(3))
 
-   version = Version(major, minor, patch)
+   version = Version3(major, minor, patch)
    
    # Verify that roundtripping yields the same value.
    if version.formatted() != text:
@@ -156,11 +162,11 @@ def get_versions(plist_file_path):
         fail('Could not parse .plist')
 
     release_version_str = release_version_match.group(1)
-    release_version = parse_3_dot_version(release_version_str)
+    release_version = parse_version_3(release_version_str)
     print 'old_release_version:', release_version.formatted()
 
     build_version_str = build_version_match.group(1)
-    build_version = parse_3_dot_version(build_version_str)
+    build_version = parse_version_3(build_version_str)
     print 'old_build_version:', build_version.formatted()
 
     return release_version, build_version
@@ -222,10 +228,10 @@ if __name__ == '__main__':
         #
         # e.g. --version 1.2.3 -> "1.2.3", "102.3.0"
         new_release_version_str = release_version_match.group(1)
-        new_release_version = parse_3_dot_version(new_release_version_str)
+        new_release_version = parse_version_3(new_release_version_str)
         print 'new_release_version:', new_release_version_str, new_release_version.formatted()
         
-        new_build_version = Version(
+        new_build_version = Version3(
             Int(str(new_release_version.major) + "0" + str(new_release_version.minor)),
             new_release_version.minor, 
             0
@@ -233,7 +239,7 @@ if __name__ == '__main__':
     else:
         # Bump patch.
         new_release_version = old_release_version
-        new_build_version = Version(
+        new_build_version = Version3(
             old_build_version.major,
             old_build_version.minor,
             old_build_version.patch + 1
