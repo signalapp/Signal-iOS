@@ -222,12 +222,20 @@ class BatchUpdateTest: SignalBaseTest {
                                                           oldValues: oldValues,
                                                           newValues: newValues,
                                                           changedValues: [])
-            // A UICollectionView can move one _unchanged_ item with one .move.
-            XCTAssertEqual(batchUpdateItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.moveItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            if BatchUpdate<MockValue>.canUseMoveInCollectionView {
+                // A UICollectionView can move one _unchanged_ item with one .move.
+                XCTAssertEqual(batchUpdateItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            } else {
+                XCTAssertEqual(batchUpdateItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            }
         }
 
         do {
@@ -299,12 +307,20 @@ class BatchUpdateTest: SignalBaseTest {
                                                           oldValues: oldValues,
                                                           newValues: newValues,
                                                           changedValues: [])
-            // A UICollectionView can move one _unchanged_ item with one .move.
-            XCTAssertEqual(batchUpdateItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.moveItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            if BatchUpdate<MockValue>.canUseMoveInCollectionView {
+                // A UICollectionView can move one _unchanged_ item with one .move.
+                XCTAssertEqual(batchUpdateItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            } else {
+                XCTAssertEqual(batchUpdateItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            }
         }
 
         do {
@@ -378,12 +394,20 @@ class BatchUpdateTest: SignalBaseTest {
                                                           oldValues: oldValues,
                                                           newValues: newValues,
                                                           changedValues: [])
-            // A UICollectionView can move two _unchanged_ items with two .moves.
-            XCTAssertEqual(batchUpdateItems.count, 2)
-            XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
-            XCTAssertEqual(batchUpdateItems.moveItems.count, 2)
-            XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            if BatchUpdate<MockValue>.canUseMoveInCollectionView {
+                // A UICollectionView can move two _unchanged_ items with two .moves.
+                XCTAssertEqual(batchUpdateItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            } else {
+                XCTAssertEqual(batchUpdateItems.count, 4)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 0)
+            }
         }
 
         do {
@@ -464,11 +488,19 @@ class BatchUpdateTest: SignalBaseTest {
                                                             MockValue("B"),
                                                             MockValue("C")
                                                           ])
-            XCTAssertEqual(batchUpdateItems.count, 6)
-            XCTAssertEqual(batchUpdateItems.deleteItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.insertItems.count, 1)
-            XCTAssertEqual(batchUpdateItems.moveItems.count, 2)
-            XCTAssertEqual(batchUpdateItems.updateItems.count, 2)
+            if BatchUpdate<MockValue>.canUseMoveInCollectionView {
+                XCTAssertEqual(batchUpdateItems.count, 6)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 1)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 2)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 2)
+            } else {
+                XCTAssertEqual(batchUpdateItems.count, 8)
+                XCTAssertEqual(batchUpdateItems.deleteItems.count, 3)
+                XCTAssertEqual(batchUpdateItems.insertItems.count, 3)
+                XCTAssertEqual(batchUpdateItems.moveItems.count, 0)
+                XCTAssertEqual(batchUpdateItems.updateItems.count, 2)
+            }
         }
     }
 

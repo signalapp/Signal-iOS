@@ -578,25 +578,17 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             AssertIsOnMainThread()
 
             let section = Self.messageSection
-            var hasInserted = false
-            var hasUpdated = false
             for item in items {
                 if !DebugFlags.reduceLogChatter {
                     Logger.verbose("\(item.logSafeDescription)")
                 }
                 switch item.updateType {
                 case .delete(let oldIndex):
-                    // Always perform deletes before inserts and updates.
-                    owsAssertDebug(!hasInserted && !hasUpdated)
-
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.deleteItems(at: [indexPath])
                 case .insert(let newIndex):
-                    // Always perform inserts before updates.
-                    owsAssertDebug(!hasUpdated)
                     let indexPath = IndexPath(row: newIndex, section: section)
                     self.collectionView.insertItems(at: [indexPath])
-                    hasInserted = true
                 case .move(let oldIndex, let newIndex):
                     let oldIndexPath = IndexPath(row: oldIndex, section: section)
                     let newIndexPath = IndexPath(row: newIndex, section: section)
@@ -604,7 +596,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 case .update(let oldIndex, _):
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.reloadItems(at: [indexPath])
-                    hasUpdated = true
                 }
             }
         }
@@ -655,7 +646,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
             Logger.warn("renderState: \(update.renderState.debugDescription)")
         }
-
 
         // We use an obj-c free function so that we can handle NSException.
         self.collectionView.cvc_performBatchUpdates(batchUpdatesBlock,

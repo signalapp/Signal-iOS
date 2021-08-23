@@ -312,9 +312,14 @@ public class BatchUpdate<T: BatchUpdateValue> {
             // Therefore, if a UICollectionView value moves, we need to
             // implement its move using an .insert/.delete pair.  The animation
             // isn't as attractive, but it properly updates the cell.
-            //
-            // TODO: Use []?
-            valueIdsToMoveWithMove = valueIdsToMoveAll.subtracting(changedValueIdSet)
+            if Self.canUseMoveInCollectionView {
+                // Alternately, we could use .moves only for moves of unchanged items.
+                // But CVC moves should be incredibly rare, and always using .delete/.insert
+                // is safer.
+                valueIdsToMoveWithMove = valueIdsToMoveAll.subtracting(changedValueIdSet)
+            } else {
+                valueIdsToMoveWithMove = []
+            }
         case .uiTableView:
             // UITableView moves _do_ update the cell.
             //
@@ -589,4 +594,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
     }
 
     private static var verboseLogging: Bool { false }
+
+    public static var canUseMoveInCollectionView: Bool { false }
 }
