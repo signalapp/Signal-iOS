@@ -105,26 +105,16 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2showSplash = build.includes(.beta)
 
     @objc
-    public static var groupsV2Migrations = true
-
-    @objc
-    public static let groupsV2MigrationSetCapability = groupsV2Migrations
-
-    @objc
     public static let linkedPhones = build.includes(.qa)
 
     @objc
     public static var isUsingProductionService: Bool {
         if paymentsInternalBeta {
-            owsAssertDebug(!paymentsExternalBeta)
             return false
         } else {
             return true
         }
     }
-
-    @objc
-    public static let useOrphanDataCleaner = true
 
     @objc
     public static let sendRecipientUpdates = false
@@ -154,10 +144,7 @@ public class FeatureFlags: BaseFlags {
     public static let paymentsInternalBeta = false
 
     @objc
-    public static let paymentsExternalBeta = true
-
-    @objc
-    public static let paymentsBeta = paymentsInternalBeta || paymentsExternalBeta
+    public static let paymentsBeta = true
 
     @objc
     public static let paymentsEnabled = paymentsBeta
@@ -176,9 +163,6 @@ public class FeatureFlags: BaseFlags {
 
     @objc
     public static let groupDescriptionEditing = true
-
-    @objc
-    public static let chatColors = true
 
     @objc
     public static let contextMenus = true
@@ -327,23 +311,6 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2onlyCreateV1Groups = TestableFlag(false,
                                                                 title: LocalizationNotNeeded("Groups v2: Only create v1 groups"),
                                                                 details: LocalizationNotNeeded("Client will not try to create v2 groups."))
-
-    @objc
-    public static let groupsV2migrationsForceEnableAutoMigrations = TestableFlag(build.includes(.beta),
-                                                                                 title: LocalizationNotNeeded("Groups v2: Force enable auto-migrations"),
-                                                                                 details: LocalizationNotNeeded("Client will try to auto-migrate legacy groups." +
-                                                                                                                    "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations."))
-
-    @objc
-    public static let groupsV2migrationsForceEnableManualMigrations = TestableFlag(build.includes(.qa),
-                                                                                   title: LocalizationNotNeeded("Groups v2: Force enable manual migrations"),
-                                                                                   details: LocalizationNotNeeded("Client will allow users to do manual migrations." +
-                                                                                                                    "\n\n" + "Do not use this on any device that communicates with devices that might not support migrations."))
-
-    @objc
-    public static let groupsV2MigrationForceBlockingMigrations = TestableFlag(false,
-                                                                              title: LocalizationNotNeeded("Groups v2: Force Blocking Migrations"),
-                                                                              details: LocalizationNotNeeded("Users will not be able to use v1 groups until they are migrated."))
 
     @objc
     public static let groupsV2migrationsDropOtherMembers = TestableFlag(false,

@@ -80,7 +80,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
         contents.addSection(previewSection)
 
-        if FeatureFlags.chatColors {
+        do {
             let chatColorSection = OWSTableSection()
             chatColorSection.customHeaderHeight = 14
 

@@ -99,45 +99,6 @@ public class RemoteConfig: BaseFlags {
         FeatureFlags.usernamesSupported
     }
 
-    // Controls whether or not the client will show the manual migration UI.
-    // Will only offer migrations if all members can be migrated.
-    @objc
-    public static var groupsV2MigrationAutoMigrations: Bool {
-        guard FeatureFlags.groupsV2Migrations else {
-            return false
-        }
-        // If either of the "blocking migrations" or "manual migrations" flags
-        // are set, auto migrations are also enabled.
-        return (DebugFlags.groupsV2migrationsForceEnableAutoMigrations.get() ||
-                    isEnabled(.groupsV2autoMigrations) ||
-                    isEnabled(.groupsV2manualMigrations) ||
-                    isEnabled(.groupsV2blockingMigrations))
-    }
-
-    // Controls whether or not the client will show the manual migration UI.
-    // Will only offer migrations if all members can be migrated.
-    @objc
-    public static var groupsV2MigrationManualMigrations: Bool {
-        guard FeatureFlags.groupsV2Migrations else {
-            return false
-        }
-        // If the "blocking migrations" flag is set, manual migrations are also enabled.
-        return (DebugFlags.groupsV2migrationsForceEnableManualMigrations.get() ||
-                    isEnabled(.groupsV2manualMigrations) ||
-                    isEnabled(.groupsV2blockingMigrations))
-    }
-
-    // Controls whether or not the client will show the manual migration UI.
-    // Will only offer migrations if all members can be migrated.
-    @objc
-    public static var groupsV2MigrationBlockingMigrations: Bool {
-        guard FeatureFlags.groupsV2Migrations else {
-            return false
-        }
-        return (DebugFlags.groupsV2MigrationForceBlockingMigrations.get() ||
-            isEnabled(.groupsV2blockingMigrations))
-    }
-
     @objc
     public static var groupCalling: Bool {
         return DebugFlags.forceGroupCalling || !isEnabled(.groupCallingKillSwitch)
@@ -426,9 +387,6 @@ private struct Flags {
         case uuidSafetyNumbers
         case groupsV2InviteLinksV2
         case profilesForAll
-        case groupsV2autoMigrations
-        case groupsV2manualMigrations
-        case groupsV2blockingMigrations
         case groupCallingKillSwitch
         case automaticSessionResetKillSwitch
         case paymentsResetKillSwitch

@@ -53,12 +53,12 @@ public class GroupManager: NSObject {
 
     @objc
     public static var canManuallyMigrate: Bool {
-        RemoteConfig.groupsV2MigrationManualMigrations
+        true
     }
 
     @objc
     public static var canAutoMigrate: Bool {
-        RemoteConfig.groupsV2MigrationAutoMigrations
+        true
     }
 
     @objc
@@ -73,7 +73,7 @@ public class GroupManager: NSObject {
 
     @objc
     public static var areMigrationsBlocking: Bool {
-        RemoteConfig.groupsV2MigrationBlockingMigrations
+        true
     }
 
     public static let maxGroupNameEncryptedByteCount: Int = 1024
