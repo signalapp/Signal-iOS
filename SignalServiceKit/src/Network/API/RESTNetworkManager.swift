@@ -144,7 +144,6 @@ public class RESTSessionManager: NSObject {
         func parseResponseHeaders(task: URLSessionDataTask?) -> OWSHttpHeaders {
             let parsedHeaders = OWSHttpHeaders()
             guard let response = parseResponse(task: task) else {
-                owsFailDebug("Invalid response.")
                 return parsedHeaders
             }
             for (key, value) in response.allHeaderFields {
@@ -183,14 +182,14 @@ public class RESTSessionManager: NSObject {
         }
 
         let afFailure = { (task: URLSessionDataTask?, error: Error) in
-            var responseStatus: Int = 0
             let responseHeaders = parseResponseHeaders(task: task)
             // TODO: Can we extract a response body?
             let responseData: Data? = nil
+            let responseStatus: Int
             if let response = parseResponse(task: task) {
                 responseStatus = response.statusCode
             } else {
-                owsFailDebug("Invalid response.")
+                responseStatus = 0
             }
             let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
                                                                  requestUrl: requestUrl,

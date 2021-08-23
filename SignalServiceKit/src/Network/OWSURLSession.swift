@@ -506,7 +506,7 @@ public class OWSURLSession: NSObject {
                 // This isn't necessarily an error or bug.
                 // A task might "succeed" after it "fails" in certain edge cases,
                 // although we make a best effort to avoid them.
-                owsFailDebug("Missing TaskState.")
+                Logger.warn("Missing TaskState.")
                 return nil
             }
             self.taskStateMap[task.taskIdentifier] = nil
@@ -532,7 +532,7 @@ public class OWSURLSession: NSObject {
 
     private func taskDidFail(_ task: URLSessionTask, error: Error) {
         guard let taskState = removeCompletedTaskState(task) else {
-            owsFailDebug("Missing TaskState.")
+            Logger.warn("Missing TaskState.")
             return
         }
         taskState.reject(error: error)
