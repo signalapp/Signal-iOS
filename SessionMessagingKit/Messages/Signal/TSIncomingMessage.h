@@ -59,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
                  expiresInSeconds:(uint32_t)expiresInSeconds
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
            openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
