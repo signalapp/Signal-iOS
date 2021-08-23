@@ -743,7 +743,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self.keyValueStore setString:AppVersion.shared.currentAppVersion4
+                        [self.keyValueStore setString:AppVersion.shared.currentAppReleaseVersion
                                                   key:OWSOrphanDataCleaner_LastCleaningVersionKey
                                           transaction:transaction];
 
