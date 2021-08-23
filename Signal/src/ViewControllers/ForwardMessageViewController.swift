@@ -15,6 +15,10 @@ public protocol ForwardMessageDelegate: AnyObject {
 @objc
 class ForwardMessageViewController: InteractiveSheetViewController {
 
+    private let pickerVC: ConversationPickerViewController
+
+    override var interactiveScrollViews: [UIScrollView] { [ pickerVC.tableView ] }
+
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
     public typealias Item = ForwardMessageItem
@@ -32,6 +36,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     private init(content: Content) {
         self.content = content
+        self.pickerVC = ConversationPickerViewController(selection: selection)
 
         super.init()
 
@@ -83,7 +88,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     private let header = UIStackView()
-    private var pickerVC: ConversationPickerViewController?
 
     private func selectRecipientsStep() {
 
@@ -136,11 +140,9 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         header.isLayoutMarginsRelativeArrangement = true
         header.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
 
-        let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
         pickerVC.pickerDelegate = self
-        self.pickerVC = pickerVC
         self.addChild(pickerVC)
         let pickerView = pickerVC.view!
 
@@ -158,17 +160,12 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     fileprivate func selectSearchBar() {
         AssertIsOnMainThread()
 
-        pickerVC?.selectSearchBar()
+        pickerVC.selectSearchBar()
         ensureHeaderVisibility()
     }
 
     fileprivate func ensureHeaderVisibility() {
         AssertIsOnMainThread()
-
-        guard let pickerVC = pickerVC else {
-            owsFailDebug("Missing pickerVC.")
-            return
-        }
 
         header.isHidden = pickerVC.isSearchBarActive
         if pickerVC.isSearchBarActive {

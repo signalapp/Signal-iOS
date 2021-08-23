@@ -56,6 +56,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         footerView.textInput
     }
 
+    private var conversationCollection: ConversationCollection = .empty {
+        didSet {
+            updateTableContents()
+        }
+    }
+
     public init(selection: ConversationPickerSelection) {
         self.selection = selection
 
@@ -298,12 +304,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         conversationCollection.conversation(for: thread)
     }
 
-    private var conversationCollection: ConversationCollection = .empty {
-        didSet {
-            updateTableContents()
-        }
-    }
-
     // MARK: - Button Actions
 
     @objc func onTouchCancelButton() {
@@ -538,6 +538,7 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         if shouldHideSearchBarIfCancelled {
             self.shouldShowSearchBar = false
         }
+        conversationCollection = buildConversationCollection()
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
