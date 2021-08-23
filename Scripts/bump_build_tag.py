@@ -55,7 +55,7 @@ def is_valid_version_3(value):
 def set_versions(plist_file_path, release_version, build_version):
     if not is_valid_version_3(release_version):
         fail('Invalid release version: %s' % release_version)
-    if not is_valid_build_version(build_version):
+    if not is_valid_version_3(build_version):
         fail('Invalid build version: %s' % build_version)
 
     with open(plist_file_path, 'rt') as f:
