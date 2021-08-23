@@ -164,7 +164,8 @@ public class BatchUpdate<T: BatchUpdateValue> {
     //
     // * Views will crash if items have invalid indices.
     // * Views will crash if more than one item affects the same
-    //   cell (e.g. .update a cell after .moving it).
+    //   cell (e.g. .update a cell after .moving it, or insert
+    //   two values at the same index, etc.).
     // * Some item indices (like deletes) use "old indices",
     //   some item indices (like inserts) use "new indices",
     //   .move use an "old index" for the "from location" and a
@@ -179,7 +180,7 @@ public class BatchUpdate<T: BatchUpdateValue> {
     //   views are updated as needed, but we lose the .move
     //   animation.
     //
-    // AFAIK ordering of items matters conceptually but the views
+    // Ordering of items matters conceptually but the views
     // don't actually care about the order in which items are
     // performed.
     //
@@ -228,8 +229,11 @@ public class BatchUpdate<T: BatchUpdateValue> {
         func simulateUpdate(items: [Item]) throws -> [ValueId] {
             var updatedValueIdList = oldValueIdList
 
-            // Items might be in any order, but the order in which they are performed
-            // matters, so we must sort before performing.
+            // UITableView and UICollection view don't care about the order
+            // in which the items are performed in a given performBatchUpdates()
+            // block, but they are applied to the view state in a very specific
+            // order to avoid index conflicts.  Therefore to simulate UITableView
+            // and UICollection behavior we sort before performing.
             //
             // For the purposes of simulation, we treat .move as a separate .delete and
             // .insert and ignore .update altogether.
@@ -362,7 +366,7 @@ public class BatchUpdate<T: BatchUpdateValue> {
 
         if verboseLogging {
             let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
-            Logger.verbose("transformedValueIdList after deletes: \(updatedValueIdList.joined(separator: "\n"))")
+            Logger.verbose("Simulated updated list after deletes: \(updatedValueIdList.joined(separator: "\n"))")
         }
 
         // 2. Inserts
@@ -497,6 +501,12 @@ public class BatchUpdate<T: BatchUpdateValue> {
             if !DebugFlags.reduceLogChatter {
                 Logger.verbose("\(item.logSafeDescription), \(newValue.logSafeDescription)")
             }
+        }
+
+        let valueIdValueAfterAllItems = try simulateUpdate(items: batchUpdateItems)
+        guard newValueIdList == valueIdValueAfterAllItems else {
+            try logState()
+            throw OWSAssertionError("New and updated ordered contents don't match.")
         }
 
         try logState()
