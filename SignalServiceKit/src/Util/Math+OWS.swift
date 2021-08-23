@@ -33,6 +33,10 @@ public extension CGFloat {
     var square: CGFloat {
         return self * self
     }
+
+    func average(_ other: CGFloat) -> CGFloat {
+        (self + other) * 0.5
+    }
 }
 
 // MARK: -
