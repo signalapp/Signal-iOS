@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 // e.g. 3.4.5
 @property (atomic, readonly) NSString *currentAppReleaseVersion;
 
-// Uniquely identifies the build, in the format specified by Apple.
+// Uniquely identifies the build within the release track, in the format specified by Apple.
 //
-// e.g. 304.5.6
+// e.g. 6
 //
 // See:
 //
