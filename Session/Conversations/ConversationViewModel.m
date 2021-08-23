@@ -1158,7 +1158,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        uint64_t viewItemTimestamp = viewItem.interaction.timestampForUI;
+        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
         OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
@@ -1225,7 +1225,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSAttributedString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
-        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestampForUI];
+        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;

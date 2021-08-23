@@ -73,7 +73,6 @@ public final class OpenGroupPollerV2 : NSObject {
                 let envelope = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: message.sentTimestamp)
                 envelope.setContent(data)
                 envelope.setSource(message.sender!) // Safe because messages with a nil sender are filtered out
-                envelope.setServerTimestamp(message.sentTimestamp)
                 do {
                     let data = try envelope.buildSerializedData()
                     let (message, proto) = try MessageReceiver.parse(data, openGroupMessageServerID: UInt64(message.serverID!), isRetry: false, using: transaction)

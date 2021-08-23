@@ -165,17 +165,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Date operations
 
-- (uint64_t)timestampForUI
-{
-    // We always want to show the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
-    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
-    // wrapped, which gets parsed to `serverTimestamp` in that case.
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
-        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
-    }
-    return _timestamp;
-}
-
 - (uint64_t)timestampForLegacySorting
 {
     return self.timestamp;
@@ -183,7 +172,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (NSDate *)dateForUI
 {
-    return [NSDate ows_dateWithMillisecondsSince1970:self.timestampForUI];
+    return [NSDate ows_dateWithMillisecondsSince1970:self.timestamp];
 }
 
 - (NSDate *)receivedAtDate
@@ -229,12 +218,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (uint64_t)sortId
 {
-    // We always want to sort on the sent timestamp. In the case of one-on-one, closed group and V2 open group messages we get
-    // this from the protobuf. In the case of V1 open group messages we get it from the envelope in which the message is
-    // wrapped, which gets parsed to `serverTimestamp` in that case.
-    if ([self isKindOfClass:TSIncomingMessage.class] && ((TSIncomingMessage *)self).isOpenGroupMessage && ((TSIncomingMessage *)self).serverTimestamp != nil) {
-        return ((TSIncomingMessage *)self).serverTimestamp.unsignedLongLongValue;
-    }
     return self.timestamp;
 }
 
@@ -279,6 +262,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     }
     [self saveWithTransaction:transaction];
 }
+
+- (void)updateTimestamp:(uint64_t)timestamp
+{
+    _timestamp = timestamp;
+}
+
 
 @end
 
