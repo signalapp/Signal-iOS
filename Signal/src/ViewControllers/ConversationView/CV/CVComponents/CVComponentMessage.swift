@@ -820,17 +820,36 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 case .topFullWidth:
                     stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
                 case .bottomFullWidth:
-                    // TODO:
                     let applyTopMarginToFullWidthStack = (previousSubcomponents.isEmpty &&
                                                             quotedReply != nil)
                     stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
                 case .nested:
-                    let hasTopMargin = shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponents.last,
-                                                                         nextComponent: firstComponent)
-                    let hasBottomMargin = shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
-                                                                            nextComponent: nextSubcomponents.first)
-                    stackConfig = buildNestedStackConfig(hasTopMargin: hasTopMargin,
-                                                         hasBottomMargin: hasBottomMargin)
+                    let topMargin: ContentStackMargin
+                    if let previousSubcomponent = previousSubcomponents.last {
+                        if shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponent,
+                                                             nextComponent: firstComponent) {
+                            topMargin = .spacing
+                        } else {
+                            topMargin = .none
+                        }
+                    } else {
+                        topMargin = .topMargin
+                    }
+
+                    var bottomMargin: ContentStackMargin = .none
+                    if let nextSubcomponent = nextSubcomponents.first {
+                        if shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
+                                                             nextComponent: nextSubcomponent) {
+                            bottomMargin = .spacing
+                        } else {
+                            bottomMargin = .none
+                        }
+                    } else {
+                        bottomMargin = .bottomMargin
+                    }
+
+                    stackConfig = buildNestedStackConfig(topMargin: topMargin,
+                                                         bottomMargin: bottomMargin)
                 }
 
                 let componentKeys = contentSection.components.map { $0.componentKey }
@@ -890,13 +909,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return true
             }
         }
-        let a = doesComponentRequireSpacing(lastComponentKey)
-        let b = doesComponentRequireSpacing(nextComponentKey)
-        let result = a || b
-        Logger.verbose("---- lastComponentKey: \(lastComponentKey), \(a), nextComponentKey: \(nextComponentKey), \(b), -> \(result)")
-        return result
-//        return (doesComponentRequireSpacing(lastComponentKey) ||
-//                    doesComponentRequireSpacing(nextComponentKey))
+        return (doesComponentRequireSpacing(lastComponentKey) ||
+                    doesComponentRequireSpacing(nextComponentKey))
     }
 
     // Builds an accessibility label for the entire message.
@@ -1224,17 +1238,36 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 case .topFullWidth:
                     stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
                 case .bottomFullWidth:
-                    // TODO:
                     let applyTopMarginToFullWidthStack = (previousSubcomponents.isEmpty &&
                                                             quotedReply != nil)
                     stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
                 case .nested:
-                    let hasTopMargin = shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponents.last,
-                                                                         nextComponent: firstComponent)
-                    let hasBottomMargin = shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
-                                                                            nextComponent: nextSubcomponents.first)
-                    stackConfig = buildNestedStackConfig(hasTopMargin: hasTopMargin,
-                                                         hasBottomMargin: hasBottomMargin)
+                    let topMargin: ContentStackMargin
+                    if let previousSubcomponent = previousSubcomponents.last {
+                        if shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponent,
+                                                             nextComponent: firstComponent) {
+                            topMargin = .spacing
+                        } else {
+                            topMargin = .none
+                        }
+                    } else {
+                        topMargin = .topMargin
+                    }
+
+                    var bottomMargin: ContentStackMargin = .none
+                    if let nextSubcomponent = nextSubcomponents.first {
+                        if shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
+                                                             nextComponent: nextSubcomponent) {
+                            bottomMargin = .spacing
+                        } else {
+                            bottomMargin = .none
+                        }
+                    } else {
+                        bottomMargin = .bottomMargin
+                    }
+
+                    stackConfig = buildNestedStackConfig(topMargin: topMargin,
+                                                         bottomMargin: bottomMargin)
                 }
 
                 let componentKeys = contentSection.components.map { $0.componentKey }
@@ -2214,15 +2247,28 @@ fileprivate extension CVComponentMessage {
 
     private enum ContentStackMargin {
         case none
-        case margin
+        case topMargin
+        case bottomMargin
         case spacing
     }
 
-    func buildNestedStackConfig(hasTopMargin: Bool,
-                                hasBottomMargin: Bool) -> CVStackViewConfig {
+    private func buildNestedStackConfig(topMargin: ContentStackMargin,
+                                        bottomMargin: ContentStackMargin) -> CVStackViewConfig {
+        func marginValue(_ margin: ContentStackMargin) -> CGFloat {
+            switch margin {
+            case .none:
+                return 0
+            case .topMargin:
+                return conversationStyle.textInsetTop
+            case .bottomMargin:
+                return conversationStyle.textInsetBottom
+            case .spacing:
+                return Self.textViewVSpacing
+            }
+        }
         var layoutMargins = conversationStyle.textInsets
-        layoutMargins.top = hasTopMargin ? Self.textViewVSpacing : 0
-        layoutMargins.bottom = hasBottomMargin ? Self.textViewVSpacing : 0
+        layoutMargins.top = marginValue(topMargin)
+        layoutMargins.bottom = marginValue(bottomMargin)
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .fill,
                                  spacing: Self.textViewVSpacing,
