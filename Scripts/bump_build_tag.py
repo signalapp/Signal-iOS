@@ -46,18 +46,6 @@ def find_project_root():
     fail('Could not find project root path')
 
 
-def is_valid_release_version(value):
-    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
-    match = regex.search(value)
-    return match is not None
-
-
-def is_valid_build_version(value):
-    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)\.(\d+)$')
-    match = regex.search(value)
-    return match is not None
-
-
 def set_versions(plist_file_path, release_version, build_version):
     if not is_valid_release_version(release_version):
         fail('Invalid release version: %s' % release_version)
@@ -94,46 +82,88 @@ def set_versions(plist_file_path, release_version, build_version):
         f.write(text)
 
 
+
+class Version:
+    def __init__(self, major, minor, patch):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+        
+    def formatted(self):
+        return str(self.major) + "." + str(self.minor) + "." + str(self.patch)
+
+
+def parse_3_dot_version(text):
+   regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
+   match = regex.search(text)
+   # print 'match', match
+   if not match:
+       fail('Could not parse .plist')
+   if len(match.groups()) != 3:
+       fail('Could not parse .plist')
+   major = int(match.group(1))
+   minor = int(match.group(2))
+   patch = int(match.group(3))
+
+   version = Version(major, minor, patch)
+   
+   # Verify that roundtripping yields the same value.
+   if version.formatted() != text:
+       fail('Could not parse .plist')
+   
+   return version
+
+
 def get_versions(plist_file_path):
     with open(plist_file_path, 'rt') as f:
         text = f.read()
     # print 'text', text
 
+    # CFBundleShortVersionString identifies the release track.
+    # CFBundleVersion uniqely identifies the build.
+    # 
+    # Previously, we used version strings like this:
+    #
+    # <key>CFBundleShortVersionString</key>
+    # <string>2.13.0</string>
     # <key>CFBundleVersion</key>
     # <string>2.13.0.13</string>
-    file_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
-    file_match = file_regex.search(text)
+    #
+    # We now use version strings like this:
+    #
+    # <key>CFBundleShortVersionString</key>
+    # <string>2.13.0</string>
+    # <key>CFBundleVersion</key>
+    # <string>2013.0.13</string>
+    #
+    # Note that in CFBundleVersion we separate the first two values with a zero ("0").
+    #
+    # See:
+    #
+    # * https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring
+    # * https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion
+    # * https://developer.apple.com/library/archive/technotes/tn2420/_index.html
+    release_version_regex = re.compile(r'<key>CFBundleShortVersionString</key>\s*<string>(\d+\.\d+\.\d+)</string>', re.MULTILINE)
+    release_version_match = release_version_regex.search(text)
     # print 'match', match
-    if not file_match:
+    if not release_version_match:
         fail('Could not parse .plist')
 
-    # e.g. "2.13.0.13"
-    old_build_version = file_match.group(1)
-    print 'old_build_version:', old_build_version
-
-    if not is_valid_build_version(old_build_version):
-        fail('Invalid build version: %s' % old_build_version)
-
-    build_number_regex = re.compile(r'\.(\d+)$')
-    build_number_match = build_number_regex.search(old_build_version)
-    if not build_number_match:
-        fail('Could not parse .plist version')
-
-    # e.g. "13"
-    old_build_number = build_number_match.group(1)
-    print 'old_build_number:', old_build_number
-
-    release_number_regex = re.compile(r'^(.+)\.\d+$')
-    release_number_match = release_number_regex.search(old_build_version)
-    if not release_number_match:
+    build_version_regex = re.compile(r'<key>CFBundleVersion</key>\s*<string>(\d+\.\d+\.\d+)</string>', re.MULTILINE)
+    build_version_match = build_version_regex.search(text)
+    # print 'match', match
+    if not build_version_match:
         fail('Could not parse .plist')
 
-    # e.g. "2.13.0"
-    old_release_version = release_number_match.group(1)
-    print 'old_release_version:', old_release_version
+    release_version_str = release_version_match.group(1)
+    release_version = parse_3_dot_version(release_version_str)
+    print 'old_release_version:', release_version.formatted()
 
-    # Given "2.13.0.13", this should return "2.13.0" and "13" as strings.
-    return old_release_version, old_build_number
+    build_version_str = build_version_match.group(1)
+    build_version = parse_3_dot_version(build_version_str)
+    print 'old_build_version:', build_version.formatted()
+
+    return release_version, build_version
 
 
 if __name__ == '__main__':
@@ -185,18 +215,32 @@ if __name__ == '__main__':
     # Main App
     # ---------------
 
-    old_release_version, old_build_number = get_versions(main_plist_path)
+    old_release_version, old_build_version = get_versions(main_plist_path)
 
     if args.version:
-        # e.g. --version 1.2.3 -> "1.2.3", "1.2.3.0"
-        new_release_version = args.version.strip()
-        new_build_version = new_release_version + ".0"
+        # Bump version, reset patch to zero.
+        #
+        # e.g. --version 1.2.3 -> "1.2.3", "102.3.0"
+        new_release_version_str = release_version_match.group(1)
+        new_release_version = parse_3_dot_version(new_release_version_str)
+        print 'new_release_version:', new_release_version_str, new_release_version.formatted()
+        
+        new_build_version = Version(
+            Int(str(new_release_version.major) + "0" + str(new_release_version.minor)),
+            new_release_version.minor, 
+            0
+        )
     else:
-        new_build_number = str(1 + int(old_build_number))
-        print 'new_build_number:', new_build_number
-
+        # Bump patch.
         new_release_version = old_release_version
-        new_build_version = old_release_version + "." + new_build_number
+        new_build_version = Version(
+            old_build_version.major,
+            old_build_version.minor,
+            old_build_version.patch + 1
+        )
+        
+    new_release_version = new_release_version.formatted()
+    new_build_version = new_build_version.formatted()
 
     print 'new_release_version:', new_release_version
     print 'new_build_version:', new_build_version
