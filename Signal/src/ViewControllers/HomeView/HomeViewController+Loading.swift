@@ -133,12 +133,13 @@ extension HomeViewController {
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
             cellContentCache.removeObject(forKey: rowChange.threadUniqueId)
 
+            if !DebugFlags.reduceLogChatter {
+                Logger.verbose("----- \(rowChange.logSafeDescription)")
+            }
             switch rowChange.type {
             case .delete(let oldIndexPath):
-                Logger.verbose("----- delete: \(oldIndexPath)")
                 tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
             case .insert(let newIndexPath):
-                Logger.verbose("----- insert: \(newIndexPath)")
                 tableView.insertRows(at: [newIndexPath], with: rowAnimation)
             case .move(let oldIndexPath, let newIndexPath):
                 // NOTE: if we're moving within the same section, we perform
@@ -149,7 +150,6 @@ extension HomeViewController {
                 //       animation. This should generally be safe, because you'll only
                 //       move between sections when pinning / unpinning which doesn't
                 //       require the moved item to be reloaded.
-                Logger.verbose("----- move: \(oldIndexPath) -> \(newIndexPath)")
                 if oldIndexPath.section != newIndexPath.section {
                     tableView.moveRow(at: oldIndexPath, to: newIndexPath)
                 } else {
@@ -157,7 +157,6 @@ extension HomeViewController {
                     tableView.insertRows(at: [newIndexPath], with: rowAnimation)
                 }
             case .update(let oldIndexPath):
-                Logger.verbose("----- update: \(oldIndexPath)")
                 tableView.reloadRows(at: [oldIndexPath], with: .none)
             }
         }

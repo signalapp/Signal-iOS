@@ -474,8 +474,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // Update scroll action to auto-scroll if necessary.
         if scrollAction.action == .none, !self.isUserScrolling {
             for item in items {
-                switch item {
-                case .insert(let renderItem, _):
+                let renderItem = item.value
+                switch item.updateType {
+                case .insert:
 
                     var wasJustInserted = false
                     if let lastMessageForInboxSortId = updateToken.lastMessageForInboxSortId {
@@ -577,35 +578,24 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             AssertIsOnMainThread()
 
             let section = Self.messageSection
-            var hasInserted = false
-            var hasUpdated = false
             for item in items {
-                switch item {
-                case .insert(_, let newIndex):
-                    // Always perform inserts before updates.
-                    owsAssertDebug(!hasUpdated)
-                    if !DebugFlags.reduceLogChatter {
-                        Logger.verbose("insert newIndex: \(newIndex)")
-                    }
-                    let indexPath = IndexPath(row: newIndex, section: section)
-                    self.collectionView.insertItems(at: [indexPath])
-                    hasInserted = true
-                case .update(_, let oldIndex, _):
-                    if !DebugFlags.reduceLogChatter {
-                        Logger.verbose("update oldIndex: \(oldIndex)")
-                    }
-                    let indexPath = IndexPath(row: oldIndex, section: section)
-                    self.collectionView.reloadItems(at: [indexPath])
-                    hasUpdated = true
-                case .delete(_, let oldIndex):
-                    if !DebugFlags.reduceLogChatter {
-                        Logger.verbose("delete oldIndex: \(oldIndex)")
-                    }
-                    // Always perform deletes before inserts and updates.
-                    owsAssertDebug(!hasInserted && !hasUpdated)
-
+                if !DebugFlags.reduceLogChatter {
+                    Logger.verbose("\(item.logSafeDescription)")
+                }
+                switch item.updateType {
+                case .delete(let oldIndex):
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.deleteItems(at: [indexPath])
+                case .insert(let newIndex):
+                    let indexPath = IndexPath(row: newIndex, section: section)
+                    self.collectionView.insertItems(at: [indexPath])
+                case .move(let oldIndex, let newIndex):
+                    let oldIndexPath = IndexPath(row: oldIndex, section: section)
+                    let newIndexPath = IndexPath(row: newIndex, section: section)
+                    self.collectionView.moveItem(at: oldIndexPath, to: newIndexPath)
+                case .update(let oldIndex, _):
+                    let indexPath = IndexPath(row: oldIndex, section: section)
+                    self.collectionView.reloadItems(at: [indexPath])
                 }
             }
         }
@@ -650,7 +640,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
         let logFailureBlock = {
             for item in items {
-                Logger.warn("item: \(item.debugDescription)")
+                Logger.warn("item: \(item.logSafeDescription)")
             }
             Logger.warn("Layout: \(self.layout.debugDescription)")
             Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")

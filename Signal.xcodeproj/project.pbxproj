@@ -484,6 +484,8 @@
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
+		34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1071F26D005340053EF4D /* BatchUpdate.swift */; };
+		34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1072126D045290053EF4D /* BatchUpdateTest.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
 		34FB6A5125D1CD6000E599B1 /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5025D1CD6000E599B1 /* OWSTableViewController2.swift */; };
@@ -1593,6 +1595,8 @@
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
+		34F1071F26D005340053EF4D /* BatchUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdate.swift; sourceTree = "<group>"; };
+		34F1072126D045290053EF4D /* BatchUpdateTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdateTest.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDetailViewController.swift; sourceTree = "<group>"; };
@@ -3495,6 +3499,7 @@
 			isa = PBXGroup;
 			children = (
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
+				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
 				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				88C4E38124671F9D009C9B97 /* Device Transfer */,
@@ -4071,6 +4076,7 @@
 		B660F6A21C29868000687D6E /* util */ = {
 			isa = PBXGroup;
 			children = (
+				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
@@ -5594,6 +5600,7 @@
 				347C3830252CE69400F3D941 /* CVItemViewState.swift in Sources */,
 				348815C4255343FC00D4F4C4 /* CVComponentDelegate.swift in Sources */,
 				3470C8782555883600F5847C /* CVLoadContext.swift in Sources */,
+				34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */,
 				34D99CE4217509C2000AFB39 /* AppEnvironment.swift in Sources */,
 				4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */,
 				4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */,
@@ -6010,6 +6017,7 @@
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
+				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,
 				34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */,
 				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
 				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,

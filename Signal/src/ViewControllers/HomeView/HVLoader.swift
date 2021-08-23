@@ -7,8 +7,23 @@ import Foundation
 enum HVRowChangeType {
     case delete(oldIndexPath: IndexPath)
     case insert(newIndexPath: IndexPath)
-    case update(oldIndexPath: IndexPath)
     case move(oldIndexPath: IndexPath, newIndexPath: IndexPath)
+    case update(oldIndexPath: IndexPath)
+
+    // MARK: -
+
+    public var logSafeDescription: String {
+        switch self {
+        case .delete(let oldIndexPath):
+            return "delete(oldIndexPath: \(oldIndexPath))"
+        case .insert(let newIndexPath):
+            return "insert(newIndexPath: \(newIndexPath))"
+        case .move(let oldIndexPath, let newIndexPath):
+            return "move(oldIndexPath: \(oldIndexPath), newIndexPath: \(newIndexPath))"
+        case .update(let oldIndexPath):
+            return "update(oldIndexPath: \(oldIndexPath))"
+        }
+    }
 }
 
 // MARK: -
@@ -20,6 +35,12 @@ struct HVRowChange {
     init(type: HVRowChangeType, threadUniqueId: String) {
         self.type = type
         self.threadUniqueId = threadUniqueId
+    }
+
+    // MARK: -
+
+    public var logSafeDescription: String {
+        "\(type), \(threadUniqueId)"
     }
 }
 
@@ -198,309 +219,101 @@ public class HVLoader: NSObject {
         let newPinnedThreadIds: [String] = newRenderState.pinnedThreads.orderedKeys
         let newUnpinnedThreadIds: [String] = newRenderState.unpinnedThreads.map { $0.uniqueId }
 
-        let allNewThreadIds = Set(newPinnedThreadIds + newUnpinnedThreadIds)
+        struct HVBatchUpdateValue: BatchUpdateValue {
+            let threadUniqueId: String
 
-        // We want to be economical and issue as few changes as possible.
-        // We can skip some "moves".  E.g. if we "delete" the first item,
-        // we don't need to explicitly "move" the other items up an index.
-        // In an effort to use as few "moves" as possible, we calculate
-        // the "naive" ordering that will occur after the "deletes" and
-        // "inserts," then only "move up" items that are not in their
-        // final position.  We leverage the fact that items in the
-        // conversation view only move upwards when modified.
-        var naivePinnedThreadIdOrdering = oldPinnedThreadIds
-        var naiveUnpinnedThreadIdOrdering = oldUnpinnedThreadIds
+            var batchUpdateId: String { threadUniqueId }
+            var logSafeDescription: String { threadUniqueId }
+        }
 
-        let pinnedSection: Int = HomeViewSection.pinned.rawValue
-        let unpinnedSection: Int = HomeViewSection.unpinned.rawValue
-        var rowChanges: [HVRowChange] = []
+        let oldPinnedValues = oldPinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
+        let newPinnedValues = newPinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
+        let oldUnpinnedValues = oldUnpinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
+        let newUnpinnedValues = newUnpinnedThreadIds.map { HVBatchUpdateValue(threadUniqueId: $0) }
 
-        // 1. Deletes - Always perform deletes before inserts and updates.
+        let pinnedChangedValues = newPinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
+        let unpinnedChangedValues = newUnpinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
+
+        let pinnedBatchUpdateItems: [BatchUpdate.Item] = try BatchUpdate.build(viewType: .uiTableView,
+                                                                               oldValues: oldPinnedValues,
+                                                                               newValues: newPinnedValues,
+                                                                               changedValues: pinnedChangedValues)
+        let unpinnedBatchUpdateItems: [BatchUpdate.Item] = try BatchUpdate.build(viewType: .uiTableView,
+                                                                                 oldValues: oldUnpinnedValues,
+                                                                                 newValues: newUnpinnedValues,
+                                                                                 changedValues: unpinnedChangedValues)
+
+        func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType,
+                           homeViewSection: HomeViewSection) -> HVRowChangeType {
+            switch batchUpdateType {
+            case .delete(let oldIndex):
+                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue))
+            case .insert(let newIndex):
+                return .insert(newIndexPath: IndexPath(row: newIndex, section: homeViewSection.rawValue))
+            case .move(let oldIndex, let newIndex):
+                return .move(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue),
+                             newIndexPath: IndexPath(row: newIndex, section: homeViewSection.rawValue))
+            case .update(let oldIndex, _):
+                return .update(oldIndexPath: IndexPath(row: oldIndex, section: homeViewSection.rawValue))
+            }
+        }
+        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<HVBatchUpdateValue>.Item],
+                        homeViewSection: HomeViewSection) -> [HVRowChange] {
+            batchUpdateItems.map { batchUpdateItem in
+                HVRowChange(type: rowChangeType(forBatchUpdateType: batchUpdateItem.updateType,
+                                                homeViewSection: homeViewSection),
+                            threadUniqueId: batchUpdateItem.value.threadUniqueId)
+            }
+        }
+        let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems,
+                                          homeViewSection: .pinned)
+        let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems,
+                                            homeViewSection: .unpinned)
+
+        var allRowChanges = pinnedRowChanges + unpinnedRowChanges
+
+        // The "row change" logic above deals with the .pinned and
+        // .unpinned sections separately.
         //
-        // * The indexPath for deletes uses pre-update indices.
-        // * We use `reversed` to ensure that items
-        //   are deleted in reverse order, to avoid confusion around
-        //   each deletion affecting the indices of subsequent deletions.
-        let deletedThreadIds = (oldPinnedThreadIds + oldUnpinnedThreadIds)
-            .filter { !newPinnedThreadIds.contains($0) && !newUnpinnedThreadIds.contains($0) }
-        for deletedThreadId in deletedThreadIds.reversed() {
-            let wasPinned = oldPinnedThreadIds.contains(deletedThreadId)
-            let oldThreadIds = wasPinned ? oldPinnedThreadIds : oldUnpinnedThreadIds
-            let oldSection = wasPinned ? pinnedSection : unpinnedSection
+        // We need to special-case one kind of update: pinning and
+        // unpinning, where a thread moves from one section to the
+        // other.
+        if pinnedRowChanges.count == 1,
+           let pinnedRowChange = pinnedRowChanges.first,
+           unpinnedRowChanges.count == 1,
+           let unpinnedRowChange = unpinnedRowChanges.first,
+           pinnedRowChange.threadUniqueId == unpinnedRowChange.threadUniqueId {
 
-            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: deletedThreadId) else {
-                throw OWSAssertionError("oldIndex was unexpectedly nil")
-            }
-
-            owsAssertDebug(newPinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
-            owsAssertDebug(newUnpinnedThreadIds.firstIndexAsInt(of: deletedThreadId) == nil)
-
-            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
-            rowChanges.append(HVRowChange(type: .delete(oldIndexPath: oldIndexPath),
-                                          threadUniqueId: deletedThreadId))
-
-            func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
-                if oldIndex >= 0 && oldIndex < naiveThreadIdOrdering.count {
-                    owsAssertDebug(naiveThreadIdOrdering[oldIndex] == deletedThreadId)
-                    naiveThreadIdOrdering.remove(at: oldIndex)
-                } else {
-                    throw OWSAssertionError("Could not delete item.")
+            switch pinnedRowChange.type {
+            case .delete(let oldIndexPath):
+                switch unpinnedRowChange.type {
+                case .insert(let newIndexPath):
+                    // Unpin: Move from .pinned to .unpinned section.
+                    allRowChanges = [HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                                                             newIndexPath: newIndexPath),
+                                                 threadUniqueId: pinnedRowChange.threadUniqueId)]
+                default:
+                    owsFailDebug("Unexpected changes. pinnedRowChange: \(pinnedRowChange)")
                 }
-            }
-
-            // Update naive ordering to reflect the delete.
-            if wasPinned {
-                try updateNaiveThreadIdOrdering(&naivePinnedThreadIdOrdering)
-            } else {
-                try updateNaiveThreadIdOrdering(&naiveUnpinnedThreadIdOrdering)
-            }
-        }
-
-        // 2. Inserts - Always perform inserts before updates.
-        //
-        // * The indexPath for inserts uses post-update indices.
-        // * We insert in ascending order.
-        let insertedThreadIds = (newPinnedThreadIds + newUnpinnedThreadIds)
-            .filter { !oldPinnedThreadIds.contains($0) && !oldUnpinnedThreadIds.contains($0) }
-        for insertedThreadId in insertedThreadIds {
-            let isPinned = newPinnedThreadIds.contains(insertedThreadId)
-            let newThreadIds = isPinned ? newPinnedThreadIds : newUnpinnedThreadIds
-            let newSection = isPinned ? pinnedSection : unpinnedSection
-
-            owsAssertDebug(oldPinnedThreadIds.firstIndexAsInt(of: insertedThreadId) == nil)
-            owsAssertDebug(oldUnpinnedThreadIds.firstIndexAsInt(of: insertedThreadId) == nil)
-
-            guard let newIndex = newThreadIds.firstIndexAsInt(of: insertedThreadId) else {
-                throw OWSAssertionError("newIndex was unexpectedly nil")
-            }
-            let newIndexPath = IndexPath(row: newIndex, section: newSection)
-            rowChanges.append(HVRowChange(type: .insert(newIndexPath: newIndexPath),
-                                          threadUniqueId: insertedThreadId))
-
-            func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
-                if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
-                    naiveThreadIdOrdering.insert(insertedThreadId, at: newIndex)
-                } else {
-                    throw OWSAssertionError("Could not insert item.")
+            case .insert(let newIndexPath):
+                switch unpinnedRowChange.type {
+                case .delete(let oldIndexPath):
+                    // Pin: Move from .unpinned to .pinned section.
+                    allRowChanges = [HVRowChange(type: .move(oldIndexPath: oldIndexPath,
+                                                             newIndexPath: newIndexPath),
+                                                 threadUniqueId: pinnedRowChange.threadUniqueId)]
+                default:
+                    owsFailDebug("Unexpected changes. pinnedRowChange: \(pinnedRowChange)")
                 }
-            }
-
-            // Update naive ordering to reflect the insert.
-            if isPinned {
-                try updateNaiveThreadIdOrdering(&naivePinnedThreadIdOrdering)
-            } else {
-                try updateNaiveThreadIdOrdering(&naiveUnpinnedThreadIdOrdering)
+            default:
+                owsFailDebug("Unexpected changes. pinnedRowChange: \(pinnedRowChange)")
             }
         }
 
-        // 3. Moves
-        //
-        // * As noted above, we only need to "move" items whose
-        //   naive ordering doesn't reflect the final ordering.
-        // * The old indexPath for moves uses pre-update indices.
-        // * The new indexPath for moves uses post-update indices.
-        // * We move in ascending "new" order.
-        guard allNewThreadIds == Set<String>(naivePinnedThreadIdOrdering + naiveUnpinnedThreadIdOrdering) else {
-            throw OWSAssertionError("Could not map contents.")
-        }
-
-        // We first check for items that moved to a new section (e.g.
-        // was pinned and is no longer pinned) because we want to perform
-        // one "move" animation for it. We don't need to reload these cells
-        // because the cell contents do not change between being pinned
-        // and unpinned. Using an insert and delete will result in a
-        // strange animation when moving to a different section.
-        let newlyPinnedThreadIds = Array(Set(newPinnedThreadIds).subtracting(oldPinnedThreadIds))
-        let newlyUnpinnedThreadIds = Array(Set(newUnpinnedThreadIds).subtracting(oldUnpinnedThreadIds))
-        let movedToNewSectionThreadIds = newlyPinnedThreadIds + newlyUnpinnedThreadIds
-
-        for threadId in movedToNewSectionThreadIds {
-            let isPinned = newPinnedThreadIds.contains(threadId)
-            let wasPinned = oldPinnedThreadIds.contains(threadId)
-            let oldThreadIds = wasPinned ? oldPinnedThreadIds : oldUnpinnedThreadIds
-            let newThreadIds = isPinned ? newPinnedThreadIds : newUnpinnedThreadIds
-
-            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: threadId) else {
-                continue
-            }
-            guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
-                throw OWSAssertionError("newIndex was unexpectedly nil.")
-            }
-
-            let oldSection = wasPinned ? pinnedSection : unpinnedSection
-            let newSection = isPinned ? pinnedSection : unpinnedSection
-
-            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
-            let newIndexPath = IndexPath(row: newIndex, section: newSection)
-            rowChanges.append(HVRowChange(type: .move(oldIndexPath: oldIndexPath,
-                                                      newIndexPath: newIndexPath),
-                                          threadUniqueId: threadId))
-
-            // Update naive ordering.
-            if wasPinned {
-                guard let naiveIndex = naivePinnedThreadIdOrdering.firstIndexAsInt(of: threadId) else {
-                    throw OWSAssertionError("Missing naive index")
-                }
-                naivePinnedThreadIdOrdering.remove(at: naiveIndex)
-            } else {
-                guard let naiveIndex = naiveUnpinnedThreadIdOrdering.firstIndexAsInt(of: threadId) else {
-                    throw OWSAssertionError("Missing naive index")
-                }
-                naiveUnpinnedThreadIdOrdering.remove(at: naiveIndex)
-            }
-
-            if isPinned {
-                if newIndex >= 0 && newIndex <= naivePinnedThreadIdOrdering.count {
-                    naivePinnedThreadIdOrdering.insert(threadId, at: newIndex)
-                } else {
-                    throw OWSAssertionError("Could not insert item.")
-                }
-            } else {
-                if newIndex >= 0 && newIndex <= naiveUnpinnedThreadIdOrdering.count {
-                    naiveUnpinnedThreadIdOrdering.insert(threadId, at: newIndex)
-                } else {
-                    throw OWSAssertionError("Could not insert item.")
-                }
-            }
-        }
-
-        // We then check for items that moved within the same section.
-        // UICollectionView cannot reload and move an item in the same
-        // PerformBatchUpdates, so HomeViewController
-        // performs these moves using an insert and a delete to ensure
-        // that the moved item is reloaded. This is how UICollectionView
-        // performs reloads internally.
-
-        var movedThreadIds = [String]()
-        let possiblyMovedWithinSectionThreadIds = allNewThreadIds
-            .subtracting(insertedThreadIds)
-            .subtracting(deletedThreadIds)
-            .subtracting(movedToNewSectionThreadIds)
-
-        for threadId in possiblyMovedWithinSectionThreadIds {
-            let isPinned = newPinnedThreadIds.contains(threadId)
-            let wasPinned = oldPinnedThreadIds.contains(threadId)
-
-            owsAssertDebug(isPinned == wasPinned)
-
-            let section = isPinned ? pinnedSection : unpinnedSection
-
-            let oldThreadIds = wasPinned ? oldPinnedThreadIds : oldUnpinnedThreadIds
-            let newThreadIds = isPinned ? newPinnedThreadIds : newUnpinnedThreadIds
-
-            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: threadId) else {
-                continue
-            }
-            guard let newIndex = newThreadIds.firstIndexAsInt(of: threadId) else {
-                throw OWSAssertionError("newIndex was unexpectedly nil.")
-            }
-
-            let naiveThreadIdOrdering = wasPinned ? naivePinnedThreadIdOrdering : naiveUnpinnedThreadIdOrdering
-
-            guard let naiveIndex = naiveThreadIdOrdering.firstIndexAsInt(of: threadId) else {
-                throw OWSAssertionError("threadId not in newThreadIdOrdering.")
-            }
-            guard newIndex != naiveIndex || isPinned != wasPinned else {
-                continue
-            }
-
-            let oldIndexPath = IndexPath(row: oldIndex, section: section)
-            let newIndexPath = IndexPath(row: newIndex, section: section)
-            rowChanges.append(HVRowChange(type: .move(oldIndexPath: oldIndexPath,
-                                                      newIndexPath: newIndexPath),
-                                          threadUniqueId: threadId))
-            movedThreadIds.append(threadId)
-
-            func updateNaiveThreadIdOrdering(_ naiveThreadIdOrdering: inout [String]) throws {
-                naiveThreadIdOrdering.remove(at: naiveIndex)
-
-                if newIndex >= 0 && newIndex <= naiveThreadIdOrdering.count {
-                    naiveThreadIdOrdering.insert(threadId, at: newIndex)
-                } else {
-                    throw OWSAssertionError("Could not insert item.")
-                }
-            }
-
-            // Update naive ordering.
-            if isPinned {
-                try updateNaiveThreadIdOrdering(&naivePinnedThreadIdOrdering)
-            } else {
-                try updateNaiveThreadIdOrdering(&naiveUnpinnedThreadIdOrdering)
-            }
-        }
-
-        func logThreadIds(_ threadIds: [String], name: String) {
-            Logger.verbose("\(name)[\(threadIds.count)]: \(threadIds.joined(separator: "\n"))")
-        }
-
-        // Once the moves are complete, the new ordering should be correct.
-        guard newPinnedThreadIds == naivePinnedThreadIdOrdering else {
-            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
-            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
-            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
-            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
-            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
-            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
-            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
-            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
-            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
-            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
-            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
-            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
-            logThreadIds(movedThreadIds, name: "movedThreadIds")
-            for rowChange in rowChanges {
-                Logger.verbose("rowChange: \(rowChange)")
-            }
-            throw OWSAssertionError("Could not reorder pinned contents.")
-        }
-
-        guard newUnpinnedThreadIds == naiveUnpinnedThreadIdOrdering else {
-            logThreadIds(newPinnedThreadIds, name: "newPinnedThreadIds")
-            logThreadIds(oldPinnedThreadIds, name: "oldPinnedThreadIds")
-            logThreadIds(newUnpinnedThreadIds, name: "newUnpinnedThreadIds")
-            logThreadIds(oldUnpinnedThreadIds, name: "oldUnpinnedThreadIds")
-            logThreadIds(newlyPinnedThreadIds, name: "newlyPinnedThreadIds")
-            logThreadIds(newlyUnpinnedThreadIds, name: "newlyUnpinnedThreadIds")
-            logThreadIds(naivePinnedThreadIdOrdering, name: "naivePinnedThreadIdOrdering")
-            logThreadIds(naiveUnpinnedThreadIdOrdering, name: "naiveUnpinnedThreadIdOrdering")
-            logThreadIds(insertedThreadIds, name: "insertedThreadIds")
-            logThreadIds(deletedThreadIds, name: "deletedThreadIds")
-            logThreadIds(movedToNewSectionThreadIds, name: "movedToNewSectionThreadIds")
-            logThreadIds(Array(possiblyMovedWithinSectionThreadIds), name: "possiblyMovedWithinSectionThreadIds")
-            logThreadIds(movedThreadIds, name: "movedThreadIds")
-            for rowChange in rowChanges {
-                Logger.verbose("rowChange: \(rowChange)")
-            }
-            throw OWSAssertionError("Could not reorder unpinned contents.")
-        }
-
-        // 4. Updates
-        //
-        // * The indexPath for updates uses pre-update indices.
-        // * We cannot and should not update any item that was inserted, deleted or moved.
-        // * Updated items that also moved use "move" changes (above).
-        let updatedThreadIds = updatedItemIds
-            .subtracting(insertedThreadIds)
-            .subtracting(deletedThreadIds)
-            .subtracting(movedToNewSectionThreadIds)
-            .subtracting(movedThreadIds)
-        for updatedThreadId in updatedThreadIds {
-            let wasPinned = oldPinnedThreadIds.contains(updatedThreadId)
-            let oldThreadIds = wasPinned ? oldPinnedThreadIds : oldUnpinnedThreadIds
-            let oldSection = wasPinned ? pinnedSection : unpinnedSection
-
-            guard let oldIndex = oldThreadIds.firstIndexAsInt(of: updatedThreadId) else {
-                throw OWSAssertionError("oldIndex was unexpectedly nil")
-            }
-            let oldIndexPath = IndexPath(row: oldIndex, section: oldSection)
-            rowChanges.append(HVRowChange(type: .update(oldIndexPath: oldIndexPath),
-                                          threadUniqueId: updatedThreadId))
-        }
-
-        if rowChanges.isEmpty {
+        if allRowChanges.isEmpty {
             return .renderStateWithoutRowChanges(renderState: newRenderState)
         } else {
-            return .renderStateWithRowChanges(renderState: newRenderState, rowChanges: rowChanges)
+            return .renderStateWithRowChanges(renderState: newRenderState, rowChanges: allRowChanges)
         }
     }
 }
