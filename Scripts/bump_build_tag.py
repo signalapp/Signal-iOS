@@ -99,6 +99,18 @@ class Version3:
         return str(self.major) + "." + str(self.minor) + "." + str(self.patch)
 
 
+# Represents a version string with 4 dotted values, e.g. 1.2.3.4.
+class Version4:
+    def __init__(self, major, minor, patch, build):
+        self.major = major
+        self.minor = minor
+        self.patch = patch
+        self.build = build
+        
+    def formatted(self):
+        return str(self.major) + "." + str(self.minor) + "." + str(self.patch) + "." + str(self.build)
+
+
 def parse_version_3(text):
    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
    match = regex.search(text)
@@ -228,42 +240,63 @@ if __name__ == '__main__':
         #
         # e.g. --version 1.2.3 -> "1.2.3", "102.3.0"
         new_release_version_str = release_version_match.group(1)
-        new_release_version = parse_version_3(new_release_version_str)
-        print 'new_release_version:', new_release_version_str, new_release_version.formatted()
+        new_release_version_3 = parse_version_3(new_release_version_str)
+        print 'new_release_version_3:', new_release_version_str, new_release_version_3.formatted()
         
-        new_build_version = Version3(
-            Int(str(new_release_version.major) + "0" + str(new_release_version.minor)),
-            new_release_version.minor, 
+        new_build_version_3 = Version3(
+            Int(str(new_release_version_3.major) + "0" + str(new_release_version_3.minor)),
+            new_release_version_3.patch, 
+            0
+        )
+        new_build_version_4 = Version4(
+            new_release_version_3.major,
+            new_release_version_3.minor,
+            new_release_version_3.patch, 
             0
         )
     else:
         # Bump patch.
-        new_release_version = old_release_version
-        new_build_version = Version3(
+        new_release_version_3 = old_release_version
+        new_build_version_3 = Version3(
             old_build_version.major,
             old_build_version.minor,
             old_build_version.patch + 1
         )
+        new_build_version_4 = Version4(
+            new_release_version_3.major,
+            new_release_version_3.minor,
+            new_release_version_3.patch, 
+            old_build_version.patch + 1
+        )
         
-    new_release_version = new_release_version.formatted()
-    new_build_version = new_build_version.formatted()
+    new_release_version_3 = new_release_version_3.formatted()
+    new_build_version_3 = new_build_version_3.formatted()
+    new_build_version_4 = new_build_version_4.formatted()
 
-    print 'new_release_version:', new_release_version
-    print 'new_build_version:', new_build_version
+    # For example:
+    #
+    # old_release_version: 5.19.0
+    # old_build_version: 5019.0.42
+    # new_release_version_3: 5.19.0
+    # new_build_version_3: 5019.0.43
+    # new_build_version_4: 5.19.0.43
+    print 'new_release_version_3:', new_release_version_3
+    print 'new_build_version_3:', new_build_version_3
+    print 'new_build_version_4:', new_build_version_4
 
-    set_versions(main_plist_path, new_release_version, new_build_version)
+    set_versions(main_plist_path, new_release_version_3, new_build_version_3)
 
     # ---------------
     # Share Extension
     # ---------------
 
-    set_versions(sae_plist_path, new_release_version, new_build_version)
+    set_versions(sae_plist_path, new_release_version_3, new_build_version_3)
 
     # ------------------------------
     # Notification Service Extension
     # ------------------------------
 
-    set_versions(nse_plist_path, new_release_version, new_build_version)
+    set_versions(nse_plist_path, new_release_version_3, new_build_version_3)
 
     # ---------------
     # Git
@@ -272,17 +305,17 @@ if __name__ == '__main__':
     execute_command(command)
 
     if is_internal:
-        commit_message = '"Bump build to %s." (Internal)' % new_build_version
+        commit_message = '"Bump build to %s." (Internal)' % new_build_version_4
     elif is_beta:
-        commit_message = '"Bump build to %s." (Beta)' % new_build_version
+        commit_message = '"Bump build to %s." (Beta)' % new_build_version_4
     elif is_nightly:
-        commit_message = '"Bump build to %s." (nightly-%s)' % ( new_build_version, date.today().strftime("%m-%d-%Y") )
+        commit_message = '"Bump build to %s." (nightly-%s)' % ( new_build_version_4, date.today().strftime("%m-%d-%Y") )
     else:
-        commit_message = '"Bump build to %s."' % new_build_version
+        commit_message = '"Bump build to %s."' % new_build_version_4
     command = ['git', 'commit', '-m', commit_message]
     execute_command(command)
 
-    tag_name = new_build_version
+    tag_name = new_build_version_4
     if is_internal:
         tag_name += "-internal"
     elif is_nightly:
