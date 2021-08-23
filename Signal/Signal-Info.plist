@@ -140,6 +140,8 @@
 		<string>INSendMessageIntent</string>
 		<string>INStartCallIntent</string>
 	</array>
+	<key>OWSBundleVersion4</key>
+	<string>5.19.0.42</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>

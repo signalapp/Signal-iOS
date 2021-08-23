@@ -52,17 +52,25 @@ def is_valid_version_3(value):
     return match is not None
 
 
-def set_versions(plist_file_path, release_version, build_version):
+def is_valid_version_4(value):
+    regex = re.compile(r'^(\d+)\.(\d+)\.(\d+).(\d+)$')
+    match = regex.search(value)
+    return match is not None
+
+
+def set_versions(plist_file_path, release_version, build_version_3, build_version_4):
     if not is_valid_version_3(release_version):
         fail('Invalid release version: %s' % release_version)
-    if not is_valid_version_3(build_version):
-        fail('Invalid build version: %s' % build_version)
+    if not is_valid_version_3(build_version_3):
+        fail('Invalid build version 3: %s' % build_version_3)
+    if not is_valid_version_4(build_version_4):
+        fail('Invalid build version 4: %s' % build_version_4)
 
     with open(plist_file_path, 'rt') as f:
         text = f.read()
     # print 'text', text
 
-    # The "short" version is the release number.
+    # The "short" version is the release version.
     #
     # <key>CFBundleShortVersionString</key>
     # <string>2.20.0</string>
@@ -73,7 +81,7 @@ def set_versions(plist_file_path, release_version, build_version):
         fail('Could not parse .plist')
     text = text[:file_match.start(1)] + release_version + text[file_match.end(1):]
 
-    # The "long" version is the build number.
+    # The "long" version is the build version 3.
     #
     # <key>CFBundleVersion</key>
     # <string>2.20.0.3</string>
@@ -82,7 +90,18 @@ def set_versions(plist_file_path, release_version, build_version):
     # print 'match', match
     if not file_match:
         fail('Could not parse .plist')
-    text = text[:file_match.start(1)] + build_version + text[file_match.end(1):]
+    text = text[:file_match.start(1)] + build_version_3 + text[file_match.end(1):]
+
+    # The build version 4.
+    #
+    # <key>OWSBundleVersion4</key>
+    # <string>2.20.0.3</string>
+    file_regex = re.compile(r'<key>OWSBundleVersion4</key>\s*<string>([\d\.]+)</string>', re.MULTILINE)
+    file_match = file_regex.search(text)
+    # print 'match', match
+    if not file_match:
+        fail('Could not parse .plist')
+    text = text[:file_match.start(1)] + build_version_4 + text[file_match.end(1):]
 
     with open(plist_file_path, 'wt') as f:
         f.write(text)
@@ -284,19 +303,13 @@ if __name__ == '__main__':
     print 'new_build_version_3:', new_build_version_3
     print 'new_build_version_4:', new_build_version_4
 
-    set_versions(main_plist_path, new_release_version_3, new_build_version_3)
-
-    # ---------------
-    # Share Extension
-    # ---------------
-
-    set_versions(sae_plist_path, new_release_version_3, new_build_version_3)
-
-    # ------------------------------
-    # Notification Service Extension
-    # ------------------------------
-
-    set_versions(nse_plist_path, new_release_version_3, new_build_version_3)
+    plist_paths = [
+        main_plist_path,
+        sae_plist_path,
+        nse_plist_path,
+    ]
+    for plist_path in plist_paths:
+        set_versions(plist_path, new_release_version_3, new_build_version_3, new_build_version_4)
 
     # ---------------
     # Git
