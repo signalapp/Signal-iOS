@@ -323,12 +323,6 @@ public class DebugFlags: BaseFlags {
                                                                           details: LocalizationNotNeeded("Group migrations will invite other members."))
 
     @objc
-    public static let groupsV2migrationsDisableMigrationCapability = TestableFlag(false,
-                                                                                  title: LocalizationNotNeeded("Groups v2: Disable Migration Capability"),
-                                                                                  details: LocalizationNotNeeded("The app will pretend not to support group migrations."),
-                                                                                  affectsCapabilities: true)
-
-    @objc
     public static let groupsV2migrationsIgnoreMigrationCapability = false
 
     @objc
