@@ -100,6 +100,7 @@ public class AvatarBuilder: NSObject {
     func contactsDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
+        requestToImageCache.removeAllObjects()
         requestToContentCache.removeAllObjects()
     }
 
@@ -107,6 +108,7 @@ public class AvatarBuilder: NSObject {
     func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
+        requestToImageCache.removeAllObjects()
         requestToContentCache.removeAllObjects()
     }
 
@@ -139,36 +141,86 @@ public class AvatarBuilder: NSObject {
         }
     }
 
-    @objc
-    public func avatarImage(forAddress address: SignalServiceAddress,
-                            diameterPoints: UInt,
-                            localUserDisplayMode: LocalUserDisplayMode,
-                            transaction: SDSAnyReadTransaction) -> UIImage? {
+    private func request(forAddress address: SignalServiceAddress,
+                         diameterPoints: UInt,
+                         localUserDisplayMode: LocalUserDisplayMode,
+                         transaction: SDSAnyReadTransaction) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurContactAvatar(address: address,
                                                                            transaction: transaction)
         let requestType: RequestType = .contactAddress(address: address,
                                                        localUserDisplayMode: localUserDisplayMode)
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              shouldBlurAvatar: shouldBlurAvatar)
-        return avatarImage(forRequest: request, transaction: transaction)
+        return Request(requestType: requestType,
+                       diameterPixels: diameterPixels,
+                       shouldBlurAvatar: shouldBlurAvatar)
     }
 
     @objc
-    public func avatarImage(forGroupThread groupThread: TSGroupThread,
+    public func avatarImage(forAddress address: SignalServiceAddress,
                             diameterPoints: UInt,
+                            localUserDisplayMode: LocalUserDisplayMode,
                             transaction: SDSAnyReadTransaction) -> UIImage? {
+        let request = request(forAddress: address,
+                              diameterPoints: diameterPoints,
+                              localUserDisplayMode: localUserDisplayMode,
+                              transaction: transaction)
+        return avatarImage(forRequest: request, transaction: transaction)
+    }
+
+    // Never builds; only returns an avatar if there is already a copy
+    // in a cache.
+    @objc
+    public func precachedAvatarImage(forAddress address: SignalServiceAddress,
+                                     diameterPoints: UInt,
+                                     localUserDisplayMode: LocalUserDisplayMode,
+                                     transaction: SDSAnyReadTransaction) -> UIImage? {
+        let request = request(forAddress: address,
+                              diameterPoints: diameterPoints,
+                              localUserDisplayMode: localUserDisplayMode,
+                              transaction: transaction)
+        guard let cacheKey = request.cacheKey else {
+            return nil
+        }
+        return requestToImageCache.object(forKey: cacheKey)
+    }
+
+    private func request(forGroupThread groupThread: TSGroupThread,
+                         diameterPoints: UInt,
+                         transaction: SDSAnyReadTransaction) -> Request {
         let diameterPixels = CGFloat(diameterPoints).pointsAsPixels
         let shouldBlurAvatar = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                          transaction: transaction)
         let requestType = buildRequestType(forGroupThread: groupThread,
                                            diameterPixels: diameterPixels,
                                            transaction: transaction)
-        let request = Request(requestType: requestType,
-                              diameterPixels: diameterPixels,
-                              shouldBlurAvatar: shouldBlurAvatar)
+        return Request(requestType: requestType,
+                       diameterPixels: diameterPixels,
+                       shouldBlurAvatar: shouldBlurAvatar)
+    }
+
+    @objc
+    public func avatarImage(forGroupThread groupThread: TSGroupThread,
+                            diameterPoints: UInt,
+                            transaction: SDSAnyReadTransaction) -> UIImage? {
+        let request = request(forGroupThread: groupThread,
+                              diameterPoints: diameterPoints,
+                              transaction: transaction)
         return avatarImage(forRequest: request, transaction: transaction)
+    }
+
+    // Never builds; only returns an avatar if there is already a copy
+    // in a cache.
+    @objc
+    public func precachedAvatarImage(forGroupThread groupThread: TSGroupThread,
+                                     diameterPoints: UInt,
+                                     transaction: SDSAnyReadTransaction) -> UIImage? {
+        let request = request(forGroupThread: groupThread,
+                              diameterPoints: diameterPoints,
+                              transaction: transaction)
+        guard let cacheKey = request.cacheKey else {
+            return nil
+        }
+        return requestToImageCache.object(forKey: cacheKey)
     }
 
     @objc
@@ -244,7 +296,7 @@ public class AvatarBuilder: NSObject {
                                           failoverContentType: nil,
                                           diameterPixels: request.diameterPixels,
                                           shouldBlurAvatar: request.shouldBlurAvatar)
-        return avatarImage(forRequest: request, avatarContent: avatarContent)
+        return avatarImage(forAvatarContent: avatarContent)
     }
 
     public func defaultAvatarImageForLocalUser(
@@ -316,10 +368,7 @@ public class AvatarBuilder: NSObject {
             shouldBlurAvatar: request.shouldBlurAvatar
         )
 
-        return avatarImage(
-            forRequest: request,
-            avatarContent: avatarContent
-        )
+        return avatarImage(forAvatarContent: avatarContent)
     }
 
     // MARK: - Requests
@@ -515,21 +564,23 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    private func avatarImage(forRequest request: Request,
-                             avatarContent: AvatarContent) -> UIImage? {
-        guard let avatarImage = avatarImage(forAvatarContent: avatarContent) else {
+    // This cache needs to be evacuated whenever anything that
+    // would affect AvatarContent for the request changes.
+    private let requestToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 16)
+
+    private func avatarImage(forRequest request: Request, transaction: SDSAnyReadTransaction) -> UIImage? {
+        let avatarContent = avatarContent(forRequest: request, transaction: transaction)
+        guard let image = avatarImage(forAvatarContent: avatarContent) else {
             return nil
         }
-        return avatarImage
+        if let cacheKey = request.cacheKey {
+            requestToImageCache.setObject(image, forKey: cacheKey)
+        }
+        return image
     }
 
-    private func avatarImage(forRequest request: Request,
-                             transaction: SDSAnyReadTransaction) -> UIImage? {
-        let avatarContent = avatarContent(forRequest: request,
-                                          transaction: transaction)
-        return avatarImage(forRequest: request, avatarContent: avatarContent)
-    }
-
+    // This cache needs to be evacuated whenever anything that
+    // would affect AvatarContent for the request changes.
     private let requestToContentCache = LRUCache<String, AvatarContent>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarContent(forRequest request: Request,
@@ -558,6 +609,8 @@ public class AvatarBuilder: NSObject {
         return avatarContent
     }
 
+    // This cache never needs to be evacuated. The cache keys will change
+    // whenever state in the content changes that would affect the image.
     private let contentToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 16)
 
     private func avatarImage(forAvatarContent avatarContent: AvatarContent) -> UIImage? {
@@ -582,7 +635,7 @@ public class AvatarBuilder: NSObject {
         // a threshold of 200 will include these avatars.
         let maxCacheSizePixels = 200
         let canCacheAvatarImage = (image.pixelWidth <= maxCacheSizePixels &&
-            image.pixelHeight <= maxCacheSizePixels)
+                                    image.pixelHeight <= maxCacheSizePixels)
 
         if canCacheAvatarImage {
             contentToImageCache.setObject(image, forKey: cacheKey)
