@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .bodyMedia }
+
     private let bodyMedia: CVComponentState.BodyMedia
     private var items: [CVMediaAlbumItem] {
         bodyMedia.items

@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentSenderName: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .senderName }
+
     private let state: CVComponentState.SenderName
     private var senderName: NSAttributedString { state.senderName }
     private var senderNameColor: UIColor { state.senderNameColor }

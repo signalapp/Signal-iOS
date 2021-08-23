@@ -1241,7 +1241,7 @@ public extension CVComponentState {
                 break
             case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
                 hasPrimaryContent = true
-            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
                 // "Primary" content is not just metadata / UI.
                 break
             case .viewOnce:

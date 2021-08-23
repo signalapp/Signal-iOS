@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentReactions: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .reactions }
+
     private let reactions: CVComponentState.Reactions
     private var reactionState: InteractionReactionState {
         reactions.reactionState

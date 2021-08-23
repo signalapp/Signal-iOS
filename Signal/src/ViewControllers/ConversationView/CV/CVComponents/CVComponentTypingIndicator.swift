@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
+    public var componentKey: CVComponentKey { .typingIndicator }
+
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.typingIndicator
     }

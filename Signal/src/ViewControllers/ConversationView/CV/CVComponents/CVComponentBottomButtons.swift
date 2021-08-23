@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .bottomButtons }
+
     private let bottomButtonsState: CVComponentState.BottomButtons
 
     typealias Action = CVMessageAction

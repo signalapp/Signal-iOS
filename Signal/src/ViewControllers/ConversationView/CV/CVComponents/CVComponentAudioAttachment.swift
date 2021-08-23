@@ -7,6 +7,8 @@ import SignalMessaging
 
 public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .audioAttachment }
+
     private let audioAttachment: AudioAttachment
     private let nextAudioAttachment: AudioAttachment?
     private var attachment: TSAttachment { audioAttachment.attachment }

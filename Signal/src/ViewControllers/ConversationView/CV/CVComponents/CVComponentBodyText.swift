@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentBodyText: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .bodyText }
+
     struct State: Equatable {
         let bodyText: CVComponentState.BodyText
         let isTextExpanded: Bool

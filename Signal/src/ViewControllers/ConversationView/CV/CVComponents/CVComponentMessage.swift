@@ -5,6 +5,9 @@
 import Foundation
 
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
+
+    public var componentKey: CVComponentKey { .messageRoot }
+
     public static let selectionAnimationDuration: TimeInterval = 0.2
 
     public var cellReuseIdentifier: CVCellReuseIdentifier {
@@ -120,7 +123,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // We don't render sender avatars with a subcomponent.
         case .senderAvatar:
             return nil
-        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+        case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
             return nil
         }
     }
@@ -315,6 +318,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     }
 
     public static let textViewVSpacing: CGFloat = 3
+    public static let textViewVSpacingTight: CGFloat = 1
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
 
@@ -703,6 +707,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         hOuterStack.applyTransformBlocks()
     }
 
+    // The behavior of this method has to align exactly with that of measureContentStack().
     private func configureContentStack(componentView: CVComponentViewMessage,
                                        cellMeasurement: CVCellMeasurement,
                                        componentDelegate: CVComponentDelegate) -> ManualLayoutView {
@@ -738,57 +743,104 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                       measurementKey: Self.measurementKey_contentStack,
                                       componentKeys: [.senderName, .sticker, .footer])
         } else {
-            // Has full-width components.
+            // The non-sticker case.
+            // Use multiple stacks.
 
-            var contentSubviews = [UIView]()
-
+            enum SectionType {
+                case topFullWidth
+                case bottomFullWidth
+                case nested
+            }
+            struct ContentSection {
+                let sectionType: SectionType
+                let stackView: ManualStackView
+                let stackMeasurementKey: String
+                let components: [CVComponent]
+            }
+            var contentSections = [ContentSection]()
             if !topFullWidthSubcomponents.isEmpty {
-                let stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
-                let topFullWidthStackView = configureStackView(componentView.topFullWidthStackView,
-                                                               stackConfig: stackConfig,
-                                                               measurementKey: Self.measurementKey_topFullWidthStackView,
-                                                               componentKeys: topFullWidthCVComponentKeys)
-                contentSubviews.append(topFullWidthStackView)
+                contentSections.append(ContentSection(
+                    sectionType: .topFullWidth,
+                    stackView: componentView.topFullWidthStackView,
+                    stackMeasurementKey: Self.measurementKey_topFullWidthStackView,
+                    components: topFullWidthSubcomponents
+                ))
             }
             if !topNestedSubcomponents.isEmpty {
-                let hasNeighborsAbove = !topFullWidthSubcomponents.isEmpty
-                let hasNeighborsBelow = (!bottomFullWidthSubcomponents.isEmpty ||
-                                            !bottomNestedSubcomponents.isEmpty ||
-                                            nil != bottomButtons)
-                let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
-                                                         hasNeighborsBelow: hasNeighborsBelow)
-                let topNestedStackView = configureStackView(componentView.topNestedStackView,
-                                                            stackConfig: stackConfig,
-                                                            measurementKey: Self.measurementKey_topNestedStackView,
-                                                            componentKeys: topNestedCVComponentKeys)
-                contentSubviews.append(topNestedStackView)
+                contentSections.append(ContentSection(
+                    sectionType: .nested,
+                    stackView: componentView.topNestedStackView,
+                    stackMeasurementKey: Self.measurementKey_topNestedStackView,
+                    components: topNestedSubcomponents
+                ))
             }
             if !bottomFullWidthSubcomponents.isEmpty {
-                // If a quoted reply is the top-most subcomponent,
-                // apply a top margin.
-                let applyTopMarginToFullWidthStack = (topFullWidthSubcomponents.isEmpty &&
-                                                        topNestedSubcomponents.isEmpty &&
-                                                        quotedReply != nil)
-                let stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
-                let bottomFullWidthStackView = configureStackView(componentView.bottomFullWidthStackView,
-                                                                  stackConfig: stackConfig,
-                                                                  measurementKey: Self.measurementKey_bottomFullWidthStackView,
-                                                                  componentKeys: bottomFullWidthCVComponentKeys)
-                contentSubviews.append(bottomFullWidthStackView)
+                contentSections.append(ContentSection(
+                    sectionType: .bottomFullWidth,
+                    stackView: componentView.bottomFullWidthStackView,
+                    stackMeasurementKey: Self.measurementKey_bottomFullWidthStackView,
+                    components: bottomFullWidthSubcomponents
+                ))
             }
             if !bottomNestedSubcomponents.isEmpty {
-                let hasNeighborsAbove = (!topFullWidthSubcomponents.isEmpty ||
-                                            !topNestedSubcomponents.isEmpty ||
-                                            !bottomFullWidthSubcomponents.isEmpty)
-                let hasNeighborsBelow = (nil != bottomButtons)
-                let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
-                                                         hasNeighborsBelow: hasNeighborsBelow)
-                let bottomNestedStackView = configureStackView(componentView.bottomNestedStackView,
-                                                               stackConfig: stackConfig,
-                                                               measurementKey: Self.measurementKey_bottomNestedStackView,
-                                                               componentKeys: bottomNestedCVComponentKeys)
-                contentSubviews.append(bottomNestedStackView)
+                contentSections.append(ContentSection(
+                    sectionType: .nested,
+                    stackView: componentView.bottomNestedStackView,
+                    stackMeasurementKey: Self.measurementKey_bottomNestedStackView,
+                    components: bottomNestedSubcomponents
+                ))
             }
+
+            var contentSubviews = [UIView]()
+            for (currentSectionIndex, contentSection) in contentSections.enumerated() {
+                guard !contentSection.components.isEmpty,
+                      let firstComponent = contentSection.components.first,
+                      let lastComponent = contentSection.components.last else {
+                    owsFailDebug("Empty content section.")
+                    continue
+                }
+
+                let previousSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                    sectionIndex < currentSectionIndex ? section : nil
+                }
+                let previousSubcomponents = Array(previousSections.map { $0.components }.joined())
+
+                let nextSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                    sectionIndex > currentSectionIndex ? section : nil
+                }
+                var nextSubcomponents = Array(nextSections.map { $0.components }.joined())
+                if let bottomButtons = self.bottomButtons {
+                    nextSubcomponents.append(bottomButtons)
+                }
+
+                let stackView = contentSection.stackView
+
+                let stackConfig: CVStackViewConfig
+                switch contentSection.sectionType {
+                case .topFullWidth:
+                    stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
+                case .bottomFullWidth:
+                    // TODO:
+                    let applyTopMarginToFullWidthStack = (previousSubcomponents.isEmpty &&
+                                                            quotedReply != nil)
+                    stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
+                case .nested:
+                    let hasTopMargin = shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponents.last,
+                                                                         nextComponent: firstComponent)
+                    let hasBottomMargin = shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
+                                                                            nextComponent: nextSubcomponents.first)
+                    stackConfig = buildNestedStackConfig(hasTopMargin: hasTopMargin,
+                                                         hasBottomMargin: hasBottomMargin)
+                }
+
+                let componentKeys = contentSection.components.map { $0.componentKey }
+                _ = configureStackView(contentSection.stackView,
+                                       stackConfig: stackConfig,
+                                       measurementKey: contentSection.stackMeasurementKey,
+                                       componentKeys: componentKeys)
+                contentSubviews.append(stackView)
+            }
+            // Append the bottom buttons if necessary.
             if nil != bottomButtons {
                 if let componentAndView = configureSubcomponent(messageView: componentView,
                                                                 cellMeasurement: cellMeasurement,
@@ -803,12 +855,48 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             let contentStack = componentView.contentStack
             contentStack.reset()
-            contentStack.configure(config: buildNoMarginsStackConfig(),
+            contentStack.configure(config: buildContentStackConfig(),
                                    cellMeasurement: cellMeasurement,
                                    measurementKey: Self.measurementKey_contentStack,
                                    subviews: contentSubviews)
             return contentStack
         }
+    }
+
+    private func shouldAddSpacingBetweenComponents(lastComponent: CVComponent?,
+                                                   nextComponent: CVComponent?) -> Bool {
+        guard let lastComponentKey = lastComponent?.componentKey else {
+            // No previous component, no spacing is necessary.
+            return false
+        }
+        guard let nextComponentKey = nextComponent?.componentKey else {
+            // No next component, no spacing is necessary.
+            return false
+        }
+        func doesComponentRequireSpacing(_ componentKey: CVComponentKey) -> Bool {
+            switch componentKey {
+            case .bodyText:
+                return false
+            case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .contactShare:
+                return true
+            case .senderName:
+                return false
+            case .senderAvatar, .reactions, .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .unknownThreadWarning, .failedOrPendingDownloads, .sendFailureBadge, .defaultDisappearingMessageTimer, .messageRoot:
+                owsFailDebug("Unexpected component.")
+                return false
+            case .footer:
+                return false
+            case .bottomButtons:
+                return true
+            }
+        }
+        let a = doesComponentRequireSpacing(lastComponentKey)
+        let b = doesComponentRequireSpacing(nextComponentKey)
+        let result = a || b
+        Logger.verbose("---- lastComponentKey: \(lastComponentKey), \(a), nextComponentKey: \(nextComponentKey), \(b), -> \(result)")
+        return result
+//        return (doesComponentRequireSpacing(lastComponentKey) ||
+//                    doesComponentRequireSpacing(nextComponentKey))
     }
 
     // Builds an accessibility label for the entire message.
@@ -885,9 +973,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                              bottom: bottomInset,
                                              trailing: conversationStyle.fullWidthGutterTrailing)
         return CVStackViewConfig(axis: .horizontal,
-                          alignment: .fill,
-                          spacing: ConversationStyle.messageStackSpacing,
-                          layoutMargins: cellLayoutMargins)
+                                 alignment: .fill,
+                                 spacing: ConversationStyle.messageStackSpacing,
+                                 layoutMargins: cellLayoutMargins)
     }
 
     private var hInnerStackConfig: CVStackViewConfig {
@@ -1013,13 +1101,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         if let reactionsSubcomponent = subcomponent(forKey: .reactions) {
             let reactionsSize = reactionsSubcomponent.measure(maxWidth: maxWidth,
-                                                                     measurementBuilder: measurementBuilder)
+                                                              measurementBuilder: measurementBuilder)
             measurementBuilder.setSize(key: Self.measurementKey_reactions, size: reactionsSize)
         }
 
         return hOuterStackMeasurement.measuredSize
     }
 
+    // The behavior of this method has to align exactly with that of configureContentStack().
     private func measureContentStack(maxWidth contentMaxWidth: CGFloat,
                                      measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
 
@@ -1065,54 +1154,96 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                            measurementKey: Self.measurementKey_contentStack,
                            componentKeys: [.senderName, .sticker, .footer])
         } else {
-            // There are full-width components.
+            // The non-sticker case.
             // Use multiple stacks.
 
-            var subviewSizes = [CGSize]()
-
+            enum SectionType {
+                case topFullWidth
+                case bottomFullWidth
+                case nested
+            }
+            struct ContentSection {
+                let sectionType: SectionType
+                let stackMeasurementKey: String
+                let components: [CVComponent]
+            }
+            var contentSections = [ContentSection]()
             if !topFullWidthSubcomponents.isEmpty {
-                let stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
-                let stackSize = measure(stackConfig: stackConfig,
-                                        measurementKey: Self.measurementKey_topFullWidthStackView,
-                                        componentKeys: topFullWidthCVComponentKeys)
-                subviewSizes.append(stackSize)
+                contentSections.append(ContentSection(
+                    sectionType: .topFullWidth,
+                    stackMeasurementKey: Self.measurementKey_topFullWidthStackView,
+                    components: topFullWidthSubcomponents
+                ))
             }
             if !topNestedSubcomponents.isEmpty {
-                let hasNeighborsAbove = !topFullWidthSubcomponents.isEmpty
-                let hasNeighborsBelow = (!bottomFullWidthSubcomponents.isEmpty ||
-                                            !bottomNestedSubcomponents.isEmpty ||
-                                            nil != bottomButtons)
-                let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
-                                                         hasNeighborsBelow: hasNeighborsBelow)
-                let stackSize = measure(stackConfig: stackConfig,
-                                        measurementKey: Self.measurementKey_topNestedStackView,
-                                        componentKeys: topNestedCVComponentKeys)
-                subviewSizes.append(stackSize)
+                contentSections.append(ContentSection(
+                    sectionType: .nested,
+                    stackMeasurementKey: Self.measurementKey_topNestedStackView,
+                    components: topNestedSubcomponents
+                ))
             }
             if !bottomFullWidthSubcomponents.isEmpty {
-                // If a quoted reply is the top-most subcomponent,
-                // apply a top margin.
-                let applyTopMarginToFullWidthStack = (topFullWidthSubcomponents.isEmpty &&
-                                                        topNestedSubcomponents.isEmpty &&
-                                                        quotedReply != nil)
-                let stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
-                let stackSize = measure(stackConfig: stackConfig,
-                                        measurementKey: Self.measurementKey_bottomFullWidthStackView,
-                                        componentKeys: bottomFullWidthCVComponentKeys)
-                subviewSizes.append(stackSize)
+                contentSections.append(ContentSection(
+                    sectionType: .bottomFullWidth,
+                    stackMeasurementKey: Self.measurementKey_bottomFullWidthStackView,
+                    components: bottomFullWidthSubcomponents
+                ))
             }
             if !bottomNestedSubcomponents.isEmpty {
-                let hasNeighborsAbove = (!topFullWidthSubcomponents.isEmpty ||
-                                            !topNestedSubcomponents.isEmpty ||
-                                            !bottomFullWidthSubcomponents.isEmpty)
-                let hasNeighborsBelow = (nil != bottomButtons)
-                let stackConfig = buildNestedStackConfig(hasNeighborsAbove: hasNeighborsAbove,
-                                                         hasNeighborsBelow: hasNeighborsBelow)
+                contentSections.append(ContentSection(
+                    sectionType: .nested,
+                    stackMeasurementKey: Self.measurementKey_bottomNestedStackView,
+                    components: bottomNestedSubcomponents
+                ))
+            }
+
+            var subviewSizes = [CGSize]()
+            for (currentSectionIndex, contentSection) in contentSections.enumerated() {
+                guard !contentSection.components.isEmpty,
+                      let firstComponent = contentSection.components.first,
+                      let lastComponent = contentSection.components.last else {
+                    owsFailDebug("Empty content section.")
+                    continue
+                }
+
+                let previousSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                    sectionIndex < currentSectionIndex ? section : nil
+                }
+                let previousSubcomponents = Array(previousSections.map { $0.components }.joined())
+
+                let nextSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                    sectionIndex > currentSectionIndex ? section : nil
+                }
+                var nextSubcomponents = Array(nextSections.map { $0.components }.joined())
+                if let bottomButtons = self.bottomButtons {
+                    nextSubcomponents.append(bottomButtons)
+                }
+
+                let stackConfig: CVStackViewConfig
+                switch contentSection.sectionType {
+                case .topFullWidth:
+                    stackConfig = buildFullWidthStackConfig(includeTopMargin: false)
+                case .bottomFullWidth:
+                    // TODO:
+                    let applyTopMarginToFullWidthStack = (previousSubcomponents.isEmpty &&
+                                                            quotedReply != nil)
+                    stackConfig = buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
+                case .nested:
+                    let hasTopMargin = shouldAddSpacingBetweenComponents(lastComponent: previousSubcomponents.last,
+                                                                         nextComponent: firstComponent)
+                    let hasBottomMargin = shouldAddSpacingBetweenComponents(lastComponent: lastComponent,
+                                                                            nextComponent: nextSubcomponents.first)
+                    stackConfig = buildNestedStackConfig(hasTopMargin: hasTopMargin,
+                                                         hasBottomMargin: hasBottomMargin)
+                }
+
+                let componentKeys = contentSection.components.map { $0.componentKey }
                 let stackSize = measure(stackConfig: stackConfig,
-                                        measurementKey: Self.measurementKey_bottomNestedStackView,
-                                        componentKeys: bottomNestedCVComponentKeys)
+                                        measurementKey: contentSection.stackMeasurementKey,
+                                        componentKeys: componentKeys)
                 subviewSizes.append(stackSize)
             }
+            // Append the bottom buttons if necessary.
             if let bottomButtons = bottomButtons {
                 let subviewSize = bottomButtons.measure(maxWidth: contentMaxWidth,
                                                         measurementBuilder: measurementBuilder)
@@ -1122,7 +1253,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
                 subviewSize.asManualSubviewInfo
             }
-            return ManualStackView.measure(config: buildNoMarginsStackConfig(),
+            return ManualStackView.measure(config: buildContentStackConfig(),
                                            measurementBuilder: measurementBuilder,
                                            measurementKey: Self.measurementKey_contentStack,
                                            subviewInfos: subviewInfos).measuredSize
@@ -1480,7 +1611,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .senderAvatar:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
                 owsFailDebug("Invalid component key: \(key)")
                 return nil
             }
@@ -1518,7 +1649,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // We don't render sender avatars with a subcomponent.
             case .senderAvatar:
                 owsAssertDebug(subcomponentView == nil)
-            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer:
+            case .systemMessage, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .sendFailureBadge, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
                 owsAssertDebug(subcomponentView == nil)
             }
         }
@@ -2081,15 +2212,17 @@ fileprivate extension CVComponentMessage {
         return CVComponentAndView(key: key, component: subcomponent, componentView: subcomponentView)
     }
 
-    func buildNestedStackConfig(hasNeighborsAbove: Bool,
-                                hasNeighborsBelow: Bool) -> CVStackViewConfig {
+    private enum ContentStackMargin {
+        case none
+        case margin
+        case spacing
+    }
+
+    func buildNestedStackConfig(hasTopMargin: Bool,
+                                hasBottomMargin: Bool) -> CVStackViewConfig {
         var layoutMargins = conversationStyle.textInsets
-        if hasNeighborsAbove {
-            layoutMargins.top = Self.textViewVSpacing
-        }
-        if hasNeighborsBelow {
-            layoutMargins.bottom = Self.textViewVSpacing
-        }
+        layoutMargins.top = hasTopMargin ? Self.textViewVSpacing : 0
+        layoutMargins.bottom = hasBottomMargin ? Self.textViewVSpacing : 0
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .fill,
                                  spacing: Self.textViewVSpacing,
@@ -2115,6 +2248,13 @@ fileprivate extension CVComponentMessage {
         CVStackViewConfig(axis: .vertical,
                           alignment: .fill,
                           spacing: Self.textViewVSpacing,
+                          layoutMargins: .zero)
+    }
+
+    func buildContentStackConfig() -> CVStackViewConfig {
+        CVStackViewConfig(axis: .vertical,
+                          alignment: .fill,
+                          spacing: 0,
                           layoutMargins: .zero)
     }
 

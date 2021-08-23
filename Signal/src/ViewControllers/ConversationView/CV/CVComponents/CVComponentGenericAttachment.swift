@@ -9,6 +9,8 @@ import PassKit
 @objc
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .genericAttachment }
+
     private let genericAttachment: CVComponentState.GenericAttachment
     private var attachment: TSAttachment { genericAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { genericAttachment.attachmentStream }

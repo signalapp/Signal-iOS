@@ -8,6 +8,8 @@ import Foundation
 // It could be the entire item or some part thereof.
 public protocol CVComponent: AnyObject {
 
+    var componentKey: CVComponentKey { get }
+
     var itemModel: CVItemModel { get }
 
     func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView
@@ -338,6 +340,7 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
     case failedOrPendingDownloads
     case unknownThreadWarning
     case defaultDisappearingMessageTimer
+    case messageRoot
 
     public var description: String {
         switch self {
@@ -387,6 +390,8 @@ public enum CVComponentKey: CustomStringConvertible, CaseIterable {
             return ".sendFailureBadge"
         case .defaultDisappearingMessageTimer:
             return ".defaultDisappearingMessageTimer"
+        case .messageRoot:
+            return ".messageRoot"
         }
     }
 

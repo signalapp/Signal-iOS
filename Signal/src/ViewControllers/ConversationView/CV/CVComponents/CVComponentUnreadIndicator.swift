@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
 
+    public var componentKey: CVComponentKey { .unreadIndicator }
+
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.unreadIndicator
     }

@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .linkPreview }
+
     private let linkPreviewState: CVComponentState.LinkPreview
 
     init(itemModel: CVItemModel,
