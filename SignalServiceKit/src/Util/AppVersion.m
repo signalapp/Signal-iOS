@@ -63,9 +63,12 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 - (void)configure {
     OWSAssertIsOnMainThread();
 
-    _currentAppReleaseVersion = [AppVersion parseAppReleaseVersionString];
-    _currentAppBuildVersion = [AppVersion parseAppBuildVersion3String];
-    _currentAppVersion4 = [AppVersion parseAppVersion4String];
+    _currentAppReleaseVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    _currentAppBuildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    _currentAppVersion4 = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"OWSBundleVersion4"];
+    OWSAssert(self.currentAppReleaseVersion.length > 0);
+    OWSAssert(self.currentAppBuildVersion.length > 0);
+    OWSAssert(self.currentAppVersion4.length > 0);
 
     // The version of the app when it was first launched.
     // nil if the app has never been launched before.
