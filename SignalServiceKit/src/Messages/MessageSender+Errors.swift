@@ -205,7 +205,7 @@ public class MessageSenderErrorNoValidRecipients: NSObject, CustomNSError, IsRet
 // MARK: -
 
 @objc
-public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, IsRetryableProvider {
+public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     @objc
     public static var asNSError: NSError {
         MessageSenderNoSessionForTransientMessageError() as Error as NSError
@@ -223,6 +223,13 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
     public var errorCode: Int { Self.errorCode }
 
     public var isRetryableProvider: Bool { false }
+
+    public var localizedDescription: String {
+        // These messages are never presented to the user, since these errors only
+        // occur to transient messages. We only specify an error to avoid an assert.
+        return NSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR",
+                                 comment: "Worst case generic error message")
+    }
 }
 
 // MARK: -
