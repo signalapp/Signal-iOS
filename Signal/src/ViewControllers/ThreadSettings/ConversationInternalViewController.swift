@@ -32,19 +32,6 @@ public class ConversationInternalViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         let section = OWSTableSection()
 
-        func addCopyableItem(title: String,
-                             value: String?,
-                             accessibilityIdentifier: String) {
-            section.add(.actionItem(name: title,
-                                    accessoryText: value ?? "Unknown",
-                                    accessibilityIdentifier: accessibilityIdentifier) { [weak self] in
-                                        if let value = value {
-                                            UIPasteboard.general.string = value
-                                            self?.presentToast(text: "Copied to Pasteboard")
-                                        }
-                                    })
-        }
-
         let thread = self.thread
         self.databaseStorage.read { transaction in
             let isThreadInProfileWhitelist = Self.profileManager.isThread(inProfileWhitelist: thread,
@@ -55,24 +42,24 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             if let contactThread = thread as? TSContactThread {
                 let address = contactThread.contactAddress
 
-                addCopyableItem(title: "UUID",
-                                value: address.uuid?.uuidString,
-                                accessibilityIdentifier: "uuid")
+                section.add(.copyableItem(label: "UUID",
+                                          value: address.uuid?.uuidString,
+                                          accessibilityIdentifier: "uuid"))
 
-                addCopyableItem(title: "Phone Number",
-                                value: address.phoneNumber,
-                                accessibilityIdentifier: "phoneNumber")
+                section.add(.copyableItem(label: "Phone Number",
+                                          value: address.phoneNumber,
+                                          accessibilityIdentifier: "phoneNumber"))
 
                 let profileKey = profileManager.profileKeyData(for: address, transaction: transaction)
-                addCopyableItem(title: "Profile Key",
-                                value: profileKey?.hexadecimalString,
-                                accessibilityIdentifier: "profile_key")
+                section.add(.copyableItem(label: "Profile Key",
+                                          value: profileKey?.hexadecimalString,
+                                          accessibilityIdentifier: "profile_key"))
 
                 let identityKey = identityManager.recipientIdentity(for: address,
                                                                     transaction: transaction)?.identityKey
-                addCopyableItem(title: "Identity Key",
-                                value: identityKey?.hexadecimalString,
-                                accessibilityIdentifier: "identity_key")
+                section.add(.copyableItem(label: "Identity Key",
+                                          value: identityKey?.hexadecimalString,
+                                          accessibilityIdentifier: "identity_key"))
 
                 var capabilities = [String]()
                 if GroupManager.doesUserHaveGroupsV2Capability(address: address,
@@ -99,16 +86,16 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 section.add(.label(withText: String(format: "Payments Enabled: %@",
                                                     arePaymentsEnabled ? "Yes" : "No")))
             } else if let groupThread = thread as? TSGroupThread {
-                addCopyableItem(title: "Group id",
-                                value: groupThread.groupId.hexadecimalString,
-                                accessibilityIdentifier: "group_id")
+                section.add(.copyableItem(label: "Group id",
+                                          value: groupThread.groupId.hexadecimalString,
+                                          accessibilityIdentifier: "group_id"))
             } else {
                 owsFailDebug("Invalid thread.")
             }
 
-            addCopyableItem(title: "thread.uniqueId",
-                            value: thread.uniqueId,
-                            accessibilityIdentifier: "thread.uniqueId")
+            section.add(.copyableItem(label: "thread.uniqueId",
+                                      value: thread.uniqueId,
+                                      accessibilityIdentifier: "thread.uniqueId"))
         }
 
         contents.addSection(section)

@@ -362,6 +362,39 @@ public extension OWSTableItem {
         iconWrapper.setContentHuggingHigh()
         return iconWrapper
     }
+
+    // Factory method for rows that display a labeled value.
+    // The value can be copied to the pasteboard by tapping.
+    static func copyableItem(label: String,
+                             value displayValue: String?,
+                             pasteboardValue: String? = nil,
+                             accessibilityIdentifier: String? = nil) -> OWSTableItem {
+        // If there is a custom pasteboardValue, honor it.
+        // Otherwise just default to using the displayValue.
+        let pasteboardValue = pasteboardValue ?? displayValue
+        let accessibilityIdentifier = accessibilityIdentifier ?? label
+        let displayValue = displayValue ?? NSLocalizedString("MISSING_VALUE",
+                                                             comment: "Generic indicator that no value is available for display")
+        return .item(
+            name: label,
+            accessoryText: displayValue,
+            accessibilityIdentifier: accessibilityIdentifier,
+            actionBlock: {
+                if let pasteboardValue = pasteboardValue {
+                    UIPasteboard.general.string = pasteboardValue
+                }
+
+                guard let fromVC = CurrentAppContext().frontmostViewController() else {
+                    owsFailDebug("could not identify frontmostViewController")
+                    return
+                }
+                let toast = NSLocalizedString("COPIED_TO_CLIPBOARD",
+                                              comment: "Indicator that a value has been copied to the clipboard.")
+                fromVC.presentToast(text: toast)
+
+            }
+        )
+    }
 }
 
 // MARK: - Declarative Initializers

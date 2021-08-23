@@ -1066,7 +1066,7 @@ extension OWSTableViewController2: OWSTableViewDelegate {
 
 // MARK: -
 
-private protocol OWSTableViewDelegate: class {
+private protocol OWSTableViewDelegate: AnyObject {
     func tableViewDidChangeWidth()
 }
 

@@ -131,57 +131,39 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         if let recipientPublicAddressData = mobileCoin.recipientPublicAddressData {
-            section.add(OWSTableItem.actionItem(name: "recipientPublicAddressData",
-                                                accessoryText: hexFormatData(recipientPublicAddressData),
-                                                accessibilityIdentifier: "recipientPublicAddressData",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = recipientPublicAddressData.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "recipientPublicAddressData",
+                                      value: hexFormatData(recipientPublicAddressData),
+                                      pasteboardValue: recipientPublicAddressData.base64EncodedString()))
         }
 
         if let transactionData = mobileCoin.transactionData {
-            section.add(OWSTableItem.actionItem(name: "transactionData",
-                                                accessoryText: hexFormatData(transactionData),
-                                                accessibilityIdentifier: "transactionData",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = transactionData.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "transactionData",
+                                      value: hexFormatData(transactionData),
+                                      pasteboardValue: transactionData.base64EncodedString()))
         }
 
         if let receiptData = mobileCoin.receiptData {
-            section.add(OWSTableItem.actionItem(name: "receiptData",
-                                                accessoryText: hexFormatData(receiptData),
-                                                accessibilityIdentifier: "receiptData",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = receiptData.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "receiptData",
+                                      value: hexFormatData(receiptData),
+                                      pasteboardValue: receiptData.base64EncodedString()))
         }
 
         for (index, publicKey) in (mobileCoin.incomingTransactionPublicKeys ?? []).enumerated() {
-            section.add(OWSTableItem.actionItem(name: "incomingTxoPublicKey.\(index)",
-                                                accessoryText: hexFormatData(publicKey),
-                                                accessibilityIdentifier: "incomingTxoPublicKey.\(index)",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = publicKey.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "incomingTxoPublicKey.\(index)",
+                                      value: hexFormatData(publicKey),
+                                      pasteboardValue: publicKey.base64EncodedString()))
         }
 
         for (index, keyImage) in (mobileCoin.spentKeyImages ?? []).enumerated() {
-            section.add(OWSTableItem.actionItem(name: "spentKeyImage.\(index)",
-                                                accessoryText: hexFormatData(keyImage),
-                                                accessibilityIdentifier: "spentKeyImages.\(index)",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = keyImage.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "spentKeyImage.\(index)",
+                                      value: hexFormatData(keyImage),
+                                      pasteboardValue: keyImage.base64EncodedString()))
         }
 
         for (index, publicKey) in (mobileCoin.outputPublicKeys ?? []).enumerated() {
-            section.add(OWSTableItem.actionItem(name: "outputPublicKey.\(index)",
-                                                accessoryText: hexFormatData(publicKey),
-                                                accessibilityIdentifier: "outputPublicKey.\(index)",
-                                                actionBlock: {
-                                                    UIPasteboard.general.string = publicKey.base64EncodedString()
-                                                }))
+            section.add(.copyableItem(label: "outputPublicKey.\(index)",
+                                      value: hexFormatData(publicKey),
+                                      pasteboardValue: publicKey.base64EncodedString()))
         }
 
         if let ledgerBlockDate = mobileCoin.ledgerBlockDate {
