@@ -385,7 +385,7 @@ public class OWSURLSession: NSObject {
 
     @objc
     public static var signalIosUserAgent: String {
-        "Signal-iOS/\(AppVersion.shared().currentAppVersionLong) iOS/\(UIDevice.current.systemVersion)"
+        "Signal-iOS/\(appVersion.currentAppVersion4) iOS/\(UIDevice.current.systemVersion)"
     }
 
     private func buildUrl(_ urlString: String) -> URL? {

@@ -3,6 +3,7 @@
 //
 
 // Any Obj-C used by SSK Swift must be imported.
+#import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>

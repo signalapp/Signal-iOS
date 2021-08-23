@@ -31,10 +31,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(completion);
 
     NSString *_Nullable lastCompletedLaunchAppVersion = AppVersion.shared.lastCompletedLaunchAppVersion;
-    NSString *currentVersion = AppVersion.shared.currentAppVersion;
+    NSString *currentVersion4 = AppVersion.shared.currentAppVersion4;
 
     OWSLogInfo(@"Checking migrations. currentVersion: %@, lastCompletedLaunchAppVersion: %@",
-        currentVersion,
+        currentVersion4,
         lastCompletedLaunchAppVersion);
 
     if (!lastCompletedLaunchAppVersion) {

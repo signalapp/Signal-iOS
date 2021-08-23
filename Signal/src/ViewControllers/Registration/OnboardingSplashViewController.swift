@@ -53,7 +53,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         if !FeatureFlags.isUsingProductionService {
-            titleLabel.text = "Internal Staging Build" + "\n" + "\(AppVersion.shared().currentAppVersionLong)"
+            titleLabel.text = "Internal Staging Build" + "\n" + "\(appVersion.currentAppVersion4)"
         }
 
         let explanationLabel = UILabel()

@@ -143,7 +143,7 @@ public extension TSAccountManager {
         let appVersionKey = "appVersion"
 
         let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilitiesForLocalDevice()
-        let currentAppVersion = AppVersion.shared().currentAppVersionLong
+        let currentAppVersion4 = appVersion.currentAppVersion4
 
         var lastAttributeRequest: Date?
         let shouldUpdateAttributes = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
@@ -161,10 +161,10 @@ public extension TSAccountManager {
             }
             // Check if the app version has changed.
             let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
-            guard lastAppVersion == currentAppVersion else {
+            guard lastAppVersion == currentAppVersion4 else {
                 return true
             }
-            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion: \(currentAppVersion).")
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion4: \(currentAppVersion4).")
             return false
         }
         guard shouldUpdateAttributes else {
@@ -180,9 +180,11 @@ public extension TSAccountManager {
             self.profileManager.fetchLocalUsersProfilePromise()
         }.map(on: DispatchQueue.global()) { _ -> Void in
             Self.databaseStorage.write { transaction in
-                self.keyValueStore.setObject(currentDeviceCapabilities, key: deviceCapabilitiesKey,
+                self.keyValueStore.setObject(currentDeviceCapabilities,
+                                             key: deviceCapabilitiesKey,
                                              transaction: transaction)
-                self.keyValueStore.setString(currentAppVersion, key: appVersionKey,
+                self.keyValueStore.setString(currentAppVersion4,
+                                             key: appVersionKey,
                                              transaction: transaction)
 
                 // Clear the update request unless a new update has been requested

@@ -6,7 +6,7 @@ import SignalServiceKit
 import MessageUI
 import PromiseKit
 
-struct SupportEmailModel {
+struct SupportEmailModel: Dependencies {
 
     enum LogPolicy {
         /// Do not upload logs
@@ -36,7 +36,7 @@ struct SupportEmailModel {
     var deviceType: String = UIDevice.current.model
     var deviceIdentifier: String = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
     var iosVersion: String = AppVersion.iOSVersionString
-    var signalVersion: String = AppVersion.shared().currentAppVersionLong
+    var signalVersion4: String = appVersion.currentAppVersion4
     var locale: String = NSLocale.current.identifier
 
     var userDescription: String? = NSLocalizedString(
@@ -225,7 +225,7 @@ final class ComposeSupportEmailOperation: NSObject {
                 format: NSLocalizedString(
                     "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT",
                     comment: "Localized label for support request email signal version string. Embeds {{signal version}}."
-                ), model.signalVersion
+                ), model.signalVersion4
             ), {
                 if let debugURLString = model.resolvedDebugString {
                     return String(
