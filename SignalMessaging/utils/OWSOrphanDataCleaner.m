@@ -634,9 +634,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     }];
 
     // Clean up once per app version.
-    NSString *currentAppVersion = AppVersion.shared.currentAppVersion;
-    if (!lastCleaningVersion || ![lastCleaningVersion isEqualToString:currentAppVersion]) {
-        OWSLogVerbose(@"Performing orphan data cleanup; new version: %@.", currentAppVersion);
+    NSString *currentAppReleaseVersion = self.appVersion.currentAppReleaseVersion;
+    if (!lastCleaningVersion || ![lastCleaningVersion isEqualToString:currentAppReleaseVersion]) {
+        OWSLogVerbose(@"Performing orphan data cleanup; new version: %@.", currentAppReleaseVersion);
         return YES;
     }
 
@@ -743,7 +743,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [self.keyValueStore setString:AppVersion.shared.currentAppVersion
+                        [self.keyValueStore setString:AppVersion.shared.currentAppReleaseVersion
                                                   key:OWSOrphanDataCleaner_LastCleaningVersionKey
                                           transaction:transaction];
 

@@ -22,8 +22,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
 @property (atomic) NSString *firstAppVersion;
 @property (atomic, nullable) NSString *lastAppVersion;
-@property (atomic) NSString *currentAppVersion;
-@property (atomic) NSString *currentAppVersionLong;
 
 @property (atomic, nullable) NSString *lastCompletedLaunchAppVersion;
 @property (atomic, nullable) NSString *lastCompletedLaunchMainAppVersion;
@@ -65,8 +63,12 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 - (void)configure {
     OWSAssertIsOnMainThread();
 
-    self.currentAppVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    self.currentAppVersionLong = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    _currentAppReleaseVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    _currentAppBuildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    _currentAppVersion4 = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"OWSBundleVersion4"];
+    OWSAssert(self.currentAppReleaseVersion.length > 0);
+    OWSAssert(self.currentAppBuildVersion.length > 0);
+    OWSAssert(self.currentAppVersion4.length > 0);
 
     // The version of the app when it was first launched.
     // nil if the app has never been launched before.
@@ -85,12 +87,13 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
     // Ensure the value for the "first launched version".
     if (!self.firstAppVersion) {
-        self.firstAppVersion = self.currentAppVersion;
-        [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_FirstAppVersion];
+        self.firstAppVersion = self.currentAppReleaseVersion;
+        [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion
+                                             forKey:kNSUserDefaults_FirstAppVersion];
     }
     
     // Update the value for the "most recently launched version".
-    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_LastAppVersion];
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion forKey:kNSUserDefaults_LastAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
 
     [self startupLogging];
@@ -98,15 +101,15 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
 - (void)startupLogging
 {
+    OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
+    OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
+    OWSLogInfo(@"currentAppReleaseVersion: %@", self.currentAppReleaseVersion);
+    OWSLogInfo(@"currentAppBuildVersion: %@", self.currentAppBuildVersion);
     // The long version string looks like an IPv4 address.
     // To prevent the log scrubber from scrubbing it,
     // we replace . with _.
-    NSString *longVersionString = [self.currentAppVersionLong stringByReplacingOccurrencesOfString:@"."
-                                                                                        withString:@"_"];
-
-    OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
-    OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
-    OWSLogInfo(@"currentAppVersion: %@ (%@)", self.currentAppVersion, longVersionString);
+    NSString *currentAppVersion4 = [self.currentAppVersion4 stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+    OWSLogInfo(@"currentAppVersion4: %@", currentAppVersion4);
 
     OWSLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
     OWSLogInfo(@"lastCompletedLaunchMainAppVersion: %@", self.lastCompletedLaunchMainAppVersion);
@@ -145,7 +148,6 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
     OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
     OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
-    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 
@@ -160,10 +162,10 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
     OWSLogInfo(@"appLaunchDidComplete");
 
-    self.lastCompletedLaunchAppVersion = self.currentAppVersion;
+    self.lastCompletedLaunchAppVersion = self.currentAppReleaseVersion;
 
     // Update the value for the "most recently launch-completed version".
-    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion
                                          forKey:kNSUserDefaults_LastCompletedLaunchAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
 }
@@ -172,8 +174,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 {
     OWSAssertIsOnMainThread();
 
-    self.lastCompletedLaunchMainAppVersion = self.currentAppVersion;
-    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+    self.lastCompletedLaunchMainAppVersion = self.currentAppReleaseVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion
                                          forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp];
 
     [self appLaunchDidComplete];
@@ -183,8 +185,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 {
     OWSAssertIsOnMainThread();
 
-    self.lastCompletedLaunchSAEAppVersion = self.currentAppVersion;
-    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+    self.lastCompletedLaunchSAEAppVersion = self.currentAppReleaseVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion
                                          forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_SAE];
 
     [self appLaunchDidComplete];
@@ -194,8 +196,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 {
     OWSAssertIsOnMainThread();
 
-    self.lastCompletedLaunchNSEAppVersion = self.currentAppVersion;
-    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+    self.lastCompletedLaunchNSEAppVersion = self.currentAppReleaseVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppReleaseVersion
                                          forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_NSE];
 
     [self appLaunchDidComplete];

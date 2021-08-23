@@ -81,7 +81,7 @@ final class HelpViewController: OWSTableViewController2 {
         aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
         aboutSection.footerTitle = NSLocalizedString("SETTINGS_COPYRIGHT", comment: "Footer for the 'about' help section")
         aboutSection.add(.copyableItem(label: NSLocalizedString("SETTINGS_VERSION", comment: ""),
-                                       value: AppVersion.shared().currentAppVersionLong))
+                                       value: AppVersion.shared().currentAppVersion4))
         aboutSection.add(.disclosureItem(
             withText: NSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
             actionBlock: { [weak self] in

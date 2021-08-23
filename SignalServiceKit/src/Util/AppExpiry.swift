@@ -13,7 +13,7 @@ public class AppExpiry: NSObject {
     public let keyValueStore = SDSKeyValueStore(collection: "AppExpiry")
 
     private struct ExpirationState: Codable {
-        let version: String
+        let version4: String
 
         enum Mode: String, Codable {
             case `default`
@@ -25,7 +25,7 @@ public class AppExpiry: NSObject {
         let expirationDate: Date?
 
         init(mode: Mode = .default, expirationDate: Date? = nil) {
-            self.version = AppVersion.shared().currentAppVersionLong
+            self.version4 = AppVersion.shared().currentAppVersion4
             self.mode = mode
             self.expirationDate = expirationDate
 
@@ -68,7 +68,7 @@ public class AppExpiry: NSObject {
             }
 
             // We only want to restore the persisted state if it's for our current version.
-            guard persistedExpirationState.version == AppVersion.shared().currentAppVersionLong else {
+            guard persistedExpirationState.version4 == appVersion.currentAppVersion4 else {
                 return nil
             }
 

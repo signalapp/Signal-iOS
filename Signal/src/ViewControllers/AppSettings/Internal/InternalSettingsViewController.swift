@@ -62,7 +62,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let infoSection = OWSTableSection()
 
-        infoSection.add(.copyableItem(label: "Version", value: AppVersion.shared().currentAppVersionLong))
+        infoSection.add(.copyableItem(label: "App Release Version", value: AppVersion.shared().currentAppReleaseVersion))
+        infoSection.add(.copyableItem(label: "App Build Version", value: AppVersion.shared().currentAppBuildVersion))
+        infoSection.add(.copyableItem(label: "App Version 4", value: AppVersion.shared().currentAppVersion4))
         // The first version of the app that was run on this device.
         infoSection.add(.copyableItem(label: "First Version", value: AppVersion.shared().firstAppVersion))
 

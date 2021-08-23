@@ -4,8 +4,6 @@
 <dict>
 	<key>BuildDetails</key>
 	<dict>
-		<key>OSXVersion</key>
-		<string>11.4</string>
 		<key>WebRTCCommit</key>
 		<string>579222c3fc3523d17508704550c5baa33e2fbda4 Production build of v2.10.8</string>
 	</dict>
@@ -45,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5.19.0.44</string>
+	<string>44</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -142,6 +140,8 @@
 		<string>INSendMessageIntent</string>
 		<string>INStartCallIntent</string>
 	</array>
+	<key>OWSBundleVersion4</key>
+	<string>5.19.0.44</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>

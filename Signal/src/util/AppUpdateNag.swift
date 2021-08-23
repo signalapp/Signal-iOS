@@ -67,7 +67,7 @@ class AppUpdateNag: NSObject {
     }
 
     var currentVersion: String? {
-        return bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        appVersion.currentAppReleaseVersion
     }
 
     var bundleIdentifier: String? {
