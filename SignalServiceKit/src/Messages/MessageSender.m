@@ -257,6 +257,10 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     if ([latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
         messageWasRemotelyDeleted = ((TSOutgoingMessage *)latestCopy).wasRemotelyDeleted;
     }
+
+    [BenchManager
+        completeEventWithEventId:[NSString stringWithFormat:@"sendMessagePreNetwork-%llu", self.message.timestamp]];
+
     if ((self.message.shouldBeSaved && latestCopy == nil) || messageWasRemotelyDeleted) {
         OWSLogInfo(@"aborting message send; message deleted.");
         NSError *error = [MessageDeletedBeforeSentError asNSError];
@@ -264,9 +268,23 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         return;
     }
 
+    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"Send Message Milestone: Network (%llu)",
+                                                self.message.timestamp]
+                              eventId:[NSString stringWithFormat:@"sendMessageNetwork-%llu", self.message.timestamp]];
+
     [self.messageSender sendMessageToService:self.message
         success:^{ [self reportSuccess]; }
         failure:^(NSError *error) { [self reportError:error]; }];
+}
+
+- (void)completeNetworkEvent
+{
+    [BenchManager
+        completeEventWithEventId:[NSString stringWithFormat:@"sendMessageNetwork-%llu", self.message.timestamp]];
+    [BenchManager
+        startEventWithTitle:[NSString
+                                stringWithFormat:@"Send Message Milestone: Post-Network (%llu)", self.message.timestamp]
+                    eventId:[NSString stringWithFormat:@"sendMessagePostNetwork-%llu", self.message.timestamp]];
 }
 
 - (void)didSucceed
@@ -275,11 +293,15 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         OWSFailDebug(@"Unexpected message status: %@", self.message.statusDescription);
     }
 
+    [self completeNetworkEvent];
+
     self.successHandler();
 }
 
 - (void)didFailWithError:(NSError *)error
 {
+    [self completeNetworkEvent];
+
     OWSLogError(@"Failed with error: %@ (isRetryable: %d)", error, error.isRetryable);
     self.failureHandler(error);
 }
