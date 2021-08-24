@@ -322,6 +322,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func updateTableContents() {
         AssertIsOnMainThread()
 
+        self.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
+                                                CGFloat(ContactCellView.avatarDiameterPoints) +
+                                                ContactCellView.avatarTextHSpacing)
+
         let conversationCollection = self.conversationCollection
 
         let contents = OWSTableContents()

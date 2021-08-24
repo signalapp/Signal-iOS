@@ -186,7 +186,7 @@ public class LongTextViewController: OWSViewController {
         // Only forward text.
         let selectionType: CVSelectionType = (itemViewModel.componentState.hasPrimaryAndSecondaryContentForSelection
                                                 ? .secondaryContent
-                                                : .primaryContent)
+                                                : .allContent)
         let selectionItem = CVSelectionItem(interactionId: itemViewModel.interaction.uniqueId,
                                             interactionType: itemViewModel.interaction.interactionType,
                                             isForwardable: true,
