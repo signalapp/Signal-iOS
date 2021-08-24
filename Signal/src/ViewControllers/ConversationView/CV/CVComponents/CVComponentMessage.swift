@@ -323,14 +323,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var sendFailureBadgeSize: CGFloat { conversationStyle.hasWallpaper ? 40 : 24 }
 
-    // The "message" contents of this component are vertically
-    // stacked in four sections.  Ordering of the keys in each
-    // section determines the ordering of the subcomponents.
-    private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
-    private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
-    private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare, .bodyText, .footer] }
-
     public static let bubbleSharpCornerRadius: CGFloat = 4
     public static let bubbleWideCornerRadius: CGFloat = 18
 
@@ -776,6 +768,14 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return contentStack
         }
     }
+
+    // The "message" contents of this component are vertically
+    // stacked in four sections.  Ordering of the keys in each
+    // section determines the ordering of the subcomponents.
+    private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
+    private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
+    private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
+    private static var bottomNestedCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .contactShare, .bodyText, .footer] }
 
     // The "message" contents of this component for most messages are vertically
     // stacked in four sections.
