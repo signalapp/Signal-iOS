@@ -36,7 +36,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.testKeychainStorage = [SSKTestKeychainStorage new];
 
-    NSString *temporaryDirectory = OWSTemporaryDirectory();
+    // Avoid using OWSTemporaryDirectory(); it can consult the current app context.
+    NSString *dirName = [NSString stringWithFormat:@"ows_temp_%@", NSUUID.UUID.UUIDString];
+    NSString *temporaryDirectory = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
+    NSError *error = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:temporaryDirectory
+                              withIntermediateDirectories:YES
+                                               attributes:nil
+                                                    error:&error];
+    if (error) {
+        OWSFail(@"Failed to create directory: %@, error: %@", temporaryDirectory, error);
+    }
+
     self.mockAppDocumentDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     self.mockAppSharedDataDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     self.appUserDefaults = [[NSUserDefaults alloc] init];
