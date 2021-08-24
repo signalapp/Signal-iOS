@@ -10,6 +10,18 @@ public extension ThreadUtil {
 
     typealias PersistenceCompletion = () -> Void
 
+    // A serial queue that ensures that messages are sent in the
+    // same order in which they are enqueued.
+    static var enqueueSendQueue: DispatchQueue { .sharedUserInitiated }
+
+    static func enqueueSendAsyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        enqueueSendQueue.async {
+            Self.databaseStorage.write { transaction in
+                block(transaction)
+            }
+        }
+    }
+
     @discardableResult
     class func enqueueMessage(body messageBody: MessageBody?,
                               mediaAttachments: [SignalAttachment],
@@ -28,7 +40,7 @@ public extension ThreadUtil {
         let message: TSOutgoingMessage = outgoingMessagePreparer.unpreparedMessage
 
         BenchManager.benchAsync(title: "Saving outgoing message") { benchmarkCompletion in
-            Self.databaseStorage.asyncWrite { writeTransaction in
+            Self.enqueueSendAsyncWrite { writeTransaction in
                 outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
                                                       transaction: writeTransaction)
                 Self.messageSenderJobQueue.add(message: outgoingMessagePreparer,
@@ -69,7 +81,7 @@ public extension ThreadUtil {
 
         let message = builder.build()
 
-        databaseStorage.asyncWrite { transaction in
+        Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
             self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             if message.hasRenderableContent() { thread.donateSendMessageIntent(transaction: transaction) }

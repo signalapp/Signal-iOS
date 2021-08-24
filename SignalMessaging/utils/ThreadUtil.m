@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(stickerDraft != nil);
     OWSAssertDebug(thread != nil);
 
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    [self enqueueSendAsyncWrite:^(SDSAnyWriteTransaction *transaction) {
         MessageSticker *_Nullable messageSticker = [self messageStickerForStickerDraft:stickerDraft
                                                                            transaction:transaction];
         if (!messageSticker) {
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
 
         [thread donateSendMessageIntentWithTransaction:transaction];
-    });
+    }];
 }
 
 + (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft

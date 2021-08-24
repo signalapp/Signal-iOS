@@ -10,7 +10,7 @@ public class AttachmentMultisend: Dependencies {
     public class func sendApprovedMedia(conversations: [ConversationItem],
                                         approvalMessageBody: MessageBody?,
                                         approvedAttachments: [SignalAttachment]) -> Promise<[TSThread]> {
-        return firstly(on: .sharedUserInitiated) {
+        return firstly(on: ThreadUtil.enqueueSendQueue) {
             // Duplicate attachments per conversation
             let conversationAttachments: [(ConversationItem, [SignalAttachment])] =
                 try conversations.map { conversation in
