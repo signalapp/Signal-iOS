@@ -5,6 +5,7 @@ import PromiseKit
 public final class ClosedGroupPoller : NSObject {
     private var isPolling: [String:Bool] = [:]
     private var timers: [String:Timer] = [:]
+    private let internalQueue: DispatchQueue = DispatchQueue(label:"isPollingQueue")
 
     // MARK: Settings
     private static let minPollInterval: Double = 2
@@ -137,6 +138,6 @@ public final class ClosedGroupPoller : NSObject {
 
     // MARK: Convenience
     private func isPolling(for groupPublicKey: String) -> Bool {
-        return isPolling[groupPublicKey] ?? false
+        return internalQueue.sync{ isPolling[groupPublicKey] ?? false }
     }
 }
