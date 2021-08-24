@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugLogger.h"
@@ -82,6 +82,9 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 - (void)enableFileLogging
 {
+    if (CurrentAppContext().isRunningTests) {
+        return;
+    }
     NSString *logsDirPath = [self logsDirPath];
 
     // Logging to file, because it's in the Cache folder, they are not uploaded in iTunes/iCloud backups.

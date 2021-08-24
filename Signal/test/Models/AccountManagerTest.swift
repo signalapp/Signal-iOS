@@ -135,7 +135,7 @@ class AccountManagerTest: SignalBaseTest {
             XCTFail("Unexpected error: \(error)")
         }
 
-        self.waitForExpectations(timeout: 1.0, handler: nil)
+        self.waitForExpectations(timeout: 5.0, handler: nil)
     }
 
     func testUpdatePushTokens() {
