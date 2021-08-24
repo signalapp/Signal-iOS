@@ -504,9 +504,6 @@ public class DebugFlags: BaseFlags {
                                                           title: LocalizationNotNeeded("Delayed message resend"),
                                                           details: LocalizationNotNeeded("Waits 10s before responding to a resend request."))
 
-    @objc
-    public static let forceAnnouncementOnlyGroupsUI = build.includes(.qa)
-
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
             DebugFlags.value(forKey: key)

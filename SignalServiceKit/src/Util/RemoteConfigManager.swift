@@ -156,11 +156,6 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceViewedReceiptSending || isEnabled(.viewedReceiptSending)
     }
 
-    @objc
-    public static var announcementOnlyGroupsUI: Bool {
-        DebugFlags.forceAnnouncementOnlyGroupsUI || isEnabled(.announcementOnlyGroupsUI)
-    }
-
     public static var standardMediaQualityLevel: ImageQualityLevel? {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return nil }
         return remoteConfig.standardMediaQualityLevel
@@ -392,7 +387,6 @@ private struct Flags {
         case paymentsResetKillSwitch
         case giphySendAsMP4
         case viewedReceiptSending
-        case announcementOnlyGroupsUI
         case senderKeyKillSwitch
         case messageResendKillSwitch
         case senderKey
