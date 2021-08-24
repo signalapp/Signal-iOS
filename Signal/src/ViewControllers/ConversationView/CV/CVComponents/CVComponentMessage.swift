@@ -912,9 +912,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
         if isLargeComponent(lastComponentKey) {
-            return .spacingBelowLargeComponent
+            if nextComponentKey == .footer {
+                return .spacingCustom(spacing: 5)
+            } else {
+                return .spacingCustom(spacing: 7)
+            }
         } else if isLargeComponent(nextComponentKey) {
-            return .spacingAboveLargeComponent
+            return .spacingCustom(spacing: 5)
         } else if topNestedCVComponentKeys.contains(lastComponentKey),
                   bottomNestedCVComponentKeys.contains(nextComponentKey),
                   sectionType == .topNested {
@@ -926,7 +930,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         } else if lastComponentKey == .senderName,
                   nextComponentKey == .bodyText {
             // Sender name and body text components hug each other.
-            return .spacingSmall
+            return .spacingCustom(spacing: 1)
         } else {
             return .spacingDefault
         }
@@ -2233,9 +2237,7 @@ fileprivate extension CVComponentMessage {
         case topMargin
         case bottomMargin
         case spacingDefault
-        case spacingSmall
-        case spacingAboveLargeComponent
-        case spacingBelowLargeComponent
+        case spacingCustom(spacing: CGFloat)
     }
 
     private func buildNestedStackConfig(topMargin: ContentStackMargin,
@@ -2250,12 +2252,8 @@ fileprivate extension CVComponentMessage {
                 return conversationStyle.textInsetBottom
             case .spacingDefault:
                 return Self.textViewVSpacing
-            case .spacingSmall:
-                return 1
-            case .spacingAboveLargeComponent:
-                return 5
-            case .spacingBelowLargeComponent:
-                return 7
+            case .spacingCustom(let spacing):
+                return spacing
             }
         }
         var layoutMargins = conversationStyle.textInsets

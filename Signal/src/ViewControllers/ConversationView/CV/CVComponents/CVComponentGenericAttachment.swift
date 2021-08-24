@@ -119,7 +119,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             text = NSLocalizedString("GENERIC_ATTACHMENT_LABEL", comment: "A label for generic attachments.")
         }
         return CVLabelConfig(text: text,
-                             font: UIFont.ows_dynamicTypeBody,
+                             font: UIFont.ows_dynamicTypeBody2.ows_semibold,
                              textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
                              lineBreakMode: .byTruncatingMiddle)
     }
@@ -238,7 +238,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private let hSpacing: CGFloat = 8
-    private let labelVSpacing: CGFloat = 2
+    private let labelVSpacing: CGFloat = 1
     private let iconSize = CGSize(width: 36, height: CGFloat(AvatarBuilder.standardAvatarSizePoints))
     private let progressSize: CGFloat = 36
 
