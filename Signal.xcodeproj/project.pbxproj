@@ -955,6 +955,7 @@
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
 		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
+		F0C124B726D4788A0031C96F /* NSE-Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F0C124B626D4788A0031C96F /* NSE-Images.xcassets */; };
 		F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */; };
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
 		FC3BD9881A30A790005B96BB /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC3BD9871A30A790005B96BB /* Social.framework */; };
@@ -2172,6 +2173,7 @@
 		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
 		F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuConfiguration.swift; sourceTree = "<group>"; };
+		F0C124B626D4788A0031C96F /* NSE-Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "NSE-Images.xcassets"; sourceTree = "<group>"; };
 		F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuReactionBarAccessory.swift; sourceTree = "<group>"; };
 		F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuController.swift; sourceTree = "<group>"; };
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -4185,6 +4187,7 @@
 				88BFD4712335C2A4001797D7 /* Lottie */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
+				F0C124B626D4788A0031C96F /* NSE-Images.xcassets */,
 				B657DDC91911A40500F45B0C /* Signal.entitlements */,
 				881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */,
 				34074F54203D0722004596AE /* Sounds */,
@@ -4660,6 +4663,7 @@
 				883A7FB72698DB2E00841DF9 /* complete.aifc in Resources */,
 				883A7FBF2698DB2E00841DF9 /* aurora.aifc in Resources */,
 				883A7FC02698DB4E00841DF9 /* NewMessage.aifc in Resources */,
+				F0C124B726D4788A0031C96F /* NSE-Images.xcassets in Resources */,
 				883A7FB62698DB2E00841DF9 /* keys.aifc in Resources */,
 				883A7FBA2698DB2E00841DF9 /* chord.aifc in Resources */,
 				883A7FB32698DB2E00841DF9 /* hello.aifc in Resources */,
