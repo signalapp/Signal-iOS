@@ -15,6 +15,13 @@ public protocol ForwardMessageDelegate: AnyObject {
 @objc
 class ForwardMessageViewController: InteractiveSheetViewController {
 
+    private let pickerVC: ForwardPickerViewController
+    private let forwardNavigationViewController = ForwardNavigationViewController()
+
+    private let handle = UIView()
+
+    override var interactiveScrollViews: [UIScrollView] { [ pickerVC.tableView ] }
+
     public weak var forwardMessageDelegate: ForwardMessageDelegate?
 
     public typealias Item = ForwardMessageItem
@@ -25,15 +32,14 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
     fileprivate var textMessage: String?
 
-    fileprivate var selectedConversations: [ConversationItem] = [] {
-        didSet {
-            updateCurrentMentionableAddresses()
-        }
-    }
+    private let selection = ConversationPickerSelection()
+    var selectedConversations: [ConversationItem] { selection.conversations }
+
     fileprivate var currentMentionableAddresses: [SignalServiceAddress] = []
 
     private init(content: Content) {
         self.content = content
+        self.pickerVC = ForwardPickerViewController(selection: selection)
 
         super.init()
 
@@ -84,13 +90,27 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         fromViewController.present(sheet, animated: true, completion: nil)
     }
 
-    private let header = UIStackView()
-    private var pickerVC: ConversationPickerViewController?
+    public override func themeDidChange() {
+        super.themeDidChange()
+    }
+
+    public override func applyTheme() {
+        AssertIsOnMainThread()
+
+        super.applyTheme()
+
+        contentView.backgroundColor = pickerVC.tableBackgroundColor
+        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        applyTheme()
+    }
 
     private func selectRecipientsStep() {
 
-        let handle = UIView()
-        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
         handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
         handle.layer.cornerRadius = 5 / 2
 
@@ -99,80 +119,39 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         handle.autoPinHeightToSuperview(withMargin: 12)
         handle.autoHCenterInSuperview()
 
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("FORWARD_MESSAGE_TITLE",
-                                            comment: "Title for the 'forward message(s)' view.")
-        titleLabel.textColor = Theme.primaryTextColor
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
-
-        func buildButton(icon: ThemeIcon, handler: @escaping () -> Void) -> UIView {
-            let button = OWSButton(block: handler)
-            let iconSize: CGFloat = 20
-            let padding: CGFloat = 4
-            button.imageEdgeInsets = UIEdgeInsets(hMargin: padding, vMargin: padding)
-            button.autoSetDimensions(to: .square(iconSize + padding * 2))
-            button.setTemplateImage(Theme.iconImage(icon), tintColor: Theme.primaryIconColor)
-            return button
-        }
-        let cancelButton = buildButton(icon: .cancel20) { [weak self] in
-            self?.forwardMessageDelegate?.forwardMessageFlowDidCancel()
-            self?.dismiss(animated: true)
-        }
-        let searchButton = buildButton(icon: .settingsSearch) { [weak self] in
-            self?.selectSearchBar()
-        }
-
-        let spacerFactory = SpacerFactory()
-        header.addArrangedSubviews([
-            cancelButton,
-            spacerFactory.buildHSpacer(),
-            titleLabel,
-            spacerFactory.buildHSpacer(),
-            searchButton
-        ])
-        spacerFactory.finalizeSpacers()
-        header.axis = .horizontal
-        header.spacing = 16
-        header.alignment = .center
-        header.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 12, trailing: 16)
-        header.isLayoutMarginsRelativeArrangement = true
-        header.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
-
-        let pickerVC = ConversationPickerViewController()
+        pickerVC.forwardMessageViewController = self
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
-        pickerVC.delegate = self
-        self.pickerVC = pickerVC
-        self.addChild(pickerVC)
-        let pickerView = pickerVC.view!
+        pickerVC.pickerDelegate = self
+
+        forwardNavigationViewController.forwardMessageViewController = self
+        forwardNavigationViewController.viewControllers = [ pickerVC ]
+        self.addChild(forwardNavigationViewController)
+        let navView = forwardNavigationViewController.view!
 
         let stackView = UIStackView(arrangedSubviews: [
                                         handleContainer,
-                                        header,
-                                        pickerView ])
+                                        navView ])
         stackView.axis = .vertical
         stackView.alignment = .fill
 
         self.contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
+
+        applyTheme()
     }
 
     fileprivate func selectSearchBar() {
         AssertIsOnMainThread()
 
-        pickerVC?.selectSearchBar()
+        pickerVC.selectSearchBar()
         ensureHeaderVisibility()
     }
 
     fileprivate func ensureHeaderVisibility() {
         AssertIsOnMainThread()
 
-        guard let pickerVC = pickerVC else {
-            owsFailDebug("Missing pickerVC.")
-            return
-        }
-
-        header.isHidden = pickerVC.isSearchBarActive
+        forwardNavigationViewController.setNavigationBarHidden(pickerVC.isSearchBarActive, animated: false)
         if pickerVC.isSearchBarActive {
             maximizeHeight()
         }
@@ -372,7 +351,7 @@ extension ForwardMessageViewController {
         } else if let attachments = item.attachments,
                   !attachments.isEmpty {
             // TODO: What about link previews in this case?
-            let conversations = selectedConversationsForConversationPicker
+            let conversations = selectedConversations
             return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
                                                          approvalMessageBody: item.messageBody,
                                                          approvedAttachments: attachments).asVoid()
@@ -451,20 +430,8 @@ extension ForwardMessageViewController {
 // MARK: -
 
 extension ForwardMessageViewController: ConversationPickerDelegate {
-    var selectedConversationsForConversationPicker: [ConversationItem] {
-        selectedConversations
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didSelectConversation conversation: ConversationItem) {
-        selectedConversations.append(conversation)
-    }
-
-    func conversationPicker(_ conversationPickerViewController: ConversationPickerViewController,
-                            didDeselectConversation conversation: ConversationItem) {
-        self.selectedConversations = self.selectedConversations.filter {
-            $0.messageRecipient != conversation.messageRecipient
-        }
+    func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
+        updateCurrentMentionableAddresses()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -474,7 +441,7 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
     }
 
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {
-        true
+        false
     }
 
     func conversationPickerDidCancel(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -490,6 +457,12 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
     var conversationPickerTextInputDefaultText: String? {
         NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
                           comment: "Indicates that the user can add a text message to forwarded messages.")
+    }
+
+    func conversationPickerDidBeginEditingText() {
+        AssertIsOnMainThread()
+
+        maximizeHeight()
     }
 
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -854,5 +827,53 @@ private struct ForwardMessageRecipientThread {
             return []
         }
         return groupThread.recipientAddresses
+    }
+}
+
+// MARK: -
+
+private class ForwardNavigationViewController: OWSNavigationController {
+    weak var forwardMessageViewController: ForwardMessageViewController?
+
+}
+
+// MARK: -
+
+private class ForwardPickerViewController: ConversationPickerViewController {
+    weak var forwardMessageViewController: ForwardMessageViewController?
+
+    @objc
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        updateNavigationItem()
+    }
+
+    public func updateNavigationItem() {
+        title = NSLocalizedString("FORWARD_MESSAGE_TITLE",
+                                  comment: "Title for the 'forward message(s)' view.")
+
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.cancel20),
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(didPressCancel))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.settingsSearch),
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(didPressSearch))
+    }
+
+    @objc
+    private func didPressCancel() {
+        AssertIsOnMainThread()
+
+        pickerDelegate?.conversationPickerDidCancel(self)
+    }
+
+    @objc
+    private func didPressSearch() {
+        AssertIsOnMainThread()
+
+        forwardMessageViewController?.selectSearchBar()
     }
 }

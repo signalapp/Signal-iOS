@@ -9,6 +9,8 @@ public enum MessageRecipient: Equatable {
     case group(_ groupThreadId: String)
 }
 
+// MARK: -
+
 public protocol ConversationItem {
     var messageRecipient: MessageRecipient { get }
     var title: String { get }
@@ -18,6 +20,8 @@ public protocol ConversationItem {
 
     func thread(transaction: SDSAnyWriteTransaction) -> TSThread?
 }
+
+// MARK: -
 
 struct RecentConversationItem {
     enum ItemType {
@@ -35,6 +39,8 @@ struct RecentConversationItem {
         }
     }
 }
+
+// MARK: -
 
 extension RecentConversationItem: ConversationItem {
     var messageRecipient: MessageRecipient {
@@ -62,6 +68,8 @@ extension RecentConversationItem: ConversationItem {
     }
 }
 
+// MARK: -
+
 struct ContactConversationItem: Dependencies {
     let address: SignalServiceAddress
     let isBlocked: Bool
@@ -70,16 +78,20 @@ struct ContactConversationItem: Dependencies {
     let comparableName: String
 }
 
+// MARK: -
+
 extension ContactConversationItem: Comparable {
     public static func < (lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
         return lhs.comparableName < rhs.comparableName
     }
 }
 
+// MARK: -
+
 extension ContactConversationItem: ConversationItem {
 
     var messageRecipient: MessageRecipient {
-        return .contact(address)
+        .contact(address)
     }
 
     var title: String {
@@ -103,6 +115,8 @@ extension ContactConversationItem: ConversationItem {
     }
 }
 
+// MARK: -
+
 struct GroupConversationItem: Dependencies {
     let groupThreadId: String
     let isBlocked: Bool
@@ -115,19 +129,21 @@ struct GroupConversationItem: Dependencies {
     // We don't want to keep this in memory, because the group model
     // can be very large.
     var groupThread: TSGroupThread? {
-        return databaseStorage.read { transaction in
+        databaseStorage.read { transaction in
             return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
         }
     }
 
     var groupModel: TSGroupModel? {
-        return groupThread?.groupModel
+        groupThread?.groupModel
     }
 }
 
+// MARK: -
+
 extension GroupConversationItem: ConversationItem {
     var messageRecipient: MessageRecipient {
-        return .group(groupThreadId)
+        .group(groupThreadId)
     }
 
     var title: String {
