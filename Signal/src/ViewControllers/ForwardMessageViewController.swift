@@ -85,9 +85,12 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     private class func present(content: Content,
                                from fromViewController: UIViewController,
                                delegate: ForwardMessageDelegate) {
+
         let sheet = ForwardMessageViewController(content: content)
         sheet.forwardMessageDelegate = delegate
-        fromViewController.present(sheet, animated: true, completion: nil)
+        fromViewController.present(sheet, animated: true) {
+            UIApplication.shared.hideKeyboard()
+        }
     }
 
     public override func themeDidChange() {

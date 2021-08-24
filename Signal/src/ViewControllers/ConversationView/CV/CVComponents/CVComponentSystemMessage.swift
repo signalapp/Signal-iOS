@@ -150,6 +150,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             if isShowingSelectionUI || wasShowingSelectionUI {
                 // System messages cannot be partially selected.
                 selectionView.isSelected = componentDelegate.selectionState.hasAnySelection(interaction: interaction)
+                selectionView.updateStyle(conversationStyle: conversationStyle)
                 outerHStackViews.append(selectionView)
             }
             outerHStackViews.append(contentsOf: [
