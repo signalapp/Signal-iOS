@@ -150,9 +150,6 @@ public extension GroupsV2Migration {
         guard !DebugFlags.reduceLogChatter else {
             return
         }
-        guard FeatureFlags.groupsV2Migrations else {
-            return
-        }
         guard CurrentAppContext().isMainAppAndActive else {
             // Don't try to migrate groups in app extensions,
             // nor if the app is in the background, e.g.
@@ -258,9 +255,6 @@ public extension GroupsV2Migration {
     static func autoMigrateThreadIfNecessary(thread: TSThread) {
         AssertIsOnMainThread()
 
-        guard FeatureFlags.groupsV2Migrations else {
-            return
-        }
         guard let groupThread = thread as? TSGroupThread else {
             return
         }
@@ -291,8 +285,13 @@ public extension GroupsV2Migration {
 
 // MARK: -
 
+public extension GroupsV2Migration {
+    static var verboseLogging: Bool { DebugFlags.internalLogging }
+}
+
+// MARK: -
+
 fileprivate extension GroupsV2Migration {
-    public static var verboseLogging: Bool { DebugFlags.internalLogging }
 
     private static let migrationQueue: OperationQueue = {
         let operationQueue = OperationQueue()

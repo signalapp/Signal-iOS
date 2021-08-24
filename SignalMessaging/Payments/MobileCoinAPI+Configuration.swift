@@ -19,7 +19,6 @@ extension MobileCoinAPI {
 
         public static var current: Environment {
             if FeatureFlags.isUsingProductionService {
-                owsAssertDebug(FeatureFlags.paymentsExternalBeta)
                 return .signalMainNet
             } else if FeatureFlags.paymentsInternalBeta {
                 // TODO: Revisit.
@@ -334,7 +333,7 @@ extension MobileCoinAPI {
                                           mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
                                           mrEnclaveFogReport: mrEnclaveFogReport)
         }
-        
+
         // consensus
         // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
         // MRENCLAVE: 0x9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af,
@@ -360,7 +359,7 @@ extension MobileCoinAPI {
             ]
             let mrEnclaveFogView = [
                 // ~June 2, 2021
-                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!,
+                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport = [
@@ -369,7 +368,7 @@ extension MobileCoinAPI {
             ]
             let mrEnclaveFogLedger = [
                 // ~June 2, 2021
-                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!,
+                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!
             ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,

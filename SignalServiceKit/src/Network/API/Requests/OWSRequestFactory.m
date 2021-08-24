@@ -504,15 +504,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"gv2-3"] = @(YES);
     capabilities[@"transfer"] = @(YES);
     capabilities[@"announcementGroup"] = @(YES);
+    capabilities[@"gv1-migration"] = @(YES);
 
     // If the storage service requires (or will require) secondary devices
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.
 
-    if (SSKFeatureFlags.groupsV2MigrationSetCapability
-        && !SSKDebugFlags.groupsV2migrationsDisableMigrationCapability.value) {
-        capabilities[@"gv1-migration"] = @(YES);
-    }
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }

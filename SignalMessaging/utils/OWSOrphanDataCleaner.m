@@ -620,9 +620,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     if (!CurrentAppContext().isMainApp || CurrentAppContext().isRunningTests || !TSAccountManager.shared.isRegistered) {
         return NO;
     }
-    if (!SSKFeatureFlags.useOrphanDataCleaner) {
-        return NO;
-    }
 
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
