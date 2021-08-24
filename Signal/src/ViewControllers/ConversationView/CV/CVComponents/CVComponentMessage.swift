@@ -744,33 +744,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let contentSections = buildContentSections()
 
             var contentSubviews = [UIView]()
-            for (currentSectionIndex, contentSection) in contentSections.enumerated() {
-                guard !contentSection.components.isEmpty,
-                      let firstComponent = contentSection.components.first,
-                      let lastComponent = contentSection.components.last else {
-                    owsFailDebug("Empty content section.")
-                    continue
-                }
-
-                let previousSections = contentSections.enumerated().compactMap { sectionIndex, section in
-                    sectionIndex < currentSectionIndex ? section : nil
-                }
-                let previousSubcomponents = Array(previousSections.map { $0.components }.joined())
-
-                let nextSections = contentSections.enumerated().compactMap { sectionIndex, section in
-                    sectionIndex > currentSectionIndex ? section : nil
-                }
-                var nextSubcomponents = Array(nextSections.map { $0.components }.joined())
-                if let bottomButtons = self.bottomButtons {
-                    nextSubcomponents.append(bottomButtons)
-                }
-
-                let stackConfig = contentSectionStackConfig(sectionType: contentSection.sectionType,
-                                                            firstComponent: firstComponent,
-                                                            lastComponent: lastComponent,
-                                                            previousSubcomponents: previousSubcomponents,
-                                                            nextSubcomponents: nextSubcomponents)
-
+            enumerate(contentSections: contentSections) { (contentSection: ContentSection,
+                                                           stackConfig: CVStackViewConfig) in
                 let componentKeys = contentSection.components.map { $0.componentKey }
                 let stackView = contentSection.stackView(componentView: componentView)
                 _ = configureStackView(stackView,
@@ -874,6 +849,38 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
         return contentSections
+    }
+
+    fileprivate func enumerate(contentSections: [ContentSection],
+                               block: (ContentSection, CVStackViewConfig) -> Void) {
+        for (currentSectionIndex, contentSection) in contentSections.enumerated() {
+            guard !contentSection.components.isEmpty,
+                  let firstComponent = contentSection.components.first,
+                  let lastComponent = contentSection.components.last else {
+                owsFailDebug("Empty content section.")
+                continue
+            }
+
+            let previousSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                sectionIndex < currentSectionIndex ? section : nil
+            }
+            let previousSubcomponents = Array(previousSections.map { $0.components }.joined())
+
+            let nextSections = contentSections.enumerated().compactMap { sectionIndex, section in
+                sectionIndex > currentSectionIndex ? section : nil
+            }
+            var nextSubcomponents = Array(nextSections.map { $0.components }.joined())
+            if let bottomButtons = self.bottomButtons {
+                nextSubcomponents.append(bottomButtons)
+            }
+
+            let stackConfig = contentSectionStackConfig(sectionType: contentSection.sectionType,
+                                                        firstComponent: firstComponent,
+                                                        lastComponent: lastComponent,
+                                                        previousSubcomponents: previousSubcomponents,
+                                                        nextSubcomponents: nextSubcomponents)
+            block(contentSection, stackConfig)
+        }
     }
 
     fileprivate func contentSectionStackConfig(sectionType: SectionType,
@@ -1217,33 +1224,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let contentSections = buildContentSections()
 
             var subviewSizes = [CGSize]()
-            for (currentSectionIndex, contentSection) in contentSections.enumerated() {
-                guard !contentSection.components.isEmpty,
-                      let firstComponent = contentSection.components.first,
-                      let lastComponent = contentSection.components.last else {
-                    owsFailDebug("Empty content section.")
-                    continue
-                }
-
-                let previousSections = contentSections.enumerated().compactMap { sectionIndex, section in
-                    sectionIndex < currentSectionIndex ? section : nil
-                }
-                let previousSubcomponents = Array(previousSections.map { $0.components }.joined())
-
-                let nextSections = contentSections.enumerated().compactMap { sectionIndex, section in
-                    sectionIndex > currentSectionIndex ? section : nil
-                }
-                var nextSubcomponents = Array(nextSections.map { $0.components }.joined())
-                if let bottomButtons = self.bottomButtons {
-                    nextSubcomponents.append(bottomButtons)
-                }
-
-                let stackConfig = contentSectionStackConfig(sectionType: contentSection.sectionType,
-                                                            firstComponent: firstComponent,
-                                                            lastComponent: lastComponent,
-                                                            previousSubcomponents: previousSubcomponents,
-                                                            nextSubcomponents: nextSubcomponents)
-
+            enumerate(contentSections: contentSections) { (contentSection: ContentSection,
+                                                           stackConfig: CVStackViewConfig) in
                 let componentKeys = contentSection.components.map { $0.componentKey }
                 let stackSize = measure(stackConfig: stackConfig,
                                         measurementKey: contentSection.stackMeasurementKey,
