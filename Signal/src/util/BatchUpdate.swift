@@ -295,7 +295,6 @@ public class BatchUpdate<T: BatchUpdateValue> {
             }
             let updatedValueIdList = try simulateUpdate(items: batchUpdateItems)
             Logger.verbose("Simulated updated list: \(updatedValueIdList.joined(separator: "\n"))")
-            Logger.flush()
         }
 
         // Identify values that we need to move.  This is non-trival.

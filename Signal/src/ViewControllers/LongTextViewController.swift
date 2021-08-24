@@ -20,6 +20,7 @@ public class LongTextViewController: OWSViewController {
     let itemViewModel: CVItemViewModelImpl
 
     var messageTextView: UITextView!
+    let footer = UIToolbar.clear()
 
     var displayableText: DisplayableText? { itemViewModel.displayableBodyText }
     var fullAttributedText: NSAttributedString { displayableText?.fullAttributedText ?? NSAttributedString() }
@@ -44,6 +45,57 @@ public class LongTextViewController: OWSViewController {
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
+    }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        loadContent()
+    }
+
+    public func loadContent() {
+        super.themeDidChange()
+
+        view.backgroundColor = Theme.backgroundColor
+        messageTextView.backgroundColor = Theme.backgroundColor
+        messageTextView.textColor = Theme.primaryTextColor
+        footer.tintColor = Theme.primaryIconColor
+
+        if let displayableText = displayableText {
+            let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
+            mutableText.addAttributes(
+                [.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
+                range: mutableText.entireRange
+            )
+
+            // Mentions have a custom style on the long-text view
+            // that differs from the message, so we re-color them here.
+            Mention.updateWithStyle(.longMessageView, in: mutableText)
+
+            let hasPendingMessageRequest = databaseStorage.read { transaction in
+                itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+            }
+            CVComponentBodyText.configureTextView(messageTextView,
+                                                  interaction: itemViewModel.interaction,
+                                                  displayableText: displayableText)
+            CVComponentBodyText.linkifyData(attributedText: mutableText,
+                                            linkifyStyle: .linkAttribute,
+                                            hasPendingMessageRequest: hasPendingMessageRequest,
+                                            shouldAllowLinkification: displayableText.shouldAllowLinkification)
+
+            messageTextView.attributedText = mutableText
+            messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
+        } else {
+            owsFailDebug("displayableText was unexpectedly nil")
+            messageTextView.text = ""
+        }
+
+        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryTextColor,
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        messageTextView.linkTextAttributes = linkTextAttributes
     }
 
     // MARK: -
@@ -90,41 +142,6 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryTextColor
-        if let displayableText = displayableText {
-            let mutableText = NSMutableAttributedString(attributedString: fullAttributedText)
-            mutableText.addAttributes(
-                [.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor],
-                range: mutableText.entireRange
-            )
-
-            // Mentions have a custom style on the long-text view
-            // that differs from the message, so we re-color them here.
-            Mention.updateWithStyle(.longMessageView, in: mutableText)
-
-            let hasPendingMessageRequest = databaseStorage.read { transaction in
-                itemViewModel.thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
-            }
-            CVComponentBodyText.configureTextView(messageTextView,
-                                                  interaction: itemViewModel.interaction,
-                                                  displayableText: displayableText)
-            CVComponentBodyText.linkifyData(attributedText: mutableText,
-                                            linkifyStyle: .linkAttribute,
-                                            hasPendingMessageRequest: hasPendingMessageRequest,
-                                            shouldAllowLinkification: displayableText.shouldAllowLinkification)
-
-            messageTextView.attributedText = mutableText
-            messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
-        } else {
-            owsFailDebug("displayableText was unexpectedly nil")
-            messageTextView.text = ""
-        }
-
-        let linkTextAttributes: [NSAttributedString.Key: Any] = [
-            NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
-            NSAttributedString.Key.underlineColor: Theme.primaryTextColor,
-            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
-        messageTextView.linkTextAttributes = linkTextAttributes
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
@@ -132,7 +149,6 @@ public class LongTextViewController: OWSViewController {
         messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
         messageTextView.textContainerInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 
-        let footer = UIToolbar()
         view.addSubview(footer)
         footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
@@ -154,6 +170,8 @@ public class LongTextViewController: OWSViewController {
                 action: #selector(forwardButtonPressed)
             )
         ]
+
+        loadContent()
     }
 
     // MARK: - Actions

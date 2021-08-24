@@ -38,6 +38,9 @@ public class ApprovalFooterView: UIView {
         }
     }
 
+    private let backgroundView = UIView()
+    private let topStrokeView = UIView()
+
     public var textInput: String? {
         textfield.text
     }
@@ -58,15 +61,11 @@ public class ApprovalFooterView: UIView {
         layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
 
         // We extend our background view below the keyboard to avoid any gaps.
-        let backgroundView = UIView()
-        backgroundView.backgroundColor = Theme.keyboardBackgroundColor
         addSubview(backgroundView)
         backgroundView.autoPinWidthToSuperview()
         backgroundView.autoPinEdge(toSuperviewEdge: .top)
         backgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -30)
 
-        let topStrokeView = UIView()
-        topStrokeView.backgroundColor = Theme.hairlineColor
         addSubview(topStrokeView)
         topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
@@ -84,6 +83,24 @@ public class ApprovalFooterView: UIView {
         vStackView.autoPinEdgesToSuperviewMargins()
 
         updateContents()
+
+        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        textfieldBackgroundView.layer.cornerRadius = 10
+        self.textfieldBackgroundView = textfieldBackgroundView
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        applyTheme()
+    }
+
+    private var textfieldBackgroundView: UIView?
+
+    @objc
+    private func applyTheme() {
+        backgroundView.backgroundColor = Theme.keyboardBackgroundColor
+        topStrokeView.backgroundColor = Theme.hairlineColor
+        namesLabel.textColor = Theme.secondaryTextAndIconColor
+        textfield.textColor = Theme.secondaryTextAndIconColor
+        textfieldBackgroundView?.backgroundColor = Theme.backgroundColor
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -137,7 +154,6 @@ public class ApprovalFooterView: UIView {
     lazy var namesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = Theme.secondaryTextAndIconColor
 
         label.setContentHuggingLow()
 
@@ -147,7 +163,6 @@ public class ApprovalFooterView: UIView {
     lazy var textfield: UITextField = {
         let textfield = UITextField()
         textfield.font = UIFont.ows_dynamicTypeBody
-        textfield.textColor = Theme.secondaryTextAndIconColor
         return textfield
     }()
 
@@ -157,8 +172,6 @@ public class ApprovalFooterView: UIView {
         textfieldStack.alignment = .fill
         textfieldStack.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
         textfieldStack.isLayoutMarginsRelativeArrangement = true
-        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
-        textfieldBackgroundView.layer.cornerRadius = 10
         return textfieldStack
     }()
 
