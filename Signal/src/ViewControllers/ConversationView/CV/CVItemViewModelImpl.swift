@@ -8,7 +8,7 @@ import Foundation
 public class CVItemViewModelImpl: NSObject, CVItemViewModel {
 
     public let renderItem: CVRenderItem
-    private var componentState: CVComponentState { renderItem.componentState }
+    public var componentState: CVComponentState { renderItem.componentState }
 
     @objc
     public required init(renderItem: CVRenderItem) {

@@ -410,8 +410,14 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             owsFailDebug("viewItem was unexpectedly nil")
             return
         }
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ForwardMessageViewController.present(forItemViewModels: [itemViewModel],
+
+        // Only forward media.
+        let selectionType: CVSelectionType = .primaryContent
+        let selectionItem = CVSelectionItem(interactionId: renderItem.interaction.uniqueId,
+                                            interactionType: renderItem.interaction.interactionType,
+                                            isForwardable: true,
+                                            selectionType: selectionType)
+        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
                                              from: self,
                                              delegate: self)
     }
