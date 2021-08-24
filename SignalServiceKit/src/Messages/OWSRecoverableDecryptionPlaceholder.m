@@ -51,6 +51,69 @@ NS_ASSUME_NONNULL_BEGIN
 // `sds_codegen.sh`.
 
 // clang-format off
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                       errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
+             wasIdentityVerified:(BOOL)wasIdentityVerified
+            hiddenUntilTimestamp:(uint64_t)hiddenUntilTimestamp
+{
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                        bodyRanges:bodyRanges
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
+                       linkPreview:linkPreview
+                    messageSticker:messageSticker
+                     quotedMessage:quotedMessage
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted
+                         errorType:errorType
+                              read:read
+                  recipientAddress:recipientAddress
+                            sender:sender
+               wasIdentityVerified:wasIdentityVerified];
+
+    if (!self) {
+        return self;
+    }
+
+    _hiddenUntilTimestamp = hiddenUntilTimestamp;
+
+    return self;
+}
+
 // clang-format on
 
 // --- CODE GENERATION MARKER
