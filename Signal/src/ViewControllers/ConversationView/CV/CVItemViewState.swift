@@ -260,6 +260,22 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         itemViewState.uiMode = viewStateSnapshot.uiMode
         itemViewState.previousUIMode = viewStateSnapshot.previousUIMode
 
+        func canClusterMessages(_ left: ItemBuilder, _ right: ItemBuilder) -> Bool {
+            let leftTime = left.interaction.receivedAtTimestamp
+            let rightTime = right.interaction.receivedAtTimestamp
+            if rightTime < leftTime {
+                // Ensure left was received first.
+                return canClusterMessages(right, left)
+            }
+            if left.componentState.reactions != nil {
+                // Don't cluster message if the earlier message has a reaction.
+                return false
+            }
+            let maxClusterTimeDifferenceMs = UInt64(kMinuteInMs) * 3
+            let elapsedMs = rightTime - leftTime
+            return elapsedMs < maxClusterTimeDifferenceMs
+        }
+
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
             let isDisappearingMessage = outgoingMessage.hasPerConversationExpiration
@@ -287,13 +303,15 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
             // clustering
             if let previousItem = previousItem {
-                itemViewState.isFirstInCluster = previousItem.interactionType != .outgoingMessage
+                itemViewState.isFirstInCluster = (previousItem.interactionType != .outgoingMessage ||
+                                                    !canClusterMessages(previousItem, item))
             } else {
                 itemViewState.isFirstInCluster = true
             }
 
             if let nextItem = nextItem {
-                itemViewState.isLastInCluster = nextItem.interactionType != .outgoingMessage
+                itemViewState.isLastInCluster = (nextItem.interactionType != .outgoingMessage ||
+                                                    !canClusterMessages(item, nextItem))
             } else {
                 itemViewState.isLastInCluster = true
             }
@@ -323,14 +341,16 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
             if let previousItem = previousItem,
                let previousIncomingMessage = previousItem.interaction as? TSIncomingMessage {
-                itemViewState.isFirstInCluster = incomingSenderAddress != previousIncomingMessage.authorAddress
+                itemViewState.isFirstInCluster = (incomingSenderAddress != previousIncomingMessage.authorAddress ||
+                                                    !canClusterMessages(previousItem, item))
             } else {
                 itemViewState.isFirstInCluster = true
             }
 
             if let nextItem = nextItem,
                let nextIncomingMessage = nextItem.interaction as? TSIncomingMessage {
-                itemViewState.isLastInCluster = incomingSenderAddress != nextIncomingMessage.authorAddress
+                itemViewState.isLastInCluster = (incomingSenderAddress != nextIncomingMessage.authorAddress ||
+                                                    !canClusterMessages(item, nextItem))
             } else {
                 itemViewState.isLastInCluster = true
             }
