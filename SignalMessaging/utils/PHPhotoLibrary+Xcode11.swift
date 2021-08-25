@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,11 +24,7 @@ public extension PHAuthorizationStatus {
 public extension PHPhotoLibrary {
     @available(iOS 14, *)
     class func ows_presentLimitedLibraryPicker(from viewController: UIViewController) {
-        #if swift(>=5.3)
         PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: viewController)
-        #else
-        CurrentAppContext().openSystemSettings()
-        #endif
     }
 
     @available(iOS 14, *)

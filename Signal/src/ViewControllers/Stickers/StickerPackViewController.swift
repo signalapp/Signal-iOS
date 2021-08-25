@@ -52,18 +52,16 @@ public class StickerPackViewController: OWSViewController {
                         animated: Bool) {
         AssertIsOnMainThread()
 
-        #if swift(>=5.1)
-            if #available(iOS 13, *) {
-                // iOS 13 on the iOS 13 SDK handles the modal blur correctly.
-                fromViewController.presentFormSheet(self, animated: animated) {
-                    // ensure any presented keyboard is dismissed, this seems to be
-                    // an issue only when opening signal from a universal link in
-                    // an external app
-                    self.becomeFirstResponder()
-                }
-                return
+        if #available(iOS 13, *) {
+            // iOS 13 on the iOS 13 SDK handles the modal blur correctly.
+            fromViewController.presentFormSheet(self, animated: animated) {
+                // ensure any presented keyboard is dismissed, this seems to be
+                // an issue only when opening signal from a universal link in
+                // an external app
+                self.becomeFirstResponder()
             }
-        #endif
+            return
+        }
 
         // Pre-iOS 13, or without the iOS 13 SDK, we need to manualy setup the
         // form sheet in order to allow it to blur and show through the background.
