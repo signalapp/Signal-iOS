@@ -31,12 +31,12 @@ public class CVMessageActionButton: CVLabel {
     }
 
     private static var buttonFont: UIFont {
-        UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+        UIFont.ows_dynamicTypeBody2Clamped.ows_semibold
     }
 
     private static let buttonVMargin: CGFloat = 5
 
     static var buttonHeight: CGFloat {
-        max(48, buttonFont.lineHeight + buttonVMargin * 2)
+        max(44, ceil(buttonFont.lineHeight + buttonVMargin * 2))
     }
 }
