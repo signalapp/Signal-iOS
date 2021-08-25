@@ -60,6 +60,10 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     // MARK: Running
     public func execute() {
+        execute(completion: nil)
+    }
+    
+    public func execute(completion: (() -> Void)?) {
         if let id = id {
             JobQueue.currentlyExecutingJobs.insert(id)
         }
@@ -67,9 +71,11 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
             // from time to time with an already downloaded attachment.
+            completion?()
             return handleSuccess()
         }
         guard let pointer = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentPointer else {
+            completion?()
             return handleFailure(error: Error.noAttachment)
         }
         let storage = SNMessagingKitConfiguration.shared.storage
@@ -92,8 +98,10 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
                     storage.setAttachmentState(to: .failed, for: pointer, associatedWith: self.tsMessageID, using: transaction)
                 }, completion: { })
                 // This usually indicates a file that has expired on the server, so there's no need to retry.
+                completion?()
                 self.handlePermanentFailure(error: error)
             } else {
+                completion?()
                 self.handleFailure(error: error)
             }
         }
@@ -103,6 +111,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             }
             OpenGroupAPIV2.download(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
+                completion?()
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }
@@ -113,6 +122,7 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
             let useOldServer = pointer.downloadURL.contains(FileServerAPIV2.oldServer)
             FileServerAPIV2.download(file, useOldServer: useOldServer).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
+                completion?()
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
             }

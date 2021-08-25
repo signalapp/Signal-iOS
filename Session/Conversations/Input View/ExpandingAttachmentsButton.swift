@@ -10,15 +10,35 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     private lazy var cameraButtonContainerBottomConstraint = cameraButtonContainer.pin(.bottom, to: .bottom, of: self)
     
     // MARK: UI Components
-    lazy var gifButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_gif_black"), delegate: self, hasOpaqueBackground: true)
+    lazy var gifButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_gif_black"), delegate: self, hasOpaqueBackground: true)
+        result.accessibilityLabel = NSLocalizedString("accessibility_gif_button", comment: "")
+        return result
+    }()
     lazy var gifButtonContainer = container(for: gifButton)
-    lazy var documentButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_document_black"), delegate: self, hasOpaqueBackground: true)
+    lazy var documentButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_document_black"), delegate: self, hasOpaqueBackground: true)
+        result.accessibilityLabel = NSLocalizedString("accessibility_document_button", comment: "")
+        return result
+    }()
     lazy var documentButtonContainer = container(for: documentButton)
-    lazy var libraryButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_roll_black"), delegate: self, hasOpaqueBackground: true)
+    lazy var libraryButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_roll_black"), delegate: self, hasOpaqueBackground: true)
+        result.accessibilityLabel = NSLocalizedString("accessibility_library_button", comment: "")
+        return result
+    }()
     lazy var libraryButtonContainer = container(for: libraryButton)
-    lazy var cameraButton = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_black"), delegate: self, hasOpaqueBackground: true)
+    lazy var cameraButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_black"), delegate: self, hasOpaqueBackground: true)
+        result.accessibilityLabel = NSLocalizedString("accessibility_camera_button", comment: "")
+        return result
+    }()
     lazy var cameraButtonContainer = container(for: cameraButton)
-    lazy var mainButton = InputViewButton(icon: #imageLiteral(resourceName: "ic_plus_24"), delegate: self)
+    lazy var mainButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "ic_plus_24"), delegate: self)
+        result.accessibilityLabel = NSLocalizedString("accessibility_expanding_attachments_button", comment: "")
+        return result
+    }()
     lazy var mainButtonContainer = container(for: mainButton)
     
     // MARK: Lifecycle
@@ -66,6 +86,7 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     // MARK: Animation
     private func expandOrCollapse() {
         if isExpanded {
+            mainButton.accessibilityLabel = NSLocalizedString("accessibility_main_button_collapse", comment: "")
             let expandedButtonSize = InputViewButton.expandedSize
             let spacing: CGFloat = 4
             cameraButtonContainerBottomConstraint.constant = -1 * (expandedButtonSize + spacing)
@@ -79,6 +100,7 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
                 self.layoutIfNeeded()
             }
         } else {
+            mainButton.accessibilityLabel = NSLocalizedString("accessibility_expanding_attachments_button", comment: "")
             [ gifButtonContainerBottomConstraint, documentButtonContainerBottomConstraint, libraryButtonContainerBottomConstraint, cameraButtonContainerBottomConstraint ].forEach {
                 $0.constant = 0
             }
