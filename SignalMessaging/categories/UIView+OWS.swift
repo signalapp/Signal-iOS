@@ -213,11 +213,11 @@ public extension UIView {
         return constraints
     }
 
-    func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: CGColor = UIColor.black.cgColor) {
+    func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: UIColor = UIColor.black) {
         layer.shadowRadius = radius
         layer.shadowOpacity = opacity
         layer.shadowOffset = offset
-        layer.shadowColor = color
+        layer.shadowColor = color.cgColor
     }
 
     class func accessibilityIdentifier(in container: NSObject, name: String) -> String {

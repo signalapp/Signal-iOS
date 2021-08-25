@@ -104,16 +104,20 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedAuthorName: String { state.quotedAuthorName }
 
         let stripeThickness: CGFloat = 4
-        var quotedAuthorFont: UIFont { UIFont.ows_dynamicTypeSubheadline.ows_semibold }
+        var quotedAuthorFont: UIFont { UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold }
         var quotedAuthorColor: UIColor { conversationStyle.quotedReplyAuthorColor() }
         var quotedTextColor: UIColor { conversationStyle.quotedReplyTextColor() }
-        var quotedTextFont: UIFont { UIFont.ows_dynamicTypeBody }
+        var quotedTextFont: UIFont { UIFont.ows_dynamicTypeBody2 }
         var fileTypeTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }
         var fileTypeFont: UIFont { quotedTextFont.ows_italic }
         var filenameTextColor: UIColor { conversationStyle.quotedReplyAttachmentColor() }
         var filenameFont: UIFont { quotedTextFont }
         var quotedAuthorHeight: CGFloat { quotedAuthorFont.lineHeight }
-        let quotedAttachmentSize: CGFloat = 54
+        let quotedAttachmentSizeWithoutQuotedText: CGFloat = 64
+        let quotedAttachmentSizeWithQuotedText: CGFloat = 72
+        var quotedAttachmentSize: CGFloat {
+            hasQuotedText ? quotedAttachmentSizeWithQuotedText : quotedAttachmentSizeWithoutQuotedText
+        }
         let remotelySourcedContentIconSize: CGFloat = 16
         let cancelIconSize: CGFloat = 20
         let cancelIconMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 0, trailing: 6)
@@ -137,7 +141,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             CVStackViewConfig(axis: .vertical,
                               alignment: .leading,
                               spacing: 2,
-                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 7))
+                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 6))
         }
 
         var outerVStackConfig: CVStackViewConfig {
@@ -213,6 +217,14 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                  lineBreakMode: .byTruncatingTail)
         }
 
+        var hasQuotedText: Bool {
+            if let displayableQuotedText = self.displayableQuotedText,
+               !displayableQuotedText.displayAttributedText.isEmpty {
+                return true
+            } else {
+                return false
+            }
+        }
         var quotedTextLabelConfig: CVLabelConfig {
             let attributedText: NSAttributedString
             var textAlignment: NSTextAlignment?
@@ -413,8 +425,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 wrapper.addSubviewToFillSuperviewEdges(quotedImageView)
 
                 if configurator.isVideoAttachment {
+                    let overlayView = ManualLayoutViewWithLayer(name: "video_overlay")
+                    overlayView.backgroundColor = .ows_black.withAlphaComponent(0.20)
+                    wrapper.addSubviewToFillSuperviewEdges(overlayView)
+
                     let contentImageView = CVImageView()
-                    contentImageView.setTemplateImageName("attachment_play_button", tintColor: .white)
+                    contentImageView.setTemplateImageName("play-solid-24", tintColor: .ows_white)
+                    contentImageView.setShadow(radius: 6, opacity: 0.24, offset: .zero, color: .ows_black)
                     wrapper.addSubviewToCenterOnSuperviewWithDesiredSize(contentImageView)
                 }
                 return wrapper
