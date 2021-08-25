@@ -692,6 +692,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        guard (errorMessage is OWSRecoverableDecryptionPlaceholder) == false else { return }
+
         switch errorMessage.errorType {
         case .noSession,
              .wrongTrustedIdentityKey,

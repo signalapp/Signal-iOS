@@ -37,7 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
     builder.timestamp = envelope.timestamp;
     builder.senderAddress = sender;
 
-    return [super initErrorMessageWithBuilder:builder];
+    self = [super initErrorMessageWithBuilder:builder];
+    if (self) {
+        _hiddenUntilTimestamp = [NSDate distantFutureMillisecondTimestamp];
+    }
+    return self;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -120,26 +124,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (void)adjustTimestamp:(uint64_t)timestamp
+- (NSDate *)expirationDate
 {
-    OWSAssert(timestamp > 0);
-    self.timestamp = timestamp;
-}
-
-- (BOOL)isVisible
-{
-    // If this interaction has ever been seen or the recovery period has elapsed, we should make
-    // this visible to the user.
     NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
     OWSAssertDebug(expirationInterval >= 0);
 
-    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
-    return [expiration isBeforeNow] || self.wasRead;
+    return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
 }
 
 - (BOOL)supportsReplacement
 {
-    return !self.isVisible;
+    return [self.expirationDate isAfterNow] && !self.wasRead;
 }
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
