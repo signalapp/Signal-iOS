@@ -111,6 +111,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addSendCompletionToMessageSendLog
         case addExclusiveProcessIdentifierAndHighPriorityToJobRecord
         case updateMessageSendLogColumnTypes
+        case addHiddenInteractionColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1393,6 +1394,16 @@ public class GRDBSchemaMigrator: NSObject {
                     on: "MessageSendLog_Message",
                     columns: ["uniqueId"]
                 )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addHiddenInteractionColumn.rawValue) { db in
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "hiddenUntilTimestamp", .integer)
+                }
             } catch {
                 owsFail("Error: \(error)")
             }

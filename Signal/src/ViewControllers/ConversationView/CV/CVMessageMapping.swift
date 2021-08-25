@@ -477,7 +477,7 @@ public class CVMessageMapping: NSObject {
 
             var newItems: [TSInteraction] = []
             try self.interactionFinder.enumerateInteractions(range: nsRange,
-                                                             includeHidden: false,
+                                                             includingHiddenInteractions: DebugFlags.showFailedDecryptionPlaceholders.get(),
                                                              transaction: transaction) { (interaction: TSInteraction, _) in
                 newItems.append(interaction)
             }
@@ -487,7 +487,10 @@ public class CVMessageMapping: NSObject {
         // Loading the mapping from the cache has the following steps:
         //
         // 1. Fetch the uniqueIds for the interactions in the load window/mapping.
-        let interactionIds = try interactionFinder.interactionIds(inRange: nsRange, includeHidden: false, transaction: transaction)
+        let interactionIds = try interactionFinder.interactionIds(
+            inRange: nsRange,
+            includingHiddenInteractions: DebugFlags.showFailedDecryptionPlaceholders.get(),
+            transaction: transaction)
         guard !interactionIds.isEmpty else {
             return []
         }

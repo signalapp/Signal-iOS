@@ -68,7 +68,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         )
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-            self?.schedulePlaceholderCleanup()
+            self?.databaseStorage.read { [weak self] readTx in
+                self?.schedulePlaceholderCleanup(transaction: readTx)
+            }
         }
     }
 
@@ -819,7 +821,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                           transaction: writeTx)
                 }
             }
+        } completion: {
+            self.databaseStorage.read { readTx in
+                self.schedulePlaceholderCleanup(transaction: readTx)
+            }
         }
+
     }
 }
 

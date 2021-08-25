@@ -129,6 +129,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
     OWSAssertDebug(expirationInterval >= 0);
 
+    if (SSKDebugFlags.fastPlaceholderExpiration.value) {
+        expirationInterval = min(expirationInterval, 5.0);
+    }
+
     return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
 }
 
@@ -143,6 +147,27 @@ NS_ASSUME_NONNULL_BEGIN
         @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
     NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
     return [[NSString alloc] initWithFormat:formatString, senderName];
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
+}
+
+#pragma mark - <OWSReadTracking>
+
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReceiptCircumstance)circumstance
+                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
+    [super markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
 }
 
 @end
