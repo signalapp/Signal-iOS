@@ -122,7 +122,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             CVStackViewConfig(axis: .vertical,
                               alignment: .fill,
                               spacing: 0,
-                              layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 6,
+                              layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 8,
                                                           vMargin: 0))
         }
 
@@ -298,7 +298,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                                   configurator: Configurator,
                                   componentDelegate: CVComponentDelegate) -> ManualLayoutView {
         let sharpCornerRadius: CGFloat = 4
-        let wideCornerRadius: CGFloat = 12
+        let wideCornerRadius: CGFloat = 10
 
         // Background
         chatColorView.configure(value: conversationStyle.bubbleChatColorOutgoing,

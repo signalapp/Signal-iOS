@@ -1039,13 +1039,25 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        // Special case: Sender name and body text components.
+        // Special case: Sender name and body text.
         if topComponentKey == .senderName,
            bottomComponentKey == .bodyText {
             return .spacingCustom(spacing: 1)
         }
 
-        // Special case: contact share and footer components.
+        // Special case: Sender name and quoted reply.
+        if topComponentKey == .senderName,
+           bottomComponentKey == .quotedReply {
+            return .spacingCustom(spacing: 5)
+        }
+
+        // Special case: Quoted reply and "large" components.
+        if topComponentKey == .quotedReply,
+           isLargeComponent(bottomComponentKey) {
+            return .spacingCustom(spacing: 8)
+        }
+
+        // Special case: Contact share and footer.
         if topComponentKey == .contactShare,
            bottomComponentKey == .footer {
             return .spacingCustom(spacing: 5)
