@@ -293,7 +293,6 @@
 		348815D025545C0A00D4F4C4 /* CVAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348815CF25545C0A00D4F4C4 /* CVAttachments.swift */; };
 		34882C522694A9260013E289 /* HomeViewController+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34882C512694A9260013E289 /* HomeViewController+Notifications.swift */; };
 		3488F9362191CC4000E524CC /* CVMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* CVMediaView.swift */; };
-		348A85CB26D67A7E0069E035 /* ScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 348A85C926D67A7E0069E035 /* ScanQRCodeViewController.m */; };
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348B9C9D264024D200A104C3 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348B9C9C264024D100A104C3 /* ContactTableViewCell.swift */; };
 		348B9CA4264029F300A104C3 /* ContactCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348B9CA3264029F200A104C3 /* ContactCellView.swift */; };
@@ -1382,8 +1381,6 @@
 		348815CF25545C0A00D4F4C4 /* CVAttachments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVAttachments.swift; sourceTree = "<group>"; };
 		34882C512694A9260013E289 /* HomeViewController+Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HomeViewController+Notifications.swift"; sourceTree = "<group>"; };
 		3488F9352191CC4000E524CC /* CVMediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaView.swift; sourceTree = "<group>"; };
-		348A85C926D67A7E0069E035 /* ScanQRCodeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeViewController.m; sourceTree = "<group>"; };
-		348A85CA26D67A7E0069E035 /* ScanQRCodeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeViewController.h; sourceTree = "<group>"; };
 		348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadFinderPerformanceTest.swift; sourceTree = "<group>"; };
 		348B9C9C264024D100A104C3 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		348B9CA3264029F200A104C3 /* ContactCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCellView.swift; sourceTree = "<group>"; };
@@ -3787,8 +3784,6 @@
 				3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */,
 				340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */,
 				340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */,
-				348A85CA26D67A7E0069E035 /* ScanQRCodeViewController.h */,
-				348A85C926D67A7E0069E035 /* ScanQRCodeViewController.m */,
 				345779402682464700732869 /* ScanQRCodeViewController.swift */,
 			);
 			path = "Linked Devices";
@@ -5839,7 +5834,6 @@
 				3491899B269CD68E008A18AF /* BlockingAnnouncementOnlyView.swift in Sources */,
 				88D23D2323CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift in Sources */,
 				88FBE9502649E7EB005F6C80 /* DonationViewController.swift in Sources */,
-				348A85CB26D67A7E0069E035 /* ScanQRCodeViewController.m in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34A4D87F2677B23100A794E7 /* ConversationViewController+MessageActions.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,

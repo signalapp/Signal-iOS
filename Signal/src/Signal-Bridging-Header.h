@@ -35,7 +35,6 @@
 #import "RecipientPickerViewController.h"
 #import "RegistrationUtils.h"
 #import "RemoteVideoView.h"
-#import "ScanQRCodeViewController.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
 #import <PureLayout/PureLayout.h>

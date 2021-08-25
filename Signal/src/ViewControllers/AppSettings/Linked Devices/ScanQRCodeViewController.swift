@@ -274,7 +274,11 @@ class QRCodeScanViewController: OWSViewController {
             self.processClassification(request)
         }
 
-        ScanQRCode.configureVNDetectBarcodesRequest(request)
+        if VNDetectBarcodesRequest.supportedSymbologies.contains(.QR) {
+            request.symbologies = [ .QR ]
+        } else {
+            owsFailDebug("Does not support .QR.")
+        }
 
         return request
     }()
@@ -292,11 +296,10 @@ class QRCodeScanViewController: OWSViewController {
             return results.compactMap {
                 $0 as? VNBarcodeObservation
             }.filter { (barcode: VNBarcodeObservation) in
-                guard ScanQRCode.isVNBarcodeObservationQR(barcode) else {
+                guard barcode.symbology == .QR else {
                     owsFailDebug("Invalid symbology.")
                     return false
                 }
-
                 guard nil != barcode.barcodeDescriptor as? CIQRCodeDescriptor else {
                     owsFailDebug("Invalid barcodeDescriptor.")
                     return false
