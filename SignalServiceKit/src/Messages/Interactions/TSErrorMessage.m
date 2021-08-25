@@ -234,12 +234,13 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         case TSErrorMessageDecryptionFailure: {
             if (self.sender) {
                 NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
-                                                           @"Error message for a decryption failure. Embeds {{sender short name}}.");
+                    @"Error message for a decryption failure. Embeds {{sender short name}}.");
                 NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
                                                                             transaction:transaction];
                 return [[NSString alloc] initWithFormat:formatString, senderName];
             } else {
-                return NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
+                return NSLocalizedString(
+                    @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
             }
         }
         default:
@@ -306,7 +307,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     TSErrorMessageBuilder *builder =
-    [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
     builder.senderAddress = sender;
     builder.timestamp = timestamp;
     return [builder build];

@@ -143,14 +143,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
+    NSString *_Nullable senderName = nil;
+    if (self.sender) {
+        senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
+    }
+
     if (SSKDebugFlags.showFailedDecryptionPlaceholders.value) {
         return [[NSString alloc] initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
-    } else {
+    } else if (senderName) {
         OWSFailDebug(@"Should not be directly surfaced to user");
-        NSString *formatString = NSLocalizedString(
-                                                   @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
+        NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+            @"Error message for a decryption failure. Embeds {{sender short name}}.");
         return [[NSString alloc] initWithFormat:formatString, senderName];
+    } else {
+        return NSLocalizedString(
+            @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
     }
 }
 

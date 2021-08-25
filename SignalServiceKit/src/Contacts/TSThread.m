@@ -357,7 +357,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 - (NSUInteger)numberOfInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countIncludingHiddenInteractions:YES transaction:transaction];
+    return
+        [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countIncludingHiddenInteractions:YES
+                                                                                               transaction:transaction];
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction

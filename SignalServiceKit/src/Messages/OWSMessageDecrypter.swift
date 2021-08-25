@@ -794,7 +794,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 self.placeholderCleanupTimer = Timer.scheduledTimer(
                     withTimeInterval: oldestPlaceholder.expirationDate.timeIntervalSinceNow,
                     repeats: false,
-                    block: { [weak self] timer in
+                    block: { [weak self] _ in
                         self?.cleanupExpiredPlaceholders()
                     })
             }
@@ -812,7 +812,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     let errorMessage = TSErrorMessage.failedDecryption(
                         forSender: placeholder.sender,
                         thread: thread,
-                        timestamp: placeholder.timestamp,
+                        timestamp: NSDate.ows_millisecondTimeStamp(),
                         transaction: writeTx)
 
                     placeholder.anyRemove(transaction: writeTx)
