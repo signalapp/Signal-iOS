@@ -39,7 +39,7 @@ protocol InteractionFinderAdapter {
 
     func earliestKnownInteractionRowId(transaction: ReadTransaction) -> Int?
 
-    func distanceFromLatest(interactionUniqueId: String, countHidden: Bool, transaction: ReadTransaction) throws -> UInt?
+    func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool, transaction: ReadTransaction) throws -> UInt?
     func count(includingHiddenInteractions: Bool, transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
@@ -287,11 +287,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func distanceFromLatest(interactionUniqueId: String, countHidden: Bool = true, transaction: SDSAnyReadTransaction) throws -> UInt? {
+    public func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool = true, transaction: SDSAnyReadTransaction) throws -> UInt? {
         return try Bench(title: "InteractionFinder.distanceFromLatest") {
             switch transaction.readTransaction {
             case .grdbRead(let grdbRead):
-                return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, countHidden: countHidden, transaction: grdbRead)
+                return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, includingHiddenInteractions: countHidden, transaction: grdbRead)
             }
         }
     }
@@ -1009,7 +1009,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return try? Int.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 
-    func distanceFromLatest(interactionUniqueId: String, countHidden: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
+    func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
         let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
 
         guard let interactionId = try UInt.fetchOne(transaction.database, sql: """

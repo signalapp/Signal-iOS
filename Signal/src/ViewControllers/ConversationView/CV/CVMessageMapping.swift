@@ -192,7 +192,7 @@ public class CVMessageMapping: NSObject {
             // from the bottom of the conversation, the more expensive this query will get.
             guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(
                     interactionUniqueId: interactionUniqueId,
-                    countHidden: false,
+                    includingHiddenInteractions: false,
                     transaction: transaction) else {
                 throw OWSAssertionError("viewIndex was unexpectedly nil")
             }

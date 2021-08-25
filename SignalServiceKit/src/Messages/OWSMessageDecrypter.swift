@@ -778,24 +778,25 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    func schedulePlaceholderCleanup() {
-        databaseStorage.read { readTx in
-            guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
+    @objc
+    func schedulePlaceholderCleanup(transaction readTx: SDSAnyReadTransaction) {
+        guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
 
+        DispatchQueue.main.async {
             if oldestPlaceholder.expirationDate.isBeforeNow {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Will perform cleanup...")
-                placeholderCleanupTimer = nil
-                cleanupExpiredPlaceholders()
+                self.placeholderCleanupTimer = nil
+                self.cleanupExpiredPlaceholders()
 
-            } else if (placeholderCleanupTimer?.fireDate ?? .distantFuture).isAfter(oldestPlaceholder.expirationDate) {
+            } else if (self.placeholderCleanupTimer?.fireDate ?? .distantFuture).isAfter(oldestPlaceholder.expirationDate) {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Scheduling timer...")
 
-                placeholderCleanupTimer = Timer.scheduledTimer(
+                self.placeholderCleanupTimer = Timer.scheduledTimer(
                     withTimeInterval: oldestPlaceholder.expirationDate.timeIntervalSinceNow,
                     repeats: false,
                     block: { [weak self] timer in
                         self?.cleanupExpiredPlaceholders()
-                })
+                    })
             }
         }
     }
@@ -805,8 +806,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             Logger.info("Performing placeholder cleanup")
             GRDBInteractionFinder.enumeratePlaceholders(transaction: writeTx.unwrapGrdbWrite) { placeholder, _ in
                 if placeholder.expirationDate.isBeforeNow {
-                    let thread = placeholder.thread(transaction: writeTx)
+                    Logger.info("replacing placeholder \(placeholder.timestamp) with error message")
 
+                    let thread = placeholder.thread(transaction: writeTx)
                     let errorMessage = TSErrorMessage.failedDecryption(
                         forSender: placeholder.sender,
                         thread: thread,

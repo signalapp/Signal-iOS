@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(expirationInterval >= 0);
 
     if (SSKDebugFlags.fastPlaceholderExpiration.value) {
-        expirationInterval = min(expirationInterval, 5.0);
+        expirationInterval = MIN(expirationInterval, 5.0);
     }
 
     return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
@@ -143,19 +143,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *formatString = NSLocalizedString(
-        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
     NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
-    return [[NSString alloc] initWithFormat:formatString, senderName];
+    if (SSKDebugFlags.showFailedDecryptionPlaceholders.value) {
+        return [[NSString alloc] initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
+    } else {
+        OWSFailDebug(@"Should not be directly surfaced to user");
+        NSString *formatString = NSLocalizedString(
+                                                   @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
+        return [[NSString alloc] initWithFormat:formatString, senderName];
+    }
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
-}
-
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
+    [super anyDidInsertWithTransaction:transaction];
     [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
 }
 
