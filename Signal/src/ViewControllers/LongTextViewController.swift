@@ -183,7 +183,15 @@ public class LongTextViewController: OWSViewController {
 
     @objc
     func forwardButtonPressed() {
-        ForwardMessageViewController.present(forItemViewModels: [itemViewModel],
+        // Only forward text.
+        let selectionType: CVSelectionType = (itemViewModel.componentState.hasPrimaryAndSecondaryContentForSelection
+                                                ? .secondaryContent
+                                                : .allContent)
+        let selectionItem = CVSelectionItem(interactionId: itemViewModel.interaction.uniqueId,
+                                            interactionType: itemViewModel.interaction.interactionType,
+                                            isForwardable: true,
+                                            selectionType: selectionType)
+        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
                                              from: self,
                                              delegate: self)
     }

@@ -1201,3 +1201,11 @@ public extension NSTextAlignment {
         CurrentAppContext().isRTL ? .left : .right
     }
 }
+
+// MARK: -
+
+public extension UIApplication {
+    func hideKeyboard() {
+        sendAction(#selector(UIView.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}

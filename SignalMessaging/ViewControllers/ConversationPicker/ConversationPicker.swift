@@ -260,7 +260,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
             let pinnedItems = pinnedItemsByThreadId.sorted { lhs, rhs in
                 guard let lhsIndex = pinnedThreadIds.firstIndex(of: lhs.key),
-                    let rhsIndex = pinnedThreadIds.firstIndex(of: rhs.key) else {
+                      let rhsIndex = pinnedThreadIds.firstIndex(of: rhs.key) else {
                     owsFailDebug("Unexpectedly have pinned item without pinned thread id")
                     return false
                 }
@@ -270,7 +270,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
-                                          groupConversations: groupItems)
+                                          groupConversations: groupItems,
+                                          isSearchResults: false)
         }
     }
 
@@ -291,7 +292,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
                 return ConversationCollection(contactConversations: contactItems,
                                               recentConversations: [],
-                                              groupConversations: groupItems)
+                                              groupConversations: groupItems,
+                                              isSearchResults: true)
             }
         }
     }
@@ -320,34 +322,47 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private func updateTableContents() {
         AssertIsOnMainThread()
 
+        self.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
+                                                CGFloat(ContactCellView.avatarDiameterPoints) +
+                                                ContactCellView.avatarTextHSpacing)
+
         let conversationCollection = self.conversationCollection
 
         let contents = OWSTableContents()
 
-        // Section 1: Recents
-        do {
+        // Recents Section
+        if !conversationCollection.recentConversations.isEmpty {
             let section = OWSTableSection()
             section.headerTitle = Strings.recentsSection
             addConversations(toSection: section,
-                                  conversations: conversationCollection.recentConversations)
+                             conversations: conversationCollection.recentConversations)
             contents.addSection(section)
         }
 
-        // Section 2: Signal Contacts
-        do {
+        // Contacts Section
+        if !conversationCollection.contactConversations.isEmpty {
             let section = OWSTableSection()
             section.headerTitle = Strings.signalContactsSection
             addConversations(toSection: section,
-                                  conversations: conversationCollection.contactConversations)
+                             conversations: conversationCollection.contactConversations)
             contents.addSection(section)
         }
 
-        // Section 3: Groups
-        do {
+        // Groups Section
+        if !conversationCollection.groupConversations.isEmpty {
             let section = OWSTableSection()
             section.headerTitle = Strings.groupsSection
             addConversations(toSection: section,
-                                  conversations: conversationCollection.groupConversations)
+                             conversations: conversationCollection.groupConversations)
+            contents.addSection(section)
+        }
+
+        // "No matches" Section
+        if conversationCollection.isSearchResults,
+           contents.sections.isEmpty {
+            let section = OWSTableSection()
+            section.add(.label(withText: NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
+                                                           comment: "keyboard toolbar label when no messages match the search string")))
             contents.addSection(section)
         }
 
@@ -661,7 +676,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         let selectionWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(selectionView)
 
         guard let disappearingMessagesConfig = disappearingMessagesConfig,
-            disappearingMessagesConfig.isEnabled else {
+              disappearingMessagesConfig.isEnabled else {
             return ContactCellAccessoryView(accessoryView: selectionWrapper,
                                             size: selectionBadgeSize)
         }
@@ -747,11 +762,13 @@ public class ConversationPickerSelection {
 private struct ConversationCollection {
     static let empty: ConversationCollection = ConversationCollection(contactConversations: [],
                                                                       recentConversations: [],
-                                                                      groupConversations: [])
+                                                                      groupConversations: [],
+                                                                      isSearchResults: false)
 
     let contactConversations: [ConversationItem]
     let recentConversations: [ConversationItem]
     let groupConversations: [ConversationItem]
+    let isSearchResults: Bool
 
     var allConversations: [ConversationItem] {
         recentConversations + contactConversations + groupConversations

@@ -85,9 +85,12 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     private class func present(content: Content,
                                from fromViewController: UIViewController,
                                delegate: ForwardMessageDelegate) {
+
         let sheet = ForwardMessageViewController(content: content)
         sheet.forwardMessageDelegate = delegate
-        fromViewController.present(sheet, animated: true, completion: nil)
+        fromViewController.present(sheet, animated: true) {
+            UIApplication.shared.hideKeyboard()
+        }
     }
 
     public override func themeDidChange() {
@@ -272,7 +275,8 @@ extension ForwardMessageViewController {
                     return message.hasRenderableContent()
                 }
 
-                // Make sure the message hasn't been deleted, etc. (e.g. view-once messages h
+                // Make sure the message and its content haven't been deleted (view-once
+                // messages, remove delete, disappearing messages, manual deletion, etc.).
                 for item in content.allItems {
                     let interactionId = item.interaction.uniqueId
                     guard let latestInteraction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction),
@@ -283,24 +287,30 @@ extension ForwardMessageViewController {
             }
 
             // TODO: Ideally we would enqueue all with a single write tranasction.
-            return firstly {
+            return firstly { () -> Promise<Void> in
                 // Maintain order of interactions.
                 let sortedItems = content.allItems.sorted { lhs, rhs in
                     lhs.interaction.timestamp < rhs.interaction.timestamp
                 }
-                var promises: [Promise<Void>] = sortedItems.map { item in
+                let promises: [Promise<Void>] = sortedItems.map { item in
                     self.send(item: item, toRecipientThreads: recipientThreads)
                 }
-                if let textMessage = textMessage {
-                    let messageBody = MessageBody(text: textMessage, ranges: .empty)
-                    let textMessagePromise = self.send(toRecipientThreads: recipientThreads) { recipientThread in
-                        self.send(body: messageBody,
-                                  linkPreviewDraft: nil,
-                                  thread: recipientThread.thread)
+                return firstly(on: .main) { () -> Promise<Void> in
+                    when(resolved: promises).asVoid()
+                }.then(on: .main) { _ -> Promise<Void> in
+                    // The user may have added an additional text message to the forward.
+                    // It should be sent last.
+                    if let textMessage = textMessage {
+                        let messageBody = MessageBody(text: textMessage, ranges: .empty)
+                        return self.send(toRecipientThreads: recipientThreads) { recipientThread in
+                            self.send(body: messageBody,
+                                      linkPreviewDraft: nil,
+                                      thread: recipientThread.thread)
+                        }
+                    } else {
+                        return Promise.value(())
                     }
-                    promises.append(textMessagePromise)
                 }
-                return when(resolved: promises).asVoid()
             }.map(on: .main) {
                 let threads = recipientThreads.map { $0.thread }
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(items: content.allItems,

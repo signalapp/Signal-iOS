@@ -111,8 +111,11 @@ public class ContactCellView: ManualStackView {
 
     private var content: ConversationContent? { configuration?.content }
 
+    @objc
+    public static var avatarDiameterPoints: UInt { AvatarBuilder.smallAvatarSizePoints }
+
     // TODO: Update localUserDisplayMode.
-    private let avatarView = ConversationAvatarView(diameterPoints: AvatarBuilder.smallAvatarSizePoints,
+    private let avatarView = ConversationAvatarView(diameterPoints: ContactCellView.avatarDiameterPoints,
                                                     localUserDisplayMode: .asUser)
 
     @objc
