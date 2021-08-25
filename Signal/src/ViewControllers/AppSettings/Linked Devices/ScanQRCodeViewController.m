@@ -31,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
     // * Is now VNBarcodeSymbologyQR in Obj-C in Xcode 13/iOS SDK 15.
     //
     // If we use the old symbol in Swift, the app will crash when scanning
-    // if built using Xcode 13/iOS SDK 15.
+    // if built using Xcode 13/iOS SDK 15 when scanning on devices running
+    // iOS 14 or earlier.
     //
     // We cannot use the new symbol in Swift, because we still use
     // both Xcode 12 and 13 to cut builds.
