@@ -671,15 +671,24 @@ public class AvatarBuilder: NSObject {
                                                                                    shouldValidate: true,
                                                                                    transaction: transaction) {
                     let digestString = imageData.sha1Base64DigestString
+                    if DebugFlags.internalLogging {
+                        Logger.info("Returning avatar image data for address")
+                    }
                     return AvatarContentTypes(contentType: .data(imageData: imageData,
                                                                  digestString: digestString,
                                                                  shouldValidate: false),
                                               failoverContentType: .contactDefaultIcon(theme: theme))
                 } else if let nameComponents = Self.contactsManager.nameComponents(for: address, transaction: transaction),
                           let contactInitials = Self.contactInitials(forPersonNameComponents: nameComponents) {
+                    if DebugFlags.internalLogging {
+                        Logger.info("Returning avatar initials image data for address")
+                    }
                     return AvatarContentTypes(contentType: .text(text: contactInitials, theme: theme),
                                               failoverContentType: .contactDefaultIcon(theme: theme))
                 } else {
+                    if DebugFlags.internalLogging {
+                        Logger.info("Failed to generate avatar data or initials, returning failover avatar image")
+                    }
                     return AvatarContentTypes(contentType: .contactDefaultIcon(theme: theme),
                                               failoverContentType: nil)
                 }
