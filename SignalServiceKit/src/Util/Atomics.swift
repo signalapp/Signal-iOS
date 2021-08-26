@@ -261,7 +261,10 @@ public class AtomicArray<T> {
 
     public var popHead: T? {
         Atomics.perform {
-            values.removeFirst()
+            guard !values.isEmpty else {
+                return nil
+            }
+            return values.removeFirst()
         }
     }
 
