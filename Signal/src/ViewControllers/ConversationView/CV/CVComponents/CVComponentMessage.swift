@@ -1340,30 +1340,23 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     return
                 }
 
-                Logger.verbose("----- footerMeasurement: \(footerMeasurement.measuredSize)")
-                Logger.verbose("----- bodyTextMaxWidth: \(bodyTextMaxWidth)")
-                Logger.verbose("----- bodyTextMeasurement: \(bodyTextMeasurement.size)")
-                //                        Logger.verbose("----- lastGlyphRect: \(lastGlyphRect)")
-                Logger.verbose("----- lastLineRect: \(lastLineRect)")
-
-                // TODO: Design is finalizing how this value should scale with dynamic type.
-                let kMinimumOverlapSpacing: CGFloat = 6
-                let overlapWidth = ceil(lastLineRect.width) + kMinimumOverlapSpacing + footerMeasurement.measuredSize.width
-                // TODO: Refine to account for RTL.
-                let shouldOverlap = overlapWidth <= bodyTextMaxWidth
-                Logger.verbose("----- overlapWidth: \(overlapWidth)")
-                Logger.verbose("----- bodyTextMaxWidth: \(bodyTextMaxWidth)")
-                Logger.verbose("----- shouldOverlap: \(shouldOverlap)")
-                guard shouldOverlap else {
-                    return
-                }
-//                let measurement1 = ManualStackView.measure(config: stackConfig,
-//                                                           subviewInfos: subviewInfos)
                 let textMessageFont = bodyText.textMessageFont
                 let lineHeight = max(0, textMessageFont.lineHeight)
                 let capHeight = max(0, textMessageFont.capHeight)
                 // NOTE: descender is expressed as a negative value.
                 let descender = max(0, -textMessageFont.descender)
+
+                // TODO: Design is finalizing how this value should scale with dynamic type.
+                let spacingScaling = max(1, lineHeight / 20)
+                let kMinimumOverlapSpacingDefault: CGFloat = 6
+                let kMinimumOverlapSpacing = kMinimumOverlapSpacingDefault * spacingScaling
+
+                let overlapWidth = ceil(lastLineRect.width) + kMinimumOverlapSpacing + footerMeasurement.measuredSize.width
+                let shouldOverlap = overlapWidth <= bodyTextMaxWidth
+                guard shouldOverlap else {
+                    return
+                }
+
                 let fontOuterSpacing = max(0, lineHeight - (capHeight + descender)) * 0.5
                 let baselineSpacing = max(0, fontOuterSpacing + descender)
                 // We want to v-align the center of the footer with the baseline of the
@@ -1381,17 +1374,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // 3. Rewrite the body text component size for overlap.
                 subviewSizes[0] = CGSize(width: max(bodyTextSubviewSize.width, overlapWidth),
                                          height: bodyTextSubviewSize.height)
-
-//                let measurement2 = ManualStackView.measure(config: stackConfig,
-//                                                           subviewInfos: subviewInfos)
-                Logger.verbose("----- lineHeight: \(textMessageFont.lineHeight)")
-                Logger.verbose("----- capHeight: \(textMessageFont.capHeight)")
-                Logger.verbose("----- descender: \(textMessageFont.descender)")
-                Logger.verbose("----- fontOuterSpacing: \(fontOuterSpacing)")
-                Logger.verbose("----- baselineSpacing: \(baselineSpacing)")
-                Logger.verbose("----- overlapHeight: \(overlapHeight)")
-//                Logger.verbose("----- measurement1: \(measurement1.measuredSize)")
-//                Logger.verbose("----- measurement2: \(measurement2.measuredSize)")
             }
             tryToOverlapBodyTextAndFooter()
 
