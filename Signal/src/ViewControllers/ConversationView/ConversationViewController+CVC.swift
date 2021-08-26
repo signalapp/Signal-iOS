@@ -627,7 +627,9 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
 
             self.updateViewToReflectLoad(loadedRenderState: renderState)
 
-            self.loadDidLand()
+            if shouldAnimateUpdate {
+                self.loadDidLand()
+            }
 
             if scrollAction.isAnimated {
                 self.perform(scrollAction: scrollAction)
@@ -667,6 +669,10 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                                                     scrollContinuity: scrollContinuity,
                                                     lastKnownDistanceFromBottom: updateToken.lastKnownDistanceFromBottom,
                                                     cvc: self)
+
+        if !shouldAnimateUpdate {
+            self.loadDidLand()
+        }
     }
 
     private var scrolledToEdgeTolerancePoints: CGFloat {
