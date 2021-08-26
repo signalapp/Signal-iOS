@@ -867,7 +867,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 // c) our request to join via group invite link was denied.
                 Logger.warn("Error: \(type(of: error)) \(error)")
             } else {
-                owsFailDebug("Error: \(type(of: error)) \(error)")
+                owsFailDebugUnlessNetworkFailure(error)
             }
 
             return Guarantee.value(UpdateOutcome.failureShouldDiscard)

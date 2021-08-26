@@ -56,7 +56,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.done(on: .global()) { _ in
             Logger.verbose("Complete.")
         }.catch(on: .global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
+            if case GroupsV2Error.localUserNotInGroup = error {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebugUnlessNetworkFailure(error)
+            }
         }
     }
 

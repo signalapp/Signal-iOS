@@ -1044,7 +1044,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             Logger.verbose("Update succeeded.")
         }.catch { error in
             if case GroupsV2Error.localUserNotInGroup = error {
-                Logger.verbose("Error: \(error)")
+                Logger.warn("Error: \(error)")
             } else {
                 owsFailDebugUnlessNetworkFailure(error)
             }
