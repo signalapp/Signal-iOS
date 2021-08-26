@@ -304,6 +304,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentFooter.measurementKey_innerStack"
 
+    // Extract the overall measurement for this component.
+    public static func footerMeasurement(measurementBuilder: CVCellMeasurement.Builder) -> CVCellMeasurement.Measurement? {
+        measurementBuilder.getMeasurement(key: measurementKey_outerStack)
+    }
+
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 

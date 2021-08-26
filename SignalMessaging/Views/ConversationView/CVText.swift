@@ -147,11 +147,15 @@ public struct CVLabelConfig {
         text.stringValue
     }
 
+    public var attributedString: NSAttributedString {
+        text.attributedString
+    }
+
     public var debugDescription: String {
         "CVLabelConfig: \(text.debugDescription)"
     }
 
-    fileprivate var cacheKey: CacheKey {
+    public var cacheKey: CacheKey {
         // textColor doesn't affect measurement.
         "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment?.rawValue ?? 0)"
     }
@@ -269,24 +273,25 @@ public class CVText {
 
     // MARK: - CVBodyTextLabel
 
-    private static let bodyTextLabelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
+    private static let bodyTextLabelCache = LRUCache<CacheKey, CVBodyTextLabel.Measurement>(maxSize: cacheSize)
 
-    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CGSize {
+    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CVBodyTextLabel.Measurement {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = bodyTextLabelCache.get(key: cacheKey) {
             return result
         }
 
-        let result = CVBodyTextLabel.measureSize(config: config, maxWidth: maxWidth)
-        owsAssertDebug(result.width > 0)
-        owsAssertDebug(result.height > 0)
+        let measurement = CVBodyTextLabel.measureSize(config: config, maxWidth: maxWidth)
+        owsAssertDebug(measurement.size.width > 0)
+        owsAssertDebug(measurement.size.height > 0)
+        owsAssertDebug(measurement.size == measurement.size.ceil)
 
         if cacheMeasurements {
-            bodyTextLabelCache.set(key: cacheKey, value: result.ceil)
+            bodyTextLabelCache.set(key: cacheKey, value: measurement)
         }
 
-        return result.ceil
+        return measurement
     }
 }
 

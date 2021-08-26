@@ -61,16 +61,28 @@ public struct CVCellMeasurement: Equatable {
             values[key] = value
         }
 
+        public func getValue(key: String) -> CGFloat? {
+            values[key]
+        }
+
         public func setMeasurement(key: String, value: Measurement) {
             owsAssertDebug(measurements[key] == nil)
 
             measurements[key] = value
         }
 
+        public func getMeasurement(key: String) -> Measurement? {
+            measurements[key]
+        }
+
         public func setObject(key: String, value: ObjectType) {
-            owsAssertDebug(measurements[key] == nil)
+            owsAssertDebug(objects[key] == nil)
 
             objects[key] = value
+        }
+
+        public func getObject(key: String) -> CVMeasurementObject? {
+            objects[key]
         }
     }
 

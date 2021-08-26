@@ -744,6 +744,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     return
                 }
                 let componentKeys = contentSection.components.map { $0.componentKey }
+
+                var stackConfig = stackConfig
+                if contentSection.sectionType == .bottomNestedText,
+                   let bottomNestedTextSpacing = cellMeasurement.value(key: Self.measurementKey_bottomNestedTextSpacing) {
+                    stackConfig = stackConfig.withSpacing(bottomNestedTextSpacing)
+                }
+
                 _ = configureStackView(stackView,
                                        stackConfig: stackConfig,
                                        measurementKey: stackMeasurementKey,
@@ -1203,6 +1210,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static let measurementKey_bottomNestedShareStackView = "CVComponentMessage.measurementKey_bottomNestedShareStackView"
     private static let measurementKey_bottomNestedTextStackView = "CVComponentMessage.measurementKey_bottomNestedTextStackView"
     private static let measurementKey_reactions = "CVComponentMessage.measurementKey_reactions"
+    private static let measurementKey_bottomNestedTextSpacing = "CVComponentMessage.measurementKey_bottomNestedTextSpacing"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -1313,6 +1321,60 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
                 subviewSize.asManualSubviewInfo
             }
+
+            var stackConfig = stackConfig
+            if let bodyText = self.bodyText as? CVComponentBodyText,
+               keys == [ .bodyText, .footer ] {
+                if let footerMeasurement = CVComponentFooter.footerMeasurement(measurementBuilder: measurementBuilder),
+                   let bodyTextMaxWidth = CVComponentBodyText.bodyTextMaxWidth(measurementBuilder: measurementBuilder),
+                    let bodyTextMeasurement = CVComponentBodyText.bodyTextMeasurement(measurementBuilder: measurementBuilder),
+                    let lastLineRect = bodyTextMeasurement.lastLineRect {
+                    //                    let lastGlyphRect = bodyTextMeasurement.lastGlyphRect {
+                    Logger.verbose("----- footerMeasurement: \(footerMeasurement.measuredSize)")
+                    Logger.verbose("----- bodyTextMaxWidth: \(bodyTextMaxWidth)")
+                    Logger.verbose("----- bodyTextMeasurement: \(bodyTextMeasurement.size)")
+                    //                        Logger.verbose("----- lastGlyphRect: \(lastGlyphRect)")
+                    Logger.verbose("----- lastLineRect: \(lastLineRect)")
+
+                    // TODO: Design is finalizing how this value should scale with dynamic type.
+                    let kMinimumOverlapSpacing: CGFloat = 6
+                    let overlapWidth = ceil(lastLineRect.width) + kMinimumOverlapSpacing + footerMeasurement.measuredSize.width
+                    // TODO: Refine to account for RTL.
+                    let shouldOverlap = overlapWidth <= bodyTextMaxWidth
+                    Logger.verbose("----- shouldOverlap: \(shouldOverlap)")
+                    if shouldOverlap {
+                        let measurement1 = ManualStackView.measure(config: stackConfig,
+                                                                   subviewInfos: subviewInfos)
+                        let textMessageFont = bodyText.textMessageFont
+                        let lineHeight = max(0, textMessageFont.lineHeight)
+                        let capHeight = max(0, textMessageFont.capHeight)
+                        // NOTE: descender is expressed as a negative value.
+                        let descender = max(0, -textMessageFont.descender)
+                        let fontOuterSpacing = max(0, lineHeight - (capHeight + descender)) * 0.5
+                        let baselineSpacing = max(0, fontOuterSpacing + descender)
+                        // We want to v-align the center of the footer with the baseline of the
+                        // last line of body text.
+                        let overlapHeight = footerMeasurement.measuredSize.height * 0.5 + baselineSpacing
+                        let bottomNestedTextSpacing = -overlapHeight
+                        stackConfig = stackConfig.withSpacing(bottomNestedTextSpacing)
+                        measurementBuilder.setValue(key: Self.measurementKey_bottomNestedTextSpacing,
+                                                    value: bottomNestedTextSpacing)
+                        let measurement2 = ManualStackView.measure(config: stackConfig,
+                                                                   subviewInfos: subviewInfos)
+                        Logger.verbose("----- lineHeight: \(textMessageFont.lineHeight)")
+                        Logger.verbose("----- capHeight: \(textMessageFont.capHeight)")
+                        Logger.verbose("----- descender: \(textMessageFont.descender)")
+                        Logger.verbose("----- fontOuterSpacing: \(fontOuterSpacing)")
+                        Logger.verbose("----- baselineSpacing: \(baselineSpacing)")
+                        Logger.verbose("----- overlapHeight: \(overlapHeight)")
+                        Logger.verbose("----- measurement1: \(measurement1.measuredSize)")
+                        Logger.verbose("----- measurement2: \(measurement2.measuredSize)")
+                    }
+                } else {
+                    owsFailDebug("Missing measurements.")
+                }
+            }
+
             let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: measurementKey,
@@ -2329,7 +2391,8 @@ fileprivate extension CVComponentMessage {
     }
 
     private func buildNestedStackConfig(topMargin: ContentStackMargin,
-                                        bottomMargin: ContentStackMargin) -> CVStackViewConfig {
+                                        bottomMargin: ContentStackMargin,
+                                        customSpacing: CGFloat? = nil) -> CVStackViewConfig {
         func marginValue(_ margin: ContentStackMargin) -> CGFloat {
             switch margin {
             case .none:
@@ -2347,9 +2410,10 @@ fileprivate extension CVComponentMessage {
         var layoutMargins = conversationStyle.textInsets
         layoutMargins.top = marginValue(topMargin)
         layoutMargins.bottom = marginValue(bottomMargin)
+        let spacing = customSpacing ?? Self.textViewVSpacing
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .fill,
-                                 spacing: Self.textViewVSpacing,
+                                 spacing: spacing,
                                  layoutMargins: layoutMargins)
     }
 

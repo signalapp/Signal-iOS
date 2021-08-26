@@ -151,9 +151,36 @@ public class CVBodyTextLabel: NSObject {
         label.reset()
     }
 
-    public static func measureSize(config: Config, maxWidth: CGFloat) -> CGSize {
+    public class Measurement: CVMeasurementObject {
+        public let size: CGSize
+        // TODO:
+//        public let lastGlyphRect: CGRect?
+        public let lastLineRect: CGRect?
+
+        init(size: CGSize, lastLineRect: CGRect?) {
+            self.size = size
+            self.lastLineRect = lastLineRect
+        }
+
+//        init(size: CGSize, lastGlyphRect: CGRect?) {
+//            self.size = size
+//            self.lastGlyphRect = lastGlyphRect
+//        }
+
+//        static let empty = { Measurement(size: .zero, lastGlyphRect: nil) }()
+        static let empty = { Measurement(size: .zero, lastLineRect: nil) }()
+
+        // MARK: - Equatable
+
+        public static func == (lhs: Measurement, rhs: Measurement) -> Bool {
+//            lhs.size == rhs.size && lhs.lastGlyphRect == rhs.lastGlyphRect
+            lhs.size == rhs.size && lhs.lastLineRect == rhs.lastLineRect
+        }
+    }
+
+    public static func measureSize(config: Config, maxWidth: CGFloat) -> Measurement {
         guard config.attributedString.length > 0 else {
-            return .zero
+            return .empty
         }
         let attributedString = Label.formatAttributedString(config: config)
 
@@ -179,7 +206,58 @@ public class CVBodyTextLabel: NSObject {
         // this can result in it being freed before we perform measurement.
         // We can work around this by explicitly extending the lifetime of
         // textStorage until measurement is completed.
-        return withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }.ceil
+        return withExtendedLifetime(textStorage) {
+            let glyphRange = layoutManager.glyphRange(for: textContainer)
+//            var lastGlyphRect: CGRect?
+            var lastLineRect: CGRect?
+            if glyphRange.location != NSNotFound,
+               glyphRange.length > 0 {
+                let lastGlyphIndex = glyphRange.length - 1
+                lastLineRect = layoutManager.lineFragmentUsedRect(forGlyphAt: lastGlyphIndex,
+                                                                      effectiveRange: nil,
+                                                                      withoutAdditionalLayout: true)
+                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+
+//                var lastLineRect: CGRect = .zero
+//                lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex,
+//                                                              effectiveRange: nil)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.lineFragmentUsedRect(forGlyphAt: lastGlyphIndex,
+//                                                                  effectiveRange: nil,
+//                                                                  withoutAdditionalLayout: false)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.lineFragmentUsedRect(forGlyphAt: lastGlyphIndex,
+//                                                                  effectiveRange: nil,
+//                                                                  withoutAdditionalLayout: true)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex,
+//                                                              effectiveRange: nil)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex,
+//                                                              effectiveRange: nil,
+//                                                              withoutAdditionalLayout: false)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.lineFragmentRect(forGlyphAt: lastGlyphIndex,
+//                                                              effectiveRange: nil,
+//                                                              withoutAdditionalLayout: true)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//                lastLineRect = layoutManager.boundingRect(forGlyphRange: NSRange(location: lastGlyphIndex,
+//                                                                                 length: 1),
+//                                                          in: textContainer)
+//                Logger.verbose("---- lastLineRect: \(lastLineRect)")
+//
+//                let lastGlyphRange = NSRange(location: lastGlyphIndex, length: 1)
+//                lastGlyphRect = layoutManager.boundingRect(forGlyphRange: lastGlyphRange,
+//                                                           in: textContainer)
+//                Logger.verbose("---- lastGlyphRect: \(lastGlyphRect)")
+            }
+            let totalUsedRect = layoutManager.usedRect(for: textContainer).size.ceil
+            Logger.verbose("---- totalUsedRect: \(totalUsedRect)")
+
+            let size = layoutManager.usedRect(for: textContainer).size.ceil
+//            return Measurement(size: size, lastGlyphRect: lastGlyphRect)
+            return Measurement(size: size, lastLineRect: lastLineRect)
+        }
     }
 
     // MARK: - Animation

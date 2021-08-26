@@ -424,7 +424,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    private var textMessageFont: UIFont {
+    public var textMessageFont: UIFont {
         owsAssertDebug(DisplayableText.kMaxJumbomojiCount == 5)
 
         if isJumbomoji, let jumbomojiCount = bodyText.jumbomojiCount {
@@ -466,16 +466,27 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVBodyTextLabel.Config {
-        let selectionColor = textSelectionColor
-        return CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
-                                      font: textViewConfig.font,
-                                      textColor: textViewConfig.textColor,
-                                      selectionColor: selectionColor,
-                                      textAlignment: textViewConfig.textAlignment ?? .natural,
-                                      lineBreakMode: .byWordWrapping,
-                                      numberOfLines: 0,
-                                      cacheKey: textViewConfig.cacheKey,
-                                      items: bodyTextState.items)
+        CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
+                               font: textViewConfig.font,
+                               textColor: textViewConfig.textColor,
+                               selectionColor: textSelectionColor,
+                               textAlignment: textViewConfig.textAlignment ?? .natural,
+                               lineBreakMode: .byWordWrapping,
+                               numberOfLines: 0,
+                               cacheKey: textViewConfig.cacheKey,
+                               items: bodyTextState.items)
+    }
+
+    public func bodyTextLabelConfig(labelConfig: CVLabelConfig) -> CVBodyTextLabel.Config {
+        CVBodyTextLabel.Config(attributedString: labelConfig.attributedString,
+                               font: labelConfig.font,
+                               textColor: labelConfig.textColor,
+                               selectionColor: textSelectionColor,
+                               textAlignment: labelConfig.textAlignment ?? .natural,
+                               lineBreakMode: .byWordWrapping,
+                               numberOfLines: 0,
+                               cacheKey: labelConfig.cacheKey,
+                               items: bodyTextState.items)
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -506,59 +517,46 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText,
                                              cellMeasurement: CVCellMeasurement) {
-        _ = configureForLabel(componentView: componentView,
-                              labelConfig: labelConfigForRemotelyDeleted,
-                              cellMeasurement: cellMeasurement)
+        let labelConfig = labelConfigForRemotelyDeleted
+        let bodyTextLabelConfig = self.bodyTextLabelConfig(labelConfig: labelConfig)
+        configureForBodyTextLabel(componentView: componentView,
+                                  bodyTextLabelConfig: bodyTextLabelConfig,
+                                  cellMeasurement: cellMeasurement)
     }
 
     private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText,
                                                      cellMeasurement: CVCellMeasurement) {
-        _ = configureForLabel(componentView: componentView,
-                              labelConfig: labelConfigForOversizeTextDownloading,
-                              cellMeasurement: cellMeasurement)
-    }
-
-    private func configureForLabel(componentView: CVComponentViewBodyText,
-                                   labelConfig: CVLabelConfig,
-                                   cellMeasurement: CVCellMeasurement) -> UILabel {
-        let label = componentView.ensuredLabel
-        labelConfig.applyForRendering(label: label)
-
-        if label.superview == nil {
-            let stackView = componentView.stackView
-            stackView.reset()
-
-            stackView.configure(config: stackViewConfig,
-                                cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_stackView,
-                                subviews: [ label ])
-        }
-
-        return label
+        let labelConfig = labelConfigForOversizeTextDownloading
+        let bodyTextLabelConfig = self.bodyTextLabelConfig(labelConfig: labelConfig)
+        configureForBodyTextLabel(componentView: componentView,
+                                  bodyTextLabelConfig: bodyTextLabelConfig,
+                                  cellMeasurement: cellMeasurement)
     }
 
     public func configureForBodyText(componentView: CVComponentViewBodyText,
                                      displayableText: DisplayableText,
                                      cellMeasurement: CVCellMeasurement) {
+        let textViewConfig = textConfig(displayableText: displayableText)
+        let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
+        configureForBodyTextLabel(componentView: componentView,
+                                              bodyTextLabelConfig: bodyTextLabelConfig,
+                                              cellMeasurement: cellMeasurement)
+    }
 
-        switch textConfig(displayableText: displayableText) {
-        case .labelConfig(let labelConfig):
-            _ = configureForLabel(componentView: componentView,
-                                  labelConfig: labelConfig,
-                                  cellMeasurement: cellMeasurement)
-        case .textViewConfig(let textViewConfig):
-            let bodyTextLabel = componentView.ensuredBodyTextLabel
-            let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
-            bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
+    public func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
+                                          bodyTextLabelConfig: CVBodyTextLabel.Config,
+                                          cellMeasurement: CVCellMeasurement) {
 
-            if bodyTextLabel.view.superview == nil {
-                let stackView = componentView.stackView
-                stackView.reset()
-                stackView.configure(config: stackViewConfig,
-                                    cellMeasurement: cellMeasurement,
-                                    measurementKey: Self.measurementKey_stackView,
-                                    subviews: [ bodyTextLabel.view ])
-            }
+        let bodyTextLabel = componentView.bodyTextLabel
+        bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
+
+        if bodyTextLabel.view.superview == nil {
+            let stackView = componentView.stackView
+            stackView.reset()
+            stackView.configure(config: stackViewConfig,
+                                cellMeasurement: cellMeasurement,
+                                measurementKey: Self.measurementKey_stackView,
+                                subviews: [ bodyTextLabel.view ])
         }
     }
 
@@ -592,10 +590,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                              textAlignment: .center)
     }
 
-    private enum TextConfig {
-        case labelConfig(labelConfig: CVLabelConfig)
-        case textViewConfig(textViewConfig: CVTextViewConfig)
-    }
+    private typealias TextConfig = CVTextViewConfig
 
     private func textConfig(displayableText: DisplayableText) -> TextConfig {
 
@@ -603,28 +598,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         switch textValue {
         case .text(let text):
-            if shouldUseAttributedText {
-                let attributedText = NSAttributedString(string: text)
-                let textViewConfig = self.textViewConfig(displayableText: displayableText,
-                                                         attributedText: attributedText)
-                return .textViewConfig(textViewConfig: textViewConfig)
-            } else {
-                let labelConfig = CVLabelConfig(
-                    text: text,
-                    font: textMessageFont,
-                    textColor: bodyTextColor,
-                    numberOfLines: 0,
-                    lineBreakMode: .byWordWrapping,
-                    textAlignment: isTextExpanded
-                        ? displayableText.fullTextNaturalAlignment
-                        : displayableText.displayTextNaturalAlignment
-                )
-                return .labelConfig(labelConfig: labelConfig)
-            }
+            let attributedText = NSAttributedString(string: text)
+            return self.textViewConfig(displayableText: displayableText,
+                                       attributedText: attributedText)
         case .attributedText(let attributedText):
-            let textViewConfig = self.textViewConfig(displayableText: displayableText,
-                                                     attributedText: attributedText)
-            return .textViewConfig(textViewConfig: textViewConfig)
+            return self.textViewConfig(displayableText: displayableText,
+                                       attributedText: attributedText)
         }
     }
 
@@ -763,26 +742,38 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private static let measurementKey_stackView = "CVComponentBodyText.measurementKey_stackView"
+    private static let measurementKey_textMeasurement = "CVComponentBodyText.measurementKey_textMeasurement"
+    private static let measurementKey_maxWidth = "CVComponentBodyText.measurementKey_maxWidth"
+
+    // Extract the max width used for measuring for this component.
+    public static func bodyTextMaxWidth(measurementBuilder: CVCellMeasurement.Builder) -> CGFloat? {
+        measurementBuilder.getValue(key: measurementKey_maxWidth)
+    }
+
+    // Extract the overall measurement for this component.
+    public static func bodyTextMeasurement(measurementBuilder: CVCellMeasurement.Builder) -> CVBodyTextLabel.Measurement? {
+        measurementBuilder.getObject(key: measurementKey_textMeasurement) as? CVBodyTextLabel.Measurement
+    }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
+        let maxWidth = max(maxWidth, 0)
 
-        let textSize: CGSize = {
+        let bodyTextLabelConfig: CVBodyTextLabel.Config = {
             switch bodyText {
             case .bodyText(let displayableText):
-                switch textConfig(displayableText: displayableText) {
-                case .labelConfig(let labelConfig):
-                    return CVText.measureLabel(config: labelConfig, maxWidth: maxWidth).ceil
-                case .textViewConfig(let textViewConfig):
-                    let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
-                    return CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: maxWidth).ceil
-                }
+                let textViewConfig = textConfig(displayableText: displayableText)
+                return self.bodyTextLabelConfig(textViewConfig: textViewConfig)
             case .oversizeTextDownloading:
-                return CVText.measureLabel(config: labelConfigForOversizeTextDownloading, maxWidth: maxWidth).ceil
+                return self.bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
             case .remotelyDeleted:
-                return CVText.measureLabel(config: labelConfigForRemotelyDeleted, maxWidth: maxWidth).ceil
+                return self.bodyTextLabelConfig(labelConfig: labelConfigForRemotelyDeleted)
             }
         }()
+        let textMeasurement = CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: maxWidth)
+        measurementBuilder.setObject(key: Self.measurementKey_textMeasurement, value: textMeasurement)
+        measurementBuilder.setValue(key: Self.measurementKey_maxWidth, value: maxWidth)
+        let textSize = textMeasurement.size.ceil
         let textInfo = textSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
@@ -807,8 +798,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             return false
         }
 
-        if let bodyTextLabel = componentView.possibleBodyTextLabel,
-           let item = bodyTextLabel.itemForGesture(sender: sender) {
+        let bodyTextLabel = componentView.bodyTextLabel
+        if let item = bodyTextLabel.itemForGesture(sender: sender) {
             bodyTextLabel.animate(selectedItem: item)
             componentDelegate.cvc_didTapBodyTextItem(.init(item: item))
             return true
@@ -837,8 +828,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             return nil
         }
 
-        guard let bodyTextLabel = componentView.possibleBodyTextLabel,
-              let item = bodyTextLabel.itemForGesture(sender: sender) else {
+        let bodyTextLabel = componentView.bodyTextLabel
+        guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
         bodyTextLabel.animate(selectedItem: item)
@@ -873,27 +864,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         fileprivate let stackView = BodyTextRootView(name: "bodyText")
 
-        private var _bodyTextLabel: CVBodyTextLabel?
-        fileprivate var possibleBodyTextLabel: CVBodyTextLabel? { _bodyTextLabel }
-        fileprivate var ensuredBodyTextLabel: CVBodyTextLabel {
-            if let bodyTextLabel = _bodyTextLabel {
-                return bodyTextLabel
-            }
-            let bodyTextLabel = CVBodyTextLabel()
-            _bodyTextLabel = bodyTextLabel
-            return bodyTextLabel
-        }
-
-        private var _label: UILabel?
-        fileprivate var possibleLabel: UILabel? { _label }
-        fileprivate var ensuredLabel: UILabel {
-            if let label = _label {
-                return label
-            }
-            let label = CVLabel()
-            _label = label
-            return label
-        }
+        public let bodyTextLabel = CVBodyTextLabel()
 
         public var isDedicatedCellView = false
 
@@ -914,10 +885,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 stackView.reset()
             }
 
-            _label?.text = nil
-            _bodyTextLabel?.reset()
+            bodyTextLabel.reset()
         }
-
     }
 }
 
