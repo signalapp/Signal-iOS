@@ -111,7 +111,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addSendCompletionToMessageSendLog
         case addExclusiveProcessIdentifierAndHighPriorityToJobRecord
         case updateMessageSendLogColumnTypes
-        case addHiddenInteractionColumn
+        case addRecordTypeIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1399,11 +1399,13 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.addHiddenInteractionColumn.rawValue) { db in
+        migrator.registerMigration(MigrationId.addRecordTypeIndex.rawValue) { db in
             do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "isHidden", .boolean)
-                }
+                try db.create(
+                    index: "index_model_TSInteraction_on_uniqueThreadId_recordType_id",
+                    on: "model_TSInteraction",
+                    columns: ["uniqueThreadId", "recordType", "id"])
+
             } catch {
                 owsFail("Error: \(error)")
             }

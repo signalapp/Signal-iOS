@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -13,7 +13,14 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
     var interactionIds: [String] = []
 
     override func setUp() {
+        // It'd be awesome to populate the database in +setUp, since each of these tests takes about 60s,
+        // with only <0.1s spent in each measure block
+        //
+        // Unfortunately the SSK test context switcheroo happens in -setUp. So I don't know if this is doable
+        // right now. One day!
+
         super.setUp()
+
         contactThread = ContactThreadFactory().create()
         interactionFinder = InteractionFinder(threadUniqueId: contactThread!.uniqueId)
         read { transaction in
@@ -24,7 +31,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
 
     var messageCount: UInt { 10000 }
     var insertionStyle: InsertionStyle { .noPlaceholders }
-    var includeHidden: Bool { true }
+    var excludePlaceholders: Bool { true }
 
     // MARK: - Insert Messages
 
@@ -33,8 +40,8 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
 
         read { readTx in
             self.measure {
-                let visibleCount = self.interactionFinder.count(includingHiddenInteractions: self.includeHidden, transaction: readTx)
-                let expectedResult = self.includeHidden ? (self.interactionIds.count + self.placeholderIds.count) : self.interactionIds.count
+                let visibleCount = self.interactionFinder.count(excludingPlaceholders: self.excludePlaceholders, transaction: readTx)
+                let expectedResult = self.excludePlaceholders ? self.interactionIds.count : (self.interactionIds.count + self.placeholderIds.count)
                 XCTAssertEqual(Int(visibleCount), expectedResult)
             }
         }
@@ -54,7 +61,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
                 testUniqueIds.forEach {
                     _ = try! self.interactionFinder.distanceFromLatest(
                         interactionUniqueId: $0,
-                        includingHiddenInteractions: self.includeHidden,
+                        excludingPlaceholders: self.excludePlaceholders,
                         transaction: readTx)
                 }
             }
@@ -66,7 +73,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
 
         read { readTx in
             self.measure {
-                let expectedSize = self.includeHidden ? (self.interactionIds.count + self.placeholderIds.count) : self.interactionIds.count
+                let expectedSize = self.excludePlaceholders ? self.interactionIds.count : (self.interactionIds.count + self.placeholderIds.count)
                 XCTAssertGreaterThan(expectedSize, 500)
 
                 let testRanges = [
@@ -78,7 +85,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
                 testRanges.forEach {
                     let interactionIds = try! self.interactionFinder.interactionIds(
                         inRange: $0,
-                        includingHiddenInteractions: self.includeHidden,
+                        excludingPlaceholders: self.excludePlaceholders,
                         transaction: readTx)
                     XCTAssertEqual(interactionIds.count, 500)
                 }
@@ -91,7 +98,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
 
         read { readTx in
             self.measure {
-                let expectedSize = self.includeHidden ? (self.interactionIds.count + self.placeholderIds.count) : self.interactionIds.count
+                let expectedSize = self.excludePlaceholders ? self.interactionIds.count: (self.interactionIds.count + self.placeholderIds.count)
                 XCTAssertGreaterThan(expectedSize, 500)
 
                 let testRanges = [
@@ -104,7 +111,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
                     var numberFetched = 0
                     try! self.interactionFinder.enumerateInteractions(
                         range: $0,
-                        includingHiddenInteractions: self.includeHidden,
+                        excludingPlaceholders: self.excludePlaceholders,
                         transaction: readTx) { _, _ in
                         numberFetched += 1
                     }

@@ -92,7 +92,6 @@ public struct InteractionRecord: SDSRecord {
     public let paymentRequest: Data?
     public let viewed: Bool?
     public let serverGuid: String?
-    public let isHidden: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -162,7 +161,6 @@ public struct InteractionRecord: SDSRecord {
         case paymentRequest
         case viewed
         case serverGuid
-        case isHidden
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -253,7 +251,6 @@ public extension InteractionRecord {
         paymentRequest = row[64]
         viewed = row[65]
         serverGuid = row[66]
-        isHidden = row[67]
     }
 }
 
@@ -628,7 +625,6 @@ extension TSInteraction {
             let senderSerialized: Data? = record.sender
             let sender: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(senderSerialized, name: "sender")
             let wasIdentityVerified: Bool = try SDSDeserialization.required(record.wasIdentityVerified, name: "wasIdentityVerified")
-            let isHidden: Bool = try SDSDeserialization.required(record.isHidden, name: "isHidden")
 
             return OWSRecoverableDecryptionPlaceholder(grdbId: recordId,
                                                        uniqueId: uniqueId,
@@ -654,8 +650,7 @@ extension TSInteraction {
                                                        read: read,
                                                        recipientAddress: recipientAddress,
                                                        sender: sender,
-                                                       wasIdentityVerified: wasIdentityVerified,
-                                                       isHidden: isHidden)
+                                                       wasIdentityVerified: wasIdentityVerified)
 
         case .unknownContactBlockOfferMessage:
 
@@ -3551,7 +3546,6 @@ extension TSInteraction: DeepCopyable {
                sender = nil
             }
             let wasIdentityVerified: Bool = modelToCopy.wasIdentityVerified
-            let isHidden: Bool = modelToCopy.isHidden
 
             return OWSRecoverableDecryptionPlaceholder(grdbId: id,
                                                        uniqueId: uniqueId,
@@ -3577,8 +3571,7 @@ extension TSInteraction: DeepCopyable {
                                                        read: read,
                                                        recipientAddress: recipientAddress,
                                                        sender: sender,
-                                                       wasIdentityVerified: wasIdentityVerified,
-                                                       isHidden: isHidden)
+                                                       wasIdentityVerified: wasIdentityVerified)
         }
 
         if let modelToCopy = self as? TSErrorMessage {
@@ -3981,7 +3974,6 @@ extension TSInteractionSerializer {
     static let paymentRequestColumn = SDSColumnMetadata(columnName: "paymentRequest", columnType: .blob, isOptional: true)
     static let viewedColumn = SDSColumnMetadata(columnName: "viewed", columnType: .int, isOptional: true)
     static let serverGuidColumn = SDSColumnMetadata(columnName: "serverGuid", columnType: .unicodeString, isOptional: true)
-    static let isHiddenColumn = SDSColumnMetadata(columnName: "isHidden", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -4054,8 +4046,7 @@ extension TSInteractionSerializer {
         paymentNotificationColumn,
         paymentRequestColumn,
         viewedColumn,
-        serverGuidColumn,
-        isHiddenColumn
+        serverGuidColumn
         ])
 }
 
@@ -4529,9 +4520,8 @@ class TSInteractionSerializer: SDSSerializer {
         let paymentRequest: Data? = nil
         let viewed: Bool? = nil
         let serverGuid: String? = nil
-        let isHidden: Bool? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, isHidden: isHidden)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid)
     }
 }
 
