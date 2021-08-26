@@ -84,6 +84,7 @@
     "InteractionRecord.hiddenUntilTimestamp": 65, 
     "InteractionRecord.infoMessageUserInfo": 50, 
     "InteractionRecord.isFromLinkedDevice": 24, 
+    "InteractionRecord.isHidden": 65, 
     "InteractionRecord.isLocalChange": 25, 
     "InteractionRecord.isViewOnceComplete": 26, 
     "InteractionRecord.isViewOnceMessage": 27, 

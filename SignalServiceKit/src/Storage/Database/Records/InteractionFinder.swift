@@ -1010,13 +1010,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
-
         guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
             SELECT id
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) = ?
-            \(countHidden ? "" : hiddenInteractionFilterClause)
+            \(countHidden ? "" : "AND \(interactionColumn: .isHidden) IS NOT TRUE")
         """, arguments: [interactionUniqueId]) else {
             owsFailDebug("failed to find id for interaction \(interactionUniqueId)")
             return nil
@@ -1027,7 +1025,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) >= ?
-            \(countHidden ? "" : hiddenInteractionFilterClause)
+            \(countHidden ? "" : "AND \(interactionColumn: .isHidden) IS NOT TRUE")
             ORDER BY \(interactionColumn: .id) DESC
         """, arguments: [threadUniqueId, interactionId]) else {
             owsFailDebug("failed to find distance from latest message")
@@ -1039,13 +1037,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     func count(includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction) -> UInt {
         do {
-            let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
             guard let count = try UInt.fetchOne(transaction.database,
                                                 sql: """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                \(includeHidden ? "" : hiddenInteractionFilterClause)
+                \(includeHidden ? "" : "AND \(interactionColumn: .isHidden) IS NOT TRUE")
                 """,
                 arguments: [threadUniqueId]) else {
                     throw OWSAssertionError("count was unexpectedly nil")
@@ -1097,12 +1094,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     func enumerateInteractions(range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        \(includeHidden ? "" : hiddenInteractionFilterClause)
+        \(includeHidden ? "" : "AND \(interactionColumn: .isHidden) IS NOT TRUE")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
         OFFSET \(range.location)
@@ -1122,13 +1118,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     func interactionIds(inRange range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction) throws -> [String] {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
-
         let sql = """
         SELECT \(interactionColumn: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        \(includeHidden ? "" : hiddenInteractionFilterClause)
+        \(includeHidden ? "" : "AND \(interactionColumn: .isHidden) IS NOT TRUE")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
         OFFSET \(range.location)

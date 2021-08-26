@@ -8,6 +8,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSRecoverableDecryptionPlaceholder ()
+@property (assign, nonatomic) BOOL isHidden;
+@end
+
 @implementation OWSRecoverableDecryptionPlaceholder
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
@@ -39,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self = [super initErrorMessageWithBuilder:builder];
     if (self) {
-        _hiddenUntilTimestamp = [NSDate distantFutureMillisecondTimestamp];
+        _isHidden = YES;
     }
     return self;
 }
@@ -81,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
-            hiddenUntilTimestamp:(uint64_t)hiddenUntilTimestamp
+                        isHidden:(BOOL)isHidden
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -113,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _hiddenUntilTimestamp = hiddenUntilTimestamp;
+    _isHidden = isHidden;
 
     return self;
 }
@@ -191,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self = [super initErrorMessageWithBuilder:builder];
     if (self) {
-        _hiddenUntilTimestamp = [NSDate distantFutureMillisecondTimestamp];
+        _isHidden = YES;
     }
     return self;
 }

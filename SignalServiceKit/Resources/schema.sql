@@ -115,7 +115,7 @@ CREATE
             ,"paymentRequest" BLOB
             ,"viewed" BOOLEAN
             ,"serverGuid" TEXT
-            ,"hiddenUntilTimestamp" INTEGER
+            ,"isHidden" BOOLEAN
         )
 ;
 

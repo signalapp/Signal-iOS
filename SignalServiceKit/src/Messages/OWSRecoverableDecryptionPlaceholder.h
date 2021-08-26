@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-@property (assign, nonatomic, readonly) BOOL isVisible;
 @property (assign, nonatomic, readonly) BOOL supportsReplacement;
-@property (assign, nonatomic, readonly) uint64_t hiddenUntilTimestamp;
+@property (assign, nonatomic, readonly) BOOL isHidden;
 
 /// After this date, the placeholder is no longer eligible for replacement with the original content.
 @property (strong, nonatomic, readonly) NSDate *expirationDate;
@@ -53,8 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                           sender:(nullable SignalServiceAddress *)sender
              wasIdentityVerified:(BOOL)wasIdentityVerified
-            hiddenUntilTimestamp:(uint64_t)hiddenUntilTimestamp
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:hiddenUntilTimestamp:));
+                        isHidden:(BOOL)isHidden
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:isHidden:));
 
 // clang-format on
 

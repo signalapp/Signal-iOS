@@ -1402,7 +1402,7 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.addHiddenInteractionColumn.rawValue) { db in
             do {
                 try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "hiddenUntilTimestamp", .integer)
+                    table.add(column: "isHidden", .boolean)
                 }
             } catch {
                 owsFail("Error: \(error)")
