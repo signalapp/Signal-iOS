@@ -133,9 +133,6 @@ public class SocketMessageInfo: NSObject {
                            headers: OWSHttpHeaders,
                            bodyData: Data?,
                            message: String?) {
-        if let message = message?.nilIfEmpty {
-            Logger.verbose("message: \(message)")
-        }
         let response = HTTPResponseImpl(requestUrl: requestUrl,
                                         status: status,
                                         headers: headers,
