@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "Hafna";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Hunsa samhengisvalmynd";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Staðsetning leiða framhjá ritskoðun";
@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Gat ekki hlaðið inn tengiliðalista.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Tókst ekki að senda skilaboð því þau eru ekki lengur tiltæk.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Gat ekki vistað myndskeið.";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Mistókst að senda inn atvikaskrár.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Tókst ekki að senda vegna úreltra gagna í lykli.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Mistókst að senda skilaboð á notanda því þú lokar á hann.";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Villa í nettengingu";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Þetta tæki er ekki lengur tengt. Tengdu það aftur til að eiga í frekari samskiptum.";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Áframsenda skeyti";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Áframsend skilaboð eru núna send samstundis.";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Senda skilaboð";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Skilaboð send";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Bæta við skilaboðum";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Þú ert ekki með neitt myndefni í þessu spjalli.";
@@ -2093,22 +2132,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "Boð meðlima";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Stillingum hóps var breytt þannig að allir meðlimir hans geta sent skilaboð.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Þú breyttir stillingum hóps þannig að allir meðlimir hans geta sent skilaboð.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ breytti stillingum hóps þannig að allir meðlimir hans geta sent skilaboð.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Stillingum hóps var breytt þannig að einungis stjórnendur geta sent skilaboð.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Þú breyttir stillingum hóps þannig að einungis stjórnendur geta sent skilaboð.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ breytti stillingum hóps þannig að einungis stjórnendur geta sent skilaboð.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Þessi hóptengill er ekki lengur gildur.";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Áframsenda þessi skilaboð";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Opna boð í hóp";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Límmerkjapakki";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Póstur";
@@ -3185,7 +3236,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Nánar um skilaboð";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Forskoðun skilaboða";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Loka á";
@@ -3381,6 +3432,9 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal þarf aðgang að myndunum þínum til að nýta þennan eiginleika.";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "Ekkert";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Þú getur ekki tengt nein fleiri tæki.";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Þú þarft að vera skráður notandi til að geta sent skilaboð.";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Staðfesting mistókst";
 
@@ -4584,6 +4641,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Símanúmerið sem þú ert að reyna að skrá hefur þegar verið skráð á öðrum netþjóni, afskráðu það þar og reyndu svo aftur.";
+
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Veldu nýjan stjórnanda";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Ljósmyndir og myndskeið";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Birta samtöl í tillögum";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Spjall í Signal er hægt að birta sem tillögur þegar deilt er af öðrum tækjum.";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Skráningarlæsing";

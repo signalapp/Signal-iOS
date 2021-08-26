@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "연락처에 접근할 수 없습니다.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "동영상을 저장할 수 없습니다.";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "로그 업로드에 실패했습니다.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "사전 키 데이터가 갱신되지 않아 발송에 실패했습니다.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "내가 차단한 사용자에게는 메시지를 보낼 수 없습니다.";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "네트워크 오류";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "내 기기의 연결이 끊겼습니다. 메시지를 보내려면 다시 연결해주세요.";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "메시지 전달";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "문자 보내기";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "이 대화에 미디어가 없습니다.";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "메시지 전달";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "그룹 초대 열기";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "스티커 팩";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "메시지";
@@ -3381,6 +3432,9 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal에서 해당 기능을 사용하려면 사진 접근 권한을 허용하세요.";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "없음";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연결할 수 없습니다.";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "메시지를 보내기 전에 등록해야 합니다.";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "검증 실패";
 
@@ -4584,6 +4641,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "등록하려는 전화번호가 이미 다른 서버에 등록되어 있습니다. 다른 서버에서 등록을 해제한 후 다시 시도해 주세요.";
+
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "새 관리자 선택";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "제안에 채팅 표시";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal 채팅은 다른 앱에서 공유할 때 제안으로 표시됩니다.";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "등록 잠금";

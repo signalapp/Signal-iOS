@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Байланыстық тұлғаларға қатынау мүмкін болмады.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Бейнефайлдарды сақтау мүмкін болмады. ";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Ескірген алдын ала деректерге байланысты жіберу мүмкін емес.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Пайдаланушыға хабарлама жіберу сәтсіз болды, себебі сіз оны бұғаттағансыз.";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Желі қатесі";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Сіздің құрылғыңыз бұдан былай байланыстырылмаған. Болашақта хабарлама жіберу үшін қайтадан байланыстырыңыз.";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Хабарламаны басқаға жолдау";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Send message";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Осы хабарламаны басқаға жолдау";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Жапсырмалар бумасы";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Хабарлама";
@@ -3381,6 +3432,9 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Осы функция үшін Signal қолданбасына сіздің фотосуреттеріңізге қатынау мүмкіндігі қажет.";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "Ешқайсы";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Бұдан басқа құрылғыларды байланыстыру мүмкін емес.";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Хабарлама жібере алардан бұрын тіркелуіңіз керек.";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Дұрыстығын тексеру сәтсіз болды";
 
@@ -4584,6 +4641,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Сіз тіркемек болып жатқан телефон нөмірі басқа серверде бұрын тіркелген, сол жерден тіркелуін алып тастаңыз да, қайтадан байқап көріңіз.";
+
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Жаңа әкімші таңдау";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Show Chats in Suggestions";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal chats are displayed as suggestions when sharing from other apps.";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Тіркеуді құлыптау";

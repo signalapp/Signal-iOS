@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "無法存取聯絡人。";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "訊息已不復存在，故無法轉寄。";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "無法儲存影片。";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "上載日誌時失敗。";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "由於密鑰資料過舊而無法傳送。";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "此使用者已被你封鎖，無法傳送訊息。";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "網路出錯。";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "您的裝置連結失效。請重新連結以傳送更多訊息。";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "轉寄訊息";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "訊息轉寄現將立即傳送。";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "傳送訊息";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "訊息已傳送";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "新增訊息";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "您在此對話中沒有任何媒體。";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "轉寄此訊息";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "開啟群組邀請";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "貼圖包";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "訊息";
@@ -3381,6 +3432,9 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal 需要存取您的照片以使用此功能。";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "無";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "您無法連結更多裝置。";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "你需要先登記以傳送訊息。";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "驗證失敗";
 
@@ -4584,6 +4641,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "你個電話已經響另一個server登記咗喇，你要取消咗登記先得。";
+
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "請選擇新的管理員";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "相片和影片";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "在「建議」中顯示對話";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "從其他應用程式分享時，Signal 對話會顯示為建議。";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖定";

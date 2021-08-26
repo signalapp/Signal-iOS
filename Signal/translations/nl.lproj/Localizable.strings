@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kon geen toegang tot contacten krijgen.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kon sommige berichten niet doorsturen omdat die inmiddels niet langer beschikbaar zijn.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Kan video niet opslaan.";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Het uploaden van logs is mislukt.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kan niet verzenden vanwege oude prekey-gegevens.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Bericht verzenden mislukt omdat je deze persoon hebt geblokkeerd.";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Netwerkfout";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Je apparaat is niet langer gekoppeld. Koppel opnieuw om weer berichten te kunnen verzenden.";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Bericht doorsturen";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Doorgestuurde berichten worden vanaf nu onmiddelijk verzonden.";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Bericht verzenden";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Berichten verzonden";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Een bericht bijvoegen";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Er zijn geen media in dit gesprek.";
@@ -2156,7 +2195,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Groepsverwijzing delen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Deel de groepsverwijzing met kennissen om ze gemakkelijk aan deze groep te laten deelnemen.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Je kunt een groepsverwijzing delen met kennissen zodat ze zelf gemakkelijk lid kunnen worden van deze groep.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Kennissen uitnodigen";
@@ -2303,7 +2342,7 @@
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ groepsleden hebben een vergelijkbare naam.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tik hier om te vergelijken";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tik hier om ze te vergelijken";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Lid";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Dit bericht doorsturen";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Groepsverwijzing volgen";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Stickerpakket";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Bericht";
@@ -3381,6 +3432,9 @@
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal heeft toegang nodig tot je foto’s voor deze functie.";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "Geen";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Je kunt niet nog meer apparaten koppelen.";
@@ -4190,7 +4244,7 @@
 "PIN_DISABLE_ERROR_TITLE" = "Pincode uitschakelen mislukt";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden vraagt Signal je periodiek om te bewijzen dat je je pincode nog weet. Als je je pincode een aantal keer juist invoert, dan zal Signal je minder vaak deze vraag stellen. Je kunt deze herinneringen uitschakelen via de instellingen.";
+"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden vraagt Signal je periodiek om te bewijzen dat je je pincode nog weet. Als je je pincode een aantal keer juist invoert, dan zal Signal je minder vaak deze vraag stellen. Je kunt deze herinneringen uitschakelen via Instellingen > Jouw registratie.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Pincode vergeten?";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Je moet je registreren voordat je een bericht kunt verzenden.";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verificatie mislukt";
 
@@ -4584,6 +4641,9 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Het telefoonnummer dat je probeert te registreren is al geregistreerd op een ander apparaat. Deregistreer Signal eerst van het andere apparaat door deze webpagina te gebruiken: https://signal.org/signal/unregister/";
+
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Kies een nieuwe beheerder";
@@ -5054,7 +5114,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Minder dataoverdracht bij oproepen";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Gebruik maken van minder dataoverdracht bij oproepen kan de kwaliteit van oproepen verbeteren op een slecht netwerk.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Gebruikmaken van minder dataoverdracht bij oproepen kan de kwaliteit van oproepen verbeteren op een slecht netwerk.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Oproepen";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Afbeeldingen en video's";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Gesprekken weergeven als optie om naar te verzenden vanuit een andere app";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Signal-gesprekken worden weergegeven als suggesties bij het delen vanuit andere apps.";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";

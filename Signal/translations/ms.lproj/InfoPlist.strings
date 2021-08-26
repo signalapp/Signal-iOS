@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal memerlukan akses kepada lokasi and
 NSMicrophoneUsageDescription = "Signal memerlukan akses kepada mikrofon anda untuk membuat dan menerima panggilan telefon dan merakam pesanan suara.";
 NSPhotoLibraryAddUsageDescription = "Signal akan menyimpan foto ke perpustakaan anda.";
 NSPhotoLibraryUsageDescription = "Signal akan membenarkan anda memilih foto daripada perpustakaan anda untuk dihantar.";
-NSLocalNetworkUsageDescription = "Signal menggunakan rangkaian tempatan untuk membenarkan anda memindah akaun anda secara langsung kepada telefon baharu. Ia tidak akan digunakan melainkan anda secara jelas memilih untuk melakukan pemindahan ke peranti baharu.";
+NSLocalNetworkUsageDescription = "Signal menggunakan rangkaian tempatan untuk membenarkan anda memindah akaun anda secara langsung kepada telefon baharu. Ia tidak akan digunakan melainkan anda memilih untuk melakukan pemindahan ke peranti baharu secara jelas.";

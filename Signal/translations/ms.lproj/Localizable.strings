@@ -758,7 +758,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organisasi";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Untuk melihat nama dan foto kenalan di sembang anda:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Untuk melihat nama dan foto kenalan dalam sembang anda:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketik \"Pergi ke Tetapan\" di bawah";
@@ -776,7 +776,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Hidupkan";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Lihat nama dan foto kenalan di sembang anda.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Lihat nama dan foto kenalan dalam sembang anda.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Hidupkan Kenalan?";
@@ -1103,7 +1103,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Semua Ahli";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Pilih orang yang boleh menghantar mesej dan memulakan panggilan dalam kumpulan ini.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Pilih orang yang boleh menghantar mesej dan mulakan panggilan dalam kumpulan ini.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Hantar Mesej";
@@ -1277,7 +1277,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Memadamkan Akaun...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Tidak ada sambungan internet. Pastikan Wi-Fi atau data mudah alih dihidupkan, kemudian cuba lagi.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Tidak ada sambungan Internet. Pastikan Wi-Fi atau data mudah alih dihidupkan, kemudian cuba lagi.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Nombor Telefon";
@@ -1505,7 +1505,7 @@
 "DONATION_VIEW_TITLE" = "Signal dikuasakan oleh orang seperti anda.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Pasukan di Signal komited terhadap misi untuk membangunkan teknologi privasi sumber terbuka yang melindungi pernyataan bebas dan memungkinkan komunikasi global yang selamat. Sumbangan anda dapat mendorong sebab ini. Tiada iklan. Tiada penjejak. Tidak bergurau. \n\nDerma anda bantu membayar untuk pembangunan, pelayan dan lebar jalur aplikasi yang digunakan oleh berjuta-juta orang di seluruh dunia untuk komunikasi yang peribadi dan segera.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Pasukan di Signal komited terhadap misi untuk membangunkan teknologi privasi sumber terbuka yang melindungi pernyataan bebas dan memungkinkan komunikasi global yang selamat. Sumbangan anda dapat mendorong sebab ini. Tiada iklan. Tiada penjejak. Tidak bergurau. \n\nDerma anda bantu membayar untuk pembangunan, pelayan dan jalur lebar aplikasi yang digunakan oleh berjuta-juta orang di seluruh dunia untuk komunikasi yang peribadi dan segera.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Mengapa Menderma?";
@@ -1597,6 +1597,18 @@
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Tidak dapat mengakses kenalan.";
 
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+
+/* Error indicating that a message could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+
+/* Error indicating that messages could not be forwarded. */
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Tidak dapat menyimpan video.";
 
@@ -1611,9 +1623,6 @@
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Gagal memuat naik log.";
-
-/* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Tidak dapat menghantar kerana data prakunci yang lama.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal menghantar mesej pengguna kerana anda telah menyekat mereka.";
@@ -1687,6 +1696,12 @@
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Ralat Rangkaian";
 
+/* Format string for an error alert notification message. Embes {{ error string }} */
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+
+/* Format string for an error alert notification title. */
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Peranti anda tidak lagi dipautkan. Sila pautkan semula untuk menghantar mesej selanjutnya.";
 
@@ -1731,6 +1746,30 @@
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "Hantar Mesej";
+
+/* Message for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+
+/* Label for button to proceed with forwarding a single message. */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Menghantar mesej";
+
+/* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+
+/* Title for alert with information about forwarding messages. */
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+
+/* Indicates that a single message was forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+
+/* Indicates that multiple messages were forwarded. */
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+
+/* Indicates that the user can add a text message to forwarded messages. */
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+
+/* Title for the 'forward message(s)' view. */
+"FORWARD_MESSAGE_TITLE" = "Forward To";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Anda tidak mempunyai sebarang media dalam sembang ini.";
@@ -1865,7 +1904,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "Dalam panggilan ini · %ld orang";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ dan %3$@ orang lagi berada dalam panggilan ini";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, dan %3$@ orang lagi berada dalam panggilan ini";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Tidak dapat menerima audio & video daripada %@";
@@ -1883,10 +1922,10 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Belum ada orang dalam panggilan ini.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ dan %ld orang yang lain telah menyertai panggilan";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@, dan %ld orang yang lain telah menyertai panggilan";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ dan %ld orang yang lain telah meninggalkan panggilan";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@, dan %ld orang yang lain telah meninggalkan panggilan";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ telah menyertai panggilan";
@@ -1937,7 +1976,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ telah memulakan panggilan kumpulan";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ dan 1 orang lagi berada dalam panggilan ini";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, dan 1 orang lagi berada dalam panggilan ini";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ dan %2$@ berada dalam panggilan ini";
@@ -2315,7 +2354,7 @@
 "GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ ahli kumpulan mempunyai nama yang serupa, semak ahli-ahli di bawah atau pilih untuk mengambil tindakan.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ahli kumpulan mempunyai nama yang sama, semak ahli di bawah atau pilih untuk mengambil tindakan.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ ahli kumpulan mempunyai nama yang sama, semak ahli-ahli di bawah atau pilih untuk mengambil tindakan.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ ahli kumpulan mempunyai nama yang sama.";
@@ -2585,10 +2624,10 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Kumpulan Legasi lwn Baharu";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Naik tarafkan kumpulan ini untuk mengaktifkan ciri-ciri baharu seperti @sebutan dan pentadbir. Ahli-ahli yang belum kongsikan nama atau foto mereka dalam kumpulan ini akan dijemput untuk menyertai kumpulan. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Naik taraf kumpulan ini untuk mengaktifkan ciri-ciri baharu seperti @sebutan dan pentadbir. Ahli-ahli yang belum kongsikan nama atau foto mereka dalam kumpulan ini akan dijemput untuk menyertai kumpulan. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Tidak Dapat Naik Tarak ke Kumpulan Baharu";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Tidak Dapat Naik Taraf ke Kumpulan Baharu";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Kumpulan ini tidak dapat dinaik taraf ke Kumpulan Baharu kerana mempunyai terlalu banyak ahli. Saiz kumpulan maksimum yang boleh dinaik taraf ialah %@.";
@@ -2597,7 +2636,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Apabila semua ahli kumpulan semasa menggunakan versi Signal yang dapat menyertai Kumpulan Baharu, kumpulan ini akan dinaik taraf.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Semua sejarah dan media mesej akan disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Semua sejarah mesej dan media akan disimpan sebelum penaiktarafan.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Kumpulan ini tidak dapat dicipta kerana 1 ahli menggunakan Signal versi lama. Anda boleh mencipta Kumpulan Gaya Baharu dengan mereka selepas mereka mengemas kini Signal, atau mengalih keluar mereka sebelum mencipta kumpulan.";
@@ -2645,19 +2684,19 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Kumpulan Legasi";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Anda perlu menerima jemputan untuk menyertai kumpulan ini semula, dan tidak akan menerima mesej kumpulan sehingga anda menerima jemputan.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Anda perlu menerima jemputan untuk menyertai kumpulan ini semula, dan tidak akan mendapat mesej kumpulan sehingga anda menerima jemputan.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Naik Tarafkan Kumpulan";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Naik Taraf Kumpulan";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Untuk mengakses ciri-ciri baharu seperti @sebutan dan pentadbir, naik tarafkan kumpulan ini.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Untuk mengakses ciri-ciri baharu seperti @sebutan dan pentadbir, naik taraf kumpulan ini.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Apakah Kumpulan Baru?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Semua sejarah dan media mesej telah disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Semua sejarah mesej dan media telah disimpan sebelum penaiktarafan.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Kumpulan Baharu mempunyai ciri-ciri seperti @sebutan dan pentadbir kumpulan, dan akan menyokong lebih banyak ciri pada masa akan datang.";
@@ -2684,7 +2723,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ahli-ahli ini tidak dapat ditambah ke Kumpulan Baharu secara automatik apabila kumpulan dinaik taraf:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua sejarah dan media mesej telah disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua sejarah mesej dan media telah disimpan sebelum penaiktarafan.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ahli ini telah dialih keluar daripada kumpulan dan tidak dapat menyertai semula kumpulan sehingga mereka naik taraf:";
@@ -2693,10 +2732,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Ahli-ahli ini telah dialih keluar daripada kumpulan dan tidak akan dapat menyertai semula kumpulan sehingga mereka naik taraf:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Ahli ini perlu menerima jemputan untuk menyertai kumpulan ini sekali lagi, dan tidak akan menerima mesej kumpulan sehingga mereka menerima jemputan:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Ahli ini perlu menerima jemputan untuk menyertai kumpulan ini sekali lagi, dan tidak akan mendapat mesej kumpulan sehingga mereka menerima jemputan:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Ahli-ahli ini perlu menerima jemputan untuk menyertai kumpulan ini semula, dan tidak akan menerima mesej kumpulan sehingga mereka menerima jemputan:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Ahli-ahli ini perlu menerima jemputan untuk menyertai kumpulan ini semula, dan tidak akan mendapat mesej kumpulan sehingga mereka menerima jemputan:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Ahli ini tidak dapat menyertai Kumpulan Baharu dan akan dialih keluar daripada kumpulan:";
@@ -2708,13 +2747,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Naik taraf ke Group Baru";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Naik Tarafkan Kumpulan ini";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Naik Taraf Kumpulan ini";
 
 /* Message for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Kumpulan ini tidak dapat dinaik taraf ke Kumpulan Baharu sekarang.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Kumpulan ini tidak dapat dinaik taraf ke Kumpulan Baharu kerana anda tidak disambung ke Internet. Cuba lagi nanti.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Kumpulan ini tidak dapat dinaik taraf ke Kumpulan Baharu kerana anda tidak disambung ke Internet. Cuba sebentar lagi.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Tidak Dapat Melengkapkan Penaiktarafan";
@@ -2723,7 +2762,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Dinaik taraf ke Kumpulan Baharu.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "naik tarafkan kumpulan ini";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "naik taraf kumpulan ini";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Sebelum anda tinggalkan, pilih pentadbir baru untuk kumpulan ini.";
@@ -2741,7 +2780,7 @@
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Had ahli yang disyorkan telah dicapai";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Tambah ahli sahaja?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Teruskan tambah ahli?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Lihat Permintaan";
@@ -2756,7 +2795,7 @@
 "HELP_SUPPORT_CENTER" = "Pusat Sokongan";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Sembang Arkib";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Sembang Diarkib";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Disekat";
@@ -2957,7 +2996,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Gagal Memaut Peranti";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Peranti ini akan dapat melihat kumpulan dan kenalan anda, mengakses sembang anda dan menghantar mesej atas nama anda.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Peranti ini akan dapat melihat kumpulan dan kenalan anda, mengakses sembang anda, dan menghantar mesej atas nama anda.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Pautkan peranti ini?";
@@ -3091,6 +3130,9 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Majukan Mesej Ini";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Buka Jemputan Kumpulan";
 
@@ -3126,6 +3168,15 @@
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Pek Pelekat";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+
+/* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+
+/* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesej";
@@ -3382,6 +3433,9 @@
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal memerlukan akses kepada foto anda untuk ciri ini.";
 
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "Tiada";
+
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Anda tidak boleh memautkan sebarang peranti lagi.";
 
@@ -3494,7 +3548,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Anda mungkin menerima mesej semasa %@ anda mulakan semula.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Untuk menerima pemberitahuan untuk mesej baharu:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Untuk menerima pemberitahuan bagi mesej baharu:";
 
 /* First step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Ketik \"Pergi ke Tetapan\" di bawah";
@@ -3923,7 +3977,7 @@
 "PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Bayaran yang Diterima";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Pembayaran Dihantar";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Pembayaran yang Dihantar";
 
 /* Label for unknown payments. */
 "PAYMENTS_UNKNOWN_PAYMENT" = "Pembayaran Tidak Sah";
@@ -4304,7 +4358,7 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Tulis beberapa perkataan mengenai diri anda...";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Berbuat baik";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Berbuat baiklah";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Penggemar kopi";
@@ -4546,6 +4600,9 @@
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Anda perlu mendaftar sebelum anda boleh menghantar mesej.";
 
+/* Error message indicating that device transfer from another device might be possible. */
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Pengesahan Gagal";
 
@@ -4585,6 +4642,9 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Nombor telefon yang anda cuba daftarkan telah didaftarkan di pelayan lain, sila nyahdaftar dari sana dan cuba lagi.";
 
+/* Accessibility label for a button that removes the preview from a drafted message. */
+"REMOVE_PREVIEW" = "Remove preview";
+
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Pilih Pentadbir Baru";
 
@@ -4604,7 +4664,7 @@
 "RESEARCH_MODAL_NO_THANKS" = "Tidak, terima kasih";
 
 /* Text explaining why the user should take the survey */
-"RESEARCH_MODAL_PLEA" = "<bold>Kami mempercayai privasi.</bold>\n\nSignal tidak menjejaki anda atau mengumpulkan data anda. Untuk menambahbaikkan Signal untuk semua orang, kami bergantung pada maklum balas pengguna, <bold>dan kami inginkan maklum balas anda</bold>.\n\nKami sedang menjalankan tinjauan untuk memahami cara anda menggunakan Signal. Tinjauan kami tidak mengumpul mana-mana data yang akan mengenal pasti anda. Sekiranya anda berminat untuk berkongsi maklum balas tambahan, anda mempunyai pilihan untuk memberikan maklumat hubungan.\n\nSekiranya anda mempunyai beberapa minit dan maklum balas untuk ditawarkan, kami ingin mendengar pendapat anda.";
+"RESEARCH_MODAL_PLEA" = "<bold>Kami mempercayai privasi.</bold>\n\nSignal tidak menjejaki anda atau mengumpulkan data anda. Untuk menambahbaik Signal bagi semua orang, kami bergantung pada maklum balas pengguna, <bold>dan kami inginkan maklum balas anda</bold>.\n\nKami sedang menjalankan tinjauan untuk memahami cara anda menggunakan Signal. Tinjauan kami tidak mengumpul mana-mana data yang akan mengenal pasti anda. Sekiranya anda berminat untuk berkongsi maklum balas tambahan, anda mempunyai pilihan untuk memberikan maklumat hubungan.\n\nSekiranya anda mempunyai beberapa minit dan maklum balas untuk ditawarkan, kami ingin mendengar pendapat anda.";
 
 /* Button text for taking the research survey */
 "RESEARCH_MODAL_TAKE_SURVEY" = "Sertai tinjauan";
@@ -5300,7 +5360,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Kemas kini PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Dengan baki yang tinggi, anda mungkin mahu mengemas kini PIN kepada PIN abjad angka untuk menambah lebih banyak perlindungan pada akaun anda.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Dengan baki yang tinggi, anda mungkin mahu mengemas kini PIN kepada PIN abjad angka untuk menambah lebih banyak perlindungan kepada akaun anda.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Kemas kini PIN anda";
@@ -5384,7 +5444,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Butiran transaksi termasuk jumlah pembayaran dan masa transaksi adalah sebahagian daripada MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Butiran transaksi termasuk jumlah pembayaran dan masa transaksi ialah sebahagian daripada MobileCoin Ledger.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "\"Bayaran pembersihan syiling\" dikenakan apabila duit syiling yang anda miliki tidak dapat digabungkan untuk menyelesaikan transaksi. Pembersihan akan membenarkan anda terus menghantar pembayaran.";
@@ -5480,7 +5540,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Frasa pemulihan tidak sah.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Perkataan disalah eja.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Perkataan dieja salah.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Masukkan Frasa Pemulihan";
@@ -5513,7 +5573,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Anda boleh memindahkan MobileCoin dengan menyelesaikan pemindahan ke alamat dompet yang disediakan oleh pertukaran. Alamat dompet merupakan rentetan nombor dan huruf yang biasanya berada di bawah kod QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Periksa alamat dompet yang ingin anda pindah ke dan cuba lagi.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Periksa alamat dompet yang ingin anda pindahkan dan cuba lagi.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Alamat Tidak Betul";
@@ -5695,11 +5755,14 @@
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Foto dan Video";
 
-/* Setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Tunjukkan Sembang dalam Cadangan";
+/* Setting for enabling & disabling iOS contact sharing. */
+"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
 
-/* Footer for setting for enabling & disabling sharing suggestions. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Sembang Signal dipaparkan sebagai cadangan semasa berkongsi dari aplikasi lain.";
+/* Footer for setting for enabling & disabling contact sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+
+/* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kunci Pendaftaran";
@@ -6125,7 +6188,7 @@
 "UPDATE_GROUP_FAILED" = "Kumpulan tidak dapat dikemas kini.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Kumpulan tidak dapat dikemas kini. Periksa sambungan internet anda dan cuba lagi.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Kumpulan tidak dapat dikemas kini. Periksa sambungan Internet anda dan cuba lagi.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Cipta PIN anda";
