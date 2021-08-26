@@ -2431,8 +2431,7 @@ fileprivate extension CVComponentMessage {
     }
 
     private func buildNestedStackConfig(topMargin: ContentStackMargin,
-                                        bottomMargin: ContentStackMargin,
-                                        customSpacing: CGFloat? = nil) -> CVStackViewConfig {
+                                        bottomMargin: ContentStackMargin) -> CVStackViewConfig {
         func marginValue(_ margin: ContentStackMargin) -> CGFloat {
             switch margin {
             case .none:
@@ -2450,10 +2449,9 @@ fileprivate extension CVComponentMessage {
         var layoutMargins = conversationStyle.textInsets
         layoutMargins.top = marginValue(topMargin)
         layoutMargins.bottom = marginValue(bottomMargin)
-        let spacing = customSpacing ?? Self.textViewVSpacing
         return CVStackViewConfig(axis: .vertical,
                                  alignment: .fill,
-                                 spacing: spacing,
+                                 spacing: Self.textViewVSpacing,
                                  layoutMargins: layoutMargins)
     }
 
