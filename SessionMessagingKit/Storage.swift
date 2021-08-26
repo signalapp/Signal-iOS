@@ -33,6 +33,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func markJobAsFailed(_ job: Job, using transaction: Any)
     func getAllPendingJobs(of type: Job.Type) -> [Job]
     func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob?
+    func getAttachmentDownloadJob(for attachmentID: String) -> AttachmentDownloadJob?
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob?
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String)
     func isJobCanceled(_ job: Job) -> Bool
