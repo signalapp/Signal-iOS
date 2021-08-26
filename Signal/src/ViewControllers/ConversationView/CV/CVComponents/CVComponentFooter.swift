@@ -296,9 +296,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private var innerStackConfig: CVStackViewConfig {
         let layoutMargins = isBorderless ? UIEdgeInsets(hMargin: 12, vMargin: 3) : .zero
         return CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: CVComponentFooter.hSpacing,
-                          layoutMargins: layoutMargins)
+                                 alignment: .center,
+                                 spacing: CVComponentFooter.hSpacing,
+                                 layoutMargins: layoutMargins)
     }
 
     private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
@@ -328,7 +328,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
         let timestampLabelSize = CVText.measureLabel(config: timestampLabelConfig,
-                                                 maxWidth: maxWidth)
+                                                     maxWidth: maxWidth)
         innerSubviewInfos.append(timestampLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
         if hasPerConversationExpiration,

@@ -1321,8 +1321,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             var stackConfig = stackConfig
             func tryToOverlapBodyTextAndFooter() {
-                guard let bodyText = self.bodyText as? CVComponentBodyText,
-                      keys == [ .bodyText, .footer ] else {
+                guard keys == [ .bodyText, .footer ],
+                      let bodyText = self.bodyText as? CVComponentBodyText,
+                      let standaloneFooter = self.standaloneFooter,
+                      !standaloneFooter.hasTapForMore else {
                     return
                 }
                 guard let footerMeasurement = CVComponentFooter.footerMeasurement(measurementBuilder: measurementBuilder),
@@ -1349,11 +1351,43 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // TODO: Design is finalizing how this value should scale with dynamic type.
                 let spacingScaling = max(1, lineHeight / 20)
                 let kMinimumOverlapSpacingDefault: CGFloat = 6
-                let kMinimumOverlapSpacing = kMinimumOverlapSpacingDefault * spacingScaling
+                let minOverlapSpacing = kMinimumOverlapSpacingDefault * spacingScaling
 
-                let overlapWidth = ceil(lastLineRect.width) + kMinimumOverlapSpacing + footerMeasurement.measuredSize.width
-                let shouldOverlap = overlapWidth <= bodyTextMaxWidth
-                guard shouldOverlap else {
+                let isRTL = CurrentAppContext().isRTL
+                let bodyTextSize = bodyTextSubviewSize.width
+                let footerSize = footerMeasurement.measuredSize
+                let overlappedLastLineWidth = ceil(lastLineRect.width) + minOverlapSpacing + footerSize.width
+                let overlappedContentWidth = max(bodyTextSize, overlappedLastLineWidth)
+                let hasSpaceForOverlap = overlappedContentWidth <= bodyTextMaxWidth
+                guard hasSpaceForOverlap else {
+                    return
+                }
+
+                // Do collision detection to determine if footer and last line would
+                // collide if overlapped.
+                let isBodyTextAlignedLeft = !isRTL
+                let isFooterAlignedLeft = isIncoming ^ isRTL
+
+                var detectionLastLineFrame = CGRect(origin: .zero, size: lastLineRect.size)
+                if !isBodyTextAlignedLeft {
+                    detectionLastLineFrame.x = overlappedContentWidth - lastLineRect.width
+                }
+                // Simplify y-axis for purposes of collision detection.
+                detectionLastLineFrame.y = 0
+                detectionLastLineFrame.height = 1
+
+                var detectionFooterFrame = CGRect(origin: .zero, size: footerSize)
+                if !isFooterAlignedLeft {
+                    detectionFooterFrame.x = overlappedContentWidth - footerSize.width
+                }
+                // Inset one of the frames to account for the "min overlap spacing".
+                detectionFooterFrame = detectionFooterFrame.insetBy(dx: -minOverlapSpacing, dy: 0)
+                detectionFooterFrame.y = 0
+                detectionFooterFrame.height = 1
+
+                let doComponentsIntersect = detectionLastLineFrame.intersects(detectionFooterFrame)
+
+                guard !doComponentsIntersect else {
                     return
                 }
 
@@ -1372,7 +1406,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                             value: bottomNestedTextSpacing)
 
                 // 3. Rewrite the body text component size for overlap.
-                subviewSizes[0] = CGSize(width: max(bodyTextSubviewSize.width, overlapWidth),
+                subviewSizes[0] = CGSize(width: overlappedContentWidth,
                                          height: bodyTextSubviewSize.height)
             }
             tryToOverlapBodyTextAndFooter()
