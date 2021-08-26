@@ -83,6 +83,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
     private var shouldIgnoreEvents: Bool { Self.shouldIgnoreEvents(interaction: interaction) }
 
+    // TODO:
+    private static let shouldDetectDates = false
+
     private static func buildDataDetector(shouldAllowLinkification: Bool) -> NSDataDetector? {
         var checkingTypes = NSTextCheckingResult.CheckingType()
         if shouldAllowLinkification {
@@ -90,8 +93,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
         checkingTypes.insert(.address)
         checkingTypes.insert(.phoneNumber)
-        // TODO:
-        let shouldDetectDates = false
         if shouldDetectDates {
             checkingTypes.insert(.date)
         }
@@ -497,50 +498,21 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             return
         }
 
+        let bodyTextLabelConfig = buildBodyTextLabelConfig()
+        configureForBodyTextLabel(componentView: componentView,
+                                  bodyTextLabelConfig: bodyTextLabelConfig,
+                                  cellMeasurement: cellMeasurement)
+    }
+
+    public func buildBodyTextLabelConfig() -> CVBodyTextLabel.Config {
         switch bodyText {
         case .bodyText(let displayableText):
-            configureForBodyText(componentView: componentView,
-                                 displayableText: displayableText,
-                                 cellMeasurement: cellMeasurement)
+            return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
         case .oversizeTextDownloading:
-            owsAssertDebug(!componentView.isDedicatedCellView)
-
-            configureForOversizeTextDownloading(componentView: componentView,
-                                                cellMeasurement: cellMeasurement)
+            return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
         case .remotelyDeleted:
-            owsAssertDebug(!componentView.isDedicatedCellView)
-
-            configureForRemotelyDeleted(componentView: componentView,
-                                        cellMeasurement: cellMeasurement)
+            return bodyTextLabelConfig(labelConfig: labelConfigForRemotelyDeleted)
         }
-    }
-
-    private func configureForRemotelyDeleted(componentView: CVComponentViewBodyText,
-                                             cellMeasurement: CVCellMeasurement) {
-        let labelConfig = labelConfigForRemotelyDeleted
-        let bodyTextLabelConfig = self.bodyTextLabelConfig(labelConfig: labelConfig)
-        configureForBodyTextLabel(componentView: componentView,
-                                  bodyTextLabelConfig: bodyTextLabelConfig,
-                                  cellMeasurement: cellMeasurement)
-    }
-
-    private func configureForOversizeTextDownloading(componentView: CVComponentViewBodyText,
-                                                     cellMeasurement: CVCellMeasurement) {
-        let labelConfig = labelConfigForOversizeTextDownloading
-        let bodyTextLabelConfig = self.bodyTextLabelConfig(labelConfig: labelConfig)
-        configureForBodyTextLabel(componentView: componentView,
-                                  bodyTextLabelConfig: bodyTextLabelConfig,
-                                  cellMeasurement: cellMeasurement)
-    }
-
-    public func configureForBodyText(componentView: CVComponentViewBodyText,
-                                     displayableText: DisplayableText,
-                                     cellMeasurement: CVCellMeasurement) {
-        let textViewConfig = textConfig(displayableText: displayableText)
-        let bodyTextLabelConfig = self.bodyTextLabelConfig(textViewConfig: textViewConfig)
-        configureForBodyTextLabel(componentView: componentView,
-                                              bodyTextLabelConfig: bodyTextLabelConfig,
-                                              cellMeasurement: cellMeasurement)
     }
 
     public func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
@@ -593,18 +565,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private typealias TextConfig = CVTextViewConfig
 
     private func textConfig(displayableText: DisplayableText) -> TextConfig {
-
         let textValue = displayableText.textValue(isTextExpanded: isTextExpanded)
-
-        switch textValue {
-        case .text(let text):
-            let attributedText = NSAttributedString(string: text)
-            return self.textViewConfig(displayableText: displayableText,
-                                       attributedText: attributedText)
-        case .attributedText(let attributedText):
-            return self.textViewConfig(displayableText: displayableText,
-                                       attributedText: attributedText)
-        }
+        return self.textViewConfig(displayableText: displayableText,
+                                   attributedText: textValue.attributedString)
     }
 
     public static func configureTextView(_ textView: UITextView,
@@ -738,6 +701,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return CVTextViewConfig(attributedText: attributedText,
                                 font: textMessageFont,
                                 textColor: bodyTextColor,
+                                textAlignment: textAlignment,
                                 linkTextAttributes: linkTextAttributes)
     }
 
@@ -759,17 +723,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         owsAssertDebug(maxWidth > 0)
         let maxWidth = max(maxWidth, 0)
 
-        let bodyTextLabelConfig: CVBodyTextLabel.Config = {
-            switch bodyText {
-            case .bodyText(let displayableText):
-                let textViewConfig = textConfig(displayableText: displayableText)
-                return self.bodyTextLabelConfig(textViewConfig: textViewConfig)
-            case .oversizeTextDownloading:
-                return self.bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
-            case .remotelyDeleted:
-                return self.bodyTextLabelConfig(labelConfig: labelConfigForRemotelyDeleted)
-            }
-        }()
+        let bodyTextLabelConfig = buildBodyTextLabelConfig()
+
         let textMeasurement = CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: maxWidth)
         measurementBuilder.setObject(key: Self.measurementKey_textMeasurement, value: textMeasurement)
         measurementBuilder.setValue(key: Self.measurementKey_maxWidth, value: maxWidth)

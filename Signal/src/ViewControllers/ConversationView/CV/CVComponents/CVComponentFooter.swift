@@ -153,9 +153,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_innerStack,
                              subviews: innerViews)
-        if isIncoming {
-            outerViews.reverse()
-        }
         outerStack.configure(config: outerStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_outerStack,
@@ -347,9 +344,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: innerSubviewInfos)
         outerSubviewInfos.append(innerStackMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true))
-        if isIncoming {
-            outerSubviewInfos.reverse()
-        }
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,

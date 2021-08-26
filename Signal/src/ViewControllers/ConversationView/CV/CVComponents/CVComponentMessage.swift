@@ -1365,8 +1365,21 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
                 // Do collision detection to determine if footer and last line would
                 // collide if overlapped.
-                let isBodyTextAlignedLeft = !isRTL
-                let isFooterAlignedLeft = isIncoming ^ isRTL
+                let isFooterAlignedLeft = isRTL
+
+                var isBodyTextAlignedLeft = false
+                let bodyTextLabelConfig = bodyText.buildBodyTextLabelConfig()
+                // For body text messages, textAlignment should reflect the natural
+                // alignment of the content.
+                switch bodyTextLabelConfig.textAlignment {
+                case .left:
+                    isBodyTextAlignedLeft = true
+                case .right:
+                    isBodyTextAlignedLeft = false
+                default:
+                    Logger.warn("Unknown text alignment: \(bodyTextLabelConfig.textAlignment).")
+                    return
+                }
 
                 var detectionLastLineFrame = CGRect(origin: .zero, size: lastLineRect.size)
                 if !isBodyTextAlignedLeft {
