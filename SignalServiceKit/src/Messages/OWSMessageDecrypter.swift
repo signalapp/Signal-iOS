@@ -779,16 +779,36 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     @objc
+    func scheduleCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder, transaction readTx: SDSAnyReadTransaction) {
+        // Only bother scheduling if the timer isn't scheduled soon enough
+        // If a timer is scheduled to fire within 5s of the expiration date, consider that good enough
+        let flexibleExpirationDate = placeholder.expirationDate.addingTimeInterval(5)
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+
+        if flexibleExpirationDate.isBefore(fireDate) {
+            schedulePlaceholderCleanup(transaction: readTx)
+        }
+    }
+
+    @objc
     func schedulePlaceholderCleanup(transaction readTx: SDSAnyReadTransaction) {
         guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
 
+        // To debounce, we consider anything expiring within five seconds of a scheduled timer not worth the reschedule
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+        let flexibleExpirationDate = oldestPlaceholder.expirationDate.addingTimeInterval(5)
+        guard flexibleExpirationDate.isBefore(fireDate) else { return }
+
         DispatchQueue.main.async {
-            if oldestPlaceholder.expirationDate.isBeforeNow {
+            let currentFireDate = self.placeholderCleanupTimer?.fireDate ?? .distantFuture
+            let placeholderExpiration = oldestPlaceholder.expirationDate
+            let newScheduledDate = min(currentFireDate, placeholderExpiration)
+
+            if newScheduledDate.isBeforeNow {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Will perform cleanup...")
                 self.placeholderCleanupTimer = nil
                 self.cleanupExpiredPlaceholders()
-
-            } else if (self.placeholderCleanupTimer?.fireDate ?? .distantFuture).isAfter(oldestPlaceholder.expirationDate) {
+            } else if currentFireDate.timeIntervalSince(newScheduledDate) > 5 {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Scheduling timer...")
 
                 self.placeholderCleanupTimer = Timer.scheduledTimer(

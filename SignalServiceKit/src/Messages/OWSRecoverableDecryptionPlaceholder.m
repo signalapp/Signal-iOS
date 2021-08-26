@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];
-    [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
+    [self.messageDecrypter scheduleCleanupIfNecessaryFor:self transaction:transaction];
 }
 
 #pragma mark - <OWSReadTracking>
@@ -179,6 +179,23 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
     [super markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
 }
+
+#pragma mark - Testing
+
+#if DEBUG
+- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread sender:(SignalServiceAddress *)sender
+{
+    TSErrorMessageBuilder *builder = [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    builder.timestamp = timestamp;
+    builder.senderAddress = sender;
+
+    self = [super initErrorMessageWithBuilder:builder];
+    if (self) {
+        _hiddenUntilTimestamp = [NSDate distantFutureMillisecondTimestamp];
+    }
+    return self;
+}
+#endif
 
 @end
 
