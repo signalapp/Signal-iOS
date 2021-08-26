@@ -1212,9 +1212,10 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_uniqueThreadId_recordType_id"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"recordType"
-    ,"id"
-)
+    INDEX index_model_TSInteraction_on_uniqueThreadId_nonPlaceholder_id
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,recordType != 70
+        ,id
+    )
 ;

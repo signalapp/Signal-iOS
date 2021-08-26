@@ -1401,11 +1401,14 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.addRecordTypeIndex.rawValue) { db in
             do {
-                try db.create(
-                    index: "index_model_TSInteraction_on_uniqueThreadId_recordType_id",
-                    on: "model_TSInteraction",
-                    columns: ["uniqueThreadId", "recordType", "id"])
-
+                try db.execute(sql: """
+                    CREATE INDEX index_model_TSInteraction_on_uniqueThreadId_nonPlaceholder_id
+                    ON model_TSInteraction (
+                        \(interactionColumn: .threadUniqueId),
+                        \(interactionColumn: .recordType) != \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue),
+                        \(interactionColumn: .id)
+                    );
+                    """)
             } catch {
                 owsFail("Error: \(error)")
             }

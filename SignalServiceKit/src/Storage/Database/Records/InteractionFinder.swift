@@ -1010,20 +1010,9 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     // From: https://www.sqlite.org/optoverview.html
-    // > The initial columns of the index must be used with the = or IN or IS operators. The right-most
-    // > column that is used can employ inequalities.
-    //
-    // Where we need to filter placeholders, we're usually also sorting and filtering by the id as well.
-    // By using "recordType IN (everything but 3)" instead of "recordType IS NOT 3", we can get better
-    // performance by allowing the query to use inequality search on id.
-    private let filterPlaceholdersClause = """
-        AND \(interactionColumn: .recordType) IN (\(
-            SDSRecordType.allCases
-                .filter { $0 != .recoverableDecryptionPlaceholder }
-                .map { "\($0.rawValue)" }
-                .joined(separator: ",")
-        ))
-        """
+    // This clause has been tuned hand-in-hand with the index_model_TSInteraction_on_uniqueThreadId_nonPlaceholder_id index
+    // If you need to adjust this clause, you should probably update the index as well. This is a perf sensitive code path.
+    private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) != \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
         guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
