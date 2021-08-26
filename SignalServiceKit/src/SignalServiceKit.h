@@ -47,6 +47,7 @@
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalServiceKit/OWSStaticOutgoingMessage.h>
 #import <SignalServiceKit/OWSSyncMessageRequestResponseMessage.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>

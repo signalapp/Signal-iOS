@@ -108,36 +108,36 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                          body:(nullable NSString *)body
-                    bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                  contactShare:(nullable OWSContact *)contactShare
-               expireStartedAt:(uint64_t)expireStartedAt
-                     expiresAt:(uint64_t)expiresAt
-              expiresInSeconds:(unsigned int)expiresInSeconds
-            isViewOnceComplete:(BOOL)isViewOnceComplete
-             isViewOnceMessage:(BOOL)isViewOnceMessage
-                   linkPreview:(nullable OWSLinkPreview *)linkPreview
-                messageSticker:(nullable MessageSticker *)messageSticker
-                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-             receivedAtTimestamp:receivedAtTimestamp
-                          sortId:sortId
-                       timestamp:timestamp
-                  uniqueThreadId:uniqueThreadId];
-    
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId];
+
     if (!self) {
         return self;
     }
-    
+
     _attachmentIds = attachmentIds;
     _body = body;
     _bodyRanges = bodyRanges;
@@ -152,9 +152,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
     _wasRemotelyDeleted = wasRemotelyDeleted;
-    
+
     [self sdsFinalizeMessage];
-    
+
     return self;
 }
 
