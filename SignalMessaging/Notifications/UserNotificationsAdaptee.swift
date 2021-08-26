@@ -228,16 +228,30 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         var contentToUse: UNNotificationContent = content
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let interaction = interaction {
+            if DebugFlags.internalLogging {
+                Logger.info("Will donate interaction")
+            }
+
             interaction.donate(completion: { error in
+                if DebugFlags.internalLogging {
+                    Logger.info("Did donate interaction")
+                }
                 guard let error = error else {
                     return
                 }
                 owsFailDebug("Failed to donate incoming message intent \(error)")
             })
 
+            if DebugFlags.internalLogging {
+                Logger.info("Will update notification content with intent")
+            }
+
             if let intent = interaction.intent as? UNNotificationContentProviding {
                 do {
                     try contentToUse = content.updating(from: intent)
+                    if DebugFlags.internalLogging {
+                        Logger.info("Did update notification content with intent")
+                    }
                 } catch {
                     owsFailDebug("Failed to update UNNotificationContent for comm style notification")
                 }
@@ -247,7 +261,9 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
-        Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
+        if DebugFlags.internalLogging {
+            Logger.info("presenting notification with identifier: \(notificationIdentifier)")
+        }
         notificationCenter.add(request) { (error: Error?) in
             if let error = error {
                 owsFailDebug("Error: \(error)")

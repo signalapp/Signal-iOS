@@ -307,7 +307,7 @@ extension TSThread {
         // Generate avatar
         var image: INImage?
         if let contactAvatar = avatarBuilder.avatarImage(forAddress: recipient,
-                                                         diameterPoints: 120,
+                                                         diameterPoints: 40,
                                                          localUserDisplayMode: .asUser,
                                                          transaction: transaction), let contactAvatarPNG = contactAvatar.pngData() {
             image = INImage(imageData: contactAvatarPNG)
@@ -319,7 +319,7 @@ extension TSThread {
     private func intentThreadAvatarImage(transaction: SDSAnyReadTransaction) -> INImage? {
         var image: INImage?
         if let threadAvatar = avatarBuilder.avatarImage(forThread: self,
-                                                        diameterPoints: 120,
+                                                        diameterPoints: 40,
                                                         localUserDisplayMode: .noteToSelf,
                                                         transaction: transaction),
         let threadAvatarPng = threadAvatar.pngData() {
