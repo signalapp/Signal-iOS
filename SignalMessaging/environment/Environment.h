@@ -62,7 +62,7 @@
 
 @property (class, nonatomic) Environment *shared;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 // Should only be called by tests.
 + (void)clearSharedForTests;
 #endif

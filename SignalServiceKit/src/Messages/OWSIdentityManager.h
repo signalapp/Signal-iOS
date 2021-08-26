@@ -13,7 +13,7 @@ extern NSNotificationName const kNSNotificationNameIdentityStateDidChange;
 // number of bytes in a signal identity key, excluding the key-type byte.
 extern const NSUInteger kIdentityKeyLength;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 extern const NSUInteger kStoredIdentityKeyLength;
 #endif
 

@@ -148,7 +148,7 @@ public struct DeviceTransferProtoFile: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension DeviceTransferProtoFile {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -288,7 +288,7 @@ public struct DeviceTransferProtoDefault: Codable, CustomDebugStringConvertible 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension DeviceTransferProtoDefault {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -446,7 +446,7 @@ public struct DeviceTransferProtoDatabase: Codable, CustomDebugStringConvertible
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension DeviceTransferProtoDatabase {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -650,7 +650,7 @@ public struct DeviceTransferProtoManifest: Codable, CustomDebugStringConvertible
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension DeviceTransferProtoManifest {
     public func serializedDataIgnoringErrors() -> Data? {

@@ -60,7 +60,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-#if DEBUG
+#if TESTABLE_BUILD
 - (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread sender:(SignalServiceAddress *)sender;
 #endif
 

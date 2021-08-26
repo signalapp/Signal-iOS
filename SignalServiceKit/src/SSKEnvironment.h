@@ -118,7 +118,7 @@ extern NSNotificationName const WarmCachesNotification;
 
 + (void)setShared:(SSKEnvironment *)env;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 // Should only be called by tests.
 + (void)clearSharedForTests;
 #endif

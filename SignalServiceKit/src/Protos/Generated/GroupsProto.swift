@@ -257,7 +257,7 @@ public struct GroupsProtoAvatarUploadAttributes: Codable, CustomDebugStringConve
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoAvatarUploadAttributes {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -515,7 +515,7 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoMember {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -675,7 +675,7 @@ public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoPendingMember {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -858,7 +858,7 @@ public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoRequestingMember {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1093,7 +1093,7 @@ public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoAccessControl {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1433,7 +1433,7 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroup {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1570,7 +1570,7 @@ public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebug
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1693,7 +1693,7 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberAction: Codable, CustomDe
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeleteMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1841,7 +1841,7 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, Cust
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1964,7 +1964,7 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2087,7 +2087,7 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberAction: Codable, Cust
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2210,7 +2210,7 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberAction: Codable, C
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2333,7 +2333,7 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2456,7 +2456,7 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, C
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsAddRequestingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2579,7 +2579,7 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberAction: Codable
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2727,7 +2727,7 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codabl
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2850,7 +2850,7 @@ public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDeb
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyTitleAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2973,7 +2973,7 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAction: Codable, CustomDe
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3096,7 +3096,7 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3221,7 +3221,7 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3346,7 +3346,7 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Coda
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3471,7 +3471,7 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Cod
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3596,7 +3596,7 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3719,7 +3719,7 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction: Codab
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3842,7 +3842,7 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, Cus
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -3956,7 +3956,7 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codabl
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -4470,7 +4470,7 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangeActions {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -4630,7 +4630,7 @@ public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChange {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -4776,7 +4776,7 @@ public struct GroupsProtoGroupChangesGroupChangeState: Codable, CustomDebugStrin
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChangesGroupChangeState {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -4893,7 +4893,7 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupChanges {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -5051,7 +5051,7 @@ public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertib
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupAttributeBlob {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -5197,7 +5197,7 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: Codable, Cust
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -5346,7 +5346,7 @@ public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupInviteLink {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -5605,7 +5605,7 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupJoinInfo {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -5728,7 +5728,7 @@ public struct GroupsProtoGroupExternalCredential: Codable, CustomDebugStringConv
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension GroupsProtoGroupExternalCredential {
     public func serializedDataIgnoringErrors() -> Data? {

@@ -263,7 +263,7 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable, NSSecu
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SignalIOSProtoBackupSnapshotBackupEntity {
     @objc
@@ -415,7 +415,7 @@ public class SignalIOSProtoBackupSnapshot: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SignalIOSProtoBackupSnapshot {
     @objc
@@ -622,7 +622,7 @@ public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SignalIOSProtoDeviceName {
     @objc

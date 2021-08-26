@@ -135,7 +135,7 @@ class ConversationLoadPerformanceTest: PerformanceBaseTest {
                     let percentageComplete = Double(idx) / Double(count)
                     shouldInsertPlaceholder = (percentageComplete > 0.7 && percentageComplete < 0.95)
                 case .randomPlaceholders:
-                    shouldInsertPlaceholder = (Int.random(in: 0..<5) == 0)
+                    shouldInsertPlaceholder = (Int.random(in: 0..<100) < 20)
                 }
 
                 let message: TSMessage

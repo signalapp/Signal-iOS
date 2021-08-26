@@ -201,7 +201,7 @@ public class KeyBackupProtoRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoRequest {
     @objc
@@ -408,7 +408,7 @@ public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoResponse {
     @objc
@@ -704,7 +704,7 @@ public class KeyBackupProtoBackupRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoBackupRequest {
     @objc
@@ -915,7 +915,7 @@ public class KeyBackupProtoBackupResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoBackupResponse {
     @objc
@@ -1168,7 +1168,7 @@ public class KeyBackupProtoRestoreRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoRestoreRequest {
     @objc
@@ -1428,7 +1428,7 @@ public class KeyBackupProtoRestoreResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoRestoreResponse {
     @objc
@@ -1612,7 +1612,7 @@ public class KeyBackupProtoDeleteRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoDeleteRequest {
     @objc
@@ -1744,7 +1744,7 @@ public class KeyBackupProtoDeleteResponse: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension KeyBackupProtoDeleteResponse {
     @objc

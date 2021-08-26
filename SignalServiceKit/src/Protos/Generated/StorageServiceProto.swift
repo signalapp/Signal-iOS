@@ -136,7 +136,7 @@ public struct StorageServiceProtoStorageItem: Codable, CustomDebugStringConverti
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoStorageItem {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -253,7 +253,7 @@ public struct StorageServiceProtoStorageItems: Codable, CustomDebugStringConvert
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoStorageItems {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -387,7 +387,7 @@ public struct StorageServiceProtoStorageManifest: Codable, CustomDebugStringConv
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoStorageManifest {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -500,7 +500,7 @@ public struct StorageServiceProtoReadOperation: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoReadOperation {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -667,7 +667,7 @@ public struct StorageServiceProtoWriteOperation: Codable, CustomDebugStringConve
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoWriteOperation {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -861,7 +861,7 @@ public struct StorageServiceProtoManifestRecordKey: Codable, CustomDebugStringCo
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoManifestRecordKey {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -994,7 +994,7 @@ public struct StorageServiceProtoManifestRecord: Codable, CustomDebugStringConve
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoManifestRecord {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1152,7 +1152,7 @@ public struct StorageServiceProtoStorageRecord: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoStorageRecord {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1608,7 +1608,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoContactRecord {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1800,7 +1800,7 @@ public struct StorageServiceProtoGroupV1Record: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoGroupV1Record {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -1992,7 +1992,7 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoGroupV2Record {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2138,7 +2138,7 @@ public struct StorageServiceProtoAccountRecordPinnedConversationContact: Codable
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoAccountRecordPinnedConversationContact {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2293,7 +2293,7 @@ public struct StorageServiceProtoAccountRecordPinnedConversation: Codable, Custo
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoAccountRecordPinnedConversation {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2430,7 +2430,7 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoAccountRecordPayments {
     public func serializedDataIgnoringErrors() -> Data? {
@@ -2877,7 +2877,7 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension StorageServiceProtoAccountRecord {
     public func serializedDataIgnoringErrors() -> Data? {
