@@ -1518,6 +1518,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
+    } else {
+        OWSLogWarn(@"Failed to get user profile to generate avatar data")
     }
 
     return nil;
@@ -1836,6 +1838,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     NSData *_Nullable avatarData = [NSData dataWithContentsOfFile:filePath];
 
     if (![avatarData ows_isValidImage]) {
+        OWSLogWarn(@"Failed to get valid avatar data");
         return nil;
     }
 
