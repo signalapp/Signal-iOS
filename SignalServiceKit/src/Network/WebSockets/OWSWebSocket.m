@@ -91,7 +91,7 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 // trying to keep the socket open), all three should be clear.
 //
 // This represents how long we're trying to keep the socket open.
-@property (nonatomic, nullable) NSDate *backgroundKeepAliveUntilDate;
+@property (atomic, nullable) NSDate *backgroundKeepAliveUntilDate;
 // This timer is used to check periodically whether we should
 // close the socket.
 @property (nonatomic, nullable) NSTimer *backgroundKeepAliveTimer;
@@ -102,7 +102,7 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
 // because UIKit only provides a "will resign active" notification, not a "did resign active"
 // notification.
-@property (nonatomic) BOOL appIsActive;
+@property (atomic) BOOL appIsActive;
 
 @property (nonatomic) BOOL hasObservedNotifications;
 
@@ -843,8 +843,6 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 
 - (BOOL)shouldSocketBeOpen
 {
-    OWSAssertIsOnMainThread();
-
     // Don't open socket in app extensions.
     if (!CurrentAppContext().isMainApp) {
         if (SSKFeatureFlags.deprecateREST) {
