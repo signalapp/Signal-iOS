@@ -155,7 +155,7 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCodin
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisioningUuid {
     @objc
@@ -339,7 +339,7 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCodi
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisionEnvelope {
     @objc
@@ -681,7 +681,7 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension ProvisioningProtoProvisionMessage {
     @objc

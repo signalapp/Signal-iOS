@@ -10,7 +10,7 @@ import SignalCoreKit
 // Do not manually edit it, instead run `sds_codegen.sh`.
 
 @objc
-public enum SDSRecordType: UInt {
+public enum SDSRecordType: UInt, CaseIterable {
     case invalidIdentityKeyReceivingErrorMessage = 1
     case thread = 2
     case attachmentPointer = 3

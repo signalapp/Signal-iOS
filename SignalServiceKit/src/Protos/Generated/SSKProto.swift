@@ -459,7 +459,7 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoEnvelope {
     @objc
@@ -690,7 +690,7 @@ public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoTypingMessage {
     @objc
@@ -1024,7 +1024,7 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoContent {
     @objc
@@ -1281,7 +1281,7 @@ public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageOffer {
     @objc
@@ -1488,7 +1488,7 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageAnswer {
     @objc
@@ -1738,7 +1738,7 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageIceUpdate {
     @objc
@@ -1893,7 +1893,7 @@ public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageBusy {
     @objc
@@ -2124,7 +2124,7 @@ public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageHangup {
     @objc
@@ -2282,7 +2282,7 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessageOpaque {
     @objc
@@ -2644,7 +2644,7 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoCallMessage {
     @objc
@@ -2889,7 +2889,7 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecu
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageQuoteQuotedAttachment {
     @objc
@@ -3214,7 +3214,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageQuote {
     @objc
@@ -3502,7 +3502,7 @@ public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContactName {
     @objc
@@ -3742,7 +3742,7 @@ public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContactPhone {
     @objc
@@ -3982,7 +3982,7 @@ public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContactEmail {
     @objc
@@ -4375,7 +4375,7 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecur
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContactPostalAddress {
     @objc
@@ -4549,7 +4549,7 @@ public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContactAvatar {
     @objc
@@ -4817,7 +4817,7 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageContact {
     @objc
@@ -5072,7 +5072,7 @@ public class SSKProtoDataMessagePreview: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePreview {
     @objc
@@ -5322,7 +5322,7 @@ public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageSticker {
     @objc
@@ -5621,7 +5621,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageReaction {
     @objc
@@ -5776,7 +5776,7 @@ public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageDelete {
     @objc
@@ -5968,7 +5968,7 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageBodyRange {
     @objc
@@ -6126,7 +6126,7 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCodi
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessageGroupCallUpdate {
     @objc
@@ -6281,7 +6281,7 @@ public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSe
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentAmountMobileCoin {
     @objc
@@ -6438,7 +6438,7 @@ public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentAmount {
     @objc
@@ -6599,7 +6599,7 @@ public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable, NSSecureCod
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentRequestId {
     @objc
@@ -6809,7 +6809,7 @@ public class SSKProtoDataMessagePaymentRequest: NSObject, Codable, NSSecureCodin
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentRequest {
     @objc
@@ -6970,7 +6970,7 @@ public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentNotificationMobileCoin {
     @objc
@@ -7178,7 +7178,7 @@ public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecure
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentNotification {
     @objc
@@ -7339,7 +7339,7 @@ public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable, NSSecure
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePaymentCancellation {
     @objc
@@ -7546,7 +7546,7 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessagePayment {
     @objc
@@ -8160,7 +8160,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDataMessage {
     @objc
@@ -8318,7 +8318,7 @@ public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoNullMessage {
     @objc
@@ -8519,7 +8519,7 @@ public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoReceiptMessage {
     @objc
@@ -8860,7 +8860,7 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoVerified {
     @objc
@@ -9113,7 +9113,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
     @objc
@@ -9445,7 +9445,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageSent {
     @objc
@@ -9623,7 +9623,7 @@ public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageContacts {
     @objc
@@ -9780,7 +9780,7 @@ public class SSKProtoSyncMessageGroups: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageGroups {
     @objc
@@ -9960,7 +9960,7 @@ public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageBlocked {
     @objc
@@ -10154,7 +10154,7 @@ public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageRequest {
     @objc
@@ -10413,7 +10413,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageRead {
     @objc
@@ -10672,7 +10672,7 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageViewed {
     @objc
@@ -10889,7 +10889,7 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageConfiguration {
     @objc
@@ -11123,7 +11123,7 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecur
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageStickerPackOperation {
     @objc
@@ -11382,7 +11382,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageViewOnceOpen {
     @objc
@@ -11567,7 +11567,7 @@ public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageFetchLatest {
     @objc
@@ -11725,7 +11725,7 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageKeys {
     @objc
@@ -12046,7 +12046,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageMessageRequestResponse {
     @objc
@@ -12336,7 +12336,7 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NS
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageOutgoingPaymentMobileCoin {
     @objc
@@ -12545,7 +12545,7 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessageOutgoingPayment {
     @objc
@@ -13063,7 +13063,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoSyncMessage {
     @objc
@@ -13547,7 +13547,7 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoAttachmentPointer {
     @objc
@@ -13705,7 +13705,7 @@ public class SSKProtoGroupContextMember: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupContextMember {
     @objc
@@ -14012,7 +14012,7 @@ public class SSKProtoGroupContext: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupContext {
     @objc
@@ -14213,7 +14213,7 @@ public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupContextV2 {
     @objc
@@ -14388,7 +14388,7 @@ public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoContactDetailsAvatar {
     @objc
@@ -14820,7 +14820,7 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoContactDetails {
     @objc
@@ -14995,7 +14995,7 @@ public class SSKProtoGroupDetailsAvatar: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupDetailsAvatar {
     @objc
@@ -15153,7 +15153,7 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupDetailsMember {
     @objc
@@ -15512,7 +15512,7 @@ public class SSKProtoGroupDetails: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoGroupDetails {
     @objc
@@ -15719,7 +15719,7 @@ public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoPackSticker {
     @objc
@@ -15948,7 +15948,7 @@ public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoPack {
     @objc
@@ -16132,7 +16132,7 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoPaymentAddressMobileCoin {
     @objc
@@ -16289,7 +16289,7 @@ public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoPaymentAddress {
     @objc
@@ -16481,7 +16481,7 @@ public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension SSKProtoDecryptionErrorMessage {
     @objc

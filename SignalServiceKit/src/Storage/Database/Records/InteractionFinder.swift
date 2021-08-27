@@ -39,12 +39,12 @@ protocol InteractionFinderAdapter {
 
     func earliestKnownInteractionRowId(transaction: ReadTransaction) -> Int?
 
-    func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool, transaction: ReadTransaction) throws -> UInt?
-    func count(includingHiddenInteractions: Bool, transaction: ReadTransaction) -> UInt
+    func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool, transaction: ReadTransaction) throws -> UInt?
+    func count(excludingPlaceholders excludePlaceholders: Bool, transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
-    func enumerateInteractions(range: NSRange, includingHiddenInteractions: Bool, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
-    func interactionIds(inRange range: NSRange, includingHiddenInteractions: Bool, transaction: ReadTransaction) throws -> [String]
+    func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool, transaction: ReadTransaction) throws -> [String]
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
     func outgoingMessageCount(transaction: ReadTransaction) -> UInt
 
@@ -287,20 +287,20 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool = true, transaction: SDSAnyReadTransaction) throws -> UInt? {
+    public func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) throws -> UInt? {
         return try Bench(title: "InteractionFinder.distanceFromLatest") {
             switch transaction.readTransaction {
             case .grdbRead(let grdbRead):
-                return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, includingHiddenInteractions: countHidden, transaction: grdbRead)
+                return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
             }
         }
     }
 
-    @objc
-    public func count(includingHiddenInteractions includeHidden: Bool = true, transaction: SDSAnyReadTransaction) -> UInt {
+    @objc(countExcludingPlaceholders:transaction:)
+    public func count(excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return grdbAdapter.count(includingHiddenInteractions: includeHidden, transaction: grdbRead)
+            return grdbAdapter.count(excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
         }
     }
 
@@ -351,17 +351,17 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func enumerateInteractions(range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    public func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateInteractions(range: range, includingHiddenInteractions: includeHidden, transaction: grdbRead, block: block)
+            return try grdbAdapter.enumerateInteractions(range: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead, block: block)
         }
     }
 
-    public func interactionIds(inRange range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: SDSAnyReadTransaction) throws -> [String] {
+    public func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) throws -> [String] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.interactionIds(inRange: range, includingHiddenInteractions: includeHidden, transaction: grdbRead)
+            return try grdbAdapter.interactionIds(inRange: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
         }
     }
 
@@ -1009,14 +1009,17 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return try? Int.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 
-    func distanceFromLatest(interactionUniqueId: String, includingHiddenInteractions countHidden: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
+    // From: https://www.sqlite.org/optoverview.html
+    // This clause has been tuned hand-in-hand with the index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id index
+    // If you need to adjust this clause, you should probably update the index as well. This is a perf sensitive code path.
+    private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
+    func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
         guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
             SELECT id
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) = ?
-            \(countHidden ? "" : hiddenInteractionFilterClause)
+            \(excludePlaceholders ? filterPlaceholdersClause : "")
         """, arguments: [interactionUniqueId]) else {
             owsFailDebug("failed to find id for interaction \(interactionUniqueId)")
             return nil
@@ -1027,8 +1030,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) >= ?
-            \(countHidden ? "" : hiddenInteractionFilterClause)
-            ORDER BY \(interactionColumn: .id) DESC
+            \(excludePlaceholders ? filterPlaceholdersClause : "")
         """, arguments: [threadUniqueId, interactionId]) else {
             owsFailDebug("failed to find distance from latest message")
             return nil
@@ -1037,15 +1039,14 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return distanceFromLatest
     }
 
-    func count(includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction) -> UInt {
+    func count(excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) -> UInt {
         do {
-            let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
             guard let count = try UInt.fetchOne(transaction.database,
                                                 sql: """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                \(includeHidden ? "" : hiddenInteractionFilterClause)
+                \(excludePlaceholders ? filterPlaceholdersClause : "")
                 """,
                 arguments: [threadUniqueId]) else {
                     throw OWSAssertionError("count was unexpectedly nil")
@@ -1096,13 +1097,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    func enumerateInteractions(range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
+    func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        \(includeHidden ? "" : hiddenInteractionFilterClause)
+        \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
         OFFSET \(range.location)
@@ -1121,14 +1121,12 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    func interactionIds(inRange range: NSRange, includingHiddenInteractions includeHidden: Bool = true, transaction: GRDBReadTransaction) throws -> [String] {
-        let hiddenInteractionFilterClause = "AND (\(interactionColumn: .hiddenUntilTimestamp) < \(Date().ows_millisecondsSince1970) OR \(interactionColumn: .hiddenUntilTimestamp) IS NULL)"
-
+    func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) throws -> [String] {
         let sql = """
         SELECT \(interactionColumn: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        \(includeHidden ? "" : hiddenInteractionFilterClause)
+        \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id)
         LIMIT \(range.length)
         OFFSET \(range.location)

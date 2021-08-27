@@ -237,7 +237,7 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureC
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketRequestMessage {
     @objc
@@ -477,7 +477,7 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecure
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketResponseMessage {
     @objc
@@ -712,7 +712,7 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension WebSocketProtoWebSocketMessage {
     @objc

@@ -14,9 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-@property (assign, nonatomic, readonly) BOOL isVisible;
 @property (assign, nonatomic, readonly) BOOL supportsReplacement;
-@property (assign, nonatomic, readonly) uint64_t hiddenUntilTimestamp;
 
 /// After this date, the placeholder is no longer eligible for replacement with the original content.
 @property (strong, nonatomic, readonly) NSDate *expirationDate;
@@ -27,38 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 // `sds_codegen.sh`.
 
 // clang-format off
-
-- (instancetype)initWithGrdbId:(int64_t)grdbId
-                      uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                    contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(uint64_t)expireStartedAt
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                       errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
-                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-                          sender:(nullable SignalServiceAddress *)sender
-             wasIdentityVerified:(BOOL)wasIdentityVerified
-            hiddenUntilTimestamp:(uint64_t)hiddenUntilTimestamp
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:bodyRanges:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:sender:wasIdentityVerified:hiddenUntilTimestamp:));
-
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+#if TESTABLE_BUILD
+- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp
+                                          thread:(TSThread *)thread
+                                          sender:(SignalServiceAddress *)sender;
+#endif
 
 @end
 

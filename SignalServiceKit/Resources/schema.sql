@@ -115,7 +115,6 @@ CREATE
             ,"paymentRequest" BLOB
             ,"viewed" BOOLEAN
             ,"serverGuid" TEXT
-            ,"hiddenUntilTimestamp" INTEGER
         )
 ;
 
@@ -1210,4 +1209,13 @@ CREATE
     INDEX "MSLMessage_relatedMessageId"
         ON "MessageSendLog_Message"("uniqueId"
 )
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"id"
+)
+WHERE
+'recordType IS NOT 70'
 ;

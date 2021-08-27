@@ -81,7 +81,6 @@
     "InteractionRecord.hasEnded": 56, 
     "InteractionRecord.hasLegacyMessageState": 22, 
     "InteractionRecord.hasSyncedTranscript": 23, 
-    "InteractionRecord.hiddenUntilTimestamp": 65, 
     "InteractionRecord.infoMessageUserInfo": 50, 
     "InteractionRecord.isFromLinkedDevice": 24, 
     "InteractionRecord.isLocalChange": 25, 

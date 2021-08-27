@@ -67,9 +67,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-            self?.databaseStorage.read { [weak self] readTx in
-                self?.schedulePlaceholderCleanup(transaction: readTx)
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.sharedUtility.async {
+                self.databaseStorage.read { readTx in
+                    self.schedulePlaceholderCleanup(transaction: readTx)
+                }
             }
         }
     }
@@ -779,16 +782,36 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     @objc
+    func scheduleCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder, transaction readTx: SDSAnyReadTransaction) {
+        // Only bother scheduling if the timer isn't scheduled soon enough
+        // If a timer is scheduled to fire within 5s of the expiration date, consider that good enough
+        let flexibleExpirationDate = placeholder.expirationDate.addingTimeInterval(5)
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+
+        if flexibleExpirationDate.isBefore(fireDate) {
+            schedulePlaceholderCleanup(transaction: readTx)
+        }
+    }
+
+    @objc
     func schedulePlaceholderCleanup(transaction readTx: SDSAnyReadTransaction) {
         guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
 
+        // To debounce, we consider anything expiring within five seconds of a scheduled timer not worth the reschedule
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+        let flexibleExpirationDate = oldestPlaceholder.expirationDate.addingTimeInterval(5)
+        guard flexibleExpirationDate.isBefore(fireDate) else { return }
+
         DispatchQueue.main.async {
-            if oldestPlaceholder.expirationDate.isBeforeNow {
+            let currentFireDate = self.placeholderCleanupTimer?.fireDate ?? .distantFuture
+            let placeholderExpiration = oldestPlaceholder.expirationDate
+            let newScheduledDate = min(currentFireDate, placeholderExpiration)
+
+            if newScheduledDate.isBeforeNow {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Will perform cleanup...")
                 self.placeholderCleanupTimer = nil
                 self.cleanupExpiredPlaceholders()
-
-            } else if (self.placeholderCleanupTimer?.fireDate ?? .distantFuture).isAfter(oldestPlaceholder.expirationDate) {
+            } else if currentFireDate.timeIntervalSince(newScheduledDate) > 5 {
                 Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Scheduling timer...")
 
                 self.placeholderCleanupTimer = Timer.scheduledTimer(
@@ -802,7 +825,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     func cleanupExpiredPlaceholders() {
-        databaseStorage.asyncWrite { writeTx in
+        databaseStorage.asyncWrite(block: { writeTx in
             Logger.info("Performing placeholder cleanup")
             GRDBInteractionFinder.enumeratePlaceholders(transaction: writeTx.unwrapGrdbWrite) { placeholder, _ in
                 if placeholder.expirationDate.isBeforeNow {
@@ -823,12 +846,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                           transaction: writeTx)
                 }
             }
-        } completion: {
+        }, completionQueue: .sharedUtility) {
             self.databaseStorage.read { readTx in
                 self.schedulePlaceholderCleanup(transaction: readTx)
             }
         }
-
     }
 }
 

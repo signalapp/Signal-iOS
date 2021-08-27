@@ -502,7 +502,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: - Sender Certificate
 
-    #if DEBUG
+    #if TESTABLE_BUILD
     @objc
     public func hasSenderCertificates() -> Bool {
         return senderCertificate(uuidOnly: true, certificateExpirationPolicy: .permissive) != nil
