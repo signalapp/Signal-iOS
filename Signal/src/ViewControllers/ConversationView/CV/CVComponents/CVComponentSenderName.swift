@@ -70,7 +70,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
     private var labelConfig: CVLabelConfig {
         CVLabelConfig(attributedText: senderName,
-                      font: UIFont.ows_dynamicTypeSubheadline.ows_semibold,
+                      font: UIFont.ows_dynamicTypeFootnote.ows_semibold,
                       textColor: senderNameColor,
                       lineBreakMode: .byTruncatingTail)
     }
