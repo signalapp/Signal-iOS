@@ -43,6 +43,16 @@ extension NSError {
         }
         return userInfo[AFNetworkingOperationFailingURLResponseErrorKey] as? HTTPURLResponse
     }
+
+    @objc
+    public func matchesDomainAndCode(of other: NSError) -> Bool {
+        other.hasDomain(domain, code: code)
+    }
+
+    @objc
+    public func hasDomain(_ domain: String, code: Int) -> Bool {
+        self.domain == domain && self.code == code
+    }
 }
 
 // MARK: -
