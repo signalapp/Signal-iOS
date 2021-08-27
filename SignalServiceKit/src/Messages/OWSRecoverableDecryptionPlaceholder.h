@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_UNAVAILABLE;
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                                        groupId:(nullable NSData *)groupId
+                               untrustedGroupId:(nullable NSData *)untrustedGroupId
                                     transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
