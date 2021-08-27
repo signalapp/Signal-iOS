@@ -67,9 +67,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             object: nil
         )
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-            self?.databaseStorage.read { [weak self] readTx in
-                self?.schedulePlaceholderCleanup(transaction: readTx)
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.sharedUtility.async {
+                self.databaseStorage.read { readTx in
+                    self.schedulePlaceholderCleanup(transaction: readTx)
+                }
             }
         }
     }
@@ -822,7 +825,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     func cleanupExpiredPlaceholders() {
-        databaseStorage.asyncWrite { writeTx in
+        databaseStorage.asyncWrite(block: { writeTx in
             Logger.info("Performing placeholder cleanup")
             GRDBInteractionFinder.enumeratePlaceholders(transaction: writeTx.unwrapGrdbWrite) { placeholder, _ in
                 if placeholder.expirationDate.isBeforeNow {
@@ -843,12 +846,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                           transaction: writeTx)
                 }
             }
-        } completion: {
+        }, completionQueue: .sharedUtility) {
             self.databaseStorage.read { readTx in
                 self.schedulePlaceholderCleanup(transaction: readTx)
             }
         }
-
     }
 }
 
