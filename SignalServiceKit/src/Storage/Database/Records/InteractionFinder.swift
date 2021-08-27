@@ -1010,9 +1010,9 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     // From: https://www.sqlite.org/optoverview.html
-    // This clause has been tuned hand-in-hand with the index_model_TSInteraction_on_uniqueThreadId_nonPlaceholder_id index
+    // This clause has been tuned hand-in-hand with the index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id index
     // If you need to adjust this clause, you should probably update the index as well. This is a perf sensitive code path.
-    private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) != \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
+    private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
         guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
@@ -1031,7 +1031,6 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) >= ?
             \(excludePlaceholders ? filterPlaceholdersClause : "")
-            ORDER BY \(interactionColumn: .id) DESC
         """, arguments: [threadUniqueId, interactionId]) else {
             owsFailDebug("failed to find distance from latest message")
             return nil
