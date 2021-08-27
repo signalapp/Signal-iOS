@@ -324,6 +324,7 @@ public class CVLoadCoordinator: NSObject {
     // Each load is based
     private let loadBuildingRequestId = AtomicOptional<CVLoadRequest.RequestId>(nil)
     private let loadLandingRequestId = AtomicOptional<CVLoadRequest.RequestId>(nil)
+    private static let canOverlapLandingAnimations = true
 
     private let autoLoadMoreThreshold: TimeInterval = 2 * kSecondInterval
 
@@ -568,7 +569,11 @@ public class CVLoadCoordinator: NSObject {
         // This flag should already be cleared.
         owsAssertDebug(!didClearBuildingFlag)
         let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
-        owsAssertDebug(didClearLandingFlag)
+        if Self.canOverlapLandingAnimations {
+            owsAssertDebug(!didClearLandingFlag)
+        } else {
+            owsAssertDebug(didClearLandingFlag)
+        }
 
         // Initiate new load if necessary.
         loadIfNecessary()
@@ -685,8 +690,23 @@ public class CVLoadCoordinator: NSObject {
 
         // Once this load's landing has _begun_ we can start building the next load.
         // loadLandingRequestId ensures that we only land one load at a time.
+        //
+        // We cannot start building the next load until this point, since the next
+        // load will...
+        //
+        // * ...use the current renderState state as a point of departure.
+        // * ...assume the UICollectionView has already been updated to reflect
+        //   this load, so that it can safely performBatchUpdates().
         let didClearBuildingFlag = self.loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
         owsAssertDebug(didClearBuildingFlag)
+
+        // If we can overlap landing animations, we can start landing the next
+        // load immediately after we start landing this load.  If we commit to
+        // this behavior, we can eliminate loadLandingRequestId.
+        if Self.canOverlapLandingAnimations {
+            let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
+            owsAssertDebug(didClearLandingFlag)
+        }
 
         // Initiate new load if necessary.
         loadIfNecessary()
