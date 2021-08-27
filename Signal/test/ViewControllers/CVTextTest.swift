@@ -126,8 +126,8 @@ class CVTextTest: SignalBaseTest {
                 let measuredSize = CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: possibleWidth)
                 // CVBodyTextLabel only has a single measurement mechanism; there isn't
                 // an independent way to verify the correctness of measurements.
-                XCTAssertTrue(measuredSize.width > 0)
-                XCTAssertTrue(measuredSize.height > 0)
+                XCTAssertTrue(measuredSize.size.width > 0)
+                XCTAssertTrue(measuredSize.size.width > 0)
             }
         }
     }
