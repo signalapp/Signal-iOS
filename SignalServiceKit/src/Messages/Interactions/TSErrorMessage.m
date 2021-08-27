@@ -325,9 +325,10 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
     TSThread *_Nullable thread = nil;
     if (untrustedGroupId.length > 0) {
+        [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:writeTx];
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId
                                                                    transaction:transaction];
-        // If we aren't sure that the sender is a member of the reported grouupId, we should fall back
+        // If we aren't sure that the sender is a member of the reported groupId, we should fall back
         // to inserting the placeholder in the contact thread.
         if ([groupThread.groupMembership isFullMember:sender]) {
             thread = groupThread;
