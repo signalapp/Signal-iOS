@@ -174,12 +174,6 @@ public class FeatureFlags: BaseFlags {
     public static let newLinkDeviceScheme = build.includes(.dev)
 
     @objc
-    public static let forceSenderKeyAndMessageResend = build.includes(.qa)
-
-    @objc
-    public static let permitSenderKeyAndMessageResend = build.includes(.beta)
-
-    @objc
     public static let forceEnableGiphyMP4 = build.includes(.beta)
 
     @objc
