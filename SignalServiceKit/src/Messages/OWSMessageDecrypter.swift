@@ -285,7 +285,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     private func processError(
         _ error: Error,
         envelope: SSKProtoEnvelope,
-        groupId: Data?,
+        untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
@@ -346,13 +346,13 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     // If default, insert an error message right away
                     errorMessage = TSErrorMessage.failedDecryption(
                         for: envelope,
-                        groupId: groupId,
+                        untrustedGroupId: untrustedGroupId,
                         with: transaction)
                 case .resendable:
                     // If resendable, insert a placeholder
                     errorMessage = OWSRecoverableDecryptionPlaceholder(
                         failedEnvelope: envelope,
-                        groupId: groupId,
+                        untrustedGroupId: untrustedGroupId,
                         transaction: transaction)
                 case .implicit:
                     errorMessage = nil
@@ -587,7 +587,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let wrappedError = processError(
                 error,
                 envelope: envelope,
-                groupId: nil,
+                untrustedGroupId: nil,
                 cipherType: cipherType,
                 contentHint: .default,
                 transaction: transaction
@@ -691,7 +691,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(handleUnidentifiedSenderDecryptionError(
                 error: outerError.underlyingError,
                 envelope: envelope.buildIdentifiedCopy(using: outerError),
-                groupId: outerError.groupId,
+                untrustedGroupId: outerError.groupId,
                 cipherType: outerError.cipherType,
                 contentHint: SealedSenderContentHint(outerError.contentHint),
                 transaction: transaction)
@@ -700,7 +700,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(handleUnidentifiedSenderDecryptionError(
                 error: error,
                 envelope: envelope,
-                groupId: nil,
+                untrustedGroupId: nil,
                 cipherType: .plaintext,
                 contentHint: .default,
                 transaction: transaction)
@@ -760,7 +760,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     func handleUnidentifiedSenderDecryptionError(
         error: Error,
         envelope: SSKProtoEnvelope,
-        groupId: Data?,
+        untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
@@ -771,7 +771,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         } else if isSignalClientError(error) {
             return processError(error,
                                 envelope: envelope,
-                                groupId: groupId,
+                                untrustedGroupId: untrustedGroupId,
                                 cipherType: cipherType,
                                 contentHint: contentHint,
                                 transaction: transaction)

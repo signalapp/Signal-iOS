@@ -314,7 +314,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 + (instancetype)failedDecryptionForEnvelope:(SSKProtoEnvelope *)envelope
-                                    groupId:(nullable NSData *)groupId
+                           untrustedGroupId:(nullable NSData *)untrustedGroupId
                             withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
@@ -323,9 +323,15 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         return nil;
     }
 
-    TSThread *thread;
-    if (groupId.length > 0) {
-        thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+    TSThread *_Nullable thread = nil;
+    if (untrustedGroupId.length > 0) {
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId
+                                                                   transaction:transaction];
+        // If we aren't sure that the sender is a member of the reported grouupId, we should fall back
+        // to inserting the placeholder in the contact thread.
+        if ([groupThread.groupMembership isFullMember:sender]) {
+            thread = groupThread;
+        }
         OWSAssertDebug(thread);
     }
     if (!thread) {
