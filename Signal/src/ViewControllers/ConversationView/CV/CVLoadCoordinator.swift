@@ -546,11 +546,10 @@ public class CVLoadCoordinator: NSObject {
             if CVLoader.verboseLogging {
                 Logger.info("Load build complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
             }
-            guard let self = self,
-                  let delegate = self.delegate else {
-                throw OWSGenericError("Missing self or delegate.")
+            guard let self = self else {
+                throw OWSGenericError("Missing self.")
             }
-            return self.loadLandWhenSafePromise(update: update, delegate: delegate)
+            return self.loadLandWhenSafePromise(update: update)
         }.done(on: .main) { [weak self] () -> Void in
             self?.loadDidSucceed(loadRequest: loadRequest)
         }.catch(on: .main) { [weak self] (error) in
@@ -564,10 +563,6 @@ public class CVLoadCoordinator: NSObject {
         if CVLoader.verboseLogging {
             Logger.info("Load complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
         }
-
-        Logger.verbose("loadRequest.requestId: \(loadRequest.requestId)")
-        Logger.verbose("loadBuildingRequestId: \(loadBuildingRequestId.get())")
-        Logger.verbose("loadLandingRequestId: \(loadLandingRequestId.get())")
 
         let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
         // This flag should already be cleared.
@@ -594,101 +589,119 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: - Safe Landing
 
-    // Lands the load when its safe, blocking on scrolling.
-    private func loadLandWhenSafePromise(update: CVUpdate,
-                                         delegate: CVLoadCoordinatorDelegate) -> Promise<Void> {
+    // Lands the load when it is safe, blocking on animations,
+    // previous loads landing, etc.
+    private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
+        loadLandWhenSafe(update: update, loadResolver: loadResolver)
+
+        return loadPromise
+    }
+
+    private func loadLandWhenSafe(update: CVUpdate, loadResolver: Resolver<Void>) {
+
+        guard let delegate = self.delegate else {
+            loadResolver.reject(OWSGenericError("Missing self or delegate."))
+            return
+        }
+
         func canLandLoad() -> Bool {
             AssertIsOnMainThread()
 
-            // Allow multi selection animation load to land, even if keyboard is animating
+            // Allow multi selection animation load to land, even if keyboard is animating.
             if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
-               lastKeyboardAnimationDate.isAfterNow, viewState.selectionAnimationState != .willAnimate {
-                Logger.verbose("Waiting for keyboard animation.")
+               lastKeyboardAnimationDate.isAfterNow,
+               viewState.selectionAnimationState != .willAnimate {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for keyboard animation.")
+                }
                 return false
             }
             guard viewState.selectionAnimationState != .animating  else {
-                Logger.verbose("Waiting for selection animation.")
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for selection animation.")
+                }
                 return false
             }
             if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
-                Logger.verbose("Waiting for context menu animation.")
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for context menu animation.")
+                }
                 return false
             }
             guard !delegate.isLayoutApplyingUpdate else {
-                Logger.verbose("Waiting for isLayoutApplyingUpdate.")
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for isLayoutApplyingUpdate.")
+                }
                 return false
             }
-            guard !delegate.isLayoutApplyingUpdate else {
-                Logger.verbose("Waiting for areCellsAnimating.")
+            guard !delegate.areCellsAnimating else {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for areCellsAnimating.")
+                }
                 return false
             }
             return true
         }
 
-        func tryToResolve() {
-            let loadRequest = update.loadRequest
+        let loadRequest = update.loadRequest
 
-            // It's important that we only set loadLandingRequestId if canLandLoad is true.
-            guard canLandLoad(),
-                  self.loadLandingRequestId.tryToSetIfNil(loadRequest.requestId) else {
-
-                Logger.verbose("Waiting to land load.")
-                // We wait in a pretty tight loop to ensure loads land in a timely way.
-                //
-                // DispatchQueue.asyncAfter() will take longer to perform
-                // its block than DispatchQueue.async() if the CPU is under
-                // heavy load. That's desirable in this case.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-                    // TODO: Rework to retain weak self.
-                    tryToResolve()
-                }
-                return
-            }
-
-            let renderState = update.renderState
-            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-
-            self.renderState = renderState
-
-            let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
-            self.loadDidLandResolver = loadDidLandResolver
-
-            delegate.updateWithNewRenderState(update: update,
-                                              scrollAction: loadRequest.scrollAction,
-                                              updateToken: updateToken)
+        // It's important that we only set loadLandingRequestId if canLandLoad is true.
+        guard canLandLoad(),
+              self.loadLandingRequestId.tryToSetIfNil(loadRequest.requestId) else {
 
             if CVLoader.verboseLogging {
-                Logger.info("Load landing begun[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                Logger.verbose("Waiting to land load.")
             }
-
-            // Once this load's landing has _begun_ we can start building the next load.
-            // loadLandingRequestId ensures that we only land one load at a time.
-            let didClearBuildingFlag = self.loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
-            owsAssertDebug(didClearBuildingFlag)
-
-            // Initiate new load if necessary.
-            loadIfNecessary()
-
-            // Wait for landing to complete.
-            firstly { () -> Promise<Void> in
-                loadDidLandPromise
-            }.done(on: CVUtils.landingQueue) {
-                if CVLoader.verboseLogging {
-                    Logger.info("Load landing complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
-                loadResolver.fulfill(())
-            }.catch(on: CVUtils.landingQueue) { error in
-                loadResolver.reject(error)
+            // We wait in a pretty tight loop to ensure loads land in a timely way.
+            //
+            // DispatchQueue.asyncAfter() will take longer to perform
+            // its block than DispatchQueue.async() if the CPU is under
+            // heavy load. That's desirable in this case.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) { [weak self] in
+                self?.loadLandWhenSafe(update: update, loadResolver: loadResolver)
             }
+            return
         }
 
-        tryToResolve()
+        let renderState = update.renderState
+        let updateToken = delegate.willUpdateWithNewRenderState(renderState)
 
-        return loadPromise
+        self.renderState = renderState
+
+        let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
+        self.loadDidLandResolver = loadDidLandResolver
+
+        delegate.updateWithNewRenderState(update: update,
+                                          scrollAction: loadRequest.scrollAction,
+                                          updateToken: updateToken)
+
+        if CVLoader.verboseLogging {
+            Logger.info("Load landing begun[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+        }
+
+        // Once this load's landing has _begun_ we can start building the next load.
+        // loadLandingRequestId ensures that we only land one load at a time.
+        let didClearBuildingFlag = self.loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        owsAssertDebug(didClearBuildingFlag)
+
+        // Initiate new load if necessary.
+        loadIfNecessary()
+
+        // Wait for landing to complete.
+        firstly { () -> Promise<Void> in
+            loadDidLandPromise
+        }.done(on: CVUtils.landingQueue) {
+            if CVLoader.verboseLogging {
+                Logger.info("Load landing complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+            }
+            loadResolver.fulfill(())
+        }.catch(on: CVUtils.landingQueue) { error in
+            loadResolver.reject(error)
+        }
     }
 
     // -
