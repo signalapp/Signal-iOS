@@ -30,7 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 // --- CODE GENERATION MARKER
 
 #if TESTABLE_BUILD
-- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread sender:(SignalServiceAddress *)sender;
+- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp
+                                          thread:(TSThread *)thread
+                                          sender:(SignalServiceAddress *)sender;
 #endif
 
 @end
