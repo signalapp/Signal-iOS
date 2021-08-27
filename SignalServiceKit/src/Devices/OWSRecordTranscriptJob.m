@@ -149,7 +149,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
     // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
     // for attachments explicitly.
-    BOOL outgoingMessageHasContent = (outgoingMessage.hasRenderableContent || transcript.attachmentPointerProtos.count > 0);
+    BOOL outgoingMessageHasContent
+        = (outgoingMessage.hasRenderableContent || transcript.attachmentPointerProtos.count > 0);
     if (!outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage) {
         if (transcript.thread.isGroupV2Thread) {
             // This is probably a v2 group update.
