@@ -43,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>53</string>
+	<string>54</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -141,7 +141,7 @@
 		<string>INStartCallIntent</string>
 	</array>
 	<key>OWSBundleVersion4</key>
-	<string>5.19.0.53</string>
+	<string>5.19.0.54</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>
