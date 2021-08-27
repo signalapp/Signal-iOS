@@ -166,4 +166,8 @@ extension CVRenderItem: ConversationViewLayoutItem {
             return ConversationStyle.defaultMessageSpacing
         }
     }
+
+    public var canBeUsedForContinuity: Bool {
+        ConversationViewLayout.canInteractionBeUsedForScrollContinuity(itemModel.interaction)
+    }
 }

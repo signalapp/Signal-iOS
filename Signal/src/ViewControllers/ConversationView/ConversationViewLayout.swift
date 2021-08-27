@@ -54,6 +54,8 @@ public protocol ConversationViewLayoutItem {
     var cellSize: CGSize { get }
 
     func vSpacing(previousLayoutItem: ConversationViewLayoutItem) -> CGFloat
+
+    var canBeUsedForContinuity: Bool { get }
 }
 
 // MARK: -
@@ -81,6 +83,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let interactionUniqueId: String
         let indexPath: IndexPath
         let layoutAttributes: UICollectionViewLayoutAttributes
+        let canBeUsedForContinuity: Bool
     }
 
     fileprivate class LayoutInfo {
@@ -347,7 +350,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
             itemLayouts.append(ItemLayout(interactionUniqueId: layoutItem.interactionUniqueId,
                                           indexPath: indexPath,
-                                          layoutAttributes: itemAttributes))
+                                          layoutAttributes: itemAttributes,
+                                          canBeUsedForContinuity: layoutItem.canBeUsedForContinuity))
         }
 
         contentBottom += conversationStyle.contentMarginBottom
@@ -641,11 +645,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
             }
             let visibleIndexPaths = collectionView.indexPathsForVisibleItems
             return visibleIndexPaths.compactMap { indexPath -> String? in
-                guard let interaction = conversationViewController.interaction(forIndexPath: indexPath),
-                      Self.canInteractionBeUsedForScrollContinuity(interaction) else {
+                guard let layoutInfo = layoutInfo.itemLayouts[safe: indexPath.row],
+                      layoutInfo.canBeUsedForContinuity else {
                     return nil
                 }
-                return interaction.uniqueId
+                return layoutInfo.interactionUniqueId
             }
         }()
         return CVScrollContinuityToken(layoutInfo: layoutInfo,
@@ -655,7 +659,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // Some interactions shift around and cannot be reliably used as
     // references for scroll continuity.
-    private static func canInteractionBeUsedForScrollContinuity(_ interaction: TSInteraction) -> Bool {
+    public static func canInteractionBeUsedForScrollContinuity(_ interaction: TSInteraction) -> Bool {
         guard !interaction.isDynamicInteraction else {
             return false
         }
@@ -791,8 +795,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let contentOffsetBeforeUpdate = token.contentOffset
 
         var beforeItemLayoutMap = [String: ItemLayout]()
-        for itemLayout in layoutInfoBeforeUpdate.itemLayouts {
-            beforeItemLayoutMap[itemLayout.interactionUniqueId] = itemLayout
+        for beforeItemLayout in layoutInfoBeforeUpdate.itemLayouts {
+            guard beforeItemLayout.canBeUsedForContinuity else {
+                continue
+            }
+            beforeItemLayoutMap[beforeItemLayout.interactionUniqueId] = beforeItemLayout
         }
 
         // Honor the scroll continuity bias.
@@ -804,7 +811,8 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                     : layoutInfoAfterUpdate.itemLayouts.reversed())
 
         for afterItemLayout in afterItemLayouts {
-            guard let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
+            guard afterItemLayout.canBeUsedForContinuity,
+                  let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
                 continue
             }
             let frameBeforeUpdate = beforeItemLayout.layoutAttributes.frame
