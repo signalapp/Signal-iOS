@@ -281,6 +281,7 @@ extension ConversationViewController {
     func scrollToQuotedMessage(_ quotedReply: OWSQuotedReplyModel,
                                isAnimated: Bool) {
         if quotedReply.isRemotelySourced {
+            presentRemotelySourcedQuotedReplyToast()
             return
         }
         let quotedMessage = databaseStorage.read { transaction in
@@ -289,10 +290,8 @@ extension ConversationViewController {
                                           author: quotedReply.authorAddress,
                                           transaction: transaction)
         }
-        guard let message = quotedMessage else {
-            return
-        }
-        guard !message.wasRemotelyDeleted else {
+        guard let message = quotedMessage, !message.wasRemotelyDeleted else {
+            presentMissingQuotedReplyToast()
             return
         }
         ensureInteractionLoadedThenScrollToInteraction(message.uniqueId,

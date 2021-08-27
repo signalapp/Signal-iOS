@@ -1479,23 +1479,16 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         [attachmentIds addObjectsFromArray:message.attachmentIds];
     }
 
-    if (message.quotedMessage) {
+    if (message.quotedMessage.thumbnailAttachmentId) {
         // We need to update the message record here to reflect the new attachments we may create.
-        [message
-            anyUpdateOutgoingMessageWithTransaction:transaction
-                                              block:^(TSOutgoingMessage *message) {
-                                                  // Though we currently only ever expect at most one thumbnail, the
-                                                  // proto data model suggests this could change. The logic is intended
-                                                  // to work with multiple, but if we ever actually want to send
-                                                  // multiple, we should do more testing.
-                                                  NSArray<TSAttachmentStream *> *quotedThumbnailAttachments =
-                                                      [message.quotedMessage
-                                                          createThumbnailAttachmentsIfNecessaryWithTransaction:
-                                                              transaction];
-                                                  for (TSAttachmentStream *attachment in quotedThumbnailAttachments) {
-                                                      [attachmentIds addObject:attachment.uniqueId];
-                                                  }
-                                              }];
+        [message anyUpdateOutgoingMessageWithTransaction:transaction
+                                                   block:^(TSOutgoingMessage *message) {
+                                                       TSAttachmentStream *thumbnail = [message.quotedMessage
+                                                           createThumbnailIfNecessaryWithTransaction:transaction];
+                                                       if (thumbnail.uniqueId) {
+                                                           [attachmentIds addObject:thumbnail.uniqueId];
+                                                       }
+                                                   }];
     }
 
     if (message.contactShare.avatarAttachmentId != nil) {

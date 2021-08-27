@@ -1040,13 +1040,13 @@ public extension OWSAttachmentDownloads {
             return jobRequests
         }
 
-        if let quotedMessage = message.quotedMessage {
-            for attachmentId in quotedMessage.thumbnailAttachmentStreamIds() {
-                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
-            }
-            if let attachmentId = quotedMessage.thumbnailAttachmentPointerId() {
-                addJobRequest(attachmentId: attachmentId, category: .quotedReplyThumbnail)
-            }
+        // We only want to kick off a thumbnail fetching job if:
+        // - The thumbnail attachment is owned by the quoted message content (so it's solely responsible for fetching)
+        // - It's an unfetched pointer
+        if message.quotedMessage?.isThumbnailOwned == true,
+           let attachment = message.quotedMessage?.fetchThumbnail(with: transaction),
+           attachment is TSAttachmentPointer {
+            addJobRequest(attachment: attachment, category: .quotedReplyThumbnail)
         }
 
         if let attachmentId = message.contactShare?.avatarAttachmentId {
@@ -1091,14 +1091,14 @@ public extension OWSAttachmentDownloads {
                 Logger.warn("Missing message.")
                 return
             }
-            guard let thumbnailAttachmentPointerId = message.quotedMessage?.thumbnailAttachmentPointerId(),
+            guard let thumbnailAttachmentPointerId = message.quotedMessage?.thumbnailAttachmentId,
                   !thumbnailAttachmentPointerId.isEmpty else {
                 return
             }
             guard let quotedMessageThumbnail = (attachmentStreams.filter { $0.uniqueId == thumbnailAttachmentPointerId }.first) else {
                 return
             }
-            message.setQuotedMessageThumbnailAttachmentStream(quotedMessageThumbnail)
+            message.setQuotedMessageThumbnailAttachmentStream(quotedMessageThumbnail, transaction: transaction)
         }
     }
 

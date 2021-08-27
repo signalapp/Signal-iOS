@@ -312,12 +312,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [result addObjectsFromArray:self.attachmentIds];
     }
 
-    if (self.quotedMessage) {
-        [result addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
-
-        if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
-            [result addObject:self.quotedMessage.thumbnailAttachmentPointerId];
-        }
+    if (self.quotedMessage.thumbnailAttachmentId) {
+        [result addObject:self.quotedMessage.thumbnailAttachmentId];
     }
 
     if (self.contactShare.avatarAttachmentId) {
@@ -700,13 +696,43 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return _body.filterStringForDisplay;
 }
 
+- (nullable TSAttachment *)fetchQuotedMessageThumbnailWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSAttachment *_Nullable attachment = [self.quotedMessage fetchThumbnailWithTransaction:transaction];
+
+    // We should clone the attachment if it's been downloaded but our quotedMessage doesn't have its own copy.
+    BOOL needsClone = [attachment isKindOfClass:[TSAttachmentStream class]] && !self.quotedMessage.isThumbnailOwned;
+    TSAttachment * (^saveUpdatedThumbnail)(SDSAnyWriteTransaction *) = ^TSAttachment *(SDSAnyWriteTransaction *writeTx)
+    {
+        __block TSAttachment *_Nullable attachment = nil;
+        [self anyUpdateMessageWithTransaction:writeTx
+                                        block:^(TSMessage *message) {
+                                            attachment = [message.quotedMessage
+                                                createThumbnailIfNecessaryWithTransaction:writeTx];
+                                        }];
+        return attachment;
+    };
+
+    // If we happen to be handed a write transaction, we can perform the clone synchronously
+    // Otherwise, just hand the caller what we have. We'll clone it async.
+    if (needsClone && [transaction isKindOfClass:[SDSAnyWriteTransaction class]]) {
+        attachment = saveUpdatedThumbnail((SDSAnyWriteTransaction *)transaction);
+    } else if (needsClone) {
+        DatabaseStorageAsyncWrite(
+            self.databaseStorage, ^(SDSAnyWriteTransaction *writeTx) { saveUpdatedThumbnail(writeTx); });
+    }
+    return attachment;
+}
+
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
     OWSAssertDebug(self.quotedMessage);
-    OWSAssertDebug(self.quotedMessage.quotedAttachments.count == 1);
-
-    [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message.quotedMessage setThumbnailAttachmentStream:attachmentStream];
+                                    }];
 }
 
 #pragma mark - Update With... Methods
@@ -886,19 +912,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    NSMutableSet<NSString *> *quotedReplyAttachmentIds = [NSMutableSet new];
-    if (self.quotedMessage.thumbnailAttachmentStreamIds != nil) {
-        [quotedReplyAttachmentIds addObjectsFromArray:self.quotedMessage.thumbnailAttachmentStreamIds];
+    if (self.quotedMessage.thumbnailAttachmentId) {
+        [unknownAttachmentIds removeObject:self.quotedMessage.thumbnailAttachmentId];
     }
-    if (self.quotedMessage.thumbnailAttachmentPointerId != nil) {
-        [quotedReplyAttachmentIds addObject:self.quotedMessage.thumbnailAttachmentPointerId];
-    }
-    [unknownAttachmentIds minusSet:quotedReplyAttachmentIds];
-    if (shouldRemoveQuotedReply) {
-        for (NSString *attachmentId in quotedReplyAttachmentIds) {
-            OWSLogVerbose(@"Removing quoted reply attachment.");
-            [self removeAttachmentWithId:attachmentId transaction:transaction];
-        }
+    if (shouldRemoveQuotedReply && self.quotedMessage.thumbnailAttachmentId) {
+        OWSLogVerbose(@"Removing quoted reply attachment.");
+        [self removeAttachmentWithId:self.quotedMessage.thumbnailAttachmentId transaction:transaction];
     }
 
     // Err on the side of cleaning up unknown attachments.

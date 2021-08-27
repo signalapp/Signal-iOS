@@ -22,16 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                    authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(nullable NSString *)body
-                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                       bodySource:(TSQuotedMessageContentSource)bodySource
-                   thumbnailImage:(nullable UIImage *)thumbnailImage
-                      contentType:(nullable NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed NS_DESIGNATED_INITIALIZER;
+                       authorAddress:(SignalServiceAddress *)authorAddress
+                                body:(nullable NSString *)body
+                          bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                          bodySource:(TSQuotedMessageContentSource)bodySource
+                      thumbnailImage:(nullable UIImage *)thumbnailImage
+                         contentType:(nullable NSString *)contentType
+                      sourceFilename:(nullable NSString *)sourceFilename
+                    attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+    failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -41,16 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Initializers
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                    authorAddress:(SignalServiceAddress *)authorAddress
-                             body:(nullable NSString *)body
-                       bodyRanges:(nullable MessageBodyRanges *)bodyRanges
-                       bodySource:(TSQuotedMessageContentSource)bodySource
-                   thumbnailImage:(nullable UIImage *)thumbnailImage
-                      contentType:(nullable NSString *)contentType
-                   sourceFilename:(nullable NSString *)sourceFilename
-                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
-       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
-          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
+                       authorAddress:(SignalServiceAddress *)authorAddress
+                                body:(nullable NSString *)body
+                          bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                          bodySource:(TSQuotedMessageContentSource)bodySource
+                      thumbnailImage:(nullable UIImage *)thumbnailImage
+                         contentType:(nullable NSString *)contentType
+                      sourceFilename:(nullable NSString *)sourceFilename
+                    attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+    failedThumbnailAttachmentPointer:(nullable TSAttachmentPointer *)failedThumbnailAttachmentPointer
 {
     self = [super init];
     if (!self) {
@@ -66,42 +65,35 @@ NS_ASSUME_NONNULL_BEGIN
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _attachmentStream = attachmentStream;
-    _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
-    _thumbnailDownloadFailed = thumbnailDownloadFailed;
+    _failedThumbnailAttachmentPointer = failedThumbnailAttachmentPointer;
 
     return self;
 }
 
 #pragma mark - Factory Methods
 
-+ (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(SDSAnyReadTransaction *)transaction
++ (nullable instancetype)quotedReplyFromMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
-    OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
+    TSQuotedMessage *quotedMessage = message.quotedMessage;
+    if (!quotedMessage) {
+        return nil;
+    }
 
-    BOOL thumbnailDownloadFailed = NO;
     UIImage *_Nullable thumbnailImage;
-    TSAttachmentPointer *attachmentPointer;
-    if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+    TSAttachment *_Nullable attachment = [message fetchQuotedMessageThumbnailWithTransaction:transaction];
+    TSAttachmentPointer *_Nullable failedAttachmentPointer = nil;
 
-        TSAttachmentStream *attachmentStream;
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            attachmentStream = (TSAttachmentStream *)attachment;
-            thumbnailImage = attachmentStream.thumbnailImageSmallSync;
-        }
-    } else if (attachmentInfo.thumbnailAttachmentPointerId) {
-        // download failed, or hasn't completed yet.
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
-
+    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+        thumbnailImage = [(TSAttachmentStream *)attachment thumbnailImageSmallSync];
+    } else if (!quotedMessage.isThumbnailOwned) {
+        // If the quoted message isn't owning the thumbnail attachment, it's going to be referencing
+        // some other attachment (e.g. undownloaded media). In this case, let's just use the blur hash
+        thumbnailImage = attachment.blurHash ? [BlurHash imageForBlurHash:attachment.blurHash] : nil;
+    } else {
+        // If the quoted message has ownership of the thumbnail, but it hasn't been downloaded yet,
+        // we shoud surface this in the view.
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            attachmentPointer = (TSAttachmentPointer *)attachment;
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                thumbnailDownloadFailed = YES;
-            }
+            failedAttachmentPointer = (TSAttachmentPointer *)attachment;
         }
     }
 
@@ -111,11 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
                                 bodyRanges:quotedMessage.bodyRanges
                                 bodySource:quotedMessage.bodySource
                             thumbnailImage:thumbnailImage
-                               contentType:attachmentInfo.contentType
-                            sourceFilename:attachmentInfo.sourceFilename
+                               contentType:quotedMessage.contentType
+                            sourceFilename:quotedMessage.sourceFilename
                           attachmentStream:nil
-                thumbnailAttachmentPointer:attachmentPointer
-                   thumbnailDownloadFailed:thumbnailDownloadFailed];
+          failedThumbnailAttachmentPointer:failedAttachmentPointer];
 }
 
 + (nullable instancetype)quotedReplyForSendingWithItem:(id<CVItemViewModel>)item
@@ -161,8 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:nil
                                 sourceFilename:nil
                               attachmentStream:nil
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     if (item.contactShare) {
@@ -181,8 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:nil
                                 sourceFilename:nil
                               attachmentStream:nil
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     if (item.stickerInfo || item.stickerAttachment || item.stickerMetadata) {
@@ -270,8 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contentType:contentType
                                 sourceFilename:quotedAttachment.sourceFilename
                               attachmentStream:quotedAttachment
-                    thumbnailAttachmentPointer:nil
-                       thumbnailDownloadFailed:NO];
+              failedThumbnailAttachmentPointer:nil];
     }
 
     NSString *_Nullable quotedText = message.body;
@@ -353,22 +341,19 @@ NS_ASSUME_NONNULL_BEGIN
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
-                thumbnailAttachmentPointer:nil
-                   thumbnailDownloadFailed:NO];
+          failedThumbnailAttachmentPointer:nil];
 }
 
 #pragma mark - Instance Methods
 
 - (TSQuotedMessage *)buildQuotedMessageForSending
 {
-    NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
-
     // Legit usage of senderTimestamp to reference existing message
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
                                         authorAddress:self.authorAddress
                                                  body:self.body
                                            bodyRanges:self.bodyRanges
-                          quotedAttachmentsForSending:attachments];
+                           quotedAttachmentForSending:self.attachmentStream];
 }
 
 - (BOOL)isRemotelySourced

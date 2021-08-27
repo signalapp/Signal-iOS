@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
-@class OWSAttachmentInfo;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
