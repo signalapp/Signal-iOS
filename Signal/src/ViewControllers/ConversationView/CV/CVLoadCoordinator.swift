@@ -537,12 +537,18 @@ public class CVLoadCoordinator: NSObject {
         }
 
         firstly { () -> Promise<CVUpdate> in
-            loader.loadPromise()
-        }.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
+            let updatePromise = loader.loadPromise()
+
             if CVLoader.verboseLogging {
-                Logger.info("Load land dispatch[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                // If we're doing verbose logging, add this step to the promise chain
+                // so that we can measure the delay dispatching onto .main.
+                return updatePromise.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
+                    Logger.info("Load land dispatch[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                    return update
+                }
+            } else {
+                return updatePromise
             }
-            return update
         }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<Void> in
             if CVLoader.verboseLogging {
                 Logger.info("Load build complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
