@@ -133,7 +133,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        if ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == ENOENT) {
+        if ([error hasDomain:NSPOSIXErrorDomain code:ENOENT] ||
+            [error hasDomain:NSCocoaErrorDomain code:NSFileReadNoSuchFileError]) {
             // Races may cause files to be removed while we crawl the directory contents.
             OWSLogWarn(@"Error: %@", error);
         } else {
