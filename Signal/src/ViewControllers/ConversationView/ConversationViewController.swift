@@ -183,7 +183,6 @@ public class ConversationViewController: OWSViewController {
 
         // This should kick off the first load.
         owsAssertDebug(!self.hasRenderState)
-        owsAssertDebug(!self.loadCoordinator.hasLoadInFlight)
         self.updateConversationStyle()
     }
 

@@ -41,7 +41,7 @@ public class AtomicBool: NSObject {
 
     @objc
     public func get() -> Bool {
-        return value.get()
+        value.get()
     }
 
     @objc
@@ -52,7 +52,7 @@ public class AtomicBool: NSObject {
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
     private func transition(from fromValue: Bool, to toValue: Bool) throws {
-        return try value.transition(from: fromValue, to: toValue)
+        try value.transition(from: fromValue, to: toValue)
     }
 
     @objc
@@ -89,7 +89,7 @@ public class AtomicUInt: NSObject {
 
     @objc
     public func get() -> UInt {
-        return value.get()
+        value.get()
     }
 
     @objc
@@ -100,19 +100,19 @@ public class AtomicUInt: NSObject {
     @discardableResult
     @objc
     public func increment() -> UInt {
-        return value.map { $0 + 1 }
+        value.map { $0 + 1 }
     }
 
     @discardableResult
     @objc
     public func decrementOrZero() -> UInt {
-        return value.map { max($0, 1) - 1 }
+        value.map { max($0, 1) - 1 }
     }
 
     @discardableResult
     @objc
     public func add(_ delta: UInt) -> UInt {
-        return value.map { $0 + delta }
+        value.map { $0 + delta }
     }
 }
 
@@ -132,7 +132,7 @@ public final class AtomicValue<T> {
 
     public func get() -> T {
         Atomics.perform {
-            return self.value
+            self.value
         }
     }
 
@@ -192,7 +192,7 @@ public final class AtomicOptional<T> {
     }
 
     public func get() -> T? {
-        return value.get()
+        value.get()
     }
 
     public func set(_ value: T?) {
@@ -218,10 +218,37 @@ extension AtomicOptional: Codable where T: Codable {
 }
 
 extension AtomicOptional where T: Equatable {
+
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
-    public func transition(from fromValue: T, to toValue: T) throws {
+    public func transition(from fromValue: T?, to toValue: T?) throws {
         try value.transition(from: fromValue, to: toValue)
+    }
+
+    public func setIfNil(_ newValue: T) throws {
+        try value.transition(from: nil, to: newValue)
+    }
+
+    public func tryToSetIfNil(_ newValue: T) -> Bool {
+        do {
+            try setIfNil(newValue)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    public func clearIfEqual(_ oldValue: T) throws {
+        try value.transition(from: oldValue, to: nil)
+    }
+
+    public func tryToClearIfEqual(_ oldValue: T) -> Bool {
+        do {
+            try clearIfEqual(oldValue)
+            return true
+        } catch {
+            return false
+        }
     }
 }
 
