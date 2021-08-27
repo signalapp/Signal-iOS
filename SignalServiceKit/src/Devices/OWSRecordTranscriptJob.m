@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (transcript.isExpirationTimerUpdate) {
         // early return to avoid saving an empty incoming message.
         OWSAssertDebug(transcript.body.length == 0);
-        OWSAssertDebug(transcript.attachmentPointerProtos == 0);
+        OWSAssertDebug(transcript.attachmentPointerProtos.count == 0);
 
         return;
     }
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Typically `hasRenderableContent` will depend on whether or not the message has any attachmentIds
     // But since outgoingMessage is partially built and doesn't have the attachments yet, we check
     // for attachments explicitly.
-    BOOL outgoingMessageHasContent = (outgoingMessage.hasRenderableContent || transcript.attachmentPointerProtos);
+    BOOL outgoingMessageHasContent = (outgoingMessage.hasRenderableContent || transcript.attachmentPointerProtos.count > 0);
     if (!outgoingMessageHasContent && !outgoingMessage.isViewOnceMessage) {
         if (transcript.thread.isGroupV2Thread) {
             // This is probably a v2 group update.

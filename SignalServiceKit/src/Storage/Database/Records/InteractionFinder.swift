@@ -1019,7 +1019,6 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             SELECT id
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) = ?
-            \(excludePlaceholders ? filterPlaceholdersClause : "")
         """, arguments: [interactionUniqueId]) else {
             owsFailDebug("failed to find id for interaction \(interactionUniqueId)")
             return nil
