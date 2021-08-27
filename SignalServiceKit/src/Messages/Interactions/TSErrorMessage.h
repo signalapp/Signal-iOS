@@ -129,6 +129,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
                                     groupId:(nullable NSData *)groupId
                             withTransaction:(SDSAnyWriteTransaction *)transaction;
 
++ (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
+                                   thread:(TSThread *)thread
+                                timestamp:(uint64_t)timestamp
+                              transaction:(SDSAnyWriteTransaction *)transaction;
+
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *sender;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;

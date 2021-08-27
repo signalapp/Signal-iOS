@@ -37,7 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
     builder.timestamp = envelope.timestamp;
     builder.senderAddress = sender;
 
-    return [super initErrorMessageWithBuilder:builder];
+    self = [super initErrorMessageWithBuilder:builder];
+    if (self) {
+        _hiddenUntilTimestamp = [NSDate distantFutureMillisecondTimestamp];
+    }
+    return self;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -51,40 +55,129 @@ NS_ASSUME_NONNULL_BEGIN
 // `sds_codegen.sh`.
 
 // clang-format off
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                      bodyRanges:(nullable MessageBodyRanges *)bodyRanges
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                       errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                          sender:(nullable SignalServiceAddress *)sender
+             wasIdentityVerified:(BOOL)wasIdentityVerified
+            hiddenUntilTimestamp:(uint64_t)hiddenUntilTimestamp
+{
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                        bodyRanges:bodyRanges
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
+                       linkPreview:linkPreview
+                    messageSticker:messageSticker
+                     quotedMessage:quotedMessage
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted
+                         errorType:errorType
+                              read:read
+                  recipientAddress:recipientAddress
+                            sender:sender
+               wasIdentityVerified:wasIdentityVerified];
+
+    if (!self) {
+        return self;
+    }
+
+    _hiddenUntilTimestamp = hiddenUntilTimestamp;
+
+    return self;
+}
+
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
 #pragma mark - Methods
 
-- (void)adjustTimestamp:(uint64_t)timestamp
+- (NSDate *)expirationDate
 {
-    OWSAssert(timestamp > 0);
-    self.timestamp = timestamp;
-}
-
-- (BOOL)isVisible
-{
-    // If this interaction has ever been seen or the recovery period has elapsed, we should make
-    // this visible to the user.
     NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
     OWSAssertDebug(expirationInterval >= 0);
 
-    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
-    return [expiration isBeforeNow] || self.wasRead;
+    if (SSKDebugFlags.fastPlaceholderExpiration.value) {
+        expirationInterval = MIN(expirationInterval, 5.0);
+    }
+
+    return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
 }
 
 - (BOOL)supportsReplacement
 {
-    return !self.isVisible;
+    return [self.expirationDate isAfterNow] && !self.wasRead;
 }
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *formatString = NSLocalizedString(
-        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
-    NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
-    return [[NSString alloc] initWithFormat:formatString, senderName];
+    NSString *_Nullable senderName = nil;
+    if (self.sender) {
+        senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
+    }
+
+    if (SSKDebugFlags.showFailedDecryptionPlaceholders.value) {
+        return [[NSString alloc]
+            initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
+    } else if (senderName) {
+        OWSFailDebug(@"Should not be directly surfaced to user");
+        NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+            @"Error message for a decryption failure. Embeds {{sender short name}}.");
+        return [[NSString alloc] initWithFormat:formatString, senderName];
+    } else {
+        OWSFailDebug(@"Should not be directly surfaced to user");
+        return NSLocalizedString(
+            @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
+    }
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [self.messageDecrypter schedulePlaceholderCleanupWithTransaction:transaction];
+}
+
+#pragma mark - <OWSReadTracking>
+
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReceiptCircumstance)circumstance
+                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
+    [super markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
 }
 
 @end

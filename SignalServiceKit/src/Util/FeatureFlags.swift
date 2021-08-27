@@ -501,8 +501,21 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let delayedMessageResend = TestableFlag(false,
-                                                          title: LocalizationNotNeeded("Delayed message resend"),
+                                                          title: LocalizationNotNeeded("Sender Key: Delayed message resend"),
                                                           details: LocalizationNotNeeded("Waits 10s before responding to a resend request."))
+
+    @objc
+    public static let showFailedDecryptionPlaceholders = TestableFlag(false,
+                                                                      title: LocalizationNotNeeded("Sender Key: Show failed decryption placeholders"),
+                                                                      details: LocalizationNotNeeded("Shows placeholder interactions in the conversation list."))
+
+    @objc
+    public static let fastPlaceholderExpiration = TestableFlag(false,
+                                                               title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
+                                                               details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
+                                                               toggleHandler: { _ in
+                                                                databaseStorage.read { messageDecrypter.schedulePlaceholderCleanup(transaction: $0)}
+                                                               })
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
@@ -586,16 +599,19 @@ public class TestableFlag: NSObject {
     private let flag: AtomicBool
     public let title: String
     public let details: String
+    public let toggleHandler: ((Bool) -> Void)?
 
     fileprivate init(_ defaultValue: Bool,
                      title: String,
                      details: String,
-                     affectsCapabilities: Bool = false) {
+                     affectsCapabilities: Bool = false,
+                     toggleHandler: ((Bool) -> Void)? = nil) {
         self.defaultValue = defaultValue
         self.title = title
         self.details = details
         self.affectsCapabilities = affectsCapabilities
         self.flag = AtomicBool(defaultValue)
+        self.toggleHandler = toggleHandler
 
         super.init()
 

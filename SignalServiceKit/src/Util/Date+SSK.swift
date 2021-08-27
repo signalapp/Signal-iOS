@@ -32,6 +32,14 @@ public extension NSDate {
     var ows_millisecondsSince1970: UInt64 {
         return NSDate.ows_millisecondsSince1970(for: self as Date)
     }
+
+    static var distantFutureForMillisecondTimestamp: Date {
+        Date.distantFutureForMillisecondTimestamp
+    }
+
+    static var distantFutureMillisecondTimestamp: UInt64 {
+        Date.distantFutureMillisecondTimestamp
+    }
 }
 
 public extension Date {
@@ -61,6 +69,10 @@ public extension Date {
         let result = Date(millisecondsSince1970: millis)
         owsAssertDebug(millis == result.ows_millisecondsSince1970)
         return result
+    }
+
+    static var distantFutureMillisecondTimestamp: UInt64 {
+        distantFutureForMillisecondTimestamp.ows_millisecondsSince1970
     }
 
     func isBefore(_ date: Date) -> Bool {
