@@ -584,11 +584,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
                                          success: @escaping (SenderCertificates) -> Void,
                                          failure: @escaping (Error) -> Void) {
-        firstly {
+        firstly(on: .global()) {
             self.ensureSenderCertificates(certificateExpirationPolicy: certificateExpirationPolicy)
-        }.done { senderCertificates in
+        }.done(on: .global()) { senderCertificates in
             success(senderCertificates)
-        }.catch { error in
+        }.catch(on: .global()) { error in
             failure(error)
         }
     }
@@ -600,7 +600,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
         let defaultPromise = ensureSenderCertificate(uuidOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
         let uuidOnlyPromise = ensureSenderCertificate(uuidOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
-        return firstly {
+        return firstly(on: .global()) {
             when(fulfilled: defaultPromise, uuidOnlyPromise)
         }.map(on: .global()) { defaultCert, uuidOnlyCert in
             return SenderCertificates(defaultCert: defaultCert, uuidOnlyCert: uuidOnlyCert)
@@ -613,18 +613,18 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return Promise.value(certificate)
         }
 
-        return firstly {
-            requestSenderCertificate(uuidOnly: uuidOnly)
-        }.map { (certificate: SenderCertificate) in
+        return firstly(on: .global()) {
+            self.requestSenderCertificate(uuidOnly: uuidOnly)
+        }.map(on: .global()) { (certificate: SenderCertificate) in
             self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: Data(certificate.serialize()))
             return certificate
         }
     }
 
     private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SenderCertificate> {
-        return firstly {
+        return firstly(on: .global()) {
             SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: uuidOnly)
-        }.map { certificateData -> SenderCertificate in
+        }.map(on: .global()) { certificateData -> SenderCertificate in
             let certificate = try SenderCertificate(certificateData)
 
             guard self.isValidCertificate(certificate) else {
@@ -632,7 +632,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             return certificate
-        }.recover { error -> Promise<SenderCertificate> in
+        }.recover(on: .global()) { error -> Promise<SenderCertificate> in
             throw error
         }
     }
@@ -707,9 +707,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         // Try to update the account attributes to reflect this change.
-        firstly {
-            tsAccountManager.updateAccountAttributes()
-        }.catch { error in
+        firstly(on: .global()) {
+            Self.tsAccountManager.updateAccountAttributes()
+        }.catch(on: .global()) { error in
             Logger.warn("Error: \(error)")
         }
     }

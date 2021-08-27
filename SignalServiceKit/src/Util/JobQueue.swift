@@ -103,6 +103,12 @@ public extension JobQueue {
 
         jobRecord.anyInsert(transaction: transaction)
 
+        transaction.addTransactionFinalizationBlock(
+            forKey: "jobQueue.\(jobRecordLabel).startWorkImmediatelyIfAppIsReady"
+        ) { transaction in
+            self.startWorkImmediatelyIfAppIsReady(transaction: transaction)
+        }
+
         transaction.addAsyncCompletion(queue: .global()) {
             self.startWorkWhenAppIsReady()
         }
@@ -110,6 +116,15 @@ public extension JobQueue {
 
     func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
         return nil != finder.getNextReady(label: self.jobRecordLabel, transaction: transaction)
+    }
+
+    func startWorkImmediatelyIfAppIsReady(transaction: SDSAnyWriteTransaction) {
+        guard isEnabled else { return }
+        guard !CurrentAppContext().isRunningTests else { return }
+        guard AppReadiness.isAppReady else { return }
+        guard !DebugFlags.suppressBackgroundActivity else { return }
+        guard isSetup.get() else { return }
+        workStep(transaction: transaction)
     }
 
     func startWorkWhenAppIsReady() {
@@ -150,44 +165,46 @@ public extension JobQueue {
             return
         }
 
-        self.databaseStorage.write { transaction in
-            guard let nextJob: JobRecordType = self.finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) else {
-                Logger.verbose("nothing left to enqueue")
-                self.didFlushQueue(transaction: transaction)
-                return
-            }
+        databaseStorage.write { self.workStep(transaction: $0) }
+    }
 
-            do {
-                try nextJob.saveAsStarted(transaction: transaction)
+    func workStep(transaction: SDSAnyWriteTransaction) {
+        guard let nextJob: JobRecordType = self.finder.getNextReady(label: jobRecordLabel, transaction: transaction) else {
+            Logger.verbose("nothing left to enqueue")
+            didFlushQueue(transaction: transaction)
+            return
+        }
 
-                let operationQueue = self.operationQueue(jobRecord: nextJob)
-                let durableOperation = try self.buildOperation(jobRecord: nextJob, transaction: transaction)
+        do {
+            try nextJob.saveAsStarted(transaction: transaction)
 
-                durableOperation.durableOperationDelegate = self as? Self.DurableOperationType.DurableOperationDelegateType
-                owsAssertDebug(durableOperation.durableOperationDelegate != nil)
+            let operationQueue = operationQueue(jobRecord: nextJob)
+            let durableOperation = try buildOperation(jobRecord: nextJob, transaction: transaction)
 
-                let remainingRetries = self.remainingRetries(durableOperation: durableOperation)
-                durableOperation.remainingRetries = remainingRetries
+            durableOperation.durableOperationDelegate = self as? Self.DurableOperationType.DurableOperationDelegateType
+            owsAssertDebug(durableOperation.durableOperationDelegate != nil)
 
+            let remainingRetries = remainingRetries(durableOperation: durableOperation)
+            durableOperation.remainingRetries = remainingRetries
+
+            transaction.addSyncCompletion {
                 self.runningOperations.append(durableOperation)
 
                 Logger.debug("adding operation: \(durableOperation) with remainingRetries: \(remainingRetries)")
                 operationQueue.addOperation(durableOperation.operation)
-            } catch JobError.assertionFailure(let description) {
-                owsFailDebug("assertion failure: \(description)")
-                nextJob.saveAsPermanentlyFailed(transaction: transaction)
-            } catch JobError.obsolete(let description) {
-                // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
-                Logger.verbose("marking obsolete task as such. description:\(description)")
-                nextJob.saveAsObsolete(transaction: transaction)
-            } catch {
-                owsFailDebug("unexpected error")
             }
-
-            DispatchQueue.global().async {
-                self.workStep()
-            }
+        } catch JobError.assertionFailure(let description) {
+            owsFailDebug("assertion failure: \(description)")
+            nextJob.saveAsPermanentlyFailed(transaction: transaction)
+        } catch JobError.obsolete(let description) {
+            // TODO is this even worthwhile to have obsolete state? Should we just delete the task outright?
+            Logger.verbose("marking obsolete task as such. description:\(description)")
+            nextJob.saveAsObsolete(transaction: transaction)
+        } catch {
+            owsFailDebug("unexpected error")
         }
+
+        transaction.addAsyncCompletionOffMain { self.workStep() }
     }
 
     func restartOldJobs() {

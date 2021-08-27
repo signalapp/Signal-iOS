@@ -34,10 +34,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        BenchManager.startEvent(title: "Send Message", eventId: "message-send")
-        BenchManager.startEvent(title: "Send Message milestone: clearTextMessageAnimated completed",
+        BenchManager.startEvent(title: "Send Message Milestone: clearTextMessageAnimated",
                                 eventId: "fromSendUntil_clearTextMessageAnimated")
-        BenchManager.startEvent(title: "Send Message milestone: toggleDefaultKeyboard completed",
+        BenchManager.startEvent(title: "Send Message Milestone: toggleDefaultKeyboard",
                                 eventId: "fromSendUntil_toggleDefaultKeyboard")
 
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
