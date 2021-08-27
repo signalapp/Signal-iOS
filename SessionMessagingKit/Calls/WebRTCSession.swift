@@ -22,9 +22,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
-        let videoEncoderFactory = RTCVideoEncoderFactoryH264()
-        let videoDecoderFactory = RTCVideoDecoderFactoryH264()
-        return RTCPeerConnectionFactory(encoderFactory: videoEncoderFactory, decoderFactory: videoDecoderFactory)
+        return RTCPeerConnectionFactory()
     }()
     
     /// Represents a WebRTC connection between the user and a remote peer. Provides methods to connect to a
