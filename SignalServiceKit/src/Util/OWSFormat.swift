@@ -14,7 +14,7 @@ public class OWSFormat: NSObject {
     // user changes a system setting that would affect
     // formatting behavior.
     private static let shortNameComponentsCache = LRUCache<String, String>(maxSize: 512,
-                                                                           nseMaxSize: 0,
+                                                                           nseMaxSize: 64,
                                                                            shouldEvacuateInBackground: true)
 
     @objc

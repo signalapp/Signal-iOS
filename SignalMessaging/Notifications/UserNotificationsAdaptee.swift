@@ -226,21 +226,41 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
 
         var contentToUse: UNNotificationContent = content
+        let postNotification = {
+            let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
+
+            if DebugFlags.internalLogging {
+                Logger.info("presenting notification with identifier: \(notificationIdentifier)")
+            }
+            self.notificationCenter.add(request) { (error: Error?) in
+                if let error = error {
+                    owsFailDebug("Error: \(error)")
+                    return
+                }
+            }
+        }
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let interaction = interaction {
             if DebugFlags.internalLogging {
                 Logger.info("Will donate interaction")
             }
 
+            let group = DispatchGroup()
+            group.enter()
             interaction.donate(completion: { error in
-                if DebugFlags.internalLogging {
-                    Logger.info("Did donate interaction")
-                }
-                guard let error = error else {
+                if DebugFlags.internalLogging { Logger.info("Did donate interaction") }
+
+                group.leave()
+
+                if let error = error {
+                    owsFailDebug("Failed to donate incoming message intent \(error)")
                     return
                 }
-                owsFailDebug("Failed to donate incoming message intent \(error)")
             })
+
+            if case .timedOut = group.wait(timeout: .now() + 1.0) {
+                Logger.warn("Timed out donating intent")
+            }
 
             if DebugFlags.internalLogging {
                 Logger.info("Will update notification content with intent")
@@ -256,20 +276,13 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                     owsFailDebug("Failed to update UNNotificationContent for comm style notification")
                 }
             }
+
+            postNotification()
         }
+        #else
+        postNotification()
         #endif
 
-        let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
-
-        if DebugFlags.internalLogging {
-            Logger.info("presenting notification with identifier: \(notificationIdentifier)")
-        }
-        notificationCenter.add(request) { (error: Error?) in
-            if let error = error {
-                owsFailDebug("Error: \(error)")
-                return
-            }
-        }
     }
 
     private var pendingCancelations = Set<PendingCancelation>() {
