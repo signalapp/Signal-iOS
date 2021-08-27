@@ -325,7 +325,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
     TSThread *_Nullable thread = nil;
     if (untrustedGroupId.length > 0) {
-        [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:writeTx];
+        [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:transaction];
         TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId
                                                                    transaction:transaction];
         // If we aren't sure that the sender is a member of the reported groupId, we should fall back
