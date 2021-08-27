@@ -153,9 +153,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_innerStack,
                              subviews: innerViews)
-        if isIncoming {
-            outerViews.reverse()
-        }
         outerStack.configure(config: outerStackConfig,
                              cellMeasurement: cellMeasurement,
                              measurementKey: Self.measurementKey_outerStack,
@@ -296,13 +293,18 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private var innerStackConfig: CVStackViewConfig {
         let layoutMargins = isBorderless ? UIEdgeInsets(hMargin: 12, vMargin: 3) : .zero
         return CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: CVComponentFooter.hSpacing,
-                          layoutMargins: layoutMargins)
+                                 alignment: .center,
+                                 spacing: CVComponentFooter.hSpacing,
+                                 layoutMargins: layoutMargins)
     }
 
     private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
     private static let measurementKey_innerStack = "CVComponentFooter.measurementKey_innerStack"
+
+    // Extract the overall measurement for this component.
+    public static func footerMeasurement(measurementBuilder: CVCellMeasurement.Builder) -> CVCellMeasurement.Measurement? {
+        measurementBuilder.getMeasurement(key: measurementKey_outerStack)
+    }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -323,7 +325,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
         let timestampLabelSize = CVText.measureLabel(config: timestampLabelConfig,
-                                                 maxWidth: maxWidth)
+                                                     maxWidth: maxWidth)
         innerSubviewInfos.append(timestampLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
         if hasPerConversationExpiration,
@@ -342,9 +344,6 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                                                             measurementKey: Self.measurementKey_innerStack,
                                                             subviewInfos: innerSubviewInfos)
         outerSubviewInfos.append(innerStackMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true))
-        if isIncoming {
-            outerSubviewInfos.reverse()
-        }
         let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
                                                             measurementBuilder: measurementBuilder,
                                                             measurementKey: Self.measurementKey_outerStack,

@@ -744,6 +744,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     return
                 }
                 let componentKeys = contentSection.components.map { $0.componentKey }
+
+                var stackConfig = stackConfig
+                if contentSection.sectionType == .bottomNestedText,
+                   let bottomNestedTextSpacing = cellMeasurement.value(key: Self.measurementKey_bottomNestedTextSpacing) {
+                    stackConfig = stackConfig.withSpacing(bottomNestedTextSpacing)
+                }
+
                 _ = configureStackView(stackView,
                                        stackConfig: stackConfig,
                                        measurementKey: stackMeasurementKey,
@@ -1203,6 +1210,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static let measurementKey_bottomNestedShareStackView = "CVComponentMessage.measurementKey_bottomNestedShareStackView"
     private static let measurementKey_bottomNestedTextStackView = "CVComponentMessage.measurementKey_bottomNestedTextStackView"
     private static let measurementKey_reactions = "CVComponentMessage.measurementKey_reactions"
+    private static let measurementKey_bottomNestedTextSpacing = "CVComponentMessage.measurementKey_bottomNestedTextSpacing"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -1310,9 +1318,116 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
                 subviewSizes.append(subviewSize)
             }
+
+            var stackConfig = stackConfig
+            func tryToOverlapBodyTextAndFooter() {
+                guard keys == [ .bodyText, .footer ],
+                      let bodyText = self.bodyText as? CVComponentBodyText,
+                      let standaloneFooter = self.standaloneFooter,
+                      !standaloneFooter.hasTapForMore else {
+                    return
+                }
+                guard let footerMeasurement = CVComponentFooter.footerMeasurement(measurementBuilder: measurementBuilder),
+                      let bodyTextMaxWidth = CVComponentBodyText.bodyTextMaxWidth(measurementBuilder: measurementBuilder),
+                      let bodyTextMeasurement = CVComponentBodyText.bodyTextMeasurement(measurementBuilder: measurementBuilder),
+                      let lastLineRect = bodyTextMeasurement.lastLineRect,
+                      lastLineRect.width > 0,
+                      lastLineRect.height > 0 else {
+                    owsFailDebug("Missing measurement state.")
+                    return
+                }
+                guard let bodyTextSubviewSize = subviewSizes.first,
+                      bodyTextSubviewSize == bodyTextMeasurement.size else {
+                    owsFailDebug("Invalid bodyTextSubviewSize.")
+                    return
+                }
+
+                let textMessageFont = bodyText.textMessageFont
+                let lineHeight = max(0, textMessageFont.lineHeight)
+                let capHeight = max(0, textMessageFont.capHeight)
+                // NOTE: descender is expressed as a negative value.
+                let descender = max(0, -textMessageFont.descender)
+
+                // TODO: Design is finalizing how this value should scale with dynamic type.
+                let spacingScaling = max(1, lineHeight / 20)
+                let kMinimumOverlapSpacingDefault: CGFloat = 6
+                let minOverlapSpacing = kMinimumOverlapSpacingDefault * spacingScaling
+
+                let isRTL = CurrentAppContext().isRTL
+                let bodyTextSize = bodyTextSubviewSize.width
+                let footerSize = footerMeasurement.measuredSize
+                let overlappedLastLineWidth = ceil(lastLineRect.width) + minOverlapSpacing + footerSize.width
+                let overlappedContentWidth = max(bodyTextSize, overlappedLastLineWidth)
+                let hasSpaceForOverlap = overlappedContentWidth <= bodyTextMaxWidth
+                guard hasSpaceForOverlap else {
+                    return
+                }
+
+                // Do collision detection to determine if footer and last line would
+                // collide if overlapped.
+                let isFooterAlignedLeft = isRTL
+
+                var isBodyTextAlignedLeft = false
+                let bodyTextLabelConfig = bodyText.buildBodyTextLabelConfig()
+                // For body text messages, textAlignment should reflect the natural
+                // alignment of the content.
+                switch bodyTextLabelConfig.textAlignment {
+                case .left:
+                    isBodyTextAlignedLeft = true
+                case .right:
+                    isBodyTextAlignedLeft = false
+                default:
+                    Logger.warn("Unknown text alignment: \(bodyTextLabelConfig.textAlignment).")
+                    return
+                }
+
+                var detectionLastLineFrame = CGRect(origin: .zero, size: lastLineRect.size)
+                if !isBodyTextAlignedLeft {
+                    detectionLastLineFrame.x = overlappedContentWidth - lastLineRect.width
+                }
+                // Simplify y-axis for purposes of collision detection.
+                detectionLastLineFrame.y = 0
+                detectionLastLineFrame.height = 1
+
+                var detectionFooterFrame = CGRect(origin: .zero, size: footerSize)
+                if !isFooterAlignedLeft {
+                    detectionFooterFrame.x = overlappedContentWidth - footerSize.width
+                }
+                // Inset one of the frames to account for the "min overlap spacing".
+                detectionFooterFrame = detectionFooterFrame.insetBy(dx: -minOverlapSpacing, dy: 0)
+                detectionFooterFrame.y = 0
+                detectionFooterFrame.height = 1
+
+                let doComponentsIntersect = detectionLastLineFrame.intersects(detectionFooterFrame)
+
+                guard !doComponentsIntersect else {
+                    return
+                }
+
+                let fontOuterSpacing = max(0, lineHeight - (capHeight + descender)) * 0.5
+                let baselineSpacing = max(0, fontOuterSpacing + descender)
+                // We want to v-align the center of the footer with the baseline of the
+                // last line of body text.
+                let overlapHeight = footerMeasurement.measuredSize.height * 0.5 + baselineSpacing
+                let bottomNestedTextSpacing = -overlapHeight
+
+                // 1. Rewrite the stack spacing for overlap.
+                stackConfig = stackConfig.withSpacing(bottomNestedTextSpacing)
+
+                // 2. Store the spacing for usage when rendering.
+                measurementBuilder.setValue(key: Self.measurementKey_bottomNestedTextSpacing,
+                                            value: bottomNestedTextSpacing)
+
+                // 3. Rewrite the body text component size for overlap.
+                subviewSizes[0] = CGSize(width: overlappedContentWidth,
+                                         height: bodyTextSubviewSize.height)
+            }
+            tryToOverlapBodyTextAndFooter()
+
             let subviewInfos: [ManualStackSubviewInfo] = subviewSizes.map { subviewSize in
                 subviewSize.asManualSubviewInfo
             }
+
             let stackMeasurement = ManualStackView.measure(config: stackConfig,
                                                            measurementBuilder: measurementBuilder,
                                                            measurementKey: measurementKey,

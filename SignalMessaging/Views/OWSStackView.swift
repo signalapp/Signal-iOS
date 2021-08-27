@@ -22,6 +22,13 @@ open class OWSStackView: UIStackView {
             self.layoutMargins = layoutMargins
         }
 
+        public func withSpacing(_ spacing: CGFloat) -> Config {
+            Config(axis: self.axis,
+                   alignment: self.alignment,
+                   spacing: spacing,
+                   layoutMargins: self.layoutMargins)
+        }
+
         public var debugDescription: String {
             let components: [String] = [
                 "axis: \(axis)",

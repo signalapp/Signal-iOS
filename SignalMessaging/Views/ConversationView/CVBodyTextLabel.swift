@@ -151,9 +151,27 @@ public class CVBodyTextLabel: NSObject {
         label.reset()
     }
 
-    public static func measureSize(config: Config, maxWidth: CGFloat) -> CGSize {
+    public class Measurement: CVMeasurementObject {
+        public let size: CGSize
+        public let lastLineRect: CGRect?
+
+        init(size: CGSize, lastLineRect: CGRect?) {
+            self.size = size
+            self.lastLineRect = lastLineRect
+        }
+
+        static let empty = { Measurement(size: .zero, lastLineRect: nil) }()
+
+        // MARK: - Equatable
+
+        public static func == (lhs: Measurement, rhs: Measurement) -> Bool {
+            lhs.size == rhs.size && lhs.lastLineRect == rhs.lastLineRect
+        }
+    }
+
+    public static func measureSize(config: Config, maxWidth: CGFloat) -> Measurement {
         guard config.attributedString.length > 0 else {
-            return .zero
+            return .empty
         }
         let attributedString = Label.formatAttributedString(config: config)
 
@@ -179,7 +197,20 @@ public class CVBodyTextLabel: NSObject {
         // this can result in it being freed before we perform measurement.
         // We can work around this by explicitly extending the lifetime of
         // textStorage until measurement is completed.
-        return withExtendedLifetime(textStorage) { layoutManager.usedRect(for: textContainer).size }.ceil
+        return withExtendedLifetime(textStorage) {
+            let glyphRange = layoutManager.glyphRange(for: textContainer)
+            var lastLineRect: CGRect?
+            if glyphRange.location != NSNotFound,
+               glyphRange.length > 0 {
+                let lastGlyphIndex = glyphRange.length - 1
+                lastLineRect = layoutManager.lineFragmentUsedRect(forGlyphAt: lastGlyphIndex,
+                                                                      effectiveRange: nil,
+                                                                      withoutAdditionalLayout: true)
+            }
+
+            let size = layoutManager.usedRect(for: textContainer).size.ceil
+            return Measurement(size: size, lastLineRect: lastLineRect)
+        }
     }
 
     // MARK: - Animation
