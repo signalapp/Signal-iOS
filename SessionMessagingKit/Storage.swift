@@ -1,5 +1,6 @@
 import PromiseKit
 import Sodium
+import YapDatabase
 
 public protocol SessionMessagingKitStorageProtocol {
 
@@ -33,7 +34,7 @@ public protocol SessionMessagingKitStorageProtocol {
     func markJobAsFailed(_ job: Job, using transaction: Any)
     func getAllPendingJobs(of type: Job.Type) -> [Job]
     func getAttachmentUploadJob(for attachmentID: String) -> AttachmentUploadJob?
-    func getAttachmentDownloadJob(for attachmentID: String) -> AttachmentDownloadJob?
+    func getAttachmentDownloadJob(for attachmentID: String, with transaction: YapDatabaseReadTransaction) -> AttachmentDownloadJob?
     func getMessageSendJob(for messageSendJobID: String) -> MessageSendJob?
     func resumeMessageSendJobIfNeeded(_ messageSendJobID: String)
     func isJobCanceled(_ job: Job) -> Bool

@@ -73,13 +73,11 @@ extension Storage {
         return result.first
     }
     
-    public func getAttachmentDownloadJob(for attachmentID: String) -> AttachmentDownloadJob? {
+    public func getAttachmentDownloadJob(for attachmentID: String, with transaction: YapDatabaseReadTransaction) -> AttachmentDownloadJob? {
         var result: [AttachmentDownloadJob] = []
-        Storage.read { transaction in
-            transaction.enumerateRows(inCollection: AttachmentDownloadJob.collection) { _, object, _, _ in
-                guard let job = object as? AttachmentDownloadJob, job.attachmentID == attachmentID else { return }
-                result.append(job)
-            }
+        transaction.enumerateRows(inCollection: AttachmentDownloadJob.collection) { _, object, _, _ in
+            guard let job = object as? AttachmentDownloadJob, job.attachmentID == attachmentID else { return }
+            result.append(job)
         }
         #if DEBUG
         assert(result.isEmpty || result.count == 1)
