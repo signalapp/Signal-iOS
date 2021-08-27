@@ -164,7 +164,7 @@ public class CVMessageMapping: NSObject {
         let count = max(1, min(count, maxInteractionCount))
 
         // The number of visible interactions currently in the conversation.
-        let conversationSize = interactionFinder.count(excludingPlaceholders: true, transaction: transaction)
+        let conversationSize = interactionFinder.count(excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), transaction: transaction)
         guard conversationSize > 0 else {
             self.loadedInteractions = []
             updateCanLoadMore(fetchIndexSet: IndexSet(), conversationSize: conversationSize)
@@ -192,7 +192,7 @@ public class CVMessageMapping: NSObject {
             // from the bottom of the conversation, the more expensive this query will get.
             guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(
                     interactionUniqueId: interactionUniqueId,
-                    excludingPlaceholders: true,
+                    excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
                     transaction: transaction) else {
                 throw OWSAssertionError("viewIndex was unexpectedly nil")
             }
@@ -477,7 +477,7 @@ public class CVMessageMapping: NSObject {
 
             var newItems: [TSInteraction] = []
             try self.interactionFinder.enumerateInteractions(range: nsRange,
-                                                             excludingPlaceholders: DebugFlags.showFailedDecryptionPlaceholders.get(),
+                                                             excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
                                                              transaction: transaction) { (interaction: TSInteraction, _) in
                 newItems.append(interaction)
             }
@@ -489,7 +489,7 @@ public class CVMessageMapping: NSObject {
         // 1. Fetch the uniqueIds for the interactions in the load window/mapping.
         let interactionIds = try interactionFinder.interactionIds(
             inRange: nsRange,
-            excludingPlaceholders: DebugFlags.showFailedDecryptionPlaceholders.get(),
+            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
             transaction: transaction)
         guard !interactionIds.isEmpty else {
             return []
