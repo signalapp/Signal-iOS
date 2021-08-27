@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .quotedReply }
+
     private let quotedReply: CVComponentState.QuotedReply
     private var quotedReplyModel: OWSQuotedReplyModel {
         quotedReply.quotedReplyModel

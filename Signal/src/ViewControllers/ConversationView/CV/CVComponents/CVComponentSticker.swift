@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentSticker: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .sticker }
+
     private let sticker: CVComponentState.Sticker
     private var stickerMetadata: StickerMetadata? {
         sticker.stickerMetadata

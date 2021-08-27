@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
+    public var componentKey: CVComponentKey { .dateHeader }
+
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.dateHeader
     }

@@ -94,7 +94,7 @@ public class CVContactShareView: ManualStackView {
     private static func topLabelConfig(state: State) -> CVLabelConfig {
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig(text: state.contactShare.displayName,
-                             font: .ows_dynamicTypeBody,
+                             font: .ows_dynamicTypeBody2.ows_semibold,
                              textColor: textColor,
                              lineBreakMode: .byTruncatingTail)
     }

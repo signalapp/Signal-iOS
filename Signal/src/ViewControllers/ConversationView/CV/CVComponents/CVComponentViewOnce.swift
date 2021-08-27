@@ -21,6 +21,8 @@ enum ViewOnceState: Equatable {
 
 public class CVComponentViewOnce: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .viewOnce }
+
     private enum ViewOnceMessageType: Equatable {
         case unknown
         case photo

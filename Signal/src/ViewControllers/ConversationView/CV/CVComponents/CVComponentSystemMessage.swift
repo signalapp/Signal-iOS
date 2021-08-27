@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
+    public var componentKey: CVComponentKey { .systemMessage }
+
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.systemMessage
     }

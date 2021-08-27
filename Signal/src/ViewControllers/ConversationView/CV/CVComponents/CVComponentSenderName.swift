@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentSenderName: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .senderName }
+
     private let state: CVComponentState.SenderName
     private var senderName: NSAttributedString { state.senderName }
     private var senderNameColor: UIColor { state.senderNameColor }
@@ -68,7 +70,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
     private var labelConfig: CVLabelConfig {
         CVLabelConfig(attributedText: senderName,
-                      font: UIFont.ows_dynamicTypeCaption1.ows_semibold,
+                      font: UIFont.ows_dynamicTypeSubheadline.ows_semibold,
                       textColor: senderNameColor,
                       lineBreakMode: .byTruncatingTail)
     }

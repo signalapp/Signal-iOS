@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentContactShare: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .contactShare }
+
     private let contactShareState: CVComponentState.ContactShare
 
     private var contactShare: ContactShareViewModel {

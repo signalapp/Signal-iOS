@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentFooter: CVComponentBase, CVComponent {
 
+    public var componentKey: CVComponentKey { .footer }
+
     struct StatusIndicator: Equatable {
         let imageName: String
         let imageSize: CGSize

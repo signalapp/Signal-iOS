@@ -6,6 +6,8 @@ import Foundation
 
 public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
+    public var componentKey: CVComponentKey { .threadDetails }
+
     public var cellReuseIdentifier: CVCellReuseIdentifier {
         CVCellReuseIdentifier.threadDetails
     }
