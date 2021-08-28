@@ -207,7 +207,8 @@ extension TSThread {
         var inSender: INPerson?
         // Recipients are required for iOS 15 Communication style notifications
         for recipient in self.recipientAddresses {
-            let person = inPersonForRecipient(recipient, transaction: transaction)
+            let generateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
+            let person = inPersonForRecipient(recipient, generateAvatar: generateAvatar, transaction: transaction)
 
             if recipient == sender {
                 inSender = person
@@ -264,7 +265,8 @@ extension TSThread {
 
             var recipients: [INPerson] = []
             for recipient in self.recipientAddresses {
-                let person = inPersonForRecipient(recipient, transaction: transaction)
+                let generateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
+                let person = inPersonForRecipient(recipient, generateAvatar: generateAvatar, transaction: transaction)
                 recipients.append(person)
             }
 
@@ -290,7 +292,7 @@ extension TSThread {
 
 #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
-    private func inPersonForRecipient(_ recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INPerson {
+    private func inPersonForRecipient(_ recipient: SignalServiceAddress, generateAvatar: Bool, transaction: SDSAnyReadTransaction) -> INPerson {
 
         // Generate recipient name
         let contactName = contactsManager.displayName(for: recipient, transaction: transaction)
@@ -308,7 +310,10 @@ extension TSThread {
         }
 
         // Generate avatar
-        let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
+        var image: INImage?
+        if generateAvatar {
+            image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
+        }
 
         return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
     }
