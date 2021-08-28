@@ -1598,16 +1598,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "S’u hy dot te kontaktet.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "S’u përcoll dot mesazhi.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "S’u përcoll dot mesazhi, ngaqë s’është më i passhëm.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "S’u përcollën dot mesazhe, ngaqë s’janë më.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "S’u përcollën dot mesazhe";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "S’u ruajt dot videoja.";
@@ -1663,6 +1663,9 @@
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "S’u dërgua dot një mesazh prej %@";
 
+/* Error message for a decryption failure. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "U mor një mesazh i përsëdytur.";
 
@@ -1697,10 +1700,10 @@
 "ERROR_NETWORK_FAILURE" = "Gabim Rrjeti";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ju lutemi, ndihmonani të përmirësojmë Signal-in, duke njoftuar për këtë gabim dhe duke dhënë regjistrat e diagnostikimit nga pajisja juaj, te support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Ndodhi një gabim";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Pajisja juaj s’është më e lidhur. Ju lutemi, që të dërgoni më tej mesazhe, rilidheni.";
@@ -1754,13 +1757,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Dërgoni mesazh";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Dërgo %@ mesazhe";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Mesazhi u dërgua";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Mesazhet u dërguan";
@@ -1769,7 +1772,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Shtoni një mesazh";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Përcillja";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "S’keni ndonjë media në këtë fjalosje.";
@@ -3131,7 +3134,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Përcilleni Këtë Mesazh";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Përcill mesazhet e përzgjedhur";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Hapni Ftesë Grupi";
@@ -3170,13 +3173,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paketë Ngjitësish";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 I përzgjedhur";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 I përzgjedhur";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Të përzgjedhur";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesazh";
@@ -4601,7 +4604,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Përpara se të mund të dërgoni një mesazh, lypset të regjistroheni.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Pati një llogari të regjistruar më herët me këtë numër, e cila mund të shpërngulet.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikimi Dështoi";
@@ -4643,7 +4646,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Numri i telefonit që po përpiqeni të regjistroni është regjistruar tashmë në një shërbyes tjetër, ju lutemi, çregjistrojeni prej andej dhe riprovoni.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Hiqe paraparjen";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Zgjidhni Përgjegjës të Ri";
@@ -5756,13 +5759,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Foto dhe Video";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Ndani Kontakte me iOS-in";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Lejojini iOS-it hyrje te kontakte dhe fjalosje Signal, për veçori të tilla si shkëmbim sugjerimesh.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Lejojini iOS-it hyrje te kontakte dhe fjalosje Signal, për veçori të tilla si shkëmbim sugjerimesh dhe njoftime.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kyçje Regjistrimi";

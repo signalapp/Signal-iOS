@@ -1663,6 +1663,9 @@
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ένα μήνυμα από τον/την %@ δεν μπόρεσε να παραδοθεί";
 
+/* Error message for a decryption failure. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Έλαβες ένα διπλότυπο μήνυμα.";
 
