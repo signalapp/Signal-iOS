@@ -155,7 +155,7 @@ public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCodi
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension FingerprintProtoLogicalFingerprint {
     @objc
@@ -356,7 +356,7 @@ public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCod
     }
 }
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 extension FingerprintProtoLogicalFingerprints {
     @objc

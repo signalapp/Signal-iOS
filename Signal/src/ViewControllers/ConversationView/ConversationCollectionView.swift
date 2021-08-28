@@ -58,8 +58,6 @@ public extension ConversationCollectionView {
                     }, failureBlock: tryFailure)
                 }
                 layout.didPerformBatchUpdates()
-
-                BenchManager.completeEvent(eventId: "message-send")
             }, failureBlock: tryFailure)
         }
 

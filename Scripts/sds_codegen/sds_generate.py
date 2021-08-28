@@ -2083,7 +2083,7 @@ import SignalCoreKit
 // Do not manually edit it, instead run `sds_codegen.sh`.
 
 @objc
-public enum SDSRecordType: UInt {
+public enum SDSRecordType: UInt, CaseIterable {
 ''' % ( sds_common.pretty_module_path(__file__), )
 
     record_type_pairs = []

@@ -171,25 +171,13 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var senderKeyPermitted: Bool {
-        // Internal population should be allowed to run beta builds and still
-        // support sender key as long as the user is in the RemoteConfig cohort
-        let isEnabled = isEnabled(.senderKey) && FeatureFlags.permitSenderKeyAndMessageResend
-
-        // Internal builds will always support sender key
-        let forceEnabled = FeatureFlags.forceSenderKeyAndMessageResend
-
-        return isEnabled || forceEnabled
-    }
-
-    @objc
     public static var senderKeyKillSwitch: Bool {
-        isEnabled(.senderKeyKillSwitch) || !senderKeyPermitted
+        isEnabled(.senderKeyKillSwitch)
     }
 
     @objc
     public static var messageResendKillSwitch: Bool {
-        isEnabled(.messageResendKillSwitch) || !senderKeyPermitted
+        isEnabled(.messageResendKillSwitch)
     }
 
     @objc
@@ -389,7 +377,6 @@ private struct Flags {
         case viewedReceiptSending
         case senderKeyKillSwitch
         case messageResendKillSwitch
-        case senderKey
     }
 
     // Values defined in this array remain set once they are

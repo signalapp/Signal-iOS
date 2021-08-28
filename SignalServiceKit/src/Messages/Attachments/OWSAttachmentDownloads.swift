@@ -1238,7 +1238,14 @@ public extension OWSAttachmentDownloads {
             }
 
             if let resumeData = resumeData {
-                return urlSession.urlDownloadTaskPromise(resumeData: resumeData,
+                let request = try urlSession.buildRequest(urlPath,
+                                                          method: .get,
+                                                          headers: headers)
+                guard let requestUrl = request.url else {
+                    return Promise(error: OWSAssertionError("Request missing url."))
+                }
+                return urlSession.urlDownloadTaskPromise(requestUrl: requestUrl,
+                                                         resumeData: resumeData,
                                                          progress: progress)
             } else {
                 return urlSession.urlDownloadTaskPromise(urlPath,

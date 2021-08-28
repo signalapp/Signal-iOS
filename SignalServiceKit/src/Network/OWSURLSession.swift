@@ -359,10 +359,10 @@ public class OWSURLSession: NSObject {
 
     // MARK: -
 
-    private func buildRequest(_ urlString: String,
-                              method: HTTPMethod,
-                              headers: [String: String]? = nil,
-                              body: Data? = nil) throws -> URLRequest {
+    public func buildRequest(_ urlString: String,
+                             method: HTTPMethod,
+                             headers: [String: String]? = nil,
+                             body: Data? = nil) throws -> URLRequest {
         guard let url = buildUrl(urlString) else {
             throw OWSAssertionError("Invalid url.")
         }
@@ -886,28 +886,32 @@ public extension OWSURLSession {
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
         firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
             let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
-            return self.urlDownloadTaskPromise(request: request,
-                                               progress: progressBlock)
+            return self.urlDownloadTaskPromise(request: request, progress: progressBlock)
         }
     }
 
     func urlDownloadTaskPromise(request: URLRequest,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
-        urlDownloadTaskPromise(progress: progressBlock) {
+        guard let requestUrl = request.url else {
+            return Promise(error: OWSAssertionError("Request missing url."))
+        }
+        return urlDownloadTaskPromise(requestUrl: requestUrl, progress: progressBlock) {
             // Don't use a completion block or the delegate will be ignored for download tasks.
             session.downloadTask(with: request)
         }
     }
 
-    func urlDownloadTaskPromise(resumeData: Data,
+    func urlDownloadTaskPromise(requestUrl: URL,
+                                resumeData: Data,
                                 progress progressBlock: ProgressBlock? = nil) -> Promise<OWSUrlDownloadResponse> {
-        urlDownloadTaskPromise(progress: progressBlock) {
+        urlDownloadTaskPromise(requestUrl: requestUrl, progress: progressBlock) {
             // Don't use a completion block or the delegate will be ignored for download tasks.
             session.downloadTask(withResumeData: resumeData)
         }
     }
 
-    private func urlDownloadTaskPromise(progress progressBlock: ProgressBlock? = nil,
+    private func urlDownloadTaskPromise(requestUrl: URL,
+                                        progress progressBlock: ProgressBlock? = nil,
                                         taskBlock: () -> URLSessionDownloadTask) -> Promise<OWSUrlDownloadResponse> {
 
         guard !Self.appExpiry.isExpired else {
@@ -918,9 +922,6 @@ public extension OWSURLSession {
         var requestConfig: RequestConfig?
         let task = taskBlock()
         addTask(task, taskState: taskState)
-        guard let requestUrl = task.originalRequest?.url else {
-            owsFail("Request missing url.")
-        }
         requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 

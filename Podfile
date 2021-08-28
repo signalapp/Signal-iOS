@@ -156,7 +156,7 @@ def configure_testable_build(installer)
       next unless ["Testable Release", "Debug", "Profiling"].include?(build_configuration.name)
       build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
 
-      next unless ["Testable Release", "Debug"].include?(build_configuration.name)
+      next unless ["Testable Release", "Debug", "Profiling"].include?(build_configuration.name)
       build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited)'
       build_configuration.build_settings['OTHER_CFLAGS'] << ' -DTESTABLE_BUILD'
 

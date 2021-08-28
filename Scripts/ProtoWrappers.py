@@ -975,7 +975,7 @@ public func serializedData() throws -> Data {
         self.generate_debug_extension(writer)
 
     def generate_debug_extension(self, writer):
-        writer.add('#if DEBUG')
+        writer.add('#if TESTABLE_BUILD')
         writer.newline()
         with writer.braced('extension %s' % self.swift_name) as writer:
             writer.add_objc()

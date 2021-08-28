@@ -10,20 +10,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_UNAVAILABLE;
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                                        groupId:(nullable NSData *)groupId
+                               untrustedGroupId:(nullable NSData *)untrustedGroupId
                                     transaction:(SDSAnyWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-@property (assign, nonatomic, readonly) BOOL isVisible;
 @property (assign, nonatomic, readonly) BOOL supportsReplacement;
 
-// Used to resolve timestamp collisions for a long-lived placeholder.
-// If a placeholder has outlived its eligible replacement period, it will live on as an error message
-// even after the replacement content has been received.
-//
-// Since we need to persist *both* the error and the replacement message, we adjust the placeholder's timestamp
-// slightly to resolve the timestamp collision.
-- (void)adjustTimestamp:(uint64_t)timestamp;
+/// After this date, the placeholder is no longer eligible for replacement with the original content.
+@property (strong, nonatomic, readonly) NSDate *expirationDate;
 
 // --- CODE GENERATION MARKER
 
@@ -34,6 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+#if TESTABLE_BUILD
+- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp
+                                          thread:(TSThread *)thread
+                                          sender:(SignalServiceAddress *)sender;
+#endif
 
 @end
 

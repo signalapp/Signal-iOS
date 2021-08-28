@@ -134,13 +134,19 @@ public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
 }
 
 public func BenchEventComplete(eventId: BenchmarkEventId) {
-    eventQueue.sync {
-        guard let event = runningEvents.removeValue(forKey: eventId) else {
-            Logger.debug("no active event with id: \(eventId)")
-            return
-        }
+    BenchEventComplete(eventIds: [eventId])
+}
 
-        event.completion()
+public func BenchEventComplete(eventIds: [BenchmarkEventId]) {
+    eventQueue.sync {
+        for eventId in eventIds {
+            guard let event = runningEvents.removeValue(forKey: eventId) else {
+                Logger.debug("no active event with id: \(eventId)")
+                return
+            }
+
+            event.completion()
+        }
     }
 }
 
@@ -166,6 +172,12 @@ public class BenchManager: NSObject {
     @objc
     public class func completeEvent(eventId: BenchmarkEventId) {
         BenchEventComplete(eventId: eventId)
+    }
+
+    @objc
+    public class func completeEvents(eventIds: [BenchmarkEventId]) {
+        guard !eventIds.isEmpty else { return }
+        BenchEventComplete(eventIds: eventIds)
     }
 
     @objc

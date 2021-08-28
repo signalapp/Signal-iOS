@@ -24,18 +24,19 @@
 {
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
-
-    Payload *payloadRecord = [MessageSendLog fetchPayloadWithAddress:address
-                                                            deviceId:deviceId
-                                                           timestamp:failedTimestamp
-                                                         transaction:transaction];
-
-    TSThread *originalThread = [TSThread anyFetchWithUniqueId:payloadRecord.uniqueThreadId transaction:transaction];
     TSThread *targetThread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:targetThread];
 
+    Payload *_Nullable payloadRecord = [MessageSendLog fetchPayloadWithAddress:address
+                                                                      deviceId:deviceId
+                                                                     timestamp:failedTimestamp
+                                                                   transaction:transaction];
+
+    TSThread *_Nullable originalThread = nil;
     if (payloadRecord) {
         OWSLogInfo(@"Found an MSL record for resend request: %lli", failedTimestamp);
+        originalThread = [TSThread anyFetchWithUniqueId:payloadRecord.uniqueThreadId transaction:transaction];
+
         // We should inherit the timestamp of the failed message. This allows the recipient of this message
         // to correlate the resend response with the original failed message.
         builder.timestamp = payloadRecord.sentTimestamp;

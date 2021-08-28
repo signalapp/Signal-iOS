@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSRecoverableDecryptionPlaceholder
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
-                                        groupId:(nullable NSData *)groupId
+                               untrustedGroupId:(nullable NSData *)untrustedGroupId
                                     transaction:(SDSAnyWriteTransaction *)writeTx
 {
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
@@ -21,8 +21,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSThread *thread;
-    if (groupId.length > 0) {
-        thread = [TSGroupThread fetchWithGroupId:groupId transaction:writeTx];
+    if (untrustedGroupId.length > 0) {
+        [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:writeTx];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId transaction:writeTx];
+        // If we aren't sure that the sender is a member of the reported groupId, we should fall back
+        // to inserting the placeholder in the contact thread.
+        if ([groupThread.groupMembership isFullMember:sender]) {
+            thread = groupThread;
+        }
         OWSAssertDebug(thread);
     }
     if (!thread) {
@@ -36,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
         [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
     builder.timestamp = envelope.timestamp;
     builder.senderAddress = sender;
-
     return [super initErrorMessageWithBuilder:builder];
 }
 
@@ -57,35 +62,76 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (void)adjustTimestamp:(uint64_t)timestamp
+- (NSDate *)expirationDate
 {
-    OWSAssert(timestamp > 0);
-    self.timestamp = timestamp;
-}
-
-- (BOOL)isVisible
-{
-    // If this interaction has ever been seen or the recovery period has elapsed, we should make
-    // this visible to the user.
     NSTimeInterval expirationInterval = [RemoteConfig replaceableInteractionExpiration];
     OWSAssertDebug(expirationInterval >= 0);
 
-    NSDate *expiration = [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
-    return [expiration isBeforeNow] || self.wasRead;
+    if (SSKDebugFlags.fastPlaceholderExpiration.value) {
+        expirationInterval = MIN(expirationInterval, 5.0);
+    }
+
+    return [self.receivedAtDate dateByAddingTimeInterval:MAX(0, expirationInterval)];
 }
 
 - (BOOL)supportsReplacement
 {
-    return !self.isVisible;
+    return [self.expirationDate isAfterNow] && !self.wasRead;
 }
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *formatString = NSLocalizedString(
-        @"ERROR_MESSAGE_DECRYPTION_FAILURE", @"Error message for a decryption failure. Embeds {{sender short name}}.");
-    NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
-    return [[NSString alloc] initWithFormat:formatString, senderName];
+    NSString *_Nullable senderName = nil;
+    if (self.sender) {
+        senderName = [self.contactsManager shortDisplayNameForAddress:self.sender transaction:transaction];
+    }
+
+    if (SSKDebugFlags.showFailedDecryptionPlaceholders.value) {
+        return [[NSString alloc]
+            initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
+    } else if (senderName) {
+        OWSFailDebug(@"Should not be directly surfaced to user");
+        NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+            @"Error message for a decryption failure. Embeds {{sender short name}}.");
+        return [[NSString alloc] initWithFormat:formatString, senderName];
+    } else {
+        OWSFailDebug(@"Should not be directly surfaced to user");
+        return NSLocalizedString(
+            @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
+    }
 }
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+    [self.messageDecrypter scheduleCleanupIfNecessaryFor:self transaction:transaction];
+}
+
+#pragma mark - <OWSReadTracking>
+
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReceiptCircumstance)circumstance
+                  transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
+    [super markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
+}
+
+#pragma mark - Testing
+
+#if TESTABLE_BUILD
+- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp
+                                          thread:(TSThread *)thread
+                                          sender:(SignalServiceAddress *)sender
+{
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    builder.timestamp = timestamp;
+    builder.senderAddress = sender;
+    return [super initErrorMessageWithBuilder:builder];
+}
+#endif
 
 @end
 

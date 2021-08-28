@@ -39,14 +39,24 @@ public extension ThreadUtil {
                                                               transaction: readTransaction)
         let message: TSOutgoingMessage = outgoingMessagePreparer.unpreparedMessage
 
-        BenchManager.benchAsync(title: "Saving outgoing message") { benchmarkCompletion in
+        BenchManager.startEvent(
+            title: "Send Message Milestone: Sending (\(message.timestamp))",
+            eventId: "sendMessageSending-\(message.timestamp)"
+        )
+        BenchManager.startEvent(
+            title: "Send Message Milestone: Sent (\(message.timestamp))",
+            eventId: "sendMessageSent-\(message.timestamp)"
+        )
+        BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
             Self.enqueueSendAsyncWrite { writeTransaction in
                 outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
                                                       transaction: writeTransaction)
                 Self.messageSenderJobQueue.add(message: outgoingMessagePreparer,
                                                transaction: writeTransaction)
-                writeTransaction.addAsyncCompletionOnMain {
+                writeTransaction.addSyncCompletion {
                     benchmarkCompletion()
+                }
+                writeTransaction.addAsyncCompletionOnMain {
                     persistenceCompletion?()
                 }
             }

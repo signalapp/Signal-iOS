@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface SSKBaseTestObjC : XCTestCase
 

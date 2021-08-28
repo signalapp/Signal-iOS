@@ -1663,6 +1663,9 @@
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@-ൽ നിന്നുള്ള ഒരു സന്ദേശം കൈമാറാൻ കഴിഞ്ഞില്ല";
 
+/* Error message for a decryption failure. */
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ഒരു ഡ്യൂപ്ലിക്കേറ്റ് സന്ദേശം ലഭിച്ചിരിക്കുന്നു.";
 

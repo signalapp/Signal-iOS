@@ -1210,3 +1210,12 @@ CREATE
         ON "MessageSendLog_Message"("uniqueId"
 )
 ;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"id"
+)
+WHERE
+'recordType IS NOT 70'
+;

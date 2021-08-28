@@ -505,6 +505,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     capabilities[@"transfer"] = @(YES);
     capabilities[@"announcementGroup"] = @(YES);
     capabilities[@"gv1-migration"] = @(YES);
+    capabilities[@"senderKey"] = @(YES);
 
     // If the storage service requires (or will require) secondary devices
     // to have a capability in order to be linked, we might need to always
@@ -512,13 +513,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     if (OWSKeyBackupService.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
-    }
-
-    // For internal builds, this will always be true
-    // For beta builds, this is only true if you have an internal feature flag set
-    // This means that internal users won't be able to link new devices on beta builds
-    if (RemoteConfig.senderKeyPermitted) {
-        capabilities[@"senderKey"] = @(YES);
     }
 
     OWSLogInfo(@"local device capabilities: %@", capabilities);

@@ -10,7 +10,9 @@ extension OWSRecoverableDecryptionPlaceholder {
     func replaceWithInteraction(_ interaction: TSInteraction, writeTx: SDSAnyWriteTransaction) {
         Logger.info("Replacing placeholder with recovered interaction: \(interaction.timestamp)")
         guard let inheritedId = grdbId?.int64Value else { return owsFailDebug("Missing rowId") }
+
         interaction.replaceRowId(inheritedId, uniqueId: uniqueId)
+        interaction.replaceSortId(UInt64(inheritedId))
 
         interaction.anyOverwritingUpdate(transaction: writeTx)
     }

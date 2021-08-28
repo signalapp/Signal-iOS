@@ -51,6 +51,9 @@ public class OWSMessageDecryptResult: NSObject {
 public class OWSMessageDecrypter: OWSMessageHandler {
 
     private var senderIdsResetDuringCurrentBatch = NSMutableSet()
+    private var placeholderCleanupTimer: Timer? {
+        didSet { oldValue?.invalidate() }
+    }
 
     public override init() {
         super.init()
@@ -63,6 +66,15 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             name: MessageProcessor.messageProcessorDidFlushQueue,
             object: nil
         )
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+            guard let self = self else { return }
+            DispatchQueue.sharedUtility.async {
+                self.databaseStorage.read { readTx in
+                    self.schedulePlaceholderCleanup(transaction: readTx)
+                }
+            }
+        }
     }
 
     public func decryptEnvelope(_ envelope: SSKProtoEnvelope, envelopeData: Data, transaction: SDSAnyWriteTransaction) -> Result<OWSMessageDecryptResult, Error> {
@@ -273,7 +285,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     private func processError(
         _ error: Error,
         envelope: SSKProtoEnvelope,
-        groupId: Data?,
+        untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
@@ -334,13 +346,13 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     // If default, insert an error message right away
                     errorMessage = TSErrorMessage.failedDecryption(
                         for: envelope,
-                        groupId: groupId,
+                        untrustedGroupId: untrustedGroupId,
                         with: transaction)
                 case .resendable:
                     // If resendable, insert a placeholder
                     errorMessage = OWSRecoverableDecryptionPlaceholder(
                         failedEnvelope: envelope,
-                        groupId: groupId,
+                        untrustedGroupId: untrustedGroupId,
                         transaction: transaction)
                 case .implicit:
                     errorMessage = nil
@@ -575,7 +587,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             let wrappedError = processError(
                 error,
                 envelope: envelope,
-                groupId: nil,
+                untrustedGroupId: nil,
                 cipherType: cipherType,
                 contentHint: .default,
                 transaction: transaction
@@ -679,7 +691,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(handleUnidentifiedSenderDecryptionError(
                 error: outerError.underlyingError,
                 envelope: envelope.buildIdentifiedCopy(using: outerError),
-                groupId: outerError.groupId,
+                untrustedGroupId: outerError.groupId,
                 cipherType: outerError.cipherType,
                 contentHint: SealedSenderContentHint(outerError.contentHint),
                 transaction: transaction)
@@ -688,7 +700,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(handleUnidentifiedSenderDecryptionError(
                 error: error,
                 envelope: envelope,
-                groupId: nil,
+                untrustedGroupId: nil,
                 cipherType: .plaintext,
                 contentHint: .default,
                 transaction: transaction)
@@ -748,7 +760,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     func handleUnidentifiedSenderDecryptionError(
         error: Error,
         envelope: SSKProtoEnvelope,
-        groupId: Data?,
+        untrustedGroupId: Data?,
         cipherType: CiphertextMessage.MessageType,
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
@@ -759,13 +771,85 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         } else if isSignalClientError(error) {
             return processError(error,
                                 envelope: envelope,
-                                groupId: groupId,
+                                untrustedGroupId: untrustedGroupId,
                                 cipherType: cipherType,
                                 contentHint: contentHint,
                                 transaction: transaction)
         } else {
             owsFailDebug("Could not decrypt UD message: \(error), identified envelope: \(description(for: envelope))")
             return error
+        }
+    }
+
+    @objc
+    func scheduleCleanupIfNecessary(for placeholder: OWSRecoverableDecryptionPlaceholder, transaction readTx: SDSAnyReadTransaction) {
+        // Only bother scheduling if the timer isn't scheduled soon enough
+        // If a timer is scheduled to fire within 5s of the expiration date, consider that good enough
+        let flexibleExpirationDate = placeholder.expirationDate.addingTimeInterval(5)
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+
+        if flexibleExpirationDate.isBefore(fireDate) {
+            schedulePlaceholderCleanup(transaction: readTx)
+        }
+    }
+
+    @objc
+    func schedulePlaceholderCleanup(transaction readTx: SDSAnyReadTransaction) {
+        guard let oldestPlaceholder = GRDBInteractionFinder.oldestPlaceholderInteraction(transaction: readTx.unwrapGrdbRead) else { return }
+
+        // To debounce, we consider anything expiring within five seconds of a scheduled timer not worth the reschedule
+        let fireDate = placeholderCleanupTimer?.fireDate ?? .distantFuture
+        let flexibleExpirationDate = oldestPlaceholder.expirationDate.addingTimeInterval(5)
+        guard flexibleExpirationDate.isBefore(fireDate) else { return }
+
+        DispatchQueue.main.async {
+            let currentFireDate = self.placeholderCleanupTimer?.fireDate ?? .distantFuture
+            let placeholderExpiration = oldestPlaceholder.expirationDate
+            let newScheduledDate = min(currentFireDate, placeholderExpiration)
+
+            if newScheduledDate.isBeforeNow {
+                Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Will perform cleanup...")
+                self.placeholderCleanupTimer = nil
+                self.cleanupExpiredPlaceholders()
+            } else if currentFireDate.timeIntervalSince(newScheduledDate) > 5 {
+                Logger.info("Oldest placeholder expirationDate: \(oldestPlaceholder.expirationDate). Scheduling timer...")
+
+                self.placeholderCleanupTimer = Timer.scheduledTimer(
+                    withTimeInterval: oldestPlaceholder.expirationDate.timeIntervalSinceNow,
+                    repeats: false,
+                    block: { [weak self] _ in
+                        self?.cleanupExpiredPlaceholders()
+                    })
+            }
+        }
+    }
+
+    func cleanupExpiredPlaceholders() {
+        databaseStorage.asyncWrite(block: { writeTx in
+            Logger.info("Performing placeholder cleanup")
+            GRDBInteractionFinder.enumeratePlaceholders(transaction: writeTx.unwrapGrdbWrite) { placeholder, _ in
+                if placeholder.expirationDate.isBeforeNow {
+                    Logger.info("replacing placeholder \(placeholder.timestamp) with error message")
+
+                    let thread = placeholder.thread(transaction: writeTx)
+                    let errorMessage = TSErrorMessage.failedDecryption(
+                        forSender: placeholder.sender,
+                        thread: thread,
+                        timestamp: NSDate.ows_millisecondTimeStamp(),
+                        transaction: writeTx)
+
+                    placeholder.anyRemove(transaction: writeTx)
+                    errorMessage.anyInsert(transaction: writeTx)
+
+                    self.notificationsManager?.notifyUser(for: errorMessage,
+                                                          thread: thread,
+                                                          transaction: writeTx)
+                }
+            }
+        }, completionQueue: .sharedUtility) {
+            self.databaseStorage.read { readTx in
+                self.schedulePlaceholderCleanup(transaction: readTx)
+            }
         }
     }
 }

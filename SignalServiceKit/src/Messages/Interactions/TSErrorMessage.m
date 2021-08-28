@@ -232,11 +232,16 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
             return NSLocalizedString(
                 @"ERROR_MESSAGE_SESSION_REFRESH", @"Text notifying the user that their secure session has been reset");
         case TSErrorMessageDecryptionFailure: {
-            NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
-                @"Error message for a decryption failure. Embeds {{sender short name}}.");
-            NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
-                                                                        transaction:transaction];
-            return [[NSString alloc] initWithFormat:formatString, senderName];
+            if (self.sender) {
+                NSString *formatString = NSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
+                    @"Error message for a decryption failure. Embeds {{sender short name}}.");
+                NSString *senderName = [self.contactsManager shortDisplayNameForAddress:self.sender
+                                                                            transaction:transaction];
+                return [[NSString alloc] initWithFormat:formatString, senderName];
+            } else {
+                return NSLocalizedString(
+                    @"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER", @"Error message for a decryption failure.");
+            }
         }
         default:
             OWSFailDebug(@"failure: unknown error type");
@@ -296,8 +301,20 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return [builder build];
 }
 
++ (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
+                                   thread:(TSThread *)thread
+                                timestamp:(uint64_t)timestamp
+                              transaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSErrorMessageBuilder *builder =
+        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
+    builder.senderAddress = sender;
+    builder.timestamp = timestamp;
+    return [builder build];
+}
+
 + (instancetype)failedDecryptionForEnvelope:(SSKProtoEnvelope *)envelope
-                                    groupId:(nullable NSData *)groupId
+                           untrustedGroupId:(nullable NSData *)untrustedGroupId
                             withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithUuidString:envelope.sourceUuid];
@@ -306,9 +323,16 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         return nil;
     }
 
-    TSThread *thread;
-    if (groupId.length > 0) {
-        thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+    TSThread *_Nullable thread = nil;
+    if (untrustedGroupId.length > 0) {
+        [TSGroupThread ensureGroupIdMappingForGroupId:untrustedGroupId transaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:untrustedGroupId
+                                                                   transaction:transaction];
+        // If we aren't sure that the sender is a member of the reported groupId, we should fall back
+        // to inserting the placeholder in the contact thread.
+        if ([groupThread.groupMembership isFullMember:sender]) {
+            thread = groupThread;
+        }
         OWSAssertDebug(thread);
     }
     if (!thread) {
@@ -318,11 +342,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (!thread) {
         return nil;
     }
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
-    builder.senderAddress = sender;
-    builder.timestamp = envelope.timestamp;
-    return [builder build];
+    return [self failedDecryptionForSender:sender thread:thread timestamp:envelope.timestamp transaction:transaction];
 }
 
 #pragma mark - OWSReadTracking

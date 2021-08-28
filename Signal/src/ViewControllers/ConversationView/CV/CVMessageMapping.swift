@@ -163,8 +163,8 @@ public class CVMessageMapping: NSObject {
         owsAssertDebug(count > 0)
         let count = max(1, min(count, maxInteractionCount))
 
-        // The number of interactions currently in the conversation.
-        let conversationSize = interactionFinder.count(transaction: transaction)
+        // The number of visible interactions currently in the conversation.
+        let conversationSize = interactionFinder.count(excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), transaction: transaction)
         guard conversationSize > 0 else {
             self.loadedInteractions = []
             updateCanLoadMore(fetchIndexSet: IndexSet(), conversationSize: conversationSize)
@@ -190,7 +190,10 @@ public class CVMessageMapping: NSObject {
             // the distance from the oldest message, since most of the time the user will
             // be scrolled towards the bottom of the conversation. The further you scroll
             // from the bottom of the conversation, the more expensive this query will get.
-            guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(interactionUniqueId: interactionUniqueId, transaction: transaction) else {
+            guard let distanceFromLatest = try self.interactionFinder.distanceFromLatest(
+                    interactionUniqueId: interactionUniqueId,
+                    excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+                    transaction: transaction) else {
                 throw OWSAssertionError("viewIndex was unexpectedly nil")
             }
             return Int(conversationSize - distanceFromLatest - 1)
@@ -474,6 +477,7 @@ public class CVMessageMapping: NSObject {
 
             var newItems: [TSInteraction] = []
             try self.interactionFinder.enumerateInteractions(range: nsRange,
+                                                             excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
                                                              transaction: transaction) { (interaction: TSInteraction, _) in
                 newItems.append(interaction)
             }
@@ -483,7 +487,10 @@ public class CVMessageMapping: NSObject {
         // Loading the mapping from the cache has the following steps:
         //
         // 1. Fetch the uniqueIds for the interactions in the load window/mapping.
-        let interactionIds = try interactionFinder.interactionIds(inRange: nsRange, transaction: transaction)
+        let interactionIds = try interactionFinder.interactionIds(
+            inRange: nsRange,
+            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
+            transaction: transaction)
         guard !interactionIds.isEmpty else {
             return []
         }

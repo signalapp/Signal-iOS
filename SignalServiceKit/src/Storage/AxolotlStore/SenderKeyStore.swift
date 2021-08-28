@@ -103,7 +103,11 @@ public class SenderKeyStore: NSObject {
             let distributionId = distributionIdForSendingToThreadId(thread.uniqueId, writeTx: writeTx)
             guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else { return }
 
-            if !keyMetadata.isValid {
+            let currentKeyRecipients = Set(keyMetadata.keyRecipients.keys)
+            let currentGroupMembership = thread.groupMembership.fullMembers
+            let didSomeoneLeaveTheGroup = currentKeyRecipients.subtracting(currentGroupMembership).count > 0
+
+            if !keyMetadata.isValid || didSomeoneLeaveTheGroup {
                 setMetadata(nil, for: distributionId, writeTx: writeTx)
             }
         }
