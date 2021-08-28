@@ -20,7 +20,7 @@ extension FeatureBuild {
     }
 }
 
-private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
