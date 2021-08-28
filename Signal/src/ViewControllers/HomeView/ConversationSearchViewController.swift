@@ -258,13 +258,15 @@ public class ConversationSearchViewController: UITableViewController {
 
         // If we have an existing HVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
-        let cacheKey = configuration.thread.threadRecord.uniqueId
+        let cacheKey = configuration.overrideSnippet?.string ?? ""
         if let cellContentToken = cellContentCache.get(key: cacheKey) {
             return cellContentToken
         }
 
         let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
-        cellContentCache.set(key: cacheKey, value: cellContentToken)
+        if cacheKey.count > 0 {
+            cellContentCache.set(key: cacheKey, value: cellContentToken)
+        }
         return cellContentToken
     }
 
