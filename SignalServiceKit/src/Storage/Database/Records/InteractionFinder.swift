@@ -288,7 +288,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) throws -> UInt? {
-        return try Bench(title: "InteractionFinder.distanceFromLatest") {
+        return try Bench(title: "InteractionFinder.distanceFromLatestExcludingPlaceholders_\(excludePlaceholders)") {
             switch transaction.readTransaction {
             case .grdbRead(let grdbRead):
                 return try grdbAdapter.distanceFromLatest(interactionUniqueId: interactionUniqueId, excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
@@ -298,9 +298,11 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     @objc(countExcludingPlaceholders:transaction:)
     public func count(excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) -> UInt {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return grdbAdapter.count(excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
+        return Bench(title: "InteractionFinder.countExcludingPlaceholders_\(excludePlaceholders)") {
+            switch transaction.readTransaction {
+            case .grdbRead(let grdbRead):
+                return grdbAdapter.count(excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
+            }
         }
     }
 
@@ -352,17 +354,21 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     public func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateInteractions(range: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead, block: block)
+        return try Bench(title: "InteractionFinder.enumerateInteractionsInRangeExcludingPlaceholders_\(excludePlaceholders)") {
+            switch transaction.readTransaction {
+            case .grdbRead(let grdbRead):
+                return try grdbAdapter.enumerateInteractions(range: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead, block: block)
+            }
         }
     }
 
     public func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool = true, transaction: SDSAnyReadTransaction) throws -> [String] {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdbRead):
-            return try grdbAdapter.interactionIds(inRange: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
-        }
+       return try Bench(title: "InteractionFinder.interactionsIdsInRangeExcludingPlaceholders_\(excludePlaceholders)") {
+           switch transaction.readTransaction {
+           case .grdbRead(let grdbRead):
+               return try grdbAdapter.interactionIds(inRange: range, excludingPlaceholders: excludePlaceholders, transaction: grdbRead)
+           }
+       }
     }
 
     /// Returns all the unread interactions in this thread
@@ -1015,22 +1021,35 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     private let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) throws -> UInt? {
-        guard let interactionId = try UInt.fetchOne(transaction.database, sql: """
+
+        let fetchInteractionIdSQL = """
             SELECT id
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .uniqueId) = ?
-        """, arguments: [interactionUniqueId]) else {
+        """
+        let fetchInteractionArguments: StatementArguments = [interactionUniqueId]
+        guard let interactionId = try UInt.fetchOne(
+            transaction.database,
+            sql: fetchInteractionIdSQL,
+            arguments: fetchInteractionArguments
+        ) else {
             owsFailDebug("failed to find id for interaction \(interactionUniqueId)")
             return nil
         }
 
-        guard let distanceFromLatest = try UInt.fetchOne(transaction.database, sql: """
+        let distanceSQL = """
             SELECT count(*) - 1
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .id) >= ?
             \(excludePlaceholders ? filterPlaceholdersClause : "")
-        """, arguments: [threadUniqueId, interactionId]) else {
+        """
+        let distanceArguments: StatementArguments = [threadUniqueId, interactionId]
+        guard let distanceFromLatest = try UInt.fetchOne(
+            transaction.database,
+            sql: distanceSQL,
+            arguments: distanceArguments
+        ) else {
             owsFailDebug("failed to find distance from latest message")
             return nil
         }
@@ -1040,15 +1059,15 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
 
     func count(excludingPlaceholders excludePlaceholders: Bool = true, transaction: GRDBReadTransaction) -> UInt {
         do {
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: """
+            let sql: String = """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
                 \(excludePlaceholders ? filterPlaceholdersClause : "")
-                """,
-                arguments: [threadUniqueId]) else {
-                    throw OWSAssertionError("count was unexpectedly nil")
+            """
+            let arguments: StatementArguments = [threadUniqueId]
+            guard let count = try UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+                throw OWSAssertionError("count was unexpectedly nil")
             }
             return count
         } catch {
