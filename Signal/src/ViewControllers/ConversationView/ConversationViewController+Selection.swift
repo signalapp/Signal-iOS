@@ -362,6 +362,8 @@ extension ConversationViewController {
     }
 
     func didTapForwardSelectedItems() {
+        AssertIsOnMainThread()
+
         let selectionItems = self.selectionState.selectionItems
         guard !selectionItems.isEmpty else {
             owsFailDebug("Invalid selection.")

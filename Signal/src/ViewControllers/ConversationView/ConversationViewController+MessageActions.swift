@@ -323,10 +323,17 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         if let contextInteraction = interaction as? ChatHistoryContextMenuInteraction, let cell = contextInteraction.view as? CVCell, let componentView = cell.componentView {
             componentView.contextMenuPresentationDidEnd?()
 
+            // Restore the keyboard unless the context menu item presented
+            // a view controller.
             if contextInteraction.keyboardWasActive {
-                popKeyBoard()
+                if self.presentedViewController == nil {
+                    popKeyBoard()
+                } else {
+                    // If we're not going to restore the keyboard, update
+                    // chat history layout.
+                    self.loadCoordinator.enqueueReload()
+                }
             }
-
         }
 
         collectionViewActiveContextMenuInteraction = nil

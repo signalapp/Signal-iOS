@@ -466,10 +466,12 @@ public class MessageActionsToolbar: UIToolbar {
 
         autoresizingMask = .flexibleHeight
         translatesAutoresizingMaskIntoConstraints = false
-        barTintColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
         setShadowImage(UIImage(), forToolbarPosition: .any)
 
         buildItems()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        applyTheme()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -477,6 +479,15 @@ public class MessageActionsToolbar: UIToolbar {
     }
 
     // MARK: -
+
+    @objc
+    private func applyTheme() {
+        AssertIsOnMainThread()
+
+        barTintColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_white
+
+        buildItems()
+    }
 
     public func updateContent() {
         buildItems()
@@ -539,7 +550,12 @@ public class MessageActionsToolbar: UIToolbar {
                                                 comment: "Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}.")
             labelTitle = String(format: labelFormat, OWSFormat.formatInt(selectedCount))
         }
-        let labelItem = UIBarButtonItem(title: labelTitle, style: .plain, target: nil, action: nil)
+        let label = UILabel()
+        label.text = labelTitle
+        label.font = UIFont.ows_dynamicTypeBodyClamped
+        label.textColor = Theme.primaryTextColor
+        label.sizeToFit()
+        let labelItem = UIBarButtonItem(customView: label)
 
         var newItems = [UIBarButtonItem]()
         newItems.append(deleteItem)

@@ -330,36 +330,47 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let contents = OWSTableContents()
 
+        var hasContents = false
+
         // Recents Section
-        if !conversationCollection.recentConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.recentsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.recentConversations)
+            if !conversationCollection.recentConversations.isEmpty {
+                section.headerTitle = Strings.recentsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.recentConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // Contacts Section
-        if !conversationCollection.contactConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.signalContactsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.contactConversations)
+            if !conversationCollection.contactConversations.isEmpty {
+                section.headerTitle = Strings.signalContactsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.contactConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // Groups Section
-        if !conversationCollection.groupConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.groupsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.groupConversations)
+            if !conversationCollection.groupConversations.isEmpty {
+                section.headerTitle = Strings.groupsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.groupConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // "No matches" Section
         if conversationCollection.isSearchResults,
-           contents.sections.isEmpty {
+           !hasContents {
             let section = OWSTableSection()
             section.add(.label(withText: NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
                                                            comment: "keyboard toolbar label when no messages match the search string")))
@@ -540,11 +551,13 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
+        restoreSelection()
     }
 
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
+        restoreSelection()
     }
 
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -618,8 +631,12 @@ private class ConversationPickerCell: ContactTableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        selectedBadgeView.isHidden = !selected
-        unselectedBadgeView.isHidden = selected
+        applySelection()
+    }
+
+    private func applySelection() {
+        selectedBadgeView.isHidden = !self.isSelected
+        unselectedBadgeView.isHidden = self.isSelected
     }
 
     // MARK: - ContactTableViewCell
@@ -648,7 +665,11 @@ private class ConversationPickerCell: ContactTableViewCell {
         }
         super.configure(configuration: configuration, transaction: transaction)
 
+        // Apply theme.
+        unselectedBadgeView.layer.borderColor = Theme.primaryIconColor.cgColor
+
         selectionStyle = .none
+        applySelection()
     }
 
     // MARK: - Subviews
@@ -704,7 +725,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         let circleView = CircleView()
         circleView.autoSetDimensions(to: selectionBadgeSize)
         circleView.layer.borderWidth = 1.0
-        circleView.layer.borderColor = Theme.outlineColor.cgColor
+        circleView.layer.borderColor = Theme.primaryIconColor.cgColor
         return circleView
     }()
 

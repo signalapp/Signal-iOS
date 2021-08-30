@@ -1080,8 +1080,6 @@
 		32A9E22524C11B3F00C43518 /* EmojiMoodPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiMoodPickerView.swift; sourceTree = "<group>"; };
 		32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinGroupCallPill.swift; sourceTree = "<group>"; };
 		32AC5CF0255F875C00829BD8 /* GroupCallUpdateMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallUpdateMessageHandler.swift; sourceTree = "<group>"; };
-		32B0E31826DC420000F3FB2D /* ps */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ps; path = translations/ps.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		32B0E31926DC420300F3FB2D /* ps */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ps; path = translations/ps.lproj/Localizable.strings; sourceTree = "<group>"; };
 		32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallErrorView.swift; sourceTree = "<group>"; };
 		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
 		32C584A725B81C6600256804 /* AvatarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewController.swift; sourceTree = "<group>"; };
@@ -4599,7 +4597,6 @@
 				ug,
 				es_ES,
 				tk,
-				ps,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -6178,7 +6175,6 @@
 				88E1EACA26BB283D00AD0C2D /* bn */,
 				88E1EACB26BB285700AD0C2D /* gu */,
 				88E1EACC26BB286F00AD0C2D /* kn */,
-				32B0E31826DC420000F3FB2D /* ps */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -6259,7 +6255,6 @@
 				88928A49263F0D3C009C9B30 /* is */,
 				88928A4A263F0DCD009C9B30 /* es_ES */,
 				88E1EACD26BB28A400AD0C2D /* zh_HK */,
-				32B0E31926DC420300F3FB2D /* ps */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
