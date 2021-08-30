@@ -2,7 +2,6 @@ import Foundation
 import SessionUtilitiesKit
 import SessionSnodeKit
 import SignalCoreKit
-import PromiseKit
 
 public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject/NSCoding conformance is needed for YapDatabase compatibility
     public let attachmentID: String
@@ -61,29 +60,17 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
 
     // MARK: Running
     public func execute() {
-        executeAsync().retainUntilComplete()
-    }
-    
-    public func executeAsync() -> Promise<Void> {
-        let (promise, seal) = Promise<Void>.pending()
         if let id = id {
             JobQueue.currentlyExecutingJobs.insert(id)
         }
-        guard !isDeferred else {
-            seal.fulfill(())
-            return promise
-        }
+        guard !isDeferred else { return }
         if TSAttachment.fetch(uniqueId: attachmentID) is TSAttachmentStream {
             // FIXME: It's not clear * how * this happens, but apparently we can get to this point
             // from time to time with an already downloaded attachment.
-            handleSuccess()
-            seal.fulfill(())
-            return promise
+            return handleSuccess()
         }
         guard let pointer = TSAttachment.fetch(uniqueId: attachmentID) as? TSAttachmentPointer else {
-            handleFailure(error: Error.noAttachment)
-            seal.reject(Error.noAttachment)
-            return promise
+            return handleFailure(error: Error.noAttachment)
         }
         let storage = SNMessagingKitConfiguration.shared.storage
         storage.write(with: { transaction in
@@ -112,33 +99,24 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         }
         if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID), let v2OpenGroup = storage.getV2OpenGroup(for: tsMessage.uniqueThreadId) {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
-                handleFailure(Error.invalidURL)
-                seal.reject(Error.invalidURL)
-                return promise
+                return handleFailure(Error.invalidURL)
             }
             OpenGroupAPIV2.download(file, from: v2OpenGroup.room, on: v2OpenGroup.server).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
-                seal.fulfill(())
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
-                seal.reject(error)
             }
         } else {
             guard let fileAsString = pointer.downloadURL.split(separator: "/").last, let file = UInt64(fileAsString) else {
-                handleFailure(Error.invalidURL)
-                seal.reject(Error.invalidURL)
-                return promise
+                return handleFailure(Error.invalidURL)
             }
             let useOldServer = pointer.downloadURL.contains(FileServerAPIV2.oldServer)
             FileServerAPIV2.download(file, useOldServer: useOldServer).done(on: DispatchQueue.global(qos: .userInitiated)) { data in
                 self.handleDownloadedAttachment(data: data, temporaryFilePath: temporaryFilePath, pointer: pointer, failureHandler: handleFailure)
-                seal.fulfill(())
             }.catch(on: DispatchQueue.global()) { error in
                 handleFailure(error)
-                seal.reject(error)
             }
         }
-        return promise
     }
     
     private func handleDownloadedAttachment(data: Data, temporaryFilePath: URL, pointer: TSAttachmentPointer, failureHandler: (Swift.Error) -> Void) {
