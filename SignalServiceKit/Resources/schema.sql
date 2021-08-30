@@ -1212,10 +1212,23 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id"
-        ON "model_TSInteraction"("uniqueThreadId"
-    ,"id"
-)
+    INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,recordType
+    )
 WHERE
-'recordType IS NOT 70'
+    recordType IS NOT 70
+;
+
+CREATE
+    INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+        ON model_TSInteraction (
+        uniqueThreadId
+        ,id
+        ,recordType
+        ,uniqueId
+    )
+WHERE
+    recordType IS NOT 70
 ;

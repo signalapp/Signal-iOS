@@ -341,13 +341,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Zvučnik";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Dodaj fotografiju";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Dodaj sliku";
 
 /* Body for avatar builder megaphone */
 "AVATAR_BUILDER_MEGAPHONE_BODY" = "Odaberite izgled i boju ili prilagodite svoje inicijale.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Dodaj fotografiju profila";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Dodaj profilnu sliku";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Izaberi boju";
@@ -359,13 +359,13 @@
 "AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Tekst";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "Kamera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "kamera";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "Fotografija";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "slika";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Odaberi svog Avatara";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Odaberite svog avatara";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "Tekst";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Izbriši razgovor";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Samo admini mogu slati poruke u ovu grupu.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Samo administratori mogu slati poruke u ovoj grupi.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Ne možete odabrati više od %@ razgovora.";
@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Poruka od %@ nije se mogla isporučiti";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Poruku nije moguće isporučiti";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena je dvostruka poruka.";
@@ -1700,7 +1700,7 @@
 "ERROR_NETWORK_FAILURE" = "Mrežna pogreška";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Pomozite nam poboljšati Signal tako što ćete prijaviti ovu pogrešku zajedno s zapisnicima pogrešaka s vašeg uređaja na: support@signal.org;%@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Pomozite nam poboljšati Signal prijavom ove pogreške zajedno s zapisnicima pogrešaka s vašeg uređaja na support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Došlo je do pogreške";
@@ -1772,7 +1772,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Dodaj poruku";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Proslijedi";
+"FORWARD_MESSAGE_TITLE" = "Proslijedi za";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "U ovom razgovoru nema medijskih zapisa.";
@@ -1793,7 +1793,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Izgled";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Dodaj fotografiju";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Dodaj sliku";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Pozovi prijatelje";
@@ -2579,7 +2579,7 @@
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "Administratori";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratori";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Samo %@ može slati poruke.";
@@ -3140,7 +3140,7 @@
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Otvori grupnu pozivnicu";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvori link";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvori poveznicu";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Pogledaj paket naljepnica";
@@ -3173,13 +3173,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paket naljepnica";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Odabrano";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 odabrano";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Odabrano";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 odabrano";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@Odabran";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ odabran";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Poruka";
@@ -4604,7 +4604,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Morate se registrirati prije slanja poruke.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Ranije je registriran račun s ovim brojem koji je dostupan za prijenos.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Postoji prethodno registriran račun s ovim telefonskim brojem, koji je dostupan za prijenos.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Provjera nije uspjela";
@@ -5138,7 +5138,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Odaberi kvalitetu slanja fotografija i videozapisa.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Poslani mediji";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Poslani medijski zapisi";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Upotreba podatkovnih podataka";
@@ -5762,10 +5762,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Podijeli kontakte sa iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Dopustite iOS -u pristup vašim Signal kontaktima i chatovima za značajke kao što su prijedlozi za dijeljenje.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Omogućite iOS-u pristup vašim Signal kontaktima i razgovorima za značajke kao što su prijedlozi za dijeljenje.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Dopustite iOS -u pristup vašim Signal kontaktima i chatovima za značajke poput dijeljenja prijedloga i obavijesti.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Omogućite iOS-u pristup vašim Signal kontaktima i razgovorima za značajke kao što su prijedlozi za dijeljenje i obavijesti.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";

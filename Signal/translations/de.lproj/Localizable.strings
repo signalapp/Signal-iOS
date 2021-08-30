@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Eine Nachricht von %@ konnte nicht zugestellt werden";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Eine Nachricht konnte nicht zugestellt werden";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Nachricht doppelt erhalten.";
@@ -1769,7 +1769,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Nachrichten gesendet";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Eine Nachricht hinzufügen";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Füge eine Nachricht hinzu";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Weiterleiten an";

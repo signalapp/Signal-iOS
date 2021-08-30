@@ -1598,16 +1598,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossible d’accéder aux contacts";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Impossible de transférer le message.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Impossible de transférer le message car il n’est plus disponible.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Impossible de transférer les messages car ils ne sont plus disponibles.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Impossible de transférer les messages";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Impossible d’enregistrer la vidéo.";
@@ -1700,10 +1700,10 @@
 "ERROR_NETWORK_FAILURE" = "Erreur réseau";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Aidez-nous à améliorer Signal en signalant cette erreur accompagné des journaux de débogage de votre appareil à support@signal.org ;%@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Bêta : une erreur est survenue";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Votre appareil n’est plus relié. Veuillez rétablir le lien pour continuer à envoyer des messages.";
@@ -5132,13 +5132,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Réinitialiser les paramètres de téléchargement automatique";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Qualité de médias envoyés";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choisissez la qualité des photos et vidéos que vous envoyez.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Médias envoyés";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Utilisations des données";

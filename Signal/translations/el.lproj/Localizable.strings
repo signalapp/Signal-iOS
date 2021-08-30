@@ -1598,16 +1598,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Δεν ήταν δυνατή η πρόσβαση στις επαφές.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Αδυναμία προώθησης μηνύματος.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Αδυναμία προώθησης μηνύματος επειδή δεν είναι πλέον διαθέσιμο.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Αδυναμία προώθησης μηνυμάτων επειδή δεν είναι πλέον διαθέσιμα.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Αδυναμία προώθησης μηνυμάτων";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Αποτυχία αποθήκευσης του βίντεο.";
@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ένα μήνυμα από τον/την %@ δεν μπόρεσε να παραδοθεί";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Ένα μήνυμα δεν μπόρεσε να παραδοθεί";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Έλαβες ένα διπλότυπο μήνυμα.";
@@ -1700,10 +1700,10 @@
 "ERROR_NETWORK_FAILURE" = "Σφάλμα δικτύου";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Παρακαλούμε βοήθησέ μας να βελτιώσουμε το Signal αναφέροντας αυτό το σφάλμα μαζί με τα αρχεία καταγραφής αποσφαλμάτωσης της συσκευής σου στο support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Παρουσιάστηκς κάποιο σφάλμα";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Η συσκευή σου δεν είναι πλέον συνδεμένη. Ξανασύνδεσέ την για να στείλεις μηνύματα.";
@@ -1757,13 +1757,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Αποστολή μηνύματος";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Αποστολή %@ μηνυμάτων";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Γρηγορότερες προωθήσεις";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Το μήνυμα στάλθηκε";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Τα μηνύματα στάλθηκαν";
@@ -1772,7 +1772,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Προσθήκη μηνύματος";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Προώθηση σε";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Δεν έχεις πολυμέσα σε αυτη τη συνομιλία.";
@@ -1958,7 +1958,7 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Κάποιος μπήκε στην κλήση με κάποιον αριθμό ασφαλείας που έχει αλλάξει.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "Σύρε προς τα πάνω για να δεις το διαμοιρασμό οθόνης";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
 "GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Κάποιος/α ξεκίνησε μια ομαδική κλήση";
@@ -3134,7 +3134,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Προώθηση μηνύματος";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Προώθηση επιλεγμένων μηνυμάτων";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Άνοιγμα πρόσκλησης σε ομάδα";
@@ -3173,13 +3173,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Πακέτο αυτοκολλήτων";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 επιλεγμένα";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 επιλεγμένο";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ επιλεγμένα";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Μήνυμα";
@@ -5759,13 +5759,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Φωτογραφίες και Βίντεο";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Διαμοιρασμός επαφών με το iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Να επιτραπεί στο iOS η πρόσβαση στις επαφές και τις συνομιλίες του Signal, για χαρακτηριστικά όπως οι προτάσεις διαμοιρασμού.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Να επιτραπεί στο iOS η πρόσβαση στις επαφές και τις συνομιλίες του Signal, για χαρακτηριστικά όπως οι προτάσεις διαμοιρασμού και οι ειδοποιήσεις.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Κλείδωμα εγγραφής";

@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "來自 %@的一則訊息無法送達";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "一則訊息無法傳送";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "接收到重複的訊息。";

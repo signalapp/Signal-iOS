@@ -1598,16 +1598,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "No s'ha pogut accedir als contactes.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "No s'ha pogut reenviar el missatge.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "No s'ha pogut reenviar el missatge perquè ja no és disponible.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "No s'han pogut reenviar els missatges perquè ja no estan disponibles.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "No s'han pogut reenviar els missatges";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "No s'ha pogut desar el vídeo.";
@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "No s'ha pogut lliurar un missatge de %@.";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "No s'ha pogut entregar un missatge";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "S'ha rebut un missatge duplicat.";
@@ -1700,10 +1700,10 @@
 "ERROR_NETWORK_FAILURE" = "Error de xarxa";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ajudeu-nos a millorar el Signal informant-nos d'aquest error amb informes d'error del vostre aparell a support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: s'ha produït un error";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "El vostre dispositiu ja no està enllaçat. Torneu a enllaçar-lo per enviar més missatges.";
@@ -1757,13 +1757,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Envia el missatge";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Envia %@ missatges";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenviaments ràpids";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "S'ha enviat el missatge";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Missatges enviats";
@@ -1772,7 +1772,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Afegiu-hi un missatge";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Reenvia a";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "No teniu contingut en aquesta conversa.";
@@ -3005,7 +3005,7 @@
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Voleu enllaçar aquest dispositiu?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Troneu a provar-ho";
+"LINK_DEVICE_RESTART" = "Torneu a provar-ho";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Escanegeu el codi QR que es mostra al dispositiu que voleu enllaçar.";
@@ -3134,7 +3134,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reenvia aquest missatge";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Reenvia els missatges seleccionats";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Obra la invitació de grup";
@@ -3173,13 +3173,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paquet d'adhesius";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 seleccionats";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 seleccionat";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ seleccionats";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Missatge";
@@ -4604,7 +4604,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Heu de registrar-vos per poder enviar un missatge. ";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Hi havia un compte registrat anteriorment amb aquest número i es pot transferir.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "La verificació ha fallat";
@@ -4646,7 +4646,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "El número de telèfon que voleu registrar ja s'ha registrat en un altre servidor, cancel·leu aquell registre i proveu-ho de nou.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Suprimeix la previsualització";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Trieu un administrador nou";
@@ -5759,13 +5759,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotografies i vídeos";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Comparteix els contactes amb iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permet a l'iOS d'accedir als contactes i xats del Signal per a funcionalitats com ara els suggeriments de compartició.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permet a l'iOS d'accedir als contactes i xats del Signal per a funcionalitats com ara els suggeriments de compartició i les notificacions.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocatge de registre";
