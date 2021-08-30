@@ -34,9 +34,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 let envelope = try? MessageWrapper.unwrap(data: data), let envelopeAsData = try? envelope.serializedData() else {
                 return self.handleFailure(for: notificationContent)
             }
-            var attachmentDownloadJobs: [AttachmentDownloadJob] = []
             Storage.write { transaction in // Intentionally capture self
                 do {
+                    var attachmentDownloadJobs: [AttachmentDownloadJob] = []
                     let (message, proto) = try MessageReceiver.parse(envelopeAsData, openGroupMessageServerID: nil, using: transaction)
                     let senderPublicKey = message.sender!
                     if (senderPublicKey == userPublicKey) {
@@ -72,10 +72,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         // Store the notification ID for unsend requests to later cancel this notification
                         tsIncomingMessage.setNotificationIdentifier(request.identifier, transaction: transaction)
                         let storage = SNMessagingKitConfiguration.shared.storage
-                        let attachments = visibleMessage.attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0, transaction: transaction) as? TSAttachmentPointer }
+                        let attachments = visibleMessage.attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0) as? TSAttachmentPointer }
                         let attachmentsToDownload = attachments.filter { !$0.isDownloaded }
                         attachmentsToDownload.forEach { attachment in
-                            if let attachmentID = attachment.uniqueId, let job = storage.getAttachmentDownloadJob(for: attachmentID, with: transaction) {
+                            if let attachmentID = attachment.uniqueId, let job = storage.getAttachmentDownloadJob(for: attachmentID) {
                                 attachmentDownloadJobs.append(job)
                             }
                         }
@@ -106,21 +106,20 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         notificationContent.body = "You've got a new message"
                     default: break
                     }
+                    if attachmentDownloadJobs.isEmpty {
+                        self.handleSuccess(for: notificationContent)
+                    } else {
+                        let promises = attachmentDownloadJobs.map { $0.executeAsync() }
+                        when(fulfilled: promises).map { attachments in
+                            self.handleSuccess(for: notificationContent)
+                        }.catch { error in
+                            self.handleSuccess(for: notificationContent)
+                        }.retainUntilComplete()
+                    }
                 } catch {
                     self.handleFailure(for: notificationContent)
                 }
             }
-            
-//            if attachmentDownloadJobs.isEmpty {
-//                self.handleSuccess(for: notificationContent)
-//            } else {
-//                let promises = attachmentDownloadJobs.map { $0.executeAsync() }
-//                when(fulfilled: promises).map { attachments in
-//                    self.handleSuccess(for: notificationContent)
-//                }.catch { error in
-//                    self.handleSuccess(for: notificationContent)
-//                }.retainUntilComplete()
-//            }
         }
     }
 
@@ -164,7 +163,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     override public func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        print("serviceExtensionTimeWillExpire")
         let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
         let notificationContent = self.notificationContent!
         notificationContent.userInfo = userInfo
