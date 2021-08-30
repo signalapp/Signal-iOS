@@ -540,11 +540,13 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(true, animated: true)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
+        restoreSelection()
     }
 
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         searchBar.setShowsCancelButton(false, animated: true)
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
+        restoreSelection()
     }
 
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
