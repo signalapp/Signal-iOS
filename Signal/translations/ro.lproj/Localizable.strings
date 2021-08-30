@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Un mesaj de la %@ nu a putut fi livrat";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Un mesaj nu a putut fi livrat";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "A fost primit un mesaj duplicat.";
@@ -1931,13 +1931,13 @@
 "GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ și încă %ld au părăsit apelul";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ s-a alăturat la apel";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ s-a alăturat apelului";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ a părăsit apelul";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ și %@ s-au alăturat la apel";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ și %@ s-au alăturat apelului";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ și %@ au părăsit apelul";

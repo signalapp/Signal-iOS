@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Správu od %@ sa nepodarilo doručiť";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Správu nebolo možné doručiť";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Prijatá duplikovaná správa.";
@@ -2171,7 +2171,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Chcete sa pridať do tejto skupiny a zdieľať vaše meno a foto s jej členmi?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Prosím, overte si, či ste online a skúste to znovu.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Prosím, skontrolujte, či ste online a skúste to znovu.";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Prosím, skúste to znovu.";
@@ -3455,7 +3455,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Preskočiť";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Prosím, overte si, či ste online a skúste to znovu.";
+"NETWORK_ERROR_RECOVERY" = "Prosím, skontrolujte, či ste online a skúste to znovu.";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "Iba mobilné";
@@ -5003,7 +5003,7 @@
 "SENT_MEDIA_QUALITY_HIGH" = "Vysoká";
 
 /* String describing standard quality sent media */
-"SENT_MEDIA_QUALITY_STANDARD" = "Štandardné";
+"SENT_MEDIA_QUALITY_STANDARD" = "Štandardná";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal používa koncové šifrovanie a občas môže potrebovať obnoviť vašu chatovú reláciu. Toto nemá vplyv na bezpečnosť vášho chatu, ale mohla by vám uniknúť správa od tohto kontaktu a môžete používateľa požiadať, aby vám ju poslal znovu.";
@@ -5126,7 +5126,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Hlasové správy, médiá na jedno zobrazenie a nálepky (pod 100kb) sa vždy stiahnu automaticky.";
 
 /* Header for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatické stiahnutie";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatické sťahovanie";
 
 /* Label for for the 'reset media auto-download settings' button in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Resetovať nastavenia automatického sťahovania médií";
@@ -5729,7 +5729,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Skryť obrazovku pri prepínaní aplikácií";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Zobrazujte hovory v zozname Nedávne v aplikácii iOS Phone.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Zobrazujte hovory v zozname Posledné v aplikácii iOS Phone.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Zvuky";

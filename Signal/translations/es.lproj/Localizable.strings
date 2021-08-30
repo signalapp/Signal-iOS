@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "No se pudo entregar un mensaje de %@";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "No se pudo entregar un mensaje";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado recibido.";
@@ -1751,7 +1751,7 @@
 "FORWARD_MESSAGE" = "Reenviar mensaje";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los reenvíos ahora se envían inmediatamente.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los reenvíos son ahora inmediatos.";
 
 /* Label for button to proceed with forwarding a single message. */
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Enviar mensaje";
@@ -5762,10 +5762,10 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Compartir contactos con iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrar sugerencias de tus chats en Signal con los que compartir adjuntos desde otras aplicaciones.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrar notificaciones y sugerencias de tus chats en Signal con los que compartir adjuntos desde otras aplicaciones.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las notificaciones y sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueo de registro";
