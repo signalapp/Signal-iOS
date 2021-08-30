@@ -238,7 +238,7 @@ class SelectMorePhotosCell: UICollectionViewCell {
         button.setPressedBlock {
             guard #available(iOS 14, *),
                 let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
-            PHPhotoLibrary.ows_presentLimitedLibraryPicker(from: frontmostVC)
+            PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
         }
 
         let topSpacer = UIView.vStretchingSpacer()

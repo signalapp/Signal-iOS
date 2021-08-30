@@ -48,7 +48,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     private var mediaLibraryAuthorizationStatus: PHAuthorizationStatus {
         if #available(iOS 14, *) {
-            return PHPhotoLibrary.ows_authorizationStatus(for: .readWrite)
+            return PHPhotoLibrary.authorizationStatus(for: .readWrite)
         } else {
             return PHPhotoLibrary.authorizationStatus()
         }
