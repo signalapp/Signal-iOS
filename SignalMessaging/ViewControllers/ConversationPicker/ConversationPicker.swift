@@ -618,8 +618,12 @@ private class ConversationPickerCell: ContactTableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        selectedBadgeView.isHidden = !selected
-        unselectedBadgeView.isHidden = selected
+        applySelection()
+    }
+
+    private func applySelection() {
+        selectedBadgeView.isHidden = !self.isSelected
+        unselectedBadgeView.isHidden = self.isSelected
     }
 
     // MARK: - ContactTableViewCell
@@ -648,7 +652,11 @@ private class ConversationPickerCell: ContactTableViewCell {
         }
         super.configure(configuration: configuration, transaction: transaction)
 
+        // Apply theme.
+        unselectedBadgeView.layer.borderColor = Theme.primaryIconColor.cgColor
+
         selectionStyle = .none
+        applySelection()
     }
 
     // MARK: - Subviews
@@ -704,7 +712,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         let circleView = CircleView()
         circleView.autoSetDimensions(to: selectionBadgeSize)
         circleView.layer.borderWidth = 1.0
-        circleView.layer.borderColor = Theme.outlineColor.cgColor
+        circleView.layer.borderColor = Theme.primaryIconColor.cgColor
         return circleView
     }()
 
