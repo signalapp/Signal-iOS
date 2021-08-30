@@ -264,6 +264,32 @@ BOOL IsNoteToSelfEnabled(void)
     return count;
 }
 
+- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    __block BOOL hasUnreadMention = false;
+    
+    YapDatabaseViewTransaction *unreadMessages = [transaction ext:TSUnreadDatabaseViewExtensionName];
+    [unreadMessages enumerateKeysAndObjectsInGroup:self.uniqueId
+                                        usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+        if (![object isKindOfClass:[TSIncomingMessage class]]) {
+            return;
+        }
+        TSIncomingMessage* unreadMessage = (TSIncomingMessage*)object;
+        if (unreadMessage.read) {
+            NSLog(@"Found an already read message in the * unread * messages list.");
+            return;
+        }
+        
+        if (unreadMessage.isUserMentioned) {
+            hasUnreadMention = true;
+            *stop = YES;
+        }
+    }];
+
+    return hasUnreadMention;
+    
+}
+
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
