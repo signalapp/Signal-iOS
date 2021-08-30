@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Ett meddelande från %@ kunde inte levereras";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Ett meddelande kunde inte levereras";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mottog ett duplicerat meddelande.";
@@ -1703,7 +1703,7 @@
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Ett fel uppstod";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Vänligen länka igen för att skicka ytterligare meddelanden.";
@@ -1760,10 +1760,10 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Snabbare vidarebefordringar";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Meddelande skickat";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Meddelanden skickade";
@@ -4646,7 +4646,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonnumret som du försöker registrera finns redan på en annan server, vänligen avregistrera dig därifrån och försök igen.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Ta bort förhandsgranskning";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Välj ny administratör";
@@ -5759,10 +5759,10 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Foton och videor";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Dela kontakter med iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Tillåt iOS-åtkomst till Signal-kontakter och chattar för funktioner som delningsförslag.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
