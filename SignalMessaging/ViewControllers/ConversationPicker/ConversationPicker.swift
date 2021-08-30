@@ -330,36 +330,47 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let contents = OWSTableContents()
 
+        var hasContents = false
+
         // Recents Section
-        if !conversationCollection.recentConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.recentsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.recentConversations)
+            if !conversationCollection.recentConversations.isEmpty {
+                section.headerTitle = Strings.recentsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.recentConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // Contacts Section
-        if !conversationCollection.contactConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.signalContactsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.contactConversations)
+            if !conversationCollection.contactConversations.isEmpty {
+                section.headerTitle = Strings.signalContactsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.contactConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // Groups Section
-        if !conversationCollection.groupConversations.isEmpty {
+        do {
             let section = OWSTableSection()
-            section.headerTitle = Strings.groupsSection
-            addConversations(toSection: section,
-                             conversations: conversationCollection.groupConversations)
+            if !conversationCollection.groupConversations.isEmpty {
+                section.headerTitle = Strings.groupsSection
+                addConversations(toSection: section,
+                                 conversations: conversationCollection.groupConversations)
+                hasContents = true
+            }
             contents.addSection(section)
         }
 
         // "No matches" Section
         if conversationCollection.isSearchResults,
-           contents.sections.isEmpty {
+           !hasContents {
             let section = OWSTableSection()
             section.add(.label(withText: NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS",
                                                            comment: "keyboard toolbar label when no messages match the search string")))
