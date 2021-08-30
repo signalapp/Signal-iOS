@@ -112,6 +112,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addExclusiveProcessIdentifierAndHighPriorityToJobRecord
         case updateMessageSendLogColumnTypes
         case addRecordTypeIndex
+        case tunedConversationLoadIndices
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1407,6 +1408,37 @@ public class GRDBSchemaMigrator: NSObject {
                     columns: ["uniqueThreadId", "id"],
                     condition: "\(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
                 )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.tunedConversationLoadIndices.rawValue) { db in
+            do {
+                // These two indices are hyper-tuned for queries used to fetch the conversation load window. Specifically:
+                // - GRDBInteractionFinder.count(excludingPlaceholders:transaction:)
+                // - GRDBInteractionFinder.distanceFromLatest(interactionUniqueId:excludingPlaceholders:transaction:)
+                // - GRDBInteractionFinder.enumerateInteractions(range:excludingPlaceholders:transaction:block:)
+                //
+                // These indices are partial, covering and as small as possible. The columns selected appear
+                // redundant, but this is to avoid the SQLite query planner from selecting a less-optimal,
+                // non-covering index that it thinks may be more optimal since it's less bytes/row.
+                // More detailed info is included in the commit message.
+                //
+                // Note: These are not generated using the GRDB index creation syntax. In my testing it seems that
+                // placing quotes around the column name in the WHERE clause will trick the SQLite query planner
+                // into thinking these indices can't be applied to the queries we're optimizing for.
+                try db.execute(sql: """
+                    DROP INDEX index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id;
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                    ON model_TSInteraction(uniqueThreadId, recordType)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+
+                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                    ON model_TSInteraction(uniqueThreadId, id, recordType, uniqueId)
+                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                """)
             } catch {
                 owsFail("Error: \(error)")
             }
