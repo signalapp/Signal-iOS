@@ -8,6 +8,10 @@ import PromiseKit
 // This entity performs a single load.
 public class CVLoader: NSObject {
 
+    static var verboseLogging: Bool {
+        true && DebugFlags.internalLogging
+    }
+
     private let threadUniqueId: String
     private let loadRequest: CVLoadRequest
     private let viewStateSnapshot: CVViewStateSnapshot
@@ -36,7 +40,7 @@ public class CVLoader: NSObject {
         let prevRenderState = self.prevRenderState
         let messageMapping = self.messageMapping
 
-        Logger.verbose("LoadType: \(loadRequest.loadType)")
+        Logger.verbose("LoadType: \(loadRequest.loadType): \(loadRequest.loadStartDateFormatted)")
 
         struct LoadState {
             let threadViewModel: ThreadViewModel
@@ -114,6 +118,10 @@ public class CVLoader: NSObject {
                     }
                 }
 
+                if CVLoader.verboseLogging {
+                    Logger.info("Before messageMapping[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                }
+
                 do {
                     switch loadRequest.loadType {
                     case .loadInitialMapping(let focusMessageIdOnOpen, _):
@@ -152,6 +160,9 @@ public class CVLoader: NSObject {
                                                              transaction: transaction)
                 }
 
+                if CVLoader.verboseLogging {
+                    Logger.info("After messageMapping[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                }
                 self.benchSteps.step("messageMapping")
 
                 let thread = threadViewModel.threadRecord
@@ -159,14 +170,28 @@ public class CVLoader: NSObject {
 
                 self.benchSteps.step("threadInteractionCount")
 
+                if CVLoader.verboseLogging {
+                    Logger.info("Before buildRenderItems[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                }
+
                 let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext,
                                                                   updatedInteractionIds: updatedInteractionIds)
 
+                if CVLoader.verboseLogging {
+                    Logger.info("After buildRenderItems[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                }
+
                 self.benchSteps.step("buildRenderItems")
 
-                return LoadState(threadViewModel: threadViewModel,
-                                 items: items,
-                                 threadInteractionCount: threadInteractionCount)
+                let loadState = LoadState(threadViewModel: threadViewModel,
+                                          items: items,
+                                          threadInteractionCount: threadInteractionCount)
+
+                if CVLoader.verboseLogging {
+                    Logger.info("After LoadState[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                }
+
+                return loadState
             }
 
             let items = loadState.items
@@ -179,6 +204,10 @@ public class CVLoader: NSObject {
                                             viewStateSnapshot: viewStateSnapshot,
                                             loadType: loadRequest.loadType)
 
+            if CVLoader.verboseLogging {
+                Logger.info("After renderState[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+            }
+
             self.benchSteps.step("build render state")
 
             let threadInteractionCount = loadState.threadInteractionCount
@@ -186,6 +215,10 @@ public class CVLoader: NSObject {
                                         prevRenderState: prevRenderState,
                                         loadRequest: loadRequest,
                                         threadInteractionCount: threadInteractionCount)
+
+            if CVLoader.verboseLogging {
+                Logger.info("After update[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+            }
 
             self.benchSteps.step("build render update")
 

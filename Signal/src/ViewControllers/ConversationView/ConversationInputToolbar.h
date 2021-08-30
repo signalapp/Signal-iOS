@@ -98,7 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)clearDesiredKeyboard;
-- (void)toggleDefaultKeyboard;
 - (void)showStickerKeyboard;
 - (void)showAttachmentKeyboard;
 

@@ -74,6 +74,8 @@ enum CVLoadType: Equatable, CustomStringConvertible {
 // MARK: -
 
 struct CVLoadRequest {
+    public typealias RequestId = UInt
+    let requestId: RequestId
     let loadType: CVLoadType
     let updatedInteractionIds: Set<String>
     let deletedInteractionIds: Set<String>
@@ -81,6 +83,10 @@ struct CVLoadRequest {
     let canReuseComponentStates: Bool
     let didReset: Bool
     let shouldClearOldestUnreadInteraction: Bool
+    private let loadStartDate = Date()
+    public var loadStartDateFormatted: String {
+        String(format: "%0.3f", abs(loadStartDate.timeIntervalSinceNow))
+    }
 
     var isInitialLoad: Bool {
         switch loadType {
@@ -107,8 +113,38 @@ struct CVLoadRequest {
     //
     // `CVLoadRequest.Builder` will handle these responsibilties.
     struct Builder {
+        private static let requestIdCounter = AtomicUInt()
+        let requestId = Self.requestIdCounter.increment()
+
         // Has any load been requested?
-        private var shouldLoad = false
+        private var shouldLoad = false {
+            didSet {
+                if !oldValue, shouldLoad {
+                    if CVLoader.verboseLogging {
+                        Logger.info("Load Scheduled")
+                    }
+                    loadScheduleDate = Date()
+                }
+            }
+        }
+
+        private var loadScheduleDate: Date?
+        public var loadScheduleDateFormatted: String? {
+            guard let loadScheduleDate = loadScheduleDate else {
+                return nil
+            }
+            return String(format: "%0.3f", abs(loadScheduleDate.timeIntervalSinceNow))
+        }
+
+        public func loadBegun() {
+            if CVLoader.verboseLogging {
+                guard let loadScheduleDateFormatted = self.loadScheduleDateFormatted else {
+                    owsFailDebug("Missing loadScheduleDateFormatted.")
+                    return
+                }
+                Logger.info("Load Scheduled -> Begun: \(loadScheduleDateFormatted)")
+            }
+        }
 
         private var updatedInteractionIds = Set<String>()
         private var deletedInteractionIds = Set<String>()
@@ -154,7 +190,7 @@ struct CVLoadRequest {
 
             // Configure for initial mapping.
             let scrollAction = CVScrollAction(action: .initialPosition,
-                                               isAnimated: false)
+                                              isAnimated: false)
             tryToUpdateLoadType(.loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen,
                                                     scrollAction: scrollAction))
             shouldLoad = true
@@ -191,8 +227,8 @@ struct CVLoadRequest {
 
             let scrollAction = CVScrollAction(action: .scrollTo(interactionId: interactionId,
                                                                 onScreenPercentage: onScreenPercentage,
-                                                                 alignment: alignment),
-                                               isAnimated: isAnimated)
+                                                                alignment: alignment),
+                                              isAnimated: isAnimated)
             tryToUpdateLoadType(.loadPageAroundInteraction(interactionId: interactionId,
                                                            scrollAction: scrollAction))
             shouldLoad = true
@@ -237,7 +273,8 @@ struct CVLoadRequest {
                 return nil
             }
 
-            return CVLoadRequest(loadType: loadType,
+            return CVLoadRequest(requestId: requestId,
+                                 loadType: loadType,
                                  updatedInteractionIds: updatedInteractionIds,
                                  deletedInteractionIds: deletedInteractionIds,
                                  canReuseInteractionModels: canReuseInteractionModels,

@@ -19,6 +19,10 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
     public func sendButtonPressed() {
         AssertIsOnMainThread()
 
+        if CVLoader.verboseLogging {
+            Logger.info("")
+        }
+
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return
@@ -36,8 +40,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         BenchManager.startEvent(title: "Send Message Milestone: clearTextMessageAnimated",
                                 eventId: "fromSendUntil_clearTextMessageAnimated")
-        BenchManager.startEvent(title: "Send Message Milestone: toggleDefaultKeyboard",
-                                eventId: "fromSendUntil_toggleDefaultKeyboard")
 
         tryToSendTextMessage(messageBody, updateKeyboardState: true)
     }
@@ -126,16 +128,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             inputToolbar.clearTextMessage(animated: true)
         }
         BenchManager.completeEvent(eventId: "fromSendUntil_clearTextMessageAnimated")
-
-        DispatchQueue.main.async {
-            // After sending we want to return from the numeric keyboard to the
-            // alphabetical one. Because this is so slow (40-50ms), we prefer it
-            // happens async, after any more essential send UI work is done.
-            BenchManager.bench(title: "toggleDefaultKeyboard") {
-                inputToolbar.toggleDefaultKeyboard()
-            }
-            BenchManager.completeEvent(eventId: "fromSendUntil_toggleDefaultKeyboard")
-        }
 
         let thread = self.thread
         Self.databaseStorage.asyncWrite { transaction in

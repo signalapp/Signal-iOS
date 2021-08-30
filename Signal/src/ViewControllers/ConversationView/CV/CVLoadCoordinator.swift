@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SignalServiceKit
 
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
     var viewState: CVViewState { get }
@@ -169,7 +170,7 @@ public class CVLoadCoordinator: NSObject {
 
     @objc
     func applicationDidEnterBackground() {
-         resetClearedUnreadMessagesIndicator()
+        resetClearedUnreadMessagesIndicator()
     }
 
     @objc
@@ -313,11 +314,17 @@ public class CVLoadCoordinator: NSObject {
     // This property should only be accessed on the main thread.
     private var loadRequestBuilder = CVLoadRequest.Builder()
 
-    // For thread safety, we can only have one load
-    // in flight at a time. Entities like the MessageMapping
-    // are not thread-safe.
-    private let isLoading = AtomicBool(false)
-    public var hasLoadInFlight: Bool { isLoading.get() }
+    // We should only have one "building" and one "landing"
+    // in flight at a time. We _can_ start building request B
+    // while A is still "landing", but only after its landing
+    // has _begun_ (but not yet complete).
+    //
+    // We can only build one load at a time more many reasons.
+    // Entities like the MessageMapping are not thread-safe.
+    // Each load is based
+    private let loadBuildingRequestId = AtomicOptional<CVLoadRequest.RequestId>(nil)
+    private let loadLandingRequestId = AtomicOptional<CVLoadRequest.RequestId>(nil)
+    private static let canOverlapLandingAnimations = true
 
     private let autoLoadMoreThreshold: TimeInterval = 2 * kSecondInterval
 
@@ -464,6 +471,10 @@ public class CVLoadCoordinator: NSObject {
     private func loadIfNecessary() {
         AssertIsOnMainThread()
 
+        if CVLoader.verboseLogging {
+            Logger.info("Trying to begin load.")
+        }
+
         let conversationStyle = self.conversationStyle
         guard conversationStyle.viewWidth > 0 else {
             Logger.info("viewWidth not yet set.")
@@ -478,9 +489,13 @@ public class CVLoadCoordinator: NSObject {
             return
         }
         #endif
-        guard isLoading.tryToSetFlag() else {
+        guard loadBuildingRequestId.tryToSetIfNil(loadRequest.requestId) else {
             Logger.verbose("Ignoring; already loading.")
             return
+        }
+        loadRequestBuilder.loadBegun()
+        if CVLoader.verboseLogging {
+            Logger.info("Loading[\(loadRequest.requestId)]")
         }
 
         loadRequestBuilder = CVLoadRequest.Builder()
@@ -494,8 +509,8 @@ public class CVLoadCoordinator: NSObject {
         // We should do an "initial" load IFF this is our first load.
         owsAssertDebug(loadRequest.isInitialLoad == renderState.isEmptyInitialState)
 
-        guard isLoading.get() else {
-            owsFailDebug("isLoading not set.")
+        guard loadBuildingRequestId.get() == loadRequest.requestId else {
+            owsFailDebug("loadBuildingRequestId is not set.")
             return
         }
         let prevRenderState = renderState
@@ -517,114 +532,202 @@ public class CVLoadCoordinator: NSObject {
                               prevRenderState: prevRenderState,
                               messageMapping: messageMapping)
 
-        firstly { () -> Promise<CVUpdate> in
-            loader.loadPromise()
-        }.then { [weak self] (update: CVUpdate) -> Promise<Void> in
-            guard let self = self else {
-                throw OWSGenericError("Missing self.")
-            }
-            guard let delegate = self.delegate else {
-                throw OWSGenericError("Missing delegate.")
-            }
-            return self.loadLandWhenSafePromise(update: update, delegate: delegate)
-        }.done { [weak self] () -> Void in
-            guard let self = self else {
-                throw OWSGenericError("Missing self.")
-            }
-            guard self.isLoading.tryToClearFlag() else {
-                owsFailDebug("Could not clear isLoading flag.")
-                return
-            }
-            // Initiate new load if necessary.
-            self.loadIfNecessary()
-        }.catch(on: CVUtils.workQueue(isInitialLoad: loadRequest.isInitialLoad)) { [weak self] (error) in
-            guard let self = self else {
-                return
-            }
-            owsFailDebug("Error: \(error)")
-            guard self.isLoading.tryToClearFlag() else {
-                owsFailDebug("Could not clear isLoading flag.")
-                return
-            }
-            // Initiate new load if necessary.
-            self.loadIfNecessary()
+        if CVLoader.verboseLogging {
+            Logger.info("Before load promise[\(loadRequest.requestId)]")
         }
+
+        firstly { () -> Promise<CVUpdate> in
+            let updatePromise = loader.loadPromise()
+
+            if CVLoader.verboseLogging {
+                // If we're doing verbose logging, add this step to the promise chain
+                // so that we can measure the delay dispatching onto .main.
+                return updatePromise.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
+                    Logger.info("Load land dispatch[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                    return update
+                }
+            } else {
+                return updatePromise
+            }
+        }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<Void> in
+            if CVLoader.verboseLogging {
+                Logger.info("Load build complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+            }
+            guard let self = self else {
+                throw OWSGenericError("Missing self.")
+            }
+            return self.loadLandWhenSafePromise(update: update)
+        }.done(on: .main) { [weak self] () -> Void in
+            self?.loadDidSucceed(loadRequest: loadRequest)
+        }.catch(on: .main) { [weak self] (error) in
+            self?.loadDidFail(loadRequest: loadRequest, error: error)
+        }
+    }
+
+    private func loadDidSucceed(loadRequest: CVLoadRequest) {
+        AssertIsOnMainThread()
+
+        if CVLoader.verboseLogging {
+            Logger.info("Load complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+        }
+
+        let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        // This flag should already be cleared.
+        owsAssertDebug(!didClearBuildingFlag)
+        let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        if Self.canOverlapLandingAnimations {
+            owsAssertDebug(!didClearLandingFlag)
+        } else {
+            owsAssertDebug(didClearLandingFlag)
+        }
+
+        // Initiate new load if necessary.
+        loadIfNecessary()
+    }
+
+    private func loadDidFail(loadRequest: CVLoadRequest, error: Error) {
+        AssertIsOnMainThread()
+
+        owsFailDebug("Load failed[\(loadRequest.requestId)]: \(error)")
+
+        let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        owsAssertDebug(didClearBuildingFlag || didClearLandingFlag)
+
+        // Initiate new load if necessary.
+        loadIfNecessary()
     }
 
     // MARK: - Safe Landing
 
-    // Lands the load when its safe, blocking on scrolling.
-    private func loadLandWhenSafePromise(update: CVUpdate,
-                                         delegate: CVLoadCoordinatorDelegate) -> Promise<Void> {
+    // Lands the load when it is safe, blocking on animations,
+    // previous loads landing, etc.
+    private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let (loadPromise, loadResolver) = Promise<Void>.pending()
 
+        loadLandWhenSafe(update: update, loadResolver: loadResolver)
+
+        return loadPromise
+    }
+
+    private func loadLandWhenSafe(update: CVUpdate, loadResolver: Resolver<Void>) {
+
+        guard let delegate = self.delegate else {
+            loadResolver.reject(OWSGenericError("Missing self or delegate."))
+            return
+        }
+
         func canLandLoad() -> Bool {
             AssertIsOnMainThread()
 
-            // Allow multi selection animation load to land, even if keyboard is animating
+            // Allow multi selection animation load to land, even if keyboard is animating.
             if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
-               lastKeyboardAnimationDate.isAfterNow, viewState.selectionAnimationState != .willAnimate {
+               lastKeyboardAnimationDate.isAfterNow,
+               viewState.selectionAnimationState != .willAnimate {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for keyboard animation.")
+                }
                 return false
             }
-
-            guard viewState.selectionAnimationState != .animating  else { return false }
-
+            guard viewState.selectionAnimationState != .animating  else {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for selection animation.")
+                }
+                return false
+            }
             if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for context menu animation.")
+                }
                 return false
             }
-
-            let result = !delegate.isLayoutApplyingUpdate && !delegate.areCellsAnimating
-            return result
+            guard !delegate.isLayoutApplyingUpdate else {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for isLayoutApplyingUpdate.")
+                }
+                return false
+            }
+            guard !delegate.areCellsAnimating else {
+                if CVLoader.verboseLogging {
+                    Logger.verbose("Waiting for areCellsAnimating.")
+                }
+                return false
+            }
+            return true
         }
 
-        func tryToResolve() {
-            guard canLandLoad() else {
-                // TODO: async() or asyncAfter()?
-                if !DebugFlags.reduceLogChatter {
-                    Logger.verbose("Waiting to land load.")
-                }
-                // We wait in a pretty tight loop to ensure loads land in a timely way.
-                //
-                // DispatchQueue.asyncAfter() will take longer to perform
-                // its block than DispatchQueue.async() if the CPU is under
-                // heavy load. That's desirable in this case.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
-                    tryToResolve()
-                }
-                return
+        let loadRequest = update.loadRequest
+
+        // It's important that we only set loadLandingRequestId if canLandLoad is true.
+        guard canLandLoad(),
+              self.loadLandingRequestId.tryToSetIfNil(loadRequest.requestId) else {
+
+            if CVLoader.verboseLogging {
+                Logger.verbose("Waiting to land load.")
             }
-
-            let renderState = update.renderState
-            let updateToken = delegate.willUpdateWithNewRenderState(renderState)
-
-            self.renderState = renderState
-
-            let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
-            self.loadDidLandResolver = loadDidLandResolver
-
-            let loadRequest = update.loadRequest
-            delegate.updateWithNewRenderState(update: update,
-                                              scrollAction: loadRequest.scrollAction,
-                                              updateToken: updateToken)
-
-            firstly { () -> Promise<Void> in
-                // We've started the process of landing the load,
-                // but its completion may be async.
-                //
-                // Block on load land completion.
-                loadDidLandPromise
-            }.done(on: CVUtils.landingQueue) {
-                loadResolver.fulfill(())
-            }.catch(on: CVUtils.landingQueue) { error in
-                loadResolver.reject(error)
+            // We wait in a pretty tight loop to ensure loads land in a timely way.
+            //
+            // DispatchQueue.asyncAfter() will take longer to perform
+            // its block than DispatchQueue.async() if the CPU is under
+            // heavy load. That's desirable in this case.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) { [weak self] in
+                self?.loadLandWhenSafe(update: update, loadResolver: loadResolver)
             }
+            return
         }
 
-        tryToResolve()
+        let renderState = update.renderState
+        let updateToken = delegate.willUpdateWithNewRenderState(renderState)
 
-        return loadPromise
+        self.renderState = renderState
+
+        let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
+        self.loadDidLandResolver = loadDidLandResolver
+
+        delegate.updateWithNewRenderState(update: update,
+                                          scrollAction: loadRequest.scrollAction,
+                                          updateToken: updateToken)
+
+        if CVLoader.verboseLogging {
+            Logger.info("Load landing begun[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+        }
+
+        // Once this load's landing has _begun_ we can start building the next load.
+        // loadLandingRequestId ensures that we only land one load at a time.
+        //
+        // We cannot start building the next load until this point, since the next
+        // load will...
+        //
+        // * ...use the current renderState state as a point of departure.
+        // * ...assume the UICollectionView has already been updated to reflect
+        //   this load, so that it can safely performBatchUpdates().
+        let didClearBuildingFlag = self.loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
+        owsAssertDebug(didClearBuildingFlag)
+
+        // If we can overlap landing animations, we can start landing the next
+        // load immediately after we start landing this load.  If we commit to
+        // this behavior, we can eliminate loadLandingRequestId.
+        if Self.canOverlapLandingAnimations {
+            let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
+            owsAssertDebug(didClearLandingFlag)
+        }
+
+        // Initiate new load if necessary.
+        loadIfNecessary()
+
+        // Wait for landing to complete.
+        firstly { () -> Promise<Void> in
+            loadDidLandPromise
+        }.done(on: CVUtils.landingQueue) {
+            if CVLoader.verboseLogging {
+                Logger.info("Load landing complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+            }
+            loadResolver.fulfill(())
+        }.catch(on: CVUtils.landingQueue) { error in
+            loadResolver.reject(error)
+        }
     }
 
     // -
@@ -764,7 +867,7 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
                                viewForSupplementaryElementOfKind kind: String,
                                at indexPath: IndexPath) -> UICollectionReusableView {
         guard kind == UICollectionView.elementKindSectionHeader ||
-            kind == UICollectionView.elementKindSectionFooter else {
+                kind == UICollectionView.elementKindSectionFooter else {
             owsFailDebug("unexpected supplementaryElement: \(kind)")
             return UICollectionReusableView()
         }
