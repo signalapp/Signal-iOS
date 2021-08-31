@@ -531,6 +531,7 @@
 "modal_open_url_title" = "URL باز شود؟";
 "modal_open_url_explanation" = "آیا مطمئن هستید که میخواهید %@ را باز کنید؟";
 "modal_open_url_button_title" = "باز کن";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Unblock %@?";
 "modal_blocked_explanation" = "Are you sure you want to unblock %@?";
 "modal_blocked_button_title" = "رفع مسدودی";

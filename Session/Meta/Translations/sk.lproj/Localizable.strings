@@ -531,6 +531,7 @@
 "modal_open_url_title" = "Otvoriť URL?";
 "modal_open_url_explanation" = "Ste si istý, že chcete otvoriť %@?";
 "modal_open_url_button_title" = "Otvoriť";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Odblokovať %@?";
 "modal_blocked_explanation" = "Ste si istý/á, že chcete odblokovať %@?";
 "modal_blocked_button_title" = "Odblokovať";

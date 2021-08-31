@@ -531,6 +531,7 @@
 "modal_open_url_title" = "URLを開きますか？";
 "modal_open_url_explanation" = "%@を本当に開いてもよろしいですか？";
 "modal_open_url_button_title" = "開く";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "%@のブロックを解除しますか？";
 "modal_blocked_explanation" = "%@のブロックを解除してもよろしいですか?";
 "modal_blocked_button_title" = "ブロックを解除する";

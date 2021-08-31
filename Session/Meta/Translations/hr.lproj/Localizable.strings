@@ -531,6 +531,7 @@
 "modal_open_url_title" = "Otvori poveznicu?";
 "modal_open_url_explanation" = "Jeste li sigurni da želite otvoriti %@?";
 "modal_open_url_button_title" = "Otvori";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Deblokiraj %@?";
 "modal_blocked_explanation" = "Jeste li sigurni da želite deblokirati %@?";
 "modal_blocked_button_title" = "Deblokiraj";

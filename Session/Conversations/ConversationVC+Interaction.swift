@@ -359,6 +359,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         snInputView.hideMentionsUI()
         self.oldText = newText
     }
+    
+    func showInputAccessoryView() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.inputAccessoryView?.isHidden = false
+            self.inputAccessoryView?.alpha = 1
+        })
+    }
 
     // MARK: View Item Interaction
     func handleViewItemLongPressed(_ viewItem: ConversationViewItem) {
@@ -560,19 +567,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             return
         }
         
-        func showInputAccessoryView() {
-            UIView.animate(withDuration: 0.25, animations: {
-                self.inputAccessoryView?.isHidden = false
-                self.inputAccessoryView?.alpha = 1
-            })
-        }
-        
         if viewItem.interaction.interactionType() == .outgoingMessage,
            let message = viewItem.interaction as? TSMessage, message.serverHash != nil  {
             let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
             let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
                 self.deleteLocally(viewItem)
-                showInputAccessoryView()
+                self.showInputAccessoryView()
             }
             alertVC.addAction(deleteLocallyAction)
             
@@ -582,12 +582,12 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             }
             let deleteRemotelyAction = UIAlertAction.init(title: title, style: .destructive) { _ in
                 self.deleteForEveryone(viewItem)
-                showInputAccessoryView()
+                self.showInputAccessoryView()
             }
             alertVC.addAction(deleteRemotelyAction)
             
             let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel) {_ in
-                showInputAccessoryView()
+                self.showInputAccessoryView()
             }
             alertVC.addAction(cancelAction)
             
@@ -674,10 +674,24 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     func openURL(_ url: URL) {
         // URLs can be unsafe, so always ask the user whether they want to open one
-        let urlModal = URLModal(url: url)
-        urlModal.modalPresentationStyle = .overFullScreen
-        urlModal.modalTransitionStyle = .crossDissolve
-        present(urlModal, animated: true, completion: nil)
+        let title = NSLocalizedString("modal_open_url_title", comment: "")
+        let message = String(format: NSLocalizedString("modal_open_url_explanation", comment: ""), url.absoluteString)
+        let alertVC = UIAlertController.init(title: title, message: message, preferredStyle: .actionSheet)
+        let openAction = UIAlertAction.init(title: NSLocalizedString("modal_open_url_button_title", comment: ""), style: .default) { _ in
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            self.showInputAccessoryView()
+        }
+        alertVC.addAction(openAction)
+        let copyAction = UIAlertAction.init(title: NSLocalizedString("modal_copy_url_button_title", comment: ""), style: .default) { _ in
+            UIPasteboard.general.string = url.absoluteString
+            self.showInputAccessoryView()
+        }
+        alertVC.addAction(copyAction)
+        let cancelAction = UIAlertAction.init(title: NSLocalizedString("cancel", comment: ""), style: .cancel) {_ in
+            self.showInputAccessoryView()
+        }
+        alertVC.addAction(cancelAction)
+        self.presentAlert(alertVC)
     }
     
     func joinOpenGroup(name: String, url: String) {

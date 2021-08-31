@@ -531,6 +531,7 @@
 "modal_open_url_title" = "เปิดลิงค์ URL ไหม";
 "modal_open_url_explanation" = "แน่ใจไหมว่าคุณต้องกาเปิดดู %@";
 "modal_open_url_button_title" = "เปิด";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "เลิกบล็อก %@ ไหม";
 "modal_blocked_explanation" = "แน่ใจไหมว่าคุณต้องการเลิกบล็อก %@";
 "modal_blocked_button_title" = "เลิกบล็อก";

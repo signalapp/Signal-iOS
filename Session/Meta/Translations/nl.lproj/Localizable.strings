@@ -531,6 +531,7 @@
 "modal_open_url_title" = "URL openen?";
 "modal_open_url_explanation" = "Weet u zeker dat u %@ wilt openen?";
 "modal_open_url_button_title" = "Openen";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Blokkering opheffen voor %@?";
 "modal_blocked_explanation" = "Weet je zeker dat je %@ weer wilt toelaten?";
 "modal_blocked_button_title" = "Deblokkeren";

@@ -531,6 +531,7 @@
 "modal_open_url_title" = "打开链接?";
 "modal_open_url_explanation" = "确定要打开 %@ 吗?";
 "modal_open_url_button_title" = "打开";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "从黑名单中移除 %@ 吗？";
 "modal_blocked_explanation" = "确定解除屏蔽%@吗?";
 "modal_blocked_button_title" = "解除屏蔽";

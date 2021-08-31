@@ -531,6 +531,7 @@
 "modal_open_url_title" = "Öppna URL?";
 "modal_open_url_explanation" = "Är du säker på att du vill öppna %@?";
 "modal_open_url_button_title" = "Öppna";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Avblockera %@?";
 "modal_blocked_explanation" = "Är du säker på att du vill avblockera %@?";
 "modal_blocked_button_title" = "Avblockera";

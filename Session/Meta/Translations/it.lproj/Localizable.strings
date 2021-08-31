@@ -531,6 +531,7 @@
 "modal_open_url_title" = "Aprire URL?";
 "modal_open_url_explanation" = "Sei sicuro di voler aprire %@?";
 "modal_open_url_button_title" = "Apri";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "Sbloccare %@?";
 "modal_blocked_explanation" = "Sei sicuro di voler sbloccare %@?";
 "modal_blocked_button_title" = "Sblocca";

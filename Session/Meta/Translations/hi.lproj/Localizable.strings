@@ -531,6 +531,7 @@
 "modal_open_url_title" = "यूआरएल खोलें";
 "modal_open_url_explanation" = "क्या आप वाकई %@ खोलना चाहते हैं?";
 "modal_open_url_button_title" = "खोलें";
+"modal_copy_url_button_title" = "Copy Link";
 "modal_blocked_title" = "%@ अनब्लॉक करें?";
 "modal_blocked_explanation" = "क्या आप वाकई %@ को अनब्लॉक करना चाहते हैं?";
 "modal_blocked_button_title" = "अनब्लॉक करें";
