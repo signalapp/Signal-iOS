@@ -472,7 +472,12 @@ class MessageSendLogTests: SSKBaseTestSwift {
             let index = MessageSendLog.recordPayload(data, forMessageBeingSent: message, transaction: writeTx)!.int64Value
             MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, transaction: writeTx)
 
-            let fetchedPayload = MessageSendLog.fetchPayload(address: address, deviceId: 1, timestamp: originalTimestamp, transaction: writeTx)
+            let fetchedPayload = MessageSendLog.test_fetchPayload(
+                address: address,
+                deviceId: 1,
+                timestamp: originalTimestamp,
+                allowExpired: true,
+                transaction: writeTx)
             XCTAssertEqual(fetchedPayload?.sentTimestamp, originalTimestamp)
         }
     }
