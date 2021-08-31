@@ -112,7 +112,10 @@ extension CVRenderItem: ConversationViewLayoutItem {
         case .incomingMessage:
             switch previousInteraction.interactionType {
             case .incomingMessage:
-                if let selfAuthorAddress = self.incomingMessageAuthorAddress,
+                // Only use compact spacing within a cluster
+                // of messages from the same author.
+                if !itemViewState.isFirstInCluster,
+                   let selfAuthorAddress = self.incomingMessageAuthorAddress,
                    let prevAuthorAddress = previousLayoutItem.incomingMessageAuthorAddress,
                    selfAuthorAddress == prevAuthorAddress {
                     return ConversationStyle.compactMessageSpacing
@@ -126,7 +129,12 @@ extension CVRenderItem: ConversationViewLayoutItem {
         case .outgoingMessage:
             switch previousInteraction.interactionType {
             case .outgoingMessage:
-                return ConversationStyle.compactMessageSpacing
+                // Only use compact spacing within a cluster.
+                if itemViewState.isFirstInCluster {
+                    return ConversationStyle.defaultMessageSpacing
+                } else {
+                    return ConversationStyle.compactMessageSpacing
+                }
             case .call, .info, .error:
                 return ConversationStyle.systemMessageSpacing
             default:
