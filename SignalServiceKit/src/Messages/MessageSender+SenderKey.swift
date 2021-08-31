@@ -97,13 +97,10 @@ extension MessageSender {
                     // For now, let's perform a check to filter out invalid registrationIds. An
                     // investigation into cleaning up these invalid registrationIds is ongoing.
                     // Once we've done this, we can remove this entire filter clause.
-                    //
-                    // loadSessionIfExists(for:deviceId:transaction:) may return nil if there's no SignalRecipient
-                    // registered, but that's okay since this will self-heal over time.
                     let addresses = Recipient(address: address, transaction: readTx)
                     return addresses.devices.allSatisfy { deviceId in
                         do {
-                            guard let sessionRecord = try sessionStore.loadSessionIfExists(for: address, deviceId: Int32(deviceId), transaction: readTx),
+                            guard let sessionRecord = try sessionStore.loadSession(for: address, deviceId: Int32(deviceId), transaction: readTx),
                                   sessionRecord.hasCurrentState else {
                                 Logger.warn("No session for address: \(address)")
                                 return false
