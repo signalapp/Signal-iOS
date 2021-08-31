@@ -209,6 +209,24 @@ public class SSKSessionStore: NSObject {
 }
 
 extension SSKSessionStore {
+    /// Returns an existing session record for a given address.
+    /// Will return `nil` if no SignalRecipient has been registered for the given address
+    public func loadSessionIfExists(
+        for address: SignalServiceAddress,
+        deviceId: Int32,
+        transaction readTx: SDSAnyReadTransaction
+    ) throws -> SessionRecord? {
+        guard let accountId = OWSAccountIdFinder.accountId(forAddress: address, transaction: readTx) else {
+            Logger.debug("No accountId for \(address)")
+            return nil
+        }
+        guard let serializedData = loadSerializedSession(forAccountId: accountId, deviceId: deviceId, transaction: readTx) else {
+            Logger.debug("No session data for \(address).\(deviceId)")
+            return nil
+        }
+        return try SessionRecord(bytes: serializedData)
+    }
+
     fileprivate func loadSession(
         for address: SignalServiceAddress,
         deviceId: Int32,
