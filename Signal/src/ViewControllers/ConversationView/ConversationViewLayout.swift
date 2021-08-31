@@ -366,11 +366,12 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         let stickyItemLayout: ItemLayout = {
             let indexPath = stickyDateHeader.indexPath
-            let layoutAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+            let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
             var frame = stickyDateHeader.frame
             frame.y = stickyY
             layoutAttributes.frame = frame
             layoutAttributes.zIndex = Self.zIndexStickyHeader
+            layoutAttributes.isStickyHeader = true
 
             return ItemLayout(interactionUniqueId: stickyDateHeader.interactionUniqueId,
                               indexPath: indexPath,
@@ -542,7 +543,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             // Do nothing.
         } else {
             let headerIndexPath = IndexPath(row: 0, section: 0)
-            let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            let layoutAttributes = CVCollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                                                     with: headerIndexPath)
             layoutAttributes.frame = CGRect(x: 0, y: y, width: viewWidth, height: layoutHeaderHeight)
             headerLayoutAttributes = layoutAttributes
@@ -574,7 +575,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let itemFrame = CGRect(x: 0, y: y, width: viewWidth, height: layoutSize.height)
 
             let indexPath = IndexPath(row: row, section: 0)
-            let layoutAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+            let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
             layoutAttributes.frame = itemFrame
             if layoutItem.isStickyHeader {
                 layoutAttributes.zIndex = Self.zIndexStickyHeader
@@ -602,7 +603,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             if layoutItems.isEmpty || layoutFooterHeight <= 0 || headerLayoutAttributes?.indexPath == footerIndexPath {
                 // Do nothing.
             } else {
-                let layoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                let layoutAttributes = CVCollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
                                                                         with: footerIndexPath)
 
                 layoutAttributes.frame = CGRect(x: 0, y: contentBottom, width: viewWidth, height: layoutFooterHeight)
@@ -1093,5 +1094,28 @@ public class CVScrollContinuityToken: NSObject {
         self.layoutInfo = layoutInfo
         self.contentOffset = contentOffset
         self.visibleUniqueIds = visibleUniqueIds
+    }
+}
+
+// MARK: -
+
+@objc
+public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
+    public var isStickyHeader: Bool = false
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let copy = super.copy(with: zone) as! CVCollectionViewLayoutAttributes
+        copy.isStickyHeader = isStickyHeader
+        return copy
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? CVCollectionViewLayoutAttributes else {
+            return false
+        }
+        guard object.isStickyHeader == self.isStickyHeader else {
+            return false
+        }
+        return super.isEqual(object)
     }
 }

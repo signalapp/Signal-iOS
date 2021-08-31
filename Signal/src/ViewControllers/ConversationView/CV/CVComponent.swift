@@ -61,6 +61,9 @@ public protocol CVComponent: AnyObject {
     func updateScrollingContent(componentView: CVComponentView)
 
     func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]?
+
+    func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
+               componentView: CVComponentView)
 }
 
 // MARK: -
@@ -155,6 +158,11 @@ public class CVComponentBase: NSObject {
 
     public func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {
         return nil
+    }
+
+    public func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
+                      componentView: CVComponentView) {
+        // Do nothing.
     }
 
     var uiMode: ConversationUIMode { itemModel.itemViewState.uiMode }
@@ -264,10 +272,11 @@ extension CVComponentBase: CVNode {
 // MARK: -
 
 extension CVComponentBase {
-    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+    public func buildBlurView(backgroundColor: UIColor,
+                              blurStyle: UIBlurEffect.Style = .regular) -> UIVisualEffectView {
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
         let blurOverlay = UIView()
-        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
+        blurOverlay.backgroundColor = backgroundColor
         blurView.contentView.addSubview(blurOverlay)
         blurOverlay.autoPinEdgesToSuperviewEdges()
         return blurView
