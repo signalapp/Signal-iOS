@@ -45,7 +45,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
 
             DispatchQueue.global(qos: .userInitiated).async {
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
-                    Logger.info("Checked notification authorization \(settings.authorizationStatus)")
+                    Logger.info("Checked notification authorization \(settings.authorizationStatus.rawValue)")
                     resolver.fulfill(settings.authorizationStatus == .authorized)
                 }
             }
