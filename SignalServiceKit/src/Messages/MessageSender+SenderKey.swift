@@ -106,7 +106,7 @@ extension MessageSender {
                                 Logger.warn("No session for address: \(address)")
                                 return false
                             }
-                            let isValidRegistrationId = (registrationId & 0x3ff == registrationId)
+                            let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
                             owsAssertDebug(isValidRegistrationId)
                             return isValidRegistrationId
                         } catch {
