@@ -199,7 +199,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                                          comment: "Label indicating that a message failed to send.")
             }
         } else {
-            return DateUtil.formatMessageTimestamp(interaction.timestamp, shouldUseLongFormat: shouldUseLongFormat)
+            return DateUtil.formatMessageTimestampForCVC(interaction.timestamp,
+                                                         shouldUseLongFormat: shouldUseLongFormat)
         }
     }
 

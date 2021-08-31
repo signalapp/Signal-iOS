@@ -7,7 +7,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface DateUtil : NSObject
 
 + (NSDateFormatter *)dateFormatter;
-+ (NSDateFormatter *)timeFormatter;
 + (NSDateFormatter *)monthAndDayFormatter;
 + (NSDateFormatter *)shortDayOfWeekFormatter;
 
@@ -29,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatTimestampAsDate:(uint64_t)timestamp;
 + (NSString *)formatDateAsDate:(NSDate *)date;
 
-+ (NSString *)formatMessageTimestamp:(uint64_t)timestamp
-                 shouldUseLongFormat:(BOOL)shouldUseLongFormat;
-
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp;
 
 // These two "exemplary" values can be used by views to measure
@@ -39,10 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)exemplaryNowTimeFormat;
 + (NSString *)exemplaryMinutesTimeFormat;
 
-+ (NSString *)formatDateForConversationDateBreaks:(NSDate *)date;
-
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;
+
++ (BOOL)dateIsOlderThanYesterday:(NSDate *)date;
 
 @end
 

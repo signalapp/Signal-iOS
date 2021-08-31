@@ -315,6 +315,13 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 }
 
 #if TESTABLE_BUILD
+
+- (void)replaceTimestamp:(uint64_t)timestamp transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) { interaction.timestamp = timestamp; }];
+}
+
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp
 {
     self.receivedAtTimestamp = receivedAtTimestamp;

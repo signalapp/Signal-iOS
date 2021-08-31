@@ -26,64 +26,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
-+ (NSDateFormatter *)dateBreakRelativeDateFormatter
-{
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateFormatter new];
-        formatter.locale = [NSLocale currentLocale];
-        formatter.dateStyle = NSDateFormatterShortStyle;
-        formatter.timeStyle = NSDateFormatterNoStyle;
-        formatter.doesRelativeDateFormatting = YES;
-    });
-
-    return formatter;
-}
-
-+ (NSDateFormatter *)dateBreakThisWeekDateFormatter
-{
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateFormatter new];
-        formatter.locale = [NSLocale currentLocale];
-        // "Monday", "Tuesday", etc.
-        formatter.dateFormat = @"EEEE";
-    });
-
-    return formatter;
-}
-
-+ (NSDateFormatter *)dateBreakThisYearDateFormatter
-{
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateFormatter new];
-        formatter.locale = [NSLocale currentLocale];
-        // Tue, Jun 6
-        [formatter setLocalizedDateFormatFromTemplate:@"EE, MMM d"];
-    });
-
-    return formatter;
-}
-
-+ (NSDateFormatter *)dateBreakOldDateFormatter
-{
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateFormatter new];
-        formatter.locale = [NSLocale currentLocale];
-        formatter.dateStyle = NSDateFormatterMediumStyle;
-        formatter.timeStyle = NSDateFormatterNoStyle;
-        formatter.doesRelativeDateFormatting = YES;
-    });
-
-    return formatter;
-}
-
 + (NSDateFormatter *)weekdayFormatter
 {
     static NSDateFormatter *formatter;
@@ -92,19 +34,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
         [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
-    });
-    return formatter;
-}
-
-+ (NSDateFormatter *)timeFormatter
-{
-    static NSDateFormatter *formatter;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        formatter = [NSDateFormatter new];
-        [formatter setLocale:[NSLocale currentLocale]];
-        [formatter setTimeStyle:NSDateFormatterShortStyle];
-        [formatter setDateStyle:NSDateFormatterNoStyle];
     });
     return formatter;
 }
@@ -200,42 +129,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dayDifference == 1;
 }
 
-// Returns the difference in days, ignoring hours, minutes, seconds.
-// If both dates are the same date, returns 0.
-// If firstDate is a day before secondDate, returns 1.
-//
-// Note: Assumes both dates use the "current" calendar.
-+ (NSInteger)daysFromFirstDate:(NSDate *)firstDate toSecondDate:(NSDate *)secondDate
-{
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-    NSDateComponents *comp1 = [calendar components:units fromDate:firstDate];
-    NSDateComponents *comp2 = [calendar components:units fromDate:secondDate];
-    [comp1 setHour:12];
-    [comp2 setHour:12];
-    NSDate *date1 = [calendar dateFromComponents:comp1];
-    NSDate *date2 = [calendar dateFromComponents:comp2];
-    return [[calendar components:NSCalendarUnitDay fromDate:date1 toDate:date2 options:0] day];
-}
-
-// Returns the difference in years, ignoring shorter units of time.
-// If both dates fall in the same year, returns 0.
-// If firstDate is from the year before secondDate, returns 1.
-//
-// Note: Assumes both dates use the "current" calendar.
-+ (NSInteger)yearsFromFirstDate:(NSDate *)firstDate toSecondDate:(NSDate *)secondDate
-{
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear;
-    NSDateComponents *comp1 = [calendar components:units fromDate:firstDate];
-    NSDateComponents *comp2 = [calendar components:units fromDate:secondDate];
-    [comp1 setHour:12];
-    [comp2 setHour:12];
-    NSDate *date1 = [calendar dateFromComponents:comp1];
-    NSDate *date2 = [calendar dateFromComponents:comp2];
-    return [[calendar components:NSCalendarUnitYear fromDate:date1 toDate:date2 options:0] year];
-}
-
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
 {
     OWSCAssertDebug(pastTimestamp > 0);
@@ -282,25 +175,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     }
 
     return dateTimeString;
-}
-
-+ (NSString *)formatDateForConversationDateBreaks:(NSDate *)date
-{
-    OWSAssertDebug(date);
-
-    if (![self dateIsThisYear:date]) {
-        // last year formatter: Nov 11, 2017
-        return [self.dateBreakOldDateFormatter stringFromDate:date];
-    } else if ([self dateIsOlderThanOneWeek:date]) {
-        // this year formatter: Tue, Jun 23
-        return [self.dateBreakThisYearDateFormatter stringFromDate:date];
-    } else if ([self dateIsOlderThanYesterday:date]) {
-        // day of week formatter: Thursday
-        return [self.dateBreakThisWeekDateFormatter stringFromDate:date];
-    } else {
-        // relative format: Today / Yesterday
-        return [self.dateBreakRelativeDateFormatter stringFromDate:date];
-    }
 }
 
 + (NSString *)formatTimestampAsTime:(uint64_t)timestamp
@@ -383,76 +257,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         [formatter setDateFormat:@"EEEE"];
     });
     return formatter;
-}
-
-+ (NSString *)formatMessageTimestamp:(uint64_t)timestamp
-                 shouldUseLongFormat:(BOOL)shouldUseLongFormat
-{
-    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
-    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
-    NSDate *nowDate = [NSDate ows_dateWithMillisecondsSince1970:nowTimestamp];
-
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-
-    NSDateComponents *relativeDiffComponents =
-        [calendar components:NSCalendarUnitMinute | NSCalendarUnitHour fromDate:date toDate:nowDate options:0];
-
-    // Note: we are careful to treat "future" dates as "now".
-    NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:nowDate];
-    NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
-    NSInteger hoursDiff = MAX(0, [relativeDiffComponents hour]);
-    NSInteger minutesDiff = MAX(0, [relativeDiffComponents minute]);
-
-    if (yearsDiff > 0) {
-        // "Long date" + locale-specific "short" time format.
-        NSString *dayOfWeek = [self.otherYearMessageFormatter stringFromDate:date];
-        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
-
-    } else if (daysDiff >= 7) {
-        // "Short date" + locale-specific "short" time format.
-        NSString *dayOfWeek = [self.thisYearMessageFormatter stringFromDate:date];
-        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
-
-    } else if (daysDiff > 0) {
-        // "Day of week" + locale-specific "short" time format.
-        NSDateFormatter *thisWeekMessageFormatter = (shouldUseLongFormat
-                                                     ? self.thisWeekMessageFormatterLong
-                                                     : self.thisWeekMessageFormatterShort);
-        NSString *dayOfWeek = [thisWeekMessageFormatter stringFromDate:date];
-        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
-        return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
-
-    } else if (hoursDiff > 0) {
-        if (shouldUseLongFormat && hoursDiff == 1) {
-            // Long format has a distinction between singular and plural
-            return NSLocalizedString(@"DATE_ONE_HOUR_AGO_LONG", @"Full string for a relative time of one hour ago.");
-        }
-
-        NSString *shortFormat = NSLocalizedString(@"DATE_HOURS_AGO_FORMAT", @"Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}.");
-        NSString *longFormat = NSLocalizedString(@"DATE_HOURS_AGO_LONG_FORMAT", @"Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}.");
-
-        NSString *formatString = shouldUseLongFormat ? longFormat : shortFormat;
-        NSString *hoursString = [OWSFormat formatInt:hoursDiff];
-        return [NSString stringWithFormat:formatString, hoursString];
-
-    } else if (minutesDiff > 0) {
-        if (shouldUseLongFormat && minutesDiff == 1) {
-            // Long format has a distinction between singular and plural
-            return NSLocalizedString(@"DATE_ONE_MINUTE_AGO_LONG", @"Full string for a relative time of one minute ago.");
-        }
-
-        NSString *shortFormat = NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT", @"Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}.");
-        NSString *longFormat = NSLocalizedString(@"DATE_MINUTES_AGO_LONG_FORMAT", @"Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}.");
-
-        NSString *formatString = shouldUseLongFormat ? longFormat : shortFormat;
-        NSString *minutesString = [OWSFormat formatInt:minutesDiff];
-        return [NSString stringWithFormat:formatString, minutesString];
-
-    } else {
-        return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
-    }
 }
 
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp

@@ -130,7 +130,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     static func buildState(interaction: TSInteraction) -> State {
         let date = Date(millisecondsSince1970: interaction.timestamp)
-        let text = DateUtil.formatDate(forConversationDateBreaks: date)
+        let text = DateUtil.formatDateHeaderForCVC(date)
         return State(text: text)
     }
 
