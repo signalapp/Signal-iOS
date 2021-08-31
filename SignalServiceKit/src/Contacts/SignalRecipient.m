@@ -221,6 +221,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         [self.profileManager fetchProfileForAddress:self.address];
 
         if (self.address.isLocalAddress) {
+            if (OWSWebSocket.verboseLogging) {
+                OWSLogInfo(@"");
+            }
             [self.socketManager cycleSocket];
         }
     });

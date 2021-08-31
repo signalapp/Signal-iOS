@@ -610,6 +610,8 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         return;
     }
 
+    OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+
     OWSLogWarn(@"Websocket did fail with error[%@]: %@", NSStringForOWSWebSocketType(self.webSocketType), error);
     if ([error.domain isEqualToString:SSKWebSocketError.errorDomain]) {
         NSNumber *_Nullable statusCode = error.userInfo[SSKWebSocketError.kStatusCodeKey];
@@ -682,6 +684,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
             [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(self.serialQueue, ^{
+            if (self.verboseLogging) {
+                OWSLogInfo(@"%@ 1", NSStringForOWSWebSocketType(self.webSocketType));
+            }
+
             void (^ackMessage)(BOOL success) = ^void(BOOL success) {
                 if (!success) {
                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -727,11 +733,20 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
                     case OWSWebSocketTypeUnidentified:
                         envelopeSource = EnvelopeSourceWebsocketUnidentified;
                 }
-                [MessageProcessor.shared processEncryptedEnvelopeData:encryptedEnvelope
-                                                    encryptedEnvelope:nil
-                                              serverDeliveryTimestamp:serverDeliveryTimestamp
-                                                       envelopeSource:envelopeSource
-                                                           completion:^(NSError *error) { ackMessage(YES); }];
+                if (self.verboseLogging) {
+                    OWSLogInfo(@"%@ 2", NSStringForOWSWebSocketType(self.webSocketType));
+                }
+                [MessageProcessor.shared
+                    processEncryptedEnvelopeData:encryptedEnvelope
+                               encryptedEnvelope:nil
+                         serverDeliveryTimestamp:serverDeliveryTimestamp
+                                  envelopeSource:envelopeSource
+                                      completion:^(NSError *error) {
+                                          if (self.verboseLogging) {
+                                              OWSLogInfo(@"%@ 3", NSStringForOWSWebSocketType(self.webSocketType));
+                                          }
+                                          ackMessage(YES);
+                                      }];
             }
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
@@ -784,9 +799,23 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
     }
 }
 
+- (BOOL)verboseLogging
+{
+    return OWSWebSocket.verboseLogging;
+}
+
++ (BOOL)verboseLogging
+{
+    return SSKDebugFlags.internalLogging;
+}
+
 - (void)cycleSocket
 {
     OWSAssertIsOnMainThread();
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
 
     [self closeWebSocket];
 
@@ -796,6 +825,8 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 - (void)handleSocketFailure
 {
     OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
 
     [self closeWebSocket];
 
@@ -848,11 +879,17 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         if (SSKFeatureFlags.deprecateREST) {
             // If we've deprecated REST, we _do_ want to open both websockets in the app extensions.
         } else {
+            if (self.verboseLogging) {
+                OWSLogInfo(@"%@ 1", NSStringForOWSWebSocketType(self.webSocketType));
+            }
             return NO;
         }
     }
 
     if (!AppReadiness.isAppReady) {
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 2", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return NO;
     }
 
@@ -861,11 +898,17 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
             // If we've deprecated REST, we _do_ want to open the unidentified websocket
             // before the user is registered.
         } else {
+            if (self.verboseLogging) {
+                OWSLogInfo(@"%@ 3", NSStringForOWSWebSocketType(self.webSocketType));
+            }
             return NO;
         }
     }
 
     if (AppExpiry.shared.isExpired) {
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 4", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return NO;
     }
 
@@ -874,21 +917,37 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         if (SSKFeatureFlags.deprecateREST) {
             // If we've deprecated REST, we _do_ want to open both websockets when using CC.
         } else {
+            if (self.verboseLogging) {
+                OWSLogInfo(@"%@ 5", NSStringForOWSWebSocketType(self.webSocketType));
+            }
             return NO;
         }
     }
 
     // TODO: We need to revisit the websocket behavior for the NSE.
+    NSDate *_Nullable backgroundKeepAliveUntilDate = self.backgroundKeepAliveUntilDate;
     if (self.appIsActive) {
         // If app is active, keep web socket alive.
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 6", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return YES;
     } else if (SSKDebugFlags.keepWebSocketOpenInBackground) {
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 7", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return YES;
-    } else if (self.backgroundKeepAliveUntilDate && [self.backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
+    } else if (backgroundKeepAliveUntilDate && [backgroundKeepAliveUntilDate timeIntervalSinceNow] > 0.f) {
         OWSAssertDebug(self.backgroundKeepAliveTimer);
         // If app is doing any work in the background, keep web socket alive.
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 8", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return YES;
     } else {
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@ 9", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         return NO;
     }
 }
@@ -898,11 +957,11 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
     OWSAssertIsOnMainThread();
     OWSAssertDebug(durationSeconds > 0.f);
 
+    NSDate *_Nullable backgroundKeepAliveUntilDate = self.backgroundKeepAliveUntilDate;
     if (self.appIsActive) {
         // If app is active, clean up state used to keep socket alive in background.
         [self clearBackgroundState];
-    } else if (!self.backgroundKeepAliveUntilDate) {
-        OWSAssertDebug(!self.backgroundKeepAliveUntilDate);
+    } else if (!backgroundKeepAliveUntilDate) {
         OWSAssertDebug(!self.backgroundKeepAliveTimer);
 
         OWSLogInfo(@"Activating socket in the background: %@.", NSStringForOWSWebSocketType(self.webSocketType));
@@ -935,17 +994,24 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
                                               if (backgroundTaskState == BackgroundTaskState_Expired) {
                                                   [strongSelf clearBackgroundState];
                                               }
+                                              if (strongSelf.verboseLogging) {
+                                                  OWSLogInfo(
+                                                      @"%@.", NSStringForOWSWebSocketType(strongSelf.webSocketType));
+                                              }
                                               [strongSelf applyDesiredSocketState];
                                           }];
     } else {
-        OWSAssertDebug(self.backgroundKeepAliveUntilDate);
         OWSAssertDebug(self.backgroundKeepAliveTimer);
         OWSAssertDebug([self.backgroundKeepAliveTimer isValid]);
 
-        if ([self.backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
+        if ([backgroundKeepAliveUntilDate timeIntervalSinceNow] < durationSeconds) {
             // Update state used to keep socket alive in background.
             self.backgroundKeepAliveUntilDate = [NSDate dateWithTimeIntervalSinceNow:durationSeconds];
         }
+    }
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
     }
 
     [self applyDesiredSocketState];
@@ -954,6 +1020,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 - (void)backgroundKeepAliveFired
 {
     OWSAssertIsOnMainThread();
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
 
     [self applyDesiredSocketState];
 }
@@ -1005,6 +1075,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         }
         [self ensureWebsocketIsOpen];
     } else {
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+        }
+
         [self clearBackgroundState];
         [self clearReconnect];
         [self closeWebSocket];
@@ -1056,6 +1130,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 {
     OWSAssertIsOnMainThread();
 
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
+
     self.appIsActive = YES;
     [self applyDesiredSocketState];
 }
@@ -1065,6 +1143,11 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
     OWSAssertIsOnMainThread();
 
     self.appIsActive = NO;
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
+
     // TODO: It might be nice to use `requestSocketAliveForAtLeastSeconds:` to
     //       keep the socket open for a few seconds after the app is
     //       inactivated.
@@ -1075,12 +1158,20 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 {
     OWSAssertIsOnMainThread();
 
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
+
     [self applyDesiredSocketState];
 }
 
 - (void)isCensorshipCircumventionActiveDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
 
     [self applyDesiredSocketState];
 }
@@ -1104,6 +1195,10 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 - (void)appExpiryDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
+    }
 
     [self applyDesiredSocketState];
 }

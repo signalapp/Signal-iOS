@@ -1209,3 +1209,24 @@ public extension UIApplication {
         sendAction(#selector(UIView.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
+
+// MARK: -
+
+extension NSTextAlignment: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .left:
+            return "left"
+        case .center:
+            return "center"
+        case .right:
+            return "right"
+        case .justified:
+            return "justified"
+        case .natural:
+            return "natural"
+        @unknown default:
+            return "unknown"
+        }
+    }
+}
