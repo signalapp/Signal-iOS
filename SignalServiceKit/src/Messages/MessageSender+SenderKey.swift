@@ -44,20 +44,17 @@ extension MessageSender {
 
         var isRetryableProvider: Bool { true }
 
-        var isRetryableWithSenderKey: Bool {
-            switch self {
-            case .invalidAuthHeader, .invalidRecipient:
-                return false
-            case .deviceUpdate, .staleDevices, .recipientSKDMFailed:
-                return true
-            }
-        }
-
         var asSSKError: NSError {
-            let error: Error = (isRetryableWithSenderKey
-                                    ? SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
-                                    : SenderKeyUnavailableError(customLocalizedDescription: localizedDescription))
-            return error as NSError
+            let result: Error
+            switch self {
+            case let .recipientSKDMFailed(underlyingError):
+                result = underlyingError
+            case .invalidAuthHeader, .invalidRecipient:
+                result = SenderKeyUnavailableError(customLocalizedDescription: localizedDescription)
+            case .deviceUpdate, .staleDevices:
+                result = SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
+            }
+            return (result as NSError)
         }
     }
 
@@ -75,22 +72,49 @@ extension MessageSender {
             return []
         }
 
-        return databaseStorage.read { readTx in
+        return databaseStorage.write { writeTx in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("No local address. Sender key not supported")
                 return []
             }
-            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
+            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: writeTx) else {
                 Logger.info("Local user does not have sender key capability. Sender key not supported.")
                 return []
             }
 
             return intendedRecipients
                 .filter { thread.recipientAddresses.contains($0) }
-                .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
+                .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: writeTx) }
                 .filter { !$0.isLocalAddress }
                 .filter { [.enabled, .unrestricted].contains(udAccessMap[$0]?.udAccess.udAccessMode) }
                 .filter { $0.isValid }
+                .filter { address in
+                    // Filter out any addresses that have a session record with an invalid
+                    // registrationId. SignalClient expects registrationIds to fit in 15 bits
+                    // for multiRecipientEncrypt, but there are some reports of clients having
+                    // larger registrationIds.
+                    //
+                    // For now, let's perform a check to filter out invalid registrationIds. An
+                    // investigation into cleaning up these invalid registrationIds is ongoing.
+                    // Once we've done this, we can remove this entire filter clause (and unless
+                    // anything has changed, demote this write transaction to a read transaction).
+                    let addresses = Recipient(address: address, transaction: writeTx)
+                    return addresses.protocolAddresses.allSatisfy { protocolAddress in
+                        do {
+                            let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
+                            guard let registrationId = try sessionRecord?.remoteRegistrationId() else {
+                                Logger.warn("No session for address: \(address)")
+                                return false
+                            }
+                            let isValidRegistrationId = (registrationId & 0x3ff == registrationId)
+                            owsAssertDebug(isValidRegistrationId)
+                            return isValidRegistrationId
+                        } catch {
+                            owsFailDebug("Failed to fetch registrationId for \(address): \(error)")
+                            return false
+                        }
+                    }
+                }
         }
     }
 
@@ -153,6 +177,7 @@ extension MessageSender {
             senderKeyDistributionPromise(
                 recipients: recipients,
                 thread: thread,
+                originalMessage: message,
                 udAccessMap: udAccessMap,
                 sendErrorBlock: wrappedSendErrorBlock)
         }.then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
@@ -227,6 +252,7 @@ extension MessageSender {
     private func senderKeyDistributionPromise(
         recipients: [SignalServiceAddress],
         thread: TSGroupThread,
+        originalMessage: TSOutgoingMessage,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         sendErrorBlock: @escaping (SignalServiceAddress, Error) -> Void
     ) -> Guarantee<[SignalServiceAddress]> {
@@ -262,6 +288,7 @@ extension MessageSender {
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
                     senderKeyDistributionMessageBytes: skdmBytes)
+                skdmMessage.configureAsSentOnBehalfOf(skdmMessage)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
                 let payloadId: NSNumber?
