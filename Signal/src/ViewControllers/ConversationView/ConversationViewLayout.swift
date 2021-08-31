@@ -143,11 +143,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
         var debugDescription: String {
             var result = "["
             for item in layoutAttributesMap.keys.sorted() {
-                guard let itemAttributes = layoutAttributesMap[item] else {
+                guard let layoutAttributes = layoutAttributesMap[item] else {
                     owsFailDebug("Missing attributes for item: \(item)")
                     continue
                 }
-                result += "item: \(itemAttributes.indexPath), "
+                result += "item: \(layoutAttributes.indexPath), "
             }
             if let headerLayoutAttributes = headerLayoutAttributes {
                 result += "header: \(headerLayoutAttributes.indexPath), "
@@ -232,7 +232,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
             return translatedLayoutInfo.layoutInfo
         }
 
-        // TODO:
         let layoutInfo = ensureCurrentLayoutInfo()
 
         guard let collectionView = self.collectionView else {
@@ -242,38 +241,17 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let collectionViewSize = collectionView.bounds.size
         let contentOffset = collectionView.contentOffset
         let contentInset = collectionView.adjustedContentInset
+        // The spacing between the sticky header and the navbar.
+        let navBarSpacing: CGFloat = 5
         // We want the sticky headers to stick just below the navbar,
         // with a small spacing.
-        let topInset = contentInset.top + 5
+        let topInset = contentInset.top + navBarSpacing
         let topOfViewportY = contentOffset.y + topInset
-//        let navBarHeight = navigationController.navigationBar.frame.height
-
-        Logger.verbose("----")
-        Logger.verbose("collectionViewSize: \(collectionViewSize)")
-        Logger.verbose("contentOffset: \(contentOffset)")
-//        Logger.verbose("contentInset: \(contentInset)")
-        Logger.verbose("topOfViewportY: \(topOfViewportY)")
-//        Logger.verbose("navBarHeight: \(navBarHeight)")
-//        Logger.verbose("safeAreaInsets: \(collectionView.safeAreaInsets)")
-//        Logger.verbose("adjustedContentInset: \(collectionView.adjustedContentInset)")
-
-//        struct DateHeader {
-//            let itemLayout: ItemLayout
-//            var indexPath: IndexPath { itemLayout.indexPath }
-//        }
-//        translatedLayoutInfo = layoutInfo
-
-//        fileprivate struct ItemLayout {
-//            let interactionUniqueId: String
-//            let indexPath: IndexPath
-//            let layoutAttributes: UICollectionViewLayoutAttributes
-//            let canBeUsedForContinuity: Bool
-//            let isStickyHeader: Bool
-//        }
+        // The minimum spacing between the sticky header and the next header.
+        let minDateHeaderSpacing: CGFloat = 5
 
         func isDateHeaderInOrBelowViewport(itemLayout: ItemLayout) -> Bool {
             let frame = itemLayout.layoutAttributes.frame
-            Logger.verbose("frame: \(frame), topOfViewportY: \(topOfViewportY), ")
             return frame.y >= topOfViewportY
         }
 
@@ -288,9 +266,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         // Sort the date headers.
         dateHeaderItemLayouts.sort { (left, right) in
             left.frame.y < right.frame.y
-        }
-        for dateHeaderItemLayout in dateHeaderItemLayouts {
-            Logger.verbose("dateHeaderItemLayout indexPath: \(dateHeaderItemLayout.indexPath), frame: \(dateHeaderItemLayout.frame), ")
         }
         // The sticky date header is either:
         //
@@ -322,9 +297,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
         // Therefore we trim the (ordered) list of date headers until there is
         // _at most_ one date header in or below the viewport (it will be last if
         // present).
-        for dateHeader in dateHeaderItemLayouts {
-            Logger.verbose("---- before trimming[\(dateHeader.indexPath)]: \(dateHeader.frame), \(isDateHeaderInOrBelowViewport(itemLayout: dateHeader))")
-        }
         while true {
             let lastTwoDateHeaders = dateHeaderItemLayouts.suffix(2)
             guard lastTwoDateHeaders.count == 2,
@@ -342,9 +314,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 break
             }
         }
-        for dateHeader in dateHeaderItemLayouts {
-            Logger.verbose("---- after trimming[\(dateHeader.indexPath)]: \(dateHeader.frame), \(isDateHeaderInOrBelowViewport(itemLayout: dateHeader))")
-        }
         struct StickyDateHeader {
             let dateHeaderToStick: ItemLayout
             let nextDateHeader: ItemLayout?
@@ -356,7 +325,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 // No date headers, nothing to stick.
                 return nil
             }
-            Logger.verbose("---- lastDateHeader[\(lastDateHeader.indexPath)]: \(lastDateHeader.frame), \(isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader))")
             guard lastTwoDateHeaders.count > 1,
                   let penultimateDateHeader = lastTwoDateHeaders.first else {
                 if isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader) {
@@ -369,7 +337,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                             nextDateHeader: nil)
                 }
             }
-            Logger.verbose("---- penultimateDateHeader[\(penultimateDateHeader.indexPath)]: \(penultimateDateHeader.frame), \(isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader))")
             if isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader) {
                 owsAssertDebug(!isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader))
                 // We found the last date header just above the first date header that
@@ -389,28 +356,22 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
         let stickyDateHeader = dateHeaderToStick.dateHeaderToStick
 
-        Logger.verbose("dateHeaderToStick: \(dateHeaderToStick.dateHeaderToStick), ")
-        Logger.verbose("nextDateHeader: \(dateHeaderToStick.nextDateHeader), ")
-
-        // "At rest", the sticky header should be aligned with the top of the viewport.
+        // "At rest", the sticky header should be aligned with the top of the viewport,
+        // with a small spacing.
         var stickyY = topOfViewportY
-        Logger.verbose("stickyY: \(stickyY), ")
         if let nextDateHeader = dateHeaderToStick.nextDateHeader {
-            let minDateHeaderSpacing: CGFloat = 3
             let maxStickyY = nextDateHeader.frame.y - (stickyDateHeader.frame.height + minDateHeaderSpacing)
-            Logger.verbose("maxStickyY: \(maxStickyY), ")
             stickyY = min(stickyY, maxStickyY)
-            Logger.verbose("stickyY: \(stickyY), ")
         }
 
         let stickyItemLayout: ItemLayout = {
             let indexPath = stickyDateHeader.indexPath
             let layoutAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
             var frame = stickyDateHeader.frame
-            Logger.verbose("frame.1: \(frame), ")
             frame.y = stickyY
             layoutAttributes.frame = frame
-            Logger.verbose("frame.2: \(frame), ")
+            layoutAttributes.zIndex = Self.zIndexStickyHeader
+
             return ItemLayout(interactionUniqueId: stickyDateHeader.interactionUniqueId,
                               indexPath: indexPath,
                               layoutAttributes: layoutAttributes,
@@ -431,76 +392,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
                return itemLayout
             }
         }
-
-//        var dateHeaderToStick: ItemLayout?
-//        while true {
-//            let lastTwoDateHeaders = dateHeaderItemLayouts.suffix(2)
-//            if lastTwoDateHeaders.count == 2,
-//               let lastDateHeader = lastTwoDateHeaders.last,
-//               let penultimateDateHeader = lastTwoDateHeaders.first {
-//
-//                isDateHeaderInOrBelowViewport(itemLayout:
-//
-//            }
-//            guard !lastTwoDateHeaders.isEmpty else {
-//                // No date headers in load window; nothing to stick.
-//                dateHeaderToStick = nil
-//                break
-//            }
-//
-//            guard dateHeaderItemLayouts.count > 1,
-//                  let lastDateHeader = dateHeaderItemLayouts.last else {
-//                dateHeaderToStick = nil
-//                break
-//            }
-//        }
-//        Logger.verbose("dateHeaderToStick: \(dateHeaderToStick), ")
-
-////        var dateHeaderItemLayouts = [ItemLayout]()
-//        var lastDateHeaderBelowTopOfView: ItemLayout?
-//        for itemLayout in layoutInfo.itemLayouts {
-//            guard itemLayout.isStickyHeader else {
-//                continue
-//            }
-////            dateHeaderItemLayouts.append(itemLayout)
-//
-//            // Identify the lastDateHeaderBelowTopOfView.
-//            let frame = itemLayout.layoutAttributes.frame
-//            let viewportTopY: CGFloat = 0
-//            let dateHeaderTopY = frame.y - contentOffset.y
-//            Logger.verbose("frame: \(frame), dateHeaderTopY: \(dateHeaderTopY), ")
-//            guard dateHeaderTopY >= viewportTopY else {
-//                continue
-//            }
-//            if let bestValueSoFar = lastDateHeaderBelowTopOfView,
-//               bestValueSoFar.layoutAttributes.frame.y < frame.y {
-//                continue
-//            }
-//            lastDateHeaderBelowTopOfView = itemLayout
-//
-////            let dateHeader = DateHeader(indexPath: <#T##IndexPath#>, itemLayout: itemLayout)
-//        }
-//        Logger.verbose("lastDateHeaderBelowTopOfView: \(lastDateHeaderBelowTopOfView), ")
-
-//        var layoutAttributesMap = layoutInfo.layoutAttributesMap
-//        let itemLayouts = layoutInfo.itemLayouts.map { (defaultItemLayout: ItemLayout) -> ItemLayout in
-//            guard defaultItemLayout.isStickyHeader else {
-//                return defaultItemLayout
-//            }
-//            let indexPath = defaultItemLayout.indexPath
-//            let layoutAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-//            var frame = defaultItemLayout.frame
-//            frame.x += Bool.random() ? -25 : +25
-//            layoutAttributes.frame = frame
-//            layoutAttributesMap[indexPath.row] = layoutAttributes
-//            let itemLayout = ItemLayout(interactionUniqueId: defaultItemLayout.interactionUniqueId,
-//                                        indexPath: indexPath,
-//                                        layoutAttributes: layoutAttributes,
-//                                        canBeUsedForContinuity: defaultItemLayout.canBeUsedForContinuity,
-//                                        isStickyHeader: defaultItemLayout.isStickyHeader)
-//
-//            return itemLayout
-//        }
 
         let adjustedLayoutInfo = LayoutInfo(viewWidth: layoutInfo.viewWidth,
                                             contentSize: layoutInfo.contentSize,
@@ -573,10 +464,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     public override func prepare() {
         super.prepare()
-
-        Logger.verbose("----")
-
-//        self.shouldInvalidateLayout(forBoundsChange: <#T##CGRect#>)
 
         _ = ensureCurrentLayoutInfo()
         clearTranslatedLayoutInfoIfNecessary()
@@ -687,9 +574,14 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let itemFrame = CGRect(x: 0, y: y, width: viewWidth, height: layoutSize.height)
 
             let indexPath = IndexPath(row: row, section: 0)
-            let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
-            itemAttributes.frame = itemFrame
-            layoutAttributesMap[row] = itemAttributes
+            let layoutAttributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
+            layoutAttributes.frame = itemFrame
+            if layoutItem.isStickyHeader {
+                layoutAttributes.zIndex = Self.zIndexStickyHeader
+            } else {
+                layoutAttributes.zIndex = Self.zIndexDefault
+            }
+            layoutAttributesMap[row] = layoutAttributes
 
             contentBottom = itemFrame.origin.y + itemFrame.size.height
             y = contentBottom
@@ -698,7 +590,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
             itemLayouts.append(ItemLayout(interactionUniqueId: layoutItem.interactionUniqueId,
                                           indexPath: indexPath,
-                                          layoutAttributes: itemAttributes,
+                                          layoutAttributes: layoutAttributes,
                                           canBeUsedForContinuity: layoutItem.canBeUsedForContinuity,
                                           isStickyHeader: layoutItem.isStickyHeader))
         }
@@ -731,13 +623,15 @@ public class ConversationViewLayout: UICollectionViewLayout {
                           renderStateId: renderStateId)
     }
 
+    private static let zIndexDefault: Int = 1
+    private static let zIndexStickyHeader: Int = 2
+
     // MARK: - UICollectionViewLayout Impl.
 
     public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         AssertIsOnMainThread()
 
-        Logger.verbose("----")
-
+        // Return values from the "translated" layout info.
         let layoutInfo = ensureTranslatedLayoutInfo()
 
         var result = [UICollectionViewLayoutAttributes]()
@@ -756,8 +650,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        Logger.verbose("----")
-
+        // Return values from the "translated" layout info.
         let layoutInfo = ensureTranslatedLayoutInfo()
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
@@ -766,8 +659,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                               at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
-        Logger.verbose("----")
-
+        // Return values from the "translated" layout info.
         let layoutInfo = ensureTranslatedLayoutInfo()
         return layoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
                                                                   at: indexPath)

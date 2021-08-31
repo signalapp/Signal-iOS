@@ -111,6 +111,13 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         layoutAttributes
     }
 
+    public override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+        super.apply(layoutAttributes)
+
+        // Insist that the cell honor its zIndex.
+        layer.zPosition = CGFloat(layoutAttributes.zIndex)
+    }
+
     func configure(renderItem: CVRenderItem,
                    componentDelegate: CVComponentDelegate,
                    messageSwipeActionState: CVMessageSwipeActionState) {
