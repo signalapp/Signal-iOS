@@ -107,6 +107,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                                                    maskCornerRadius: 8,
                                                    componentDelegate: componentDelegate)
                         innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+                    } else {
+                        let backgroundView = componentView.backgroundView
+                        backgroundView.backgroundColor = Theme.background
+                        backgroundView.layer.cornerRadius = 8
+                        innerStack.addSubviewToFillSuperviewEdges(backgroundView)
                     }
                     innerStack.configure(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
@@ -204,6 +209,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             return wallpaperBlurView
         }
 
+        fileprivate let backgroundView = ManualLayoutViewWithLayer(name: "backgroundView")
+
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
 
@@ -231,6 +238,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
                 wallpaperBlurView?.removeFromSuperview()
                 wallpaperBlurView?.resetContentAndConfiguration()
+
+                backgroundView.removeFromSuperview()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false
