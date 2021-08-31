@@ -72,19 +72,19 @@ extension MessageSender {
             return []
         }
 
-        return databaseStorage.write { writeTx in
+        return databaseStorage.read { readTx in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("No local address. Sender key not supported")
                 return []
             }
-            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: writeTx) else {
+            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
                 Logger.info("Local user does not have sender key capability. Sender key not supported.")
                 return []
             }
 
             return intendedRecipients
                 .filter { thread.recipientAddresses.contains($0) }
-                .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: writeTx) }
+                .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
                 .filter { !$0.isLocalAddress }
                 .filter { [.enabled, .unrestricted].contains(udAccessMap[$0]?.udAccess.udAccessMode) }
                 .filter { $0.isValid }
@@ -96,16 +96,19 @@ extension MessageSender {
                     //
                     // For now, let's perform a check to filter out invalid registrationIds. An
                     // investigation into cleaning up these invalid registrationIds is ongoing.
-                    // Once we've done this, we can remove this entire filter clause (and unless
-                    // anything has changed, demote this write transaction to a read transaction).
-                    let addresses = Recipient(address: address, transaction: writeTx)
-                    return addresses.protocolAddresses.allSatisfy { protocolAddress in
+                    // Once we've done this, we can remove this entire filter clause.
+                    //
+                    // loadSessionIfExists(for:deviceId:transaction:) may return nil if there's no SignalRecipient
+                    // registered, but that's okay since this will self-heal over time.
+                    let addresses = Recipient(address: address, transaction: readTx)
+                    return addresses.devices.allSatisfy { deviceId in
                         do {
-                            let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
-                            guard let registrationId = try sessionRecord?.remoteRegistrationId() else {
+                            guard let sessionRecord = try sessionStore.loadSessionIfExists(for: address, deviceId: Int32(deviceId), transaction: readTx),
+                                  sessionRecord.hasCurrentState else {
                                 Logger.warn("No session for address: \(address)")
                                 return false
                             }
+                            let registrationId = try sessionRecord.remoteRegistrationId()
                             let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
                             owsAssertDebug(isValidRegistrationId)
                             return isValidRegistrationId
@@ -288,7 +291,7 @@ extension MessageSender {
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
                     senderKeyDistributionMessageBytes: skdmBytes)
-                skdmMessage.configureAsSentOnBehalfOf(skdmMessage)
+                skdmMessage.configureAsSentOnBehalfOf(originalMessage)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
                 let payloadId: NSNumber?
