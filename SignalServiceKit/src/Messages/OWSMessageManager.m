@@ -431,6 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  transaction:transaction];
         } else if (contentProto.callMessage) {
             if (shouldDiscardVisibleMessages) {
+                OWSLogInfo(@"Discarding message with timestamp: %llu", envelope.timestamp);
                 return;
             }
             if (![self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
@@ -1856,6 +1857,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Now that "reactions" and "delete for everyone" have been processed,
         // the only possible outcome of further processing is a visible message
         // or group call update, both of which should be discarded.
+        OWSLogInfo(@"Discarding message with timestamp: %llu", envelope.timestamp);
         return nil;
     }
 
