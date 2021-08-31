@@ -170,4 +170,8 @@ extension CVRenderItem: ConversationViewLayoutItem {
     public var canBeUsedForContinuity: Bool {
         ConversationViewLayout.canInteractionBeUsedForScrollContinuity(itemModel.interaction)
     }
+
+    public var isStickyHeader: Bool {
+        itemModel.interaction.interactionType == .dateHeader
+    }
 }
