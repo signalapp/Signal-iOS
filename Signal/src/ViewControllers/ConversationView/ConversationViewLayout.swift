@@ -57,7 +57,7 @@ public protocol ConversationViewLayoutItem {
 
     var canBeUsedForContinuity: Bool { get }
 
-    var isStickyHeader: Bool { get }
+    var isDateHeader: Bool { get }
 }
 
 // MARK: -
@@ -162,6 +162,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     private var hasEverHadLayout = false
 
+    // * currentLayoutInfo is the "at rest" layout.
+    // * translatedLayoutInfo is the same layout, with ephemeral changes
+    //   for sticky date headers.
     private var currentLayoutInfo: LayoutInfo? {
         didSet {
             // We need to clear our "translated" layout info cache if the
@@ -203,6 +206,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
             self.contentInset = contentInset
         }
     }
+    // * currentLayoutInfo is the "at rest" layout.
+    // * translatedLayoutInfo is the same layout, with ephemeral changes
+    //   for sticky date headers.
     private var translatedLayoutInfo: TranslatedLayoutInfo?
 
     private func clearTranslatedLayoutInfoIfNecessary() {
@@ -242,7 +248,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let contentOffset = collectionView.contentOffset
         let contentInset = collectionView.adjustedContentInset
         // The spacing between the sticky header and the navbar.
-        let navBarSpacing: CGFloat = 5
+        let navBarSpacing: CGFloat = 12
         // We want the sticky headers to stick just below the navbar,
         // with a small spacing.
         let topInset = contentInset.top + navBarSpacing
@@ -577,7 +583,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             let indexPath = IndexPath(row: row, section: 0)
             let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
             layoutAttributes.frame = itemFrame
-            if layoutItem.isStickyHeader {
+            if layoutItem.isDateHeader {
                 layoutAttributes.zIndex = Self.zIndexStickyHeader
             } else {
                 layoutAttributes.zIndex = Self.zIndexDefault
@@ -593,7 +599,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                           indexPath: indexPath,
                                           layoutAttributes: layoutAttributes,
                                           canBeUsedForContinuity: layoutItem.canBeUsedForContinuity,
-                                          isStickyHeader: layoutItem.isStickyHeader))
+                                          isStickyHeader: layoutItem.isDateHeader))
         }
 
         contentBottom += conversationStyle.contentMarginBottom
