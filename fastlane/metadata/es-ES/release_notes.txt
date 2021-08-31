@@ -1,4 +1,1 @@
-• Una imagen bien vale más que mil palabras y ahora puedes enviarlas en resolución de 4 mil (4K): Usa el nuevo selector de calidad para enviar fotos en alta resolución. También puedes seleccionar enviarlas en alta resolución por defecto en «Ajustes > Uso de datos».
-• Al dejar tu dedo sobre un mensaje se activa un nuevo menú que te permite rápidamente reaccionar, responder, eliminar y más.
-• Introducing “My Daily Life”, a new animated sticker pack by artist Plastic Thing. 
-• Hemos implementado varias mejoras para que deslizarte sobre muchos mensajes sea más fluido.
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.

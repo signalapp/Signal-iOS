@@ -1,4 +1,1 @@
-• Obrázek může mít hodnotu tisíce slov, ale nyní je můžete poslat ve 4K. Pomocí nového voliče kvality můžete volitelně odesílat fotografie ve vyšším rozlišení. V Nastavení > Využití dat můžete také ve výchozím nastavení vždy odesílat fotografie ve vyšším rozlišení.
-• Když dlouze stisknete zprávu, v novém rychlém menu můžete rychle reagovat, odpovídat, mazat a další.
-• Představujeme "My Daily Life", nový balíček animovaných samolepek od umělce Plastic Thing. 
-• Provedli jsme několik vylepšení, aby bylo procházení seznamu chatů plynulejší.
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.

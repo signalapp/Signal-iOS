@@ -1,4 +1,1 @@
-• Je kunt er vanaf nu voor kiezen om afbeeldingen met een resolutie van 4 duizend pixels te verzenden. Hiervoor is een nieuw keuzemenu toegevoegd zodat je dit per afbeelding kunt kiezen, of je kunt in de Instellingen > Dataverbruik aangeven dat je altijd met een bepaalde resolutie wilt verzenden.
-• Als je vanaf nu een bericht lang vast houd dan krijg je opties te zien om met een emoji te reageren, om te beantwoorden, te wissen en nog meer opties.
-• We hebben een nieuw geanimeerd stickerpakket toegevoegd genaamd “My Daily Life”. Deze is gemaakt door artiest Plastic Thing.
-• We hebben een aantal verbeteringen aangebracht waardoor scrollen door he gesprekkenlijst iets makkelijker verloopt.
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.
