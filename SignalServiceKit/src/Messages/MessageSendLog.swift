@@ -175,13 +175,22 @@ public class MessageSendLog: NSObject {
         timestamp: UInt64,
         transaction readTx: SDSAnyReadTransaction
     ) -> Payload? {
+        return fetchPayload(address: address, deviceId: deviceId, timestamp: timestamp, allowExpired: false, transaction: readTx)
+    }
 
+    private static func fetchPayload(
+        address: SignalServiceAddress,
+        deviceId: Int64,
+        timestamp: UInt64,
+        allowExpired: Bool,
+        transaction readTx: SDSAnyReadTransaction
+    ) -> Payload? {
         guard !RemoteConfig.messageResendKillSwitch else {
             Logger.info("Resend kill switch activated. Ignoring MSL lookup.")
             return nil
         }
 
-        guard timestamp > expiredPayloadTimestamp else {
+        guard timestamp > expiredPayloadTimestamp || allowExpired else {
             Logger.info("Ignoring payload lookup for timestamp before expiration")
             return nil
         }
@@ -343,6 +352,18 @@ public class MessageSendLog: NSObject {
     #if TESTABLE_BUILD
     static func test_forceCleanupStaleEntries(transaction: SDSAnyWriteTransaction) {
         forceCleanupStaleEntries(transaction: transaction)
+    }
+    #endif
+
+    #if TESTABLE_BUILD
+    static func test_fetchPayload(
+        address: SignalServiceAddress,
+        deviceId: Int64,
+        timestamp: UInt64,
+        allowExpired: Bool,
+        transaction readTx: SDSAnyReadTransaction
+    ) -> Payload? {
+        return fetchPayload(address: address, deviceId: deviceId, timestamp: timestamp, allowExpired: allowExpired, transaction: readTx)
     }
     #endif
 }
