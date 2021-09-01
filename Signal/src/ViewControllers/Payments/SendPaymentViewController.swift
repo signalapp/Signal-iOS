@@ -547,7 +547,22 @@ public class SendPaymentViewController: OWSViewController {
             return rowStack
         }
 
+        func buildDecimalButton() -> OWSButton {
+            if let decimalSeparator = PaymentsConstants.decimalSeparator.nilIfEmpty {
+                return buildAmountKeyboardButton(title: decimalSeparator) { [weak self] in
+                    self?.keyboardPressedDecimal()
+                }
+            } else {
+                return buildAmountKeyboardButton(imageName: "decimal-32") { [weak self] in
+                    self?.keyboardPressedDecimal()
+                }
+            }
+        }
+
         // Don't localize; use Arabic numeral literals.
+        //
+        // TODO: Localize or remove custom keyboard to support payments
+        //       in locales that don't use arabic numerals.
         let allRows = [
             buildAmountKeyboardRow([
                 buildAmountKeyboardButton(title: "1") { [weak self] in
@@ -586,9 +601,7 @@ public class SendPaymentViewController: OWSViewController {
             ]),
             spacerFactory.buildVSpacer(),
             buildAmountKeyboardRow([
-                buildAmountKeyboardButton(imageName: "decimal-32") { [weak self] in
-                    self?.keyboardPressedPeriod()
-                },
+                buildDecimalButton(),
                 buildAmountKeyboardButton(title: "0") { [weak self] in
                     self?.keyboardPressedNumeral("0")
                 },
@@ -1059,7 +1072,7 @@ fileprivate extension SendPaymentViewController {
         updateAmountString(inputString)
     }
 
-    private func keyboardPressedPeriod() {
+    private func keyboardPressedDecimal() {
         let inputString = amount.inputString.append(.decimal)
         updateAmountString(inputString)
     }

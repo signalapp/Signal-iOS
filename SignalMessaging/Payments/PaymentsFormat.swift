@@ -15,9 +15,13 @@ public class PaymentsFormat {
 
 public extension PaymentsFormat {
 
-    private static func buildMobFormatter(isShortForm: Bool) -> NumberFormatter {
+    private static func buildMobFormatter(isShortForm: Bool,
+                                          locale: Locale? = nil) -> NumberFormatter {
+
         let numberFormatter = NumberFormatter()
-        numberFormatter.locale = Locale(identifier: "en_US")
+        numberFormatter.locale = locale ?? Locale.current
+        // We use .decimal and not .currency because we don't
+        // want to append currency symbol.
         numberFormatter.numberStyle = .decimal
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
@@ -192,23 +196,28 @@ public extension PaymentsFormat {
     }
 
     static func formatAsFiatCurrency(paymentAmount: TSPaymentAmount,
-                                     currencyConversionInfo: CurrencyConversionInfo) -> String? {
+                                     currencyConversionInfo: CurrencyConversionInfo,
+                                     locale: Locale? = nil) -> String? {
         guard let fiatCurrencyAmount = currencyConversionInfo.convertToFiatCurrency(paymentAmount: paymentAmount) else {
             return nil
         }
-        return format(fiatCurrencyAmount: fiatCurrencyAmount)
+        return format(fiatCurrencyAmount: fiatCurrencyAmount,
+                      locale: locale)
     }
 
     // Used to format fiat currency values for display.
     static func format(fiatCurrencyAmount: Double,
                        minimumFractionDigits: Int = 2,
-                       maximumFractionDigits: Int = 2) -> String? {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.locale = Locale(identifier: "en_US")
-        currencyFormatter.numberStyle = .decimal
+                       maximumFractionDigits: Int = 2,
+                       locale: Locale? = nil) -> String? {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.locale = locale ?? Locale.current
+        // We use .decimal and not .currency because we don't
+        // want to append currency symbol.
+        numberFormatter.numberStyle = .decimal
         // TODO: Check with design.
-        currencyFormatter.minimumFractionDigits = minimumFractionDigits
-        currencyFormatter.maximumFractionDigits = maximumFractionDigits
-        return currencyFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
+        numberFormatter.minimumFractionDigits = minimumFractionDigits
+        numberFormatter.maximumFractionDigits = maximumFractionDigits
+        return numberFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
     }
 }

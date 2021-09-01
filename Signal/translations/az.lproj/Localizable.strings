@@ -2186,7 +2186,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Bu cihazda bu qrupa qoşulmaq üçün Signal-ı yeniləyin.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Qrup bağlantısı vasitəsilə qoşulan yeni üzvləri təsdiqləmək üçün bir admin tələb et.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Qrup bağlantısı vasitəsilə qoşulan yeni üzvlərin admin tərəfindən təsdiqlənməsi tələb olunsun.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Yeni üzvləri təsdiqlə";
@@ -2225,7 +2225,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Qrup bağlantısı";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Qrup bağlantısı vasitəsilə qoşulan yeni üzvləri təsdiqləmək üçün bir admin tələb et.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Qrup bağlantısı vasitəsilə qoşulan yeni üzvlərin admin tərəfindən təsdiqlənməsi tələb olunsun.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Bağlantını sıfırla";
@@ -4031,7 +4031,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Dəvəti ləğv et";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" tərəfindən göndərilən qrup dəvətini ləğv et?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" tərəfindən göndərilən qrup dəvəti ləğv edilsin?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" tərəfindən göndərilən %1$@ dəvət ləğv edilsin?";
