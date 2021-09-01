@@ -28,6 +28,7 @@
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSOutgoingGroupCallMessage.h>
 #import <SignalServiceKit/OWSOutgoingReactionMessage.h>
+#import <SignalServiceKit/OWSOutgoingSenderKeyDistributionMessage.h>
 #import <SignalServiceKit/OWSOutgoingSentMessageTranscript.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
@@ -1387,7 +1388,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         return;
     }
     // Discard "typing indicator" messages if there is no existing session with the user.
+    // We also discard SKDMs if they're sent on behalf of an online message.
     BOOL canSafelyBeDiscarded = messageSend.message.isOnline;
+    if ([messageSend.message isKindOfClass:[OWSOutgoingSenderKeyDistributionMessage class]]) {
+        OWSOutgoingSenderKeyDistributionMessage *skdm = (OWSOutgoingSenderKeyDistributionMessage *)messageSend.message;
+        canSafelyBeDiscarded |= skdm.isSentOnBehalfOfOnlineMessage;
+    }
+
     if (canSafelyBeDiscarded) {
         OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
     }
