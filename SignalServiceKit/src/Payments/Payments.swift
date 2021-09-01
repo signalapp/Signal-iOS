@@ -561,12 +561,55 @@ public class PaymentsConstants {
     }
 
     private static let decimalFormattingInfo: DecimalFormattingInfo = {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.locale = .current
-        numberFormatter.numberStyle = .currency
-        let decimalSeparator = numberFormatter.decimalSeparator ?? ""
-        let groupingSeparator = numberFormatter.groupingSeparator ?? ""
-        let groupingSize = numberFormatter.groupingSize
+        // NumberFormatter.numberStyle affects the separator and grouping behavior.
+        // We prefer to derive the values we'll use for payments from .currency,
+        // but we failover to .decimal.
+        let numberFormatterCurrency = NumberFormatter()
+        numberFormatterCurrency.locale = .current
+        numberFormatterCurrency.numberStyle = .currency
+
+        let numberFormatterDecimal = NumberFormatter()
+        numberFormatterDecimal.locale = .current
+        numberFormatterDecimal.numberStyle = .decimal
+
+        // https://en.wikipedia.org/wiki/Decimal_separator
+        let validDecimalSeparators = [",", ".", "'", "·"]
+        let validGroupingSeparators = [",", ".", " ", "'",
+                                       // NOTE: NumberFormatter sometimes uses a 'NARROW NO-BREAK SPACE' (U+202F) as a grouping separator.
+                                       " "]
+        let validGroupingSizes = [2, 3, 4]
+
+        let decimalSeparator: String = {
+            if let decimalSeparator = numberFormatterCurrency.decimalSeparator.nilIfEmpty,
+               validDecimalSeparators.contains(decimalSeparator) {
+                return decimalSeparator
+            }
+            if let decimalSeparator = numberFormatterDecimal.decimalSeparator.nilIfEmpty,
+               validDecimalSeparators.contains(decimalSeparator) {
+                return decimalSeparator
+            }
+            return ""
+        }()
+        let groupingSeparator: String = {
+            if let groupingSeparator = numberFormatterCurrency.groupingSeparator.nilIfEmpty,
+               validGroupingSeparators.contains(groupingSeparator) {
+                return groupingSeparator
+            }
+            if let groupingSeparator = numberFormatterDecimal.groupingSeparator.nilIfEmpty,
+               validGroupingSeparators.contains(groupingSeparator) {
+                return groupingSeparator
+            }
+            return ""
+        }()
+        let groupingSize: Int = {
+            if validGroupingSizes.contains(numberFormatterCurrency.groupingSize) {
+                return numberFormatterCurrency.groupingSize
+            }
+            if validGroupingSizes.contains(numberFormatterDecimal.groupingSize) {
+                return numberFormatterDecimal.groupingSize
+            }
+            return 0
+        }()
 
         // NumberFormatter doesn't expose a property for this behavior,
         // but we can infer the appropriate behavior for the user's locale
@@ -599,12 +642,6 @@ public class PaymentsConstants {
             return shouldUseGroupingSeparatorsAfterDecimal
         }()
 
-        // https://en.wikipedia.org/wiki/Decimal_separator
-        let validDecimalSeparators = [",", ".", "'", "·"]
-        let validGroupingSeparators = [",", ".", " ", "'",
-                                       // NOTE: NumberFormatter sometimes uses a 'NARROW NO-BREAK SPACE' (U+202F) as a grouping separator.
-                                       " "]
-        let validGroupingSizes = [2, 3, 4]
         guard validDecimalSeparators.contains(decimalSeparator),
               validGroupingSeparators.contains(groupingSeparator),
               validGroupingSizes.contains(groupingSize),
