@@ -878,7 +878,8 @@ extension CallService: CallManagerDelegate {
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
         shouldSendCallMessage recipientUuid: UUID,
-        message: Data
+        message: Data,
+        urgency: CallMessageUrgency
     ) {
         AssertIsOnMainThread()
         Logger.info("shouldSendCallMessage")
@@ -900,6 +901,7 @@ extension CallService: CallManagerDelegate {
         }.then(on: .global()) { thread throws -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
+            opaqueBuilder.setUrgency(urgency.protobufValue)
 
             let callMessage = OWSOutgoingCallMessage(
                 thread: thread,
@@ -926,6 +928,20 @@ extension CallService: CallManagerDelegate {
             }
             // TODO: Tell RingRTC something went wrong. API TBD
         }
+    }
+
+    /**
+     * A call message should be sent to all other members of the given group.
+     * Invoked on the main thread, asynchronously.
+     * If there is any error, the UI can reset UI state and invoke the reset() API.
+     */
+    public func callManager(
+        _ callManager: CallManager<SignalCall, CallService>,
+        shouldSendCallMessageToGroup groupId: Data,
+        message: Data,
+        urgency: CallMessageUrgency
+    ) {
+        Logger.info("Stubbed \(#function)")
     }
 
     /**
@@ -1045,6 +1061,18 @@ extension CallService: CallManagerDelegate {
             onEvent: call,
             event: event
         )
+    }
+
+    /**
+     * onNetworkRouteChangedFor will be invoked when changes to the network routing (e.g. wifi/cellular) are detected.
+     * Invoked on the main thread, asychronously.
+     */
+    public func callManager(
+        _ callManager: CallManager<SignalCall, CallService>,
+        onNetworkRouteChangedFor call: SignalCall,
+        networkRoute: NetworkRoute
+    ) {
+        Logger.info("Network route changed for call: \(call): \(networkRoute.localAdapterType.rawValue)")
     }
 
     public func callManager(
@@ -1174,5 +1202,31 @@ extension CallService: CallManagerDelegate {
             onAddRemoteVideoTrack: call,
             track: track
         )
+    }
+
+    /**
+     * An update from `sender` has come in for the ring in `groupId` identified by `ringId`.
+     *
+     * `sender` will be the current user's ID if the update came from another device.
+     *
+     * Invoked on the main thread, asynchronously.
+     */
+    public func callManager(
+        _ callManager: CallManager<SignalCall, CallService>,
+        didUpdateRingForGroup groupId: Data,
+        ringId: Int64,
+        sender: UUID,
+        update: RingUpdate
+    ) {
+        Logger.info("Stubbed \(#function)")
+    }
+}
+
+extension CallMessageUrgency {
+    var protobufValue: SSKProtoCallMessageOpaqueUrgency {
+    switch self {
+    case .droppable: return .droppable
+    case .handleImmediately: return .handleImmediately
+    }
     }
 }
