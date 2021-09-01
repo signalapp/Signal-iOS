@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, getter=wasRead) BOOL read;
 
-@property (nonatomic, nullable) NSNumber *serverTimestamp;
-
 @end
 
 #pragma mark -
@@ -52,7 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
                  expiresInSeconds:(uint32_t)expiresInSeconds
                     quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                       linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   wasReceivedByUD:(BOOL)wasReceivedByUD
           openGroupInvitationName:(nullable NSString *)openGroupInvitationName
            openGroupInvitationURL:(nullable NSString *)openGroupInvitationURL
@@ -77,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     _authorId = authorId;
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
-    _serverTimestamp = serverTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
     _notificationIdentifier = nil;
 

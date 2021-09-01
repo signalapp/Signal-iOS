@@ -450,6 +450,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 #pragma mark - Update With... Methods
 
+- (void)updateOpenGroupServerID:(uint64_t)openGroupServerID serverTimeStamp:(uint64_t)timestamp
+{
+    self.openGroupServerMessageID = openGroupServerID;
+    [super updateTimestamp:timestamp];
+}
+
 - (void)updateWithSendingError:(NSError *)error transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self applyChangeToSelfAndLatestCopy:transaction

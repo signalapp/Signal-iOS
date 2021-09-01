@@ -317,7 +317,7 @@ public final class MessageSender : NSObject {
         OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
             message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
             storage.write(with: { transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: openGroupMessage.sentTimestamp, using: transaction)
                 seal.fulfill(())
             }, completion: { })
         }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
@@ -330,7 +330,7 @@ public final class MessageSender : NSObject {
     }
 
     // MARK: Success & Failure Handling
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, isSyncMessage: Bool = false, using transaction: Any) {
+    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, serverTimestamp: UInt64? = nil, isSyncMessage: Bool = false, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Get the visible message if possible
         if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
@@ -338,8 +338,13 @@ public final class MessageSender : NSObject {
             // will be replaced by the hash value of the sync message. Since the hash value of the
             // real message has no use when we delete a message. It is OK to let it be.
             tsMessage.serverHash = message.serverHash
-            // Track the open group server message ID
-            tsMessage.openGroupServerMessageID = message.openGroupServerMessageID ?? 0
+            // Track the open group server message ID and update server timestamp
+            if let openGroupServerMessageID = message.openGroupServerMessageID, let timestamp = serverTimestamp {
+                // Use server timestamp for open group messages
+                // Otherwise the quote messages may not be able
+                // to be found by the timestamp on other devices
+                tsMessage.updateOpenGroupServerID(openGroupServerMessageID, serverTimeStamp: timestamp)
+            }
             // Mark the message as sent
             var recipients = [ message.recipient! ]
             if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
