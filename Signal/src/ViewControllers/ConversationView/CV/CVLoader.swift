@@ -9,7 +9,7 @@ import PromiseKit
 public class CVLoader: NSObject {
 
     static var verboseLogging: Bool {
-        true && DebugFlags.internalLogging
+        false && DebugFlags.internalLogging
     }
 
     private let threadUniqueId: String
