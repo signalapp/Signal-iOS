@@ -28,6 +28,8 @@ extern NSString *const kLocalProfileInvariantPhoneNumber;
 
 BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfileWriter);
 
+NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
+
 #pragma mark -
 
 @interface OWSUserProfile : BaseModel

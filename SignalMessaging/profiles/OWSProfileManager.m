@@ -1695,7 +1695,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(address.isValid);
 
     OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
-                @"avatarData: %d",
+                @"avatarData: %d, userProfileWriter: %@",
         addressParam,
         address,
         givenName,
@@ -1703,7 +1703,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         bio,
         bioEmoji,
         avatarUrlPath,
-        optionalDecryptedAvatarData.length > 0);
+        optionalDecryptedAvatarData.length > 0,
+        NSStringForUserProfileWriter(userProfileWriter));
 
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1771,7 +1772,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             if (userProfile.avatarFileName.length > 0) {
                 NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
                 if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-                    OWSLogError(@"downloaded file is missing for profile: %@", userProfile.address);
+                    OWSLogError(@"downloaded file is missing for profile: %@, userProfileWriter: %@",
+                        userProfile.address,
+                        NSStringForUserProfileWriter(userProfileWriter));
                     [userProfile updateWithAvatarFileName:nil
                                         userProfileWriter:userProfileWriter
                                               transaction:transaction];

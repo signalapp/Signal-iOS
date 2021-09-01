@@ -456,8 +456,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
               profile:(OWSUserProfile *)profile
     userProfileWriter:(UserProfileWriter)userProfileWriter
 {
+    BOOL isLocalProfile = [OWSUserProfile isLocalProfileAddress:profile.address];
     BOOL canModifyStorageServiceProperties;
-    if ([OWSUserProfile isLocalProfileAddress:profile.address]) {
+    if (isLocalProfile) {
         // Any properties stored in the storage service can only
         // by modified by the local user or the storage service.
         // In particular, they should _not_ be modified by profile
@@ -538,16 +539,22 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         profile.isUuidCapable = changes.isUuidCapable.value;
     }
 
+    BOOL canUpdateAvatar = (canModifyStorageServiceProperties || userProfileWriter == UserProfileWriter_Reupload);
     // Update the avatar properties in lockstep.
-    if (changes.avatarUrlPath != nil && changes.avatarFileName != nil && canModifyStorageServiceProperties) {
+    if (changes.avatarUrlPath != nil && changes.avatarFileName != nil && canUpdateAvatar) {
         [profile updateAvatarUrlPath:changes.avatarUrlPath.value
                       avatarFileName:changes.avatarFileName.value
                    userProfileWriter:userProfileWriter];
-    } else if (changes.avatarUrlPath != nil && canModifyStorageServiceProperties) {
+    } else if (changes.avatarUrlPath != nil && canUpdateAvatar) {
         // The "avatar url path" (but not the "avatar file name") is stored in the storage service.
         [profile updateAvatarUrlPath:changes.avatarUrlPath.value userProfileWriter:userProfileWriter];
     } else if (changes.avatarFileName != nil) {
-        [profile updateAvatarFileName:changes.avatarFileName.value userProfileWriter:userProfileWriter];
+        // The local user should be able to "filling in" their profile avatar
+        // by downloading a profile avatar url.
+        BOOL canUpdateAvatarFile = (canUpdateAvatar || userProfileWriter == UserProfileWriter_AvatarDownload);
+        if (canUpdateAvatarFile) {
+            [profile updateAvatarFileName:changes.avatarFileName.value userProfileWriter:userProfileWriter];
+        }
     }
 
     if (changes.lastFetchDate != nil) {
@@ -644,14 +651,14 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                        // match profile fetch state, re-upload.
                                        if (userProfileWriter == UserProfileWriter_ProfileFetch) {
                                            BOOL givenNameDoesNotMatch
-                                               = ![NSObject isNullableObject:changes.givenName.value
-                                                                     equalTo:profile.givenName];
+                                               = ![NSObject isNullableObject:[changes.givenName.value ows_nilIfEmpty]
+                                                                     equalTo:[profile.givenName ows_nilIfEmpty]];
                                            BOOL familyNameDoesNotMatch
-                                               = ![NSObject isNullableObject:changes.familyName.value
-                                                                     equalTo:profile.familyName];
-                                           BOOL avatarUrlPathDoesNotMatch
-                                               = ![NSObject isNullableObject:changes.avatarUrlPath.value
-                                                                     equalTo:profile.avatarUrlPath];
+                                               = ![NSObject isNullableObject:[changes.familyName.value ows_nilIfEmpty]
+                                                                     equalTo:[profile.familyName ows_nilIfEmpty]];
+                                           BOOL avatarUrlPathDoesNotMatch = ![NSObject
+                                               isNullableObject:[changes.avatarUrlPath.value ows_nilIfEmpty]
+                                                        equalTo:[profile.avatarUrlPath ows_nilIfEmpty]];
                                            if (givenNameDoesNotMatch || familyNameDoesNotMatch
                                                || avatarUrlPathDoesNotMatch) {
                                                OWSLogWarn(@"Updating profile to reflect profile state: %@, %@, "
