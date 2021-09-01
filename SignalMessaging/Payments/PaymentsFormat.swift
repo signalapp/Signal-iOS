@@ -20,7 +20,9 @@ public extension PaymentsFormat {
 
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
-        numberFormatter.numberStyle = .currency
+        // We use .decimal and not .currency because we don't
+        // want to a currency symbol.
+        numberFormatter.numberStyle = .decimal
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
         numberFormatter.maximumFractionDigits = (isShortForm
@@ -202,7 +204,9 @@ public extension PaymentsFormat {
                        locale: Locale? = nil) -> String? {
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
-        numberFormatter.numberStyle = .currency
+        // We use .decimal and not .currency because we don't
+        // want to a currency symbol.
+        numberFormatter.numberStyle = .decimal
         // TODO: Check with design.
         numberFormatter.minimumFractionDigits = minimumFractionDigits
         numberFormatter.maximumFractionDigits = maximumFractionDigits
