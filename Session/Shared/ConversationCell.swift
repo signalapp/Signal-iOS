@@ -1,4 +1,5 @@
 import UIKit
+import SessionUIKit
 
 final class ConversationCell : UITableViewCell {
     var threadViewModel: ThreadViewModel! { didSet { update() } }
@@ -33,6 +34,26 @@ final class ConversationCell : UITableViewCell {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         result.textColor = Colors.text
+        result.textAlignment = .center
+        return result
+    }()
+    
+    private lazy var hasMentionView: UIView = {
+        let result = UIView()
+        result.backgroundColor = Colors.accent
+        let size = ConversationCell.unreadCountViewSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.layer.masksToBounds = true
+        result.layer.cornerRadius = size / 2
+        return result
+    }()
+    
+    private lazy var hasMentionLabel: UILabel = {
+        let result = UILabel()
+        result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        result.textColor = Colors.text
+        result.text = "@"
         result.textAlignment = .center
         return result
     }()
@@ -98,9 +119,12 @@ final class ConversationCell : UITableViewCell {
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
         unreadCountLabel.pin(to: unreadCountView)
+        // Has mention view
+        hasMentionView.addSubview(hasMentionLabel)
+        hasMentionLabel.pin(to: hasMentionView)
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
-        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, unreadCountView, topLabelSpacer, timestampLabel ])
+        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ])
         topLabelStackView.axis = .horizontal
         topLabelStackView.alignment = .center
         topLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
@@ -176,6 +200,7 @@ final class ConversationCell : UITableViewCell {
         unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
         let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
+        hasMentionView.isHidden = !threadViewModel.hasUnreadMentions
         profilePictureView.update(for: thread)
         displayNameLabel.text = getDisplayName()
         timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)

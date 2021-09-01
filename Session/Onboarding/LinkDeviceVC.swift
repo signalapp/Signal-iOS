@@ -122,6 +122,14 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     func continueWithSeed(_ seed: Data) {
+        if (seed.count != 16) {
+            let alert = UIAlertController(title: NSLocalizedString("invalid_recovery_phrase", comment: ""), message: NSLocalizedString("Please check the Recovery Phrase and try again.", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { _ in
+                self.scanQRCodeWrapperVC.startCapture()
+            }))
+            presentAlert(alert)
+            return
+        }
         let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
         Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
         TSAccountManager.sharedInstance().didRegister()

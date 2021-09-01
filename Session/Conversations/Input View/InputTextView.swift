@@ -26,6 +26,8 @@ public final class InputTextView : UITextView, UITextViewDelegate {
         super.init(frame: CGRect.zero, textContainer: nil)
         setUpViewHierarchy()
         self.delegate = self
+        self.isAccessibilityElement = true
+        self.accessibilityLabel = NSLocalizedString("vc_conversation_input_prompt", comment: "")
     }
     
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
