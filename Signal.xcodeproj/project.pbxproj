@@ -145,6 +145,7 @@
 		344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761224B36C8C009D69A5 /* TestingViewController.swift */; };
 		344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DAEDE248A7526000AD4FA /* DebugUIStress.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
+		3452851B26DE890400824983 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
 		3452C15625348F1D00F69070 /* GroupsV2Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452C15525348F1D00F69070 /* GroupsV2Migration.swift */; };
 		34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34546F4F2649989C007C4958 /* ChatColorViewController.swift */; };
 		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
@@ -1221,6 +1222,7 @@
 		344A761224B36C8C009D69A5 /* TestingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingViewController.swift; sourceTree = "<group>"; };
 		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
+		3452851A26DE890300824983 /* DateUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtil.swift; sourceTree = "<group>"; };
 		3452C15525348F1D00F69070 /* GroupsV2Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Migration.swift; sourceTree = "<group>"; };
 		34546F4F2649989C007C4958 /* ChatColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorViewController.swift; sourceTree = "<group>"; };
 		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
@@ -2543,9 +2545,11 @@
 				883A7FD0269F640D00841DF9 /* Avatars */,
 				343D3D991E9283F100165CA4 /* BlockListUIUtils.h */,
 				343D3D9A1E9283F100165CA4 /* BlockListUIUtils.m */,
+				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				3466087120E550F300AFFE73 /* ConversationStyle.swift */,
 				3464451022B7F97100A957B1 /* DateUtil.h */,
 				3464450F22B7F97000A957B1 /* DateUtil.m */,
+				3452851A26DE890300824983 /* DateUtil.swift */,
 				34480B4D1FD0A7A300BC14EF /* DebugLogger.h */,
 				34480B4E1FD0A7A300BC14EF /* DebugLogger.m */,
 				348ECD8B25F278450083C47D /* DebugLogger.swift */,
@@ -2579,7 +2583,6 @@
 				340872BE22393CF900CB25B0 /* UIGestureRecognizer+OWS.swift */,
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
-				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -5457,6 +5460,7 @@
 				889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
+				3452851B26DE890400824983 /* DateUtil.swift in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
 				348D8E72262DF67A0019CAA8 /* ConversationAvatarView.swift in Sources */,
 				3474C57226111605006723D2 /* PaymentsFormat.swift in Sources */,

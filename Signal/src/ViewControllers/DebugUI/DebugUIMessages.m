@@ -2885,8 +2885,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     return [DebugUIMessagesSingleAction
                actionWithLabel:[NSString stringWithFormat:@"Fake Back-Date Message (%@)", label]
         unstaggeredActionBlock:^(NSUInteger index, SDSAnyWriteTransaction *transaction) {
-            NSString *messageBody =
-                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:self.randomText];
+            NSString *messageBody = [@[ @(index).stringValue, self.randomText, label ] componentsJoinedByString:@" "];
             TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
                                                              messageBody:messageBody
                                                          fakeAssetLoader:nil
@@ -2898,8 +2897,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
-            [message replaceReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)
-                                    transaction:transaction];
+            uint64_t timestamp = (uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset);
+            [message replaceTimestamp:timestamp transaction:transaction];
+            [message replaceReceivedAtTimestamp:timestamp transaction:transaction];
         }];
 }
 
@@ -2926,6 +2926,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     [actions addObject:[self fakeBackDatedMessageAction:thread
                                                   label:@"Ten Days Ago"
                                              dateOffset:-(int64_t)kDayInMs * 10]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"5 Months Ago"
+                                             dateOffset:-(int64_t)kMonthInMs * 5]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread
+                                                  label:@"7 Months Ago"
+                                             dateOffset:-(int64_t)kMonthInMs * 7]];
     [actions addObject:[self fakeBackDatedMessageAction:thread
                                                   label:@"400 Days Ago"
                                              dateOffset:-(int64_t)kDayInMs * 400]];

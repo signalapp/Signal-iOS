@@ -371,7 +371,7 @@ public extension ManualLayoutView {
 
     static func wrapSubviewUsingIOSAutoLayout(_ subview: UIView,
                                               isWrapperRendering: Bool = false,
-                                              wrapperName: String = "iOS auto layout wrapper") -> UIView {
+                                              wrapperName: String = "iOS auto layout wrapper") -> ManualLayoutView {
         let wrapper: ManualLayoutView
         if isWrapperRendering {
             wrapper = ManualLayoutViewWithLayer(name: wrapperName)

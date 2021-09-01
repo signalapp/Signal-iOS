@@ -46,7 +46,25 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
-        return componentView.wallpaperBlurView
+        return componentView.contentViewDefault?.wallpaperBlurView
+    }
+
+    public override func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
+                               componentView: CVComponentView) {
+        guard let componentView = componentView as? CVComponentViewDateHeader else {
+            owsFailDebug("Unexpected componentView.")
+            return
+        }
+        guard let doubleContentView = componentView.doubleContentView else {
+            return
+        }
+        doubleContentView.normalView.isHidden = layoutAttributes.isStickyHeader
+        doubleContentView.stickyView.isHidden = !layoutAttributes.isStickyHeader
+    }
+
+    fileprivate struct DoubleContentView {
+        let normalView: UIView
+        let stickyView: UIView
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -58,10 +76,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         }
 
         let outerStack = componentView.outerStack
-        let innerStack = componentView.innerStack
-
-        let titleLabel = componentView.titleLabel
-        titleLabelConfig.applyForRendering(label: titleLabel)
+        let doubleContentWrapper = componentView.doubleContentWrapper
 
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
         componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
@@ -70,50 +85,75 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
         componentView.hasWallpaper = hasWallpaper
 
+        let blurBackgroundColor: UIColor = {
+            if componentDelegate.isConversationPreview {
+                let blurBackgroundColor: UIColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
+                return blurBackgroundColor
+            } else {
+                // TODO: Design may change this value.
+                let blurBackgroundColor: UIColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
+                return blurBackgroundColor
+            }
+        }()
+
         let isReusing = (componentView.rootView.superview != nil &&
                             !themeHasChanged &&
                             !wallpaperModeHasChanged)
         if isReusing {
-            innerStack.configureForReuse(config: innerStackConfig,
-                                          cellMeasurement: cellMeasurement,
-                                          measurementKey: Self.measurementKey_innerStack)
             outerStack.configureForReuse(config: outerStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_outerStack)
+
+            let contentViewDefault = componentView.contentViewDefault
+            let contentViewForBlur = componentView.contentViewForBlur
+            contentViewDefault?.configure(componentView: componentView,
+                                          cellMeasurement: cellMeasurement,
+                                          componentDelegate: componentDelegate,
+                                          hasWallpaper: hasWallpaper,
+                                          titleLabelConfig: titleLabelConfig,
+                                          innerStackConfig: innerStackConfig,
+                                          isReusing: true)
+            contentViewForBlur?.configure(blurBackgroundColor: blurBackgroundColor,
+                                          titleLabelConfig: titleLabelConfig,
+                                          innerStackConfig: innerStackConfig,
+                                          isReusing: true)
         } else {
-            innerStack.reset()
             outerStack.reset()
-            titleLabel.removeFromSuperview()
-            componentView.wallpaperBlurView?.removeFromSuperview()
-            componentView.wallpaperBlurView = nil
+            doubleContentWrapper.reset()
 
             let contentView: UIView = {
-                if hasWallpaper,
-                   componentDelegate.isConversationPreview {
+                func buildContentViewWithBlur() -> UIView {
+                    let contentView = componentView.ensureContentViewForBlur()
+                    contentView.configure(blurBackgroundColor: blurBackgroundColor,
+                                          titleLabelConfig: titleLabelConfig,
+                                          innerStackConfig: innerStackConfig,
+                                          isReusing: false)
+                    return contentView.rootView
+                }
+                func buildContentViewDefault() -> UIView {
+                    let contentView = componentView.ensureContentViewDefault()
+                    contentView.configure(componentView: componentView,
+                                          cellMeasurement: cellMeasurement,
+                                          componentDelegate: componentDelegate,
+                                          hasWallpaper: hasWallpaper,
+                                          titleLabelConfig: titleLabelConfig,
+                                          innerStackConfig: innerStackConfig,
+                                          isReusing: false)
+                    return contentView.rootView
+                }
 
-                    // blurView replaces innerStack, using the same size, layoutMargins, etc.
-                    let blurView = buildBlurView(conversationStyle: conversationStyle)
-                    blurView.clipsToBounds = true
-                    blurView.layer.cornerRadius = 8
-                    blurView.contentView.addSubview(titleLabel)
-                    titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
-                    titleLabel.setContentHuggingLow()
-
-                    return ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
+                if componentDelegate.isConversationPreview {
+                    return buildContentViewWithBlur()
+                } else if hasWallpaper {
+                    return buildContentViewDefault()
                 } else {
-                    if hasWallpaper {
-                        let wallpaperBlurView = componentView.ensureWallpaperBlurView()
-                        configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
-                                                   maskCornerRadius: 8,
-                                                   componentDelegate: componentDelegate)
-                        innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
-                    }
-                    innerStack.configure(config: innerStackConfig,
-                                         cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_innerStack,
-                                         subviews: [ titleLabel ])
-
-                    return innerStack
+                    let blurContentView = buildContentViewWithBlur()
+                    let defaultContentView = buildContentViewDefault()
+                    doubleContentWrapper.addSubviewToFillSuperviewEdges(blurContentView)
+                    doubleContentWrapper.addSubviewToFillSuperviewEdges(defaultContentView)
+                    componentView.doubleContentView = DoubleContentView(normalView: defaultContentView,
+                                                                        stickyView: blurContentView)
+                    return doubleContentWrapper
                 }
             }()
 
@@ -130,7 +170,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
     static func buildState(interaction: TSInteraction) -> State {
         let date = Date(millisecondsSince1970: interaction.timestamp)
-        let text = DateUtil.formatDate(forConversationDateBreaks: date)
+        let text = DateUtil.formatDateHeaderForCVC(date)
         return State(text: text)
     }
 
@@ -159,8 +199,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                           layoutMargins: UIEdgeInsets(hMargin: 10, vMargin: 4))
     }
 
-    private static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
-    private static let measurementKey_innerStack = "CVComponentDateHeader.measurementKey_innerStack"
+    fileprivate static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
+    fileprivate static let measurementKey_innerStack = "CVComponentDateHeader.measurementKey_innerStack"
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
@@ -191,23 +231,34 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     public class CVComponentViewDateHeader: NSObject, CVComponentView {
 
         fileprivate let outerStack = ManualStackView(name: "dateHeader.outerStackView")
-        fileprivate let innerStack = ManualStackView(name: "dateHeader.innerStackView")
-        fileprivate let titleLabel = CVLabel()
+        fileprivate let doubleContentWrapper = ManualLayoutView(name: "dateHeader.doubleContentWrapper")
 
-        fileprivate var wallpaperBlurView: CVWallpaperBlurView?
-        fileprivate func ensureWallpaperBlurView() -> CVWallpaperBlurView {
-            if let wallpaperBlurView = self.wallpaperBlurView {
-                return wallpaperBlurView
+        fileprivate var contentViewDefault: ContentViewDefault?
+        fileprivate func ensureContentViewDefault() -> ContentViewDefault {
+            if let contentViewDefault = self.contentViewDefault {
+                return contentViewDefault
             }
-            let wallpaperBlurView = CVWallpaperBlurView()
-            self.wallpaperBlurView = wallpaperBlurView
-            return wallpaperBlurView
+            let contentViewDefault = ContentViewDefault()
+            self.contentViewDefault = contentViewDefault
+            return contentViewDefault
+        }
+
+        fileprivate var contentViewForBlur: ContentViewForBlur?
+        fileprivate func ensureContentViewForBlur() -> ContentViewForBlur {
+            if let contentViewForBlur = self.contentViewForBlur {
+                return contentViewForBlur
+            }
+            let contentViewForBlur = ContentViewForBlur()
+            self.contentViewForBlur = contentViewForBlur
+            return contentViewForBlur
         }
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
 
         public var isDedicatedCellView = false
+
+        fileprivate var doubleContentView: DoubleContentView?
 
         public var rootView: UIView {
             outerStack
@@ -223,20 +274,143 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         public func reset() {
             owsAssertDebug(isDedicatedCellView)
 
+            contentViewDefault?.reset(isDedicatedCellView: isDedicatedCellView)
+            contentViewForBlur?.reset(isDedicatedCellView: isDedicatedCellView)
+
             if !isDedicatedCellView {
                 outerStack.reset()
-                innerStack.reset()
-
-                titleLabel.removeFromSuperview()
-
-                wallpaperBlurView?.removeFromSuperview()
-                wallpaperBlurView?.resetContentAndConfiguration()
+                doubleContentWrapper.reset()
 
                 hasWallpaper = false
                 isDarkThemeEnabled = false
+                doubleContentView = nil
             }
-            titleLabel.text = nil
+        }
+    }
+}
+
+// MARK: -
+
+private class ContentViewForBlur {
+    private let titleLabel = CVLabel()
+    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+    private let blurOverlay = UIView()
+    private let wrapper: UIView
+
+    private var layoutConstraints = [NSLayoutConstraint]()
+
+    var rootView: UIView { wrapper }
+
+    init() {
+        blurView.contentView.addSubview(blurOverlay)
+        blurOverlay.autoPinEdgesToSuperviewEdges()
+
+        blurView.clipsToBounds = true
+
+        let wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(blurView)
+        let blurView = self.blurView
+        wrapper.addLayoutBlock { view in
+            blurView.layer.cornerRadius = view.frame.size.smallerAxis * 0.5
+        }
+        self.wrapper = wrapper
+    }
+
+    func configure(blurBackgroundColor: UIColor,
+                   titleLabelConfig: CVLabelConfig,
+                   innerStackConfig: CVStackViewConfig,
+                   isReusing: Bool) {
+
+        if !isReusing {
+            reset(isDedicatedCellView: false)
         }
 
+        titleLabelConfig.applyForRendering(label: titleLabel)
+        blurOverlay.backgroundColor = blurBackgroundColor
+
+        if isReusing {
+            // Do nothing.
+        } else {
+            if titleLabel.superview == nil {
+                blurView.contentView.addSubview(titleLabel)
+                titleLabel.setContentHuggingLow()
+            } else {
+                NSLayoutConstraint.deactivate(layoutConstraints)
+            }
+            layoutConstraints = titleLabel.autoPinEdgesToSuperviewEdges(withInsets: innerStackConfig.layoutMargins)
+        }
+    }
+
+    func reset(isDedicatedCellView: Bool) {
+        if !isDedicatedCellView {
+            titleLabel.removeFromSuperview()
+        }
+
+        titleLabel.text = nil
+        layoutConstraints = []
+    }
+}
+
+// MARK: -
+
+private class ContentViewDefault {
+    private let titleLabel = CVLabel()
+    private let innerStack = ManualStackView(name: "dateHeader.innerStackView")
+
+    var rootView: UIView { innerStack }
+
+    fileprivate var wallpaperBlurView: CVWallpaperBlurView?
+    private func ensureWallpaperBlurView() -> CVWallpaperBlurView {
+        if let wallpaperBlurView = self.wallpaperBlurView {
+            return wallpaperBlurView
+        }
+        let wallpaperBlurView = CVWallpaperBlurView()
+        self.wallpaperBlurView = wallpaperBlurView
+        return wallpaperBlurView
+    }
+
+    func configure(componentView: CVComponentDateHeader.CVComponentViewDateHeader,
+                   cellMeasurement: CVCellMeasurement,
+                   componentDelegate: CVComponentDelegate,
+                   hasWallpaper: Bool,
+                   titleLabelConfig: CVLabelConfig,
+                   innerStackConfig: CVStackViewConfig,
+                   isReusing: Bool) {
+
+        if !isReusing {
+            reset(isDedicatedCellView: false)
+        }
+
+        titleLabelConfig.applyForRendering(label: titleLabel)
+
+        if isReusing {
+            innerStack.configureForReuse(config: innerStackConfig,
+                                         cellMeasurement: cellMeasurement,
+                                         measurementKey: CVComponentDateHeader.measurementKey_innerStack)
+        } else {
+            if hasWallpaper {
+                let wallpaperBlurView = ensureWallpaperBlurView()
+                CVComponentBase.configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                                           maskCornerRadius: 8,
+                                                           componentDelegate: componentDelegate)
+                innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
+            }
+            innerStack.configure(config: innerStackConfig,
+                                 cellMeasurement: cellMeasurement,
+                                 measurementKey: CVComponentDateHeader.measurementKey_innerStack,
+                                 subviews: [ titleLabel ])
+        }
+    }
+
+    func reset(isDedicatedCellView: Bool) {
+        if !isDedicatedCellView {
+            innerStack.reset()
+
+            titleLabel.removeFromSuperview()
+
+            wallpaperBlurView?.removeFromSuperview()
+            wallpaperBlurView?.resetContentAndConfiguration()
+        }
+
+        titleLabel.text = nil
     }
 }

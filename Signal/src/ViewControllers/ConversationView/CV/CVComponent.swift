@@ -61,6 +61,9 @@ public protocol CVComponent: AnyObject {
     func updateScrollingContent(componentView: CVComponentView)
 
     func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]?
+
+    func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
+               componentView: CVComponentView)
 }
 
 // MARK: -
@@ -157,6 +160,11 @@ public class CVComponentBase: NSObject {
         return nil
     }
 
+    public func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
+                      componentView: CVComponentView) {
+        // Do nothing.
+    }
+
     var uiMode: ConversationUIMode { itemModel.itemViewState.uiMode }
     var previousUIMode: ConversationUIMode { itemModel.itemViewState.previousUIMode }
     var isShowingSelectionUI: Bool { uiMode.hasSelectionUI }
@@ -194,6 +202,14 @@ public class CVComponentBase: NSObject {
     public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
                                            maskCornerRadius: CGFloat,
                                            componentDelegate: CVComponentDelegate) {
+        Self.configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                        maskCornerRadius: maskCornerRadius,
+                                        componentDelegate: componentDelegate)
+    }
+
+    public static func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
+                                                  maskCornerRadius: CGFloat,
+                                                  componentDelegate: CVComponentDelegate) {
         if componentDelegate.isConversationPreview {
             wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
         } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
@@ -258,19 +274,6 @@ extension CVComponentBase: CVNode {
             return .solidColor(color: conversationStyle.bubbleColorIncoming)
         }
         return conversationStyle.bubbleChatColor(message: message)
-    }
-}
-
-// MARK: -
-
-extension CVComponentBase {
-    public func buildBlurView(conversationStyle: ConversationStyle) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        let blurOverlay = UIView()
-        blurOverlay.backgroundColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-        blurView.contentView.addSubview(blurOverlay)
-        blurOverlay.autoPinEdgesToSuperviewEdges()
-        return blurView
     }
 }
 
