@@ -1,4 +1,1 @@
-• Obrázok môže mať hodnotu aj 1 000 slov, a teraz ho môžete odoslať v 4 kB. Pomocou nového voliča kvality môžete voliteľne odosielať fotografie vo vyššom rozlíšení. Môžete tiež predvoliť odosielanie fotografií vo vyššom rozlíšení v časti Nastavenia> Použitie údajov.
-• Keď dlho stlačíte správu, nová šikovná ponuka vám umožní rýchlo reagovať, odpovedať, odstrániť a podobne.
-• Predstavujeme „My Daily Life“, nový balíček animovaných nálepiek od výtvarníka Plastic Thing.
-• Vykonali sme niekoľko vylepšení, ktoré vám pomôžu uľahčiť posúvanie zoznamu rozhovorov.
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.

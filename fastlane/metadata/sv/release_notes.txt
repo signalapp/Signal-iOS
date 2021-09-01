@@ -1,4 +1,1 @@
-• En bild kan vara värd 1k ord, men nu kan du skicka dem på 4k. Använd den nya kvalitetsväljaren för att eventuellt skicka foton med högre upplösning. Du kan också som standard alltid skicka foton med högre upplösning i Inställningar > Dataanvändning.
-• När du trycker länge på ett meddelande låter en snabb ny meny dig snabbt reagera, svara, ta bort och mer.
-• Vi presenterar "My Daily Life", ett nytt animerat klistermärkepaket av artisten Plastic Thing.
-• Vi har gjort flera förbättringar för att göra rullningen i din chattlista smidigare.
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.

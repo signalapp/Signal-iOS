@@ -1,4 +1,1 @@
-• एक फ़ोटो का मूल्य 1 हज़ार शब्द हो सकता है, लेकिन अब आप उन्हें 4k में भेज सकते हैं। वैक्लपिक रूप से उच्च रिज़ॉल्यूशन वाली फ़ोटो भेजने के लिए नए क्वालिटी चयनकर्ता का उपयोग करें। आप हमेशा उच्च रिज़ॉल्यूशन वाली फ़ोटो भेजने के लिए सेटिंग्ज़ > डेटा उपयोग को डिफ़ॉल्ट सेटिंग्ज़ भी बना सकते हैं।
-• जब आप किसी संदेश को देर तक दबाते हैं, तो एक तेज़ नए मेनू की मदद से आप तुरंत प्रतिक्रिया या उत्तर दे सकते हैं और उसे हटाने के अलावा और भी बहुत कुछ कर सकते हैं।
-• प्रस्तुत है, कलाकार प्लास्टिक थिंग की ओर से एक नया ऐनिमेटेड स्टिकर पैक “माई डेलि लाइफ”।
-• हमने आपकी चैट सूची को आसानी से स्क्रॉल करने में आपकी सहायता करने के लिए कई सुधार किए हैं।
+• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.
