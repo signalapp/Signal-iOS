@@ -1295,10 +1295,18 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         @available(swift, obsoleted: 1.0)
         public mutating func setServiceE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.serviceE164 = valueParam
         }
 
         public mutating func setServiceE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.serviceE164 = valueParam
         }
 
@@ -1553,17 +1561,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                     return nil
                 }
 
-                guard let serviceE164 = serviceE164 else {
-                    owsFailDebug("serviceE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !serviceE164.isEmpty else {
-                    owsFailDebug("serviceE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return serviceE164
+                return ProtoUtils.parseProtoE164(serviceE164, name: "StorageServiceProtos_ContactRecord.serviceE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)

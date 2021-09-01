@@ -755,21 +755,7 @@ class MessageContext(BaseContext):
             writer.pop_indent()
             writer.add('}')
             writer.newline()
-            writer.add('guard let %s = %s else {' % (e164_field.name_swift, e164_field.name_swift))
-            writer.push_indent()
-            writer.add('owsFailDebug("%s was unexpectedly nil")' % e164_field.name_swift)
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-            writer.add('guard !%s.isEmpty else {' % e164_field.name_swift)
-            writer.push_indent()
-            writer.add('owsFailDebug("%s was unexpectedly empty")' % e164_field.name_swift)
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-            writer.add('return %s' % e164_field.name_swift)
+            writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
             writer.pop_indent()
             writer.add('}()')
             writer.newline()
@@ -1173,6 +1159,14 @@ public func serializedData() throws -> Data {
                     elif self.is_field_a_proto(field):
                         writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                     else:
+                        if field.name.endswith('E164') and field.proto_type == 'string':
+                            writer.add('if let valueParam = valueParam.nilIfEmpty {')
+                            writer.push_indent()
+                            writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                            writer.pop_indent()
+                            writer.add('}')
+                            writer.newline()
+                        
                         writer.add('proto.%s = valueParam' % ( field.name_swift, ) )
 
                     writer.pop_indent()
@@ -1197,6 +1191,13 @@ public func serializedData() throws -> Data {
                 elif self.is_field_a_proto(field):
                     writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                 else:
+                    if field.name.endswith('E164') and field.proto_type == 'string':
+                        writer.add('if let valueParam = valueParam.nilIfEmpty {')
+                        writer.push_indent()
+                        writer.add('owsAssertDebug(PhoneNumber.resemblesE164(valueParam))')
+                        writer.pop_indent()
+                        writer.add('}')
+                        writer.newline()
                     writer.add('proto.%s = valueParam' % ( field.name_swift, ) )
 
                 writer.pop_indent()

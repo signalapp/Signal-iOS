@@ -125,10 +125,18 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSourceE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.sourceE164 = valueParam
         }
 
         public func setSourceE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.sourceE164 = valueParam
         }
 
@@ -375,17 +383,7 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let sourceE164 = sourceE164 else {
-                    owsFailDebug("sourceE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !sourceE164.isEmpty else {
-                    owsFailDebug("sourceE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return sourceE164
+                return ProtoUtils.parseProtoE164(sourceE164, name: "SignalServiceProtos_Envelope.sourceE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
@@ -2964,10 +2962,18 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setAuthorE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
         public func setAuthorE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
@@ -3122,17 +3128,7 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let authorE164 = authorE164 else {
-                    owsFailDebug("authorE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !authorE164.isEmpty else {
-                    owsFailDebug("authorE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return authorE164
+                return ProtoUtils.parseProtoE164(authorE164, name: "SignalServiceProtos_DataMessage.Quote.authorE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -5407,10 +5403,18 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setAuthorE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
         public func setAuthorE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.authorE164 = valueParam
         }
 
@@ -5531,17 +5535,7 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let authorE164 = authorE164 else {
-                    owsFailDebug("authorE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !authorE164.isEmpty else {
-                    owsFailDebug("authorE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return authorE164
+                return ProtoUtils.parseProtoE164(authorE164, name: "SignalServiceProtos_DataMessage.Reaction.authorE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -8611,10 +8605,18 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -8782,17 +8784,7 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let destinationE164 = destinationE164 else {
-                    owsFailDebug("destinationE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !destinationE164.isEmpty else {
-                    owsFailDebug("destinationE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return destinationE164
+                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_Verified.destinationE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -8921,10 +8913,18 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -9035,17 +9035,7 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
                     return nil
                 }
 
-                guard let destinationE164 = destinationE164 else {
-                    owsFailDebug("destinationE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !destinationE164.isEmpty else {
-                    owsFailDebug("destinationE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return destinationE164
+                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus.destinationE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -9184,10 +9174,18 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setDestinationE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
         public func setDestinationE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.destinationE164 = valueParam
         }
 
@@ -9357,17 +9355,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let destinationE164 = destinationE164 else {
-                    owsFailDebug("destinationE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !destinationE164.isEmpty else {
-                    owsFailDebug("destinationE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return destinationE164
+                return ProtoUtils.parseProtoE164(destinationE164, name: "SignalServiceProtos_SyncMessage.Sent.destinationE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -10219,10 +10207,18 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -10329,17 +10325,7 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let senderE164 = senderE164 else {
-                    owsFailDebug("senderE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !senderE164.isEmpty else {
-                    owsFailDebug("senderE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return senderE164
+                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.Read.senderE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -10478,10 +10464,18 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -10588,17 +10582,7 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let senderE164 = senderE164 else {
-                    owsFailDebug("senderE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !senderE164.isEmpty else {
-                    owsFailDebug("senderE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return senderE164
+                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.Viewed.senderE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -11188,10 +11172,18 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
         @available(swift, obsoleted: 1.0)
         public func setSenderE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
         public func setSenderE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.senderE164 = valueParam
         }
 
@@ -11298,17 +11290,7 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
                     return nil
                 }
 
-                guard let senderE164 = senderE164 else {
-                    owsFailDebug("senderE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !senderE164.isEmpty else {
-                    owsFailDebug("senderE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return senderE164
+                return ProtoUtils.parseProtoE164(senderE164, name: "SignalServiceProtos_SyncMessage.ViewOnceOpen.senderE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -11820,10 +11802,18 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
         @available(swift, obsoleted: 1.0)
         public func setThreadE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.threadE164 = valueParam
         }
 
         public func setThreadE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.threadE164 = valueParam
         }
 
@@ -11968,17 +11958,7 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
                     return nil
                 }
 
-                guard let threadE164 = threadE164 else {
-                    owsFailDebug("threadE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !threadE164.isEmpty else {
-                    owsFailDebug("threadE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return threadE164
+                return ProtoUtils.parseProtoE164(threadE164, name: "SignalServiceProtos_SyncMessage.MessageRequestResponse.threadE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .low)
@@ -14473,10 +14453,18 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
         @available(swift, obsoleted: 1.0)
         public func setContactE164(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.contactE164 = valueParam
         }
 
         public func setContactE164(_ valueParam: String) {
+            if let valueParam = valueParam.nilIfEmpty {
+                owsAssertDebug(PhoneNumber.resemblesE164(valueParam))
+            }
+
             proto.contactE164 = valueParam
         }
 
@@ -14730,17 +14718,7 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
                     return nil
                 }
 
-                guard let contactE164 = contactE164 else {
-                    owsFailDebug("contactE164 was unexpectedly nil")
-                    return nil
-                }
-
-                guard !contactE164.isEmpty else {
-                    owsFailDebug("contactE164 was unexpectedly empty")
-                    return nil
-                }
-
-                return contactE164
+                return ProtoUtils.parseProtoE164(contactE164, name: "SignalServiceProtos_ContactDetails.contactE164")
             }()
 
             let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)

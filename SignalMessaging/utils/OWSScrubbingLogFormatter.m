@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         NSError *error;
         regex = [NSRegularExpression regularExpressionWithPattern:@"\\+\\d{7,12}(\\d{3})"
-                                                          options:NSRegularExpressionCaseInsensitive
+                                                          options:0
                                                             error:&error];
         if (error || !regex) {
             OWSFail(@"could not compile regular expression: %@", error);

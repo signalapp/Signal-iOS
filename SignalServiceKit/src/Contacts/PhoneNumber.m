@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSString+SSK.h"
 #import <SignalServiceKit/PhoneNumber.h>
+#import "NSString+SSK.h"
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBAsYouTypeFormatter.h>
@@ -104,6 +104,28 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     OWSAssertDebug(number != nil);
     return number;
+}
+
++ (NSRegularExpression *)phoneRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSError *error;
+        regex = [NSRegularExpression regularExpressionWithPattern:@"^\\+\\d{10,15}$"
+                                                          options:0
+                                                            error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
+
++ (BOOL)resemblesE164:(NSString *)text {
+    return [self.phoneRegex rangeOfFirstMatchInString:text
+                                              options:0
+                                                range:NSMakeRange(0, text.length)].location != NSNotFound;
 }
 
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input {

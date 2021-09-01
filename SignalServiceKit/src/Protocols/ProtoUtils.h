@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
                           transaction:(SDSAnyReadTransaction *)transaction;
 
++ (nullable NSString *)parseProtoE164:(nullable NSString *)value name:(NSString *)name;
+
 @end
 
 NS_ASSUME_NONNULL_END
