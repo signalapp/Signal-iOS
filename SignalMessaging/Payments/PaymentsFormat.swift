@@ -15,9 +15,11 @@ public class PaymentsFormat {
 
 public extension PaymentsFormat {
 
-    private static func buildMobFormatter(isShortForm: Bool) -> NumberFormatter {
+    private static func buildMobFormatter(isShortForm: Bool,
+                                          locale: Locale? = nil) -> NumberFormatter {
+
         let numberFormatter = NumberFormatter()
-        numberFormatter.locale = Locale(identifier: "en_US")
+        numberFormatter.locale = locale ?? Locale.current
         numberFormatter.numberStyle = .decimal
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
@@ -31,17 +33,9 @@ public extension PaymentsFormat {
         return numberFormatter
     }
 
-    private static let mobFormatShort: NumberFormatter = {
-        buildMobFormatter(isShortForm: true)
-    }()
-
-    private static let mobFormatLong: NumberFormatter = {
-        buildMobFormatter(isShortForm: false)
-    }()
-
     // Used for formatting MOB (not picoMob) values for display.
-    private static func mobFormat(isShortForm: Bool) -> NumberFormatter {
-        isShortForm ? mobFormatShort : mobFormatLong
+    private static func mobFormat(isShortForm: Bool, locale: Locale? = nil) -> NumberFormatter {
+        buildMobFormatter(isShortForm: isShortForm, locale: locale)
     }
 
     // Used for formatting decimal numbers in the
@@ -192,19 +186,22 @@ public extension PaymentsFormat {
     }
 
     static func formatAsFiatCurrency(paymentAmount: TSPaymentAmount,
-                                     currencyConversionInfo: CurrencyConversionInfo) -> String? {
+                                     currencyConversionInfo: CurrencyConversionInfo,
+                                     locale: Locale? = nil) -> String? {
         guard let fiatCurrencyAmount = currencyConversionInfo.convertToFiatCurrency(paymentAmount: paymentAmount) else {
             return nil
         }
-        return format(fiatCurrencyAmount: fiatCurrencyAmount)
+        return format(fiatCurrencyAmount: fiatCurrencyAmount,
+                      locale: locale)
     }
 
     // Used to format fiat currency values for display.
     static func format(fiatCurrencyAmount: Double,
                        minimumFractionDigits: Int = 2,
-                       maximumFractionDigits: Int = 2) -> String? {
+                       maximumFractionDigits: Int = 2,
+                       locale: Locale? = nil) -> String? {
         let currencyFormatter = NumberFormatter()
-        currencyFormatter.locale = Locale(identifier: "en_US")
+        currencyFormatter.locale = locale ?? Locale.current
         currencyFormatter.numberStyle = .decimal
         // TODO: Check with design.
         currencyFormatter.minimumFractionDigits = minimumFractionDigits
