@@ -758,11 +758,47 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `data`. Subsequent reads from it will return its default value.
     mutating func clearData() {self._data = nil}
 
+    var urgency: SignalServiceProtos_CallMessage.Opaque.Urgency {
+      get {return _urgency ?? .droppable}
+      set {_urgency = newValue}
+    }
+    /// Returns true if `urgency` has been explicitly set.
+    var hasUrgency: Bool {return self._urgency != nil}
+    /// Clears the value of `urgency`. Subsequent reads from it will return its default value.
+    mutating func clearUrgency() {self._urgency = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum Urgency: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case droppable // = 0
+      case handleImmediately // = 1
+
+      init() {
+        self = .droppable
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .droppable
+        case 1: self = .handleImmediately
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .droppable: return 0
+        case .handleImmediately: return 1
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _data: Data?
+    fileprivate var _urgency: SignalServiceProtos_CallMessage.Opaque.Urgency?
   }
 
   init() {}
@@ -777,6 +813,10 @@ extension SignalServiceProtos_CallMessage.Offer.TypeEnum: CaseIterable {
 }
 
 extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_CallMessage.Opaque.Urgency: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4719,7 +4759,8 @@ extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoN
 extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Opaque"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "data")
+    1: .same(proto: "data"),
+    2: .same(proto: "urgency")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4729,6 +4770,7 @@ extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self._data) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self._urgency) }()
       default: break
       }
     }
@@ -4738,14 +4780,25 @@ extension SignalServiceProtos_CallMessage.Opaque: SwiftProtobuf.Message, SwiftPr
     if let v = self._data {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
     }
+    if let v = self._urgency {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Opaque, rhs: SignalServiceProtos_CallMessage.Opaque) -> Bool {
     if lhs._data != rhs._data {return false}
+    if lhs._urgency != rhs._urgency {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.Opaque.Urgency: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "DROPPABLE"),
+    1: .same(proto: "HANDLE_IMMEDIATELY")
+  ]
 }
 
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
