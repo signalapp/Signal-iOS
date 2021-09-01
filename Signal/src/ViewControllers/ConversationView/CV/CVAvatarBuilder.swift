@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // Caching builder used for a single CVC load.
 // CVC loads often build the same avatars over and over.

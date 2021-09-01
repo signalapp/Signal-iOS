@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SafariServices
 
 @objc(OWSSupportConstants)
@@ -248,10 +247,9 @@ final class ContactSupportViewController: OWSTableViewController2 {
                                                  comment: "Message for alert dialog presented when a support email failed to send")
             OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
 
-        }.finally(on: .main) {
+        }.ensure(on: .main) {
             self.currentEmailComposeOperation = nil
             self.showSpinnerOnNextButton = false
-
         }
     }
 }

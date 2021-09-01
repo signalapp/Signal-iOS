@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?

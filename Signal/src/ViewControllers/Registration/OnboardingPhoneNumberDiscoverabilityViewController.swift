@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 
 @objc
 public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {

@@ -5,7 +5,6 @@
 #import "BlockListUIUtils.h"
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/SignalAccount.h>

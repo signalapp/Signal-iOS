@@ -11,7 +11,7 @@ source 'https://cdn.cocoapods.org/'
 
 pod 'SwiftProtobuf', ">= 1.14.0"
 
-pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'ssh://git@github.com/signalapp/SignalCoreKit-Private', testspecs: ["Tests"], branch: 'nt/promises'
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
@@ -32,8 +32,6 @@ pod 'ZKGroup', git: 'https://github.com/signalapp/zkgroup', testspecs: ["Tests"]
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
-
-pod 'PromiseKit'
 
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'

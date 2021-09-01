@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // This entity performs a single load.
 public class CVLoader: NSObject {

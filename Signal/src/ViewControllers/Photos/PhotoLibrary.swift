@@ -4,7 +4,6 @@
 
 import Foundation
 import Photos
-import PromiseKit
 
 protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)
@@ -141,7 +140,7 @@ class PhotoCollectionContents {
     }
 
     private func requestImageDataSource(for asset: PHAsset) -> Promise<(dataSource: DataSource, dataUTI: String)> {
-        return Promise { resolver in
+        return Promise { future in
 
             let options: PHImageRequestOptions = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
@@ -151,27 +150,27 @@ class PhotoCollectionContents {
             _ = imageManager.requestImageData(for: asset, options: options) { imageData, dataUTI, _, _ in
 
                 guard let imageData = imageData else {
-                    resolver.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
+                    future.reject(PhotoLibraryError.assertionError(description: "imageData was unexpectedly nil"))
                     return
                 }
 
                 guard let dataUTI = dataUTI else {
-                    resolver.reject(PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil"))
+                    future.reject(PhotoLibraryError.assertionError(description: "dataUTI was unexpectedly nil"))
                     return
                 }
 
                 guard let dataSource = DataSourceValue.dataSource(with: imageData, utiType: dataUTI) else {
-                    resolver.reject(PhotoLibraryError.assertionError(description: "dataSource was unexpectedly nil"))
+                    future.reject(PhotoLibraryError.assertionError(description: "dataSource was unexpectedly nil"))
                     return
                 }
 
-                resolver.fulfill((dataSource: dataSource, dataUTI: dataUTI))
+                future.resolve((dataSource: dataSource, dataUTI: dataUTI))
             }
         }
     }
 
     private func requestVideoDataSource(for asset: PHAsset) -> Promise<SignalAttachment> {
-        return Promise { resolver in
+        return Promise { future in
 
             let options: PHVideoRequestOptions = PHVideoRequestOptions()
             options.isNetworkAccessAllowed = true
@@ -180,7 +179,7 @@ class PhotoCollectionContents {
             _ = imageManager.requestAVAsset(forVideo: asset, options: options) { video, _, info in
                 guard let video = video else {
                     let error = info?[PHImageErrorKey] as! Error?
-                    resolver.reject(PhotoLibraryError.failedToExportAsset(underlyingError: error))
+                    future.reject(PhotoLibraryError.failedToExportAsset(underlyingError: error))
                     return
                 }
 
@@ -192,7 +191,7 @@ class PhotoCollectionContents {
 
                     if let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) {
                         if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
-                            resolver.fulfill(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
+                            future.resolve(SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI))
                             return
                         }
                     }
@@ -206,7 +205,9 @@ class PhotoCollectionContents {
                 let (compressPromise, _) = SignalAttachment.compressVideoAsMp4(asset: video,
                                                                                baseFilename: baseFilename,
                                                                                dataUTI: dataUTI)
-                compressPromise.pipe { resolver.resolve($0) }
+                compressPromise
+                    .done { future.resolve($0) }
+                    .catch { future.reject($0) }
             }
         }
     }

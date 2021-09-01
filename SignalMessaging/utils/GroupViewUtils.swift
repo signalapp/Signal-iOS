@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import UIKit
 import SafariServices
 
@@ -31,7 +30,7 @@ public class GroupViewUtils {
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly {
                                                             updatePromiseBlock()
-                                                        }.done { (value: T) in
+                                                        }.done(on: .main) { (value: T) in
                                                             modalActivityIndicator.dismiss {
                                                                 completion(value)
                                                             }

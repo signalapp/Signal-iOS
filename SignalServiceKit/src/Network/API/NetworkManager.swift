@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // A class used for making HTTP requests against the main service.
 @objc

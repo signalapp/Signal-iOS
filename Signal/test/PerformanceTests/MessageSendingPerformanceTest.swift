@@ -3,7 +3,6 @@
 //
 
 import XCTest
-import PromiseKit
 @testable import SignalServiceKit
 import GRDB
 
@@ -225,13 +224,13 @@ class StubbableNetworkManager: NetworkManager {
         // async's a little more realistic.
         let fakeNetworkLatency = DispatchTimeInterval.milliseconds(25)
         let block = self.block
-        let (promise, resolver) = Promise<HTTPResponse>.pending()
+        let (promise, future) = Promise<HTTPResponse>.pending()
         DispatchQueue.global().asyncAfter(deadline: .now() + fakeNetworkLatency) {
             let success = { response in
-                resolver.fulfill(response)
+                future.resolve(response)
             }
             let failure = { error in
-                resolver.reject(error)
+                future.reject(error)
             }
             block(request, success, failure)
         }

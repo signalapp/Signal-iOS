@@ -7,7 +7,6 @@
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
@@ -573,8 +572,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     OWSLogInfo(@"Trying to unlock prekey update.");
 
-    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    return AnyPromise.withFutureOn(
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(AnyFuture *future) {
             OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);
 
             // Retry prekey update every time user tries to send a message while app
@@ -585,14 +584,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             [TSPreKeyManager
                 rotateSignedPreKeyWithSuccess:^{
                     OWSLogInfo(@"New prekeys registered with server.");
-                    resolve(@(1));
+                    [future resolveWithValue:@(1)];
                 }
                 failure:^(NSError *error) {
                     OWSLogWarn(@"Failed to update prekeys with the server: %@", error);
-                    resolve(error);
+                    [future rejectWithError:error];
                 }];
         });
-    }];
 }
 
 - (AnyPromise *)sendPromiseForAddresses:(NSArray<SignalServiceAddress *> *)addresses
@@ -697,11 +695,11 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 [sendPromises addObject:senderKeyMessagePromise];
             }
 
-            // We use PMKJoin(), not PMKWhen(), because we don't want the
+            // We use resolved, not fulfilled, because we don't want the
             // completion promise to execute until _all_ send promises
-            // have either succeeded or failed. PMKWhen() executes as
+            // have either succeeded or failed. Fulfilled executes as
             // soon as any of its input promises fail.
-            return PMKJoin(sendPromises);
+            return [AnyPromise whenResolved:sendPromises];
         });
 }
 
@@ -803,7 +801,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                       }
                                   }];
         })
-        .thenInBackground(^(id value) { successHandler(); })
+        .doneInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
             NSError *firstRetryableError = nil;
             NSError *firstNonRetryableError = nil;
@@ -1278,7 +1276,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             [self sendMessageToRecipient:messageSend];
             return messageSend.asAnyPromise;
         })
-        .thenInBackground(^{
+        .doneInBackground(^(id value) {
             OWSLogInfo(@"Successfully sent sync transcript.");
 
             success();

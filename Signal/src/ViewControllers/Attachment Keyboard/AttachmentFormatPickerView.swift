@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol AttachmentFormatPickerDelegate: AnyObject {
     func didTapCamera()

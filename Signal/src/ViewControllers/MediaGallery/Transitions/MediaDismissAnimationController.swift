@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 class MediaDismissAnimationController: NSObject {
     private let item: Media

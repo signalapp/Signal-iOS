@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import PromiseKit
 
 class CustomActionSheet: ActionSheetController {
     public override func viewWillDisappear(_ animated: Bool) {

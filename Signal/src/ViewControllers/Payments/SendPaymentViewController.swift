@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 import Lottie
 
 @objc

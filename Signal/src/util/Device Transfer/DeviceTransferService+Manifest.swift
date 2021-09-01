@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import MultipeerConnectivity
 
 extension DeviceTransferService {
@@ -238,13 +237,13 @@ extension DeviceTransferService {
         )
         try manifestData.write(to: manifestFileURL, options: .atomic)
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
 
         session.sendResource(at: manifestFileURL, withName: DeviceTransferService.manifestIdentifier, toPeer: newDevicePeerId) { error in
             if let error = error {
-                resolver.reject(error)
+                future.reject(error)
             } else {
-                resolver.fulfill(())
+                future.resolve()
 
                 Logger.info("Successfully sent manifest to new device.")
 

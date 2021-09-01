@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {

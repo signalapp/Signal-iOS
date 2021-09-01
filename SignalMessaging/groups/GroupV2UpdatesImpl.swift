@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 import ZKGroup
 
@@ -280,7 +279,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         let groupModelOptions: TSGroupModelOptions
 
         let promise: Promise<TSGroupThread>
-        let resolver: Resolver<TSGroupThread>
+        let future: Future<TSGroupThread>
 
         // MARK: -
 
@@ -293,9 +292,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             self.groupUpdateMode = groupUpdateMode
             self.groupModelOptions = groupModelOptions
 
-            let (promise, resolver) = Promise<TSGroupThread>.pending()
+            let (promise, future) = Promise<TSGroupThread>.pending()
             self.promise = promise
-            self.resolver = resolver
+            self.future = future
 
             super.init()
 
@@ -319,7 +318,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 Logger.verbose("Group refresh succeeded.")
 
                 self.reportSuccess()
-                self.resolver.fulfill(groupThread)
+                self.future.resolve(groupThread)
             }.catch(on: .global()) { (error) in
                 if IsNetworkConnectivityFailure(error) {
                     Logger.warn("Group update failed: \(error)")
@@ -364,7 +363,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         public override func didFail(error: Error) {
             Logger.error("failed with error: \(error)")
 
-            resolver.reject(error)
+            future.reject(error)
         }
     }
 

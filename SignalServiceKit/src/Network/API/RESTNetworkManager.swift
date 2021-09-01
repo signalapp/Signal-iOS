@@ -3,19 +3,18 @@
 //
 
 import Foundation
-import PromiseKit
 import AFNetworking
 
 public extension RESTNetworkManager {
     func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
-        let (promise, resolver) = Promise<HTTPResponse>.pending()
+        let (promise, future) = Promise<HTTPResponse>.pending()
         self.makeRequest(request,
                          completionQueue: DispatchQueue.global(),
                          success: { (response: HTTPResponse) in
-                            resolver.fulfill(response)
+                            future.resolve(response)
                          },
                          failure: { (error: OWSHTTPErrorWrapper) in
-                            resolver.reject(error.error)
+                            future.reject(error.error)
                          })
         return promise
     }

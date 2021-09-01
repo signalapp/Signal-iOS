@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 
 // Objc wrapper for the MediaGalleryItem struct
 @objc

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 /// Durably enqueues a message for sending.
 ///
@@ -43,7 +42,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: false,
             isHighPriority: false,
-            resolver: nil,
+            future: nil,
             transaction: transaction
         )
     }
@@ -59,7 +58,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             removeMessageAfterSending: false,
             exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
             isHighPriority: isHighPriority,
-            resolver: nil,
+            future: nil,
             transaction: transaction
         )
     }
@@ -84,20 +83,20 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     public func add(
-        _ namespace: PMKNamespacer,
+        _ namespace: PromiseNamespace,
         message: OutgoingMessagePreparer,
         removeMessageAfterSending: Bool = false,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise { future in
             self.add(
                 message: message,
                 removeMessageAfterSending: false,
                 exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
                 isHighPriority: isHighPriority,
-                resolver: resolver,
+                future: future,
                 transaction: transaction
             )
         }
@@ -130,19 +129,19 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 removeMessageAfterSending: isTemporaryAttachment,
                 exclusiveToCurrentProcessIdentifier: false,
                 isHighPriority: false,
-                resolver: nil,
+                future: nil,
                 transaction: transaction
             )
         }
     }
 
-    private var jobResolvers = AtomicDictionary<String, Resolver<Void>>()
+    private var jobFutures = AtomicDictionary<String, Future<Void>>()
     private func add(
         message: OutgoingMessagePreparer,
         removeMessageAfterSending: Bool,
         exclusiveToCurrentProcessIdentifier: Bool,
         isHighPriority: Bool,
-        resolver: Resolver<Void>?,
+        future: Future<Void>?,
         transaction: SDSAnyWriteTransaction
     ) {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
@@ -159,8 +158,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
             }
             self.add(jobRecord: jobRecord, transaction: transaction)
-            if let resolver = resolver {
-                jobResolvers[jobRecord.uniqueId] = resolver
+            if let future = future {
+                jobFutures[jobRecord.uniqueId] = future
             }
             transaction.addSyncCompletion {
                 BenchManager.startEvent(
@@ -222,7 +221,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         let operation = MessageSenderOperation(
             message: message,
             jobRecord: jobRecord,
-            resolver: jobResolvers.pop(jobRecord.uniqueId)
+            future: jobFutures.pop(jobRecord.uniqueId)
         )
         operation.queuePriority = jobRecord.isHighPriority ? .high : MessageSender.queuePriority(for: message)
 
@@ -328,12 +327,12 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: Init
 
     let message: TSOutgoingMessage
-    private var resolver: Resolver<Void>?
+    private var future: Future<Void>?
 
-    init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord, resolver: Resolver<Void>?) {
+    init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord, future: Future<Void>?) {
         self.message = message
         self.jobRecord = jobRecord
-        self.resolver = resolver
+        self.future = future
 
         super.init()
     }
@@ -358,7 +357,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
                 self.message.removeTemporaryAttachments(with: transaction)
             }
         }
-        resolver?.fulfill(())
+        future?.resolve(())
     }
 
     override public func didReportError(_ error: Error) {
@@ -386,6 +385,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
                 self.message.anyRemove(transaction: transaction)
             }
         }
-        resolver?.reject(error)
+        future?.reject(error)
     }
 }

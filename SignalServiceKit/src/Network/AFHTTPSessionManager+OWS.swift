@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public extension AFHTTPSessionManager {
     typealias Response = (task: URLSessionDataTask, responseObject: Any?)
@@ -45,10 +44,10 @@ public extension AFHTTPSessionManager {
             }
         }
 
-        let (promise, resolver) = Promise<Response>.pending()
+        let (promise, future) = Promise<Response>.pending()
 
         let success = { (task: URLSessionDataTask, responseObject: Any?) in
-            resolver.fulfill((task: task, responseObject: responseObject))
+            future.resolve((task: task, responseObject: responseObject))
         }
         let failure = { (task: URLSessionDataTask?, error: Error) in
             if IsNetworkConnectivityFailure(error) {
@@ -60,7 +59,7 @@ public extension AFHTTPSessionManager {
                     #endif
                 }
             }
-            resolver.reject(error)
+            future.reject(error)
         }
         switch method {
         case .get:
@@ -112,7 +111,7 @@ public extension AFHTTPSessionManager {
             dstFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
 
-        let (promise, resolver) = Promise<URL>.pending()
+        let (promise, future) = Promise<URL>.pending()
         var taskReference: URLSessionDownloadTask?
         let task = downloadTask(with: request,
                                 progress: { (progress: Progress) in
@@ -132,14 +131,14 @@ public extension AFHTTPSessionManager {
                                             HTTPUtils.logCurl(for: task)
                                         }
                                         #endif
-                                        resolver.reject(error)
+                                        future.reject(error)
                                         return
                                     }
                                     if dstFileUrl != completionUrl {
-                                        resolver.reject(OWSAssertionError("Unexpected url."))
+                                        future.reject(OWSAssertionError("Unexpected url."))
                                         return
                                     }
-                                    resolver.fulfill(dstFileUrl)
+                                    future.resolve(dstFileUrl)
         })
         taskReference = task
         task.resume()
@@ -180,7 +179,7 @@ public extension AFHTTPSessionManager {
             dstFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         }
 
-        let (promise, resolver) = Promise<URL>.pending()
+        let (promise, future) = Promise<URL>.pending()
         var taskReference: URLSessionDownloadTask?
         let task = downloadTask(withResumeData: resumeData,
                                 progress: { (progress: Progress) in
@@ -195,14 +194,14 @@ public extension AFHTTPSessionManager {
         },
                                 completionHandler: { (_: URLResponse, completionUrl: URL?, error: Error?) in
                                     if let error = error {
-                                        resolver.reject(error)
+                                        future.reject(error)
                                         return
                                     }
                                     if dstFileUrl != completionUrl {
-                                        resolver.reject(OWSAssertionError("Unexpected url."))
+                                        future.reject(OWSAssertionError("Unexpected url."))
                                         return
                                     }
-                                    resolver.fulfill(dstFileUrl)
+                                    future.resolve(dstFileUrl)
         })
         taskReference = task
         task.resume()

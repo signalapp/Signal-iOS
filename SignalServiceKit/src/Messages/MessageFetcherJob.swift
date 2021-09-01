@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // This token can be used to observe the completion of a given fetch cycle.
 public struct MessageFetchCycle: Hashable, Equatable {
@@ -222,24 +221,24 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-    fileprivate class func fetchMessages(resolver: Resolver<Void>) {
+    fileprivate class func fetchMessages(future: Future<Void>) {
         Logger.debug("")
 
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady)
             Logger.warn("Not registered.")
-            return resolver.fulfill(())
+            return future.resolve()
         }
 
         if shouldUseWebSocket {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
             socketManager.requestSocketOpen()
-            return resolver.fulfill(())
+            return future.resolve()
         } else if CurrentAppContext().shouldProcessIncomingMessages {
             // Main app should use REST if censorship circumvention is active.
             // Notification extension that should always use REST.
         } else {
-            return resolver.reject(OWSAssertionError("App extensions should not fetch messages."))
+            return future.reject(OWSAssertionError("App extensions should not fetch messages."))
         }
 
         Logger.info("Fetching messages via REST.")
@@ -247,10 +246,10 @@ public class MessageFetcherJob: NSObject {
         firstly {
             fetchMessagesViaRestWhenReady()
         }.done {
-            resolver.fulfill(())
+            future.resolve()
         }.catch { error in
             Logger.error("Error: \(error).")
-            resolver.reject(error)
+            future.reject(error)
         }
     }
 
@@ -481,13 +480,13 @@ public class MessageFetcherJob: NSObject {
 private class MessageFetchOperation: OWSOperation {
 
     let promise: Promise<Void>
-    let resolver: Resolver<Void>
+    let future: Future<Void>
 
     override required init() {
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
         super.init()
         self.remainingRetries = 3
     }
@@ -495,7 +494,7 @@ private class MessageFetchOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        MessageFetcherJob.fetchMessages(resolver: resolver)
+        MessageFetcherJob.fetchMessages(future: future)
 
         _ = promise.ensure {
             self.reportSuccess()
@@ -557,24 +556,24 @@ extension Promise {
                                  dispatchQueue: DispatchQueue = .global(),
                                  conditionBlock: @escaping () -> Bool) -> Promise<Void> {
 
-        let (promise, resolver) = Promise<Void>.pending()
-        fulfillWaitUntil(resolver: resolver,
+        let (promise, future) = Promise<Void>.pending()
+        fulfillWaitUntil(future: future,
                          checkFrequency: checkFrequency,
                          dispatchQueue: dispatchQueue,
                          conditionBlock: conditionBlock)
         return promise
     }
 
-    private static func fulfillWaitUntil(resolver: Resolver<Void>,
+    private static func fulfillWaitUntil(future: Future<Void>,
                                          checkFrequency: TimeInterval,
                                          dispatchQueue: DispatchQueue,
                                          conditionBlock: @escaping () -> Bool) {
         if conditionBlock() {
-            resolver.fulfill(())
+            future.resolve()
             return
         }
         dispatchQueue.asyncAfter(deadline: .now() + checkFrequency) {
-            fulfillWaitUntil(resolver: resolver,
+            fulfillWaitUntil(future: future,
                              checkFrequency: checkFrequency,
                              dispatchQueue: dispatchQueue,
                              conditionBlock: conditionBlock)

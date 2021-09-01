@@ -9,7 +9,6 @@
 #import "OWSProfileManager.h"
 #import "OWSReceiptManager.h"
 #import <Contacts/Contacts.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -342,23 +341,23 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSAssertDebug(!isDurableSend);
     }
 
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+    AnyPromise *promise = AnyPromise.withFuture(^(AnyFuture *future) {
         AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
             dispatch_async(self.serialQueue, ^{
                 if (debounce && self.isRequestInFlight) {
                     // De-bounce.  It's okay if we ignore some new changes;
                     // `sendSyncContactsMessageIfPossible` is called fairly
                     // often so we'll sync soon.
-                    return resolve(@(1));
+                    return [future resolveWithValue:@(1)];
                 }
-                
+
                 TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
                 if (thread == nil) {
                     OWSFailDebug(@"Missing thread.");
                     NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
                                              description:@"Could not sync contacts."
                                              isRetryable:NO];
-                    return resolve(error);
+                    return [future rejectWithError:error];
                 }
 
                 OWSSyncContactsMessage *syncContactsMessage =
@@ -376,16 +375,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
                                              description:@"Could not sync contacts."
                                              isRetryable:NO];
-                    return resolve(error);
+                    return [future rejectWithError:error];
                 }
-                
+
                 NSData *_Nullable messageHash = [self hashForMessageData:messageData];
                 if (skipIfRedundant && messageHash != nil && lastMessageHash != nil &&
                     [lastMessageHash isEqual:messageHash]) {
                     // Ignore redundant contacts sync message.
-                    return resolve(@(1));
+                    return [future resolveWithValue:@(1)];
                 }
-                
+
                 if (debounce) {
                     self.isRequestInFlight = YES;
                 }
@@ -399,7 +398,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     if (debounce) {
                         self.isRequestInFlight = NO;
                     }
-                    resolve(writeError);
+                    [future rejectWithError:writeError];
                     return;
                 }
 
@@ -414,7 +413,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     if (debounce) {
                         self.isRequestInFlight = NO;
                     }
-                    return resolve(@(1));
+                    return [future resolveWithValue:@(1)];
                 } else {
                     [self.messageSender sendTemporaryAttachment:dataSource
                         contentType:OWSMimeTypeApplicationOctetStream
@@ -435,7 +434,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                     self.isRequestInFlight = NO;
                                 }
 
-                                resolve(@(1));
+                                [future resolveWithValue:@(1)];
                             });
                         }
                         failure:^(NSError *error) {
@@ -446,13 +445,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                     self.isRequestInFlight = NO;
                                 }
 
-                                resolve(error);
+                                [future rejectWithError:error];
                             });
                         }];
                 }
             });
         });
-    }];
+    });
     return promise;
 }
 

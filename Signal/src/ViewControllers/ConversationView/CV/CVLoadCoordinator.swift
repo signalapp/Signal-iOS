@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
@@ -79,7 +78,7 @@ public class CVLoadCoordinator: NSObject {
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    private var loadDidLandResolver: Resolver<Void>?
+    private var loadDidLandFuture: Future<Void>?
 
     required init(viewState: CVViewState) {
         self.viewState = viewState
@@ -605,7 +604,7 @@ public class CVLoadCoordinator: NSObject {
     private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let (loadPromise, loadResolver) = Promise<Void>.pending()
+        let (loadPromise, loadFuture) = Promise<Void>.pending()
 
         loadLandWhenSafe(update: update, loadResolver: loadResolver)
 
@@ -734,12 +733,12 @@ public class CVLoadCoordinator: NSObject {
 
     public func loadDidLand() {
         AssertIsOnMainThread()
-        guard let loadDidLandResolver = loadDidLandResolver else {
-            owsFailDebug("Missing loadDidLandResolver.")
+        guard let loadDidLandFuture = loadDidLandFuture else {
+            owsFailDebug("Missing loadDidLandFuture.")
             return
         }
-        loadDidLandResolver.fulfill(())
-        self.loadDidLandResolver = nil
+        loadDidLandFuture.resolve()
+        self.loadDidLandFuture = nil
     }
 }
 

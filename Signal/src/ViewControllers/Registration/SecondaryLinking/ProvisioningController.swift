@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class ProvisioningController: NSObject {
@@ -14,17 +13,17 @@ public class ProvisioningController: NSObject {
     let provisioningSocket: ProvisioningSocket
 
     var deviceIdPromise: Promise<String>
-    var deviceIdResolver: Resolver<String>
+    var deviceIdFuture: Future<String>
 
     var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
-    var provisionEnvelopeResolver: Resolver<ProvisioningProtoProvisionEnvelope>
+    var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
     public init(onboardingController: OnboardingController) {
         self.onboardingController = onboardingController
         provisioningCipher = ProvisioningCipher.generate()
 
-        (self.deviceIdPromise, self.deviceIdResolver) = Promise.pending()
-        (self.provisionEnvelopePromise, self.provisionEnvelopeResolver) = Promise.pending()
+        (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
+        (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
 
         provisioningSocket = ProvisioningSocket()
 
@@ -35,8 +34,8 @@ public class ProvisioningController: NSObject {
 
     public func resetPromises() {
         _awaitProvisionMessage = nil
-        (self.deviceIdPromise, self.deviceIdResolver) = Promise.pending()
-        (self.provisionEnvelopePromise, self.provisionEnvelopeResolver) = Promise.pending()
+        (self.deviceIdPromise, self.deviceIdFuture) = Promise.pending()
+        (self.provisionEnvelopePromise, self.provisionEnvelopeFuture) = Promise.pending()
     }
 
     @objc
@@ -71,8 +70,8 @@ public class ProvisioningController: NSObject {
                            navigationController: UINavigationController) {
 
         awaitProvisionMessage.done { [weak self, weak navigationController] message in
-            guard let self = self else { throw PMKError.cancelled }
-            guard let navigationController = navigationController else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
+            guard let navigationController = navigationController else { throw PromiseError.cancelled }
 
             // Verify the primary device is new enough to link us. Right now this is a simple check
             // of >= the latest version, but when we bump the version we may need to be more specific
@@ -96,7 +95,7 @@ public class ProvisioningController: NSObject {
             navigationController.pushViewController(confirmVC, animated: true)
         }.catch { error in
             switch error {
-            case PMKError.cancelled:
+            case PromiseError.cancelled:
                 Logger.info("cancelled")
             default:
                 Logger.warn("error: \(error)")
@@ -183,7 +182,7 @@ public class ProvisioningController: NSObject {
 
     public func getProvisioningURL() -> Promise<URL> {
         return getDeviceId().map { [weak self] deviceId in
-            guard let self = self else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
 
             return try self.buildProvisioningUrl(deviceId: deviceId)
         }
@@ -193,7 +192,7 @@ public class ProvisioningController: NSObject {
     public var awaitProvisionMessage: Promise<ProvisionMessage> {
         if _awaitProvisionMessage == nil {
             _awaitProvisionMessage = provisionEnvelopePromise.map { [weak self] envelope in
-                guard let self = self else { throw PMKError.cancelled }
+                guard let self = self else { throw PromiseError.cancelled }
                 return try self.provisioningCipher.decrypt(envelope: envelope)
             }
         }
@@ -202,7 +201,7 @@ public class ProvisioningController: NSObject {
 
     public func completeLinking(deviceName: String) -> Promise<Void> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<Void> in
-            guard let self = self else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
 
             return self.accountManager.completeSecondaryLinking(provisionMessage: provisionMessage,
                                                                 deviceName: deviceName)
@@ -249,20 +248,20 @@ public class ProvisioningController: NSObject {
 
 extension ProvisioningController: ProvisioningSocketDelegate {
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
-        assert(deviceIdPromise.isPending)
-        deviceIdResolver.fulfill(deviceId)
+        owsAssertDebug(!deviceIdPromise.isSealed)
+        deviceIdFuture.resolve(deviceId)
     }
 
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveEnvelope envelope: ProvisioningProtoProvisionEnvelope) {
         // After receiving the provisioning message, there's nothing else to retreive from the provisioning socket
         provisioningSocket.disconnect()
 
-        assert(provisionEnvelopePromise.isPending)
-        return provisionEnvelopeResolver.fulfill(envelope)
+        owsAssertDebug(!provisionEnvelopePromise.isSealed)
+        return provisionEnvelopeFuture.resolve(envelope)
     }
 
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
-        deviceIdResolver.reject(error)
-        provisionEnvelopeResolver.reject(error)
+        deviceIdFuture.reject(error)
+        provisionEnvelopeFuture.reject(error)
     }
 }

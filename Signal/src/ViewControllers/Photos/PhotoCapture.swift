@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol PhotoCaptureDelegate: AnyObject {
 
@@ -862,9 +861,9 @@ class MovieRecording {
             state = .finished
             audioInput.markAsFinished()
             videoInput.markAsFinished()
-            return Promise<URL> { resolver -> Void in
+            return Promise<URL> { future -> Void in
                 self.assetWriter.finishWriting {
-                    resolver.fulfill(self.assetWriter.outputURL)
+                    future.resolve(self.assetWriter.outputURL)
                 }
             }
         default:

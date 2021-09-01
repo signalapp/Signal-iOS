@@ -5,7 +5,6 @@
 import Foundation
 import MobileCoreServices
 import SignalServiceKit
-import PromiseKit
 import AVFoundation
 import YYImage
 
@@ -1160,36 +1159,36 @@ public class SignalAttachment: NSObject {
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
         exportSession.outputURL = exportURL
 
-        let (promise, resolver) = Promise<SignalAttachment>.pending()
+        let (promise, future) = Promise<SignalAttachment>.pending()
 
         Logger.debug("Starting video export")
 
         exportSession.exportAsynchronously {
             if let error = exportSession.error {
                 owsFailDebug("Error: \(error)")
-                resolver.reject(error)
+                future.reject(error)
                 return
             }
             switch exportSession.status {
             case .unknown:
-                resolver.reject(OWSAssertionError("Unknown export status."))
+                future.reject(OWSAssertionError("Unknown export status."))
                 return
             case .waiting:
-                resolver.reject(OWSAssertionError("Export status: .waiting."))
+                future.reject(OWSAssertionError("Export status: .waiting."))
                 return
             case .exporting:
-                resolver.reject(OWSAssertionError("Export status: .exporting."))
+                future.reject(OWSAssertionError("Export status: .exporting."))
                 return
             case .completed:
                 break
             case .failed:
-                resolver.reject(OWSAssertionError("Export failed without error."))
+                future.reject(OWSAssertionError("Export failed without error."))
                 return
             case .cancelled:
-                resolver.reject(OWSGenericError("Cancelled."))
+                future.reject(OWSGenericError("Cancelled."))
                 return
             @unknown default:
-                resolver.reject(OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)"))
+                future.reject(OWSAssertionError("Unknown export status: \(exportSession.status.rawValue)"))
                 return
             }
             Logger.debug("Completed video export")
@@ -1201,12 +1200,12 @@ public class SignalAttachment: NSObject {
                 dataSource.sourceFilename = mp4Filename
 
                 let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-                resolver.fulfill(attachment)
+                future.resolve(attachment)
             } catch {
                 owsFailDebug("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
-                resolver.fulfill(attachment)
+                future.resolve(attachment)
                 return
             }
         }

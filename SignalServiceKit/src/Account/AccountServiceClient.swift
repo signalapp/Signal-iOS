@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // TODO define actual type, and validate length
 public typealias IdentityKey = Data
@@ -26,7 +25,7 @@ public class AccountServiceClient: NSObject {
         return serviceClient.requestVerificationCode(recipientId: recipientId,
                                                      preauthChallenge: preauthChallenge,
                                                      captchaToken: captchaToken,
-                                                     transport: transport).recover { error in
+                                                     transport: transport).recover { error -> Void in
                                                         if error.httpStatusCode == 402 {
                                                             throw AccountServiceClientError.captchaRequired
                                                         }

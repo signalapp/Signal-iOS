@@ -4,7 +4,6 @@
 
 import Foundation
 import SafariServices
-import PromiseKit
 
 @objc
 extension ConversationViewController: MessageRequestDelegate {
@@ -164,7 +163,7 @@ extension ConversationViewController: MessageRequestDelegate {
             promises.append(networkManager.makePromise(request: request).asVoid())
         }
 
-        when(fulfilled: promises).done {
+        Promise.when(fulfilled: promises).done {
             Logger.info("Successfully reported \(guidsToReport.count) message(s) from \(senderPhoneNumber) as spam.")
         }.catch { error in
             owsFailDebug("Failed to report message(s) from \(senderPhoneNumber) as spam with error: \(error)")

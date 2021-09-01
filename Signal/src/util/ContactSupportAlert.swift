@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class ContactSupportAlert: NSObject {
@@ -107,11 +106,11 @@ extension ContactSupportError: LocalizedError {
 
 extension Pastelog {
     class func uploadLog() -> Promise<URL> {
-        return Promise { resolver in
-            Pastelog.uploadLogs(success: resolver.fulfill,
+        return Promise { future in
+            Pastelog.uploadLogs(success: future.resolve,
                                 failure: { localizedErrorDescription in
                                     let error = ContactSupportError.pasteLogError(localizedDescription: localizedErrorDescription)
-                                    resolver.reject(error)
+                                    future.reject(error)
             })
         }
     }

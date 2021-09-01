@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public struct ContactDiscoveryService: Dependencies {
 

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // MARK: -
 
@@ -381,13 +380,13 @@ class MediaViewAdapterStill: MediaViewAdapterSwift {
         guard attachmentStream.isValidImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        let (promise, resolver) = Promise<AnyObject>.pending()
+        let (promise, future) = Promise<AnyObject>.pending()
         attachmentStream.thumbnailImage(quality: thumbnailQuality,
                                         success: { (image) in
-                                            resolver.fulfill(image)
+                                            future.resolve(image)
                                         },
                                         failure: {
-                                            resolver.reject(OWSAssertionError("Could not load thumbnail"))
+                                            future.reject(OWSAssertionError("Could not load thumbnail"))
                                         })
         return promise
     }
@@ -440,13 +439,13 @@ class MediaViewAdapterVideo: MediaViewAdapterSwift {
         guard attachmentStream.isValidVideo else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        let (promise, resolver) = Promise<AnyObject>.pending()
+        let (promise, future) = Promise<AnyObject>.pending()
         attachmentStream.thumbnailImage(quality: thumbnailQuality,
                                         success: { (image) in
-                                            resolver.fulfill(image)
+                                            future.resolve(image)
                                         },
                                         failure: {
-                                            resolver.reject(OWSAssertionError("Could not load thumbnail"))
+                                            future.reject(OWSAssertionError("Could not load thumbnail"))
                                         })
         return promise
     }

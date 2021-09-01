@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 import SignalMetadataKit
 import ZKGroup
@@ -722,22 +721,22 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // avatar with the avatar data.
             var promises = [Promise<(String, Data)>]()
             for avatarUrlPath in undownloadedAvatarUrlPaths {
-                let (downloadPromise, resolver) = Promise<Data>.pending()
+                let (downloadPromise, future) = Promise<Data>.pending()
                 firstly { () -> Promise<Data> in
                     self.fetchAvatarData(avatarUrlPath: avatarUrlPath,
                                          groupV2Params: groupV2Params)
                 }.done(on: .global()) { avatarData in
-                    resolver.fulfill(avatarData)
+                    future.resolve(avatarData)
                 }.catch(on: .global()) { error in
                     if let statusCode = error.httpStatusCode,
                        statusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
                         // if the the avatar is missing from the CDN.
-                        resolver.fulfill(Data())
+                        future.resolve(Data())
                     }
 
-                    resolver.reject(error)
+                    future.reject(error)
                 }
 
                 let promise = downloadPromise.map(on: .global()) { (avatarData: Data) -> Data in
@@ -757,7 +756,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
                 promises.append(promise)
             }
-            return when(fulfilled: promises)
+            return Promise.when(fulfilled: promises)
         }.map(on: .global()) { (avatars: [(String, Data)]) -> GroupV2DownloadedAvatars in
             for (avatarUrlPath, avatarData) in avatars {
                 guard avatarData.count > 0 else {
@@ -858,11 +857,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<GroupsV2Request> in
             try requestBuilder(authCredential)
         }.then(on: .global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
-            let (promise, resolver) = Promise<HTTPResponse>.pending()
+            let (promise, future) = Promise<HTTPResponse>.pending()
             firstly {
                 self.performServiceRequestAttempt(request: request)
             }.done(on: .global()) { (response: HTTPResponse) in
-                resolver.fulfill(response)
+                future.resolve(response)
             }.catch(on: .global()) { (error: Error) in
 
                 let retryIfPossible = {
@@ -874,12 +873,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                        behavior404: behavior404,
                                                        remainingRetries: remainingRetries - 1)
                         }.done(on: .global()) { (response: HTTPResponse) in
-                            resolver.fulfill(response)
+                            future.resolve(response)
                         }.catch(on: .global()) { (error: Error) in
-                            resolver.reject(error)
+                            future.reject(error)
                         }
                     } else {
-                        resolver.reject(error)
+                        future.reject(error)
                     }
                 }
 
@@ -929,38 +928,38 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                 self.tryToUpdateGroupToLatest(groupId: groupId)
                             case .expiredGroupInviteLink:
                                 owsFailDebug("groupId should not be set in this code path.")
-                                resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                future.reject(GroupsV2Error.expiredGroupInviteLink)
                                 break
                             case .localUserIsNotARequestingMember:
                                 owsFailDebug("groupId should not be set in this code path.")
-                                resolver.reject(GroupsV2Error.localUserIsNotARequestingMember)
+                                future.reject(GroupsV2Error.localUserIsNotARequestingMember)
                                 break
                             }
                         } else {
                             // We should only receive 403 when groupId is not nil.
                             if behavior403 == .expiredGroupInviteLink {
-                                resolver.reject(GroupsV2Error.expiredGroupInviteLink)
+                                future.reject(GroupsV2Error.expiredGroupInviteLink)
                                 return
                             } else if behavior403 == .localUserIsNotARequestingMember {
-                                resolver.reject(GroupsV2Error.localUserIsNotARequestingMember)
+                                future.reject(GroupsV2Error.localUserIsNotARequestingMember)
                                 return
                             } else {
                                 owsFailDebug("Missing groupId.")
                             }
                         }
 
-                        resolver.reject(GroupsV2Error.localUserNotInGroup)
+                        future.reject(GroupsV2Error.localUserNotInGroup)
                     case 404:
                         // 404 indicates that the group does not exist on the
                         // service for some (but not all) group v2 service requests.
 
                         switch behavior404 {
                         case .fail:
-                            resolver.reject(error)
+                            future.reject(error)
                             break
                         case .groupDoesNotExistOnService:
                             Logger.warn("Error: \(error)")
-                            resolver.reject(GroupsV2Error.groupDoesNotExistOnService)
+                            future.reject(GroupsV2Error.groupDoesNotExistOnService)
                         }
                     case 409:
                         // Group update conflict, retry. When updating group state,
@@ -968,14 +967,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         retryIfPossible()
                     default:
                         // Unexpected status code.
-                        resolver.reject(error)
+                        future.reject(error)
                     }
                 } else if error.isNetworkFailureOrTimeout {
                     // Retry on network failure.
                     retryIfPossible()
                 } else {
                     // Unexpected error.
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -1099,7 +1098,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
             promises.append(promise)
         }
-        return when(fulfilled: promises)
+        return Promise.when(fulfilled: promises)
             .map(on: .global()) { _ in
                 // Since we've just successfully fetched versioned profiles
                 // for all of the UUIDs without credentials, we _should_ be
@@ -1191,7 +1190,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
             promises.append(promise)
         }
-        return when(fulfilled: promises)
+        return Promise.when(fulfilled: promises)
     }
 
     // MARK: - Auth Credentials

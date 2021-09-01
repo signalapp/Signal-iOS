@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 import SafariServices
 
 @objc(OWSPinSetupViewController)
@@ -693,7 +692,7 @@ extension PinSetupViewController {
             return showRegistrationLockConfirmation(fromViewController: fromViewController)
         }
 
-        let (promise, resolver) = Promise<Bool>.pending()
+        let (promise, future) = Promise<Bool>.pending()
 
         let actionSheet = ActionSheetController(
             title: NSLocalizedString("PIN_CREATION_DISABLE_CONFIRMATION_TITLE",
@@ -703,7 +702,7 @@ extension PinSetupViewController {
         )
 
         let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
-            resolver.fulfill(false)
+            future.resolve(false)
         }
         actionSheet.addAction(cancelAction)
 
@@ -720,7 +719,7 @@ extension PinSetupViewController {
                     KeyBackupService.useDeviceLocalMasterKey(transaction: transaction)
 
                     transaction.addAsyncCompletionOnMain {
-                        modal.dismiss { resolver.fulfill(true) }
+                        modal.dismiss { future.resolve(true) }
                     }
                 }
             }
@@ -733,7 +732,7 @@ extension PinSetupViewController {
     }
 
     private class func showRegistrationLockConfirmation(fromViewController: UIViewController) -> Promise<Bool> {
-        let (promise, resolver) = Promise<Bool>.pending()
+        let (promise, future) = Promise<Bool>.pending()
 
         let actionSheet = ActionSheetController(
             title: NSLocalizedString("PIN_CREATION_REGLOCK_CONFIRMATION_TITLE",
@@ -743,7 +742,7 @@ extension PinSetupViewController {
         )
 
         let cancelAction = ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel) { _ in
-            resolver.fulfill(false)
+            future.resolve(false)
         }
         actionSheet.addAction(cancelAction)
 
@@ -757,15 +756,15 @@ extension PinSetupViewController {
                 canCancel: false
             ) { modal in
                 OWS2FAManager.shared.disableRegistrationLockV2().then {
-                    Promise { resolver in
-                        modal.dismiss { resolver.fulfill(()) }
+                    Guarantee { resolve in
+                        modal.dismiss { resolve(()) }
                     }
                 }.then { () -> Promise<Bool> in
                     disablePinWithConfirmation(fromViewController: fromViewController)
                 }.done { success in
-                    resolver.fulfill(success)
+                    future.resolve(success)
                 }.catch { error in
-                    modal.dismiss { resolver.reject(error) }
+                    modal.dismiss { future.reject(error) }
                 }
             }
         }

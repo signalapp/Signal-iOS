@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 public enum AccountManagerError: Error {
@@ -62,8 +61,8 @@ public class AccountManager: NSObject {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
-            let (pushPromise, pushResolver) = Promise<String>.pending()
-            self.pushRegistrationManager.preauthChallengeResolver = pushResolver
+            let (pushPromise, pushFuture) = Promise<String>.pending()
+            self.pushRegistrationManager.preauthChallengeFuture = pushFuture
 
             return self.accountServiceClient.requestPreauthChallenge(
                 recipientId: recipientId,
@@ -322,7 +321,7 @@ public class AccountManager: NSObject {
                 BenchEventComplete(eventId: "initial-contact-sync")
             }
 
-            return when(fulfilled: [storageServiceRestorePromise, initialSyncMessagePromise])
+            return Promise.when(fulfilled: [storageServiceRestorePromise, initialSyncMessagePromise])
         }
     }
 
@@ -334,7 +333,7 @@ public class AccountManager: NSObject {
     private func registerForTextSecure(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<RegistrationResponse> {
         let serverAuthToken = generateServerAuthToken()
 
-        return Promise<Any?> { resolver in
+        return Promise<Any?> { future in
             guard let phoneNumber = tsAccountManager.phoneNumberAwaitingVerification else {
                 throw OWSAssertionError("phoneNumberAwaitingVerification was unexpectedly nil")
             }
@@ -346,8 +345,8 @@ public class AccountManager: NSObject {
                                                                        checkForAvailableTransfer: checkForAvailableTransfer)
 
             tsAccountManager.verifyAccount(request: request,
-                                           success: resolver.fulfill,
-                                           failure: resolver.reject)
+                                           success: future.resolve,
+                                           failure: future.reject)
         }.map(on: .global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
@@ -407,9 +406,9 @@ public class AccountManager: NSObject {
     }
 
     private func createPreKeys() -> Promise<Void> {
-        return Promise { resolver in
-            TSPreKeyManager.createPreKeys(success: { resolver.fulfill(()) },
-                                          failure: resolver.reject)
+        return Promise { future in
+            TSPreKeyManager.createPreKeys(success: { future.resolve() },
+                                          failure: future.reject)
         }
     }
 
@@ -428,11 +427,11 @@ public class AccountManager: NSObject {
     // MARK: Message Delivery
 
     func updatePushTokens(pushToken: String, voipToken: String?) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise { future in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,
-                                                          success: { resolver.fulfill(()) },
-                                                          failure: resolver.reject)
+                                                          success: { future.resolve() },
+                                                          failure: future.reject)
         }
     }
 

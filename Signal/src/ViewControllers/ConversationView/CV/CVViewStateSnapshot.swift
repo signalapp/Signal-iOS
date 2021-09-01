@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // This captures the CV view state that can affect the load.
 // It is used when building, measuring & configuring components and their views.

@@ -33,7 +33,6 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'WebRTC/Build/libringrtc/*/libringrtc.a'
 
   s.dependency 'SignalCoreKit'
-  s.dependency 'PromiseKit'
 
   s.pod_target_xcconfig = {
     # Make sure we link the static library, not a dynamic one.

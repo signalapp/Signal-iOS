@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import Intents
 
 /// There are two primary components in our system notification integration:

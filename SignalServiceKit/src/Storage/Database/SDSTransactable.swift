@@ -4,7 +4,6 @@
 
 import Foundation
 import GRDB
-import PromiseKit
 
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
@@ -95,21 +94,21 @@ public extension SDSTransactable {
         return AnyPromise(read(.promise, block) as Promise<Void>)
     }
 
-    func read<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyReadTransaction) -> T) -> Promise<T> {
-        return Promise { resolver in
+    func read<T>(_: PromiseNamespace, _ block: @escaping (SDSAnyReadTransaction) -> T) -> Promise<T> {
+        return Promise { future in
             DispatchQueue.global().async {
-                resolver.fulfill(self.read(block: block))
+                future.resolve(self.read(block: block))
             }
         }
     }
 
-    func read<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyReadTransaction) throws -> T) -> Promise<T> {
-        return Promise { resolver in
+    func read<T>(_: PromiseNamespace, _ block: @escaping (SDSAnyReadTransaction) throws -> T) -> Promise<T> {
+        return Promise { future in
             DispatchQueue.global().async {
                 do {
-                    resolver.fulfill(try self.read(block: block))
+                    future.resolve(try self.read(block: block))
                 } catch {
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
         }
@@ -120,14 +119,14 @@ public extension SDSTransactable {
         return AnyPromise(write(.promise, block) as Promise<Void>)
     }
 
-    func write<T>(_: PMKNamespacer,
+    func write<T>(_: PromiseNamespace,
                   file: String = #file,
                   function: String = #function,
                   line: Int = #line,
                   _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
-        return Promise { resolver in
+        return Promise { future in
             DispatchQueue.global().async {
-                resolver.fulfill(self.write(file: file,
+                future.resolve(self.write(file: file,
                                             function: function,
                                             line: line,
                                             block: block))
@@ -135,20 +134,20 @@ public extension SDSTransactable {
         }
     }
 
-    func write<T>(_: PMKNamespacer,
+    func write<T>(_: PromiseNamespace,
                   file: String = #file,
                   function: String = #function,
                   line: Int = #line,
                   _ block: @escaping (SDSAnyWriteTransaction) throws -> T) -> Promise<T> {
-        return Promise { resolver in
+        return Promise { future in
             DispatchQueue.global().async {
                 do {
-                    resolver.fulfill(try self.write(file: file,
+                    future.resolve(try self.write(file: file,
                                                     function: function,
                                                     line: line,
                                                     block: block))
                 } catch {
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
         }

@@ -6,7 +6,6 @@ import Foundation
 import AVFoundation
 import MediaPlayer
 import Photos
-import PromiseKit
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
@@ -654,7 +653,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 attachment.preparedForOutput(qualityLevel: outputQualityLevel)
             })
         }
-        return when(fulfilled: promises)
+        return Promise.when(fulfilled: promises)
     }
 
     // For any attachments edited with an editor, returns a
@@ -885,7 +884,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         // make below are reflected afterwards.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
             self.outputAttachmentsPromise()
-                .done { attachments in
+                .done(on: .main) { attachments in
                     AssertIsOnMainThread()
                     modalVC.dismiss {
                         AssertIsOnMainThread()

@@ -14,7 +14,7 @@
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
 #import <Intents/Intents.h>
-#import <PromiseKit/AnyPromise.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/Environment.h>
@@ -1110,7 +1110,7 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"performing background fetch");
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        [self.messageFetcherJob runObjc].then(^{
+        [self.messageFetcherJob runObjc].done(^(id value) {
             // HACK: Call completion handler after n seconds.
             //
             // We don't currently have a convenient API to know when message fetching is *done* when

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 class ConversationConfigurationSyncOperation: OWSOperation {

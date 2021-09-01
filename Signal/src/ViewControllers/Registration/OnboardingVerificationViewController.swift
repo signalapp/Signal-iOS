@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 
 private protocol OnboardingCodeViewTextFieldDelegate: AnyObject {
     func textFieldDidDeletePrevious()

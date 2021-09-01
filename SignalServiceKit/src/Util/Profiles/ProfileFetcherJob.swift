@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalMetadataKit
 
 @objc
@@ -249,27 +248,27 @@ public class ProfileFetcherJob: NSObject {
     private func requestProfileWithRetries(retryCount: Int = 0) -> Promise<FetchedProfile> {
         let subject = self.subject
 
-        let (promise, resolver) = Promise<FetchedProfile>.pending()
+        let (promise, future) = Promise<FetchedProfile>.pending()
         firstly {
             requestProfileAttempt()
         }.done(on: Self.queueCluster.next()) { fetchedProfile in
-            resolver.fulfill(fetchedProfile)
+            future.resolve(fetchedProfile)
         }.catch(on: Self.queueCluster.next()) { error in
             if error.httpStatusCode == 401 {
-                return resolver.reject(ProfileFetchError.unauthorized)
+                return future.reject(ProfileFetchError.unauthorized)
             }
             if error.httpStatusCode == 404 {
-                return resolver.reject(ProfileFetchError.missing)
+                return future.reject(ProfileFetchError.missing)
             }
             if error.httpStatusCode == 413 {
-                return resolver.reject(ProfileFetchError.rateLimit)
+                return future.reject(ProfileFetchError.rateLimit)
             }
 
             switch error {
             case ProfileFetchError.throttled, ProfileFetchError.notMainApp:
                 // These errors should only be thrown at a higher level.
                 owsFailDebug("Unexpected error: \(error)")
-                resolver.reject(error)
+                future.reject(error)
                 return
             case SignalServiceProfile.ValidationError.invalidIdentityKey:
                 // There will be invalid identity keys on staging that can be safely ignored.
@@ -279,27 +278,27 @@ public class ProfileFetcherJob: NSObject {
                 } else {
                     Logger.warn("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
                 }
-                resolver.reject(error)
+                future.reject(error)
                 return
             case let error as SignalServiceProfile.ValidationError:
                 // This should not be retried.
                 owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
-                resolver.reject(error)
+                future.reject(error)
                 return
             default:
                 let maxRetries = 3
                 guard retryCount < maxRetries else {
                     Logger.warn("failed to get profile with error: \(error)")
-                    resolver.reject(error)
+                    future.reject(error)
                     return
                 }
 
                 firstly {
                     self.requestProfileWithRetries(retryCount: retryCount + 1)
                 }.done(on: Self.queueCluster.next()) { fetchedProfile in
-                    resolver.fulfill(fetchedProfile)
+                    future.resolve(fetchedProfile)
                 }.catch(on: Self.queueCluster.next()) { error in
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
         }

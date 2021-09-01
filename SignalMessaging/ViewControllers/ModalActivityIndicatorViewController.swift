@@ -5,7 +5,6 @@
 import Foundation
 import MediaPlayer
 import SignalServiceKit
-import PromiseKit
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
@@ -22,7 +21,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         _wasCancelled.get()
     }
     public let wasCancelledPromise: Promise<Void>
-    private let wasCancelledResolver: Resolver<Void>
+    private let wasCancelledFuture: Future<Void>
 
     var activityIndicator: UIActivityIndicatorView?
 
@@ -40,9 +39,9 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.presentationDelay = presentationDelay
         self.isInvisible = isInvisible
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         self.wasCancelledPromise = promise
-        self.wasCancelledResolver = resolver
+        self.wasCancelledFuture = future
 
         super.init()
     }
@@ -107,7 +106,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         let completion = {
             completionParam()
-            self.wasCancelledResolver.reject(OWSGenericError("ModalActivityIndicatorViewController was not cancelled."))
+            self.wasCancelledFuture.reject(OWSGenericError("ModalActivityIndicatorViewController was not cancelled."))
         }
 
         if !wasDimissed {
@@ -220,7 +219,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         _wasCancelled.set(true)
 
-        self.wasCancelledResolver.fulfill(())
+        self.wasCancelledFuture.resolve()
 
         dismiss {}
     }

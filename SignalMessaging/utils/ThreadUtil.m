@@ -4,7 +4,6 @@
 
 #import "ThreadUtil.h"
 #import "OWSQuotedReplyModel.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>

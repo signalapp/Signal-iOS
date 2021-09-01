@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import MobileCoin
 
 public class MobileCoinAPI: Dependencies {
@@ -134,7 +133,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.Balance> in
-            let (promise, resolver) = Promise<MobileCoin.Balance>.pending()
+            let (promise, future) = Promise<MobileCoin.Balance>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -142,10 +141,10 @@ public class MobileCoinAPI: Dependencies {
             client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success(let balance):
-                    resolver.fulfill(balance)
+                    future.resolve(balance)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -175,7 +174,7 @@ public class MobileCoinAPI: Dependencies {
 
         // We don't need to support amountPicoMobHigh.
         return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
-            let (promise, resolver) = Promise<TSPaymentAmount>.pending()
+            let (promise, future) = Promise<TSPaymentAmount>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -187,14 +186,14 @@ public class MobileCoinAPI: Dependencies {
                 case .success(let feePicoMob):
                     let fee = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
                     guard fee.isValidAmount(canBeEmpty: false) else {
-                        resolver.reject(OWSAssertionError("Invalid amount."))
+                        future.reject(OWSAssertionError("Invalid amount."))
                         return
                     }
                     Logger.verbose("Success paymentAmount: \(paymentAmount), fee: \(fee), ")
-                    resolver.fulfill(fee)
+                    future.resolve(fee)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -216,7 +215,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
-            let (promise, resolver) = Promise<TSPaymentAmount>.pending()
+            let (promise, future) = Promise<TSPaymentAmount>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -227,14 +226,14 @@ public class MobileCoinAPI: Dependencies {
                 case .success(let feePicoMob):
                     let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: feePicoMob)
                     guard paymentAmount.isValidAmount(canBeEmpty: true) else {
-                        resolver.reject(OWSAssertionError("Invalid amount."))
+                        future.reject(OWSAssertionError("Invalid amount."))
                         return
                     }
                     Logger.verbose("Success paymentAmount: \(paymentAmount), ")
-                    resolver.fulfill(paymentAmount)
+                    future.resolve(paymentAmount)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -286,7 +285,7 @@ public class MobileCoinAPI: Dependencies {
                 throw OWSAssertionError("Invalid fee.")
             }
 
-            let (promise, resolver) = Promise<PreparedTransaction>.pending()
+            let (promise, future) = Promise<PreparedTransaction>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -306,10 +305,10 @@ public class MobileCoinAPI: Dependencies {
                     let preparedTransaction = PreparedTransaction(transaction: transaction,
                                                                   receipt: receipt,
                                                                   feeAmount: finalFeeAmount)
-                    resolver.fulfill(preparedTransaction)
+                    future.resolve(preparedTransaction)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -330,7 +329,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         return firstly(on: .global()) { () -> Promise<Bool> in
-            let (promise, resolver) = Promise<Bool>.pending()
+            let (promise, future) = Promise<Bool>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -340,10 +339,10 @@ public class MobileCoinAPI: Dependencies {
                                                                                             TransactionEstimationFetcherError>) in
                 switch result {
                 case .success(let shouldDefragment):
-                    resolver.fulfill(shouldDefragment)
+                    future.resolve(shouldDefragment)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise
@@ -361,7 +360,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
-            let (promise, resolver) = Promise<[MobileCoin.Transaction]>.pending()
+            let (promise, future) = Promise<[MobileCoin.Transaction]>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -371,11 +370,11 @@ public class MobileCoinAPI: Dependencies {
                                                                                                            MobileCoin.DefragTransactionPreparationError>) in
                 switch result {
                 case .success(let transactions):
-                    resolver.fulfill(transactions)
+                    future.resolve(transactions)
                     break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                     break
                 }
             }
@@ -393,7 +392,7 @@ public class MobileCoinAPI: Dependencies {
         }
 
         return firstly(on: .global()) { () throws -> Promise<Void> in
-            let (promise, resolver) = Promise<Void>.pending()
+            let (promise, future) = Promise<Void>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -402,11 +401,11 @@ public class MobileCoinAPI: Dependencies {
             client.submitTransaction(transaction) { (result: Swift.Result<Void, TransactionSubmissionError>) in
                 switch result {
                 case .success:
-                    resolver.fulfill(())
+                    future.resolve()
                     break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                     break
                 }
             }
@@ -435,7 +434,7 @@ public class MobileCoinAPI: Dependencies {
             // TODO: We could improve perf when verifying multiple transactions by getting balance just once.
             self.getLocalBalance()
         }.then(on: .global()) { (_: TSPaymentAmount) -> Promise<MCOutgoingTransactionStatus> in
-            let (promise, resolver) = Promise<MCOutgoingTransactionStatus>.pending()
+            let (promise, future) = Promise<MCOutgoingTransactionStatus>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -443,11 +442,11 @@ public class MobileCoinAPI: Dependencies {
             client.status(of: transaction) { (result: Swift.Result<MobileCoin.TransactionStatus, ConnectionError>) in
                 switch result {
                 case .success(let transactionStatus):
-                    resolver.fulfill(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
+                    future.resolve(MCOutgoingTransactionStatus(transactionStatus: transactionStatus))
                     break
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                     break
                 }
             }
@@ -536,7 +535,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         return firstly(on: .global()) { () throws -> Promise<MobileCoin.AccountActivity> in
-            let (promise, resolver) = Promise<MobileCoin.AccountActivity>.pending()
+            let (promise, future) = Promise<MobileCoin.AccountActivity>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
                 return promise
@@ -544,10 +543,10 @@ public class MobileCoinAPI: Dependencies {
             client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
                 switch result {
                 case .success:
-                    resolver.fulfill(client.accountActivity)
+                    future.resolve(client.accountActivity)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
             return promise

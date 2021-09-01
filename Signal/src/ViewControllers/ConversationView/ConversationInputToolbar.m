@@ -9,7 +9,7 @@
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "ViewControllerUtils.h"
-#import <PromiseKit/AnyPromise.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
@@ -1434,7 +1434,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     __weak ConversationInputToolbar *weakSelf = self;
     [self.linkPreviewManager fetchLinkPreviewForUrl:previewUrl]
-        .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
+        .done(^(OWSLinkPreviewDraft *linkPreviewDraft) {
             ConversationInputToolbar *_Nullable strongSelf = weakSelf;
             if (!strongSelf) {
                 return;

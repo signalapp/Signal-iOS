@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 public extension GroupsV2Impl {
@@ -135,12 +134,12 @@ public extension GroupsV2Impl {
         guard canProcessGroupRestore else {
             return Promise.value(.cantProcess)
         }
-        return Promise<RestoreGroupOutcome> { resolver in
+        return Promise<RestoreGroupOutcome> { future in
             DispatchQueue.global().async {
                 guard let masterKeyData = (self.databaseStorage.read { transaction in
                     groupsFromStorageService_EnqueuedForRestore.anyDataValue(transaction: transaction)
                 }) else {
-                    return resolver.fulfill(.emptyQueue)
+                    return future.resolve(.emptyQueue)
                 }
                 let key = self.restoreGroupKey(forMasterKeyData: masterKeyData)
 
@@ -165,7 +164,7 @@ public extension GroupsV2Impl {
                 } catch {
                     owsFailDebug("Error: \(error)")
                     markAsFailed()
-                    return resolver.fulfill(.unretryableFailure)
+                    return future.resolve(.unretryableFailure)
                 }
 
                 let isGroupInDatabase = self.databaseStorage.read { transaction in
@@ -174,7 +173,7 @@ public extension GroupsV2Impl {
                 guard !isGroupInDatabase else {
                     // No work to be done, group already in database.
                     markAsComplete()
-                    return resolver.fulfill(.success)
+                    return future.resolve(.success)
                 }
 
                 // This will try to update the group using incremental "changes" but
@@ -187,11 +186,11 @@ public extension GroupsV2Impl {
                 }.done { _ in
                     Logger.verbose("Update succeeded.")
                     markAsComplete()
-                    resolver.fulfill(.success)
+                    future.resolve(.success)
                 }.catch { error in
                     if IsNetworkConnectivityFailure(error) {
                         Logger.warn("Error: \(error)")
-                        return resolver.fulfill(.retryableFailure)
+                        return future.resolve(.retryableFailure)
                     } else {
                         switch error {
                         case GroupsV2Error.localUserNotInGroup:
@@ -200,7 +199,7 @@ public extension GroupsV2Impl {
                             owsFailDebug("Error: \(error)")
                         }
                         markAsFailed()
-                        return resolver.fulfill(.unretryableFailure)
+                        return future.resolve(.unretryableFailure)
                     }
                 }
             }

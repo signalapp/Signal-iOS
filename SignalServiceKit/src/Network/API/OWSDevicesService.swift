@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 open class OWSDevicesService: NSObject {

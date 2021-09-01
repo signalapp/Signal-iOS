@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import PromiseKit
 
 @objc
 public class GroupMigrationActionSheet: UIView {

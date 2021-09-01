@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import MultipeerConnectivity
 
 class DeviceTransferOperation: OWSOperation {
@@ -11,7 +10,7 @@ class DeviceTransferOperation: OWSOperation {
     let file: DeviceTransferProtoFile
 
     let promise: Promise<Void>
-    private let resolver: Resolver<Void>
+    private let future: Future<Void>
 
     class func scheduleTransfer(file: DeviceTransferProtoFile, priority: Operation.QueuePriority = .normal) -> Promise<Void> {
         let operation = DeviceTransferOperation(file: file)
@@ -30,7 +29,7 @@ class DeviceTransferOperation: OWSOperation {
 
     private init(file: DeviceTransferProtoFile) {
         self.file = file
-        (self.promise, self.resolver) = Promise<Void>.pending()
+        (self.promise, self.future) = Promise<Void>.pending()
         super.init()
     }
 
@@ -38,12 +37,12 @@ class DeviceTransferOperation: OWSOperation {
 
     override func didSucceed() {
         super.didSucceed()
-        resolver.fulfill(())
+        future.resolve()
     }
 
     override func didFail(error: Error) {
         super.didFail(error: error)
-        resolver.reject(error)
+        future.reject(error)
     }
 
     override public func run() {

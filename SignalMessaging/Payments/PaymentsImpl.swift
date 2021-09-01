@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import MobileCoin
 
 @objc
@@ -944,7 +943,7 @@ public extension PaymentsImpl {
                     }
                 }
             }
-            return when(fulfilled: promises)
+            return Promise.when(fulfilled: promises)
         }.timeout(seconds: maxBlockInterval, description: "blockOnVerificationOfDefragmentation") { () -> Error in
             PaymentsError.timeout
         }
@@ -965,7 +964,7 @@ public extension PaymentsImpl {
                  .outgoingUnverified:
                 // Not yet verified, wait then try again.
                 return firstly(on: .global()) {
-                    after(seconds: 0.05)
+                    Guarantee.after(seconds: 0.05)
                 }.then(on: .global()) { () -> Promise<Bool> in
                     // Recurse.
                     self.blockOnOutgoingVerification(paymentModel: paymentModel)

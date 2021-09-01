@@ -4,7 +4,6 @@
 
 import SignalServiceKit
 import MessageUI
-import PromiseKit
 
 struct SupportEmailModel: Dependencies {
 
@@ -168,12 +167,12 @@ final class ComposeSupportEmailOperation: NSObject {
     }
 
     private func open(mailURL url: URL) -> Promise<Void> {
-        Promise { (resolver) in
+        Promise { future in
             UIApplication.shared.open(url, options: [:]) { (success) in
                 if success {
-                    resolver.fulfill_()
+                    future.resolve()
                 } else {
-                    resolver.reject(EmailError.failedToOpenURL)
+                    future.reject(EmailError.failedToOpenURL)
                 }
             }
         }

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public enum OWSUploadError: Error {
     case missingRangeHeader
@@ -548,7 +547,7 @@ public class OWSAttachmentUploadV2: NSObject {
                         return Guarantee.value(())
                     case .retryAfterDelay(let delay):
                         // We wait briefly before retrying.
-                        return after(seconds: delay)
+                        return Guarantee.after(seconds: delay)
                     }
                 }.then(on: Self.serialQueue) {
                     // Retry
@@ -571,7 +570,7 @@ public class OWSAttachmentUploadV2: NSObject {
         return firstly {
             // Google Cloud Storage seems to need time to store the uploaded data,
             // so we wait before querying for the current upload progress.
-            after(seconds: 5)
+            Guarantee.after(seconds: 5)
         }.then(on: Self.serialQueue) { () -> Promise<Int> in
             self.getResumableUploadProgressV3Attempt(form: form,
                                                      uploadV3Metadata: uploadV3Metadata,
@@ -675,7 +674,7 @@ public extension OWSUpload {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, resolver) = Promise<String>.pending()
+        let (promise, future) = Promise<String>.pending()
         Self.serialQueue.async {
             // TODO: Use OWSUrlSession instead.
             self.cdn0SessionManager.requestSerializer.setValue(OWSURLSession.signalIosUserAgent,
@@ -705,7 +704,7 @@ public extension OWSUpload {
                                          success: { (_, _) in
                                             Logger.verbose("Success.")
                                             let uploadedUrlPath = uploadForm.key
-                                            resolver.fulfill(uploadedUrlPath)
+                                            future.resolve(uploadedUrlPath)
             }, failure: { (task, error) in
                 if let task = task {
                     #if TESTABLE_BUILD
@@ -721,7 +720,7 @@ public extension OWSUpload {
                 }
 
                 owsFailDebugUnlessNetworkFailure(error)
-                resolver.reject(error)
+                future.reject(error)
             })
         }
         return promise

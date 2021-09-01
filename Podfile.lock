@@ -83,15 +83,6 @@ PODS:
     - SwiftNIOHTTP1 (~> 2.18)
     - SwiftProtobuf (~> 1.5)
   - OpenSSL-Universal (1.1.1100)
-  - PromiseKit (6.13.1):
-    - PromiseKit/CorePromise (= 6.13.1)
-    - PromiseKit/Foundation (= 6.13.1)
-    - PromiseKit/UIKit (= 6.13.1)
-  - PromiseKit/CorePromise (6.13.1)
-  - PromiseKit/Foundation (6.13.1):
-    - PromiseKit/CorePromise
-  - PromiseKit/UIKit (6.13.1):
-    - PromiseKit/CorePromise
   - PureLayout (3.1.4)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
@@ -120,11 +111,9 @@ PODS:
     - SignalCoreKit
     - SwiftProtobuf
   - SignalRingRTC (2.10.8):
-    - PromiseKit
     - SignalCoreKit
     - SignalRingRTC/WebRTC (= 2.10.8)
   - SignalRingRTC/WebRTC (2.10.8):
-    - PromiseKit
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
     - AFNetworking/NSURLSession
@@ -136,7 +125,6 @@ PODS:
     - libwebp
     - Mantle
     - OpenSSL-Universal
-    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SignalArgon2
@@ -156,7 +144,6 @@ PODS:
     - libwebp
     - Mantle
     - OpenSSL-Universal
-    - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
     - SignalArgon2
@@ -236,15 +223,14 @@ DEPENDENCIES:
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v1.1.0`)
   - OpenSSL-Universal (from `https://github.com/signalapp/GRKOpenSSLFramework`)
-  - PromiseKit
   - PureLayout
   - Reachability
   - SignalArgon2 (from `https://github.com/signalapp/Argon2.git`)
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
+  - "SignalCoreKit (from `ssh://git@github.com/signalapp/SignalCoreKit-Private`, branch `nt/promises`)"
+  - "SignalCoreKit/Tests (from `ssh://git@github.com/signalapp/SignalCoreKit-Private`, branch `nt/promises`)"
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -277,7 +263,6 @@ SPEC REPOS:
     - libwebp
     - Logging
     - lottie-ios
-    - PromiseKit
     - PureLayout
     - Reachability
     - SAMKeychain
@@ -322,7 +307,8 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit
+    :branch: nt/promises
+    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private"
   SignalMetadataKit:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -368,8 +354,8 @@ CHECKOUT OPTIONS:
     :commit: ffd2fe1664cd23d1ae7dc5d3a7c6c33bc702b93e
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: bacb5ab174e8638458ab2032a7a472422efdf165
-    :git: https://github.com/signalapp/SignalCoreKit
+    :commit: 6cf76bc71dd15c1c4e19391d4da9e06d639dd883
+    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private"
   SignalMetadataKit:
     :commit: 4c8ddf0b04afd179f00d7b024b1c611e3ddd2b7d
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -407,7 +393,6 @@ SPEC CHECKSUMS:
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: 59f940b9f71e6fdcfd206150ebda839a132b58be
   OpenSSL-Universal: d8fb58afffcf2dafe4ad99e17efe236bcd216c2e
-  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
@@ -415,8 +400,8 @@ SPEC CHECKSUMS:
   SignalClient: 2353bbeaaa062b98457690c26e1d5e3c2cb772a0
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalMetadataKit: eb928ec98376ab5a6ef2108a7fcd3b2d792b8c65
-  SignalRingRTC: 0b51c21e0424b156b45a28910c677b29b7840691
-  SignalServiceKit: 5e25915a8275f4deff7f830a343c0fcb085d062b
+  SignalRingRTC: 665575d98c82e766f9248e3bd66cb775e7e4b9e7
+  SignalServiceKit: aaaad497e0597ea5049acfe04ac78cbc6e271583
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
@@ -434,6 +419,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 4de3037acfe442a115b15e5f87d45cc73865bc86
+PODFILE CHECKSUM: 76ac182b70983a83ffd9c40a554d9653e61e1bd0
 
 COCOAPODS: 1.10.1

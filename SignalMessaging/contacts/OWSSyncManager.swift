@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 extension OWSSyncManager: SyncManagerProtocolSwift {
 
@@ -35,7 +34,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             self.sendSyncRequestMessage(.keys, transaction: transaction)
         }
 
-        return when(fulfilled: [
+        return Promise.when(fulfilled: [
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).asVoid(),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid(),
@@ -173,7 +172,7 @@ public extension OWSSyncManager {
             self.sendSyncRequestMessage(.contacts, transaction: transaction)
         }
 
-        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], [(threadId: String, sortOrder: UInt32)], Void, Void)> = when(fulfilled:
+        let notificationsPromise: Promise<([(threadId: String, sortOrder: UInt32)], [(threadId: String, sortOrder: UInt32)], Void, Void)> = Promise.when(fulfilled:
             NotificationCenter.default.observe(once: .IncomingContactSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .IncomingGroupSyncDidComplete).map { $0.newThreads }.timeout(seconds: timeoutSeconds, substituteValue: []),
             NotificationCenter.default.observe(once: .OWSSyncManagerConfigurationSyncDidComplete).asVoid().timeout(seconds: timeoutSeconds),

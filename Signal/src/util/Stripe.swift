@@ -4,7 +4,6 @@
 
 import Foundation
 import PassKit
-import PromiseKit
 
 struct Stripe: Dependencies {
     static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {

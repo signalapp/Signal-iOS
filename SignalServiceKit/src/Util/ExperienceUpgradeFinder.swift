@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import Contacts
 
 public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
@@ -39,20 +38,20 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         case .pinReminder:
             return OWS2FAManager.shared.isDueForV2Reminder(transaction: transaction.asAnyRead)
         case .notificationPermissionReminder:
-            let (promise, resolver) = Promise<Bool>.pending()
+            let (promise, future) = Promise<Bool>.pending()
 
             Logger.info("Checking notification authorization")
 
             DispatchQueue.global(qos: .userInitiated).async {
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
                     Logger.info("Checked notification authorization \(settings.authorizationStatus)")
-                    resolver.fulfill(settings.authorizationStatus == .authorized)
+                    future.resolve(settings.authorizationStatus == .authorized)
                 }
             }
 
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
                 guard promise.result == nil else { return }
-                resolver.reject(OWSGenericError("timeout fetching notification permissions"))
+                future.reject(OWSGenericError("timeout fetching notification permissions"))
             }
 
             do {

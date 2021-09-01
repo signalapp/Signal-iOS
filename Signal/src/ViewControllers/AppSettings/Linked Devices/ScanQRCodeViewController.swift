@@ -4,7 +4,6 @@
 
 import Foundation
 import AVFoundation
-import PromiseKit
 import Vision
 
 @objc

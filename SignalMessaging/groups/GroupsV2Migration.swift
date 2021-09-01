@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import ZKGroup
 import SignalClient
 
@@ -465,7 +464,7 @@ fileprivate extension GroupsV2Migration {
         switch profileFetchMode {
         case .parallel:
             let promises = addresses.map { fetchProfilePromise(address: $0) }
-            return when(fulfilled: promises)
+            return Promise.when(fulfilled: promises)
         case .serialWithThrottling:
             guard let firstAddress = addresses.first else {
                 // No more profiles to fetch.
@@ -479,7 +478,7 @@ fileprivate extension GroupsV2Migration {
                 //
                 // The profile fetch rate limit is a bucket size of 4320, which
                 // refills at a rate of 3 per minute.
-                after(seconds: 1.0 / 3.0)
+                Guarantee.after(seconds: 1.0 / 3.0)
             }.then(on: .global()) {
                 // Recurse.
                 fetchProfiles(addresses: remainder, profileFetchMode: profileFetchMode)
@@ -1136,16 +1135,16 @@ private class MigrateGroupOperation: OWSOperation {
     private let migrationMode: GroupsV2MigrationMode
 
     fileprivate let promise: Promise<TSGroupThread>
-    fileprivate let resolver: Resolver<TSGroupThread>
+    fileprivate let future: Future<TSGroupThread>
 
     fileprivate required init(groupId: Data,
                               migrationMode: GroupsV2MigrationMode) {
         self.groupId = groupId
         self.migrationMode = migrationMode
 
-        let (promise, resolver) = Promise<TSGroupThread>.pending()
+        let (promise, future) = Promise<TSGroupThread>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
 
         super.init()
 
@@ -1167,13 +1166,13 @@ private class MigrateGroupOperation: OWSOperation {
                 Logger.info("success groupId: \(groupId.hexadecimalString), migrationMode: \(migrationMode)")
             }
             self.reportSuccess()
-            self.resolver.fulfill(groupThread)
+            self.future.resolve(groupThread)
         }.catch(on: .global()) { error in
             if GroupsV2Migration.verboseLogging {
                 Logger.info("failure groupId: \(groupId.hexadecimalString), migrationMode: \(migrationMode), error: \(error)")
             }
             self.reportError(error)
-            self.resolver.reject(error)
+            self.future.reject(error)
         }
     }
 }

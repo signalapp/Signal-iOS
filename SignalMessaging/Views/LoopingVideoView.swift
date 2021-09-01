@@ -4,7 +4,6 @@
 
 import YYImage
 import AVKit
-import PromiseKit
 
 /// Model object for a looping video asset
 /// Any LoopingVideoViews playing this instance will all be kept in sync
@@ -193,8 +192,8 @@ public class LoopingVideoView: UIView {
         guard let asset = video?.asset else {
             // If we have an outstanding promise, invalidate the size once it's complete
             // If there isn't, -noIntrinsicMetric is valid
-            if video?.assetPromise.isPending == true {
-                video?.assetPromise.done { _ in self.invalidateIntrinsicContentSize() }
+            if video?.assetPromise.isSealed != true {
+                video?.assetPromise.done(on: .main) { _ in self.invalidateIntrinsicContentSize() }
             }
             return CGSize(square: UIView.noIntrinsicMetric)
         }

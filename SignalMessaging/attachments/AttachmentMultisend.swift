@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public class AttachmentMultisend: Dependencies {
 
@@ -158,7 +157,7 @@ public class AttachmentMultisend: Dependencies {
                 }
             }
 
-            return when(fulfilled: messageSendPromises).map { threads }
+            return Promise.when(fulfilled: messageSendPromises).map { threads }
         }
     }
 }

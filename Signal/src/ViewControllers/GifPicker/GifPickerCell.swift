@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 import SignalMessaging
 import YYImage
@@ -108,7 +107,7 @@ class GifPickerCell: UICollectionViewCell {
             return Promise(error: GiphyError.assertionError(description: "fullSizeAsset was unexpectedly nil"))
         }
 
-        let (promise, resolver) = Promise<ProxiedContentAsset>.pending()
+        let (promise, future) = Promise<ProxiedContentAsset>.pending()
 
         // We don't retain a handle on the asset request, since there will only ever
         // be one selected asset, and we never want to cancel it.
@@ -116,13 +115,13 @@ class GifPickerCell: UICollectionViewCell {
             assetDescription: fullSizeAsset,
             priority: .high,
             success: { _, asset in
-                resolver.fulfill(asset)
+                future.resolve(asset)
             },
             failure: { _ in
                 // TODO GiphyDownloader API should pass through a useful failing error
                 // so we can pass it through here
                 Logger.error("request failed")
-                resolver.reject(GiphyError.fetchFailure)
+                future.reject(GiphyError.fetchFailure)
             })
 
         return promise

@@ -128,7 +128,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
                                                isDraft: true)
             linkPreviewView.isHidden = false
 
-            linkPreviewManager.fetchLinkPreview(for: previewUrl).done { [weak self] draft in
+            linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: .main) { [weak self] draft in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
                 linkPreviewView.configureForNonCVC(state: LinkPreviewDraft(linkPreviewDraft: draft),

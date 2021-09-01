@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController {
 

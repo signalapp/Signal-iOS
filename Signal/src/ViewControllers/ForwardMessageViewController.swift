@@ -2,8 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import PromiseKit
-
 public protocol ForwardMessageDelegate: AnyObject {
     func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
                                        recipientThreads: [TSThread])
@@ -296,7 +294,7 @@ extension ForwardMessageViewController {
                     self.send(item: item, toRecipientThreads: recipientThreads)
                 }
                 return firstly(on: .main) { () -> Promise<Void> in
-                    when(resolved: promises).asVoid()
+                    Promise.when(resolved: promises).asVoid()
                 }.then(on: .main) { _ -> Promise<Void> in
                     // The user may have added an additional text message to the forward.
                     // It should be sent last.
@@ -419,7 +417,7 @@ extension ForwardMessageViewController {
                           enqueueBlock: @escaping (RecipientThread) -> Promise<Void>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        return when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
+        return Promise.when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
     }
 
     fileprivate func recipientThreads(for conversationItems: [ConversationItem]) -> Promise<[RecipientThread]> {

@@ -4,7 +4,6 @@
 
 import Foundation
 import Photos
-import PromiseKit
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 

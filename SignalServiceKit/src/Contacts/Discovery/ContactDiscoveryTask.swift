@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service
@@ -52,7 +51,7 @@ public class ContactDiscoveryTask: NSObject {
                         targetQueue: DispatchQueue? = nil,
                         database: SDSDatabaseStorage? = SDSDatabaseStorage.shared) -> Promise<Set<SignalRecipient>> {
         guard e164FetchSet.count > 0 else {
-            return .value(Set())
+            return Promise.value(Set())
         }
         if let retryAfterDate = Self.rateLimiter.currentRetryAfterDate(forCriticalPriority: isCriticalPriority) {
             return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: retryAfterDate))
@@ -68,7 +67,7 @@ public class ContactDiscoveryTask: NSObject {
             let discoveryOperation = createContactDiscoveryOperation()
             return discoveryOperation.perform(on: workQueue)
 
-        }.map(on: workQueue) { (discoveredContacts) -> Set<SignalRecipient> in
+        }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
             let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
 
             let discoveredAddresses = discoveredContacts

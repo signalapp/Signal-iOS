@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import PushKit
 import SignalServiceKit
 import SignalMessaging
@@ -26,13 +25,13 @@ public enum PushRegistrationError: Error {
     }
 
     private var vanillaTokenPromise: Promise<Data>?
-    private var vanillaTokenResolver: Resolver<Data>?
+    private var vanillaTokenFuture: Future<Data>?
 
     private var voipRegistry: PKPushRegistry?
     private var voipTokenPromise: Promise<Data?>?
-    private var voipTokenResolver: Resolver<Data?>?
+    private var voipTokenFuture: Future<Data?>?
 
-    public var preauthChallengeResolver: Resolver<String>?
+    public var preauthChallengeFuture: Future<String>?
 
     // MARK: Public interface
 
@@ -60,10 +59,10 @@ public enum PushRegistrationError: Error {
     public func didReceiveVanillaPreAuthChallengeToken(_ challenge: String) {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()
-            if let preauthChallengeResolver = self.preauthChallengeResolver {
+            if let preauthChallengeFuture = self.preauthChallengeFuture {
                 Logger.info("received vanilla preauth challenge")
-                preauthChallengeResolver.fulfill(challenge)
-                self.preauthChallengeResolver = nil
+                preauthChallengeFuture.resolve(challenge)
+                self.preauthChallengeFuture = nil
             }
         }
     }
@@ -71,23 +70,23 @@ public enum PushRegistrationError: Error {
     // Vanilla push token is obtained from the system via AppDelegate
     @objc
     public func didReceiveVanillaPushToken(_ tokenData: Data) {
-        guard let vanillaTokenResolver = self.vanillaTokenResolver else {
+        guard let vanillaTokenFuture = self.vanillaTokenFuture else {
             owsFailDebug("promise completion in \(#function) unexpectedly nil")
             return
         }
 
-        vanillaTokenResolver.fulfill(tokenData)
+        vanillaTokenFuture.resolve(tokenData)
     }
 
     // Vanilla push token is obtained from the system via AppDelegate    
     @objc
     public func didFailToReceiveVanillaPushToken(error: Error) {
-        guard let vanillaTokenResolver = self.vanillaTokenResolver else {
+        guard let vanillaTokenFuture = self.vanillaTokenFuture else {
             owsFailDebug("promise completion in \(#function) unexpectedly nil")
             return
         }
 
-        vanillaTokenResolver.reject(error)
+        vanillaTokenFuture.reject(error)
     }
 
     // MARK: PKPushRegistryDelegate - voIP Push Token
@@ -100,11 +99,11 @@ public enum PushRegistrationError: Error {
             if CallMessageRelay.handleVoipPayload(payload.dictionaryPayload) {
                 // Do nothing. This was a call message relayed from the NSE
                 Logger.info("Handled call message from NSE.")
-            } else if let preauthChallengeResolver = self.preauthChallengeResolver,
+            } else if let preauthChallengeFuture = self.preauthChallengeFuture,
                 let challenge = payload.dictionaryPayload["challenge"] as? String {
                 Logger.info("received preauth challenge")
-                preauthChallengeResolver.fulfill(challenge)
-                self.preauthChallengeResolver = nil
+                preauthChallengeFuture.resolve(challenge)
+                self.preauthChallengeFuture = nil
             } else {
                 owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                 self.messageFetcherJob.run()
@@ -116,9 +115,9 @@ public enum PushRegistrationError: Error {
         Logger.info("")
         owsAssertDebug(type == .voIP)
         owsAssertDebug(credentials.type == .voIP)
-        guard let voipTokenResolver = self.voipTokenResolver else { return }
+        guard let voipTokenFuture = self.voipTokenFuture else { return }
 
-        voipTokenResolver.fulfill(credentials.token)
+        voipTokenFuture.resolve(credentials.token)
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
@@ -172,15 +171,15 @@ public enum PushRegistrationError: Error {
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
-            owsAssertDebug(promise.isPending)
+            owsAssertDebug(!promise.isSealed)
             Logger.info("alreay pending promise for vanilla push token")
             return promise.map { $0.hexEncodedString }
         }
 
         // No pending vanilla token yet. Create a new promise
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, future) = Promise<Data>.pending()
         self.vanillaTokenPromise = promise
-        self.vanillaTokenResolver = resolver
+        self.vanillaTokenFuture = future
 
         UIApplication.shared.registerForRemoteNotifications()
 
@@ -244,14 +243,14 @@ public enum PushRegistrationError: Error {
 
         guard self.voipTokenPromise == nil else {
             let promise = self.voipTokenPromise!
-            owsAssertDebug(promise.isPending)
+            owsAssertDebug(!promise.isSealed)
             return promise.map { $0?.hexEncodedString }
         }
 
         // No pending voip token yet. Create a new promise
-        let (promise, resolver) = Promise<Data?>.pending()
+        let (promise, future) = Promise<Data?>.pending()
         self.voipTokenPromise = promise
-        self.voipTokenResolver = resolver
+        self.voipTokenFuture = future
 
         // We don't create the voip registry in init, because it immediately requests the voip token,
         // potentially before we're ready to handle it.
@@ -259,7 +258,7 @@ public enum PushRegistrationError: Error {
 
         guard let voipRegistry = self.voipRegistry else {
             owsFailDebug("failed to initialize voipRegistry")
-            resolver.reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
+            future.reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
             return promise.map { _ in
                 // coerce expected type of returned promise - we don't really care about the value,
                 // since this promise has been rejected. In practice this shouldn't happen
@@ -271,7 +270,7 @@ public enum PushRegistrationError: Error {
         // rather than waiting for the delegate method to be called.
         if let voipTokenData = voipRegistry.pushToken(for: .voIP) {
             Logger.info("using pre-registered voIP token")
-            resolver.fulfill(voipTokenData)
+            future.resolve(voipTokenData)
         }
 
         return promise.map { (voipTokenData: Data?) -> String? in

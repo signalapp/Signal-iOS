@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 // Whenever we rotate our profile key, we need to update all

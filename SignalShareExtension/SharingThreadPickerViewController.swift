@@ -2,8 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import PromiseKit
-
 // MARK: -
 
 @objc
@@ -357,7 +355,7 @@ extension SharingThreadPickerViewController {
                 // We're sending a message to this thread, approve any pending message request
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
-            return when(fulfilled: sendPromises)
+            return Promise.when(fulfilled: sendPromises)
         }.done {
             dismissSendProgress {}
             self.shareViewDelegate?.shareViewWasCompleted()
@@ -493,7 +491,7 @@ extension SharingThreadPickerViewController {
         }
 
         let dismissSendProgress = showSendProgress()
-        when(fulfilled: promises).done {
+        Promise.when(fulfilled: promises).done {
             dismissSendProgress {}
             self.shareViewDelegate?.shareViewWasCompleted()
         }.catch { error in

@@ -4,7 +4,6 @@
 
 import UIKit
 import AVFoundation
-import PromiseKit
 
 public enum VideoEditorError: Error {
     case cancelled
@@ -347,20 +346,20 @@ extension VideoEditorModel {
 
 fileprivate extension AVAssetExportSession {
     func exportPromise() -> Promise<String> {
-        Promise { resolver in
+        Promise { future in
             guard self.status != .cancelled else {
-                resolver.reject(VideoEditorError.cancelled)
+                future.reject(VideoEditorError.cancelled)
                 return
             }
 
             exportAsynchronously {
                 switch (self.status, self.outputURL?.path) {
                 case (.completed, let path?):
-                    resolver.fulfill(path)
+                    future.resolve(path)
                 case (.cancelled, _):
-                    resolver.reject(VideoEditorError.cancelled)
+                    future.reject(VideoEditorError.cancelled)
                 default:
-                    resolver.reject(self.error ?? OWSAssertionError("Status \(self.status)"))
+                    future.reject(self.error ?? OWSAssertionError("Status \(self.status)"))
                 }
             }
         }

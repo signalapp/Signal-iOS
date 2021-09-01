@@ -4,7 +4,6 @@
 
 import Foundation
 import QuickLook
-import PromiseKit
 import PassKit
 
 extension ConversationViewController: CVComponentDelegate {

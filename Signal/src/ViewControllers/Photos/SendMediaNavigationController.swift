@@ -4,7 +4,6 @@
 
 import Foundation
 import Photos
-import PromiseKit
 
 @objc
 protocol SendMediaNavDelegate: AnyObject {
@@ -551,9 +550,9 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
-            let approvalItemsPromise = when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises)
+            let approvalItemsPromise: Promise<[AttachmentApprovalItem]> = Promise.when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises)
             firstly { () -> Promise<Swift.Result<[AttachmentApprovalItem], Error>> in
-                return race(
+                return Promise.race(
                     approvalItemsPromise.map { attachmentApprovalItems -> Swift.Result<[AttachmentApprovalItem], Error> in
                         Swift.Result.success(attachmentApprovalItems)
                     },

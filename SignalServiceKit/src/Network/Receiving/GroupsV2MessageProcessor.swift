@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 private struct IncomingGroupsV2MessageJobInfo {
     let job: IncomingGroupsV2MessageJob
@@ -201,14 +200,14 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     private let finder = GRDBGroupsV2MessageJobFinder()
 
     fileprivate let promise: Promise<Void>
-    private let resolver: Resolver<Void>
+    private let future: Future<Void>
 
     internal required init(groupId: Data) {
         self.groupId = groupId
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
 
         observeNotifications()
 
@@ -296,7 +295,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                             !DebugFlags.suppressBackgroundActivity)
         guard canProcess else {
             Logger.warn("Cannot process.")
-            resolver.fulfill(())
+            future.resolve()
             return
         }
 
@@ -312,7 +311,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         }
         guard !batchJobs.isEmpty else {
             Logger.verbose("No jobs for \(groupId.hexadecimalString).")
-            resolver.fulfill(())
+            future.resolve()
             return
         }
 
@@ -350,7 +349,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                     // That allows us to kick off another batch immediately if
                     // reachability changes, etc.
                     if !self.isDrainingQueue.tryToClearFlag() {
-                        self.resolver.reject(OWSAssertionError("Couldn't clear flag."))
+                        self.future.reject(OWSAssertionError("Couldn't clear flag."))
                         return
                     }
                     DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelayAfterFailure) {
@@ -743,17 +742,17 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     //
     // This method should never return .failureShouldRetry.
     private func tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
-        let (promise, resolver) = Promise<UpdateOutcome>.pending()
+        let (promise, future) = Promise<UpdateOutcome>.pending()
         DispatchQueue.global().async {
             guard let groupContextInfo = jobInfo.groupContextInfo,
                 let groupContext = jobInfo.groupContext else {
                     owsFailDebug("Missing jobInfo properties.")
-                    return resolver.fulfill(.failureShouldDiscard)
+                    return future.resolve(.failureShouldDiscard)
             }
             let groupId = groupContextInfo.groupId
             guard GroupManager.isValidGroupId(groupId, groupsVersion: .V2) else {
                 owsFailDebug("Invalid groupId.")
-                return resolver.fulfill(.failureShouldDiscard)
+                return future.resolve(.failureShouldDiscard)
             }
             let thread = self.databaseStorage.read { transaction in
                 return TSGroupThread.fetch(groupId: groupId, transaction: transaction)
@@ -762,34 +761,34 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 // We might be learning of a group for the first time
                 // in which case we should fetch current group state from the
                 // service.
-                return resolver.fulfill(.failureShouldFailoverToService)
+                return future.resolve(.failureShouldFailoverToService)
             }
             guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 owsFailDebug("Invalid group model.")
-                return resolver.fulfill(.failureShouldDiscard)
+                return future.resolve(.failureShouldDiscard)
             }
             guard groupContext.hasRevision else {
                 owsFailDebug("Missing revision.")
-                return resolver.fulfill(.failureShouldDiscard)
+                return future.resolve(.failureShouldDiscard)
             }
             let contextRevision = groupContext.revision
             guard contextRevision > oldGroupModel.revision else {
                 // Group is already updated.
                 // No need to apply embedded change from the group context; it is obsolete.
                 // This can happen due to races.
-                return resolver.fulfill(.successShouldProcess)
+                return future.resolve(.successShouldProcess)
             }
             guard contextRevision == oldGroupModel.revision + 1 else {
                 // We can only apply embedded changes if we're behind exactly
                 // one revision.
-                return resolver.fulfill(.failureShouldFailoverToService)
+                return future.resolve(.failureShouldFailoverToService)
             }
             guard FeatureFlags.groupsV2processProtosInGroupUpdates else {
-                return resolver.fulfill(.failureShouldFailoverToService)
+                return future.resolve(.failureShouldFailoverToService)
             }
             guard let changeActionsProtoData = groupContext.groupChange else {
                 // No embedded group change.
-                return resolver.fulfill(.failureShouldFailoverToService)
+                return future.resolve(.failureShouldFailoverToService)
             }
 
             DispatchQueue.global().async(.promise) {
@@ -808,31 +807,31 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
                 guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
                     owsFailDebug("Invalid group model.")
-                    return resolver.fulfill(.failureShouldFailoverToService)
+                    return future.resolve(.failureShouldFailoverToService)
                 }
                 guard updatedGroupModel.revision >= contextRevision else {
                     owsFailDebug("Invalid revision.")
-                    return resolver.fulfill(.failureShouldFailoverToService)
+                    return future.resolve(.failureShouldFailoverToService)
                 }
                 guard updatedGroupModel.revision == contextRevision else {
                     // We expect the embedded changes to update us to the target
                     // revision.  If we update past that, assert but proceed in production.
                     owsFailDebug("Unexpected revision.")
-                    return resolver.fulfill(.successShouldProcess)
+                    return future.resolve(.successShouldProcess)
                 }
                 Logger.info("Successfully applied embedded change proto from group context.")
-                return resolver.fulfill(.successShouldProcess)
+                return future.resolve(.successShouldProcess)
             }.catch(on: .global()) { error in
                 if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
-                    return resolver.fulfill(.failureShouldRetry)
+                    return future.resolve(.failureShouldRetry)
                 } else {
                     if case GroupsV2Error.cantApplyChangesToPlaceholder = error {
                         Logger.warn("Error: \(error)")
                     } else {
                         owsFailDebug("Error: \(error)")
                     }
-                    return resolver.fulfill(.failureShouldFailoverToService)
+                    return future.resolve(.failureShouldFailoverToService)
                 }
             }
         }

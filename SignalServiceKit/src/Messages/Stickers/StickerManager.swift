@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalClient
 
 // Stickers
@@ -278,10 +277,10 @@ public class StickerManager: NSObject {
     }()
 
     private func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
-        let (promise, resolver) = Promise<StickerPack>.pending()
+        let (promise, future) = Promise<StickerPack>.pending()
         let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
-                                                     success: resolver.fulfill,
-                                                     failure: resolver.reject)
+                                                     success: future.resolve,
+                                                     failure: future.reject)
         packOperationQueue.addOperation(operation)
         return promise
     }
@@ -336,7 +335,7 @@ public class StickerManager: NSObject {
         } else {
             switch installMode {
             case .doNotInstall:
-                promise = .value
+                promise = .value(())
             case .install:
                 promise = self.markSavedStickerPackAsInstalled(stickerPack: stickerPack,
                                                                wasLocallyInitiated: wasLocallyInitiated,
@@ -347,7 +346,7 @@ public class StickerManager: NSObject {
                                                                    wasLocallyInitiated: wasLocallyInitiated,
                                                                    transaction: transaction)
                 } else {
-                    promise = .value
+                    promise = .value(())
                 }
             }
         }
@@ -364,7 +363,7 @@ public class StickerManager: NSObject {
                                                        transaction: SDSAnyWriteTransaction) -> Promise<Void> {
 
         if stickerPack.isInstalled {
-            return .value
+            return .value(())
         }
 
         Logger.verbose("Installing sticker pack: \(stickerPack.info).")
@@ -394,7 +393,7 @@ public class StickerManager: NSObject {
                 stickerPack: stickerPack,
                 item: stickerPack.cover,
                 transaction: transaction)
-        }.done { shouldNotify in
+        }.done { (shouldNotify: Bool) in
             if shouldNotify {
                 stickersDidChangeEvent.requestNotify()
                 needsNotify = false
@@ -403,7 +402,7 @@ public class StickerManager: NSObject {
         fetches.append(coverFetch)
 
         guard !onlyInstallCover else {
-            return when(fulfilled: fetches)
+            return Promise.when(fulfilled: fetches)
         }
 
         // The stickers.
@@ -415,7 +414,7 @@ public class StickerManager: NSObject {
                         item: item,
                         transaction: transaction)
                 }.done { shouldNotify in
-                    if shouldNotify, coverFetch.isResolved {
+                    if shouldNotify, coverFetch.isSealed {
                         // We should only notify for changes once we've fetched the cover
                         // Some views will assume that an installed pack always has a cover
                         // and faildebug otherwise
@@ -427,7 +426,7 @@ public class StickerManager: NSObject {
                 }
             )
         }
-        return when(fulfilled: fetches).ensure {
+        return Promise.when(fulfilled: fetches).ensure {
             if needsNotify {
                 stickersDidChangeEvent.requestNotify()
             }
@@ -757,12 +756,12 @@ public class StickerManager: NSObject {
 
     private struct StickerDownload {
         let promise: Promise<URL>
-        let resolver: Resolver<URL>
+        let future: Future<URL>
 
         init() {
-            let (promise, resolver) = Promise<URL>.pending()
+            let (promise, future) = Promise<URL>.pending()
             self.promise = promise
-            self.resolver = resolver
+            self.future = future
         }
     }
     private let stickerDownloadQueue = DispatchQueue(label: "stickerManager.stickerDownloadQueue")
@@ -796,7 +795,7 @@ public class StickerManager: NSObject {
                                                         _ = self.stickerDownloadQueue.sync {
                                                             self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
                                                         }
-                                                        stickerDownload.resolver.fulfill(data)
+                                                        stickerDownload.future.resolve(data)
                 },
                                                      failure: { [weak self] error in
                                                         guard let self = self else {
@@ -805,7 +804,7 @@ public class StickerManager: NSObject {
                                                         _ = self.stickerDownloadQueue.sync {
                                                             self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
                                                         }
-                                                        stickerDownload.resolver.reject(error)
+                                                        stickerDownload.future.reject(error)
             })
             self.stickerOperationQueue.addOperation(operation)
             return stickerDownload.promise
@@ -1096,15 +1095,15 @@ public class StickerManager: NSObject {
     }
 
     public class func ensureDownloadsAsync(forStickerPack stickerPack: StickerPack) -> Promise<Void> {
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         DispatchQueue.global().async {
             databaseStorage.read { (transaction) in
                 firstly {
                     ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }.done {
-                    resolver.fulfill(())
+                    future.resolve()
                 }.catch { (error) in
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             }
         }

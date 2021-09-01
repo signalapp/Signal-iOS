@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalClient
 
 extension RemoteAttestation {
@@ -88,8 +87,8 @@ extension RemoteAttestation {
     // MARK: -
 
     private static func getRemoteAttestationAuth(forService service: RemoteAttestationService) -> Promise<RemoteAttestationAuth> {
-        Promise { resolver in
-            self.getRemoteAttestationAuth(forService: service, success: resolver.fulfill, failure: resolver.reject)
+        Promise { future in
+            self.getRemoteAttestationAuth(forService: service, success: future.resolve, failure: future.reject)
         }
     }
 
@@ -159,7 +158,7 @@ extension RemoteAttestation {
             } else {
                 return getRemoteAttestationAuth(forService: service)
             }
-        }.then(on: .global()) { auth -> Promise<AttestationResponse> in
+        }.then(on: .global()) { (auth: RemoteAttestationAuth) -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
 
             let request = remoteAttestationRequest(enclaveName: config.enclaveName,

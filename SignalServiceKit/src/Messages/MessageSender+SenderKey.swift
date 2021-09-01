@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import PromiseKit
 import SignalClient
 import SignalMetadataKit
 
@@ -173,14 +172,13 @@ extension MessageSender {
         // Without calling the perRecipient failures, we declare this as a guarantee.
         // All errors must be caught and handled. If not, we may end up with sends that
         // pend indefinitely.
-        let senderKeyGuarantee: Guarantee<Void> = firstly {
-            senderKeyDistributionPromise(
-                recipients: recipients,
-                thread: thread,
-                originalMessage: message,
-                udAccessMap: udAccessMap,
-                sendErrorBlock: wrappedSendErrorBlock)
-        }.then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
+        let senderKeyGuarantee: Guarantee<Void> = senderKeyDistributionPromise(
+            recipients: recipients,
+            thread: thread,
+            originalMessage: message,
+            udAccessMap: udAccessMap,
+            sendErrorBlock: wrappedSendErrorBlock
+        ).then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
@@ -226,7 +224,7 @@ extension MessageSender {
                         }
                     }
                 }
-            }.recover(on: self.senderKeyQueue) { error in
+            }.recover(on: self.senderKeyQueue) { error -> Void in
                 // If the sender key message failed to send, fail each recipient that we hoped to send it to.
                 Logger.error("Sender key send failed: \(error)")
                 senderKeyRecipients.forEach { wrappedSendErrorBlock($0, error) }
@@ -235,7 +233,7 @@ extension MessageSender {
 
         // Since we know the guarantee is always successful, on any per-recipient failure, this generic error is used
         // to fail the returned promise.
-        return senderKeyGuarantee.done {
+        return senderKeyGuarantee.done(on: .global()) {
             if didHitAnyFailure.get() {
                 // MessageSender just uses this error as a sentinel to consult the per-recipient errors. The
                 // actual error doesn't matter.
@@ -316,16 +314,16 @@ extension MessageSender {
             // to *also* fail the original message send.
             firstly { () -> Promise<Void> in
                 MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
-            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<SignalServiceAddress>]> in
+            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<SignalServiceAddress, Error>]> in
                 // For each SKDM request we kick off a sendMessage promise.
                 // - If it succeeds, great! Record a successful delivery
                 // - Otherwise, invoke the sendErrorBlock
                 // We use when(resolved:) because we want the promise to wait for
                 // all sub-promises to finish, even if some failed.
-                when(resolved: skdmSends.map { messageSend in
-                    return firstly { () -> Promise<Any?> in
+                Guarantee.when(resolved: skdmSends.map { messageSend in
+                    return firstly { () -> AnyPromise in
                         self.sendMessage(toRecipient: messageSend)
-                        return Promise(messageSend.asAnyPromise)
+                        return messageSend.asAnyPromise
                     }.map(on: self.senderKeyQueue) { _ -> SignalServiceAddress in
                         try self.databaseStorage.write { writeTx in
                             try self.senderKeyStore.recordSenderKeySent(
@@ -347,8 +345,8 @@ extension MessageSender {
             // We only want to pass along recipients capable of receiving a senderKey message
             return Array(recipientsNotNeedingSKDM) + resultArray.compactMap { result in
                 switch result {
-                case let .fulfilled(address): return address
-                case .rejected: return nil
+                case let .success(address): return address
+                case .failure: return nil
                 }
             }
         }.recover(on: senderKeyQueue) { error in
@@ -506,13 +504,13 @@ extension MessageSender {
                     guard let body = responseData, let expiry = error.httpRetryAfterDate else {
                         throw OWSAssertionError("Invalid spam response body")
                     }
-                    return Promise { resolver in
+                    return Promise { future in
                         self.spamChallengeResolver.handleServerChallengeBody(body, retryAfter: expiry) { didSucceed in
                             if didSucceed {
-                                resolver.fulfill(())
+                                future.resolve()
                             } else {
                                 let error = SpamChallengeRequiredError()
-                                resolver.reject(error)
+                                future.reject(error)
                             }
                         }
                     }.then(on: self.senderKeyQueue) {

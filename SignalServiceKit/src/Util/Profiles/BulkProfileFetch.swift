@@ -2,8 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import PromiseKit
-
 @objc
 public class BulkProfileFetch: NSObject {
 
@@ -192,7 +190,7 @@ public class BulkProfileFetch: NSObject {
             if hasHitRateLimitRecently {
                 // Wait before updating if we've recently hit the rate limit.
                 // This will give the rate limit bucket time to refill.
-                return after(seconds: 20.0)
+                return Guarantee.after(seconds: 20.0)
             } else {
                 return Guarantee.value(())
             }

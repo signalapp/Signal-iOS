@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc(OWSStorageServiceManager)
 public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
@@ -244,11 +243,11 @@ class StorageServiceOperation: OWSOperation {
     private let mode: Mode
 
     let promise: Promise<Void>
-    private let resolver: Resolver<Void>
+    private let future: Future<Void>
 
     fileprivate init(mode: Mode) {
         self.mode = mode
-        (self.promise, self.resolver) = Promise<Void>.pending()
+        (self.promise, self.future) = Promise<Void>.pending()
         super.init()
         self.remainingRetries = 4
     }
@@ -257,12 +256,12 @@ class StorageServiceOperation: OWSOperation {
 
     override func didSucceed() {
         super.didSucceed()
-        resolver.fulfill(())
+        future.resolve()
     }
 
     override func didFail(error: Error) {
         super.didFail(error: error)
-        resolver.reject(error)
+        future.reject(error)
     }
 
     // Called every retry, this is where the bulk of the operation's work should go.

@@ -4,7 +4,6 @@
 
 import Foundation
 import PassKit
-import PromiseKit
 import BonMot
 
 /* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.

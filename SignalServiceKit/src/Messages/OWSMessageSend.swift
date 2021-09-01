@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalMetadataKit
-import PromiseKit
 
 // Corresponds to a single effort to send a message to a given recipient,
 // which may span multiple attempts.  Note that group messages may be sent
@@ -89,16 +88,16 @@ public class OWSMessageSend: NSObject {
         self.localAddress = localAddress
         self.isLocalAddress = address.isLocalAddress
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         self.promise = promise
         self.success = {
-            resolver.fulfill(())
+            future.resolve()
         }
         self.failure = { error in
             if let sendErrorBlock = sendErrorBlock {
                 sendErrorBlock(error)
             }
-            resolver.reject(error)
+            future.reject(error)
         }
 
         super.init()
