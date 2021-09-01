@@ -264,7 +264,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let keyBackupEnclave = KeyBackupEnclave(
         name: "dcd2f0b7b581068569f19e9ccb6a7ab1a96912d09dde12ed1464e832c63fa948",
         mrenclave: "9db0568656c53ad65bb1c4e1b54ee09198828699419ec0f63cf326e79827ab23",
-        serviceId: "1f182fbdbf4c996e4629c72166df1da1713e2f0a88afb1010e46eeac887228b6"
+        serviceId: "446a6e51956e0eed502c6d9626476cea5b7278829098c34ca0cdce329753a8ee"
     )
 
     // An array of previously used enclaves that we should try and restore
@@ -275,7 +275,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
         KeyBackupEnclave(
             name: "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9",
             mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
-            serviceId: "51a56084c0b21c6b8f62b1bc792ec9bedac4c7c3964bb08ddcab868158c09982"
+            serviceId: "16b94ac6d2b7f7b9d72928f36d798dbb35ed32e7bb14c42b4301ad0344b46f29"
         )
     ]
 
