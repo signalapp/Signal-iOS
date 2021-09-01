@@ -908,7 +908,7 @@
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "فقط مدیران می‌توانند در این گروه پیام ارسال کنند.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "نمی توانید بیش از %@ گپ را انتخاب کنید.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "نمی‌توانید بیش از %@ گفتگو را انتخاب کنید.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "گروه ها";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "در حال بارگیری پیام‌های بیشتر…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "ادامه مطلب";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "بیشتر بخوانید";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "روی کلیپ‌بورد کپی شد";
@@ -1244,7 +1244,7 @@
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "به اشتراک گذاری";
 
 /* Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "یک قدم بیشتر";
+"DEBUG_LOG_ALERT_TITLE" = "یک مرحلهٔ دیگر";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "لینک خلاصه در کلیپ بورد شما کپی شد. در حال ریدایرکت شدن به لیست مسائل گیت هاب می باشید.";
@@ -1364,7 +1364,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "با ادامه دادن این کار، سیگنال روی دستگاه هایی که با همین شماره تلفن ثبت نام شده اند از کار می افتد.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "امکان تائید دستگاه جدید شما نیست، لطفا دوباره تلاش کنید";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "امکان تأیید دستگاه جدید شما نیست، لطفا دوباره تلاش کنید";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "عملیات انتقال انجام نشد، لطفا از نزدیک بودن دستگاه ها مطمئن شده و دوباره امتحان کنید";
@@ -1394,7 +1394,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "این کد QR را در قابل دستگاه دیگر خود قرار دهید.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "آیا درخواست را روی دستگاه قدیمی خود مشاهده نمی‌کنید؟";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "در انتظار دستگاه دیگر...";
@@ -1451,7 +1451,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "ثانیه";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "هنگامی که فعال شود، در مکالمه‌ها‌یی که شما آغاز می‌کنید پیام‌های ارسال و دریافت شدهٔ جدید پس از دیده شدن ناپدید خواهند شد.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "هفته";
@@ -1460,7 +1460,7 @@
 "DISMISS_BUTTON_TEXT" = "نادیده گرفتن";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "رد کردن منوی زمینه";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "محل دورزدن سانسور";
@@ -1478,31 +1478,31 @@
 "DONATION_MEGAPHONE_TITLE" = "حمایت از سیگنال";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "مبلغ کمک اهدایی";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "مبلغ دلخواه را وارد کنید";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "حمایت از سیگنال";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "راه‌‌های دیگر حمایت";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "مبلغ بیشتری را برای حمایت انتخاب کنید";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "مبلغ کم‌تری را برای حمایت انتخاب کنید";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "مبلغی را برای حمایت انتخاب کنید";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "ممنون از پشتیبانی شما";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "سیگنال با کمک افرادی همانند شما پشتیبانی می‌شود.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
@@ -1541,13 +1541,13 @@
 "EDIT_ITEM_COPY_ACTION" = "کپی";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hey,\n\nLately I've been using Signal to keep the chats on my iPhone private. I'd like you to install it too, so we can be confident that only you and I can read our messages or hear our calls.\n\nSignal is available for iPhones and Android. Get it here: %@\n\nSignal works like your existing messaging app. We can send pictures and video, make calls, and start group chats. The best part is, no one else can see any of it, not even the people who make Signal!\n\nYou can read more about Open Whisper Systems, the people who make Signal, here: %@";
+"EMAIL_INVITE_BODY" = "سلام،\n\nبه‌تازگی در حال استفاده از سیگنال بودم تا گفتگوهام رو در iPhone خصوصی نگه دارم. دوست دارم تا شما هم این برنامه رو نصب کنید تا خیالمون از اینکه فقط من و شما می‌تونیم پیام‌هامون رو بخونیم یا تماس‌هامون رو بشنویم.\n\nسیگنال برای آیفون و اندروید در دسترس است. دریافت برنامه از: %@\n\nسیگنال مثل برنامهٔ پیام‌رسان فعلی شما کار می‌کنه. ما می‌تونیم عکس و ویدئو بفرستیم، تماس بگیریم، و گفتگوها‌ی گروهی شروع کنیم. بهترین قسمتش اینجاست، که هیچکس دیگه‌ای نمی‌تونه اون‌ها رو ببینه، حتی سازندگان سیگنال\n\nشما می‌توانید در مورد Open Whisper Systems، سازندگان سیگنال، اینجا بخوانید: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "به نرم افزار پیام رسان سیگنال بپیوندید";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "دستگاه شما برای ارسال ایمیل پیکربندی نشده است. برای ارسال یک درخواست پشتیبانی، ایمیل را روی دستگاه خود تنظیم کنید یا به support@signal.org ایمیل ارسال کنید";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "ایمیل در دسترس نیست";
@@ -1736,7 +1736,7 @@
 "FAILED_VERIFICATION_TITLE" = "تأیید شمارهٔ امنیتی ناموفق بود!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "علامت‌گذاری به عنوان تائید شده";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "علامت‌گذاری به عنوان تأیید شده";
 
 /* Label for button to reset a session. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "ریست نشست";
@@ -1943,13 +1943,13 @@
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ و %@ تماس را ترک کردند";
 
 /* String indicating one person is currently in the call */
-"GROUP_CALL_ONE_IN_THIS_CALL" = "در این تماس · 1 نفر";
+"GROUP_CALL_ONE_IN_THIS_CALL" = "در این تماس · ۱ نفر";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ در این تماس می باشد";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ در این تماس حضور دارد";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ is presenting";
+"GROUP_CALL_PRESENTING_FORMAT" = "%@ در حال ارائه است";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "اتصال مجدد";
@@ -1958,13 +1958,13 @@
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "شخصی با شمارهٔ امنیتی تغییر یافته به این تماس پیوسته است.";
 
 /* Toast view text informing user about swiping to screen share */
-"GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
+"GROUP_CALL_SCREEN_SHARE_TOAST" = "برای مشاهدهٔ اشتراک صفحه انگشت‌تان را به سمت بالا بکشید";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "شخصی تماس گروهی را شروع کرد";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "یک نفر تماس گروهی را شروع کرد";
 
 /* Toast view text informing user about swiping to speaker view */
-"GROUP_CALL_SPEAKER_VIEW_TOAST" = "برای تغییر نماها به بالا بکشید.";
+"GROUP_CALL_SPEAKER_VIEW_TOAST" = "برای تغییر نماها به سمت بالا بکشید.";
 
 /* Button to start a group call */
 "GROUP_CALL_START_BUTTON" = "شروع تماس";
@@ -1985,7 +1985,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ و %2$@ در این تماس هستند";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "You were disconnected from the call. Check your connection and try again.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "ارتباط شما با تماس قطع شد. اتصال خود را بررسی کنید و دوباره امتحان کنید.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "شما";
@@ -2003,7 +2003,7 @@
 "GROUP_CALLS_MEGAPHONE_TITLE" = "معرفی تماس‌های گروهی";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "شما گروه رو خلق کردی";
+"GROUP_CREATED_BY_LOCAL_USER" = "شما گروه را ایجاد کردید.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@شما را به گروه اضافه کرد.";
@@ -2012,76 +2012,76 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "گروه ایجاد شد.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "بعضی از اعضا به گروه اضافه نشدند. برای امتحان دوباره لمس کنید.";
+"GROUP_CREATION_FAILED" = "همهٔ اعضا به گروه اضافه نشدند. برای تلاش دوباره ضربه بزنید.";
 
 /* Text indication the user can tap to view the full group description */
 "GROUP_DESCRIPTION_MORE" = "بیشتر";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "افزودن توضیحات گروه...";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "توضیحات گروه برای اعضای این گروه و کسانی که دعوت شده‌اند قابل رؤیت خواهد بود.";
 
 /* Title for the group description view. */
-"GROUP_DESCRIPTION_VIEW_TITLE" = "Group Description";
+"GROUP_DESCRIPTION_VIEW_TITLE" = "توضیحات گروه";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Group Description (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "توضیحات گروه (%@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
-"GROUP_INVALID_INVITES_ADDED_1" = "An invalid invite was added.";
+"GROUP_INVALID_INVITES_ADDED_1" = "یک دعوت نامعتبر اضافه شد.";
 
 /* Message indicating that 1 invalid invite was added by the local user. */
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_1" = "شما یک دعوت نامعتبر اضافه کردید.";
 
 /* Message indicating that multiple invalid invites were added by the local user. */
-"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "شما دعوت نامه های نامعتبر اضافه کردید.";
+"GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "شما چند دعوت نامعتبر اضافه کردید.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ added an invalid invite.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ یک دعوت نامعتبر اضافه کرد.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ added invalid invites.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ چند دعوت نامعتبر اضافه کرد.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
-"GROUP_INVALID_INVITES_ADDED_N" = "Invalid invites were added.";
+"GROUP_INVALID_INVITES_ADDED_N" = "چند دعوت نامعتبر اضافه شدند.";
 
 /* Message indicating that 1 invalid invite was revoked. */
-"GROUP_INVALID_INVITES_REMOVED_1" = "An invalid invite was revoked.";
+"GROUP_INVALID_INVITES_REMOVED_1" = "یک دعوت نامعتبر لغو شد.";
 
 /* Message indicating that 1 invalid invite was revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "You revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_1" = "شما یک دعوت نامعتبر را لغو کردید.";
 
 /* Message indicating that multiple invalid invites were revoked by the local user. */
-"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "You revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "شما دعوت‌های نامعتبر را لغو کردید.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ revoked an invalid invite.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ یک دعوت نامعتبر را لغو کرد.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ revoked invalid invites.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ دعوت‌های نامعتبر را لغو کرد.";
 
 /* Message indicating that multiple invalid invites were revoked. */
-"GROUP_INVALID_INVITES_REMOVED_N" = "Invalid invites were revoked.";
+"GROUP_INVALID_INVITES_REMOVED_N" = "دعوت‌های نامعتبر لغو شدند.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "The group link was turned off.";
+"GROUP_INVITE_LINK_DISABLED" = "پیوند گروه غیرفعال شد.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "شما پیوند گروه را خاموش کردید.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "شما پیوند گروه را غیرفعال کردید.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ turned off the group link.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ پیوند گروه را غیرفعال کرد.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "The group link was turned on with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "پیوند گروه با موافقت مدیر فعال شد.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "شما پیوند گروه را با نیاز به تأیید مدیر فعال کردید.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "شما پیوند گروه را با موافقت مدیر فعال کردید.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval on.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ پیوند گروه را با موافقت مدیر فعال کرد.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "The group link was turned on with admin approval off.";
@@ -2090,7 +2090,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "شما پیوند گروه را بدون تأیید مدیر خاموش کردید.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned on the group link with admin approval off.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ پیوند گروه را با موافقت مدیر فعال کرد.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = "لینک گروه بازنشانی شد.";
@@ -2111,7 +2111,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ turned off admin approval for the group link.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Admin approval was turned on for the group link.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "موافقت مدیر برای پیوند گروه فعال شد.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "شما موافقت مدیر را برای پیوند گروه فعال کردید.";
@@ -2189,7 +2189,7 @@
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "نیاز به یک مدیر برای تأیید اعضای جدید که از طریق پیوند گروه می‌پیوندند.";
 
 /* Label for the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "تائید اعضای جدید";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "تأیید اعضای جدید";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Enable and Share Link";
@@ -2216,7 +2216,7 @@
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "کد QR";
 
 /* Label for the 'approve new members' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "تائید اعضای جدید";
+"GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "تأیید اعضای جدید";
 
 /* Label for the 'copy link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_COPY_LINK" = "کپی کردن لینک";
@@ -2246,7 +2246,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "اشتراک‌گذاری از طریق سیگنال";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Anyone with this link can view this group’s name and members and request to join.  Share it with people you trust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "هرکسی با این پیوند می‌تواند نام و اعضای گروه را مشاهده کند و درخواست پیوستن بدهد. فقط با کسانی که اعتماد دارید به اشتراک بگذارید.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "لینک گروه";
@@ -2315,7 +2315,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@امتیازات مدیریتی شما را لغو کرده است.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "A member added you to the group.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "یک عضو شما را به گروه اضافه کرد.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "مدیر";
@@ -2363,7 +2363,7 @@
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ عضو گروه نام یکسانی دارند.";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group Name (Required)";
+"GROUP_NAME_PLACEHOLDER" = "نام گروه (الزامی)";
 
 /* Title for the group name view. */
 "GROUP_NAME_VIEW_TITLE" = "نام گروه";
@@ -2462,13 +2462,13 @@
 "GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ canceled their request to join the group.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "You denied a request to join the group from %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "شما یک درخواست از %@ را برای پیوستن به گروه رد کردید.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ denied a request to join the group from %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ درخواستی از %1$@ را برای پیوستن به گروه رد کرد.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "A request to join the group from %@ was denied.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "یک درخواست از %@ برای پیوستن به گروه رد شد. ";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ requested to join via the group link.";
@@ -2564,7 +2564,7 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ members couldn’t be added to the New Group and have been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ نفر از اعضا نمی‌توانستند به گروه جدید اضافه شوند و از گروه حذف شد‌ه‌اند.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_1" = "A member couldn’t be added to the New Group and has been invited to join";
@@ -2609,13 +2609,13 @@
 "GROUPS_INVITE_FRIENDS_BUTTON" = "دعوت دوستان";
 
 /* Body text for the first section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "گروه‌های قدیمی گروه‌هایی هستند که با قابلیت‌های گروه‌ جدید مثل مدیران و به‌روزرسانی‌های مشروح گروه سازگار نیستند.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_1_BODY" = "گروه‌های قدیمی گروه‌هایی هستند که با قابلیت‌ها‌ی گروه‌ جدید مثل مدیران و به‌روزرسانی‌های توصیفی گروه سازگار نیستند.";
 
 /* Title for the first section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "گروه‌های قدیمی چیستند؟";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Legacy Groups can't yet be upgraded to New Groups, but you can create a New Group with the same members if they're on the latest version of Signal.\n\nSignal will offer a way to upgrade Legacy Groups in the future.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "گروه‌های قدیمی هنوز نمی‌توانند به گروه‌های جدید ارتقا پیدا کنند، اما شما می‌توانید یک گروه جدید با همان اعضا ایجاد کنید در صورتی که همگی از آخرین نسخهٔ سیگنال استفاده می‌کنند.\n\nسیگنال در آینده راهی برای ارتقای گروه‌های قدیمی ارائه خواهد داد.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "می‌توانم یک گروه قدیمی را به‌روزرسانی کنم؟";
@@ -2654,19 +2654,19 @@
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "This group cannot be created because %1$@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "A Legacy Group will be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "یک گروه قدیمی ایجاد خواهد شد چون ۱ عضو دارد از یک نسخهٔ قدیمی سیگنال استفاده می‌کند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند یک گروه با سبک جدید با آن‌ها بسازید، یا آن‌ها را قبل از ساختن گروه حذف کنید.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "A Legacy Group will be created because %@ members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "یک گروه قدیمی ایجاد خواهد شد چون %@ عضو دارند از یک نسخهٔ قدیمی سیگنال استفاده می‌کنند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند یک گروه با سبک جدید با آن‌ها بسازید، یا آن‌ها را قبل از ساختن گروه حذف کنید.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 member does not support New Groups, so this will be a Legacy Group. %@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "۱ عضو از گروه‌های جدید پشتیبانی نمی‌کند، پس این یک گروه قدیمی خواهد بود. %@";
 
 /* Indicates that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ members do not support New Groups, so this will be a Legacy Group. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_N" = "%1$@ عضو از گروه‌های جدید پشتیبانی نمی‌کنند، پس این یک گروه قدیمی خواهد بود. %2$@";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "این یک گروه قدیمی است. قابلیت‌ها‌یی نظیر مدیران گروه فقط برای گروه‌های جدید در دسترس هستند. %@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "This Legacy Group is not yet ready to be upgraded to a New Group. %@.";
@@ -2702,7 +2702,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تمام تاریخچهٔ گروه و رسانه‌های پیش از ارتقا حفظ شده‌اند.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "گروه‌های جدید دارای قابلیت‌هایی مانند @اشاره‌ها و مدیران گروه هستند و از قابلیت‌های بیشتری در آینده پشتیبانی خواهند کرد.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "گروه‌های جدید دارای قابلیت‌ها‌یی مانند اشاره‌ها@ و مدیران گروه هستند و از قابلیت‌ها‌ی بیشتری در آینده پشتیبانی خواهند کرد.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "گروه‌های جدید";
@@ -2777,7 +2777,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "مدیر جدید را انتخاب کنید";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Signal groups perform best with %@ members or less. Adding more members will cause delays sending and receiving messages.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "گروه‌های سیگنال با %@ عضو یا کمتر به بهترین شکل عمل می‌کنند. افزودن اعضای بیشتر باعث بوجود آمدن تأخیر در ارسال و دریافت پیام‌ها خواهد شد.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "تعداد اعضا به انتها رسیده است";
@@ -2891,16 +2891,16 @@
 "IN_CALL_TERMINATED" = "پایان تماس. ";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These chats are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "این گفتگوها بایگانی شده‌اند و تنها در صورتی در صندوق ورودی نمایش داده خواهند شد که پیام‌های جدید دریافت شوند.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
+"INBOX_VIEW_EMPTY_INBOX" = "هنوز گفتگویی وجود ندارد.\nبا پیام دادن به یک دوست آغاز کنید.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ با شما تماس گرفت";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "شما می‌توانید پیام‌های همگام‌سازی شده را از تلفن یا iPad خود دریافت کنید.  برای امنیت شما، تاریخچهٔ گفتگو به دستگاه‌های پیوند داده شدهٔ جدید منتقل نمی‌شود.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ عضو سیگنال شده است!";
@@ -2978,7 +2978,7 @@
 "KEY_COMMAND_STICKERS" = "نمایش استیکرها";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Chat";
+"KEY_COMMAND_UNARCHIVE" = "خارج کردن گفتگو از بایگانی";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "اطلاعات بیشتر";
@@ -3026,7 +3026,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "خطا در اتصال دستگاه جدید";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Link previews will now be generated for all sites.";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "پیش‌نمایش‌های پیوند حالا برای همهٔ سایت‌ها ایجاد خواهند شد.";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "غیرفعال کردن";
@@ -3107,7 +3107,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "برای همه پاک شود";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be deleted for everyone in the chat if they’re on a recent version of Signal. They will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "این پیام برای همه در این گفتگو در صورتی که آن‌ها از نسخهٔ اخیر سیگنال استفاده می‌کنند، حذف خواهد شد. آن‌ها قادر خواهند بود ببینند که شما پیامی را پاک کردید.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "این پیام را می‌خواهید برای چه کسانی حذف کنید؟";
@@ -3317,7 +3317,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "مسدودیت این گروه را برداشته و نام و عکس‌ خود را با اعضای آن به اشتراک می‌گذارید؟ تا زمانی که مسدودیت آن‌ها را برندارید هیچ پیامی دریافت نخواهید کرد.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Unblock this group? They won’t know you’ve seen their messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "این گروه را رفع مسدودیت می‌کنید؟ تا زمانی که نپذیرید آن‌ها متوجه نخواهند شد که پیام‌شان را خوانده‌اید.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "ادامه دادن";
@@ -3326,10 +3326,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continue this chat with %@ and share your name and photo with them?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "این گفتگو را با %@ ادامه می‌دهید و نام و عکس خود را با آن‌ها به اشتراک می‌گذارید؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continue your chat with this group and share your name and photo with its members?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "آیا به گفتگو‌ی خود با این گروه ادامه می‌دهید و نام و عکس خود را با اعضای آن به اشتراک می‌گذارید؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "به %@ اجازه می‌دهید که به شما پیام دهد و نام و عکس خود را با آن‌ها به اشتراک می‌گذارید؟ تا زمانی که نپذیرید آن‌ها متوجه نمی‌شوند که پیام‌شان را خوانده‌اید.";
@@ -3398,10 +3398,10 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "پیام جدید";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تائیدشده نیست. برای مشاهده تنظیمات لمس کنید.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تأیید شده نیست. برای مشاهده گزینه‌ها ضربه بزنید.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تائیدشده نیست. برای مشاهده تنظیمات لمس کنید.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ دیگر تأیید شده نیست. برای مشاهدهٔ گزینه‌ها ضربه بزنید.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "شما 1 عضو از این گروه را مسدود کردید.";
@@ -3410,7 +3410,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "شما %@ عضو از این گروه را مسدود کرده‌اید";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "بیش از یک کاربر این گروه، تائید نشده‌اند. برای دسترسی به تنظیمات لمس کنید.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "بیش از یک کاربر این گروه، تأیید نشده‌اند. برای دسترسی به تنظیمات لمس کنید.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "پیام های جدید";
@@ -3671,13 +3671,13 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "اجازه مجوزها";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "اجازه دادن به اعلان‌ها و مخاطبین به شما اجازه می‌دهد ببینید که پیام‌ها چه زمانی می‌رسند و به پیدا کردن افرادی که می‌شناسید کمک می‌کند. مخاطبین سرتاسر رمزگذاری شده‌اند تا سرویس سیگنال قادر به دیدن آن‌ها نباشد.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "اجازه مجوزها";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "انتخاب کنید چه کسانی می‌توانند شما را در سیگنال با شماره‌تلفن‌تان %@ پیدا کنند   ";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
@@ -3695,7 +3695,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "شماره تلفن شما";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "شماره‌تلفن نامعتبر. لطفاً برای ثبت‌نام یک شماره‌تلفن معتبر وارد کنید. ";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "شانس شما برای حدس رمزتان تمام شد، ولی کماکان می توانید با ایجاد یک رمز جدید به حساب سیگنال خود دسترسی داشته باشید. برای امنیت و حریم خصوصی شما، حساب کاربری شما بدون اطلاعات پروفایل و تنظیماتتان بازیابی خواهد شد.";
@@ -4022,10 +4022,10 @@
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" رد شد.";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revoke invalid invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "لغو دعوت نامعتبر";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revoke %@ invalid invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "لغو %@ دعوت نامعتبر";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "لغو دعوت";
@@ -4046,16 +4046,16 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "اطلاعات افراد دعوت شده از جانب اعضای دیگر گروه نشان داده نمی‌شوند. اگر دعوت‌شوندگان تصمیم به عضویت بگیرند، آنگاه اطلاعات آنان نشان داده خواهد شد. آن‌ها تا زمانی که عضو نشوند هیچ پیامی از گروه را نخواهند دید.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "People on this list are attempting to join “%@” via the group link.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "افراد در این فهرست در حال تلاش برای پیوستن به «%@» از طریق پیوند گروه هستند.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوت‌های نامعتبر";
 
 /* Title for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invited by Others";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "دعوت شده از سوی دیگران";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invited by You";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "دعوت شده از سوی شما";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "خطا در کنترل پیام دریافتی";
@@ -4085,7 +4085,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "همه";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "هرکسی که شماره‌تلفن شما را در مخاطبین خود داشته باشد، شما را به عنوان یک مخاطب در سیگنال خواهد دید. دیگران می‌توانند شما را در جستجو پیدا کنند.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "هیچ کس";
@@ -4112,7 +4112,7 @@
 "PHONE_NUMBER_SHARING_NOBODY" = "هیچ کس";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nobody will see your phone number on Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "هیچکس شماره‌تلفن شما را در سیگنال نخواهد دید.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -4172,7 +4172,7 @@
 "PIN_CREATION_CHANGING_TITLE" = "پین خود را تغییر دهید";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "رمز خود را تائید کنید";
+"PIN_CREATION_CONFIRM_TITLE" = "رمز خود را تأیید کنید";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "رمزی که به تازگی ایجاد کردید را وارد کنید.";
@@ -4241,7 +4241,7 @@
 "PIN_CREATION_WEAK_ERROR" = "یک پین قوی‌تر انتخاب کنید";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Your PIN was not able to be disabled. We’ll prompt you again later.";
+"PIN_DISABLE_ERROR_MESSAGE" = "غیرفعال کردن پین شما میسر نبود. ما دوباره از شما خواهیم پرسید.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "غیرفعال‌سازی پین ناموفق بود";
@@ -4268,7 +4268,7 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "فردا به شما یادآوری می‌کنیم";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple of weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "طی چند هفته، دوباره به شما یادآوری خواهیم کرد.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "یه هفته دیگه به شما یادآوری می‌کنیم";
@@ -4283,7 +4283,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "پین حداقل باید 4 رقم باشد.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "You can only pin up to 4 chats.";
+"PINNED_CONVERSATION_LIMIT" = "شما فقط تا ۴ مکالمه را می‌توانید سنجاق کنید.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "سنجاق شده";
@@ -4295,13 +4295,13 @@
 "PINS_MEGAPHONE_BODY" = "رمز شما اطلاعات ذخیره شده در سیگنال را رمزگذاری شده نگه می دارد";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "بعد به شما یادآوری خواهیم کرد. ایجاد رمز تا %ld روز دیگر اجباری خواهد شد.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "در آینده به شما یادآوری خواهیم کرد. ایجاد پین از %ld روز دیگر الزامی خواهد شد.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "یک پین جدید ایجاد کنید";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "رمز ایجاد شد. می توانید در تنظیمات آن را تغییر دهید.";
+"PINS_MEGAPHONE_TOAST" = "پین ایجاد شد. می‌توانید در تنظیمات آن را تغییر دهید.";
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "پین غیرفعال شد.";
@@ -4310,22 +4310,22 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "پخش رسانه";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ را به عنوان تائیدشده علامت نزده‌اید.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ را به عنوان تأییدشده علامت نزده‌اید.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "تائید شده";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "تأیید شده";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ تائید شده.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ تأیید شده.";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "برای اسکن، لمس کنید";
+"PRIVACY_TAP_TO_SCAN" = "برای اسکن کردن ضربه بزنید";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "پاک کردن تائید";
+"PRIVACY_UNVERIFY_BUTTON" = "پاک کردن تأیید";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "این به نظر شبیه کد امنیتی شما با %@ نیست. مطمئنید که در حال تأیید مخاطب درستی هستید؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "این شبیه به شمارهٔ امنیتی شما با %@ نیست. آیا در حال تأیید مخاطب درستی هستید؟";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "شمارهٔ موجود در کلیپ‌بورد شما شبیه شمارهٔ امنیتی برای این گفتگو نیست.";
@@ -4337,22 +4337,22 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "هر دو کاربر سیگنال یک کد امنیتی مجزا خواهند داشت. مطمئن شوید که %@ کد امنیتی مجزا *شما* را نشان می دهد.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "شما از نسخه قدیمی سیگنال استفاده می‌کنید. برای تائید، ابتدا به‌روزرسانی کنید.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "شما از نسخه قدیمی سیگنال استفاده می‌کنید. برای تأیید، ابتدا به‌روزرسانی کنید.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "مخاطب شما از نسخه قدیمی سیگنال استفاده می‌کند. برای تائید، ابتدا به‌روزرسانی شود.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "مخاطب شما از نسخه قدیمی سیگنال استفاده می‌کند. برای تأیید، ابتدا به‌روزرسانی شود.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "کد اسکن شده شبیه کد امنیتی به نظر نمی‌رسد. آیا هر دوی شما از نسخهٔ به‌روزرسانی شدهٔ سیگنال استفاده می‌کنید؟";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "کد اسکن شده شبیه شمارهٔ امنیتی نیست. آیا هر دوی شما از نسخهٔ به‌روز سیگنال استفاده می‌کنید؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "اگر نیاز به گفتگوی رمزنگاری‌شده با %@ دارید، شماره بالا را با شماره نمایش‌یافته در دستگاه مخاطب خود مقایسه کنید.\n\nهمچنین می‌توانید کد نمایش‌یافته روی دستگاه یکدیگر را اسکن کنید.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "تائید کد امنیتی";
+"PRIVACY_VERIFICATION_TITLE" = "تأیید کد امنیتی";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "علامت به عنوان تائیدشده";
+"PRIVACY_VERIFY_BUTTON" = "علامت به عنوان تأییدشده";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ادامه دادن";
@@ -4424,7 +4424,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "نمایه فقط می‌تواند هنگام اتصال به اینترنت به‌روز شود.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. Your profile and changes to it will be visible to your contacts and when you start or accept new chats.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "پروفایل شما سرتاسر رمزگذاری شده است. پروفایل شما و تغییرات آن، برای مخاطبین‌تان و هنگامی که گفتگوهای جدید را آغاز می‌کنید، قابل مشاهده خواهند بود.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "ذخیره";
@@ -4559,7 +4559,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "کد نادرست است";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "در حال تائید رمز...";
+"REGISTER_2FA_PIN_PROGRESS" = "در حال تأیید رمز...";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "ارسال";
@@ -4586,7 +4586,7 @@
 "REGISTRATION_ERROR" = "خطای ثبت‌نام";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لطفا برای فعال شدن حساب خود، کدی که به شما فرستاده‌ایم را تائید کنید.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لطفا برای فعال شدن حساب خود، کدی که به شما فرستاده‌ایم را تأیید کنید.";
 
 /* Alert body for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "To continue, check your phone's Internet connection and try again.";
@@ -4607,7 +4607,7 @@
 "REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "خطا در تائید";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "خطا در تأیید";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "این شماره، با کدی که به شما فرستاده‌ای مطابقت ندارد. لطفا دوباره بررسی کنید.";
@@ -4631,7 +4631,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "یک کد احراز هویت به این شماره ارسال خواهد شد. آیا شماره همراه بالا صحیح است؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تائید شماره: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأیید شماره: %@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ویرایش";
@@ -4706,7 +4706,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "کد امنیتی ما:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "کلید هویت‌سنجی شما با %@ تغییر یافته. دوباره تائید کنید.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "کلید هویت‌سنجی شما با %@ تغییر یافته. دوباره تأیید کنید.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "کد QR را از دستگاه مخاطب خود اسکن کنید.";
@@ -5234,19 +5234,19 @@
 "SETTINGS_NAV_BAR_TITLE" = "تنظیمات";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Include Muted Chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "شمارش گفتگوهای بسته شده";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "نشانگر شمارش";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "اعلان‌ها‌ی تماس و پیام هنگامی که تلفن شما قفل است، می‌توانند ظاهر شوند.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "محتوای نوتیفیکیشن";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "مخاطب به سیگنال می‌پیوندد";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "خبر بده هنگامی که...";
@@ -5648,16 +5648,16 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "نشانی کیف پول شما";
 
 /* Label for the 'phone number discoverability' setting. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "پیدا کردن من با شماره‌تلفن";
 
 /* The title for the phone number discoverability settings. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "پیدا کردن من با شماره‌تلفن";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "دیدن شماره‌تلفن من";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "دیدن شماره‌تلفن من";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "یادآور ها را خاموش کن";
@@ -5666,13 +5666,13 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "مطمئن شوید که رمز خود را حفظ کرده و یا به صورت ایمن آن را ذخیر کنید چون قابل بازیابی نیست. اگر رمز خود را فراموش کنید ممکن است اطلاعاتی را موقع ثبت نام دوباره حساب سیگنال خود از دست بدهید.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "رمز سیگنال خود را تائید کنید";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "رمز سیگنال خود را تأیید کنید";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "یادآور های رمز";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your PIN cannot be recovered. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "پین‌ها اطلاعات ذخیره شده در سیگنال را رمزگذاری شده نگه ‌می‌دارند تا فقط شما قادر به دسترسی به آن‌ها باشید. پین شما قابلیت بازیابی ندارد. پروفایل، تنظیمات، و مخاطبین شما هنگامی که شما سیگنال را دوباره نصب می‌کنید بازگردانی می‌شوند.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "پین خود را تغییر دهید";
@@ -5753,7 +5753,7 @@
 "SETTINGS_SECURITY_TITLE" = "امنیت برنامه";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ارسال رسانه با کیفیت بالا از داده‌های بیشتری استفاده خواهد کرد.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
@@ -5771,7 +5771,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل ثبت‌نام";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Require your Signal PIN to register your phone number again with Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "درخواست پین سیگنال شما برای ثبت‌نام دوباره با شماره‌تلفن شما در سیگنال.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "نشانگر های نوشته";
@@ -5780,7 +5780,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "ارسال کننده مهر و موم شده";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Show Status Icon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "نمایش آیکون وضعیت";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "اجازه به همه";
@@ -5900,7 +5900,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "New Groups are here!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "New Group features include @mentions, admins, and more. Try it out by tapping:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "گروه جدید دارای قابلیت‌ها‌یی مانند اشاره‌ها@، مدیران و موارد دیگر است. آن‌را با ضربه زدن بر گزینهٔ زیر امتحان کنید:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "استیکر";
@@ -5945,7 +5945,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "حذف";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "کلید هویت‌سنجی شما با %@ مطابقت دارد. شما می‌توانید این مخاطب را به عنوان تائید شده علامت‌گذاری کنید.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "کلید هویت‌سنجی شما با %@ مطابقت دارد. شما می‌توانید این مخاطب را به عنوان تأیید شده علامت‌گذاری کنید.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "کلید هویت‌سنجی مطابقت دارد!";
@@ -5954,7 +5954,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "تماس با ما";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "به ما بگویید چه پیش آمده است";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "درباره این موضوع به ما بگویید:";
@@ -6023,10 +6023,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "این پیام حذف شد";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو %@، %@، و %lu گروه دیگر";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "شما می‌توانید برای خودتان در این گفتگو یادداشت اضافه کنید. اگر حساب کاربری شما دارای هر گونه دستگاه پیوند داده شدهٔ جدیدی باشد، یادداشت‌های جدید همگام‌سازی خواهند شد.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو %@";
@@ -6257,19 +6257,19 @@
 "VALIDATION_ERROR_TOO_LONG" = "نام دستگاه بیش از حد طولانی است";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "شما %@ را به عنوان تائیدنشده علامت‌گذاری کردید.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "شما %@ را به عنوان تأییدنشده علامت‌گذاری کردید.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "شما %@ را در دستگاه دیگری به عنوان تائیدنشده علامت‌گذاری کردید.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "شما %@ را در دستگاه دیگری به عنوان تأییدنشده علامت‌گذاری کردید.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "شما %@ را به عنوان تائید‌شده علامت‌گذاری کردید.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "شما %@ را به عنوان تأیید‌شده علامت‌گذاری کردید.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "شما %@ را در دستگاه دیگری به عنوان تائیدشده علامت‌گذاری کردید.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "شما %@ را در دستگاه دیگری به عنوان تأییدشده علامت‌گذاری کردید.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "وضعیت تائید تغییر یافت.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "وضعیت تأیید تغییر یافت.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "مشاهدهٔ شمارهٔ امنیتی";
@@ -6311,7 +6311,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "دو انگشت برای بزرگ کردن و کشیدن برای جابه‌جایی و تنظیم";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "برای پیش‌نمایش کاغذدیواری‌های بیشتر به سمت راست بکشید";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تنظیم کاغذدیواری برای تمامی گفتگوها.";

@@ -4604,7 +4604,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Necesitas registrarte antes de poder enviar un mensaje.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Existe una cuenta previamente registrada bajo este número que es posible trasferir.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Existe una cuenta registrada previamente con este número que es posible trasferir.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Fallo al verificar";

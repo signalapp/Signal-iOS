@@ -2786,7 +2786,7 @@
 "GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Add member anyway?";
 
 /* Label for button that lets the user view the request to join the group. */
-"GROUPS_VIEW_REQUEST_BUTTON" = "View Request";
+"GROUPS_VIEW_REQUEST_BUTTON" = "Bekyk versoek";
 
 /* Label for button that lets the user view the requests to join the group. */
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Bekyk versoeke";
@@ -2795,7 +2795,7 @@
 "HELP_CONTACT_US" = "Kontak Ons";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Support Center";
+"HELP_SUPPORT_CENTER" = "Steundienssentrum";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Geargiveerde kletse";
@@ -2852,10 +2852,10 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Verander foto’s";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Grant full access in Settings or change which photos Signal can access.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Verleen volle toegang in Instellings of verander tot welke foto’s Signal toegang het.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Not seeing your photos?";
+"IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Sien u nie u foto’s nie?";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Kon nie aanhegsel kies nie.";
@@ -2882,7 +2882,7 @@
 "IN_CALL_RINGING_AUDIO" = "Audio Call…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Video Call…";
+"IN_CALL_RINGING_VIDEO" = "Video-oproep…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Het geantwoord. Beveilig tans...";
@@ -2909,7 +2909,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Plakkers";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Dubbeltik en hou om op te neem. Laat los om te verstuur of vee na links om te kanselleer. Dibbeltik en vee op om opname te vergrendel.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Stemboodskap";
@@ -3248,7 +3248,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokkeer en wis";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Rapporteer gemorspos en versper";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Geblokkeerde mense sal jou nie kan bel of vir jou boodskappe kan stuur nie.";
@@ -3302,7 +3302,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Review Request";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Rapporteer as gemorspos en versper.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Aanvaar";
@@ -3344,10 +3344,10 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Ontblokkeer";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Cancel Request";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Kanselleer versoek";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Kanselleer versoek om by die groep aan te sluit?";
 
 /* Indicator that you have requested to join this group. */
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
@@ -3641,7 +3641,7 @@
 "ONBOARDING_DROPPED_YDB_EXPLANATION" = "Because you’ve been inactive for a long period of time, you must register again to use Signal.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Register for Signal";
+"ONBOARDING_DROPPED_YDB_TITLE" = "Registreer vir Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registreer iPad";
@@ -3668,34 +3668,34 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Om jou iPhone te koppel, word nie aanbeveel nie, en sal sekere kernfunksies beperk.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Laat toestemmings toe";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications and contacts lets you see when messages arrive and helps you find people you know. Contacts are encrypted so the Signal service can't see them.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Deur kennisgewings en kontakte toe te laat kan u sien wanneer boodskappe aankom en dit help om metse wat u ken te vinf. Kontakte is geëinkripteer sodat die Signal-diens dit nie kan sien nie.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Allow Permissions";
+"ONBOARDING_PERMISSIONS_TITLE" = "Laat toestemmings toe";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Choose who can find you on Signal with your phone number %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Kies wie u in Signal d.m.v. u telefoonnommer %@ kan vind";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Who can find you with your number?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Wie kan u d.m.v. u telefoonnommer vind?";
 
 /* Placeholder string for phone number field during registration */
-"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Your phone number";
+"ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "U telefoonnommer";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Please wait a few minutes before trying again. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Wag asb. ’n paar minute voor u weer probeer. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Voer jou foonnommer in";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
-"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Your Phone Number";
+"ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "U telefoonnommer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid phone number. Please enter a valid phone number to register.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ongeldige telefoonnommer. Voer ’n geldige telefoonnommer in om te registreer.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Jy mag nie verder jou PIN raai nie, maar jy kan steeds toegang tot jou Signal-rekening kry deur ’n nuwe PIN te skep. Vir jou privaatheid en sekuriteit sal jou rekening teruggelaai word sonder enige gestoorde profielinligting of -instellings.";
@@ -3779,28 +3779,28 @@
 "OUTGOING_CALL_FORMAT" = "You called %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Weier versoek";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ om %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ sal laat weet word dat u geweier het.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Weier hierdie versoek?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Versoek kon nie gekanselleer word nie.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Versoek kon nie geweier word nie.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Misluk";
@@ -3827,7 +3827,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Beskikbare balans: %@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Bevestig betaling";
@@ -5015,13 +5015,13 @@
 "SET_WALLPAPER_CHOOSE_PHOTO" = "Choose from Photos";
 
 /* Title for the wallpaper presets section */
-"SET_WALLPAPER_PRESETS" = "Presets";
+"SET_WALLPAPER_PRESETS" = "Voorinstellings";
 
 /* Title for the set wallpaper settings view. */
 "SET_WALLPAPER_TITLE" = "Set Wallpaper";
 
 /* Title for the 'account' link in settings. */
-"SETTINGS_ACCOUNT" = "Account";
+"SETTINGS_ACCOUNT" = "Rekening";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokkeer";
@@ -5111,13 +5111,13 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Data Usage";
+"SETTINGS_DATA" = "Datagebruik";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Use Less Data";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Gebruik minder data";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Using less data may improve calls on bad networks.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Die gebruik van minder data kan oproepe op swak netwerke verbeter.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Oproepe";
@@ -5141,7 +5141,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Data Usage";
+"SETTINGS_DATA_TITLE" = "Datagebruik";
 
 /* table cell label in conversation settings */
 "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
@@ -5273,13 +5273,13 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Beursadres gekopieer";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Alle betalings";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ at %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ om %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
@@ -5333,19 +5333,19 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Betalings kon nie gedeaktiveer word nie";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Besonderhede";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Aktiveer betalings";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is ’n nuwe privaatheidgefokusde digitale geldeenheid.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "About MobileCoin";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Oor MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
@@ -5378,16 +5378,16 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ongeldige beursadres";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Nog geen onlangse aktiwiteit.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Wil u betalings aktiveer?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Betalings nie geaktiveer nie";
 
 /* Message for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
@@ -5579,7 +5579,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Verkeerde adres";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
@@ -5615,13 +5615,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copy to Clipboard";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Kopieer na knipbord";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopieer na knipbord?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
@@ -5633,7 +5633,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Recovery Phrase";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Skryf die volgende 24 woorde in volgorde neer. Bewaar u lys op ’n veilige plek.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
@@ -5654,10 +5654,10 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Find Me by Phone Number";
 
 /* Label for the 'phone number sharing' setting. */
-"SETTINGS_PHONE_NUMBER_SHARING" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING" = "Sien my telefoonnommer";
 
 /* The title for the phone number sharing settings. */
-"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "See My Phone Number";
+"SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Sien my telefoonnommer";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Skakel herinneraars af";
@@ -5825,7 +5825,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Kan nie aanhegsel stuur nie";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Laai tans %1$@ van %2$@ op…";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Laai tans op...";
@@ -5954,10 +5954,10 @@
 "SUPPORT_CONTACT_US_HEADER" = "Kontak Ons";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Tell us what’s going on";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Vertel ons wat aangaan";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Tell us about the issue: ";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Vertel ons oor die probleem:";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Please email your support request to support@signal.org";

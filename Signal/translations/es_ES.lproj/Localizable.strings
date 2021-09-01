@@ -590,7 +590,7 @@
 "CAMERA_BUTTON_LABEL" = "Cámara";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Sólo puedes verificar a esta persona una vez que hayáis intercambiado mensajes.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Solo puedes verificar a esta persona una vez que hayáis intercambiado mensajes.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Fallo";
@@ -608,13 +608,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Otra burbuja";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "Este color sólo es visible para ti.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "Este color solo es visible para ti.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "Este color sólo es visible para ti.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "Este color solo es visible para ti.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "Este color sólo es visible para ti.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "Este color solo es visible para ti.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "¿Eliminar chat?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Sólo admins pueden enviar mensajes en este grupo.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Solo admins pueden enviar mensajes en este grupo.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Imposible seleccionar más de %@ chats.";
@@ -977,7 +977,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Editar detalles del grupo";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Sólo admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Solo admins";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquiera";
@@ -1109,7 +1109,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Enviar mensajes";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Sólo admins";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Solo admins";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Desbloquear grupo";
@@ -1598,16 +1598,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Fallo al acceder a los contactos.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Fallo al reenviar el mensaje.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Fallo al reenviar el mensaje al no estar disponible.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Fallo al reenviar mensajes al no estar disponibles.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Fallo al reenviar mensajes";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Fallo al guardar vídeo.";
@@ -1664,7 +1664,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "No se pudo entregar un mensaje de %@";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "No se pudo entregar un mensaje";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado recibido.";
@@ -1700,10 +1700,10 @@
 "ERROR_NETWORK_FAILURE" = "Fallo de red";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Ayúdanos a mejorar Signal explicándonos el fallo ocurrido junto con el registro de depuración de tu dispositivo a support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Ha ocurrido un fallo";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Este dispositivo ya no está enlazado. Vuelve a enlazarlo para enviar mensajes.";
@@ -1751,28 +1751,28 @@
 "FORWARD_MESSAGE" = "Reenviar mensaje";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Los reenvíos son ahora inmediatos.";
 
 /* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Send message";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Enviar mensaje";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Reenviar %@ mensajes ";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Reenvíos más rápidos";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Mensaje reenviado";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Mensajes reenviados";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Añadir un mensaje";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Reenviar a";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "No hay ningún adjunto en este chat.";
@@ -1838,7 +1838,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "La descripción del grupo puede ser editada por «%@».";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Sólo admins";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Solo admins";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Cualquiera";
@@ -1862,7 +1862,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "«%@» puede(n) modificar l@s participantes del grupo.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Sólo admins pueden modificar esta opción.";
+"GROUP_ADMIN_ONLY_WARNING" = "Solo admins pueden modificar esta opción.";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "No recibirás su audio ni vídeo y ni ell@s el tuyo.";
@@ -1871,10 +1871,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ está bloquead@";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Sólo admins del grupo pueden iniciar una llamada.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Solo admins del grupo pueden iniciar una llamada.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Imposible iniciar llamada de grupo";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Imposible iniciar llamada en grupo";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ está bloquead@";
@@ -1991,7 +1991,7 @@
 "GROUP_CALL_YOU" = "Tú";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "Participas en la llamada en grupo";
+"GROUP_CALL_YOU_ARE_HERE" = "Participas en la llamada";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Tú (en otro dispositivo)";
@@ -2147,10 +2147,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Se han modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para solo permitir a admins enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para permitir solo a admins enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ha modificado los ajustes del grupo para solo permitir a admins enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ha modificado los ajustes del grupo para permitir solo a admins enviar mensajes.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Este enlace de grupo es inválido.";
@@ -2261,7 +2261,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ te ha promovido a admin.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Has aceptado la invitación para participar en el grupo.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Has aceptado una invitación para participar en el grupo.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Has aceptado la invitación de %@ para participar en el grupo.";
@@ -3134,7 +3134,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reenviar mensaje";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Reenviar mensajes seleccionados";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Abrir invitación";
@@ -3173,13 +3173,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Paquete de stickers";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 seleccionados";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 seleccionado";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ seleccionados";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensaje";
@@ -3437,7 +3437,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal necesita acceder a tu fototeca para usar esta función.";
 
 /* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "Ninguno";
+"MISSING_VALUE" = "Ninguna";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "No se pueden enlazar más dispositivos.";
@@ -3458,13 +3458,13 @@
 "NETWORK_ERROR_RECOVERY" = "Combrueba que estás online y prueba de nuevo.";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Sólo red móvil";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Solo red móvil";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Nunca";
 
 /* String representing only the wifi interface */
-"NETWORK_INTERFACE_SET_WIFI" = "Sólo en Wi-Fi";
+"NETWORK_INTERFACE_SET_WIFI" = "Solo en Wi-Fi";
 
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi y red móvil";
@@ -3593,7 +3593,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nombre, contenido y acciones";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Sólo remitente";
+"NOTIFICATIONS_SENDER_ONLY" = "Solo remitente";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Ver";
@@ -3671,7 +3671,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Activar permisos";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Al permitir notificaciones y acceso a tus contactos te permite saber cuándo recibes un mensaje de una amistad y encontrar a personas que conoces. Tu lista de contactos está cifrada y sólo tú tienes acceso. Nadie más, ni siquiera la gente de Signal tiene acceso a ella.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Al permitir notificaciones y acceso a tus contactos te permite saber cuándo recibes un mensaje de una amistad y encontrar a personas que conoces. Tu lista de contactos está cifrada y solo tú tienes acceso. Nadie más, ni siquiera la gente de Signal tiene acceso a ella.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activar permisos";
@@ -3845,7 +3845,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "No tienes suficientes MOB para completar el pago.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "No tienes suficientes MOB para completar el pago. Sólo tienes %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "No tienes suficientes MOB para completar el pago. Solo tienes %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Pago inválido";
@@ -4100,7 +4100,7 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Mis contactos";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Sólo las personas entre tus contactos podrán ver que puedes comunicarte a través de Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Solo las personas entre tus contactos podrán ver que puedes comunicarte a través de Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Cualquiera";
@@ -4187,7 +4187,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Desactivar PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Si desactivas el PIN, perderás todos los datos de tu cuenta al volver a instalar Signal. Sólo podrás conservar los datos si los transfieres a otro dispositivo iOS durante el registro del nuevo dispositivo. No puedes activar el bloqueo de registro con el PIN desactivado.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Si desactivas el PIN, perderás todos los datos de tu cuenta al volver a instalar Signal. Solo podrás conservar los datos si los transfieres a otro dispositivo iOS durante el registro del nuevo dispositivo. No puedes activar el bloqueo de registro con el PIN desactivado.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Advertencia";
@@ -4199,7 +4199,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Fallo al crear el PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. Con el PIN, tu perfil, contactos, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
+"PIN_CREATION_EXPLANATION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que solo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. Con el PIN, tu perfil, contactos, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Saber más sobre el PIN";
@@ -4283,7 +4283,7 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "El PIN debe tener al menos 4 caracteres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Sólo puedes fijar un máximo de cuatro chats.";
+"PINNED_CONVERSATION_LIMIT" = "Solo puedes fijar un máximo de cuatro chats.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Chats fijados";
@@ -4292,7 +4292,7 @@
 "PINS_MEGAPHONE_ACTION" = "Crear PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso.";
+"PINS_MEGAPHONE_BODY" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que solo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Te lo recordaremos más tarde. Crear tu PIN será obligatorio en %ld días.";
@@ -4421,10 +4421,10 @@
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Nombre o alias (Necesario)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "El perfil sólo se puede actualizar con una conexión a internet activa.";
+"PROFILE_VIEW_NO_CONNECTION" = "El perfil solo se puede actualizar con una conexión a internet activa.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil también está cifrado de extremo a extremo. Tu perfil y sus actualizaciones sólo son visibles para tus contactos y las personas con las que inicias o aceptas un chat. Nadie más, ni siquiera la gente de Signal puede ver tu perfil.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil también está cifrado de extremo a extremo. Tu perfil y sus actualizaciones solo son visibles para tus contactos y las personas con las que inicias o aceptas un chat. Nadie más, ni siquiera la gente de Signal puede ver tu perfil.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Guardar";
@@ -4550,10 +4550,10 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Te quedan %lu intentos. Cuando superes el número de intentos permitidos, tu cuenta se bloqueará. Tras 7 días con tu cuenta bloqueada, podrás volver a registrarte en Signal con un nuevo PIN. Previamente se eliminará tu cuenta incluyendo tu perfil, contactos, grupos y personas bloqueadas.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta bloqueada, podrás volver a registrarte con un nuevo PIN de Signal. Previamente se eliminará tu cuenta con todo su contenido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Tan solo te queda 1 intento. Si fallas, tu cuenta se bloqueará. Tras 7 días con tu cuenta bloqueada, podrás volver a registrarte con un nuevo PIN de Signal. Previamente se eliminará tu cuenta con todo su contenido.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan sólo te queda 1 intento. Si fallas, podrás crear un nuevo PIN. Podrás registrar y usar tu cuenta de Signal de nuevo pero perderás los ajustes guardados, incluyendo tu perfil, contactos, grupos y personas bloqueadas.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Tan solo te queda 1 intento. Si fallas, podrás crear un nuevo PIN. Podrás registrar y usar tu cuenta de Signal de nuevo pero perderás los ajustes guardados, incluyendo tu perfil, contactos, grupos y personas bloqueadas.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorrecto";
@@ -4604,7 +4604,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Necesitas registrarte antes de poder enviar un mensaje.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Existe una cuenta registrada previamente con este número que es posible trasferir.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Fallo al verificar";
@@ -4646,7 +4646,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "El número de teléfono que deseas registrar ya está registrado en otro servidor. Dalo de baja del otro servidor e inténtalo de nuevo.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Eliminar la previsualización del enlace en el mensaje";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Seleccionar nuev@ admin";
@@ -4841,7 +4841,7 @@
 "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "¡Cumpleaños feliz! ¡Cumpleaños feliz! Te deseamos ...";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "Aquí sólo se ven nubes.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "Aquí solo se ven nubes.";
 
 /* 1984 is the book title. The file extension is a text file. */
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
@@ -5042,7 +5042,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Has desactivado manualmente la opción de evitar la censura.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "La opción para evitar censura sólo se puede activar con acceso a internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "La opción para evitar censura solo se puede activar con acceso a internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "La opción para evitar censura no es necesaria: Signal está conectada con su servidor.";
@@ -5297,7 +5297,7 @@
 "SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Los pagos en Signal no están disponibles. Todavía puedes transferir tus fondos a un «Exchange» pero no podrás recibir o enviar más pagos a través de Signal.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "La conversión es sólo una estimación y puede no ser exacta.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "La conversión es solo una estimación y puede no ser exacta.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Moneda";
@@ -5354,7 +5354,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Añadir fondos";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Siempre puedes recuperar tus fondos al transferirlos a un «exchange» que soporte MobileCoin. Tan sólo tienes que hacer una transferencia a tu cuenta en ese «exchange».";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Siempre puedes recuperar tus fondos al transferirlos a un «exchange» que soporte MobileCoin. Tan solo tienes que hacer una transferencia a tu cuenta en ese «exchange».";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Recuperar";
@@ -5411,7 +5411,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "¡Los pagos han llegado! (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Tu balance se restaurará automáticamente al reinstalar Signal si confirmas el PIN de tu cuenta de Signal. También puedes restaurar tu balance con la frase de recuperación: 24 palabras que tan sólo tú conoces. Anótala y guárdala en sitio seguro.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Tu balance se restaurará automáticamente al reinstalar Signal si confirmas el PIN de tu cuenta de Signal. También puedes restaurar tu balance con la frase de recuperación: 24 palabras que tan solo tú conoces. Anótala y guárdala en sitio seguro.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Añadir fondos";
@@ -5453,7 +5453,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "La tasa de «limpieza de monedas» se aplica cuando tus monedas no se pueden combinar para completar un pago. La limpieza te permite continuar enviado pagos.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "No tienes suficientes MOB para completar el pago. Sólo tienes %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "No tienes suficientes MOB para completar el pago. Solo tienes %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Balance insuficiente";
@@ -5528,7 +5528,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Pegar frase de recuperación";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Tu frase de recuperación son las 24 palabras que se generan al activar los pagos y que sólo tú conoces. Úsala para recuperar tu cartera y cuenta de pagos.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Tu frase de recuperación son las 24 palabras que se generan al activar los pagos y que solo tú conoces. Úsala para recuperar tu cartera y cuenta de pagos.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introducir frase de recuperación";
@@ -5672,7 +5672,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Recordatorios de PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "El PIN protege y almacena tu cuenta en Signal de forma cifrada y sólo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. El PIN no se puede recuperar. Con él, tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal.";
+"SETTINGS_PINS_FOOTER" = "El PIN protege y almacena tu cuenta en Signal de forma cifrada y solo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. El PIN no se puede recuperar. Con él, tu perfil, alias, grupos y personas bloqueadas se recuperarán al reinstalar Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Cambiar PIN";
@@ -5759,13 +5759,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Calidad";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Compartir contactos con iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las notificaciones y sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueo de registro";
@@ -5786,7 +5786,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "La función por defecto de «Remitente confidencial» impide al servidor de Signal saber quién envía los mensajes. Sólo la persona que los reciba sabrá quién los envía. Activa la opción «Permitir de cualquiera» para recibir mensajes con «remitente confidencial» de personas que no estén entre tus contactos y con las que no has compartido tu perfil.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "La función por defecto de «Remitente confidencial» impide al servidor de Signal saber quién envía los mensajes. Solo la persona que los reciba sabrá quién los envía. Activa la opción «Permitir de cualquiera» para recibir mensajes con «remitente confidencial» de personas que no estén entre tus contactos y con las que no has compartido tu perfil.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versión";
@@ -6026,7 +6026,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Participa en «%@», «%@» y %lu grupos adicionales";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, fotos ... que sólo tú puedes ver. Si tu cuenta tiene dispositivos enlazados, el contenido nuevo se sincronizará.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, fotos ... que solo tú puedes ver. Si tu cuenta tiene dispositivos enlazados, el contenido nuevo se sincronizará.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Participa en «%@»";
@@ -6200,7 +6200,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Saber más sobre el PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que sólo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. Con el PIN, tu perfil, contactos, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "El PIN permite activar el bloqueo de registro de tu número y almacena tu cuenta cifrada en el servidor de Signal de forma que solo tú puedes acceder a ella. Ni siquiera la gente de Signal tiene acceso. Con el PIN, tu perfil, contactos, grupos y personas bloqueadas se recuperarán al reinstalar Signal. No necesitas el PIN para abrir la aplicación.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "¡El PIN ha llegado!";
@@ -6218,7 +6218,7 @@
 "USERNAME_DESCRIPTION" = "Los alias de Signal (nombre de usuari@) son opcionales. Si decides crear un alias, otras personas podrán encontrarte en Signal por ese nombre y ponerse en contacto contigo sin conocer tu número de teléfono.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "El alias sólo puede contener a-Z, 0-9 y _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Tu alias solo puede contener a-Z, 0-9 y _";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "Fallo al buscar alias. Inténtalo más tarde.";
