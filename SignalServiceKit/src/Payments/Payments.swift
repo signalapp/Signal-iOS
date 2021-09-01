@@ -562,6 +562,8 @@ public class PaymentsConstants {
 
     private static let decimalFormattingInfo: DecimalFormattingInfo = {
         let numberFormatter = NumberFormatter()
+        numberFormatter.locale = .current
+        numberFormatter.numberStyle = .currency
         let decimalSeparator = numberFormatter.decimalSeparator ?? ""
         let groupingSeparator = numberFormatter.groupingSeparator ?? ""
         let groupingSize = numberFormatter.groupingSize
@@ -599,26 +601,20 @@ public class PaymentsConstants {
 
         // https://en.wikipedia.org/wiki/Decimal_separator
         let validDecimalSeparators = [",", ".", "'", "·"]
-        let validGroupingSeparators = [",", ".", " ", "'"]
+        let validGroupingSeparators = [",", ".", " ", "'",
+                                       // NOTE: NumberFormatter sometimes uses a 'NARROW NO-BREAK SPACE' (U+202F) as a grouping separator.
+                                       " "]
         let validGroupingSizes = [2, 3, 4]
         guard validDecimalSeparators.contains(decimalSeparator),
               validGroupingSeparators.contains(groupingSeparator),
               validGroupingSizes.contains(groupingSize),
               decimalSeparator != groupingSeparator else {
 
-            if FeatureFlags.paymentsBeta {
-                // Fall back to UK style formatting.
-                return DecimalFormattingInfo(decimalSeparator: ".",
-                                             groupingSeparator: ",",
-                                             groupingSize: 3,
-                                             shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
-            } else {
-                // Fall back to the most common international style formatting.
-                return DecimalFormattingInfo(decimalSeparator: ",",
-                                             groupingSeparator: ".",
-                                             groupingSize: 3,
-                                             shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
-            }
+            // Fall back to the most common international style formatting.
+            return DecimalFormattingInfo(decimalSeparator: ",",
+                                         groupingSeparator: ".",
+                                         groupingSize: 3,
+                                         shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
         }
         return DecimalFormattingInfo(decimalSeparator: decimalSeparator,
                                      groupingSeparator: groupingSeparator,

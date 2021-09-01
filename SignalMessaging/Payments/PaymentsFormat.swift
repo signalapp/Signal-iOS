@@ -20,7 +20,7 @@ public extension PaymentsFormat {
 
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
-        numberFormatter.numberStyle = .decimal
+        numberFormatter.numberStyle = .currency
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
         numberFormatter.maximumFractionDigits = (isShortForm
@@ -200,12 +200,12 @@ public extension PaymentsFormat {
                        minimumFractionDigits: Int = 2,
                        maximumFractionDigits: Int = 2,
                        locale: Locale? = nil) -> String? {
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.locale = locale ?? Locale.current
-        currencyFormatter.numberStyle = .decimal
+        let numberFormatter = NumberFormatter()
+        numberFormatter.locale = locale ?? Locale.current
+        numberFormatter.numberStyle = .currency
         // TODO: Check with design.
-        currencyFormatter.minimumFractionDigits = minimumFractionDigits
-        currencyFormatter.maximumFractionDigits = maximumFractionDigits
-        return currencyFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
+        numberFormatter.minimumFractionDigits = minimumFractionDigits
+        numberFormatter.maximumFractionDigits = maximumFractionDigits
+        return numberFormatter.string(from: NSNumber(value: fiatCurrencyAmount))
     }
 }
