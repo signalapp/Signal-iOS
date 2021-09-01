@@ -7,6 +7,7 @@
 
 @interface OWSOutgoingSenderKeyDistributionMessage ()
 @property (strong, nonatomic, readonly) NSData *serializedSKDM;
+@property (assign, atomic) BOOL isSentOnBehalfOfOnlineMessage;
 @end
 
 @implementation OWSOutgoingSenderKeyDistributionMessage
@@ -46,6 +47,11 @@
         return nil;
     }
     return data;
+}
+
+- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
+{
+    self.isSentOnBehalfOfOnlineMessage = message.isOnline;
 }
 
 @end
