@@ -21,7 +21,7 @@ public extension PaymentsFormat {
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
         // We use .decimal and not .currency because we don't
-        // want to a currency symbol.
+        // want to append currency symbol.
         numberFormatter.numberStyle = .decimal
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
@@ -205,7 +205,7 @@ public extension PaymentsFormat {
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
         // We use .decimal and not .currency because we don't
-        // want to a currency symbol.
+        // want to append currency symbol.
         numberFormatter.numberStyle = .decimal
         // TODO: Check with design.
         numberFormatter.minimumFractionDigits = minimumFractionDigits
