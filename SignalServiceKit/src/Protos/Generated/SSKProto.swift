@@ -2140,6 +2140,28 @@ extension SSKProtoCallMessageHangup.SSKProtoCallMessageHangupBuilder {
 
 #endif
 
+// MARK: - SSKProtoCallMessageOpaqueUrgency
+
+@objc
+public enum SSKProtoCallMessageOpaqueUrgency: Int32 {
+    case droppable = 0
+    case handleImmediately = 1
+}
+
+private func SSKProtoCallMessageOpaqueUrgencyWrap(_ value: SignalServiceProtos_CallMessage.Opaque.Urgency) -> SSKProtoCallMessageOpaqueUrgency {
+    switch value {
+    case .droppable: return .droppable
+    case .handleImmediately: return .handleImmediately
+    }
+}
+
+private func SSKProtoCallMessageOpaqueUrgencyUnwrap(_ value: SSKProtoCallMessageOpaqueUrgency) -> SignalServiceProtos_CallMessage.Opaque.Urgency {
+    switch value {
+    case .droppable: return .droppable
+    case .handleImmediately: return .handleImmediately
+    }
+}
+
 // MARK: - SSKProtoCallMessageOpaque
 
 @objc
@@ -2158,6 +2180,9 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
         let builder = SSKProtoCallMessageOpaqueBuilder()
         if let _value = data {
             builder.setData(_value)
+        }
+        if let _value = urgency {
+            builder.setUrgency(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2182,6 +2207,11 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
 
         public func setData(_ valueParam: Data) {
             proto.data = valueParam
+        }
+
+        @objc
+        public func setUrgency(_ valueParam: SSKProtoCallMessageOpaqueUrgency) {
+            proto.urgency = SSKProtoCallMessageOpaqueUrgencyUnwrap(valueParam)
         }
 
         public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2211,6 +2241,26 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
     @objc
     public var hasData: Bool {
         return proto.hasData
+    }
+
+    public var urgency: SSKProtoCallMessageOpaqueUrgency? {
+        guard hasUrgency else {
+            return nil
+        }
+        return SSKProtoCallMessageOpaqueUrgencyWrap(proto.urgency)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedUrgency: SSKProtoCallMessageOpaqueUrgency {
+        if !hasUrgency {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Opaque.urgency.")
+        }
+        return SSKProtoCallMessageOpaqueUrgencyWrap(proto.urgency)
+    }
+    @objc
+    public var hasUrgency: Bool {
+        return proto.hasUrgency
     }
 
     public var hasUnknownFields: Bool {

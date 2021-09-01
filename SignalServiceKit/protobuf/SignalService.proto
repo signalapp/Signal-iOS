@@ -122,7 +122,12 @@ message CallMessage {
   }
 
   message Opaque {
+    enum Urgency {
+      DROPPABLE = 0;
+      HANDLE_IMMEDIATELY = 1;
+    }
     optional bytes data = 1;
+    optional Urgency urgency = 2 [default = DROPPABLE];
   }
 
   optional Offer     offer               = 1;
