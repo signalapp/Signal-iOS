@@ -221,6 +221,10 @@ class PhotoCollectionContents {
 
 class PhotoCollection {
     private let collection: PHAssetCollection
+    
+    // The user never sees this collection, but we use it for a null object pattern
+    // when the user has denied photos access.
+    static let empty = PhotoCollection(collection: PHAssetCollection())
 
     init(collection: PHAssetCollection) {
         self.collection = collection
@@ -275,11 +279,30 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
+    
+    private lazy var fetchOptions: PHFetchOptions = {
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "endDate", ascending: true)]
+        return fetchOptions
+    }()
 
     func defaultPhotoCollection() -> PhotoCollection {
-        guard let photoCollection = allPhotoCollections().first else {
-            owsFail("Could not locate Camera Roll.")
+        var fetchedCollection: PhotoCollection?
+        PHAssetCollection.fetchAssetCollections(
+            with: .smartAlbum,
+            subtype: .smartAlbumUserLibrary,
+            options: fetchOptions
+        ).enumerateObjects { collection, _, stop in
+            fetchedCollection = PhotoCollection(collection: collection)
+            stop.pointee = true
         }
+
+        guard let photoCollection = fetchedCollection else {
+            Logger.info("Using empty photo collection.")
+            assert(PHPhotoLibrary.authorizationStatus() == .denied)
+            return PhotoCollection.empty
+        }
+
         return photoCollection
     }
 
