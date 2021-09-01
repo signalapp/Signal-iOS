@@ -479,20 +479,36 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     public func bodyTextLabelConfig(labelConfig: CVLabelConfig) -> CVBodyTextLabel.Config {
-        CVBodyTextLabel.Config(attributedString: labelConfig.attributedString,
-                               font: labelConfig.font,
-                               textColor: labelConfig.textColor,
-                               selectionColor: textSelectionColor,
-                               textAlignment: labelConfig.textAlignment ?? .natural,
-                               lineBreakMode: .byWordWrapping,
-                               numberOfLines: 0,
-                               cacheKey: labelConfig.cacheKey,
-                               items: bodyTextState.items)
+        // CVBodyTextLabel requires that attributedString has
+        // default attributes applied to the entire string's range.
+        let textAlignment: NSTextAlignment = labelConfig.textAlignment ?? .natural
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = textAlignment
+        let attributedText = labelConfig.attributedString.mutableCopy() as! NSMutableAttributedString
+        attributedText.addAttributes(
+            [
+                .font: labelConfig.font,
+                .foregroundColor: labelConfig.textColor,
+                .paragraphStyle: paragraphStyle
+            ],
+            range: attributedText.entireRange
+        )
+
+        return CVBodyTextLabel.Config(attributedString: attributedText,
+                                      font: labelConfig.font,
+                                      textColor: labelConfig.textColor,
+                                      selectionColor: textSelectionColor,
+                                      textAlignment: textAlignment,
+                                      lineBreakMode: .byWordWrapping,
+                                      numberOfLines: 0,
+                                      cacheKey: labelConfig.cacheKey,
+                                      items: bodyTextState.items)
     }
 
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
                                       componentDelegate: CVComponentDelegate) {
+        AssertIsOnMainThread()
         guard let componentView = componentView as? CVComponentViewBodyText else {
             owsFailDebug("Unexpected componentView.")
             return
@@ -504,20 +520,10 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                   cellMeasurement: cellMeasurement)
     }
 
-    public func buildBodyTextLabelConfig() -> CVBodyTextLabel.Config {
-        switch bodyText {
-        case .bodyText(let displayableText):
-            return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
-        case .oversizeTextDownloading:
-            return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
-        case .remotelyDeleted:
-            return bodyTextLabelConfig(labelConfig: labelConfigForRemotelyDeleted)
-        }
-    }
-
-    public func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
-                                          bodyTextLabelConfig: CVBodyTextLabel.Config,
-                                          cellMeasurement: CVCellMeasurement) {
+    private func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
+                                           bodyTextLabelConfig: CVBodyTextLabel.Config,
+                                           cellMeasurement: CVCellMeasurement) {
+        AssertIsOnMainThread()
 
         let bodyTextLabel = componentView.bodyTextLabel
         bodyTextLabel.configureForRendering(config: bodyTextLabelConfig)
@@ -529,6 +535,17 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                 cellMeasurement: cellMeasurement,
                                 measurementKey: Self.measurementKey_stackView,
                                 subviews: [ bodyTextLabel.view ])
+        }
+    }
+
+    public func buildBodyTextLabelConfig() -> CVBodyTextLabel.Config {
+        switch bodyText {
+        case .bodyText(let displayableText):
+            return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
+        case .oversizeTextDownloading:
+            return bodyTextLabelConfig(labelConfig: labelConfigForOversizeTextDownloading)
+        case .remotelyDeleted:
+            return bodyTextLabelConfig(labelConfig: labelConfigForRemotelyDeleted)
         }
     }
 
