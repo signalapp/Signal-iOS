@@ -415,6 +415,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return adjustedLayoutInfo
     }
 
+    public override class var layoutAttributesClass: AnyClass {
+        CVCollectionViewLayoutAttributes.self
+    }
+
     public required init(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
 

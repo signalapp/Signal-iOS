@@ -202,6 +202,14 @@ public class CVComponentBase: NSObject {
     public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
                                            maskCornerRadius: CGFloat,
                                            componentDelegate: CVComponentDelegate) {
+        Self.configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
+                                        maskCornerRadius: maskCornerRadius,
+                                        componentDelegate: componentDelegate)
+    }
+
+    public static func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
+                                                  maskCornerRadius: CGFloat,
+                                                  componentDelegate: CVComponentDelegate) {
         if componentDelegate.isConversationPreview {
             wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
         } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
@@ -266,20 +274,6 @@ extension CVComponentBase: CVNode {
             return .solidColor(color: conversationStyle.bubbleColorIncoming)
         }
         return conversationStyle.bubbleChatColor(message: message)
-    }
-}
-
-// MARK: -
-
-extension CVComponentBase {
-    public func buildBlurView(backgroundColor: UIColor,
-                              blurStyle: UIBlurEffect.Style = .regular) -> UIVisualEffectView {
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: blurStyle))
-        let blurOverlay = UIView()
-        blurOverlay.backgroundColor = backgroundColor
-        blurView.contentView.addSubview(blurOverlay)
-        blurOverlay.autoPinEdgesToSuperviewEdges()
-        return blurView
     }
 }
 
