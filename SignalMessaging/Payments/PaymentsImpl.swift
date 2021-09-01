@@ -138,7 +138,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
             owsFailDebug("Missing countryCode: \(localNumber).")
             return false
         }
-//        return true
         let validCountryCodes: [Int] = [
             // France
             33,

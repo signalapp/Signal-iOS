@@ -35,9 +35,17 @@ public extension PaymentsFormat {
         return numberFormatter
     }
 
+    private static let mobFormatShort: NumberFormatter = {
+        buildMobFormatter(isShortForm: true)
+    }()
+
+    private static let mobFormatLong: NumberFormatter = {
+        buildMobFormatter(isShortForm: false)
+    }()
+
     // Used for formatting MOB (not picoMob) values for display.
-    private static func mobFormat(isShortForm: Bool, locale: Locale? = nil) -> NumberFormatter {
-        buildMobFormatter(isShortForm: isShortForm, locale: locale)
+    private static func mobFormat(isShortForm: Bool) -> NumberFormatter {
+        isShortForm ? mobFormatShort : mobFormatLong
     }
 
     // Used for formatting decimal numbers in the
