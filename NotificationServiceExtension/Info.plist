@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.20.0</string>
 	<key>CFBundleVersion</key>
-	<string>24</string>
+	<string>25</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -62,16 +62,16 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
-	<key>OWSBundleVersion4</key>
-	<string>5.20.0.24</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Inter-Medium.otf</string>
-	</array>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>INSendMessageIntent</string>
 		<string>INStartCallIntent</string>
+	</array>
+	<key>OWSBundleVersion4</key>
+	<string>5.20.0.25</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Inter-Medium.otf</string>
 	</array>
 </dict>
 </plist>
