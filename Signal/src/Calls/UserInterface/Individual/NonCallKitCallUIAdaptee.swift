@@ -89,15 +89,10 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             owsFailDebug("localId does not match current call")
             return
         }
-
-        self.audioSession.isRTCAudioEnabled = true
         self.callService.individualCallService.handleAcceptCall(call)
     }
 
     func recipientAcceptedCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        self.audioSession.isRTCAudioEnabled = true
     }
 
     func localHangupCall(localId: UUID) {

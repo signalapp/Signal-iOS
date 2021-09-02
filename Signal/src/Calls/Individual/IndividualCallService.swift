@@ -164,6 +164,10 @@ import SignalMessaging
             owsFailDebug("missing call record")
         }
 
+        // Make RTC audio inactive early in the hangup process before the state
+        // change resulting in any change to the default AudioSession.
+        audioSession.isRTCAudioEnabled = false
+
         call.individualCall.state = .localHangup
 
         ensureAudioState(call: call)
@@ -559,6 +563,10 @@ import SignalMessaging
                 return
             }
 
+            // Make RTC audio inactive early in the hangup process before the state
+            // change resulting in any change to the default AudioSession.
+            audioSession.isRTCAudioEnabled = false
+
             switch call.individualCall.state {
             case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
                 handleMissedCall(call)
@@ -578,6 +586,8 @@ import SignalMessaging
                 callService.cleanupStaleCall(call)
                 return
             }
+
+            audioSession.isRTCAudioEnabled = false
 
             switch call.individualCall.state {
             case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
@@ -599,6 +609,8 @@ import SignalMessaging
                 return
             }
 
+            audioSession.isRTCAudioEnabled = false
+
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.individualCall.state)"))
@@ -618,6 +630,8 @@ import SignalMessaging
                 return
             }
 
+            audioSession.isRTCAudioEnabled = false
+
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.individualCall.state)"))
@@ -636,6 +650,8 @@ import SignalMessaging
                 callService.cleanupStaleCall(call)
                 return
             }
+
+            audioSession.isRTCAudioEnabled = false
 
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
@@ -1207,7 +1223,12 @@ import SignalMessaging
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
         ensureAudioState(call: call)
+
         callService.callManager.setLocalVideoEnabled(enabled: callService.shouldHaveLocalVideoTrack, call: call)
+
+        // After state changes and the resulting AudioSession changes, enable audio
+        // via WebRTC to flow.
+        audioSession.isRTCAudioEnabled = true
     }
 
     /**

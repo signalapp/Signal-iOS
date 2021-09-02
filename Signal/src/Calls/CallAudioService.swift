@@ -87,17 +87,6 @@ protocol CallAudioServiceDelegate: AnyObject {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        // This should not be required, but for some reason setting the mode
-        // to "videoChat" prior to a remote device being connected gets changed
-        // to "voiceChat" by iOS. This results in the audio coming out of the
-        // earpiece instead of the speaker. It may be a result of us not actually
-        // playing any audio until the remote device connects, or something
-        // going on with the underlying RTCAudioSession that's not directly
-        // in our control.
-        ensureProperAudioSession(call: call)
-    }
-
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         ensureProperAudioSession(call: call)
     }
@@ -167,37 +156,40 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
     }
 
+    /// Set the AudioSession based on the state of the call. If video is captured locally,
+    /// it is assumed that the speaker should be used. Otherwise audio will be routed
+    /// through the receiver.
+    ///
+    /// Ring tones will be played through the speaker (the default mode). On the caller's
+    /// ringback tones will be played through the receiver for an audio call or speaker
+    /// if video is captured locally.
+    ///
+    /// Note: Force the .allowBluetooth option to ensure linked bluetooth devices are
+    /// included as an available input.
     private func ensureProperAudioSession(call: IndividualCall?) {
         AssertIsOnMainThread()
 
-        guard let call = call, !call.isEnded else {
-            // Revert to ambient audio
-            setAudioSession(category: .ambient,
-                            mode: .default)
+        guard let call = call, !call.isEnded, call.state != .answering else {
+            // Revert to ambient audio.
+            setAudioSession(category: .ambient, mode: .default)
             return
         }
 
         if call.state == .localRinging {
+            // The AudioSession for playing a ring tone.
             setAudioSession(category: .playback, mode: .default)
         } else if call.hasLocalVideo {
-            // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
-            // otherwise sounds like ringing will be extra loud for video vs. speakerphone
-
-            // Apple Docs say that setting mode to AVAudioSessionModeVideoChat has the
-            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
-            // does not include my linked bluetooth device
-            setAudioSession(category: .playAndRecord,
-                            mode: .videoChat,
-                            options: .allowBluetooth)
+            if call.state == .dialing || call.state == .remoteRinging {
+                // The AudioSession for playing a ringback tone.
+                setAudioSession(category: .playback, mode: .default)
+            } else {
+                // The AudioSession for video calls as long as video is
+                // being captured locally.
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+            }
         } else {
-            // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
-            // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
-            // option, and inspect AVAudioSession.shared.categoryOptions == 0. And availableInputs
-            // does not include my linked bluetooth device
-            setAudioSession(category: .playAndRecord,
-                            mode: .voiceChat,
-                            options: .allowBluetooth)
+            // The AudioSession for audio calls, through the receiver.
+            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
         }
     }
 
@@ -337,8 +329,7 @@ protocol CallAudioServiceDelegate: AnyObject {
             audioPlayer.stop()
         }
 
-        // Stop solo audio, revert to ambient.
-        setAudioSession(category: .ambient)
+        setAudioSession(category: .ambient, mode: .default)
     }
 
     // MARK: Playing Sounds
@@ -501,10 +492,11 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
     }
 
+    // The default option upon entry is always .mixWithOthers, so we will set that
+    // as our default value if no options are provided.
     private func setAudioSession(category: AVAudioSession.Category,
                                  mode: AVAudioSession.Mode? = nil,
-                                 options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions(rawValue: 0)) {
-
+                                 options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
         AssertIsOnMainThread()
 
         var audioSessionChanged = false

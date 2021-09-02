@@ -1095,12 +1095,12 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     @objc func didPressAnswerCall(sender: UIButton) {
         Logger.info("")
 
-        individualCallUIAdapter.answerCall(call)
-
-        // Answer without video.
         if sender == videoAnswerIncomingAudioOnlyButton {
+            // Answer without video, set state before answering.
             individualCallUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: false)
         }
+
+        individualCallUIAdapter.answerCall(call)
 
         // We should always be unmuted when we answer an incoming call.
         // Explicitly setting it so will cause us to prompt for
