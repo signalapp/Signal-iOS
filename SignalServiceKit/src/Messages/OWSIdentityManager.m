@@ -445,27 +445,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                    direction:(TSMessageDirection)direction
                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(address.isValid);
-    NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
-    if (!accountId) {
-        OWSFailDebug(@"AccountId unexpectedly nil");
-        return NO;
-    }
-    return [self isTrustedIdentityKey:identityKey accountId:accountId direction:direction transaction:transaction];
-}
-
-- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
-                   accountId:(NSString *)accountId
-                   direction:(TSMessageDirection)direction
-                 transaction:(SDSAnyReadTransaction *)transaction
-{
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
-    OWSAssertDebug(accountId.length > 1);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(direction != TSMessageDirectionUnknown);
     OWSAssertDebug(transaction);
-
-    SignalServiceAddress *_Nullable address = [OWSAccountIdFinder addressForAccountId:accountId
-                                                                          transaction:transaction];
 
     if (address.isLocalAddress) {
         ECKeyPair *_Nullable localIdentityKeyPair = [self identityKeyPairWithTransaction:transaction];
@@ -473,10 +456,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         if ([localIdentityKeyPair.publicKey isEqualToData:identityKey]) {
             return YES;
         } else {
-            OWSFailDebug(@"Wrong identity: %@ for local key: %@, accountId: %@",
+            OWSFailDebug(@"Wrong identity: %@ for local key: %@, address: %@",
                 identityKey,
                 localIdentityKeyPair.publicKey,
-                accountId);
+                address);
             return NO;
         }
     }
@@ -486,6 +469,11 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             return YES;
         }
         case TSMessageDirectionOutgoing: {
+            NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
+            if (!accountId) {
+                OWSFailDebug(@"AccountId unexpectedly nil");
+                return NO;
+            }
             OWSRecipientIdentity *existingIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId
                                                                                     transaction:transaction];
             return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
