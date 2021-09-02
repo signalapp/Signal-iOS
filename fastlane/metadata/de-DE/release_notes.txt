@@ -1,1 +1,1 @@
-★ Das Weiterleiten von mehreren Nachrichten ist jetzt möglich. Ein neues Design erleichtert die Auswahl der Unterhaltungen, an die gesendet werden soll. Beim Weiterleiten mehrerer Nachrichten, kann eine zusätzliche Nachricht geschrieben und gesendet werden.
+• Das Weiterleiten von mehreren Nachrichten ist jetzt möglich. Ein neues Design erleichtert die Auswahl der Unterhaltungen, an die gesendet werden soll. Beim Weiterleiten mehrerer Nachrichten, kann eine zusätzliche Nachricht geschrieben und gesendet werden.
