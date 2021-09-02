@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isSameHourWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameHourWithDate:(NSDate *)date1 date:(NSDate *)date2;
 
++ (BOOL)shouldShowDateBreakForTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
+
 @end
 
 NS_ASSUME_NONNULL_END
