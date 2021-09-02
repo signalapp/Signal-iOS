@@ -5,23 +5,34 @@
 @objc
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyReadTransaction) {
         Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
-    public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(forReaction reaction: OWSReaction,
+                           onOutgoingMessage message: TSOutgoingMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyReadTransaction) {
         Logger.warn("skipping notification for: \(reaction.description)")
     }
 
-    public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }
 
-    public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
+                           thread: TSThread,
+                           wantsSound: Bool,
+                           transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping notification for: \(previewableInteraction.description)")
     }
 
-    public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forThreadlessErrorMessage errorMessage: ThreadlessErrorMessage,
+                           transaction: SDSAnyWriteTransaction) {
         Logger.warn("skipping notification for: \(errorMessage.description)")
     }
 

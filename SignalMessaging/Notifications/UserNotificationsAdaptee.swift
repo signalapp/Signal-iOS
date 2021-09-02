@@ -225,7 +225,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             content.threadIdentifier = threadIdentifier
         }
 
-        var contentToUse: UNNotificationContent = content
+        let contentToUse: UNNotificationContent = content
         let postNotification = {
             let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
@@ -235,8 +235,12 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             self.notificationCenter.add(request) { (error: Error?) in
                 if let error = error {
                     owsFailDebug("Error: \(error)")
-                    return
+                } else if DebugFlags.internalLogging {
+                    Logger.info("Posted.")
                 }
+            }
+            if DebugFlags.internalLogging {
+                Logger.info("Posting.")
             }
         }
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.

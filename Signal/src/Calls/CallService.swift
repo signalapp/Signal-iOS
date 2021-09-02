@@ -834,7 +834,10 @@ extension CallService {
             owsFailDebug("Unknown thread")
             return
         }
-        Self.notificationPresenter.notifyUser(for: message, thread: thread, wantsSound: true, transaction: transaction)
+        Self.notificationPresenter.notifyUser(forPreviewableInteraction: message,
+                                              thread: thread,
+                                              wantsSound: true,
+                                              transaction: transaction)
     }
 }
 

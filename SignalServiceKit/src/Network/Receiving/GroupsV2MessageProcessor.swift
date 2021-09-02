@@ -603,7 +603,8 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         let reportFailure = { (transaction: SDSAnyWriteTransaction) in
             // TODO: Add analytics.
             let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-            self.notificationsManager?.notifyUser(for: errorMessage, transaction: transaction)
+            self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
+                                                  transaction: transaction)
         }
 
         var processedJobs = [IncomingGroupsV2MessageJob]()
