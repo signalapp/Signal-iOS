@@ -169,21 +169,12 @@ class AudioMessageView: ManualStackView {
                              ])
         outerSubviews.append(topInnerStack)
 
-        let bottomSubviews: [UIView]
-        if isIncoming {
-            bottomSubviews = [
-                .transparentSpacer(),
-                playedDotContainer,
-                playbackTimeLabel
-            ]
-        } else {
-            bottomSubviews = [
+        let bottomSubviews = [
                 .transparentSpacer(),
                 playbackTimeLabel,
                 playedDotContainer,
                 .transparentSpacer()
-            ]
-        }
+        ]
 
         let bottomInnerStack = ManualStackView(name: "playbackLabelStack")
         bottomInnerStack.configure(
@@ -248,22 +239,13 @@ class AudioMessageView: ManualStackView {
                                                                              conversationStyle: conversationStyle)
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
-        let bottomInnerSubviewInfos: [ManualStackSubviewInfo]
-        if isIncoming {
-            bottomInnerSubviewInfos = [
-                .empty,
-                dotSize.asManualSubviewInfo(hasFixedSize: true),
-                playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true)
-            ]
-        } else {
-            let leadingInset = CGSize(width: 44, height: 0)
-            bottomInnerSubviewInfos = [
-                leadingInset.asManualSubviewInfo(hasFixedWidth: true),
-                playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
-                dotSize.asManualSubviewInfo(hasFixedSize: true),
-                .empty
-            ]
-        }
+        let leadingInset = CGSize(width: 44, height: 0)
+        let bottomInnerSubviewInfos: [ManualStackSubviewInfo] = [
+            leadingInset.asManualSubviewInfo(hasFixedWidth: true),
+            playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
+            dotSize.asManualSubviewInfo(hasFixedSize: true),
+            .empty
+        ]
 
         let bottomInnerStackMeasurement = ManualStackView.measure(config: bottomInnerStackConfig,
                                                             measurementBuilder: measurementBuilder,
