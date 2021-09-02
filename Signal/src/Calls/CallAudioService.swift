@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,6 +24,9 @@ protocol CallAudioServiceDelegate: AnyObject {
             assert(newValue == nil || delegate == nil)
         }
     }
+
+    // Track whether the speaker should be enabled or not.
+    private var isSpeakerEnabled = false
 
     // MARK: Vibration config
     private let vibrateRepeatDuration = 1.6
@@ -106,16 +109,23 @@ protocol CallAudioServiceDelegate: AnyObject {
     }
 
     public func requestSpeakerphone(isEnabled: Bool) {
-        // This is a little too slow to execute on the main thread and the results are not immediately available after execution
-        // anyway, so we dispatch async. If you need to know the new value, you'll need to check isSpeakerphoneEnabled and take
-        // advantage of the CallAudioServiceDelegate.callAudioService(_:didUpdateIsSpeakerphoneEnabled:)
-        DispatchQueue.global().async {
-            do {
-                try self.avAudioSession.overrideOutputAudioPort( isEnabled ? .speaker : .none )
-            } catch {
-                Logger.warn("failed to set \(#function) = \(isEnabled) with error: \(error)")
-            }
-        }
+        // Save the enablement state. The AudioSession will be configured the
+        // next time that the ensureProperAudioSession() is triggered.
+        self.isSpeakerEnabled = isEnabled
+    }
+
+    public func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
+        // If toggled for an group call, save the enablement state and
+        // update the AudioSession.
+        self.isSpeakerEnabled = isEnabled
+        self.ensureProperAudioSession(call: call)
+    }
+
+    public func requestSpeakerphone(call: IndividualCall, isEnabled: Bool) {
+        // If toggled for an individual call, save the enablement state and
+        // update the AudioSession.
+        self.isSpeakerEnabled = isEnabled
+        self.ensureProperAudioSession(call: call)
     }
 
     private func audioRouteDidChange() {
@@ -144,25 +154,32 @@ protocol CallAudioServiceDelegate: AnyObject {
 
     private func ensureProperAudioSession(call: GroupCall?) {
         guard let call = call, call.localDeviceState.joinState != .notJoined else {
-            // Revert to ambient audio
+            // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
             return
         }
 
         if call.isOutgoingVideoMuted {
-            setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+            if self.isSpeakerEnabled {
+                // When there is no outgoing video, set the AudioSession
+                // to the VideoChat mode if the speaker is enabled.
+                setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
+            } else {
+                // When there is no outgoing video, set the AudioSession
+                // to the VoiceChat mode.
+                setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
+            }
         } else {
+            // The AudioSession for group calls as long as there is
+            // outgoing video. Choose the VideoChat mode, which enables
+            // the speaker.
             setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
         }
     }
 
     /// Set the AudioSession based on the state of the call. If video is captured locally,
     /// it is assumed that the speaker should be used. Otherwise audio will be routed
-    /// through the receiver.
-    ///
-    /// Ring tones will be played through the speaker (the default mode). On the caller's
-    /// ringback tones will be played through the receiver for an audio call or speaker
-    /// if video is captured locally.
+    /// through the receiver, or speaker if enabled.
     ///
     /// Note: Force the .allowBluetooth option to ensure linked bluetooth devices are
     /// included as an available input.
@@ -176,19 +193,23 @@ protocol CallAudioServiceDelegate: AnyObject {
         }
 
         if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.state) {
-            // The AudioSession for playing a ring tone.
+            // Set the AudioSession for playing a ring tone.
             setAudioSession(category: .playback, mode: .default)
-        } else if call.hasLocalVideo {
+        } else if call.hasLocalVideo || self.isSpeakerEnabled {
             if call.state == .dialing || call.state == .remoteRinging {
-                // The AudioSession for playing a ringback tone.
+                // Set the AudioSession for playing a ringback tone through the
+                // speaker with the proximity sensor disabled.
                 setAudioSession(category: .playback, mode: .default)
             } else {
-                // The AudioSession for video calls as long as video is
-                // being captured locally.
+                // The user is capturing video or wants to use the speaker for an
+                // audio call, so choose the VideoChat mode, which enables the speaker
+                // with the proximity sensor disabled.
                 setAudioSession(category: .playAndRecord, mode: .videoChat, options: .allowBluetooth)
             }
         } else {
-            // The AudioSession for audio calls, through the receiver.
+            // The user is not capturing video and doesn't want to use the speaker
+            // for an audio call, so choose VoiceChat mode, which uses the receiver
+            // with the proximity sensor enabled.
             setAudioSession(category: .playAndRecord, mode: .voiceChat, options: .allowBluetooth)
         }
     }
@@ -234,7 +255,7 @@ protocol CallAudioServiceDelegate: AnyObject {
         Logger.debug("")
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
-        // need some time to settle? Is somethign else interrupting our session?
+        // need some time to settle? Is something else interrupting our session?
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
             self.play(sound: .callConnecting)
         }
