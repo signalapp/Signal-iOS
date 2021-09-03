@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalMetadataKit
 import SignalClient
 

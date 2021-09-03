@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // CVItemViewState represents the transient, un-persisted values
 // that may affect item appearance.

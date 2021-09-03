@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 import Contacts
 import Lottie
 
@@ -83,7 +82,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     private func requestContactsAccess() -> Promise<Void> {
         Logger.info("")
 
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
             if granted {
                 Logger.info("Granted.")
@@ -91,7 +90,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                 Logger.error("Error: \(String(describing: error)).")
             }
             // Always fulfill.
-            resolver.fulfill(())
+            future.resolve()
         }
         return promise
     }

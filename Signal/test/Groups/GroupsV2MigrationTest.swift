@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
-import PromiseKit
-//import SignalServiceKit
+// import SignalServiceKit
 @testable import Signal
 
 class GroupsV2MigrationTest: SignalBaseTest {

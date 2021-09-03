@@ -4,7 +4,6 @@
 
 import Foundation
 import MultipeerConnectivity
-import PromiseKit
 
 protocol DeviceTransferServiceObserver: AnyObject {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?)
@@ -292,7 +291,7 @@ class DeviceTransferService: NSObject {
 
         var promises = [Promise<Void>]()
 
-        let (databasePromise, databaseResolver) = Promise<Void>.pending()
+        let (databasePromise, databaseFuture) = Promise<Void>.pending()
         promises.append(databasePromise)
 
         // Transfer the database files within a write transaction so we can be confident
@@ -301,13 +300,13 @@ class DeviceTransferService: NSObject {
         // minimal amount of time.
         databaseStorage.asyncWrite { _ in
             do {
-                try when(fulfilled: [
+                try Promise.when(fulfilled: [
                     DeviceTransferOperation.scheduleTransfer(file: database.database, priority: .high),
                     DeviceTransferOperation.scheduleTransfer(file: database.wal, priority: .high)
                 ]).wait()
-                databaseResolver.fulfill(())
+                databaseFuture.resolve()
             } catch {
-                databaseResolver.reject(error)
+                databaseFuture.reject(error)
             }
         }
 
@@ -315,7 +314,7 @@ class DeviceTransferService: NSObject {
             promises.append(DeviceTransferOperation.scheduleTransfer(file: file))
         }
 
-        when(fulfilled: promises).done {
+        Promise.when(fulfilled: promises).done {
             if !FeatureFlags.deviceTransferThrowAway {
                 self.tsAccountManager.wasTransferred = true
             }

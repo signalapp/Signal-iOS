@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public enum HTTPMethod {
     case get
@@ -519,7 +518,7 @@ public class OWSURLSession: NSObject {
             owsFailDebug("Missing TaskState.")
             return
         }
-        taskState.resolver.fulfill((task, downloadUrl))
+        taskState.future.resolve((task, downloadUrl))
     }
 
     private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, responseData: Data?) {
@@ -527,7 +526,7 @@ public class OWSURLSession: NSObject {
             owsFailDebug("Missing TaskState.")
             return
         }
-        taskState.resolver.fulfill((task, responseData))
+        taskState.future.resolve((task, responseData))
     }
 
     private func taskDidFail(_ task: URLSessionTask, error: Error) {
@@ -1034,18 +1033,18 @@ private protocol TaskState {
 private class DownloadTaskState: TaskState {
     let progressBlock: ProgressBlock?
     let promise: Promise<(URLSessionTask, URL)>
-    let resolver: Resolver<(URLSessionTask, URL)>
+    let future: Future<(URLSessionTask, URL)>
 
     init(progressBlock: ProgressBlock?) {
         self.progressBlock = progressBlock
 
-        let (promise, resolver) = Promise<(URLSessionTask, URL)>.pending()
+        let (promise, future) = Promise<(URLSessionTask, URL)>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
     }
 
     func reject(error: Error) {
-        resolver.reject(error)
+        future.reject(error)
     }
 }
 
@@ -1054,18 +1053,18 @@ private class DownloadTaskState: TaskState {
 private class UploadOrDataTaskState: TaskState {
     let progressBlock: ProgressBlock?
     let promise: Promise<(URLSessionTask, Data?)>
-    let resolver: Resolver<(URLSessionTask, Data?)>
+    let future: Future<(URLSessionTask, Data?)>
 
     init(progressBlock: ProgressBlock?) {
         self.progressBlock = progressBlock
 
-        let (promise, resolver) = Promise<(URLSessionTask, Data?)>.pending()
+        let (promise, future) = Promise<(URLSessionTask, Data?)>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
     }
 
     func reject(error: Error) {
-        resolver.reject(error)
+        future.reject(error)
     }
 }
 

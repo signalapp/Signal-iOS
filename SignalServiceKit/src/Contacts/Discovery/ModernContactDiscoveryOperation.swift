@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 struct CDSRegisteredContact: Hashable {
     let signalUuid: UUID
@@ -29,7 +28,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                 .map { makeContactDiscoveryRequest(e164sToLookup: $0) }
 
             // Then, wait for them all to be fulfilled before joining the subsets together
-            return when(fulfilled: batchOperationPromises)
+            return Promise.when(fulfilled: batchOperationPromises)
 
         }.map(on: queue) { (setArray) -> Set<DiscoveredContactInfo> in
             setArray.reduce(into: Set()) { (builder, cdsContactSubset) in

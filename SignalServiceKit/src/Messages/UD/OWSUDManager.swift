@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalMetadataKit
 import SignalCoreKit
 import SignalClient
@@ -601,7 +600,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         let defaultPromise = ensureSenderCertificate(uuidOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
         let uuidOnlyPromise = ensureSenderCertificate(uuidOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
         return firstly(on: .global()) {
-            when(fulfilled: defaultPromise, uuidOnlyPromise)
+            Promise.when(fulfilled: defaultPromise, uuidOnlyPromise)
         }.map(on: .global()) { defaultCert, uuidOnlyCert in
             return SenderCertificates(defaultCert: defaultCert, uuidOnlyCert: uuidOnlyCert)
         }
@@ -624,7 +623,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SenderCertificate> {
         return firstly(on: .global()) {
             SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: uuidOnly)
-        }.map(on: .global()) { certificateData -> SenderCertificate in
+        }.map(on: .global()) { (certificateData: Data) -> SenderCertificate in
             let certificate = try SenderCertificate(certificateData)
 
             guard self.isValidCertificate(certificate) else {

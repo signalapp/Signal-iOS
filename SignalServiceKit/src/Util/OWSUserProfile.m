@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/OWSUserProfile.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class NotificationActionHandler: NSObject {
@@ -225,9 +224,9 @@ public class NotificationActionHandler: NSObject {
     }
 
     private class func submitDebugLogs() -> Promise<Void> {
-        Promise { resolver in
+        Promise { future in
             Pastelog.submitLogs {
-                resolver.fulfill(())
+                future.resolve()
             }
         }
     }
@@ -272,13 +271,13 @@ public class NotificationActionHandler: NSObject {
         guard let interaction = notificationMessage.interaction else {
             return Promise(error: OWSAssertionError("missing interaction"))
         }
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         self.receiptManager.markAsReadLocally(
             beforeSortId: interaction.sortId,
             thread: notificationMessage.thread,
             hasPendingMessageRequest: notificationMessage.hasPendingMessageRequest
         ) {
-            resolver.fulfill(())
+            future.resolve()
         }
         return promise
     }

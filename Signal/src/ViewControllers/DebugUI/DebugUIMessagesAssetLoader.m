@@ -4,8 +4,8 @@
 
 #import "DebugUIMessagesAssetLoader.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -696,11 +696,11 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
 
     for (DebugUIMessagesAssetLoader *assetLoader in assetLoaders) {
         // Use chained promises to make the code more readable.
-        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        AnyPromise *promise = AnyPromise.withFuture(^(AnyFuture *future) {
             assetLoader.prepareBlock(
                 ^{
                     // The value doesn't matter, we just need any non-NSError value.
-                    resolve(@(1));
+                    [future resolveWithValue:@1];
                 },
                 ^{
                     NSError *error =
@@ -710,14 +710,13 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
                     @synchronized(errors) {
                         [errors addObject:error];
                     }
-                    resolve(error);
+                    [future rejectWithError:error];
                 });
-        }];
+        });
         [promises addObject:promise];
     }
 
-    // We could use PMKJoin() or PMKWhen().
-    PMKJoin(promises).then(^(id value) { success(); }).catch(^(id error) {
+    [AnyPromise whenResolved:promises].done(^(id value) { success(); }).catch(^(id error) {
         OWSLogError(@"Could not prepare fake asset loaders: %@.", error);
         failure();
     });

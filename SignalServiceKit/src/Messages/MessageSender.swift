@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalMetadataKit
 import SignalClient
 
@@ -38,7 +37,7 @@ extension MessageSender {
             if !promises.isEmpty {
                 Logger.info("Prekey fetches: \(promises.count)")
             }
-            return when(fulfilled: promises).asVoid()
+            return Promise.when(fulfilled: promises)
         }
         if !ignoreErrors {
             promise.catch(on: .global()) { _ in
@@ -96,19 +95,19 @@ extension MessageSender {
             Logger.verbose("Fetching prekey for: \(messageSend.address), \(deviceId)")
 
             let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
-                let (promise, resolver) = Promise<SignalServiceKit.PreKeyBundle>.pending()
+                let (promise, future) = Promise<SignalServiceKit.PreKeyBundle>.pending()
                 self.makePrekeyRequest(
                     messageSend: messageSend,
                     deviceId: NSNumber(value: deviceId),
                     accountId: accountId,
                     success: { preKeyBundle in
                         guard let preKeyBundle = preKeyBundle else {
-                            return resolver.reject(OWSAssertionError("Missing preKeyBundle."))
+                            return future.reject(OWSAssertionError("Missing preKeyBundle."))
                         }
-                        resolver.fulfill(preKeyBundle)
+                        future.resolve(preKeyBundle)
                     },
                     failure: { error in
-                        resolver.reject(error)
+                        future.reject(error)
                     }
                 )
                 return promise
@@ -527,14 +526,14 @@ extension MessageSender {
 
     private static func prepareSend(of message: TSOutgoingMessage) -> Promise<MessageSendInfo> {
         firstly(on: .global()) { () -> Promise<SenderCertificates> in
-            let (promise, resolver) = Promise<SenderCertificates>.pending()
+            let (promise, future) = Promise<SenderCertificates>.pending()
             self.udManager.ensureSenderCertificates(
                 certificateExpirationPolicy: .permissive,
                 success: { senderCertificates in
-                    resolver.fulfill(senderCertificates)
+                    future.resolve(senderCertificates)
                 },
                 failure: { error in
-                    resolver.reject(error)
+                    future.reject(error)
                 }
             )
             return promise

@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import PromiseKit
 
 public struct SendPaymentInfo {
     let recipient: SendPaymentRecipient

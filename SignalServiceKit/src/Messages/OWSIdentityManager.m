@@ -4,7 +4,6 @@
 
 #import "OWSIdentityManager.h"
 #import <Curve25519Kit/Curve25519.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalServiceKit/AppContext.h>
@@ -24,7 +23,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/UnfairLock.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -712,7 +710,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                             limitToCurrentProcessLifetime:YES
                                            isHighPriority:NO
                                               transaction:transaction]
-            .thenInBackground(^{
+            .doneInBackground(^(id value) {
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
                 [self writeWithUnfairLock:^(SDSAnyWriteTransaction *transaction) {
                     [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
@@ -720,7 +718,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                         limitToCurrentProcessLifetime:YES
                                                        isHighPriority:NO
                                                           transaction:transaction]
-                        .thenInBackground(^{
+                        .doneInBackground(^(id value) {
                             OWSLogInfo(@"Successfully sent verification state sync message");
 
                             // Record that this verification state was successfully synced.

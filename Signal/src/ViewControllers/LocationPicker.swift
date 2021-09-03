@@ -10,7 +10,6 @@
 import UIKit
 import MapKit
 import CoreLocation
-import PromiseKit
 
 @objc
 public protocol LocationPickerDelegate {
@@ -428,7 +427,7 @@ public class Location: NSObject {
     }
 
     public func generateSnapshot() -> Promise<UIImage> {
-        return Promise { resolver in
+        return Promise { future in
             let options = MKMapSnapshotter.Options()
 
             // this is the plus/minus meter range from the given coordinate
@@ -445,12 +444,12 @@ public class Location: NSObject {
             MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
                 guard error == nil else {
                     owsFailDebug("Unexpectedly failed to capture map snapshot \(error!)")
-                    return resolver.reject(LocationError.assertion)
+                    return future.reject(LocationError.assertion)
                 }
 
                 guard let snapshot = snapshot else {
                     owsFailDebug("snapshot unexpectedly nil")
-                    return resolver.reject(LocationError.assertion)
+                    return future.reject(LocationError.assertion)
                 }
 
                 // Draw our location pin on the snapshot
@@ -477,10 +476,10 @@ public class Location: NSObject {
 
                 guard let finalImage = image else {
                     owsFailDebug("image unexpectedly nil")
-                    return resolver.reject(LocationError.assertion)
+                    return future.reject(LocationError.assertion)
                 }
 
-                resolver.fulfill(finalImage)
+                future.resolve(finalImage)
             }
         }
     }

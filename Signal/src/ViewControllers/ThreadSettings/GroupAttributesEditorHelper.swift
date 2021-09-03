@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import UIKit
 
 protocol GroupAttributesEditorHelperDelegate: AnyObject {

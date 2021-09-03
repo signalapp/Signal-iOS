@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class PaymentsUI: NSObject {
@@ -56,7 +55,7 @@ public extension PaymentsUI {
                                                      canCancel: false) { modalActivityIndicator in
             firstly(on: .global()) {
                 declinePaymentRequestPromise(paymentRequestModel: paymentRequestModel)
-            }.done { _ in
+            }.done(on: .main) { _ in
                 modalActivityIndicator.dismiss {}
             }.catch { error in
                 owsFailDebug("Error: \(error)")
@@ -105,7 +104,7 @@ public extension PaymentsUI {
                                                      canCancel: false) { modalActivityIndicator in
             firstly(on: .global()) {
                 cancelPaymentRequestPromise(paymentRequestModel: paymentRequestModel)
-            }.done { _ in
+            }.done(on: .main) { _ in
                 modalActivityIndicator.dismiss {}
             }.catch { error in
                 owsFailDebug("Error: \(error)")

@@ -5,7 +5,6 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
-import PromiseKit
 
 #if DEBUG
 

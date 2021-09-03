@@ -7,7 +7,6 @@ import UIKit
 import SignalMessaging
 import PureLayout
 import SignalServiceKit
-import PromiseKit
 import Intents
 
 @objc
@@ -85,7 +84,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         self.shareViewNavigationController = shareViewNavigationController
 
         // Don't display load screen immediately, in hopes that we can avoid it altogether.
-        after(seconds: 0.8).done { [weak self] in
+        Guarantee.after(seconds: 0.8).done { [weak self] in
             AssertIsOnMainThread()
 
             guard let strongSelf = self else { return }
@@ -517,15 +516,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let result = try self.itemsToLoad(inputItems: inputItems)
             return Promise.value(result)
         }.then(on: .sharedUserInitiated) { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
-            guard let self = self else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
 
             return self.loadItems(unloadedItems: unloadedItems)
         }.then(on: .sharedUserInitiated) { [weak self] (loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> in
-            guard let self = self else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
 
             return self.buildAttachments(loadedItems: loadedItems)
         }.done { [weak self] (attachments: [SignalAttachment]) in
-            guard let self = self else { throw PMKError.cancelled }
+            guard let self = self else { throw PromiseError.cancelled }
 
             // Make sure the user is not trying to share more than our attachment limit.
             guard attachments.filter({ !$0.isConvertibleToTextMessage }).count <= SignalAttachment.maxAttachmentsAllowed else {
@@ -755,7 +754,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             loadItem(unloadedItem: unloadedItem)
         }
 
-        return when(fulfilled: loadPromises)
+        return Promise.when(fulfilled: loadPromises)
     }
 
     private func loadItem(unloadedItem: UnloadedItem) -> Promise<LoadedItem> {
@@ -848,7 +847,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 self.buildAttachment(loadedItem: loadedItem)
             })
         }
-        return when(fulfilled: attachmentPromises)
+        return Promise.when(fulfilled: attachmentPromises)
     }
 
     private func buildAttachment(loadedItem: LoadedItem) -> Promise<SignalAttachment> {

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class UpsertGroupResult: NSObject {
@@ -1483,9 +1482,8 @@ public class GroupManager: NSObject {
                                            ignoreErrors: Bool) -> Promise<Void> {
         let promise = tryToEnableGroupsV2(for: addresses, isBlocking: isBlocking)
         if ignoreErrors {
-            return promise.recover { error -> Guarantee<Void> in
+            return promise.recover { error in
                 Logger.warn("Error: \(error).")
-                return Guarantee.value(())
             }
         } else {
             return promise
@@ -1564,7 +1562,7 @@ public class GroupManager: NSObject {
                     }
                     promises.append(promise)
                 }
-                return when(fulfilled: promises)
+                return Promise.when(fulfilled: promises)
             } else {
                 // This will throttle, de-bounce, etc.
                 self.bulkProfileFetch.fetchProfiles(addresses: addressesWithoutCapability)

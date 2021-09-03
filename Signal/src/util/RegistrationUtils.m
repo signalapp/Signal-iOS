@@ -5,7 +5,7 @@
 #import "RegistrationUtils.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
-#import <PromiseKit/PromiseKit.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                       [self.accountManager requestAccountVerificationObjCWithRecipientId:phoneNumber
                                                                             captchaToken:nil
                                                                                    isSMS:true]
-                          .then(^{
+                          .done(^(id value) {
                               OWSAssertIsOnMainThread();
 
                               OWSLogInfo(@"re-registering: send verification code succeeded.");

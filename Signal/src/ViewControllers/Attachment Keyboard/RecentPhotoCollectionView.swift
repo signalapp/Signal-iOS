@@ -5,7 +5,6 @@
 import Foundation
 import Photos
 import PhotosUI
-import PromiseKit
 
 protocol RecentPhotosDelegate: AnyObject {
     var isMediaLibraryAccessGranted: Bool { get }

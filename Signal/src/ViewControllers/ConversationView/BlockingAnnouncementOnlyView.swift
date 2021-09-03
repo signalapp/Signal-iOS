@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import PromiseKit
 
 @objc
 class BlockingAnnouncementOnlyView: UIStackView {

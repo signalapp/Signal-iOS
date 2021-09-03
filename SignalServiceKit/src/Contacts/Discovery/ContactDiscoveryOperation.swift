@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 struct DiscoveredContactInfo: Hashable {
     let e164: String?

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public extension GroupManager {
@@ -19,10 +18,10 @@ public extension GroupManager {
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
-            firstly {
+            firstly(on: .global()) {
                 self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread,
                                                       replacementAdminUuid: replacementAdminUuid).asVoid()
-            }.done { _ in
+            }.done(on: .main) { _ in
                 modalView.dismiss {
                     success?()
                 }
@@ -41,9 +40,9 @@ public extension GroupManager {
                                        success: @escaping () -> Void) {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
-                                                        firstly { () -> Promise<TSGroupThread> in
+                                                        firstly(on: .global()) { () -> Promise<TSGroupThread> in
                                                             self.acceptGroupInvitePromise(groupThread: groupThread)
-                                                        }.done { _ in
+                                                        }.done(on: .main) { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()
                                                             }

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class OWSAttachmentDownloads: NSObject {
@@ -51,7 +50,7 @@ public class OWSAttachmentDownloads: NSObject {
         let downloadBehavior: AttachmentDownloadBehavior
 
         let promise: Promise<TSAttachmentStream>
-        let resolver: Resolver<TSAttachmentStream>
+        let future: Future<TSAttachmentStream>
 
         var progress: CGFloat = 0
         var attachmentId: AttachmentId { jobType.attachmentId }
@@ -63,9 +62,9 @@ public class OWSAttachmentDownloads: NSObject {
             self.jobRequest = jobRequest
             self.downloadBehavior = downloadBehavior
 
-            let (promise, resolver) = Promise<TSAttachmentStream>.pending()
+            let (promise, future) = Promise<TSAttachmentStream>.pending()
             self.promise = promise
-            self.resolver = resolver
+            self.future = future
         }
 
         func loadLatestAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
@@ -456,7 +455,7 @@ public class OWSAttachmentDownloads: NSObject {
         }
 
         // TODO: Should we fulfill() if the attachmentPointer no longer existed?
-        job.resolver.fulfill(attachmentStream)
+        job.future.resolve(attachmentStream)
 
         markJobComplete(job, isAttachmentDownloaded: true)
     }
@@ -489,7 +488,7 @@ public class OWSAttachmentDownloads: NSObject {
             }
         }
 
-        job.resolver.reject(error)
+        job.future.reject(error)
 
         markJobComplete(job, isAttachmentDownloaded: false)
     }
@@ -694,10 +693,10 @@ public extension OWSAttachmentDownloads {
 public extension OWSAttachmentDownloads {
 
     func enqueueHeadlessDownloadPromise(attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
-        return Promise { resolver in
+        return Promise { future in
             self.enqueueHeadlessDownload(attachmentPointer: attachmentPointer,
-                                         success: resolver.fulfill,
-                                         failure: resolver.reject)
+                                         success: future.resolve,
+                                         failure: future.reject)
         }.map { attachments in
             assert(attachments.count == 1)
             guard let attachment = attachments.first else {
@@ -758,7 +757,7 @@ public extension OWSAttachmentDownloads {
         do {
             let finder = GRDBInteractionFinder(threadUniqueId: thread.uniqueId)
             try finder.enumerateMessagesWithAttachments(transaction: transaction.unwrapGrdbRead) { (message, _) in
-                let (promise, resolver) = Promise<Void>.pending()
+                let (promise, future) = Promise<Void>.pending()
                 promises.append(promise)
                 self.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,
                                                   attachmentGroup: .allAttachmentsIncoming,
@@ -768,10 +767,10 @@ public extension OWSAttachmentDownloads {
                                                     unfairLock.withLock {
                                                         attachmentStreams.append(contentsOf: downloadedAttachments)
                                                     }
-                                                    resolver.fulfill(())
+                                                    future.resolve()
                                                   },
                                                   failure: { error in
-                                                    resolver.reject(error)
+                                                    future.reject(error)
                                                   })
             }
 
@@ -781,8 +780,8 @@ public extension OWSAttachmentDownloads {
 
             // Block until _all_ promises have either succeeded or failed.
             _ = firstly(on: Self.serialQueue) {
-                when(fulfilled: promises)
-            }.done(on: Self.serialQueue) { _ in
+                Promise.when(fulfilled: promises)
+            }.done(on: Self.serialQueue) {
                 let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
                 Logger.info("Successfully downloaded attachments for whitelisted thread: \(attachmentStreamsCopy.count).")
             }.catch(on: Self.serialQueue) { error in
@@ -1139,8 +1138,8 @@ public extension OWSAttachmentDownloads {
 
         // Block until _all_ promises have either succeeded or failed.
         _ = firstly(on: Self.serialQueue) {
-            when(fulfilled: promises)
-        }.done(on: Self.serialQueue) { _ in
+            Promise.when(fulfilled: promises)
+        }.done(on: Self.serialQueue) {
             let attachmentStreamsCopy = unfairLock.withLock { attachmentStreams }
             Logger.info("Attachment downloads succeeded: \(attachmentStreamsCopy.count).")
 
@@ -1220,7 +1219,7 @@ public extension OWSAttachmentDownloads {
                                  resumeData: Data? = nil,
                                  attemptIndex: UInt = 0) -> Promise<URL> {
 
-        let (promise, resolver) = Promise<URL>.pending()
+        let (promise, future) = Promise<URL>.pending()
 
         firstly(on: Self.serialQueue) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
@@ -1234,7 +1233,7 @@ public extension OWSAttachmentDownloads {
                 self.handleDownloadProgress(downloadState: downloadState,
                                             task: task,
                                             progress: progress,
-                                            resolver: resolver)
+                                            future: future)
             }
 
             if let resumeData = resumeData {
@@ -1271,7 +1270,7 @@ public extension OWSAttachmentDownloads {
 
                 return firstly {
                     // Wait briefly before retrying.
-                    after(seconds: 0.25)
+                    Guarantee.after(seconds: 0.25)
                 }.then { () -> Promise<URL> in
                     if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
                        !resumeData.isEmpty {
@@ -1284,9 +1283,9 @@ public extension OWSAttachmentDownloads {
                 throw error
             }
         }.done(on: Self.serialQueue) { url in
-            resolver.fulfill(url)
+            future.resolve(url)
         }.catch(on: Self.serialQueue) { error in
-            resolver.reject(error)
+            future.reject(error)
         }
 
         return promise
@@ -1315,12 +1314,12 @@ public extension OWSAttachmentDownloads {
     private func handleDownloadProgress(downloadState: DownloadState,
                                         task: URLSessionTask,
                                         progress: Progress,
-                                        resolver: Resolver<URL>) {
+                                        future: Future<URL>) {
 
         guard !self.shouldCancelJob(downloadState: downloadState) else {
             Logger.info("Cancelling job.")
             task.cancel()
-            resolver.reject(AttachmentDownloadError.cancelled)
+            future.reject(AttachmentDownloadError.cancelled)
             return
         }
 
@@ -1338,7 +1337,7 @@ public extension OWSAttachmentDownloads {
             // exceed the max download size, abort the download.
             owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
             task.cancel()
-            resolver.reject(AttachmentDownloadError.oversize)
+            future.reject(AttachmentDownloadError.oversize)
             return
         }
 

@@ -5,7 +5,6 @@
 import UserNotifications
 import SignalMessaging
 import SignalServiceKit
-import PromiseKit
 
 // The lifecycle of the NSE looks something like the following:
 //  1)  App receives notification

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public class SocketManager: NSObject {
@@ -59,7 +58,7 @@ public class SocketManager: NSObject {
             return Promise.value(())
         }
         return firstly(on: .global()) {
-            after(seconds: kSecondInterval / 10)
+            Guarantee.after(seconds: kSecondInterval / 10)
         }.then(on: .global()) {
             self.waitForSocketToOpen(webSocketType: webSocketType,
                                      waitStartDate: waitStartDate)
@@ -103,14 +102,14 @@ public class SocketManager: NSObject {
         return firstly(on: .global()) {
             self.waitForSocketToOpen(webSocketType: webSocketType)
         }.then(on: .global()) { () -> Promise<HTTPResponse> in
-            let (promise, resolver) = Promise<HTTPResponse>.pending()
+            let (promise, future) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,
                              webSocketType: webSocketType,
                              success: { (response: HTTPResponse) in
-                                resolver.fulfill(response)
+                                future.resolve(response)
                              },
                              failure: { (failure: OWSHTTPErrorWrapper) in
-                                resolver.reject(failure.error)
+                                future.reject(failure.error)
                              })
             return promise
         }

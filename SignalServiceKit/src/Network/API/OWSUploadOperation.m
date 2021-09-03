@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/OWSUploadOperation.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
@@ -108,15 +107,15 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
     OWSAttachmentUploadV2 *upload = [[OWSAttachmentUploadV2 alloc] initWithAttachmentStream:attachmentStream
                                                                                    canUseV3:self.canUseV3];
     [BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
-        .catchInBackground(^{
+        .catchInBackground(^(NSError *error) {
             // Swallow these errors; blurHashes are strictly optional.
             OWSLogWarn(@"Error generating blurHash.");
         })
-        .thenInBackground(^{
+        .thenInBackground(^(id value) {
             return [upload uploadWithProgressBlock:^(
                 NSProgress *uploadProgress) { [self fireNotificationWithProgress:uploadProgress.fractionCompleted]; }];
         })
-        .thenInBackground(^{
+        .doneInBackground(^(id value) {
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
                                                              digest:upload.digest

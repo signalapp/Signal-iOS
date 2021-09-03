@@ -4,7 +4,6 @@
 
 import Foundation
 import UserNotifications
-import PromiseKit
 import Intents
 
 public class UserNotificationConfig {
@@ -148,7 +147,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     }
 
     func registerNotificationSettings() -> Promise<Void> {
-        return Promise { resolver in
+        return Promise { future in
             notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
                 self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
 
@@ -163,7 +162,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                 // Note that the promise is fulfilled regardless of if notification permssions were
                 // granted. This promise only indicates that the user has responded, so we can
                 // proceed with requesting push tokens and complete registration.
-                resolver.fulfill(())
+                future.resolve()
             }
         }
     }
@@ -458,14 +457,14 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     }
 
     func getDeliveredNotifications() -> Guarantee<[UNNotification]> {
-        return Guarantee { resolver in
-            self.notificationCenter.getDeliveredNotifications { resolver($0) }
+        return Guarantee { resolve in
+            self.notificationCenter.getDeliveredNotifications { resolve($0) }
         }
     }
 
     func getPendingNotificationRequests() -> Guarantee<[UNNotificationRequest]> {
-        return Guarantee { resolver in
-            self.notificationCenter.getPendingNotificationRequests { resolver($0) }
+        return Guarantee { resolve in
+            self.notificationCenter.getPendingNotificationRequests { resolve($0) }
         }
     }
 }

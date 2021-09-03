@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/MockSSKEnvironment.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
@@ -154,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configure
 {
     __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [self configureGrdb].then(^{
+    [self configureGrdb].done(^(id value) {
         OWSAssertIsOnMainThread();
 
         dispatch_semaphore_signal(semaphore);

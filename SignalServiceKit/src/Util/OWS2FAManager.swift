@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 extension OWS2FAManager {
 
@@ -41,11 +40,11 @@ extension OWS2FAManager {
     }
 
     public func requestEnable2FA(withPin pin: String, mode: OWS2FAMode, rotateMasterKey: Bool = false) -> Promise<Void> {
-        return Promise { resolver in
+        return Promise { future in
             requestEnable2FA(withPin: pin, mode: mode, rotateMasterKey: rotateMasterKey, success: {
-                resolver.fulfill(())
+                future.resolve()
             }) { error in
-                resolver.reject(error)
+                future.reject(error)
             }
         }
     }

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
@@ -11,16 +10,16 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     private let urlPath: String
     private let maxDownloadSize: UInt?
     public let promise: Promise<Data>
-    private let resolver: Resolver<Data>
+    private let future: Future<Data>
 
     public required init(urlPath: String,
                          maxDownloadSize: UInt? = nil) {
         self.urlPath = urlPath
         self.maxDownloadSize = maxDownloadSize
 
-        let (promise, resolver) = Promise<Data>.pending()
+        let (promise, future) = Promise<Data>.pending()
         self.promise = promise
-        self.resolver = resolver
+        self.future = future
 
         super.init()
     }
@@ -33,7 +32,7 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
                 return
             }
 
-            self.resolver.fulfill(data)
+            self.future.resolve(data)
             self.reportSuccess()
         }.catch(on: DispatchQueue.global()) { [weak self] error in
             guard let self = self else {
@@ -46,6 +45,6 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
     override public func didFail(error: Error) {
         Logger.error("Download exhausted retries: \(error)")
 
-        resolver.reject(error)
+        future.reject(error)
     }
 }

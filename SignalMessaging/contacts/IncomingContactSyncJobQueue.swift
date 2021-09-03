@@ -9,7 +9,6 @@ import Foundation
 //
 
 import Foundation
-import PromiseKit
 
 public extension Notification.Name {
     static let IncomingContactSyncDidComplete = Notification.Name("IncomingContactSyncDidComplete")

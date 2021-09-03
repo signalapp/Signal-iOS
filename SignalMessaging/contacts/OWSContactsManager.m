@@ -7,9 +7,9 @@
 #import "OWSProfileManager.h"
 #import "ViewControllerUtils.h"
 #import <Contacts/Contacts.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -112,14 +112,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (AnyPromise *)userRequestedSystemContactsRefresh
 {
-    return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.systemContactsFetcher userRequestedRefreshWithCompletion:^(NSError *error){
+    return AnyPromise.withFuture(^(AnyFuture *future) {
+        [self.systemContactsFetcher userRequestedRefreshWithCompletion:^(NSError *error) {
             if (error) {
                 OWSLogError(@"refreshing contacts failed with error: %@", error);
+                [future rejectWithError:error];
+            } else {
+                [future resolveWithValue:@1];
             }
-            resolve(error ?: @(1));
         }];
-    }];
+    });
 }
 
 - (BOOL)isSystemContactsAuthorized

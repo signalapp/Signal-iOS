@@ -4,7 +4,6 @@
 
 import Foundation
 import WebRTC
-import PromiseKit
 import SignalServiceKit
 import SignalMessaging
 import SignalRingRTC

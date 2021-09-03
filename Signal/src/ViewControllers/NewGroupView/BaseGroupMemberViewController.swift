@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol GroupMemberViewDelegate: AnyObject {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -356,10 +355,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
                let address = recipient.address,
                !GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
                                                                           transaction: transaction) {
-                
+
                 // Re-fetch profile for this user.
                 ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
-                
+
                 return .memberHasOutdatedClient
             }
             return .canBeSelected

@@ -6,7 +6,6 @@ import Foundation
 
 import SignalClient
 import SignalMetadataKit
-import PromiseKit
 import CommonCrypto
 
 public struct ProvisionMessage {

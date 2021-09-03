@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 private enum FeatureBuild: Int {
     case dev

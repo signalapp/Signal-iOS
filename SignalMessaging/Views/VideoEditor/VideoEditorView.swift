@@ -4,7 +4,6 @@
 
 import UIKit
 import AVFoundation
-import PromiseKit
 import Photos
 
 @objc
@@ -139,7 +138,7 @@ public class VideoEditorView: UIView {
                                        displaySize: displaySize,
                                        timelineHeight: timelineHeight,
                                        untrimmedDurationSeconds: untrimmedDurationSeconds)
-        }.done { [weak self] (thumbnails: [UIImage]) -> Void in
+        }.done(on: .main) { [weak self] (thumbnails: [UIImage]) -> Void in
             guard let self = self else {
                 return
             }
@@ -318,7 +317,7 @@ public class VideoEditorView: UIView {
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
                 firstly {
                     self.saveVideoPromise()
-                }.done {
+                }.done(on: .main) {
                     modalVC.dismiss {}
                 }.catch { _ in
                     modalVC.dismiss {
@@ -354,7 +353,7 @@ public class VideoEditorView: UIView {
             }
 
         }.then(on: .sharedUtility) { (videoFilePath: String) -> Promise<Void> in
-            Promise { resolver in
+            Promise { future in
                 let videoUrl = URL(fileURLWithPath: videoFilePath)
 
                 PHPhotoLibrary.shared().performChanges {
@@ -363,14 +362,14 @@ public class VideoEditorView: UIView {
                     OWSFileSystem.deleteFileIfExists(videoFilePath)
 
                     if let error = error {
-                        resolver.reject(error)
+                        future.reject(error)
                         return
                     }
                     guard didSucceed else {
-                        resolver.reject(OWSAssertionError("Video export failed."))
+                        future.reject(OWSAssertionError("Video export failed."))
                         return
                     }
-                    resolver.fulfill(())
+                    future.resolve()
                 }
             }
         }
@@ -513,7 +512,7 @@ class TrimVideoTimelineView: UIView {
         addSubview(thumbnailLayerView)
         thumbnailLayerView.clipsToBounds = true
         thumbnailLayerView.autoPinEdgesToSuperviewEdges()
-        thumbnailLayerView.layoutCallback = { [weak self] view in
+        thumbnailLayerView.layoutCallback = { [weak self] _ in
             self?.updateThumbnailView()
         }
 

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public protocol CVViewStateDelegate: AnyObject {
     func viewStateUIModeDidChange(oldValue: ConversationUIMode)

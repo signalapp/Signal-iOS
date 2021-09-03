@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 class AppUpdateNag: NSObject {
@@ -218,15 +217,15 @@ class AppStoreVersionService: NSObject {
     func fetchLatestVersion(lookupURL: URL) -> Promise<AppStoreRecord> {
         Logger.debug("lookupURL:\(lookupURL)")
 
-        let (promise, resolver) = Promise<AppStoreRecord>.pending()
+        let (promise, future) = Promise<AppStoreRecord>.pending()
 
         let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, networkError) in
             if let networkError = networkError {
-                return resolver.reject(networkError)
+                return future.reject(networkError)
             }
 
             guard let data = data else {
-                resolver.reject(OWSAssertionError("Missing data."))
+                future.reject(OWSAssertionError("Missing data."))
                 return
             }
 
@@ -234,13 +233,13 @@ class AppStoreVersionService: NSObject {
                 let decoder = JSONDecoder()
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
-                    resolver.reject(OWSAssertionError("Missing or invalid record."))
+                    future.reject(OWSAssertionError("Missing or invalid record."))
                     return
                 }
 
-                resolver.fulfill(appStoreRecord)
+                future.resolve(appStoreRecord)
             } catch {
-                resolver.reject(error)
+                future.reject(error)
             }
         }
 

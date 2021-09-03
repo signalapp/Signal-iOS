@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalArgon2
 
 @objc(OWSKeyBackupService)

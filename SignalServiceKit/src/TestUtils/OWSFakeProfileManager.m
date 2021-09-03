@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/OWSFakeProfileManager.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

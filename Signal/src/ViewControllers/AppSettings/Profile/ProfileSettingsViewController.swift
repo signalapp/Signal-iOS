@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 class ProfileSettingsViewController: OWSTableViewController2 {
@@ -193,12 +192,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                                                             profileBioEmoji: normalizedBioEmoji,
                                                             profileAvatarData: avatarData,
                                                             userProfileWriter: .localUser)
-            }.done { _ in
+            }.done(on: .main) { _ in
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()
                     self?.profileCompleted()
                 }
-            }.catch { error in
+            }.catch(on: .main) { error in
                 owsFailDebug("Error: \(error)")
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()

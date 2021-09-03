@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController)
@@ -536,10 +535,10 @@ extension ConversationPickerViewController: UISearchBarDelegate {
             buildSearchResults(searchText: searchText)
         }.then { [weak self] searchResults -> Promise<ConversationCollection> in
             guard let self = self else {
-                throw PMKError.cancelled
+                throw PromiseError.cancelled
             }
             return self.buildConversationCollection(searchResults: searchResults)
-        }.done { [weak self] conversationCollection in
+        }.done(on: .main) { [weak self] conversationCollection in
             guard let self = self else { return }
 
             self.conversationCollection = conversationCollection

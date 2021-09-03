@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc
 public enum LinkPreviewError: Int, Error {
@@ -411,8 +410,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     func fetchStringResource(from url: URL) -> Promise<(URL, String)> {
         firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
-                .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
-
         }.map(on: Self.workQueue) { (response: HTTPResponse) -> (URL, String) in
             let statusCode = response.responseStatusCode
             guard statusCode >= 200 && statusCode < 300 else {
@@ -432,8 +429,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
     private func fetchImageResource(from url: URL) -> Promise<Data> {
         firstly(on: Self.workQueue) { () -> Promise<(HTTPResponse)> in
             self.buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get)
-                .catchCancellation(andThrow: LinkPreviewError.invalidPreview)
-
         }.map(on: Self.workQueue) { (httpResponse: HTTPResponse) -> Data in
             try autoreleasepool {
                 let statusCode = httpResponse.responseStatusCode
@@ -559,12 +554,12 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         // tryToDownloadStickerPack will use locally saved data if possible.
         return firstly(on: Self.workQueue) {
             StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-        }.then(on: Self.workQueue) { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
+        }.then(on: Self.workQueue) { (stickerPack: StickerPack) -> Promise<OWSLinkPreviewDraft> in
             let coverInfo = stickerPack.coverInfo
             // tryToDownloadSticker will use locally saved data if possible.
             return firstly { () -> Promise<URL> in
                 StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo)
-            }.map(on: Self.workQueue) { coverUrl in
+            }.map(on: Self.workQueue) { (coverUrl: URL) in
                 return try Data(contentsOf: coverUrl)
             }.then(on: Self.workQueue) { (coverData) -> Promise<PreviewThumbnail?> in
                 Self.previewThumbnail(srcImageData: coverData, srcMimeType: OWSMimeTypeImageWebp)

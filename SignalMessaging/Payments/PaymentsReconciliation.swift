@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import MobileCoin
 
 public class PaymentsReconciliation: Dependencies {

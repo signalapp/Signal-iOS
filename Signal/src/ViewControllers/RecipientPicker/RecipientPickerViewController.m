@@ -8,7 +8,7 @@
 #import "SignalApp.h"
 #import "UIView+OWS.h"
 #import <MessageUI/MessageUI.h>
-#import <PromiseKit/AnyPromise.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -184,9 +184,9 @@ const NSUInteger kMinimumSearchLength = 1;
     OWSLogInfo(@"beggining refreshing.");
 
     [self.contactsManagerImpl userRequestedSystemContactsRefresh]
-        .then(^{
+        .then(^(id value) {
             if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
-                return [AnyPromise promiseWithValue:nil];
+                return [AnyPromise promiseWithValue:@1];
             }
 
             return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];

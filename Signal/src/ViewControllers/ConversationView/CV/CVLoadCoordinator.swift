@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
@@ -79,7 +78,7 @@ public class CVLoadCoordinator: NSObject {
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    private var loadDidLandResolver: Resolver<Void>?
+    private var loadDidLandFuture: Future<Void>?
 
     required init(viewState: CVViewState) {
         self.viewState = viewState
@@ -605,17 +604,17 @@ public class CVLoadCoordinator: NSObject {
     private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let (loadPromise, loadResolver) = Promise<Void>.pending()
+        let (loadPromise, loadFuture) = Promise<Void>.pending()
 
-        loadLandWhenSafe(update: update, loadResolver: loadResolver)
+        loadLandWhenSafe(update: update, loadFuture: loadFuture)
 
         return loadPromise
     }
 
-    private func loadLandWhenSafe(update: CVUpdate, loadResolver: Resolver<Void>) {
+    private func loadLandWhenSafe(update: CVUpdate, loadFuture: Future<Void>) {
 
         guard let delegate = self.delegate else {
-            loadResolver.reject(OWSGenericError("Missing self or delegate."))
+            loadFuture.reject(OWSGenericError("Missing self or delegate."))
             return
         }
 
@@ -673,7 +672,7 @@ public class CVLoadCoordinator: NSObject {
             // its block than DispatchQueue.async() if the CPU is under
             // heavy load. That's desirable in this case.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) { [weak self] in
-                self?.loadLandWhenSafe(update: update, loadResolver: loadResolver)
+                self?.loadLandWhenSafe(update: update, loadFuture: loadFuture)
             }
             return
         }
@@ -683,8 +682,8 @@ public class CVLoadCoordinator: NSObject {
 
         self.renderState = renderState
 
-        let (loadDidLandPromise, loadDidLandResolver) = Promise<Void>.pending()
-        self.loadDidLandResolver = loadDidLandResolver
+        let (loadDidLandPromise, loadDidLandFuture) = Promise<Void>.pending()
+        self.loadDidLandFuture = loadDidLandFuture
 
         delegate.updateWithNewRenderState(update: update,
                                           scrollAction: loadRequest.scrollAction,
@@ -724,9 +723,9 @@ public class CVLoadCoordinator: NSObject {
             if CVLoader.verboseLogging {
                 Logger.info("Load landing complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
             }
-            loadResolver.fulfill(())
+            loadFuture.resolve()
         }.catch(on: CVUtils.landingQueue) { error in
-            loadResolver.reject(error)
+            loadFuture.reject(error)
         }
     }
 
@@ -734,12 +733,12 @@ public class CVLoadCoordinator: NSObject {
 
     public func loadDidLand() {
         AssertIsOnMainThread()
-        guard let loadDidLandResolver = loadDidLandResolver else {
-            owsFailDebug("Missing loadDidLandResolver.")
+        guard let loadDidLandFuture = loadDidLandFuture else {
+            owsFailDebug("Missing loadDidLandFuture.")
             return
         }
-        loadDidLandResolver.fulfill(())
-        self.loadDidLandResolver = nil
+        loadDidLandFuture.resolve()
+        self.loadDidLandFuture = nil
     }
 }
 

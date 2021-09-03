@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol GroupLinkViewControllerDelegate: AnyObject {
     func groupLinkViewViewDidUpdate()

@@ -4,7 +4,6 @@
 
 import Foundation
 import Photos
-import PromiseKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)

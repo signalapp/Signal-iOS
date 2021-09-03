@@ -3,7 +3,6 @@
 //
 
 #import "OWSOutgoingReceiptManager.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSError.h>
@@ -110,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        AnyPromise *completionPromise = PMKJoin(sendPromises);
+        AnyPromise *completionPromise = [AnyPromise whenResolved:sendPromises];
         completionPromise.ensure(^() {
             // Wait N seconds before conducting another pass.
             // This allows time for a batch to accumulate.
@@ -185,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     limitToCurrentProcessLifetime:YES
                                                    isHighPriority:NO
                                                       transaction:transaction]
-                    .thenInBackground(^{
+                    .doneInBackground(^(id value) {
                         OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
                             (unsigned long)receiptSet.timestamps.count,
                             receiptName);

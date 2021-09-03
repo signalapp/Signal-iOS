@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol AddGroupMembersViewControllerDelegate: AnyObject {
     func addGroupMembersViewDidUpdate()

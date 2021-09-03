@@ -4,11 +4,11 @@
 
 #import "OWSProfileManager.h"
 #import "Environment.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -492,7 +492,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)reuploadLocalProfile
 {
-    [self reuploadLocalProfilePromise].then(^{ OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
+    [self reuploadLocalProfilePromise].done(^(id value) { OWSLogInfo(@"Done."); }).catch(^(NSError *error) {
         OWSFailDebugUnlessNetworkFailure(error);
     });
 }
@@ -616,7 +616,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [self rotateProfileKeyWithIntersectingPhoneNumbers:intersectingPhoneNumbers
                                          intersectingUUIDs:intersectingUUIDS
                                       intersectingGroupIds:intersectingGroupIds]
-            .then(^{ success(); })
+            .done(^(id value) { success(); })
             .catch(^(NSError *error) { failure(error); });
     });
 }
@@ -1630,7 +1630,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [self downloadAndDecryptProfileAvatarForProfileAddress:userProfile.address
                                                  avatarUrlPath:avatarUrlPathAtStart
                                                     profileKey:profileKeyAtStart]
-            .thenInBackground(^(id value) {
+            .doneInBackground(^(id value) {
                 if (![value isKindOfClass:[NSData class]]) {
                     OWSFailDebug(@"Invalid value.");
                     return;

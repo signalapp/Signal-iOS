@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalRingRTC
-import PromiseKit
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
@@ -745,7 +744,7 @@ extension CallService {
 
             firstly {
                 self.fetchGroupMembershipProof(for: thread)
-            }.then(on: .main) { (proof: Data) -> Promise<PeekInfo> in
+            }.then(on: .main) { (proof: Data) -> Guarantee<PeekInfo> in
                 let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
                 return self.callManager.peekGroupCall(sfuUrl: sfuURL, membershipProof: proof, groupMembers: memberInfo)
             }.done(on: .main) { info in
@@ -919,9 +918,9 @@ extension CallService: CallManagerDelegate {
                     transaction: transaction
                 )
             }
-        }.done { _ in
+        }.done(on: .main) { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
-        }.catch { error in
+        }.catch(on: .main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
             } else if error is UntrustedIdentityError {

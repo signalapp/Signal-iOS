@@ -4,7 +4,6 @@
 
 import Foundation
 import CoreImage
-import PromiseKit
 
 extension UIImage {
     @objc

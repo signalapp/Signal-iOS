@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 protocol GroupPermissionsSettingsDelegate: AnyObject {
     func groupPermissionSettingsDidUpdate()
@@ -64,7 +63,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                 let promises = membersWithoutCapability.map { address in
                     ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: true)
                 }
-                return when(resolved: promises).asVoid()
+                return Promise.when(resolved: promises).asVoid()
             }.done { [weak self] in
                 self?.updateAnnouncementOnlyCapabilityState()
             }.catch { error in

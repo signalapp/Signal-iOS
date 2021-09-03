@@ -3,7 +3,6 @@
 //
 
 import XCTest
-import PromiseKit
 @testable import SignalServiceKit
 @testable import SignalMessaging
 @testable import Signal

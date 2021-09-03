@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public class CVComponentState: Equatable, Dependencies {
     let messageCellType: CVMessageCellType

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 // We generate 100 one-time prekeys at a time.  We should replenish
 // whenever ~2/3 of them have been consumed.

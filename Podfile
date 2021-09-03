@@ -33,8 +33,6 @@ pod 'ZKGroup', git: 'https://github.com/signalapp/zkgroup', testspecs: ["Tests"]
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
 
-pod 'PromiseKit'
-
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 pod 'GRDB.swift/SQLCipher'
 

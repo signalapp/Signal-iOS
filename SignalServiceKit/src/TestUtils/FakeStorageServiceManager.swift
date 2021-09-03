@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc(OWSFakeStorageServiceManager)
 public class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {

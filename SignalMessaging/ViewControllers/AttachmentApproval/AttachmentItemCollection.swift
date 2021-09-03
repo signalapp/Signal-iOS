@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {

@@ -4,7 +4,6 @@
 
 #import "TSAccountManager.h"
 #import <AFNetworking/AFURLResponseSerialization.h>
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>

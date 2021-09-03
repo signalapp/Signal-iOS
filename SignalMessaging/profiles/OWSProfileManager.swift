@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalServiceKit
 
 public extension OWSProfileManager {
@@ -34,7 +33,7 @@ public extension OWSProfileManager {
                                         profileAvatarData: profileAvatarData,
                                         unsavedRotatedProfileKey: unsavedRotatedProfileKey,
                                         userProfileWriter: userProfileWriter)
-        }.then { update in
+        }.then(on: .main) { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
             guard unsavedRotatedProfileKey == nil else {
@@ -389,14 +388,14 @@ extension OWSProfileManager {
         guard let profileAvatarData = attempt.update.profileAvatarData else {
             return Promise.value(())
         }
-        let (promise, resolver) = Promise<Void>.pending()
+        let (promise, future) = Promise<Void>.pending()
         DispatchQueue.global().async {
             self.profileManagerImpl.writeAvatarToDisk(with: profileAvatarData,
                                                       success: { avatarFilename in
                                                         attempt.avatarFilename = avatarFilename
-                                                        resolver.fulfill(())
+                                                        future.resolve()
                                                       }, failure: { (error) in
-                                                        resolver.reject(error)
+                                                        future.reject(error)
                                                       })
         }
         return promise

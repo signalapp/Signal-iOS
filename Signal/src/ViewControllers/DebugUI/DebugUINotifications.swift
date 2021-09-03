@@ -5,7 +5,6 @@
 import Foundation
 import SignalServiceKit
 import SignalMessaging
-import PromiseKit
 
 #if DEBUG
 
@@ -79,10 +78,10 @@ class DebugUINotifications: DebugUIPage {
         // Notifications won't sound if the app is suspended.
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
-        return after(seconds: kNotificationDelay).done {
+        return Guarantee.after(seconds: kNotificationDelay).done {
             block()
         }.then {
-            after(seconds: 2.0)
+            Guarantee.after(seconds: 2.0)
         }.done {
             // We don't want to endBackgroundTask until *after* the notifications manager is done,
             // but it dispatches async without a completion handler, so we just wait a while extra.
@@ -110,9 +109,7 @@ class DebugUINotifications: DebugUIPage {
     func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
-        return firstly {
-            self.notifyForIncomingCall(thread: contactThread)
-        }.then {
+        return self.notifyForIncomingCall(thread: contactThread).then {
             self.notifyForMissedCall(thread: contactThread)
         }.then {
             self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)

@@ -3,7 +3,6 @@
 //
 
 #import "OWS2FAManager.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -63,7 +62,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
 
             [self migrateToRegistrationLockV2]
-                .then(^{ OWSLogInfo(@"Successfully migrated to registration lock V2"); })
+                .done(^(id value) { OWSLogInfo(@"Successfully migrated to registration lock V2"); })
                 .catch(^(NSError *error) {
                     OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.userErrorDescription);
                 });
@@ -175,7 +174,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
             // Enabling V2 2FA doesn't inherently enable registration lock,
             // it's managed by a separate setting.
             [OWSKeyBackupService generateAndBackupKeysWithPin:pin rotateMasterKey:rotateMasterKey]
-                .then(^{
+                .done(^(id value) {
                     OWSAssertIsOnMainThread();
 
                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -210,9 +209,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         case OWS2FAMode_V2:
         {
             [OWSKeyBackupService deleteKeys]
-                .then(^{
-                    return [self disableRegistrationLockV2];
-                })
+                .then(^(id value) { return [self disableRegistrationLockV2]; })
                 .ensure(^{
                     OWSAssertIsOnMainThread();
 
@@ -220,7 +217,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                         [self markDisabledWithTransaction:transaction];
                     });
                 })
-                .then(^() {
+                .done(^(id value) {
                     OWSAssertIsOnMainThread();
 
                     if (success) {

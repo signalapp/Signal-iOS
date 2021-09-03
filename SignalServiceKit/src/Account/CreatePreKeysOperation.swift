@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 @objc(SSKCreatePreKeysOperation)
 public class CreatePreKeysOperation: OWSOperation {

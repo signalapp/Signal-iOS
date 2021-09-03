@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 open class CDNDownloadOperation: OWSOperation {
 
@@ -45,7 +44,7 @@ open class CDNDownloadOperation: OWSOperation {
         }
 
         // We use a seperate promise so that we can cancel from the progress block.
-        let (promise, resolver) = Promise<URL>.pending()
+        let (promise, future) = Promise<URL>.pending()
 
         let hasCheckedContentLength = AtomicBool(false)
         firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
@@ -60,7 +59,7 @@ open class CDNDownloadOperation: OWSOperation {
                                                         self.task = task
                                                         self.handleDownloadProgress(task: task,
                                                                                     progress: progress,
-                                                                                    resolver: resolver,
+                                                                                    future: future,
                                                                                     maxDownloadSize: maxDownloadSize,
                                                                                     hasCheckedContentLength: hasCheckedContentLength)
             }
@@ -85,7 +84,7 @@ open class CDNDownloadOperation: OWSOperation {
             do {
                 let temporaryFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
                 try OWSFileSystem.moveFile(from: downloadUrl, to: temporaryFileUrl)
-                resolver.fulfill(temporaryFileUrl)
+                future.resolve(temporaryFileUrl)
             } catch {
                 owsFailDebug("Could not move to temporary file: \(error)")
                 // Fail immediately; do not retry.
@@ -93,7 +92,7 @@ open class CDNDownloadOperation: OWSOperation {
             }
         }.catch(on: .global()) { (error: Error) in
             Logger.warn("Download failed: \(error)")
-            resolver.reject(error)
+            future.reject(error)
         }
 
         return promise
@@ -115,7 +114,7 @@ open class CDNDownloadOperation: OWSOperation {
 
     private func handleDownloadProgress(task: URLSessionTask,
                                         progress: Progress,
-                                        resolver: Resolver<URL>,
+                                        future: Future<URL>,
                                         maxDownloadSize: UInt?,
                                         hasCheckedContentLength: AtomicBool) {
         // Don't do anything until we've received at least one byte of data.
@@ -125,7 +124,7 @@ open class CDNDownloadOperation: OWSOperation {
 
         let abortDownload = { (message: String) -> Void in
             owsFailDebug(message)
-            resolver.reject(StickerError.assertionFailure)
+            future.reject(StickerError.assertionFailure)
             task.cancel()
         }
 

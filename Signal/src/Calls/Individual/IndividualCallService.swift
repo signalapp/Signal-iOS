@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 import SignalRingRTC
 import WebRTC
 import SignalServiceKit
@@ -498,7 +497,7 @@ import SignalMessaging
         Logger.info("call: \(call)")
 
         // Start the call, asynchronously.
-        getIceServers().done { iceServers in
+        getIceServers().done(on: .main) { iceServers in
             guard self.callService.currentCall === call else {
                 Logger.debug("call has since ended")
                 return
@@ -864,10 +863,10 @@ import SignalMessaging
                     transaction: transaction
                 )
             }
-        }.done {
+        }.done(on: .main) {
             Logger.info("sent offer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("failed to send offer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -891,10 +890,10 @@ import SignalMessaging
                     transaction: transaction
                 )
             }
-        }.done {
+        }.done(on: .main) {
             Logger.debug("sent answer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("failed to send answer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -931,10 +930,10 @@ import SignalMessaging
                     transaction: transaction
                 )
             }
-        }.done {
+        }.done(on: .main) {
             Logger.debug("sent ice update message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("failed to send ice update message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             callManager.signalingMessageDidFail(callId: callId)
         }
@@ -977,10 +976,10 @@ import SignalMessaging
                     transaction: transaction
                 )
             }
-        }.done {
+        }.done(on: .main) {
             Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("failed to send hangup message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -1003,10 +1002,10 @@ import SignalMessaging
                     transaction: transaction
                 )
             }
-        }.done {
+        }.done(on: .main) {
             Logger.debug("sent busy message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch { error in
+        }.catch(on: .main) { error in
             Logger.error("failed to send busy message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }

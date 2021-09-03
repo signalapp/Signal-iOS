@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public enum PaymentsError: Error {
     case notEnabled

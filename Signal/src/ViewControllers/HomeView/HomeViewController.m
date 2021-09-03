@@ -11,8 +11,8 @@
 #import "TSAccountManager.h"
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
-#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -773,9 +773,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"beggining refreshing.");
 
     [self.messageFetcherJob runObjc]
-        .then(^{
+        .then(^(id value) {
             if (TSAccountManager.shared.isRegisteredPrimaryDevice) {
-                return [AnyPromise promiseWithValue:nil];
+                return [AnyPromise promiseWithValue:@1];
             }
 
             return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
