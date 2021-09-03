@@ -321,38 +321,41 @@ public class ConversationViewLayout: UICollectionViewLayout {
             }
         }
         struct StickyDateHeader {
+            let prevDateHeader: ItemLayout?
             let dateHeaderToStick: ItemLayout
             let nextDateHeader: ItemLayout?
         }
         func findDateHeaderToStick() -> StickyDateHeader? {
             // This might contain item layouts for 0, 1 or 2 date headers.
-            let lastTwoDateHeaders = dateHeaderItemLayouts.suffix(2)
-            guard let lastDateHeader = lastTwoDateHeaders.last else {
+            guard let lastDateHeader = dateHeaderItemLayouts[back: 0] else {
                 // No date headers, nothing to stick.
                 return nil
             }
-            guard lastTwoDateHeaders.count > 1,
-                  let penultimateDateHeader = lastTwoDateHeaders.first else {
+            guard let penultimateDateHeader = dateHeaderItemLayouts[back: 1] else {
                 if isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader) {
                     // All date headers are in or below viewport, nothing to stick.
                     return nil
                 } else {
                     // There's only one date header and it's above the viewport;
                     // it should stick.
-                    return StickyDateHeader(dateHeaderToStick: lastDateHeader,
+                    return StickyDateHeader(prevDateHeader: nil,
+                                            dateHeaderToStick: lastDateHeader,
                                             nextDateHeader: nil)
                 }
             }
+            let prevDateHeader: ItemLayout? = dateHeaderItemLayouts[back: 2]
             if isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader) {
                 owsAssertDebug(!isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader))
                 // We found the last date header just above the first date header that
                 // is in or below the viewport; it should stick.
-                return StickyDateHeader(dateHeaderToStick: penultimateDateHeader,
+                return StickyDateHeader(prevDateHeader: prevDateHeader,
+                                        dateHeaderToStick: penultimateDateHeader,
                                         nextDateHeader: lastDateHeader)
             } else {
                 // There's last date header is above the viewport;
                 // it should stick.
-                return StickyDateHeader(dateHeaderToStick: lastDateHeader,
+                return StickyDateHeader(prevDateHeader: prevDateHeader,
+                                        dateHeaderToStick: lastDateHeader,
                                         nextDateHeader: nil)
             }
         }
@@ -362,42 +365,74 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
         let stickyDateHeader = dateHeaderToStick.dateHeaderToStick
 
-        // "At rest", the sticky header should be aligned with the top of the viewport,
-        // with a small spacing.
-        var stickyY = topOfViewportY
-        if let nextDateHeader = dateHeaderToStick.nextDateHeader {
-            let maxStickyY = nextDateHeader.frame.y - (stickyDateHeader.frame.height + minDateHeaderSpacing)
-            stickyY = min(stickyY, maxStickyY)
+        var layoutAttributesMap = layoutInfo.layoutAttributesMap
+        var itemLayouts = layoutInfo.itemLayouts
+
+        func updateItemLayout(_ newItemLayout: ItemLayout) {
+            // Update layoutAttributesMap.
+            layoutAttributesMap[newItemLayout.indexPath.row] = newItemLayout.layoutAttributes
+
+            // Update itemLayouts.
+            itemLayouts = itemLayouts.map { (itemLayout: ItemLayout) -> ItemLayout in
+                if itemLayout.indexPath == newItemLayout.indexPath {
+                    // Replace this itemLayout with the stickyItemLayout
+                    return newItemLayout
+                } else {
+                    return itemLayout
+                }
+            }
         }
 
-        let stickyItemLayout: ItemLayout = {
-            let indexPath = stickyDateHeader.indexPath
-            let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
-            var frame = stickyDateHeader.frame
-            frame.y = stickyY
-            layoutAttributes.frame = frame
-            layoutAttributes.zIndex = Self.zIndexStickyHeader
-            layoutAttributes.isStickyHeader = true
+        // "At rest", the sticky header should be aligned with the top of the viewport,
+        // with a small spacing.
+        let stickyHeaderY_normal = stickyDateHeader.frame.y
+        var stickyHeaderY_stuck = topOfViewportY
+        if let nextDateHeader = dateHeaderToStick.nextDateHeader {
+            let maxStickyY = nextDateHeader.frame.y - (stickyDateHeader.frame.height + minDateHeaderSpacing)
+            stickyHeaderY_stuck = min(stickyHeaderY_stuck, maxStickyY)
+        }
 
-            return ItemLayout(interactionUniqueId: stickyDateHeader.interactionUniqueId,
-                              indexPath: indexPath,
-                              layoutAttributes: layoutAttributes,
-                              canBeUsedForContinuity: stickyDateHeader.canBeUsedForContinuity,
-                              isStickyHeader: stickyDateHeader.isStickyHeader)
-        }()
+        // Update the ItemLayout for the "stuck" sticky header.
+        do {
+            let stickyItemLayout: ItemLayout = {
+                let indexPath = stickyDateHeader.indexPath
+                let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
+                var frame = stickyDateHeader.frame
+                frame.y = stickyHeaderY_stuck
+                layoutAttributes.frame = frame
+                layoutAttributes.zIndex = Self.zIndexStickyHeader
+                layoutAttributes.isStickyHeader = true
 
-        // Update layoutAttributesMap.
-        var layoutAttributesMap = layoutInfo.layoutAttributesMap
-        layoutAttributesMap[stickyItemLayout.indexPath.row] = stickyItemLayout.layoutAttributes
+                return ItemLayout(interactionUniqueId: stickyDateHeader.interactionUniqueId,
+                                  indexPath: indexPath,
+                                  layoutAttributes: layoutAttributes,
+                                  canBeUsedForContinuity: stickyDateHeader.canBeUsedForContinuity,
+                                  isStickyHeader: stickyDateHeader.isStickyHeader)
+            }()
+            updateItemLayout(stickyItemLayout)
+        }
 
-        // Update itemLayouts.
-        let itemLayouts = layoutInfo.itemLayouts.map { (itemLayout: ItemLayout) -> ItemLayout in
-            if itemLayout.indexPath == stickyItemLayout.indexPath {
-                // Replace this itemLayout with the stickyItemLayout
-                return stickyItemLayout
-            } else {
-               return itemLayout
-            }
+        // Update the ItemLayout for the previous date header.
+        // This ensures an orderly transition out after it has become
+        // "unstuck"
+        if let prevDateHeader = dateHeaderToStick.prevDateHeader {
+
+            let prevItemLayout: ItemLayout = {
+                let indexPath = prevDateHeader.indexPath
+                let layoutAttributes = CVCollectionViewLayoutAttributes(forCellWith: indexPath)
+                var frame = prevDateHeader.frame
+                frame.y = stickyHeaderY_normal - (frame.height + minDateHeaderSpacing)
+                layoutAttributes.frame = frame
+                layoutAttributes.zIndex = Self.zIndexStickyHeader
+                layoutAttributes.isStickyHeader = true
+
+                return ItemLayout(interactionUniqueId: prevDateHeader.interactionUniqueId,
+                                  indexPath: indexPath,
+                                  layoutAttributes: layoutAttributes,
+                                  canBeUsedForContinuity: prevDateHeader.canBeUsedForContinuity,
+                                  isStickyHeader: prevDateHeader.isStickyHeader)
+            }()
+            updateItemLayout(prevItemLayout)
         }
 
         let adjustedLayoutInfo = LayoutInfo(viewWidth: layoutInfo.viewWidth,
@@ -1127,5 +1162,13 @@ public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes 
             return false
         }
         return super.isEqual(object)
+    }
+}
+
+// MARK: -
+
+extension Array {
+    subscript(back i: Int) -> Iterator.Element? {
+        self[safe: index(endIndex, offsetBy: -(i + 1))]
     }
 }

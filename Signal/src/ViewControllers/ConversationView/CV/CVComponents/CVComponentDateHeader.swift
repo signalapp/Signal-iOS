@@ -78,8 +78,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let outerStack = componentView.outerStack
         let doubleContentWrapper = componentView.doubleContentWrapper
 
-        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
-        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+        let themeHasChanged = isDarkThemeEnabled != componentView.isDarkThemeEnabled
+        componentView.isDarkThemeEnabled = isDarkThemeEnabled
 
         let hasWallpaper = conversationStyle.hasWallpaper
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
@@ -87,12 +87,9 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
 
         let blurBackgroundColor: UIColor = {
             if componentDelegate.isConversationPreview {
-                let blurBackgroundColor: UIColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-                return blurBackgroundColor
+                return isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
             } else {
-                // TODO: Design may change this value.
-                let blurBackgroundColor: UIColor = conversationStyle.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-                return blurBackgroundColor
+                return isDarkThemeEnabled ? UIColor(rgbHex: 0x1B1B1B) : UIColor(rgbHex: 0xFAFAFA)
             }
         }()
 
