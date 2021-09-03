@@ -43,7 +43,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(webSocketStateDidChange),
-                                               name: .webSocketStateDidChange,
+                                               name: OWSWebSocket.webSocketStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),
@@ -224,7 +224,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(webSocketStateDidChange),
-                                               name: .webSocketStateDidChange,
+                                               name: OWSWebSocket.webSocketStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(reachabilityChanged),

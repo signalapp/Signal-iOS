@@ -23,8 +23,9 @@ public class ProvisioningSocket {
                             relativeTo: serviceBaseURL)!
 
         let request = URLRequest(url: socketURL)
-        socket = SSKWebSocketManager.buildSocket(request: request)
-        socket.delegate = self
+        var webSocket = SSKWebSocketManager.buildSocket(request: request)
+        self.socket = webSocket
+        webSocket.delegate = self
     }
 
     public var state: SSKWebSocketState {

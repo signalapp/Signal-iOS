@@ -198,7 +198,7 @@ public class MessageFetcherJob: NSObject {
                 Logger.verbose("!hasCompletedInitialFetch")
             }
 
-            return NotificationCenter.default.observe(once: .webSocketStateDidChange).then { _ in
+            return NotificationCenter.default.observe(once: OWSWebSocket.webSocketStateDidChange).then { _ in
                 self.fetchingCompletePromise()
             }.asVoid()
         } else {

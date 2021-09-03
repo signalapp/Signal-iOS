@@ -5,8 +5,7 @@
 import Foundation
 import Starscream
 
-@objc
-public enum SSKWebSocketState: UInt {
+public enum SSKWebSocketState {
     case open, connecting, disconnected
 }
 
@@ -64,34 +63,26 @@ public class SSKWebSocketError: NSObject, CustomNSError {
 
 // MARK: -
 
-@objc
 public protocol SSKWebSocket {
 
-    @objc
     var delegate: SSKWebSocketDelegate? { get set }
 
-    @objc
+    var id: UInt { get }
+
     var state: SSKWebSocketState { get }
 
-    @objc
     func connect()
-
-    @objc
     func disconnect()
 
-    @objc(writeData:)
     func write(data: Data)
 
-    @objc
     func writePing()
 
-    @objc(sendResponseForRequest:status:message:error:)
     func sendResponse(for request: WebSocketProtoWebSocketRequestMessage, status: UInt32, message: String) throws
 }
 
 // MARK: -
 
-@objc
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
@@ -102,12 +93,10 @@ public protocol SSKWebSocketDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class SSKWebSocketManager: NSObject {
-
-    @objc
-    public class func buildSocket(request: URLRequest) -> SSKWebSocket {
-        return SSKWebSocketImpl(request: request)
+    public class func buildSocket(request: URLRequest,
+                                  callbackQueue: DispatchQueue? = nil) -> SSKWebSocket {
+        SSKWebSocketImpl(request: request, callbackQueue: callbackQueue)
     }
 }
 
@@ -115,10 +104,21 @@ public class SSKWebSocketManager: NSObject {
 
 class SSKWebSocketImpl: SSKWebSocket {
 
+    private static let idCounter = AtomicUInt()
+    public let id = SSKWebSocketImpl.idCounter.increment()
+
     private let socket: Starscream.WebSocket
 
-    init(request: URLRequest) {
+    public var callbackQueue: DispatchQueue { socket.callbackQueue }
+
+    init(request: URLRequest,
+         callbackQueue: DispatchQueue? = nil) {
+
         let socket = WebSocket(request: request)
+
+        if let callbackQueue = callbackQueue {
+            socket.callbackQueue = callbackQueue
+        }
 
         socket.disableSSLCertValidation = true
         socket.socketSecurityLevel = StreamSocketSecurityLevel.tlSv1_2
@@ -138,13 +138,15 @@ class SSKWebSocketImpl: SSKWebSocket {
 
     weak var delegate: SSKWebSocketDelegate?
 
-    var hasEverConnected = false
+    private let hasEverConnected = AtomicBool(false)
+
+    // This method is thread-safe.
     var state: SSKWebSocketState {
         if socket.isConnected {
             return .open
         }
 
-        if hasEverConnected {
+        if hasEverConnected.get() {
             return .disconnected
         }
 
@@ -167,7 +169,9 @@ class SSKWebSocketImpl: SSKWebSocket {
         socket.write(ping: Data())
     }
 
-    func sendResponse(for request: WebSocketProtoWebSocketRequestMessage, status: UInt32, message: String) throws {
+    func sendResponse(for request: WebSocketProtoWebSocketRequestMessage,
+                      status: UInt32,
+                      message: String) throws {
         let responseBuilder = WebSocketProtoWebSocketResponseMessage.builder(requestID: request.requestID,
                                                                              status: status)
         responseBuilder.setMessage(message)
@@ -187,7 +191,7 @@ class SSKWebSocketImpl: SSKWebSocket {
 
 extension SSKWebSocketImpl: WebSocketDelegate {
     func websocketDidConnect(socket: WebSocketClient) {
-        hasEverConnected = true
+        hasEverConnected.set(true)
         delegate?.websocketDidConnect(socket: self)
     }
 

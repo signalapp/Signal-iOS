@@ -32,10 +32,13 @@ public class SocketManager: NSObject {
         webSocket(ofType: webSocketType).canMakeRequests
     }
 
+    public typealias RequestSuccess = OWSWebSocket.RequestSuccess
+    public typealias RequestFailure = OWSWebSocket.RequestFailure
+
     private func makeRequest(_ request: TSRequest,
                             webSocketType: OWSWebSocketType,
-                            success: @escaping TSSocketMessageSuccess,
-                            failure: @escaping TSSocketMessageFailure) {
+                            success: @escaping RequestSuccess,
+                            failure: @escaping RequestFailure) {
         webSocket(ofType: webSocketType).makeRequest(request, success: success, failure: failure)
     }
 
@@ -118,16 +121,16 @@ public class SocketManager: NSObject {
     // This method can be called from any thread.
     @objc
     public func requestSocketOpen() {
-        websocketIdentified.requestOpen()
-        websocketUnidentified.requestOpen()
+        websocketIdentified.requestSocketOpen()
+        websocketUnidentified.requestSocketOpen()
     }
 
     @objc
     public func cycleSocket() {
         AssertIsOnMainThread()
 
-        websocketIdentified.cycle()
-        websocketUnidentified.cycle()
+        websocketIdentified.cycleSocket()
+        websocketUnidentified.cycleSocket()
     }
 
     @objc
@@ -138,7 +141,7 @@ public class SocketManager: NSObject {
     }
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
-        webSocket(ofType: webSocketType).state
+        webSocket(ofType: webSocketType).currentState
     }
 
     public var hasEmptiedInitialQueue: Bool {

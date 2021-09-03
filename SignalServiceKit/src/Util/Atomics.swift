@@ -142,6 +142,15 @@ public final class AtomicValue<T> {
         }
     }
 
+    // Returns the old value.
+    public func swap(_ value: T) -> T {
+        Atomics.perform {
+            let oldValue = self.value
+            self.value = value
+            return oldValue
+        }
+    }
+
     // Transform the current value using a block.
     @discardableResult
     public func map(_ block: @escaping (T) -> T) -> T {
@@ -197,6 +206,11 @@ public final class AtomicOptional<T> {
 
     public func set(_ value: T?) {
         self.value.set(value)
+    }
+
+    // Returns the old value.
+    public func swap(_ value: T?) -> T? {
+        self.value.swap(value)
     }
 }
 

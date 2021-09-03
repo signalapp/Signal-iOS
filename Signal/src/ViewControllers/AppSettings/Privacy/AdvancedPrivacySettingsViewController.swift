@@ -19,7 +19,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
-            name: .webSocketStateDidChange,
+            name: OWSWebSocket.webSocketStateDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(

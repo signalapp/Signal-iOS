@@ -19,8 +19,8 @@ NSString *const kisCensorshipCircumventionManuallyDisabledKey
 NSString *const kManualCensorshipCircumventionCountryCodeKey
     = @"kTSStorageManager_ManualCensorshipCircumventionCountryCode";
 
-NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
-    @"kNSNotificationName_IsCensorshipCircumventionActiveDidChange";
+NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidChange
+    = @"NSNotificationNameIsCensorshipCircumventionActiveDidChange";
 
 @interface OWSSignalService ()
 
@@ -166,7 +166,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     }
 
     [[NSNotificationCenter defaultCenter]
-        postNotificationNameAsync:kNSNotificationName_IsCensorshipCircumventionActiveDidChange
+        postNotificationNameAsync:NSNotificationNameIsCensorshipCircumventionActiveDidChange
                            object:nil
                          userInfo:nil];
 }
