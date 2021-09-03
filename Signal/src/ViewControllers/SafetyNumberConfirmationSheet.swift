@@ -176,8 +176,30 @@ class SafetyNumberConfirmationSheet: UIViewController {
         stackView.addArrangedSubview(confirmAction.button)
         stackView.addHairline(with: theme.hairlineColor)
         confirmAction.button.releaseAction = { [weak self] in
-            self?.completionHandler(true)
-            self?.dismiss(animated: true)
+            guard let self = self else { return }
+            let identityManager = self.identityManager
+            let unconfirmedAddresses = self.items.map { $0.address }
+
+            self.databaseStorage.asyncWrite(block: { writeTx in
+                for address in unconfirmedAddresses {
+                    guard let identityKey = identityManager.identityKey(for: address, transaction: writeTx) else { return }
+                    let currentState = identityManager.verificationState(for: address, transaction: writeTx)
+
+                    // Promote any unverified verification states to default, but otherwise leave
+                    // the state intact. We don't want to overwrite any addresses that have
+                    // been verified since we last checked.
+                    let newState = (currentState == .noLongerVerified) ? .default : currentState
+                    identityManager.setVerificationState(
+                        newState,
+                        identityKey: identityKey,
+                        address: address,
+                        isUserInitiatedChange: true,
+                        transaction: writeTx)
+                }
+            }, completionQueue: .main) {
+                self.completionHandler(true)
+                self.dismiss(animated: true)
+            }
         }
 
         cancelAction.button.applyActionSheetTheme(theme)

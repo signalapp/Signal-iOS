@@ -624,29 +624,9 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             addressesToConfirm: addressesToAlert,
             confirmationText: approveText,
             cancelText: denyText,
-            theme: .translucentDark) { didApprove in
-
-            if didApprove {
-                SDSDatabaseStorage.shared.asyncWrite { writeTx in
-                    let identityManager = Self.identityManager
-                    for address in addressesToAlert {
-                        guard let identityKey = identityManager.identityKey(for: address, transaction: writeTx) else { return }
-                        let currentState = identityManager.verificationState(for: address, transaction: writeTx)
-                        let newState = (currentState == .noLongerVerified) ? .default : currentState
-
-                        identityManager.setVerificationState(newState,
-                            identityKey: identityKey,
-                            address: address,
-                            isUserInitiatedChange: true,
-                            transaction: writeTx)
-                    }
-                } completion: {
-                    completion(true)
-                }
-
-            } else {
-                completion(false)
-            }
+            theme: .translucentDark
+        ) { didApprove in
+            completion(didApprove)
         }
         sheet.allowsDismissal = localDeviceHasNotJoined
         present(sheet, animated: true, completion: nil)

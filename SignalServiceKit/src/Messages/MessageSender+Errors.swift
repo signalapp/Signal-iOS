@@ -229,6 +229,11 @@ public class MessageSenderNoSessionForTransientMessageError: NSObject, CustomNSE
         return NSLocalizedString("ERROR_DESCRIPTION_UNKNOWN_ERROR",
                                  comment: "Worst case generic error message")
     }
+
+    @objc
+    public class func isTransientMessageError(_ error: Error?) -> Bool {
+        error is MessageSenderNoSessionForTransientMessageError
+    }
 }
 
 // MARK: -

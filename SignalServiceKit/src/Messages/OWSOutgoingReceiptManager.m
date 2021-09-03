@@ -52,8 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    // We skip any sends to untrusted identities since we know they'll fail anyway. If an identity state changes
+    // we should recheck our pendingReceipts to re-attempt a send to formerly untrusted recipients.
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reachabilityChanged)
+                                             selector:@selector(process)
+                                                 name:kNSNotificationNameIdentityStateDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(process)
                                                  name:SSKReachability.owsReachabilityDidChange
                                                object:nil];
 
@@ -152,6 +158,11 @@ NS_ASSUME_NONNULL_BEGIN
         if ([self.blockingManager isAddressBlocked:address]) {
             OWSLogWarn(@"Skipping send for blocked address: %@", address);
             [self dequeueReceiptsForAddress:address receiptSet:receiptSet receiptType:receiptType];
+            continue;
+        }
+
+        if ([self.identityManager untrustedIdentityForSendingToAddress:address]) {
+            OWSLogWarn(@"%@ is untrusted. Deferring sending of receipts.", address);
             continue;
         }
 
@@ -281,13 +292,6 @@ NS_ASSUME_NONNULL_BEGIN
         [persistedSet subtract:dequeueSet];
         [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     });
-}
-
-- (void)reachabilityChanged
-{
-    OWSAssertIsOnMainThread();
-
-    [self process];
 }
 
 - (SDSKeyValueStore *)storeForReceiptType:(OWSReceiptType)receiptType

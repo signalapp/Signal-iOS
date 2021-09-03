@@ -1385,17 +1385,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     if (hasSession) {
         return;
     }
-    // Discard "typing indicator" messages if there is no existing session with the user.
-    // We also discard SKDMs if they're sent on behalf of an online message.
-    BOOL canSafelyBeDiscarded = messageSend.message.isOnline;
-    if ([messageSend.message isKindOfClass:[OWSOutgoingSenderKeyDistributionMessage class]]) {
-        OWSOutgoingSenderKeyDistributionMessage *skdm = (OWSOutgoingSenderKeyDistributionMessage *)messageSend.message;
-        canSafelyBeDiscarded |= skdm.isSentOnBehalfOfOnlineMessage;
-    }
-
-    if (canSafelyBeDiscarded) {
-        OWSRaiseException(NoSessionForTransientMessageException, @"No session for transient message.");
-    }
 
     __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     __block PreKeyBundle *_Nullable bundle;
@@ -1435,6 +1424,11 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 exception = [NSException exceptionWithName:UntrustedIdentityKeyException
                                                     reason:@"Identity key is not valid"
                                                   userInfo:@{ NSUnderlyingErrorKey : error }];
+            } else if ([MessageSenderNoSessionForTransientMessageError isTransientMessageError:error]) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:NoSessionForTransientMessageException
+                                                    reason:@"No session for transient message"
+                                                  userInfo:@ { NSUnderlyingErrorKey : error }];
             } else if (IsNetworkConnectivityFailure(error)) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
