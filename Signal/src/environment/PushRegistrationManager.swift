@@ -108,11 +108,13 @@ public enum PushRegistrationError: Error {
                 owsAssertDebug(!FeatureFlags.notificationServiceExtension)
                 Logger.info("Fetching messages.")
                 var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
-                firstly {
+                firstly { () -> Promise<Void> in
                     self.messageFetcherJob.run().promise
                 }.done(on: .main) {
                     owsAssertDebug(backgroundTask != nil)
                     backgroundTask = nil
+                }.catch { error in
+                    owsFailDebug("Error: \(error)")
                 }
             }
         }
