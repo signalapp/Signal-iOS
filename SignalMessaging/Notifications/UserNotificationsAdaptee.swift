@@ -232,15 +232,15 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             if DebugFlags.internalLogging {
                 Logger.info("presenting notification with identifier: \(notificationIdentifier)")
             }
+            if DebugFlags.internalLogging {
+                Logger.info("Posting: \(notificationIdentifier).")
+            }
             self.notificationCenter.add(request) { (error: Error?) in
                 if let error = error {
                     owsFailDebug("Error: \(error)")
                 } else if DebugFlags.internalLogging {
-                    Logger.info("Posted.")
+                    Logger.info("Posted: \(notificationIdentifier).")
                 }
-            }
-            if DebugFlags.internalLogging {
-                Logger.info("Posting.")
             }
         }
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
