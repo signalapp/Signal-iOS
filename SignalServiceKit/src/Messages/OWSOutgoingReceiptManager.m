@@ -87,7 +87,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Schedules a processing pass, unless one is already scheduled.
 - (void)process {
-    OWSAssertDebug(AppReadiness.isAppReady);
+    if (!AppReadiness.isAppReady && !CurrentAppContext().isRunningTests) {
+        OWSFailDebug(@"Outgoing receipts require app is ready");
+        return;
+    }
 
     dispatch_async(self.serialQueue, ^{
         if (self.isProcessing) {
