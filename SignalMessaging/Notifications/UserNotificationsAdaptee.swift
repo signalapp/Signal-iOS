@@ -372,17 +372,29 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     func cancelNotifications(threadId: String) {
         AssertIsOnMainThread()
 
+        if DebugFlags.internalLogging {
+            Logger.info("threadId: \(threadId)")
+        }
+
         pendingCancelations.insert(.threadId(threadId))
     }
 
     func cancelNotifications(messageId: String) {
         AssertIsOnMainThread()
 
+        if DebugFlags.internalLogging {
+            Logger.info("messageId: \(messageId)")
+        }
+
         pendingCancelations.insert(.messageId(messageId))
     }
 
     func cancelNotifications(reactionId: String) {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("reactionId: \(reactionId)")
+        }
 
         pendingCancelations.insert(.reactionId(reactionId))
     }
