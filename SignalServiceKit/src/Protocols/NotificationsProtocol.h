@@ -21,24 +21,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
                               thread:(TSThread *)thread
-                         transaction:(SDSAnyReadTransaction *)transaction;
+                         transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forIncomingMessage:thread:transaction:));
 
 - (void)notifyUserForReaction:(OWSReaction *)reaction
             onOutgoingMessage:(TSOutgoingMessage *)message
                        thread:(TSThread *)thread
-                  transaction:(SDSAnyReadTransaction *)transaction;
+                  transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forReaction:onOutgoingMessage:thread:transaction:));
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                            thread:(TSThread *)thread
-                      transaction:(SDSAnyWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forErrorMessage:thread:transaction:));
 
 - (void)notifyUserForPreviewableInteraction:(TSInteraction<OWSPreviewText> *)previewableInteraction
                                      thread:(TSThread *)thread
                                  wantsSound:(BOOL)wantsSound
-                                transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(notifyUser(for:thread:wantsSound:transaction:));
+                                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forPreviewableInteraction:thread:wantsSound:transaction:));
 
 - (void)notifyUserForThreadlessErrorMessage:(ThreadlessErrorMessage *)errorMessage
-                                transaction:(SDSAnyWriteTransaction *)transaction;
+                                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUser(forThreadlessErrorMessage:transaction:));
 
 - (void)notifyTestPopulationOfErrorMessage:(NSString *)errorString;
 

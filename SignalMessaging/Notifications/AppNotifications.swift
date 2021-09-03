@@ -162,9 +162,22 @@ protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?)
+    func notify(category: AppNotificationCategory,
+                title: String?,
+                body: String,
+                threadIdentifier: String?,
+                userInfo: [AnyHashable: Any],
+                interaction: INInteraction?,
+                sound: OWSSound?)
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?)
+    func notify(category: AppNotificationCategory,
+                title: String?,
+                body: String,
+                threadIdentifier: String?,
+                userInfo: [AnyHashable: Any],
+                interaction: INInteraction?,
+                sound: OWSSound?,
+                replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(messageId: String)
@@ -307,7 +320,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: IndividualCallNotificationInfo, callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: IndividualCallNotificationInfo,
+                                                                   callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -340,7 +354,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: IndividualCallNotificationInfo, callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: IndividualCallNotificationInfo,
+                                                      callerName: String) {
 
         let remoteAddress = call.remoteAddress
         let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
@@ -391,8 +406,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
     }
 
-    public func canNotify(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        guard isThreadMuted(thread, transaction: transaction) else { return true }
+    public func canNotify(for incomingMessage: TSIncomingMessage,
+                          thread: TSThread,
+                          transaction: SDSAnyReadTransaction) -> Bool {
+        guard isThreadMuted(thread, transaction: transaction) else {
+            return true
+        }
 
         guard let localAddress = TSAccountManager.localAddress else {
             owsFailDebug("Missing local address")
@@ -400,19 +419,37 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
-        guard mentionedAddresses.contains(localAddress) else { return false }
+        guard mentionedAddresses.contains(localAddress) else {
+            if DebugFlags.internalLogging {
+                Logger.info("Not notifying; no mention.")
+            }
+            return false
+        }
 
         switch thread.mentionNotificationMode {
         case .default, .always:
             return true
         case .never:
+            if DebugFlags.internalLogging {
+                Logger.info("Not notifying; mentionNotificationMode .never.")
+            }
             return false
         }
     }
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(forIncomingMessage incomingMessage: TSIncomingMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyReadTransaction) {
 
-        guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else { return }
+        guard canNotify(for: incomingMessage, thread: thread, transaction: transaction) else {
+            if DebugFlags.internalLogging {
+                Logger.info("Not notifying.")
+            }
+            return
+        }
+        if DebugFlags.internalLogging {
+            Logger.info("Notifying.")
+        }
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(transaction: transaction)
@@ -436,7 +473,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                            senderName,
                                            groupThread.groupNameOrDefault)
             default:
-                owsFailDebug("unexpected thread: \(thread.uniqueId)")
+                owsFailDebug("Invalid thread: \(thread.uniqueId)")
                 return
             }
 
@@ -499,7 +536,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for reaction: OWSReaction, on message: TSOutgoingMessage, thread: TSThread, transaction: SDSAnyReadTransaction) {
+    public func notifyUser(forReaction reaction: OWSReaction,
+                           onOutgoingMessage message: TSOutgoingMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyReadTransaction) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         // Reaction notifications only get displayed if we can
@@ -645,8 +685,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         owsFailDebug("Fatal error occurred: \(errorString).")
         guard DebugFlags.testPopulationErrorAlerts else { return }
 
-        let title = NSLocalizedString("ERROR_NOTIFICATION_TITLE", comment: "Format string for an error alert notification title.")
-        let messageFormat = NSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT", comment: "Format string for an error alert notification message. Embes {{ error string }}")
+        let title = NSLocalizedString("ERROR_NOTIFICATION_TITLE",
+                                      comment: "Format string for an error alert notification title.")
+        let messageFormat = NSLocalizedString("ERROR_NOTIFICATION_MESSAGE_FORMAT",
+                                              comment: "Format string for an error alert notification message. Embes {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
         DispatchQueue.main.async {
@@ -691,7 +733,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forErrorMessage errorMessage: TSErrorMessage,
+                           thread: TSThread,
+                           transaction: SDSAnyWriteTransaction) {
         guard (errorMessage is OWSRecoverableDecryptionPlaceholder) == false else { return }
 
         switch errorMessage.errorType {
@@ -708,11 +752,17 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
              .groupCreationFailed:
             return
         case .sessionRefresh:
-            notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
+            notifyUser(forPreviewableInteraction: errorMessage as TSMessage,
+                       thread: thread,
+                       wantsSound: true,
+                       transaction: transaction)
         }
     }
 
-    public func notifyUser(for previewableInteraction: TSInteraction & OWSPreviewText, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
+                           thread: TSThread,
+                           wantsSound: Bool,
+                           transaction: SDSAnyWriteTransaction) {
         guard !isThreadMuted(thread, transaction: transaction) else { return }
 
         let notificationTitle: String?
@@ -764,7 +814,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyUser(for errorMessage: ThreadlessErrorMessage, transaction: SDSAnyWriteTransaction) {
+    public func notifyUser(forThreadlessErrorMessage errorMessage: ThreadlessErrorMessage,
+                           transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
         transaction.addAsyncCompletionOnMain {

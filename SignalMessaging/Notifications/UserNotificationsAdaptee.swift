@@ -225,17 +225,21 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             content.threadIdentifier = threadIdentifier
         }
 
-        var contentToUse: UNNotificationContent = content
+        let contentToUse: UNNotificationContent = content
         let postNotification = {
             let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
             if DebugFlags.internalLogging {
                 Logger.info("presenting notification with identifier: \(notificationIdentifier)")
             }
+            if DebugFlags.internalLogging {
+                Logger.info("Posting: \(notificationIdentifier).")
+            }
             self.notificationCenter.add(request) { (error: Error?) in
                 if let error = error {
                     owsFailDebug("Error: \(error)")
-                    return
+                } else if DebugFlags.internalLogging {
+                    Logger.info("Posted: \(notificationIdentifier).")
                 }
             }
         }

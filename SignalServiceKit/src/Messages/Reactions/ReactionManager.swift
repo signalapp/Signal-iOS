@@ -168,7 +168,10 @@ public class ReactionManager: NSObject {
                     return .success
                 }
 
-                self.notificationsManager?.notifyUser(for: reaction, on: message, thread: thread, transaction: transaction)
+                self.notificationsManager?.notifyUser(forReaction: reaction,
+                                                      onOutgoingMessage: message,
+                                                      thread: thread,
+                                                      transaction: transaction)
             }
         }
 

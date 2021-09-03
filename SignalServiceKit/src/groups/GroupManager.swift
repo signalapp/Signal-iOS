@@ -2243,7 +2243,7 @@ public class GroupManager: NSObject {
         } else if !wasLocalUserInGroup && isLocalUserInGroup {
             // Notify when the local user is added or invited to a group.
             self.notificationsManager?.notifyUser(
-                for: infoMessage,
+                forPreviewableInteraction: infoMessage,
                 thread: groupThread,
                 wantsSound: true,
                 transaction: transaction

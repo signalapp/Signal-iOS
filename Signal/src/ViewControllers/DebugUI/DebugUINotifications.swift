@@ -171,7 +171,7 @@ class DebugUINotifications: DebugUIPage {
                 factory.threadCreator = { _ in return thread }
                 let incomingMessage = factory.create(transaction: transaction)
 
-                self.notificationPresenter.notifyUser(for: incomingMessage,
+                self.notificationPresenter.notifyUser(forIncomingMessage: incomingMessage,
                                                       thread: thread,
                                                       transaction: transaction)
             }
@@ -185,7 +185,7 @@ class DebugUINotifications: DebugUIPage {
             let errorMessage = TSErrorMessage(errorMessageWithBuilder: builder)
 
             self.databaseStorage.write { transaction in
-                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
+                self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: transaction)
             }
         }
     }
@@ -195,7 +195,7 @@ class DebugUINotifications: DebugUIPage {
         return delayedNotificationDispatch {
             self.databaseStorage.write { transaction in
                 let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                self.notificationPresenter.notifyUser(for: errorMessage,
+                self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                       transaction: transaction)
             }
         }
