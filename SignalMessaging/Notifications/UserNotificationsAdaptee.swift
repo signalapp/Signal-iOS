@@ -340,6 +340,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             }
         }
 
+        if DebugFlags.internalLogging {
+            Logger.info("identifiersToCancel: \(identifiersToCancel)")
+        }
+
         notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
 
@@ -350,6 +354,11 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     func cancelNotification(identifier: String) {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("cancelNotification: \(identifier)")
+        }
+
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
     }
@@ -380,6 +389,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     func clearAllNotifications() {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("")
+        }
 
         pendingCancelations.removeAll()
         notificationCenter.removeAllPendingNotificationRequests()
