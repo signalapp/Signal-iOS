@@ -78,8 +78,6 @@ public class CVLoadCoordinator: NSObject {
     // TODO: Remove. This model will get stale.
     private let thread: TSThread
 
-    private var loadDidLandFuture: Future<Void>?
-
     required init(viewState: CVViewState) {
         self.viewState = viewState
         let threadViewModel = viewState.threadViewModel
@@ -470,10 +468,6 @@ public class CVLoadCoordinator: NSObject {
     private func loadIfNecessary() {
         AssertIsOnMainThread()
 
-        if CVLoader.verboseLogging {
-            Logger.info("Trying to begin load.")
-        }
-
         let conversationStyle = self.conversationStyle
         guard conversationStyle.viewWidth > 0 else {
             Logger.info("viewWidth not yet set.")
@@ -482,6 +476,9 @@ public class CVLoadCoordinator: NSObject {
         guard let loadRequest = loadRequestBuilder.build() else {
             // No load is needed.
             return
+        }
+        if CVLoader.verboseLogging {
+            Logger.info("Trying to begin load.")
         }
         #if TESTABLE_BUILD
         guard !blockLoads.get() else {
@@ -642,7 +639,7 @@ public class CVLoadCoordinator: NSObject {
                 }
                 return false
             }
-            guard !delegate.isLayoutApplyingUpdate else {
+            guard Self.canOverlapLandingAnimations || !delegate.isLayoutApplyingUpdate else {
                 if CVLoader.verboseLogging {
                     Logger.verbose("Waiting for isLayoutApplyingUpdate.")
                 }
@@ -683,7 +680,9 @@ public class CVLoadCoordinator: NSObject {
         self.renderState = renderState
 
         let (loadDidLandPromise, loadDidLandFuture) = Promise<Void>.pending()
-        self.loadDidLandFuture = loadDidLandFuture
+        updateLoadLanding(renderState: renderState,
+                          loadRequest: loadRequest,
+        loadDidLandFuture: loadDidLandFuture)
 
         delegate.updateWithNewRenderState(update: update,
                                           scrollAction: loadRequest.scrollAction,
@@ -709,6 +708,8 @@ public class CVLoadCoordinator: NSObject {
         // load immediately after we start landing this load.  If we commit to
         // this behavior, we can eliminate loadLandingRequestId.
         if Self.canOverlapLandingAnimations {
+            loadDidLandImmediately()
+
             let didClearLandingFlag = loadLandingRequestId.tryToClearIfEqual(loadRequest.requestId)
             owsAssertDebug(didClearLandingFlag)
         }
@@ -729,16 +730,61 @@ public class CVLoadCoordinator: NSObject {
         }
     }
 
-    // -
+    // MARK: - LoadLanding
 
-    public func loadDidLand() {
+    private struct LoadLanding {
+        let renderStateId: UInt
+        let loadRequestId: UInt
+        private var loadDidLandFuture: Future<Void>?
+
+        init(renderStateId: UInt, loadRequestId: UInt, loadDidLandFuture: Future<Void>) {
+            self.renderStateId = renderStateId
+            self.loadRequestId = loadRequestId
+            self.loadDidLandFuture = loadDidLandFuture
+        }
+
+        func fulfill() {
+            AssertIsOnMainThread()
+
+            guard let loadDidLandFuture = self.loadDidLandFuture else {
+                owsFailDebug("Missing loadDidLandFuture.")
+                return
+            }
+            if CVLoader.verboseLogging {
+                Logger.info("LoadLanding fulfilled[\(loadRequestId)]")
+            }
+            loadDidLandFuture.fulfill(())
+        }
+    }
+    private var currentLoadLanding: LoadLanding?
+
+    private func updateLoadLanding(renderState: CVRenderState,
+                                   loadRequest: CVLoadRequest,
+                                   loadDidLandFuture: Future<Void>) {
+        if let currentLoadLanding = self.currentLoadLanding {
+            currentLoadLanding.fulfill()
+        }
+        self.currentLoadLanding = LoadLanding(renderStateId: renderState.renderStateId,
+                                              loadRequestId: loadRequest.requestId,
+                                              loadDidLandFuture: loadDidLandFuture)
+    }
+
+    func loadDidLandInView(renderState: CVRenderState) {
         AssertIsOnMainThread()
-        guard let loadDidLandFuture = loadDidLandFuture else {
-            owsFailDebug("Missing loadDidLandFuture.")
+
+        guard let currentLoadLanding = currentLoadLanding,
+              currentLoadLanding.renderStateId == renderState.renderStateId else {
             return
         }
-        loadDidLandFuture.resolve()
-        self.loadDidLandFuture = nil
+        currentLoadLanding.fulfill()
+        self.currentLoadLanding = nil
+    }
+
+    func loadDidLandImmediately() {
+        AssertIsOnMainThread()
+
+        currentLoadLanding?.fulfill()
+        self.currentLoadLanding = nil
     }
 }
 
