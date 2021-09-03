@@ -551,14 +551,14 @@ public class CVLoadCoordinator: NSObject {
                 // If we're doing verbose logging, add this step to the promise chain
                 // so that we can measure the delay dispatching onto .main.
                 return updatePromise.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
-                    loadRequest.logLoadEvent("Load land dispatch")
+                    loadRequest.logLoadEvent("Load landing dispatch")
                     return update
                 }
             } else {
                 return updatePromise
             }
         }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<Void> in
-            loadRequest.logLoadEvent("Load land complete")
+            loadRequest.logLoadEvent("Load landing ready")
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
             }
