@@ -340,6 +340,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             }
         }
 
+        if DebugFlags.internalLogging {
+            Logger.info("identifiersToCancel: \(identifiersToCancel)")
+        }
+
         notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
 
@@ -350,6 +354,11 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     func cancelNotification(identifier: String) {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("cancelNotification: \(identifier)")
+        }
+
         notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
     }
@@ -363,11 +372,19 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     func cancelNotifications(threadId: String) {
         AssertIsOnMainThread()
 
+        if DebugFlags.internalLogging {
+            Logger.info("threadId: \(threadId)")
+        }
+
         pendingCancelations.insert(.threadId(threadId))
     }
 
     func cancelNotifications(messageId: String) {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("messageId: \(messageId)")
+        }
 
         pendingCancelations.insert(.messageId(messageId))
     }
@@ -375,11 +392,19 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     func cancelNotifications(reactionId: String) {
         AssertIsOnMainThread()
 
+        if DebugFlags.internalLogging {
+            Logger.info("reactionId: \(reactionId)")
+        }
+
         pendingCancelations.insert(.reactionId(reactionId))
     }
 
     func clearAllNotifications() {
         AssertIsOnMainThread()
+
+        if DebugFlags.internalLogging {
+            Logger.info("")
+        }
 
         pendingCancelations.removeAll()
         notificationCenter.removeAllPendingNotificationRequests()
