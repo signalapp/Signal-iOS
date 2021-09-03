@@ -83,9 +83,23 @@ struct CVLoadRequest {
     let canReuseComponentStates: Bool
     let didReset: Bool
     let shouldClearOldestUnreadInteraction: Bool
+
     private let loadStartDate = Date()
     public var loadStartDateFormatted: String {
         String(format: "%0.3f", abs(loadStartDate.timeIntervalSinceNow))
+    }
+    private let loadScheduleDelayInterval: TimeInterval
+    public var loadScheduleDelayIntervalFormatted: String {
+        String(format: "%0.3f", abs(loadScheduleDelayInterval))
+    }
+    public func logLoadEvent(_ label: String,
+                             file: String = #file,
+                             function: String = #function,
+                             line: Int = #line) {
+        if CVLoader.verboseLogging {
+            var logString = "\(label)[\(requestId)]. duration: \(loadStartDateFormatted), schedule delay: \(loadScheduleDelayIntervalFormatted)"
+            Logger.info(logString, file: file, function: function, line: line)
+        }
     }
 
     var isInitialLoad: Bool {
@@ -273,6 +287,7 @@ struct CVLoadRequest {
                 return nil
             }
 
+            let loadScheduleDelayInterval: TimeInterval = abs(loadScheduleDate?.timeIntervalSinceNow ?? 0)
             return CVLoadRequest(requestId: requestId,
                                  loadType: loadType,
                                  updatedInteractionIds: updatedInteractionIds,
@@ -280,7 +295,8 @@ struct CVLoadRequest {
                                  canReuseInteractionModels: canReuseInteractionModels,
                                  canReuseComponentStates: canReuseComponentStates,
                                  didReset: didReset,
-                                 shouldClearOldestUnreadInteraction: shouldClearOldestUnreadInteraction)
+                                 shouldClearOldestUnreadInteraction: shouldClearOldestUnreadInteraction,
+                                 loadScheduleDelayInterval: loadScheduleDelayInterval)
         }
     }
 }

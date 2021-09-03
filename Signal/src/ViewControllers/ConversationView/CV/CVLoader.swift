@@ -117,9 +117,7 @@ public class CVLoader: NSObject {
                     }
                 }
 
-                if CVLoader.verboseLogging {
-                    Logger.info("Before messageMapping[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
+                loadRequest.logLoadEvent("Before messageMapping")
 
                 do {
                     switch loadRequest.loadType {
@@ -159,9 +157,7 @@ public class CVLoader: NSObject {
                                                              transaction: transaction)
                 }
 
-                if CVLoader.verboseLogging {
-                    Logger.info("After messageMapping[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
+                loadRequest.logLoadEvent("After messageMapping")
                 self.benchSteps.step("messageMapping")
 
                 let thread = threadViewModel.threadRecord
@@ -169,16 +165,12 @@ public class CVLoader: NSObject {
 
                 self.benchSteps.step("threadInteractionCount")
 
-                if CVLoader.verboseLogging {
-                    Logger.info("Before buildRenderItems[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
+                loadRequest.logLoadEvent("Before buildRenderItems")
 
                 let items: [CVRenderItem] = self.buildRenderItems(loadContext: loadContext,
                                                                   updatedInteractionIds: updatedInteractionIds)
 
-                if CVLoader.verboseLogging {
-                    Logger.info("After buildRenderItems[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
+                loadRequest.logLoadEvent("After buildRenderItems")
 
                 self.benchSteps.step("buildRenderItems")
 
@@ -186,9 +178,7 @@ public class CVLoader: NSObject {
                                           items: items,
                                           threadInteractionCount: threadInteractionCount)
 
-                if CVLoader.verboseLogging {
-                    Logger.info("After LoadState[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-                }
+                loadRequest.logLoadEvent("After LoadState")
 
                 return loadState
             }
@@ -203,9 +193,7 @@ public class CVLoader: NSObject {
                                             viewStateSnapshot: viewStateSnapshot,
                                             loadType: loadRequest.loadType)
 
-            if CVLoader.verboseLogging {
-                Logger.info("After renderState[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-            }
+            loadRequest.logLoadEvent("After renderState")
 
             self.benchSteps.step("build render state")
 
@@ -215,9 +203,7 @@ public class CVLoader: NSObject {
                                         loadRequest: loadRequest,
                                         threadInteractionCount: threadInteractionCount)
 
-            if CVLoader.verboseLogging {
-                Logger.info("After update[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-            }
+            loadRequest.logLoadEvent("After update built")
 
             self.benchSteps.step("build render update")
 

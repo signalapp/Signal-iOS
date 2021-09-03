@@ -464,8 +464,20 @@ public class CVLoadCoordinator: NSObject {
     #if TESTABLE_BUILD
     public let blockLoads = AtomicBool(false)
     #endif
-
     private func loadIfNecessary() {
+        AssertIsOnMainThread()
+
+        loadIfNecessaryEvent.requestNotify()
+    }
+
+    private lazy var loadIfNecessaryEvent: DebouncedEvent = {
+        DebouncedEvent(maxFrequencySeconds: 0.001, onQueue: .main) { [weak self] in
+            AssertIsOnMainThread()
+            self?.loadIfNecessaryDebounced()
+        }
+    }()
+
+    private func loadIfNecessaryDebounced() {
         AssertIsOnMainThread()
 
         let conversationStyle = self.conversationStyle
@@ -539,16 +551,14 @@ public class CVLoadCoordinator: NSObject {
                 // If we're doing verbose logging, add this step to the promise chain
                 // so that we can measure the delay dispatching onto .main.
                 return updatePromise.map(on: CVUtils.landingQueue) { (update: CVUpdate) -> CVUpdate in
-                    Logger.info("Load land dispatch[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
+                    loadRequest.logLoadEvent("Load land dispatch")
                     return update
                 }
             } else {
                 return updatePromise
             }
         }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<Void> in
-            if CVLoader.verboseLogging {
-                Logger.info("Load build complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-            }
+            loadRequest.logLoadEvent("Load land complete")
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
             }
@@ -563,9 +573,7 @@ public class CVLoadCoordinator: NSObject {
     private func loadDidSucceed(loadRequest: CVLoadRequest) {
         AssertIsOnMainThread()
 
-        if CVLoader.verboseLogging {
-            Logger.info("Load complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-        }
+        loadRequest.logLoadEvent("Load complete")
 
         let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
         // This flag should already be cleared.
@@ -688,9 +696,7 @@ public class CVLoadCoordinator: NSObject {
                                           scrollAction: loadRequest.scrollAction,
                                           updateToken: updateToken)
 
-        if CVLoader.verboseLogging {
-            Logger.info("Load landing begun[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-        }
+        loadRequest.logLoadEvent("Load landing begun")
 
         // Once this load's landing has _begun_ we can start building the next load.
         // loadLandingRequestId ensures that we only land one load at a time.
@@ -721,10 +727,8 @@ public class CVLoadCoordinator: NSObject {
         firstly { () -> Promise<Void> in
             loadDidLandPromise
         }.done(on: CVUtils.landingQueue) {
-            if CVLoader.verboseLogging {
-                Logger.info("Load landing complete[\(loadRequest.requestId)]: \(loadRequest.loadStartDateFormatted)")
-            }
-            loadFuture.resolve()
+            loadRequest.logLoadEvent("Load landing complete")
+            loadDidLandFuture.resolve()
         }.catch(on: CVUtils.landingQueue) { error in
             loadFuture.reject(error)
         }
