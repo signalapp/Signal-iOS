@@ -27,6 +27,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // Instantiating more than one CXProvider can cause us to miss call transactions, so
     // we maintain the provider across Adaptees using a singleton pattern
+    static private let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady", queueMode: .mainThread)
     private static var _sharedProvider: CXProvider?
     class func sharedProvider(useSystemCallLog: Bool) -> CXProvider {
         let configuration = buildProviderConfiguration(useSystemCallLog: useSystemCallLog)
@@ -116,8 +117,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
-        callManager.addCall(call)
-        callManager.startCall(call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.callManager.addCall(call)
+            self.callManager.startCall(call)
+        }
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
@@ -125,14 +128,15 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        switch error {
-        case .timeout(description: _):
-            provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
-        default:
-            provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            switch error {
+            case .timeout(description: _):
+                self.provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
+            default:
+                self.provider.reportCall(with: call.individualCall.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
+            }
+            self.callManager.removeCall(call)
         }
-
-        callManager.removeCall(call)
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void) {
@@ -158,22 +162,24 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         disableUnsupportedFeatures(callUpdate: update)
 
-        // Report the incoming call to the system
-        provider.reportNewIncomingCall(with: call.individualCall.localId, update: update) { error in
-            /*
-             Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
-             since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
-             */
-            guard error == nil else {
-                completion(error)
-                Logger.error("failed to report new incoming call, error: \(error!)")
-                return
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            // Report the incoming call to the system
+            self.provider.reportNewIncomingCall(with: call.individualCall.localId, update: update) { error in
+                /*
+                 Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
+                 since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
+                 */
+                guard error == nil else {
+                    completion(error)
+                    Logger.error("failed to report new incoming call, error: \(error!)")
+                    return
+                }
+
+                completion(nil)
+
+                self.showCall(call)
+                self.callManager.addCall(call)
             }
-
-            completion(nil)
-
-            self.showCall(call)
-            self.callManager.addCall(call)
         }
     }
 
@@ -188,7 +194,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        callManager.answer(call: call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.callManager.answer(call: call)
+        }
     }
 
     private var ignoreFirstUnuteAfterRemoteAnswer = false
@@ -196,18 +204,20 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        self.provider.reportOutgoingCall(with: call.individualCall.localId, connectedAt: nil)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.provider.reportOutgoingCall(with: call.individualCall.localId, connectedAt: nil)
 
-        let update = CXCallUpdate()
-        disableUnsupportedFeatures(callUpdate: update)
+            let update = CXCallUpdate()
+            self.disableUnsupportedFeatures(callUpdate: update)
 
-        provider.reportCall(with: call.individualCall.localId, updated: update)
+            self.provider.reportCall(with: call.individualCall.localId, updated: update)
 
-        // When we tell CallKit about the call, it tries
-        // to unmute the call. We can work around this
-        // by ignoring the next "unmute" request from
-        // CallKit after the call is answered.
-        ignoreFirstUnuteAfterRemoteAnswer = call.individualCall.isMuted
+            // When we tell CallKit about the call, it tries
+            // to unmute the call. We can work around this
+            // by ignoring the next "unmute" request from
+            // CallKit after the call is answered.
+            self.ignoreFirstUnuteAfterRemoteAnswer = call.individualCall.isMuted
+        }
     }
 
     func localHangupCall(localId: UUID) {
@@ -220,62 +230,80 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        callManager.localHangup(call: call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.callManager.localHangup(call: call)
+        }
     }
 
     func remoteDidHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
-        callManager.removeCall(call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
+            self.callManager.removeCall(call)
+        }
     }
 
     func remoteBusy(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
-        callManager.removeCall(call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
+            self.callManager.removeCall(call)
+        }
     }
 
     func didAnswerElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .answeredElsewhere)
-        callManager.removeCall(call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .answeredElsewhere)
+            self.callManager.removeCall(call)
+        }
     }
 
     func didDeclineElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .declinedElsewhere)
-        callManager.removeCall(call)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .declinedElsewhere)
+            self.callManager.removeCall(call)
+        }
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        callManager.setIsMuted(call: call, isMuted: isMuted)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            self.callManager.setIsMuted(call: call, isMuted: isMuted)
+        }
     }
 
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
         Logger.debug("")
-
-        let update = CXCallUpdate()
-        update.hasVideo = hasLocalVideo
+        callService.updateIsLocalVideoMuted(isLocalVideoMuted: !hasLocalVideo)
 
         // Update the CallKit UI.
-        provider.reportCall(with: call.individualCall.localId, updated: update)
-
-        self.callService.updateIsLocalVideoMuted(isLocalVideoMuted: !hasLocalVideo)
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            let update = CXCallUpdate()
+            update.hasVideo = hasLocalVideo
+            self.provider.reportCall(with: call.individualCall.localId, updated: update)
+        }
     }
 
     // MARK: CXProviderDelegate
+
+    func providerDidBegin(_ provider: CXProvider) {
+        AssertIsOnMainThread()
+        Logger.info("")
+        Self.providerReadyFlag.setIsReady()
+    }
 
     func providerDidReset(_ provider: CXProvider) {
         AssertIsOnMainThread()
@@ -305,7 +333,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.callService.individualCallService.handleOutgoingCall(call)
 
         action.fulfill()
-        self.provider.reportOutgoingCall(with: call.individualCall.localId, startedConnectingAt: nil)
+        provider.reportOutgoingCall(with: call.individualCall.localId, startedConnectingAt: nil)
 
         // Update the name used in the CallKit UI for outgoing calls when the user prefers not to show names
         // in ther notifications
