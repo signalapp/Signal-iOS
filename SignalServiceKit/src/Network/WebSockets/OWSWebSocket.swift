@@ -6,42 +6,17 @@ import Foundation
 import PromiseKit
 import SignalCoreKit
 
-@objc
-public enum OWSWebSocketType: UInt, CustomStringConvertible {
+public enum OWSWebSocketType {
     case identified
     case unidentified
-
-    // MARK: - CustomStringConvertible
-
-    public var description: String {
-        switch self {
-        case .identified:
-            return "identified"
-        case .unidentified:
-            return "unidentified"
-        }
-    }
 }
 
 // MARK: -
 
-public enum OWSWebSocketState: CustomStringConvertible {
+public enum OWSWebSocketState {
     case closed
     case connecting
     case open
-
-    // MARK: - CustomStringConvertible
-
-    public var description: String {
-        switch self {
-        case .closed:
-            return "closed"
-        case .connecting:
-            return "connecting"
-        case .open:
-            return "open"
-        }
-    }
 }
 
 // MARK: -
@@ -521,7 +496,7 @@ public class OWSWebSocket: NSObject {
                 if !success {
                     Self.databaseStorage.write { transaction in
                         let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                        Self.notificationsManager?.notifyUser(for: errorMessage,
+                        Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                               transaction: transaction)
                     }
                 }
@@ -624,7 +599,7 @@ public class OWSWebSocket: NSObject {
     // This method is thread-safe.
     public func cycleSocket() {
         if verboseLogging {
-            Logger.info(webSocketType.description)
+            Logger.info("\(webSocketType)")
         }
 
         self.currentWebSocket = nil
