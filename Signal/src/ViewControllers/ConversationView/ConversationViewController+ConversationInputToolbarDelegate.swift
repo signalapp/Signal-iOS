@@ -88,7 +88,6 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         ) { [weak self] didConfirmIdentity in
             guard let self = self else { return }
             if didConfirmIdentity {
-                self.resetVerificationStateToDefault()
                 self.tryToSendTextMessage(messageBody, updateKeyboardState: false)
             }
         }

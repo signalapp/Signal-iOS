@@ -195,6 +195,12 @@ public extension MessageSender {
             }
         }
 
+        let isTransientSKDM = (messageSend.message as? OWSOutgoingSenderKeyDistributionMessage)?.isSentOnBehalfOfOnlineMessage ?? false
+        if messageSend.message.isOnline || isTransientSKDM {
+            Logger.info("Skipping prekey request for transient message")
+            return failure(MessageSenderNoSessionForTransientMessageError())
+        }
+
         let requestMaker = RequestMaker(label: "Prekey Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                                             Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
