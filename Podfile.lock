@@ -229,8 +229,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - "SignalCoreKit (from `ssh://git@github.com/signalapp/SignalCoreKit-Private`, branch `nt/promises`)"
-  - "SignalCoreKit/Tests (from `ssh://git@github.com/signalapp/SignalCoreKit-Private`, branch `nt/promises`)"
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -307,8 +307,7 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :branch: nt/promises
-    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private"
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -354,8 +353,8 @@ CHECKOUT OPTIONS:
     :commit: ffd2fe1664cd23d1ae7dc5d3a7c6c33bc702b93e
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 6cf76bc71dd15c1c4e19391d4da9e06d639dd883
-    :git: "ssh://git@github.com/signalapp/SignalCoreKit-Private"
+    :commit: 3519b7fbca0e1ba684f307cdb8123bc36643e58b
+    :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
     :commit: 4c8ddf0b04afd179f00d7b024b1c611e3ddd2b7d
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -419,6 +418,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 76ac182b70983a83ffd9c40a554d9653e61e1bd0
+PODFILE CHECKSUM: e491dcf558b3a4abe4198774c2bbaaf1e99b90db
 
 COCOAPODS: 1.10.1
