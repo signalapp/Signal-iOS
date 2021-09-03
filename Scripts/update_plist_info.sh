@@ -21,7 +21,7 @@ cd $PROJECT_DIR
 /usr/libexec/PlistBuddy -c "add :BuildDetails:WebRTCCommit string '$_git_commit'" Signal/Signal-Info.plist
 
 echo "CONFIGURATION: ${CONFIGURATION}"
-if [ "${CONFIGURATION}" = "App Store Release" ] || [ "${CONFIGURATION}" = "Profiling" ]; then
+if [ "${CONFIGURATION}" = "App Store Release" ]; then
     /usr/libexec/PlistBuddy -c "add :BuildDetails:XCodeVersion string '${XCODE_VERSION_MAJOR}.${XCODE_VERSION_MINOR}'" Signal/Signal-Info.plist
 
     # Use UTC

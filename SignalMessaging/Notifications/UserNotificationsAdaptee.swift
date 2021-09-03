@@ -482,3 +482,18 @@ extension OWSSound {
         return UNNotificationSound(named: UNNotificationSoundName(rawValue: filename))
     }
 }
+
+extension UNAuthorizationStatus: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .notDetermined: return "Not Determined"
+        case .denied: return "Denied"
+        case .authorized: return "Authorized"
+        case .provisional: return "Provisional"
+        case .ephemeral: return "Ephemeral"
+        @unknown default:
+            owsFailDebug("New case! Please update the method")
+            return "Raw value: \(rawValue)"
+        }
+    }
+}

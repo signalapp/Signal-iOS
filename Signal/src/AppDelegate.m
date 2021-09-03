@@ -148,7 +148,7 @@ void uncaughtExceptionHandler(NSException *exception)
     // the phone directory being looked up during tests.
     isLoggingEnabled = TRUE;
     [DebugLogger.sharedLogger enableTTYLogging];
-#elif RELEASE
+#else
     isLoggingEnabled = OWSPreferences.isLoggingEnabled;
 #endif
     if (isLoggingEnabled) {

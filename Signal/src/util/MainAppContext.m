@@ -297,12 +297,10 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
         [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"][@"Timestamp"] integerValue];
 
         if (buildTimestamp == 0) {
-#if RELEASE
             // Production builds should _always_ expire, ensure that here.
-            OWSFail(@"No build timestamp, assuming app never expires.");
-#else
+            OWSAssert(OWSIsTestableBuild());
+
             OWSLogDebug(@"No build timestamp, assuming app never expires.");
-#endif
             _buildTime = [NSDate distantFuture];
         } else {
             _buildTime = [NSDate dateWithTimeIntervalSince1970:buildTimestamp];

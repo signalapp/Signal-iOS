@@ -252,7 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (buildTimestamp == 0) {
             // Production builds should _always_ expire, ensure that here.
-            OWSAssert(OWSIsDebugBuild());
+            OWSAssert(OWSIsTestableBuild());
 
             OWSLogDebug(@"No build timestamp, assuming app never expires.");
             _buildTime = [NSDate distantFuture];

@@ -1053,7 +1053,7 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 {
     OWSAssertIsOnMainThread();
 
-#ifdef DEBUG
+#if TESTABLE_BUILD
     if (CurrentAppContext().isRunningTests) {
         OWSLogWarn(@"Suppressing socket in tests.");
         return;
