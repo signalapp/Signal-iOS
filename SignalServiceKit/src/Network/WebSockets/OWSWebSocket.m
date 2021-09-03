@@ -1030,7 +1030,13 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
 
 - (void)requestSocketOpen
 {
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@. 1", NSStringForOWSWebSocketType(self.webSocketType));
+    }
     DispatchMainThreadSafe(^{
+        if (self.verboseLogging) {
+            OWSLogInfo(@"%@. 2", NSStringForOWSWebSocketType(self.webSocketType));
+        }
         [self observeNotificationsIfNecessary];
 
         // If the app is active and the user is registered, this will
@@ -1065,7 +1071,11 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         return;
     }
 
-    if ([self shouldSocketBeOpen]) {
+    BOOL shouldSocketBeOpen = self.shouldSocketBeOpen;
+    if (self.verboseLogging) {
+        OWSLogInfo(@"%@, shouldSocketBeOpen: %d", NSStringForOWSWebSocketType(self.webSocketType), shouldSocketBeOpen);
+    }
+    if (shouldSocketBeOpen) {
         if (self.state != OWSWebSocketStateOpen) {
             // If we want the socket to be open and it's not open,
             // start up the reconnect timer immediately (don't wait for an error).
@@ -1075,10 +1085,6 @@ NSString *NSStringForOWSWebSocketType(OWSWebSocketType value)
         }
         [self ensureWebsocketIsOpen];
     } else {
-        if (self.verboseLogging) {
-            OWSLogInfo(@"%@.", NSStringForOWSWebSocketType(self.webSocketType));
-        }
-
         [self clearBackgroundState];
         [self clearReconnect];
         [self closeWebSocket];

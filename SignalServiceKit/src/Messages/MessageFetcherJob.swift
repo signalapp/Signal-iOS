@@ -80,7 +80,7 @@ public class MessageFetcherJob: NSObject {
 
     @discardableResult
     public func run() -> MessageFetchCycle {
-        Logger.debug("")
+        Logger.info("")
 
         // Use an operation queue to ensure that only one fetch cycle is done
         // at a time.
@@ -222,7 +222,7 @@ public class MessageFetcherJob: NSObject {
     // MARK: -
 
     fileprivate class func fetchMessages(future: Future<Void>) {
-        Logger.debug("")
+        Logger.info("")
 
         guard tsAccountManager.isRegisteredAndReady else {
             assert(AppReadiness.isAppReady)
@@ -231,7 +231,7 @@ public class MessageFetcherJob: NSObject {
         }
 
         if shouldUseWebSocket {
-            Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
+            Logger.info("delegating message fetching to SocketManager since we're using normal transport.")
             socketManager.requestSocketOpen()
             return future.resolve()
         } else if CurrentAppContext().shouldProcessIncomingMessages {
@@ -492,7 +492,7 @@ private class MessageFetchOperation: OWSOperation {
     }
 
     public override func run() {
-        Logger.debug("")
+        Logger.info("")
 
         MessageFetcherJob.fetchMessages(future: future)
 

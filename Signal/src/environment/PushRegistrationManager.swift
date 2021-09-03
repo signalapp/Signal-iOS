@@ -106,7 +106,14 @@ public enum PushRegistrationError: Error {
                 self.preauthChallengeFuture = nil
             } else {
                 owsAssertDebug(!FeatureFlags.notificationServiceExtension)
-                self.messageFetcherJob.run()
+                Logger.info("Fetching messages.")
+                var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
+                firstly {
+                    self.messageFetcherJob.run().promise
+                }.done(on: .main) {
+                    owsAssertDebug(backgroundTask != nil)
+                    backgroundTask = nil
+                }
             }
         }
     }
