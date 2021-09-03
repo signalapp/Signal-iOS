@@ -357,7 +357,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
                 self.message.removeTemporaryAttachments(with: transaction)
             }
         }
-        future?.resolve(())
+        future?.resolve()
     }
 
     override public func didReportError(_ error: Error) {
