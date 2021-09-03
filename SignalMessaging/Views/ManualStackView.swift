@@ -384,7 +384,7 @@ open class ManualStackView: ManualLayoutView {
                 $0.subviewInfo.canCompressOnAxis(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
-                owsFailDebug("\(name): No overflowLayoutItems.")
+                Logger.warn("\(name): No overflowLayoutItems.")
                 overflowLayoutItems = layoutItems
             }
 
