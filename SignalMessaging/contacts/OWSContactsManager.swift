@@ -842,6 +842,31 @@ extension OWSContactsManager {
 
 // MARK: -
 
+@objc
+public extension OWSContactsManager {
+
+    @nonobjc
+    private static let unknownAddressFetchDateMap = AtomicDictionary<UUID, Date>()
+
+    @objc(fetchProfileForUnknownAddress:)
+    func fetchProfile(forUnknownAddress address: SignalServiceAddress) {
+        guard let uuid = address.uuid else {
+            return
+        }
+        let minFetchInterval = kMinuteInterval * 30
+        if let lastFetchDate = Self.unknownAddressFetchDateMap[uuid],
+           abs(lastFetchDate.timeIntervalSinceNow) < minFetchInterval {
+            return
+        }
+
+        Self.unknownAddressFetchDateMap[uuid] = Date()
+
+        bulkProfileFetch.fetchProfile(address: address)
+    }
+}
+
+// MARK: -
+
 public extension Array where Element == SignalAccount {
     func stableSort() -> [SignalAccount] {
         // Use an arbitrary sort but ensure the ordering is stable.

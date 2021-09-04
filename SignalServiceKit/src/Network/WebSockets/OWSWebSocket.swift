@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import PromiseKit
-import SignalCoreKit
 
 public enum OWSWebSocketType {
     case identified
@@ -30,7 +28,7 @@ public class OWSWebSocket: NSObject {
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
     @objc
-    public static var verboseLogging: Bool { false && DebugFlags.internalLogging }
+    public static var verboseLogging: Bool { true && DebugFlags.internalLogging }
     fileprivate var verboseLogging: Bool { Self.verboseLogging }
 
     // MARK: -
@@ -151,8 +149,10 @@ public class OWSWebSocket: NSObject {
         if appIsActive.get() {
             self.backgroundKeepAlive = nil
         } else if let backgroundKeepAlive = self.backgroundKeepAlive {
-            backgroundKeepAlive.keepAliveUntilDate = max(backgroundKeepAlive.keepAliveUntilDate,
-                                                         keepAliveUntilDate)
+            if keepAliveUntilDate < backgroundKeepAlive.keepAliveUntilDate {
+                self.backgroundKeepAlive = BackgroundKeepAlive(keepAliveUntilDate: keepAliveUntilDate,
+                                                               delegate: self)
+            }
         } else {
             self.backgroundKeepAlive = BackgroundKeepAlive(keepAliveUntilDate: keepAliveUntilDate,
                                                            delegate: self)
@@ -162,21 +162,23 @@ public class OWSWebSocket: NSObject {
     }
 
     private var hasBackgroundKeepAlive: Bool {
-        assertOnQueue(serialQueue)
-
-        if appIsActive.get(),
-           let backgroundKeepAlive = self.backgroundKeepAlive,
-           backgroundKeepAlive.keepAliveUntilDate > Date() {
+        guard !appIsActive.get() else {
+            self.backgroundKeepAlive = nil
             return true
-        } else {
-            if self.backgroundKeepAlive != nil {
-                self.backgroundKeepAlive = nil
-
-                applyDesiredSocketState()
-            }
-
+        }
+        guard let backgroundKeepAlive = self.backgroundKeepAlive else {
             return false
         }
+        guard backgroundKeepAlive.keepAliveUntilDate > Date() else {
+            Self.serialQueue.async { [weak self] in
+                guard let self = self else { return }
+                if self.backgroundKeepAlive?.id == backgroundKeepAlive.id {
+                    self.backgroundKeepAlive = nil
+                }
+            }
+            return false
+        }
+        return true
     }
 
     private func clearBackgroundKeepAlive() {
@@ -216,6 +218,12 @@ public class OWSWebSocket: NSObject {
         self.webSocketType = webSocketType
 
         super.init()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+            guard let self = self else { return }
+            self.observeNotificationsIfNecessary()
+            self.applyDesiredSocketState()
+        }
     }
 
     // MARK: - Notifications
@@ -484,7 +492,7 @@ public class OWSWebSocket: NSObject {
                                        currentWebSocket: WebSocketWrapper) {
         assertOnQueue(Self.serialQueue)
 
-        var backgroundTask: MainThreadBackgroundTask? = MainThreadBackgroundTask()
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "handleIncomingMessage")
 
         if Self.verboseLogging {
             Logger.info("\(self.webSocketType) 1")
@@ -627,7 +635,7 @@ public class OWSWebSocket: NSObject {
     // This method is thread-safe.
     public var shouldSocketBeOpen: Bool {
 
-        #if DEBUG
+        #if TESTABLE_BUILD
         if CurrentAppContext().isRunningTests {
             Logger.warn("Suppressing socket in tests.")
             return false
@@ -701,6 +709,8 @@ public class OWSWebSocket: NSObject {
 
     // This method is thread-safe.
     public func requestSocketOpen() {
+
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "requestSocketOpen")
         DispatchMainThreadSafe {
             self.observeNotificationsIfNecessary()
 
@@ -712,6 +722,9 @@ public class OWSWebSocket: NSObject {
 
             Self.serialQueue.async {
                 self.ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_Default)
+
+                owsAssertDebug(backgroundTask != nil)
+                backgroundTask = nil
             }
         }
     }
@@ -731,7 +744,11 @@ public class OWSWebSocket: NSObject {
         serialQueue.async { [weak self] in
             guard let self = self else { return }
 
-            if self.shouldSocketBeOpen {
+            let shouldSocketBeOpen = self.shouldSocketBeOpen
+            if Self.verboseLogging {
+                Logger.info("\(self.webSocketType), shouldSocketBeOpen: \(shouldSocketBeOpen)")
+            }
+            if shouldSocketBeOpen {
                 self.ensureWebsocketExists()
 
                 if self.currentState != .open {
@@ -742,9 +759,6 @@ public class OWSWebSocket: NSObject {
                     self.ensureReconnectTimer()
                 }
             } else {
-                if Self.verboseLogging {
-                    Logger.info("\(self.webSocketType)")
-                }
                 self.clearBackgroundKeepAlive()
                 self.clearReconnect()
                 self.currentWebSocket = nil
@@ -855,10 +869,17 @@ public class OWSWebSocket: NSObject {
 
         appIsActive.set(false)
 
-        // TODO: It might be nice to use `requestSocketAliveForAtLeastSeconds:` to
-        //       keep the socket open for a few seconds after the app is
-        //       inactivated.
-        applyDesiredSocketState()
+        if CurrentAppContext().isMainApp {
+            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "applicationWillResignActive")
+            Self.serialQueue.async {
+                self.ensureBackgroundKeepAlive(interval: 3)
+
+                owsAssertDebug(backgroundTask != nil)
+                backgroundTask = nil
+            }
+        } else {
+            applyDesiredSocketState()
+        }
     }
 
     @objc
@@ -999,7 +1020,7 @@ private class SocketRequestInfo {
     // This property should only be accessed with unfairLock acquired.
     private var status: Status
 
-    private let backgroundTask: MainThreadBackgroundTask
+    private let backgroundTask: OWSBackgroundTask
 
     public typealias RequestSuccess = OWSWebSocket.RequestSuccess
     public typealias RequestFailure = OWSWebSocket.RequestFailure
@@ -1011,7 +1032,7 @@ private class SocketRequestInfo {
         self.request = request
         self.requestUrl = requestUrl
         self.status = .incomplete(success: success, failure: failure)
-        self.backgroundTask = MainThreadBackgroundTask()
+        self.backgroundTask = OWSBackgroundTask(label: "SocketRequestInfo")
     }
 
     public func didSucceed(status: Int,
@@ -1334,13 +1355,13 @@ private class BackgroundKeepAlive {
     public let id = BackgroundKeepAlive.idCounter.increment()
 
     // This represents how long we're trying to keep the socket open.
-    var keepAliveUntilDate: Date
+    let keepAliveUntilDate: Date
     // This timer is used to check periodically whether we should
     // close the socket.
-    private var timer: MainThreadTimer?
+    private let timer = AtomicOptional<MainThreadTimer>(nil, lock: AtomicLock())
     // This is used to manage the iOS "background task" used to
     // keep the app alive in the background.
-    private var backgroundTask: MainThreadBackgroundTask?
+    private let backgroundTask = AtomicOptional<OWSBackgroundTask>(nil)
 
     required init(keepAliveUntilDate: Date,
                   delegate: BackgroundKeepAliveDelegate) {
@@ -1348,7 +1369,7 @@ private class BackgroundKeepAlive {
 
         // Start a new timer that will fire every second while the socket is open in the background.
         // This timer will ensure we close the websocket when the time comes.
-        self.timer = MainThreadTimer(timeInterval: 1, repeats: true) { [weak self, weak delegate] timer in
+        let timer = MainThreadTimer(timeInterval: 1, repeats: true) { [weak self, weak delegate] timer in
             AssertIsOnMainThread()
             guard let self = self,
                   let delegate = delegate else {
@@ -1357,8 +1378,9 @@ private class BackgroundKeepAlive {
             }
             delegate.backgroundKeepAliveCheck(self)
         }
+        self.timer.set(timer)
 
-        self.backgroundTask = MainThreadBackgroundTask { [weak self, weak delegate] (backgroundTaskState) in
+        let backgroundTask = OWSBackgroundTask(label: "BackgroundKeepAlive") { [weak self, weak delegate] (backgroundTaskState) in
             AssertIsOnMainThread()
             guard let self = self,
                   let delegate = delegate else {
@@ -1370,17 +1392,12 @@ private class BackgroundKeepAlive {
                 delegate.backgroundKeepAliveCheck(self)
             }
         }
+        self.backgroundTask.set(backgroundTask)
     }
 
     func reset() {
-        if let timer = timer {
-            DispatchQueue.main.async {
-                timer.invalidate()
-            }
-        }
-        timer = nil
-
-        backgroundTask = nil
+        timer.set(nil)
+        backgroundTask.set(nil)
     }
 }
 
@@ -1417,10 +1434,6 @@ public class MainThreadTimer {
     }
 
     deinit {
-        if OWSWebSocket.verboseLogging {
-            Logger.debug("\(type(of: self))")
-        }
-
         invalidate()
     }
 
@@ -1434,50 +1447,6 @@ public class MainThreadTimer {
         // https://developer.apple.com/documentation/foundation/nstimer
         DispatchQueue.main.async {
             timer.invalidate()
-        }
-    }
-}
-
-// MARK: -
-
-// A thread-safe wrapper around OWSBackgroundTask.
-private class MainThreadBackgroundTask {
-    // This is used to manage the iOS "background task" used to
-    // keep the app alive in the background.
-    private let optionalTask = AtomicOptional<OWSBackgroundTask>(nil)
-
-    required init(completion: BackgroundTaskCompletionBlock? = nil,
-                  file: String = #file,
-                  function: String = #function,
-                  line: Int = #line) {
-
-        // We format the filename & line number in a format compatible
-        // with XCode's "Open Quickly..." feature.
-        let label = "[\(file):\(line) \(function)]"
-
-        let optionalTask = self.optionalTask
-        DispatchMainThreadSafe {
-            let backgroundTask = OWSBackgroundTask(label: label) { (backgroundTaskState) in
-                AssertIsOnMainThread()
-
-                // UIBackgroundTask is supposed to always call its completion on the
-                // main thread, but there are rare cases where that isn't true.
-                DispatchMainThreadSafe {
-                    completion?(backgroundTaskState)
-                }
-            }
-            optionalTask.set(backgroundTask)
-        }
-    }
-
-    deinit {
-        if OWSWebSocket.verboseLogging {
-            Logger.debug("\(type(of: self))")
-        }
-
-        let optionalTask = self.optionalTask
-        DispatchMainThreadSafe {
-            optionalTask.set(nil)
         }
     }
 }
