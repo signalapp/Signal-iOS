@@ -146,6 +146,7 @@ public class OWSWebSocket: NSObject {
                 return false
             }
             guard backgroundKeepAliveDate >= Date() else {
+                // Cull expired values.
                 self._backgroundKeepAliveDate = nil
                 return false
             }
