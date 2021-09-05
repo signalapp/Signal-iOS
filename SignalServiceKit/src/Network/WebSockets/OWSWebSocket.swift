@@ -44,11 +44,10 @@ public class OWSWebSocket: NSObject {
     private static let keepAliveDuration_Default: TimeInterval = 20
     // b) It has received a message over the socket in the last N seconds.
     private static let keepAliveDuration_ReceiveMessage: TimeInterval = 15
-    // c) It is in the process of making a request.
-    private static let keepAliveDuration_MakeRequestInForeground: TimeInterval = 25
-    private static let keepAliveDuration_MakeRequestInBackground: TimeInterval = 20
-    // d) It has just received the response to a request.
+    // c) It has just received the response to a request.
     private static let keepAliveDuration_ReceiveResponse: TimeInterval = 5
+    // d) It is in the process of making a request (but we accomplish this by
+    //    observing currentWebSocket.hasPendingRequests.
 
     private var _currentWebSocket = AtomicOptional<WebSocketWrapper>(nil)
     private var currentWebSocket: WebSocketWrapper? {
@@ -111,18 +110,16 @@ public class OWSWebSocket: NSObject {
     private var _backgroundKeepAliveDate: Date?
     private let unfairLock = UnfairLock()
 
+    // This method is thread-safe.
     private func ensureBackgroundKeepAlive(interval: TimeInterval) {
-        assertOnQueue(serialQueue)
-
         owsAssertDebug(interval > 0)
 
         let keepAliveUntilDate = Date().addingTimeInterval(interval)
         ensureBackgroundKeepAlive(keepAliveUntilDate: keepAliveUntilDate)
     }
 
+    // This method is thread-safe.
     private func ensureBackgroundKeepAlive(keepAliveUntilDate newValue: Date) {
-        assertOnQueue(serialQueue)
-
         let didChange: Bool = unfairLock.withLock {
             if let oldValue = self._backgroundKeepAliveDate,
                oldValue >= newValue {
@@ -133,7 +130,12 @@ public class OWSWebSocket: NSObject {
         }
 
         if didChange {
-            applyDesiredSocketState()
+            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "applicationWillResignActive")
+            applyDesiredSocketState {
+                assertOnQueue(Self.serialQueue)
+                owsAssertDebug(backgroundTask != nil)
+                backgroundTask = nil
+            }
         }
     }
 
@@ -266,11 +268,6 @@ public class OWSWebSocket: NSObject {
             }
             return
         }
-
-        let keepAliveInterval: TimeInterval = (CurrentAppContext().isMainAppAndActive
-                                                ? Self.keepAliveDuration_MakeRequestInForeground
-                                                : Self.keepAliveDuration_MakeRequestInBackground)
-        webSocket.ensureBackgroundKeepAlive(interval: keepAliveInterval)
 
         let requestInfo = SocketRequestInfo(request: request,
                                             requestUrl: requestUrl,
@@ -623,6 +620,14 @@ public class OWSWebSocket: NSObject {
             return false
         }
 
+        if let currentWebSocket = self.currentWebSocket,
+           currentWebSocket.hasPendingRequests {
+            if verboseLogging {
+                Logger.info("\(webSocketType) hasPendingRequests")
+            }
+            return true
+        }
+
         if appIsActive.get() {
             // While app is active, keep web socket alive.
             if verboseLogging {
@@ -650,44 +655,32 @@ public class OWSWebSocket: NSObject {
 
     // This method is thread-safe.
     public func requestSocketOpen() {
+        owsAssertDebug(AppReadiness.isAppReady)
 
-        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "requestSocketOpen")
-        DispatchMainThreadSafe {
-            self.observeNotificationsIfNecessary()
-
-            // If the app is active and the user is registered, this will
-            // simply open the websocket.
-            //
-            // If the app is inactive, it will open the websocket for a
-            // period of time.
-
-            Self.serialQueue.async {
-                self.ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_Default)
-
-                owsAssertDebug(backgroundTask != nil)
-                backgroundTask = nil
-            }
-        }
+        self.ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_Default)
     }
 
     // This method aligns the socket state with the "desired" socket state.
     //
     // This method is thread-safe.
-    private func applyDesiredSocketState() {
+    private func applyDesiredSocketState(completion: (() -> Void)? = nil) {
 
         guard AppReadiness.isAppReady else {
             AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-                self?.applyDesiredSocketState()
+                self?.applyDesiredSocketState(completion: completion)
             }
             return
         }
 
         serialQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self else {
+                completion?()
+                return
+            }
 
             let shouldSocketBeOpen = self.shouldSocketBeOpen
             if Self.verboseLogging {
-                Logger.info("\(self.webSocketType), shouldSocketBeOpen: \(shouldSocketBeOpen)")
+                Logger.info("\(self.webSocketType), shouldSocketBeOpen: \(shouldSocketBeOpen), appIsActive: \(self.appIsActive.get())")
             }
             var shouldHaveBackgroundKeepAlive = false
             if shouldSocketBeOpen {
@@ -726,13 +719,15 @@ public class OWSWebSocket: NSObject {
                     self.backgroundKeepAliveBackgroundTask = OWSBackgroundTask(label: "BackgroundKeepAlive") { [weak self] (_) in
                         AssertIsOnMainThread()
                         self?.applyDesiredSocketState()
+                    }
                 }
-            }
             } else {
                 self.backgroundKeepAliveTimer?.invalidate()
                 self.backgroundKeepAliveTimer = nil
                 self.backgroundKeepAliveBackgroundTask = nil
             }
+
+            completion?()
         }
     }
 
@@ -847,13 +842,7 @@ public class OWSWebSocket: NSObject {
         appIsActive.set(false)
 
         if CurrentAppContext().isMainApp {
-            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "applicationWillResignActive")
-            Self.serialQueue.async {
-                self.ensureBackgroundKeepAlive(interval: 3)
-
-                owsAssertDebug(backgroundTask != nil)
-                backgroundTask = nil
-            }
+            self.ensureBackgroundKeepAlive(interval: 3)
         } else {
             applyDesiredSocketState()
         }
@@ -1213,8 +1202,14 @@ private class WebSocketWrapper {
 
     public var state: SSKWebSocketState { webSocket.state }
 
-    // This property should only be accessed while synchronized on the socket manager.
+    // This property should only be accessed with unfairLock acquired.
     private var requestInfoMap = [UInt64: SocketRequestInfo]()
+
+    public var hasPendingRequests: Bool {
+        unfairLock.withLock {
+            !requestInfoMap.isEmpty
+        }
+    }
 
     required init(webSocketType: OWSWebSocketType, webSocket: SSKWebSocket) {
         owsAssertDebug(!CurrentAppContext().isRunningTests)
