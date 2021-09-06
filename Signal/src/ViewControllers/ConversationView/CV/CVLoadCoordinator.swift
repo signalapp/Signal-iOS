@@ -557,23 +557,24 @@ public class CVLoadCoordinator: NSObject {
             } else {
                 return updatePromise
             }
-        }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<Void> in
+        }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
             loadRequest.logLoadEvent("Load landing ready")
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
             }
             return self.loadLandWhenSafePromise(update: update)
-        }.done(on: .main) { [weak self] () -> Void in
-            self?.loadDidSucceed(loadRequest: loadRequest)
+        }.done(on: .main) { [weak self] (update: CVUpdate) -> Void in
+            self?.loadDidSucceed(update: update)
         }.catch(on: .main) { [weak self] (error) in
             self?.loadDidFail(loadRequest: loadRequest, error: error)
         }
     }
 
-    private func loadDidSucceed(loadRequest: CVLoadRequest) {
+    private func loadDidSucceed(update: CVUpdate) {
         AssertIsOnMainThread()
 
-        loadRequest.logLoadEvent("Load complete")
+        let loadRequest = update.loadRequest
+        loadRequest.logLoadEvent("Load complete \(update.prevRenderState.items.count) -> \(renderState.items.count)")
 
         let didClearBuildingFlag = loadBuildingRequestId.tryToClearIfEqual(loadRequest.requestId)
         // This flag should already be cleared.
@@ -606,17 +607,17 @@ public class CVLoadCoordinator: NSObject {
 
     // Lands the load when it is safe, blocking on animations,
     // previous loads landing, etc.
-    private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<Void> {
+    private func loadLandWhenSafePromise(update: CVUpdate) -> Promise<CVUpdate> {
         AssertIsOnMainThread()
 
-        let (loadPromise, loadFuture) = Promise<Void>.pending()
+        let (loadPromise, loadFuture) = Promise<CVUpdate>.pending()
 
         loadLandWhenSafe(update: update, loadFuture: loadFuture)
 
         return loadPromise
     }
 
-    private func loadLandWhenSafe(update: CVUpdate, loadFuture: Future<Void>) {
+    private func loadLandWhenSafe(update: CVUpdate, loadFuture: Future<CVUpdate>) {
 
         guard let delegate = self.delegate else {
             loadFuture.reject(OWSGenericError("Missing self or delegate."))
@@ -690,13 +691,13 @@ public class CVLoadCoordinator: NSObject {
         let (loadDidLandPromise, loadDidLandFuture) = Promise<Void>.pending()
         updateLoadLanding(renderState: renderState,
                           loadRequest: loadRequest,
-        loadDidLandFuture: loadDidLandFuture)
+                          loadDidLandFuture: loadDidLandFuture)
 
         delegate.updateWithNewRenderState(update: update,
                                           scrollAction: loadRequest.scrollAction,
                                           updateToken: updateToken)
 
-        loadRequest.logLoadEvent("Load landing begun")
+        loadRequest.logLoadEvent("Load landing begun \(update.prevRenderState.items.count) -> \(renderState.items.count)")
 
         // Once this load's landing has _begun_ we can start building the next load.
         // loadLandingRequestId ensures that we only land one load at a time.
@@ -728,7 +729,7 @@ public class CVLoadCoordinator: NSObject {
             loadDidLandPromise
         }.done(on: CVUtils.landingQueue) {
             loadRequest.logLoadEvent("Load landing complete")
-            loadDidLandFuture.resolve()
+            loadFuture.resolve(update)
         }.catch(on: CVUtils.landingQueue) { error in
             loadFuture.reject(error)
         }
@@ -757,7 +758,7 @@ public class CVLoadCoordinator: NSObject {
             if CVLoader.verboseLogging {
                 Logger.info("LoadLanding fulfilled[\(loadRequestId)]")
             }
-            loadDidLandFuture.fulfill(())
+            loadDidLandFuture.resolve()
         }
     }
     private var currentLoadLanding: LoadLanding?

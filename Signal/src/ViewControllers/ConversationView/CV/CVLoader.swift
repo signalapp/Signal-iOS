@@ -8,7 +8,7 @@ import Foundation
 public class CVLoader: NSObject {
 
     static var verboseLogging: Bool {
-        false && DebugFlags.internalLogging
+        true && DebugFlags.internalLogging
     }
 
     private let threadUniqueId: String
