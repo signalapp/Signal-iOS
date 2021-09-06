@@ -98,7 +98,8 @@ public class OWSWebSocket: NSObject {
     // notification.
     private let appIsActive = AtomicBool(false)
 
-    private let hasDrainedQueueAtLeastOnce = AtomicBool(false)
+    private let lastReceivedPushDate = AtomicOptional<Date>(nil)
+    private let lastDrainQueueDate = AtomicOptional<Date>(nil)
 
     // MARK: - BackgroundKeepAlive
 
@@ -125,9 +126,8 @@ public class OWSWebSocket: NSObject {
                 // The app is trying to make a request.
                 return 5
             }
-            // There are other cases as well not associated with a fixed duration,
-            // such as if currentWebSocket.hasPendingRequests, or
-            // !hasDrainedQueueAtLeastOnce.
+            // There are many other cases as well not associated with a fixed duration,
+            // such as if currentWebSocket.hasPendingRequests; see shouldSocketBeOpen().
         }
     }
 
@@ -554,11 +554,10 @@ public class OWSWebSocket: NSObject {
                         self.notifyStatusChange()
                     }
 
-                    if self.hasDrainedQueueAtLeastOnce.tryToSetFlag() {
-                        // We may have been holding the websocket open, waiting to drain the
-                        // queue at least once. Check if we should close the websocket.
-                        self.applyDesiredSocketState()
-                    }
+                    self.lastDrainQueueDate.set(Date())
+                    // We may have been holding the websocket open, waiting to drain the
+                    // queue. Check if we should close the websocket.
+                    self.applyDesiredSocketState()
                 }
             }
         }
@@ -664,15 +663,31 @@ public class OWSWebSocket: NSObject {
             return true
         }
 
-        let shouldDrainQueue = (CurrentAppContext().isMainApp ||
-                                    CurrentAppContext().isNSE)
-        if shouldDrainQueue,
-           tsAccountManager.isRegisteredAndReady,
-           webSocketType == .identified,
-           !hasDrainedQueueAtLeastOnce.get() {
-            if verboseLogging {
-                Logger.info("\(webSocketType) !hasDrainedQueueAtLeastOnce true")
+        let shouldDrainQueue: Bool = {
+            guard CurrentAppContext().isMainApp ||
+                    CurrentAppContext().isNSE else {
+                return false
             }
+            guard webSocketType == .identified,
+                  tsAccountManager.isRegisteredAndReady else {
+                return false
+            }
+            guard let lastDrainQueueDate = self.lastDrainQueueDate.get() else {
+                if verboseLogging {
+                    Logger.info("\(webSocketType) Has not drained queue at least once.")
+                }
+                return true
+            }
+            guard let lastReceivedPushDate = self.lastReceivedPushDate.get(),
+                  lastReceivedPushDate > lastDrainQueueDate else {
+                return false
+            }
+            if verboseLogging {
+                Logger.info("\(webSocketType) Has not drained queue since last received push.")
+            }
+            return true
+        }()
+        if shouldDrainQueue {
             return true
         }
 
@@ -705,7 +720,11 @@ public class OWSWebSocket: NSObject {
     public func didReceivePush() {
         owsAssertDebug(AppReadiness.isAppReady)
 
+        lastReceivedPushDate.set(Date())
+
         self.ensureBackgroundKeepAlive(.didReceivePush)
+
+        applyDesiredSocketState()
     }
 
     // This method is thread-safe.
