@@ -98,7 +98,7 @@ public class OWSWebSocket: NSObject {
     // notification.
     private let appIsActive = AtomicBool(false)
 
-    private let lastReceivedPushDate = AtomicOptional<Date>(nil)
+    private let lastReceivedPushWithoutOpenWebsocketDate = AtomicOptional<Date>(nil)
     private let lastDrainQueueDate = AtomicOptional<Date>(nil)
 
     // MARK: - BackgroundKeepAlive
@@ -678,8 +678,8 @@ public class OWSWebSocket: NSObject {
                 }
                 return true
             }
-            guard let lastReceivedPushDate = self.lastReceivedPushDate.get(),
-                  lastReceivedPushDate > lastDrainQueueDate else {
+            guard let lastReceivedPushWithoutOpenWebsocketDate = self.lastReceivedPushWithoutOpenWebsocketDate.get(),
+                  lastReceivedPushWithoutOpenWebsocketDate > lastDrainQueueDate else {
                 return false
             }
             if verboseLogging {
@@ -720,11 +720,16 @@ public class OWSWebSocket: NSObject {
     public func didReceivePush() {
         owsAssertDebug(AppReadiness.isAppReady)
 
-        lastReceivedPushDate.set(Date())
-
         self.ensureBackgroundKeepAlive(.didReceivePush)
 
-        applyDesiredSocketState()
+        // If we receive a push without an identified websocket open,
+        // hold the websocket open in the background until the
+        // websocket drains it queue.
+        if webSocketType == .identified,
+           nil == currentWebSocket?.openDate {
+            lastReceivedPushWithoutOpenWebsocketDate.set(Date())
+            applyDesiredSocketState()
+        }
     }
 
     // This method is thread-safe.
@@ -1145,6 +1150,10 @@ extension OWSWebSocket: SSKWebSocketDelegate {
             return
         }
 
+        let oldOpenDate = currentWebSocket.openDate.swap(Date())
+        // The SSKWebSocket/WebSocketWrapper instance should only open once.
+        owsAssertDebug(oldOpenDate == nil)
+
         currentWebSocket.startHeartbeat(delegate: self)
 
         if webSocketType == .identified {
@@ -1261,6 +1270,8 @@ private class WebSocketWrapper {
     public var hasPendingRequests: Bool {
         !requestInfoMap.isEmpty
     }
+
+    public let openDate = AtomicOptional<Date>(nil)
 
     required init(webSocketType: OWSWebSocketType, webSocket: SSKWebSocket) {
         owsAssertDebug(!CurrentAppContext().isRunningTests)
