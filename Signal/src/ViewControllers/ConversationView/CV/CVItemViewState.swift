@@ -76,7 +76,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
     // MARK: -
 
     private var shouldShowDateOnNextViewItem = true
-    private var previousItemTimestamp: UInt64 = 0
+    private let todayDate = Date()
+    private var previousDaysBeforeToday: Int?
 
     private var items = [ItemBuilder]()
     private var previousItem: ItemBuilder? {
@@ -476,12 +477,17 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         let itemTimestamp = item.interaction.timestamp
         owsAssertDebug(itemTimestamp > 0)
 
+        let itemDate = NSDate.ows_date(withMillisecondsSince1970: itemTimestamp)
+        let daysBeforeToday = DateUtil.daysFrom(firstDate: itemDate, toSecondDate: todayDate)
+
         var shouldShowDate = false
-        if previousItemTimestamp == 0 {
+        if let previousDaysBeforeToday = self.previousDaysBeforeToday {
+            if daysBeforeToday != previousDaysBeforeToday {
+                shouldShowDateOnNextViewItem = true
+            }
+        } else {
             // Only show for the first item if the date is not today
-            shouldShowDateOnNextViewItem = !DateUtil.dateIsToday(NSDate.ows_date(withMillisecondsSince1970: itemTimestamp))
-        } else if !DateUtil.isSameDay(withTimestamp: itemTimestamp, timestamp: previousItemTimestamp) {
-            shouldShowDateOnNextViewItem = true
+            shouldShowDateOnNextViewItem = daysBeforeToday != 0
         }
 
         if shouldShowDateOnNextViewItem && item.canShowDate {
@@ -499,7 +505,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             items.append(item)
         }
 
-        previousItemTimestamp = itemTimestamp
+        self.previousDaysBeforeToday = daysBeforeToday
     }
 
     var hasPlacedUnreadIndicator = false

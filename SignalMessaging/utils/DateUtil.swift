@@ -23,21 +23,13 @@ extension DateUtil {
     @objc
     public static func daysFrom(firstDate: Date, toSecondDate secondDate: Date) -> Int {
         let calendar = Calendar.current
-        let units: Set<Calendar.Component> = [.era, .year, .month, .day]
-        var components1 = calendar.dateComponents(units, from: firstDate)
-        var components2 = calendar.dateComponents(units, from: secondDate)
-        components1.hour = 12
-        components2.hour = 12
-        guard let date1 = calendar.date(from: components1),
-              let date2 = calendar.date(from: components2) else {
-            owsFailDebug("Invalid date.")
+        guard let days = calendar.dateComponents([.day],
+                                                 from: calendar.startOfDay(for: firstDate),
+                                                 to: calendar.startOfDay(for: secondDate)).day else {
+            owsFailDebug("Invalid result.")
             return 0
         }
-        guard let result = calendar.dateComponents([.day], from: date1, to: date2).day else {
-            owsFailDebug("Missing result.")
-            return 0
-        }
-        return result
+        return days
     }
 
     // Returns the difference in years, ignoring shorter units of time.
@@ -142,4 +134,15 @@ extension DateUtil {
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
+
+    @objc(isSameDayWithTimestamp:timestamp:)
+    public static func isSameDay(timestamp timestamp1: UInt64, timestamp timestamp2: UInt64) -> Bool {
+        isSameDay(date: NSDate.ows_date(withMillisecondsSince1970: timestamp1),
+                  date: NSDate.ows_date(withMillisecondsSince1970: timestamp2))
+    }
+
+    @objc(isSameDayWithDate:date:)
+    public static func isSameDay(date date1: Date, date date2: Date) -> Bool {
+        0 == daysFrom(firstDate: date1, toSecondDate: date2)
+    }
 }
