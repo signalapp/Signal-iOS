@@ -350,6 +350,26 @@ public class AtomicDictionary<Key: Hashable, Value> {
     public func set(_ values: [Key: Value]) {
         lock.perform { self.values = values }
     }
+
+    public var isEmpty: Bool {
+        lock.perform { values.isEmpty }
+    }
+
+    @discardableResult
+    public func removeValue(forKey key: Key) -> Value? {
+        lock.perform {
+            values.removeValue(forKey: key)
+        }
+    }
+
+    @discardableResult
+    public func removeAllValues() -> [Value] {
+        lock.perform {
+            let result = Array(values.values)
+            values.removeAll()
+            return result
+        }
+    }
 }
 
 // MARK: -

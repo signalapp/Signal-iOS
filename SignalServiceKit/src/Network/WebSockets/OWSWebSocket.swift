@@ -27,6 +27,10 @@ public class OWSWebSocket: NSObject {
     fileprivate static let serialQueue = DispatchQueue(label: "org.signal.websocket")
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
+    // TODO: Should we use a higher-priority queue?
+    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.websocket.messageProcessingQueue")
+    fileprivate var messageProcessingQueue: DispatchQueue { Self.messageProcessingQueue }
+
     @objc
     public static var verboseLogging: Bool { true && DebugFlags.internalLogging }
     fileprivate var verboseLogging: Bool { Self.verboseLogging }
@@ -481,8 +485,7 @@ public class OWSWebSocket: NSObject {
             }
         }()
 
-        // TODO: Should we use a higher-priority queue?
-        DispatchQueue.global().async {
+        Self.messageProcessingQueue.async {
             if Self.verboseLogging {
                 Logger.info("\(self.webSocketType) 2")
             }
@@ -492,7 +495,9 @@ public class OWSWebSocket: NSObject {
                 if Self.verboseLogging {
                     Logger.info("\(self.webSocketType) 3")
                 }
-                ackMessage(true)
+                Self.serialQueue.async {
+                    ackMessage(true)
+                }
             }
         }
     }
@@ -506,16 +511,15 @@ public class OWSWebSocket: NSObject {
         sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
 
         if !currentWebSocket.hasEmptiedInitialQueue.get() {
-            // We need to flush the serial queue to ensure that
-            // all received messages are enqueued by the message
-            // receiver before we: a) mark the queue as empty.
-            // b) notify.
+            // We need to flush the message processing and serial queues
+            // to ensure that all received messages are enqueued and
+            // processed before we: a) mark the queue as empty. b) notify.
             //
             // The socket might close and re-open while we're
-            // flushing the queue. Therefore we capture currentWebSocket
+            // flushing the queues. Therefore we capture currentWebSocket
             // flushing to ensure that we handle this case correctly.
-            serialQueue.async { [weak self] in
-                DispatchQueue.global().async {
+            Self.messageProcessingQueue.async { [weak self] in
+                Self.serialQueue.async {
                     guard let self = self else { return }
                     if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                         self.notifyStatusChange()
@@ -975,10 +979,7 @@ private class SocketRequestInfo {
         case complete
     }
 
-    private static let unfairLock = UnfairLock()
-
-    // This property should only be accessed with unfairLock acquired.
-    private var status: Status
+    private let status: AtomicValue<Status>
 
     private let backgroundTask: OWSBackgroundTask
 
@@ -991,7 +992,7 @@ private class SocketRequestInfo {
                          failure: @escaping RequestFailure) {
         self.request = request
         self.requestUrl = requestUrl
-        self.status = .incomplete(success: success, failure: failure)
+        self.status = AtomicValue(.incomplete(success: success, failure: failure))
         self.backgroundTask = OWSBackgroundTask(label: "SocketRequestInfo")
     }
 
@@ -1006,17 +1007,13 @@ private class SocketRequestInfo {
     }
 
     public func didSucceed(response: HTTPResponse) {
-        Self.unfairLock.withLock {
-            switch status {
-            case .complete:
-                return
-            case .incomplete(let success, _):
-                // Ensure that we only complete once.
-                status = .complete
-
-                DispatchQueue.global().async {
-                    success(response)
-                }
+        // Ensure that we only complete once.
+        switch status.swap(.complete) {
+        case .complete:
+            return
+        case .incomplete(let success, _):
+            DispatchQueue.global().async {
+                success(response)
             }
         }
     }
@@ -1047,22 +1044,18 @@ private class SocketRequestInfo {
     }
 
     private func didFail(error: Error) {
-        Self.unfairLock.withLock {
-            switch status {
-            case .complete:
-                return
-            case .incomplete(_, let failure):
-                // Ensure that we only complete once.
-                status = .complete
+        // Ensure that we only complete once.
+        switch status.swap(.complete) {
+        case .complete:
+            return
+        case .incomplete(_, let failure):
+            DispatchQueue.global().async {
+                let statusCode = HTTPStatusCodeForError(error) ?? 0
+                Logger.warn("didFail, status: \(statusCode), error: \(error)")
 
-                DispatchQueue.global().async {
-                    let statusCode = HTTPStatusCodeForError(error) ?? 0
-                    Logger.warn("didFail, status: \(statusCode), error: \(error)")
-
-                    let error = error as! OWSHTTPError
-                    let socketFailure = OWSHTTPErrorWrapper(error: error)
-                    failure(socketFailure)
-                }
+                let error = error as! OWSHTTPError
+                let socketFailure = OWSHTTPErrorWrapper(error: error)
+                failure(socketFailure)
             }
         }
     }
@@ -1192,13 +1185,10 @@ private class WebSocketWrapper {
 
     public var state: SSKWebSocketState { webSocket.state }
 
-    // This property should only be accessed with unfairLock acquired.
-    private var requestInfoMap = [UInt64: SocketRequestInfo]()
+    private var requestInfoMap = AtomicDictionary<UInt64, SocketRequestInfo>()
 
     public var hasPendingRequests: Bool {
-        unfairLock.withLock {
-            !requestInfoMap.isEmpty
-        }
+        !requestInfoMap.isEmpty
     }
 
     required init(webSocketType: OWSWebSocketType, webSocket: SSKWebSocket) {
@@ -1219,18 +1209,16 @@ private class WebSocketWrapper {
     private var heartbeatTimer: OffMainThreadTimer?
 
     func startHeartbeat(delegate: WebSocketWrapperDelegate) {
-        unfairLock.withLock {
-            let heartbeatPeriodSeconds: TimeInterval = 30
-            self.heartbeatTimer = OffMainThreadTimer(timeInterval: heartbeatPeriodSeconds,
-                                                     repeats: true) { [weak self, weak delegate] timer in
-                guard let self = self,
-                      let delegate = delegate else {
-                    owsFailDebug("Missing self or delegate.")
-                    timer.invalidate()
-                    return
-                }
-                delegate.webSocketHeartBeat(self)
+        let heartbeatPeriodSeconds: TimeInterval = 30
+        self.heartbeatTimer = OffMainThreadTimer(timeInterval: heartbeatPeriodSeconds,
+                                                 repeats: true) { [weak self, weak delegate] timer in
+            guard let self = self,
+                  let delegate = delegate else {
+                owsFailDebug("Missing self or delegate.")
+                timer.invalidate()
+                return
             }
+            delegate.webSocketHeartBeat(self)
         }
     }
 
@@ -1242,14 +1230,13 @@ private class WebSocketWrapper {
         unfairLock.withLock {
             webSocket.delegate = nil
             webSocket.disconnect()
-
-            heartbeatTimer?.invalidate()
-            self.heartbeatTimer = nil
-
-            let requestInfos = Array(requestInfoMap.values)
-            requestInfoMap.removeAll()
-            failPendingMessages(requestInfos: requestInfos)
         }
+
+        heartbeatTimer?.invalidate()
+        self.heartbeatTimer = nil
+
+        let requestInfos = requestInfoMap.removeAllValues()
+        failPendingMessages(requestInfos: requestInfos)
     }
 
     private func failPendingMessages(requestInfos: [SocketRequestInfo]) {
@@ -1266,9 +1253,7 @@ private class WebSocketWrapper {
 
     // This method is thread-safe.
     fileprivate func sendRequest(requestInfo: SocketRequestInfo, messageData: Data) {
-        unfairLock.withLock {
-            requestInfoMap[requestInfo.requestId] = requestInfo
-        }
+        requestInfoMap[requestInfo.requestId] = requestInfo
 
         webSocket.write(data: messageData)
 
@@ -1279,9 +1264,7 @@ private class WebSocketWrapper {
     }
 
     fileprivate func popRequestInfo(forRequestId requestId: UInt64) -> SocketRequestInfo? {
-        unfairLock.withLock {
-            requestInfoMap.removeValue(forKey: requestId)
-        }
+        requestInfoMap.removeValue(forKey: requestId)
     }
 
     fileprivate func sendResponse(for request: WebSocketProtoWebSocketRequestMessage,
