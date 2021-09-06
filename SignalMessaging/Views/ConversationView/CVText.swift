@@ -60,7 +60,7 @@ public enum CVTextValue: Equatable, Hashable {
         case .text(let text):
             return "t\(text)"
         case .attributedText(let attributedText):
-            return "a\(attributedText.description)"
+            return "a\(attributedText.string.description)"
         }
     }
 }
@@ -171,6 +171,7 @@ public struct CVTextViewConfig {
     public let textColor: UIColor
     public let textAlignment: NSTextAlignment?
     public let linkTextAttributes: [NSAttributedString.Key: Any]?
+    public let extraCacheKeyFactors: [String]?
 
     public init(text: String,
                 font: UIFont,
@@ -183,19 +184,22 @@ public struct CVTextViewConfig {
         self.textColor = textColor
         self.textAlignment = textAlignment
         self.linkTextAttributes = linkTextAttributes
+        self.extraCacheKeyFactors = nil
     }
 
     public init(attributedText: NSAttributedString,
                 font: UIFont,
                 textColor: UIColor,
                 textAlignment: NSTextAlignment? = nil,
-                linkTextAttributes: [NSAttributedString.Key: Any]? = nil) {
+                linkTextAttributes: [NSAttributedString.Key: Any]? = nil,
+                extraCacheKeyFactors: [String]? = nil) {
 
         self.text = .attributedText(attributedText: attributedText)
         self.font = font
         self.textColor = textColor
         self.textAlignment = textAlignment
         self.linkTextAttributes = linkTextAttributes
+        self.extraCacheKeyFactors = extraCacheKeyFactors
     }
 
     public var stringValue: String {
@@ -209,7 +213,13 @@ public struct CVTextViewConfig {
     public var cacheKey: CacheKey {
         // textColor and linkTextAttributes (for the attributes we set)
         // don't affect measurement.
-        "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(textAlignment?.rawValue ?? 0)"
+        var cacheKey = "\(text.cacheKey),\(font.fontName),\(font.pointSize),\(textAlignment?.rawValue ?? 0)"
+
+        if let extraCacheKeyFactors = self.extraCacheKeyFactors {
+            cacheKey += extraCacheKeyFactors.joined(separator: ",")
+        }
+
+        return cacheKey
     }
 }
 
