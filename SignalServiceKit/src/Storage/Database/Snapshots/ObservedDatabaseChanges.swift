@@ -57,16 +57,17 @@ class ObservedDatabaseChanges: NSObject {
     typealias RowId = Int64
 
     enum ConcurrencyMode {
-        case mainThread
         case databaseChangeObserverSerialQueue
+        case unfairLock
     }
     private let concurrencyMode: ConcurrencyMode
 
     #if TESTABLE_BUILD
     private func checkConcurrency() {
         switch concurrencyMode {
-        case .mainThread:
-            AssertIsOnMainThread()
+        case .unfairLock:
+            // There's no way to assert we have the unfairLock acquired.
+            break
         case .databaseChangeObserverSerialQueue:
             AssertHasDatabaseChangeObserverLock()
         }
@@ -75,6 +76,19 @@ class ObservedDatabaseChanges: NSObject {
 
     init(concurrencyMode: ConcurrencyMode) {
         self.concurrencyMode = concurrencyMode
+    }
+
+    public var isEmpty: Bool {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        return (_collections.isEmpty &&
+                    _tableNames.isEmpty &&
+                    threads.isEmpty &&
+                    interactions.isEmpty &&
+                    attachments.isEmpty &&
+                    _lastError == nil)
     }
 
     // MARK: - Collections
@@ -305,6 +319,14 @@ private struct ObservedModelChanges {
     private var _deletedRowIds = Set<RowId>()
     private var _deletedUniqueIds = Set<UniqueId>()
     fileprivate var rowIdToUniqueIdMap = [RowId: UniqueId]()
+
+    public var isEmpty: Bool {
+        return (_rowIds.isEmpty &&
+                    _uniqueIds.isEmpty &&
+                    _deletedRowIds.isEmpty &&
+                    _deletedUniqueIds.isEmpty &&
+                    rowIdToUniqueIdMap.isEmpty)
+    }
 
     mutating func append(model: BaseModel) {
         _uniqueIds.insert(model.uniqueId)
