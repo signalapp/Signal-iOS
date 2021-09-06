@@ -438,22 +438,17 @@ public class OWSWebSocket: NSObject {
         }
 
         let ackMessage = { (success: Bool) in
-            // notificationsManager should only be accessed on the main thread.
-            DispatchMainThreadSafe {
-                if !success {
-                    Self.databaseStorage.write { transaction in
-                        let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                        Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                              transaction: transaction)
-                    }
-                }
-
-                Self.serialQueue.async {
-                    self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
-                    owsAssertDebug(backgroundTask != nil)
-                    backgroundTask = nil
+            if !success {
+                Self.databaseStorage.write { transaction in
+                    let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
+                    Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
+                                                          transaction: transaction)
                 }
             }
+
+            self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
+            owsAssertDebug(backgroundTask != nil)
+            backgroundTask = nil
         }
 
         let headers = OWSHttpHeaders()
@@ -517,10 +512,10 @@ public class OWSWebSocket: NSObject {
             // b) notify.
             //
             // The socket might close and re-open while we're
-            // flushing the queue. We use willEmptyInitialQueue
-            // to detect this case.
+            // flushing the queue. Therefore we capture currentWebSocket
+            // flushing to ensure that we handle this case correctly.
             serialQueue.async { [weak self] in
-                DispatchQueue.main.async {
+                DispatchQueue.global().async {
                     guard let self = self else { return }
                     if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                         self.notifyStatusChange()
@@ -707,8 +702,7 @@ public class OWSWebSocket: NSObject {
                 if nil == self.backgroundKeepAliveTimer {
                     // Start a new timer that will fire every second while the socket is open in the background.
                     // This timer will ensure we close the websocket when the time comes.
-                    self.backgroundKeepAliveTimer = MainThreadTimer(timeInterval: 1, repeats: true) { [weak self] timer in
-                        AssertIsOnMainThread()
+                    self.backgroundKeepAliveTimer = OffMainThreadTimer(timeInterval: 1, repeats: true) { [weak self] timer in
                         guard let self = self else {
                             timer.invalidate()
                             return
@@ -734,7 +728,7 @@ public class OWSWebSocket: NSObject {
 
     // This timer is used to check periodically whether we should
     // close the socket.
-    private var backgroundKeepAliveTimer: MainThreadTimer?
+    private var backgroundKeepAliveTimer: OffMainThreadTimer?
     // This is used to manage the iOS "background task" used to
     // keep the app alive in the background.
     private var backgroundKeepAliveBackgroundTask: OWSBackgroundTask?
@@ -787,7 +781,7 @@ public class OWSWebSocket: NSObject {
 
     // MARK: - Reconnect
 
-    private var reconnectTimer: MainThreadTimer?
+    private var reconnectTimer: OffMainThreadTimer?
 
     // This method is thread-safe.
     private func ensureReconnectTimer() {
@@ -797,9 +791,8 @@ public class OWSWebSocket: NSObject {
                 owsAssertDebug(reconnectTimer.isValid)
             } else {
                 // TODO: It'd be nice to do exponential backoff.
-                self.reconnectTimer = MainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
+                self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
                                                       repeats: true) { [weak self] timer in
-                    AssertIsOnMainThread()
                     guard let self = self else {
                         timer.invalidate()
                         return
@@ -1167,10 +1160,6 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
 extension OWSWebSocket: WebSocketWrapperDelegate {
     fileprivate func webSocketHeartBeat(_ webSocket: WebSocketWrapper) {
-        // This method will be called on the main thread,
-        // but it doesn't have to be.
-        AssertIsOnMainThread()
-
         if shouldSocketBeOpen {
             webSocket.writePing()
         } else {
@@ -1227,14 +1216,13 @@ private class WebSocketWrapper {
         reset()
     }
 
-    private var heartbeatTimer: MainThreadTimer?
+    private var heartbeatTimer: OffMainThreadTimer?
 
     func startHeartbeat(delegate: WebSocketWrapperDelegate) {
         unfairLock.withLock {
             let heartbeatPeriodSeconds: TimeInterval = 30
-            self.heartbeatTimer = MainThreadTimer(timeInterval: heartbeatPeriodSeconds,
-                                                  repeats: true) { [weak self, weak delegate] timer in
-                AssertIsOnMainThread()
+            self.heartbeatTimer = OffMainThreadTimer(timeInterval: heartbeatPeriodSeconds,
+                                                     repeats: true) { [weak self, weak delegate] timer in
                 guard let self = self,
                       let delegate = delegate else {
                     owsFailDebug("Missing self or delegate.")
@@ -1350,5 +1338,66 @@ public class MainThreadTimer {
         DispatchQueue.main.async {
             timer.invalidate()
         }
+    }
+}
+
+// MARK: -
+
+// A thread-safe timer that is scheduled on the main thread,
+// but which can be created, invalidated or deallocated on any thread.
+public class OffMainThreadTimer {
+
+    private let timeInterval: TimeInterval
+    private let repeats: Bool
+    private let queue: DispatchQueue
+
+    public typealias Block = (OffMainThreadTimer) -> Void
+    private let block: Block
+
+    private let _isValid = AtomicBool(true)
+    public var isValid: Bool {
+        get { _isValid.get() }
+        set { _isValid.set(newValue) }
+    }
+
+    required init(timeInterval: TimeInterval,
+                  repeats: Bool,
+                  queue: DispatchQueue = .global(),
+                  _ block: @escaping Block) {
+        owsAssertDebug(timeInterval > 0)
+
+        self.timeInterval = max(0, timeInterval)
+        self.repeats = repeats
+        self.queue = queue
+        self.block = block
+
+        scheduleNextFire()
+    }
+
+    private func scheduleNextFire() {
+        queue.asyncAfter(deadline: .now() + timeInterval) { [weak self] in
+            self?.fire()
+        }
+    }
+
+    private func fire() {
+        assertOnQueue(queue)
+        guard self.isValid else {
+            return
+        }
+        block(self)
+        guard repeats else {
+            invalidate()
+            return
+        }
+        scheduleNextFire()
+    }
+
+    deinit {
+        invalidate()
+    }
+
+    public func invalidate() {
+        isValid = false
     }
 }
