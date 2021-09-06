@@ -722,7 +722,7 @@ public class OWSWebSocket: NSObject {
                     Logger.info("\(webSocketType) Hasn't drained most recent identified websocket. true")
                 }
                 return true
-           }
+            }
             guard let lastReceivedPushWithoutWebsocketDate = self.lastReceivedPushWithoutWebsocketDate.get(),
                   lastReceivedPushWithoutWebsocketDate > lastDrainQueueDate else {
                 return false
@@ -917,7 +917,7 @@ public class OWSWebSocket: NSObject {
             } else {
                 // TODO: It'd be nice to do exponential backoff.
                 self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
-                                                      repeats: true) { [weak self] timer in
+                                                         repeats: true) { [weak self] timer in
                     guard let self = self else {
                         timer.invalidate()
                         return
