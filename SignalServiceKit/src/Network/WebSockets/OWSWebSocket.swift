@@ -41,18 +41,6 @@ public class OWSWebSocket: NSObject {
 
     private static let socketReconnectDelaySeconds: TimeInterval = 5
 
-    // If the app is in the background, it should keep the
-    // websocket open if:
-    //
-    // a) It has received a notification or app has been activated in the last N seconds.
-    private static let keepAliveDuration_Default: TimeInterval = 20
-    // b) It has received a message over the socket in the last N seconds.
-    private static let keepAliveDuration_ReceiveMessage: TimeInterval = 15
-    // c) It has just received the response to a request.
-    private static let keepAliveDuration_ReceiveResponse: TimeInterval = 5
-    // d) It is in the process of making a request (but we accomplish this by
-    //    observing currentWebSocket.hasPendingRequests.
-
     private var _currentWebSocket = AtomicOptional<WebSocketWrapper>(nil)
     private var currentWebSocket: WebSocketWrapper? {
         get {
@@ -110,26 +98,57 @@ public class OWSWebSocket: NSObject {
     // notification.
     private let appIsActive = AtomicBool(false)
 
+    // MARK: - BackgroundKeepAlive
+
+    private enum BackgroundKeepAliveRequestType {
+        case generic
+        case receiveMessage
+        case receiveResponse
+        case willResignActive
+
+        var keepAliveDuration: TimeInterval {
+            // If the app is in the background, it should keep the
+            // websocket open if:
+            switch self {
+            case .generic:
+                // Received a notification or app has been activated in the last N seconds.
+                return 20
+            case .receiveMessage:
+                // It has received a message over the socket in the last N seconds.
+                return 15
+            case .receiveResponse:
+                // It has just received the response to a request.
+                return 5
+            case .willResignActive:
+                // It has just entered the background.
+                return 3
+            }
+            // There are other cases as well not associated with a fixed duration,
+            // such as if currentWebSocket.hasPendingRequests..
+        }
+    }
+
+    private struct BackgroundKeepAlive {
+        let requestType: BackgroundKeepAliveRequestType
+        let untilDate: Date
+    }
+
     // This var should only be accessed with unfairLock acquired.
-    private var _backgroundKeepAliveDate: Date?
+    private var _backgroundKeepAlive: BackgroundKeepAlive?
     private let unfairLock = UnfairLock()
 
     // This method is thread-safe.
-    private func ensureBackgroundKeepAlive(interval: TimeInterval) {
-        owsAssertDebug(interval > 0)
+    private func ensureBackgroundKeepAlive(_ requestType: BackgroundKeepAliveRequestType) {
+        let keepAliveDuration = requestType.keepAliveDuration
+        owsAssertDebug(keepAliveDuration > 0)
+        let untilDate = Date().addingTimeInterval(keepAliveDuration)
 
-        let keepAliveUntilDate = Date().addingTimeInterval(interval)
-        ensureBackgroundKeepAlive(keepAliveUntilDate: keepAliveUntilDate)
-    }
-
-    // This method is thread-safe.
-    private func ensureBackgroundKeepAlive(keepAliveUntilDate newValue: Date) {
         let didChange: Bool = unfairLock.withLock {
-            if let oldValue = self._backgroundKeepAliveDate,
-               oldValue >= newValue {
+            if let oldValue = self._backgroundKeepAlive,
+               oldValue.untilDate >= untilDate {
                 return false
             }
-            self._backgroundKeepAliveDate = newValue
+            self._backgroundKeepAlive = BackgroundKeepAlive(requestType: requestType, untilDate: untilDate)
             return true
         }
 
@@ -146,13 +165,16 @@ public class OWSWebSocket: NSObject {
     // This var is thread-safe.
     private var hasBackgroundKeepAlive: Bool {
         unfairLock.withLock {
-            guard let backgroundKeepAliveDate = self._backgroundKeepAliveDate else {
+            guard let backgroundKeepAlive = self._backgroundKeepAlive else {
                 return false
             }
-            guard backgroundKeepAliveDate >= Date() else {
+            guard backgroundKeepAlive.untilDate >= Date() else {
                 // Cull expired values.
-                self._backgroundKeepAliveDate = nil
+                self._backgroundKeepAlive = nil
                 return false
+            }
+            if Self.verboseLogging {
+                Logger.info("\(self.webSocketType) requestType: \(backgroundKeepAlive.requestType)")
             }
             return true
         }
@@ -355,7 +377,7 @@ public class OWSWebSocket: NSObject {
             Logger.info("received WebSocket response[\(webSocketType)], requestId: \(message.requestID), status: \(message.status)")
         }
 
-        ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_ReceiveResponse)
+        ensureBackgroundKeepAlive(.receiveResponse)
 
         // The websocket is only used to connect to the main signal
         // service, so we need to check for remote deprecation.
@@ -416,7 +438,7 @@ public class OWSWebSocket: NSObject {
         // prolong how long the socket stays open.
         //
         // TODO: NSE
-        ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_ReceiveMessage)
+        ensureBackgroundKeepAlive(.receiveMessage)
 
         if httpMethod == "PUT",
            httpPath == "/api/v1/message" {
@@ -657,7 +679,7 @@ public class OWSWebSocket: NSObject {
     public func requestSocketOpen() {
         owsAssertDebug(AppReadiness.isAppReady)
 
-        self.ensureBackgroundKeepAlive(interval: Self.keepAliveDuration_Default)
+        self.ensureBackgroundKeepAlive(.generic)
     }
 
     // This method aligns the socket state with the "desired" socket state.
@@ -840,7 +862,7 @@ public class OWSWebSocket: NSObject {
         appIsActive.set(false)
 
         if CurrentAppContext().isMainApp {
-            self.ensureBackgroundKeepAlive(interval: 3)
+            self.ensureBackgroundKeepAlive(.willResignActive)
         } else {
             applyDesiredSocketState()
         }
