@@ -9,6 +9,7 @@ public class SocketManager: NSObject {
 
     private let websocketIdentified = OWSWebSocket(webSocketType: .identified)
     private let websocketUnidentified = OWSWebSocket(webSocketType: .unidentified)
+    private var websockets: [OWSWebSocket] { [ websocketIdentified, websocketUnidentified ]}
 
     @objc
     public required override init() {
@@ -45,6 +46,7 @@ public class SocketManager: NSObject {
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
         let webSocket = self.webSocket(ofType: webSocketType)
+        webSocket.openToMakeRequest()
         if webSocket.canMakeRequests {
             // The socket is open; proceed.
             return Promise.value(())
@@ -120,24 +122,24 @@ public class SocketManager: NSObject {
 
     // This method can be called from any thread.
     @objc
-    public func requestSocketOpen() {
-        websocketIdentified.requestSocketOpen()
-        websocketUnidentified.requestSocketOpen()
+    public func didReceivePush() {
+        for websocket in websockets {
+            websocket.didReceivePush()
+        }
     }
 
     @objc
     public func cycleSocket() {
         AssertIsOnMainThread()
 
-        websocketIdentified.cycleSocket()
-        websocketUnidentified.cycleSocket()
+        for websocket in websockets {
+            websocket.cycleSocket()
+        }
     }
 
     @objc
     public var isAnySocketOpen: Bool {
-        // TODO: Use CaseIterable
-        (socketState(forType: .identified) == .open ||
-         socketState(forType: .unidentified) == .open)
+        !OWSWebSocketType.allCases.compactMap { socketState(forType: $0) == .open }.isEmpty
     }
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {

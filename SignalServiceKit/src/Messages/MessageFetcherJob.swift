@@ -232,7 +232,7 @@ public class MessageFetcherJob: NSObject {
 
         if shouldUseWebSocket {
             Logger.info("delegating message fetching to SocketManager since we're using normal transport.")
-            socketManager.requestSocketOpen()
+            socketManager.didReceivePush()
             return future.resolve()
         } else if CurrentAppContext().shouldProcessIncomingMessages {
             // Main app should use REST if censorship circumvention is active.

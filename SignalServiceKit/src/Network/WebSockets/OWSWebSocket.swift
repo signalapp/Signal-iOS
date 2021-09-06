@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum OWSWebSocketType {
+public enum OWSWebSocketType: CaseIterable {
     case identified
     case unidentified
 }
@@ -98,20 +98,22 @@ public class OWSWebSocket: NSObject {
     // notification.
     private let appIsActive = AtomicBool(false)
 
+    private let hasDrainedQueueAtLeastOnce = AtomicBool(false)
+
     // MARK: - BackgroundKeepAlive
 
     private enum BackgroundKeepAliveRequestType {
-        case generic
+        case didReceivePush
         case receiveMessage
         case receiveResponse
-        case willResignActive
+        case makeRequest
 
         var keepAliveDuration: TimeInterval {
             // If the app is in the background, it should keep the
             // websocket open if:
             switch self {
-            case .generic:
-                // Received a notification or app has been activated in the last N seconds.
+            case .didReceivePush:
+                // Received a push notification in the last N seconds.
                 return 20
             case .receiveMessage:
                 // It has received a message over the socket in the last N seconds.
@@ -119,12 +121,13 @@ public class OWSWebSocket: NSObject {
             case .receiveResponse:
                 // It has just received the response to a request.
                 return 5
-            case .willResignActive:
-                // It has just entered the background.
-                return 3
+            case .makeRequest:
+                // The app is trying to make a request.
+                return 5
             }
             // There are other cases as well not associated with a fixed duration,
-            // such as if currentWebSocket.hasPendingRequests..
+            // such as if currentWebSocket.hasPendingRequests, or
+            // !hasDrainedQueueAtLeastOnce.
         }
     }
 
@@ -419,6 +422,10 @@ public class OWSWebSocket: NSObject {
                                 responseError: nil,
                                 responseData: responseData)
         }
+
+        // We may have been holding the websocket open, waiting for this response.
+        // Check if we should close the websocket.
+        applyDesiredSocketState()
     }
 
     // MARK: -
@@ -546,6 +553,12 @@ public class OWSWebSocket: NSObject {
                     if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
                         self.notifyStatusChange()
                     }
+
+                    if self.hasDrainedQueueAtLeastOnce.tryToSetFlag() {
+                        // We may have been holding the websocket open, waiting to drain the
+                        // queue at least once. Check if we should close the websocket.
+                        self.applyDesiredSocketState()
+                    }
                 }
             }
         }
@@ -637,7 +650,8 @@ public class OWSWebSocket: NSObject {
             return false
         }
 
-        guard !signalService.isCensorshipCircumventionActive else {
+        guard !FeatureFlags.deprecateREST,
+              !signalService.isCensorshipCircumventionActive else {
             Logger.warn("\(webSocketType) Skipping opening of websocket due to censorship circumvention.")
             return false
         }
@@ -645,7 +659,19 @@ public class OWSWebSocket: NSObject {
         if let currentWebSocket = self.currentWebSocket,
            currentWebSocket.hasPendingRequests {
             if verboseLogging {
-                Logger.info("\(webSocketType) hasPendingRequests")
+                Logger.info("\(webSocketType) hasPendingRequests true")
+            }
+            return true
+        }
+
+        let shouldDrainQueue = (CurrentAppContext().isMainApp ||
+                                    CurrentAppContext().isNSE)
+        if shouldDrainQueue,
+           tsAccountManager.isRegisteredAndReady,
+           webSocketType == .identified,
+           !hasDrainedQueueAtLeastOnce.get() {
+            if verboseLogging {
+                Logger.info("\(webSocketType) !hasDrainedQueueAtLeastOnce true")
             }
             return true
         }
@@ -676,10 +702,17 @@ public class OWSWebSocket: NSObject {
     }
 
     // This method is thread-safe.
-    public func requestSocketOpen() {
+    public func didReceivePush() {
         owsAssertDebug(AppReadiness.isAppReady)
 
-        self.ensureBackgroundKeepAlive(.generic)
+        self.ensureBackgroundKeepAlive(.didReceivePush)
+    }
+
+    // This method is thread-safe.
+    public func openToMakeRequest() {
+        owsAssertDebug(AppReadiness.isAppReady)
+
+        self.ensureBackgroundKeepAlive(.makeRequest)
     }
 
     // This method aligns the socket state with the "desired" socket state.
@@ -848,6 +881,7 @@ public class OWSWebSocket: NSObject {
         }
 
         appIsActive.set(true)
+
         applyDesiredSocketState()
     }
 
@@ -861,11 +895,7 @@ public class OWSWebSocket: NSObject {
 
         appIsActive.set(false)
 
-        if CurrentAppContext().isMainApp {
-            self.ensureBackgroundKeepAlive(.willResignActive)
-        } else {
-            applyDesiredSocketState()
-        }
+        applyDesiredSocketState()
     }
 
     @objc
