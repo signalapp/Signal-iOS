@@ -89,8 +89,9 @@ public class ConversationViewController: OWSViewController {
         // chain, and thus won't inherit our inputAccessoryView, so we manually set it here.
         searchController.uiSearchController.searchBar.inputAccessoryView = self.inputAccessoryPlaceholder
 
-        self.otherUsersProfileDidChangeEvent = DebouncedEvent(maxFrequencySeconds: 1.0,
-                                                              onQueue: DispatchQueue.main) { [weak self] in
+        self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(mode: .firstLast,
+                                                                     maxFrequencySeconds: 1.0,
+                                                                     onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.
             self?.loadCoordinator.enqueueReload(canReuseInteractionModels: true,

@@ -44,14 +44,18 @@ public class StickerManager: NSObject {
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
 
     private static var packsDidChangeEvent: DebouncedEvent {
-        DebouncedEvent(maxFrequencySeconds: 0.5) {
+        DebouncedEvents.build(mode: .firstLast,
+                              maxFrequencySeconds: 0.5,
+                              onQueue: .asyncOnQueue(queue: .global())) {
             NotificationCenter.default.postNotificationNameAsync(packsDidChange, object: nil)
             NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
         }
     }
 
     private static var stickersDidChangeEvent: DebouncedEvent {
-        DebouncedEvent(maxFrequencySeconds: 0.5) {
+        DebouncedEvents.build(mode: .firstLast,
+                              maxFrequencySeconds: 0.5,
+                              onQueue: .asyncOnQueue(queue: .global())) {
             NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
         }
     }

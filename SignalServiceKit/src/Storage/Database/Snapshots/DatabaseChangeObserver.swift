@@ -421,7 +421,6 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
         }
 
-
         publishUpdates(shouldPublishIfEmpty: false)
     }
 
@@ -491,7 +490,6 @@ extension DatabaseChangeObserver: TransactionObserver {
     // e.g. after reloading the database due to a device transfer.
     func publishUpdatesImmediately() {
         AssertIsOnMainThread()
-
 
         publishUpdates(shouldPublishIfEmpty: true)
     }
