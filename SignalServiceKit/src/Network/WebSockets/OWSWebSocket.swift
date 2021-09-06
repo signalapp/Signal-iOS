@@ -98,8 +98,26 @@ public class OWSWebSocket: NSObject {
     // notification.
     private let appIsActive = AtomicBool(false)
 
-    private let lastReceivedPushWithoutOpenWebsocketDate = AtomicOptional<Date>(nil)
+    private let lastNewWebsocketDate = AtomicOptional<Date>(nil)
     private let lastDrainQueueDate = AtomicOptional<Date>(nil)
+    private let lastReceivedPushWithoutWebsocketDate = AtomicOptional<Date>(nil)
+
+    private static let unsubmittedRequestTokenCounter = AtomicUInt()
+    public typealias UnsubmittedRequestToken = UInt
+    // This method is thread-safe.
+    public func makeUnsubmittedRequestToken() -> UnsubmittedRequestToken {
+        let token = Self.unsubmittedRequestTokenCounter.increment()
+        unsubmittedRequestTokens.insert(token)
+        applyDesiredSocketState()
+        return token
+    }
+    private let unsubmittedRequestTokens = AtomicSet<UnsubmittedRequestToken>()
+    // This method is thread-safe.
+    fileprivate func removeUnsubmittedRequestToken(_ token: UnsubmittedRequestToken) {
+        owsAssertDebug(unsubmittedRequestTokens.contains(token))
+        unsubmittedRequestTokens.remove(token)
+        applyDesiredSocketState()
+    }
 
     // MARK: - BackgroundKeepAlive
 
@@ -107,7 +125,6 @@ public class OWSWebSocket: NSObject {
         case didReceivePush
         case receiveMessage
         case receiveResponse
-        case makeRequest
 
         var keepAliveDuration: TimeInterval {
             // If the app is in the background, it should keep the
@@ -121,9 +138,6 @@ public class OWSWebSocket: NSObject {
                 return 15
             case .receiveResponse:
                 // It has just received the response to a request.
-                return 5
-            case .makeRequest:
-                // The app is trying to make a request.
                 return 5
             }
             // There are many other cases as well not associated with a fixed duration,
@@ -264,17 +278,27 @@ public class OWSWebSocket: NSObject {
     public typealias RequestFailure = (OWSHTTPErrorWrapper) -> Void
 
     fileprivate func makeRequestInternal(_ request: TSRequest,
+                                         unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccess,
                                          failure: @escaping RequestFailure) {
         serialQueue.async {
-            Self.makeRequestInternal(request, webSocket: self, success: success, failure: failure)
+            Self.makeRequestInternal(request,
+                                     unsubmittedRequestToken: unsubmittedRequestToken,
+                                     webSocket: self,
+                                     success: success,
+                                     failure: failure)
         }
     }
 
     fileprivate static func makeRequestInternal(_ request: TSRequest,
+                                                unsubmittedRequestToken: UnsubmittedRequestToken,
                                                 webSocket: OWSWebSocket,
                                                 success: @escaping RequestSuccess,
                                                 failure: @escaping RequestFailure) {
+
+        defer {
+            webSocket.removeUnsubmittedRequestToken(unsubmittedRequestToken)
+        }
 
         guard let requestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")
@@ -441,14 +465,15 @@ public class OWSWebSocket: NSObject {
 
         Logger.info("Got message[\(webSocketType)], verb: \(httpMethod), path: \(httpPath)")
 
-        // If we receive a message over the socket while the app is in the background,
-        // prolong how long the socket stays open.
-        //
-        // TODO: NSE
-        ensureBackgroundKeepAlive(.receiveMessage)
-
         if httpMethod == "PUT",
            httpPath == "/api/v1/message" {
+
+            // If we receive a message over the socket while the app is in the background,
+            // prolong how long the socket stays open.
+            //
+            // TODO: NSE
+            ensureBackgroundKeepAlive(.receiveMessage)
+
             handleIncomingMessage(message, currentWebSocket: currentWebSocket)
         } else if httpPath == "/api/v1/queue/empty" {
             // Queue is drained.
@@ -663,6 +688,13 @@ public class OWSWebSocket: NSObject {
             return true
         }
 
+        if !unsubmittedRequestTokens.isEmpty {
+            if verboseLogging {
+                Logger.info("\(webSocketType) unsubmittedRequestTokens true")
+            }
+            return true
+        }
+
         let shouldDrainQueue: Bool = {
             guard CurrentAppContext().isMainApp ||
                     CurrentAppContext().isNSE else {
@@ -674,16 +706,29 @@ public class OWSWebSocket: NSObject {
             }
             guard let lastDrainQueueDate = self.lastDrainQueueDate.get() else {
                 if verboseLogging {
-                    Logger.info("\(webSocketType) Has not drained queue at least once.")
+                    Logger.info("\(webSocketType) Has not drained identified queue at least once. true")
                 }
                 return true
             }
-            guard let lastReceivedPushWithoutOpenWebsocketDate = self.lastReceivedPushWithoutOpenWebsocketDate.get(),
-                  lastReceivedPushWithoutOpenWebsocketDate > lastDrainQueueDate else {
+            guard let lastNewWebsocketDate = self.lastNewWebsocketDate.get() else {
+                owsFailDebug("Missing lastNewWebsocketDate.")
+                if verboseLogging {
+                    Logger.info("\(webSocketType) Has never tried to open an identified websocket. true")
+                }
+                return true
+            }
+            if lastNewWebsocketDate > lastDrainQueueDate {
+                if verboseLogging {
+                    Logger.info("\(webSocketType) Hasn't drained most recent identified websocket. true")
+                }
+                return true
+           }
+            guard let lastReceivedPushWithoutWebsocketDate = self.lastReceivedPushWithoutWebsocketDate.get(),
+                  lastReceivedPushWithoutWebsocketDate > lastDrainQueueDate else {
                 return false
             }
             if verboseLogging {
-                Logger.info("\(webSocketType) Has not drained queue since last received push.")
+                Logger.info("\(webSocketType) Has not drained queue since last received push. true")
             }
             return true
         }()
@@ -722,21 +767,16 @@ public class OWSWebSocket: NSObject {
 
         self.ensureBackgroundKeepAlive(.didReceivePush)
 
-        // If we receive a push without an identified websocket open,
+        // If we receive a push without an identified websocket,
         // hold the websocket open in the background until the
         // websocket drains it queue.
-        if webSocketType == .identified,
-           nil == currentWebSocket?.openDate {
-            lastReceivedPushWithoutOpenWebsocketDate.set(Date())
+        if AppReadiness.isAppReady,
+           tsAccountManager.isRegisteredAndReady,
+           webSocketType == .identified,
+           nil == currentWebSocket {
+            lastReceivedPushWithoutWebsocketDate.set(Date())
             applyDesiredSocketState()
         }
-    }
-
-    // This method is thread-safe.
-    public func openToMakeRequest() {
-        owsAssertDebug(AppReadiness.isAppReady)
-
-        self.ensureBackgroundKeepAlive(.makeRequest)
     }
 
     // This method aligns the socket state with the "desired" socket state.
@@ -847,6 +887,8 @@ public class OWSWebSocket: NSObject {
             owsFailDebug("Invalid URL.")
             return
         }
+
+        self.lastNewWebsocketDate.set(Date())
         var request = URLRequest(url: webSocketConnectURL)
         request.addValue(OWSURLSession.signalIosUserAgent,
                          forHTTPHeaderField: OWSURLSession.kUserAgentHeader)
@@ -986,10 +1028,13 @@ extension OWSWebSocket {
 
     // TODO: Combine with makeRequestInternal().
     public func makeRequest(_ request: TSRequest,
+                            unsubmittedRequestToken: UnsubmittedRequestToken,
                             success successParam: @escaping RequestSuccess,
                             failure failureParam: @escaping RequestFailure) {
 
         guard !appExpiry.isExpired else {
+            removeUnsubmittedRequestToken(unsubmittedRequestToken)
+
             DispatchQueue.global().async {
                 guard let requestUrl = request.url else {
                     owsFail("Missing requestUrl.")
@@ -1016,6 +1061,7 @@ extension OWSWebSocket {
         Logger.info("Making \(label): \(request)")
 
         self.makeRequestInternal(request,
+                                 unsubmittedRequestToken: unsubmittedRequestToken,
                                  success: { (response: HTTPResponse) in
                                     Logger.info("Succeeded \(label): \(request)")
 
@@ -1150,10 +1196,6 @@ extension OWSWebSocket: SSKWebSocketDelegate {
             return
         }
 
-        let oldOpenDate = currentWebSocket.openDate.swap(Date())
-        // The SSKWebSocket/WebSocketWrapper instance should only open once.
-        owsAssertDebug(oldOpenDate == nil)
-
         currentWebSocket.startHeartbeat(delegate: self)
 
         if webSocketType == .identified {
@@ -1270,8 +1312,6 @@ private class WebSocketWrapper {
     public var hasPendingRequests: Bool {
         !requestInfoMap.isEmpty
     }
-
-    public let openDate = AtomicOptional<Date>(nil)
 
     required init(webSocketType: OWSWebSocketType, webSocket: SSKWebSocket) {
         owsAssertDebug(!CurrentAppContext().isRunningTests)

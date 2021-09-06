@@ -389,4 +389,12 @@ public class AtomicSet<T: Hashable> {
     public func contains(_ value: T) -> Bool {
         lock.perform { self.values.contains(value) }
     }
+
+    public func remove(_ value: T) {
+        _ = lock.perform { self.values.remove(value) }
+    }
+
+    public var isEmpty: Bool {
+        lock.perform { values.isEmpty }
+    }
 }

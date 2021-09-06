@@ -37,17 +37,22 @@ public class SocketManager: NSObject {
     public typealias RequestFailure = OWSWebSocket.RequestFailure
 
     private func makeRequest(_ request: TSRequest,
-                            webSocketType: OWSWebSocketType,
-                            success: @escaping RequestSuccess,
-                            failure: @escaping RequestFailure) {
-        webSocket(ofType: webSocketType).makeRequest(request, success: success, failure: failure)
+                             unsubmittedRequestToken: OWSWebSocket.UnsubmittedRequestToken,
+                             webSocketType: OWSWebSocketType,
+                             success: @escaping RequestSuccess,
+                             failure: @escaping RequestFailure) {
+
+        let webSocket = self.webSocket(ofType: webSocketType)
+        webSocket.makeRequest(request,
+                              unsubmittedRequestToken: unsubmittedRequestToken,
+                              success: success,
+                              failure: failure)
     }
 
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
         let webSocket = self.webSocket(ofType: webSocketType)
-        webSocket.openToMakeRequest()
-        if webSocket.canMakeRequests {
+       if webSocket.canMakeRequests {
             // The socket is open; proceed.
             return Promise.value(())
         }
@@ -104,11 +109,15 @@ public class SocketManager: NSObject {
             }
         }
 
+        // Request that the websocket open to make this request, if necessary.
+        let unsubmittedRequestToken = webSocket(ofType: webSocketType).makeUnsubmittedRequestToken()
+
         return firstly(on: .global()) {
             self.waitForSocketToOpen(webSocketType: webSocketType)
         }.then(on: .global()) { () -> Promise<HTTPResponse> in
             let (promise, future) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,
+                             unsubmittedRequestToken: unsubmittedRequestToken,
                              webSocketType: webSocketType,
                              success: { (response: HTTPResponse) in
                                 future.resolve(response)
