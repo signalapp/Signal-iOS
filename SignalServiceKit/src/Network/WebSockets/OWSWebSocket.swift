@@ -1448,8 +1448,8 @@ public class MainThreadTimer {
 
 // MARK: -
 
-// A thread-safe timer that is scheduled on the main thread,
-// but which can be created, invalidated or deallocated on any thread.
+// A thread-safe timer that runs on a specific queue and which
+// can be safely created, invalidated or deallocated on any thread.
 public class OffMainThreadTimer {
 
     private let timeInterval: TimeInterval
