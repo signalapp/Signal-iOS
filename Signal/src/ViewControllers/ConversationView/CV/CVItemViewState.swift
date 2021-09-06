@@ -161,6 +161,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+        let displayNameCache = DisplayNameCache(transaction: transaction)
 
         // Update the properties of the view items.
         //
@@ -176,6 +177,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                         threadViewModel: threadViewModel,
                                         viewStateSnapshot: viewStateSnapshot,
                                         groupNameColors: groupNameColors,
+                                        displayNameCache: displayNameCache,
                                         transaction: transaction)
         }
 
@@ -202,6 +204,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         let groupNameColors = ChatColors.groupNameColors(forThread: thread)
+        let displayNameCache = DisplayNameCache(transaction: transaction)
 
         configureItemViewState(item: itemBuilder,
                                previousItem: nil,
@@ -210,6 +213,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                threadViewModel: threadViewModel,
                                viewStateSnapshot: viewStateSnapshot,
                                groupNameColors: groupNameColors,
+                               displayNameCache: displayNameCache,
                                transaction: transaction)
 
         return itemBuilder.build(coreState: viewStateSnapshot.coreState)
@@ -222,6 +226,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                threadViewModel: ThreadViewModel,
                                                viewStateSnapshot: CVViewStateSnapshot,
                                                groupNameColors: ChatColors.GroupNameColors,
+                                               displayNameCache: DisplayNameCache,
                                                transaction: SDSAnyReadTransaction) {
         let itemViewState = item.itemViewState
         itemViewState.shouldShowSenderAvatar = false
@@ -360,8 +365,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 // the previous message has the same sender name and
                 // no "date break" separates us.
                 var shouldShowSenderName = true
-                let authorName = contactsManager.displayName(for: incomingSenderAddress,
-                                                             transaction: transaction)
+                let authorName = displayNameCache.displayName(address: incomingSenderAddress)
                 itemViewState.accessibilityAuthorName = authorName
 
                 if let previousItem = previousItem,
@@ -390,9 +394,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             } else {
                 // In a 1:1 thread, we can avoid cluttering up voiceover string with the recipient's
                 // full name. Group thread's will continue to read off the full name.
-                itemViewState.accessibilityAuthorName = contactsManager.shortDisplayName(
-                    for: incomingSenderAddress,
-                    transaction: transaction)
+                itemViewState.accessibilityAuthorName = displayNameCache.shortDisplayName(address: incomingSenderAddress)
             }
 
         } else if [.call, .info, .error].contains(interaction.interactionType) {
@@ -716,5 +718,43 @@ private class ItemBuilder {
         case .unreadIndicator, .incomingMessage, .outgoingMessage, .error, .call:
             return true
         }
+    }
+}
+
+// MARK: -
+
+class DisplayNameCache: Dependencies {
+    private let transaction: SDSAnyReadTransaction
+
+    required init(transaction: SDSAnyReadTransaction) {
+        self.transaction = transaction
+    }
+
+    private var shortDisplayNameCache = [UUID: String]()
+
+    func shortDisplayName(address: SignalServiceAddress) -> String {
+        if let uuid = address.uuid,
+           let value = shortDisplayNameCache[uuid] {
+            return value
+        }
+        let value = contactsManager.shortDisplayName(for: address, transaction: transaction)
+        if let uuid = address.uuid {
+            shortDisplayNameCache[uuid] = value
+        }
+        return value
+    }
+
+    private var displayNameCache = [UUID: String]()
+
+    func displayName(address: SignalServiceAddress) -> String {
+        if let uuid = address.uuid,
+           let value = displayNameCache[uuid] {
+            return value
+        }
+        let value = contactsManager.displayName(for: address, transaction: transaction)
+        if let uuid = address.uuid {
+            displayNameCache[uuid] = value
+        }
+        return value
     }
 }
