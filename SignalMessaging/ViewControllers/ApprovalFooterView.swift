@@ -22,10 +22,6 @@ public protocol ApprovalFooterDelegate: AnyObject {
 
     func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode
 
-    var approvalFooterHasTextInput: Bool { get }
-
-    var approvalFooterTextInputDefaultText: String? { get }
-
     func approvalFooterDidBeginEditingText()
 }
 
@@ -50,6 +46,19 @@ public class ApprovalFooterView: UIView {
             return .send
         }
         return delegate.approvalMode(self)
+    }
+
+    public enum ApprovalTextMode: Equatable {
+        case none
+        case active(placeholderText: String)
+    }
+    public var approvalTextMode: ApprovalTextMode = .none {
+        didSet {
+            if oldValue != approvalTextMode {
+                updateContents()
+                self.layoutIfNeeded()
+            }
+        }
     }
 
     override init(frame: CGRect) {
@@ -84,7 +93,7 @@ public class ApprovalFooterView: UIView {
 
         updateContents()
 
-        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: textfieldBackgroundColor)
         textfieldBackgroundView.layer.cornerRadius = 10
         self.textfieldBackgroundView = textfieldBackgroundView
 
@@ -99,8 +108,12 @@ public class ApprovalFooterView: UIView {
         backgroundView.backgroundColor = Theme.keyboardBackgroundColor
         topStrokeView.backgroundColor = Theme.hairlineColor
         namesLabel.textColor = Theme.secondaryTextAndIconColor
-        textfield.textColor = Theme.secondaryTextAndIconColor
-        textfieldBackgroundView?.backgroundColor = Theme.backgroundColor
+        textfield.textColor = Theme.primaryTextColor
+        textfieldBackgroundView?.backgroundColor = textfieldBackgroundColor
+    }
+
+    private var textfieldBackgroundColor: UIColor {
+        OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -197,9 +210,13 @@ public class ApprovalFooterView: UIView {
         proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
 
-        let hasTextInput = delegate?.approvalFooterHasTextInput ?? false
-        textfieldStack.isHidden = !hasTextInput
-        textfield.placeholder = delegate?.approvalFooterTextInputDefaultText
+        switch approvalTextMode {
+        case .none:
+            textfieldStack.isHidden = true
+        case .active(let placeholderText):
+            textfieldStack.isHidden = false
+            textfield.placeholder = placeholderText
+        }
         textfield.delegate = self
         let textfieldHeight = textfield.intrinsicContentSize.height
         if let textfieldHeightConstraint = self.textfieldHeightConstraint {
