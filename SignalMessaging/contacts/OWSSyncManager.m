@@ -325,13 +325,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return [AnyPromise promiseWithValue:@(YES)];
     }
     if (!self.contactsManagerImpl.isSetup) {
-        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
     }
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"should not sync from secondary device")];
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"should not sync from secondary device")];
     }
     if (!self.tsAccountManager.isRegisteredAndReady) {
-        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Not yet registered and ready.")];
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Not yet registered and ready.")];
     }
     // TODO: Rewrite this in Swift and replace these flags with a "mode" enum.
     if (isDurableSend) {

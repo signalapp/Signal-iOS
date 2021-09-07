@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)fetchLocalUsersProfilePromise
 {
     // Do nothing.
-    return [AnyPromise promiseWithValue:nil];
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 - (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
@@ -306,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    avatarUrlPath:(NSString *)avatarUrlPath
                                                       profileKey:(OWSAES256Key *)profileKey
 {
-    return [AnyPromise promiseWithValue:nil];
+    return [AnyPromise promiseWithValue:@(1)];
 }
 
 - (BOOL)hasProfileAvatarData:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction

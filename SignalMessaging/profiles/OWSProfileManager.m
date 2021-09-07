@@ -446,7 +446,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (!localAddress.isValid) {
-        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Missing local address.")];
+        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
     return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
 }
