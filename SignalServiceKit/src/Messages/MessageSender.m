@@ -699,9 +699,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             // completion promise to execute until _all_ send promises
             // have either succeeded or failed. Fulfilled executes as
             // soon as any of its input promises fail.
-            //
-            // TODO: We need something like PMKJoin() which will reject
-            //       if any of the sendPromises reject.
             return [AnyPromise whenResolved:sendPromises];
         });
 }
@@ -804,12 +801,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                       }
                                   }];
         })
-        .doneInBackground(^(id value) {
-            @synchronized(sendErrors) {
-                OWSAssertDebug(sendErrors.count == 0);
-            }
-            successHandler();
-        })
+        .doneInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
             // Ignore the failure value; consult sendErrors and sendErrorPerRecipientCopy.
             NSError *firstRetryableError = nil;
