@@ -191,7 +191,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 // we give up.
 internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
-    fileprivate groupId: Data
+    fileprivate let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
 
     fileprivate let promise: Promise<Void>
