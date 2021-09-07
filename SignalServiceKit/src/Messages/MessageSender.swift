@@ -574,7 +574,7 @@ extension MessageSender {
             // which recipients are unregistered.
             return firstly(on: .global()) { () -> Promise<[SignalServiceAddress]> in
                 Self.ensureRecipientAddresses(sendInfo.recipients, message: message)
-            }.map(on: .global()) { (validRecipients: [SignalServiceAddress]) in
+            }.map { (validRecipients: [SignalServiceAddress]) in
                 // Replace recipients with validRecipients.
                 MessageSendInfo(thread: sendInfo.thread,
                                 recipients: validRecipients,

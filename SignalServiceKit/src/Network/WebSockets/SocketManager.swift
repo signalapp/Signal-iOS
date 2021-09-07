@@ -42,6 +42,10 @@ public class SocketManager: NSObject {
 
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
+        // The socket state we consult in this method is not yet thread-safe,
+        // so we need to do this waiting on the main thread.
+        AssertIsOnMainThread()
+
         let webSocket = self.webSocket(ofType: webSocketType)
         if webSocket.canMakeRequests {
             // The socket is open; proceed.
@@ -60,7 +64,7 @@ public class SocketManager: NSObject {
         }
         return firstly(on: .global()) {
             after(seconds: kSecondInterval / 10)
-        }.then(on: .global()) {
+        }.then(on: .main) {
             self.waitForSocketToOpen(webSocketType: webSocketType,
                                      waitStartDate: waitStartDate)
         }
@@ -100,7 +104,7 @@ public class SocketManager: NSObject {
             }
         }
 
-        return firstly(on: .global()) {
+        return firstly(on: .main) {
             self.waitForSocketToOpen(webSocketType: webSocketType)
         }.then(on: .global()) { () -> Promise<HTTPResponse> in
             let (promise, resolver) = Promise<HTTPResponse>.pending()

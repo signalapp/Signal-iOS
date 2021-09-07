@@ -31,7 +31,7 @@ typedef void (^TSSocketMessageFailure)(OWSHTTPErrorWrapper *failure);
 // TODO: Port to Swift.
 @interface OWSWebSocket : NSObject
 
-@property (atomic, readonly) OWSWebSocketType webSocketType;
+@property (nonatomic, readonly) OWSWebSocketType webSocketType;
 @property (nonatomic, readonly) OWSWebSocketState state;
 @property (nonatomic, readonly) BOOL hasEmptiedInitialQueue;
 @property (nonatomic, readonly) BOOL shouldSocketBeOpen;
