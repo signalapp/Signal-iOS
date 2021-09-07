@@ -224,7 +224,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             content.threadIdentifier = threadIdentifier
         }
 
-        let contentToUse: UNNotificationContent = content
+        var contentToUse: UNNotificationContent = content
         let postNotification = {
             let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
