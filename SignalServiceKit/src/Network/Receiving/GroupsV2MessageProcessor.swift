@@ -123,7 +123,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     }
 
     private let unfairLock = UnfairLock()
-    private var groupsMessageProcessors = [Data: GroupsMessageProcessor]()
+    private var groupIdsBeingProcessed: Set<Data> = Set()
 
     // At any given time, we need to ensure that there is exactly
     // one GroupsMessageProcessor for each group that needs to
@@ -154,29 +154,24 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
             return
         }
 
-        var groupIdsToProcess = Set<Data>()
-        unfairLock.withLock {
-            groupIdsToProcess = groupIdsWithJobs.subtracting(groupsMessageProcessors.keys)
+        let messageProcessors: [GroupsMessageProcessor] = unfairLock.withLock {
+            let groupIdsToProcess = groupIdsWithJobs.subtracting(groupIdsBeingProcessed)
+            groupIdsBeingProcessed.formUnion(groupIdsToProcess)
 
-            for groupId in groupIdsToProcess {
-                let groupsMessageProcessor = GroupsMessageProcessor(groupId: groupId)
-                groupsMessageProcessors[groupId] = groupsMessageProcessor
-
-                firstly(on: .global()) { () -> Promise<Void> in
-                    groupsMessageProcessor.promise
-                }.ensure(on: .global()) {
-                    self.unfairLock.withLock {
-                        _ = self.groupsMessageProcessors.removeValue(forKey: groupId)
-                    }
-                    self.drainQueues()
-                }.catch(on: .global()) { error in
-                    owsFailDebug("Error: \(error)")
-                }
-            }
+            return groupIdsToProcess.map { GroupsMessageProcessor(groupId: $0) }
         }
 
-        guard !groupIdsToProcess.isEmpty else {
-            return
+        for processor in messageProcessors {
+            firstly(on: .global()) { () -> Promise<Void> in
+                processor.promise
+            }.ensure(on: .global()) {
+                self.unfairLock.withLock {
+                    _ = self.groupIdsBeingProcessed.remove(processor.groupId)
+                }
+                self.drainQueues()
+            }.catch(on: .global()) { error in
+                owsFailDebug("Error: \(error)")
+            }
         }
     }
 
@@ -196,7 +191,7 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
 // we give up.
 internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependencies {
 
-    private let groupId: Data
+    fileprivate let groupId: Data
     private let finder = GRDBGroupsV2MessageJobFinder()
 
     fileprivate let promise: Promise<Void>
