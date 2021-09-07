@@ -72,6 +72,10 @@ public class RESTSessionManager: NSObject {
                               value: OWSURLSession.signalIosUserAgent,
                               overwriteOnConflict: true)
 
+        if signalService.isCensorshipCircumventionActive {
+            httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
+        }
+
         // Then apply any custom headers for the request
         httpHeaders.addHeaders(request.allHTTPHeaderFields, overwriteOnConflict: true)
 
