@@ -22,11 +22,17 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
     // MARK: UI Components
     private lazy var attachmentsButton = ExpandingAttachmentsButton(delegate: delegate)
     
-    private lazy var voiceMessageButton = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
+    private lazy var voiceMessageButton: InputViewButton = {
+        let result = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
+        result.accessibilityLabel = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE", comment: "")
+        result.accessibilityHint = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
+        return result
+    }()
     
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
         result.isHidden = true
+        result.accessibilityLabel = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "")
         return result
     }()
     private lazy var voiceMessageButtonContainer = container(for: voiceMessageButton)

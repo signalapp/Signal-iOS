@@ -19,7 +19,6 @@ public extension TSIncomingMessage {
             expiresInSeconds: !isOpenGroupMessage ? expiration : 0, // Ensure we don't ever expire open group messages
             quotedMessage: quotedMessage,
             linkPreview: linkPreview,
-            serverTimestamp: visibleMessage.openGroupServerTimestamp as NSNumber?,
             wasReceivedByUD: true,
             openGroupInvitationName: visibleMessage.openGroupInvitation?.name,
             openGroupInvitationURL: visibleMessage.openGroupInvitation?.url,

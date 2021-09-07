@@ -258,10 +258,8 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         let text = snInputView.text
-        if !text.isEmpty {
-            Storage.write { transaction in
-                self.thread.setDraft(text, transaction: transaction)
-            }
+        Storage.write { transaction in
+            self.thread.setDraft(text, transaction: transaction)
         }
         inputAccessoryView?.resignFirstResponder()
     }

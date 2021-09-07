@@ -38,9 +38,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
-@property (nonatomic, readonly) BOOL shouldUseServerTime;
-
-- (uint64_t)timestampForUI;
 
 - (NSDate *)dateForUI;
 
@@ -79,6 +76,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
     NS_SWIFT_NAME(saveNextSortId(transaction:));
+
+- (void)updateTimestamp:(uint64_t)timestamp;
 
 @end
 

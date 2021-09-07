@@ -71,4 +71,10 @@ final class ScanQRCodeWrapperVC : BaseVC {
     @objc private func close() {
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
+    
+    public func startCapture() {
+        DispatchQueue.main.async { [weak self] in
+            self?.scanQRCodeVC.startCapture()
+        }
+    }
 }

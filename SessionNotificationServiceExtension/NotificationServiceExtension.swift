@@ -48,7 +48,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     case let visibleMessage as VisibleMessage:
                         let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: false, using: transaction)
                         guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
-                            return self.handleFailure(for: notificationContent)
+                            return self.completeSilenty()
                         }
                         let thread = tsIncomingMessage.thread(with: transaction)
                         if thread.isMuted {

@@ -162,4 +162,3 @@ public final class AttachmentDownloadJob : NSObject, Job, NSCoding { // NSObject
         delegate?.handleJobFailed(self, with: error)
     }
 }
-

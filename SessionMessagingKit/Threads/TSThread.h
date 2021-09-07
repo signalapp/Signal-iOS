@@ -57,6 +57,9 @@ BOOL IsNoteToSelfEnabled(void);
 - (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(unreadMessageCount(transaction:));
 
+- (BOOL)hasUnreadMentionMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(hasUnreadMentionMessage(transaction:));
+
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**

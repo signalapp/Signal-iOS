@@ -25,6 +25,7 @@ final class InputViewButton : UIView {
         self.hasOpaqueBackground = hasOpaqueBackground
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
+        self.isAccessibilityElement = true
     }
     
     override init(frame: CGRect) {

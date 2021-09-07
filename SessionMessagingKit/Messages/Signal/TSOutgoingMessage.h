@@ -159,6 +159,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 #pragma mark - Update With... Methods
 
+- (void)updateOpenGroupServerID:(uint64_t)openGroupServerID
+                serverTimeStamp:(uint64_t)timestamp;
+
 // This method is used to record a successful send to one recipient.
 - (void)updateWithSentRecipient:(NSString *)recipientId
                     wasSentByUD:(BOOL)wasSentByUD
