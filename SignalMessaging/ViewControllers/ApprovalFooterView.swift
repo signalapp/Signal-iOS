@@ -36,6 +36,8 @@ public class ApprovalFooterView: UIView {
 
     private let backgroundView = UIView()
     private let topStrokeView = UIView()
+    private let hStackView = UIStackView()
+    private let vStackView = UIStackView()
 
     public var textInput: String? {
         textfield.text
@@ -56,7 +58,26 @@ public class ApprovalFooterView: UIView {
         didSet {
             if oldValue != approvalTextMode {
                 updateContents()
+
+                struct ViewFrame {
+                    let view: UIView
+                    let frame: CGRect
+
+                    func apply() {
+                        view.frame = self.frame
+                    }
+                }
+                func viewFrames(for views: [UIView]) -> [ViewFrame] {
+                    views.map { ViewFrame(view: $0, frame: $0.frame) }
+                }
+                let animatedViews = [ self, vStackView, hStackView ]
+                let viewFramesBefore = viewFrames(for: animatedViews)
                 self.layoutIfNeeded()
+                let viewFramesAfter = viewFrames(for: animatedViews)
+                for viewFrame in viewFramesBefore { viewFrame.apply() }
+                UIView.animate(withDuration: 0.15) {
+                    for viewFrame in viewFramesAfter { viewFrame.apply() }
+                }
             }
         }
     }
@@ -79,12 +100,12 @@ public class ApprovalFooterView: UIView {
         topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
 
-        let hStackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
+        hStackView.addArrangedSubviews([labelScrollView, proceedButton])
         hStackView.axis = .horizontal
         hStackView.spacing = 12
         hStackView.alignment = .center
 
-        let vStackView = UIStackView(arrangedSubviews: [textfieldStack, hStackView])
+        vStackView.addArrangedSubviews([textfieldStack, hStackView])
         vStackView.axis = .vertical
         vStackView.spacing = 16
         vStackView.alignment = .fill
