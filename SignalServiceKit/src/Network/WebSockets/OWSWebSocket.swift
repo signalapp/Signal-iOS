@@ -564,6 +564,8 @@ public class OWSWebSocket: NSObject {
 
         sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
 
+        self.lastDrainQueueDate.set(Date())
+
         if !currentWebSocket.hasEmptiedInitialQueue.get() {
             // We need to flush the message processing and serial queues
             // to ensure that all received messages are enqueued and
@@ -579,7 +581,6 @@ public class OWSWebSocket: NSObject {
                         self.notifyStatusChange()
                     }
 
-                    self.lastDrainQueueDate.set(Date())
                     // We may have been holding the websocket open, waiting to drain the
                     // queue. Check if we should close the websocket.
                     self.applyDesiredSocketState()
