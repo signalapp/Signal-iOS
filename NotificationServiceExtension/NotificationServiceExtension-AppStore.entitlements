@@ -6,6 +6,8 @@
 	<string>NSFileProtectionComplete</string>
 	<key>com.apple.developer.usernotifications.filtering</key>
 	<true/>
+	<key>com.apple.developer.pushkit.unrestricted-voip</key>
+	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.org.whispersystems.signal.group</string>
