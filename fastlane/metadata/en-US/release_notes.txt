@@ -1,1 +1,2 @@
+• Fixes a bug that prevented some people from registering or sending and receiving messages.
 • Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.

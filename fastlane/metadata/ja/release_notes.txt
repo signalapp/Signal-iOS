@@ -1,1 +1,1 @@
-• Fast forward to a future where it's possible to forward multiple messages at once. A future where a new design makes it super quick to select the chats you want to send to. A future where you can even type an additional message when forwarding other messages to add a little context. The future is now.
+★ 複数のメッセージを一度に転送できるようになりました。新しいデザインにより、送信したいチャットをすばやく選択できます。また他のメッセージを転送する際に、簡単な状況説明のためのメッセージを追加できます。
