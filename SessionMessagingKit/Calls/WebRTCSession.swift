@@ -204,6 +204,14 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         peerConnection.close()
     }
     
+    public func mute() {
+        audioTrack.isEnabled = false
+    }
+    
+    public func unmute() {
+        audioTrack.isEnabled = true
+    }
+    
     // MARK: Delegate
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCSignalingState) {
         print("[Calls] Signaling state changed to: \(state).")

@@ -17,15 +17,20 @@ final class CameraManager : NSObject {
     private var isCapturing = false
     weak var delegate: CameraManagerDelegate?
     
-    private lazy var videoCaptureDevice: AVCaptureDevice? = {
-        return AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
-    }()
+    private var videoCaptureDevice: AVCaptureDevice?
+    private var videoInput: AVCaptureDeviceInput?
     
     func prepare() {
         print("[Calls] Preparing camera.")
-        if let videoCaptureDevice = videoCaptureDevice,
+        addNewVideoIO(position: .front)
+    }
+    
+    private func addNewVideoIO(position: AVCaptureDevice.Position) {
+        if let videoCaptureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position),
             let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice), captureSession.canAddInput(videoInput) {
             captureSession.addInput(videoInput)
+            self.videoCaptureDevice = videoCaptureDevice
+            self.videoInput = videoInput
         }
         if captureSession.canAddOutput(videoDataOutput) {
             captureSession.addOutput(videoDataOutput)
@@ -34,7 +39,7 @@ final class CameraManager : NSObject {
             guard let connection = videoDataOutput.connection(with: AVMediaType.video) else { return }
             connection.videoOrientation = .portrait
             connection.automaticallyAdjustsVideoMirroring = false
-            connection.isVideoMirrored = true
+            connection.isVideoMirrored = (position == .front)
         } else {
             SNLog("Couldn't add video data output to capture session.")
         }
@@ -52,6 +57,21 @@ final class CameraManager : NSObject {
         print("[Calls] Stopping camera.")
         isCapturing = false
         captureSession.stopRunning()
+    }
+    
+    func switchCamera() {
+        guard let videoCaptureDevice = videoCaptureDevice, let videoInput = videoInput else { return }
+        stop()
+        if videoCaptureDevice.position == .front {
+            captureSession.removeInput(videoInput)
+            captureSession.removeOutput(videoDataOutput)
+            addNewVideoIO(position: .back)
+        } else {
+            captureSession.removeInput(videoInput)
+            captureSession.removeOutput(videoDataOutput)
+            addNewVideoIO(position: .front)
+        }
+        start()
     }
 }
 

@@ -7,6 +7,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     let sessionID: String
     let mode: Mode
     let webRTCSession: WebRTCSession
+    var isMuted = false
     
     lazy var cameraManager: CameraManager = {
         let result = CameraManager()
@@ -19,6 +20,14 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }()
     
     // MARK: UI Components
+    private lazy var localVideoView: RTCMTLVideoView = {
+        let result = RTCMTLVideoView()
+        result.contentMode = .scaleAspectFill
+        result.set(.width, to: 80)
+        result.set(.height, to: 173)
+        return result
+    }()
+    
     private lazy var remoteVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
         result.contentMode = .scaleAspectFill
@@ -45,6 +54,42 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.set(.width, to: 60)
         result.set(.height, to: 60)
         result.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var hangUpButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "EndCall")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.backgroundColor = Colors.destructive
+        result.layer.cornerRadius = 30
+        result.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+
+    private lazy var switchCameraButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "SwitchCamera")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.layer.cornerRadius = 30
+        result.addTarget(self, action: #selector(switchCamera), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+
+    private lazy var switchAudioButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "AudioOn")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.layer.cornerRadius = 30
+        result.addTarget(self, action: #selector(switchAudio), for: UIControl.Event.touchUpInside)
         return result
     }()
     
@@ -115,15 +160,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: view)
         // Local video view
-        let localVideoView = RTCMTLVideoView()
-        localVideoView.contentMode = .scaleAspectFill
         webRTCSession.attachLocalRenderer(localVideoView)
-        localVideoView.set(.width, to: 80)
-        localVideoView.set(.height, to: 173)
         view.addSubview(localVideoView)
-        localVideoView.pin(.right, to: .right, of: view, withInset: -Values.largeSpacing)
-        let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom + Values.largeSpacing
-        localVideoView.pin(.bottom, to: .bottom, of: view, withInset: -bottomMargin)
+        localVideoView.pin(.right, to: .right, of: view, withInset: -Values.smallSpacing)
+        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
+        localVideoView.pin(.top, to: .top, of: view, withInset: topMargin)
         // Fade view
         view.addSubview(fadeView)
         fadeView.translatesAutoresizingMaskIntoConstraints = false
@@ -138,6 +179,21 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.center(.vertical, in: closeButton)
         titleLabel.center(.horizontal, in: view)
+        // End call button
+        view.addSubview(hangUpButton)
+        hangUpButton.translatesAutoresizingMaskIntoConstraints = false
+        hangUpButton.center(.horizontal, in: view)
+        hangUpButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset)
+        // Switch camera button
+        view.addSubview(switchCameraButton)
+        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
+        switchCameraButton.center(.vertical, in: hangUpButton)
+        switchCameraButton.pin(.right, to: .left, of: hangUpButton, withInset: -Values.veryLargeSpacing)
+        // Switch audio button
+        view.addSubview(switchAudioButton)
+        switchAudioButton.translatesAutoresizingMaskIntoConstraints = false
+        switchAudioButton.center(.vertical, in: hangUpButton)
+        switchAudioButton.pin(.left, to: .right, of: hangUpButton, withInset: Values.veryLargeSpacing)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -173,5 +229,25 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
         }
         presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func switchCamera() {
+        cameraManager.switchCamera()
+    }
+    
+    @objc private func switchAudio() {
+        if isMuted {
+            switchAudioButton.backgroundColor = UIColor(hex: 0x1F1F1F)
+            let image = UIImage(named: "AudioOn")!.withTint(.white)
+            switchAudioButton.setImage(image, for: UIControl.State.normal)
+            isMuted = false
+            webRTCSession.unmute()
+        } else {
+            switchAudioButton.backgroundColor = Colors.destructive
+            let image = UIImage(named: "AudioOff")!.withTint(.white)
+            switchAudioButton.setImage(image, for: UIControl.State.normal)
+            isMuted = true
+            webRTCSession.mute()
+        }
     }
 }
