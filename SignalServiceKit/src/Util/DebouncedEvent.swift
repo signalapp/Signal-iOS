@@ -98,6 +98,9 @@ public class DebouncedEvents {
     @available(*, unavailable, message: "Do not instantiate this class.")
     private init() {}
 
+    // A very small interval.
+    public static let thetaInterval: Double = 0.001
+
     public static func build(mode: DebouncedEventMode,
                              maxFrequencySeconds: TimeInterval,
                              onQueue queueBehavior: DebouncedEventQueueBehavior,
@@ -187,8 +190,16 @@ private class DebouncedEventLastOnly: NSObject, DebouncedEvent {
             }
             // We've notified recently; wait before notifying again.
             self.hasEnqueuedNotification = true
-            DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + self.maxFrequencySeconds) { [weak self] in
-                self?.fireDelayedNotification()
+            if self.maxFrequencySeconds > DebouncedEvents.thetaInterval {
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + self.maxFrequencySeconds) { [weak self] in
+                    self?.fireDelayedNotification()
+                }
+            } else {
+                // For sufficiently small frequencies, dispatch without asyncAfter();
+                // DispatchQueue.async() is much less vulnerable to delays.
+                DispatchQueue.global().async { [weak self] in
+                    self?.fireDelayedNotification()
+                }
             }
         }
     }
