@@ -154,9 +154,11 @@ public class DatabaseChangeObserver: NSObject {
     }
 
     private let isDisplayLinkActive = AtomicBool(false)
+    private let willRequestDisplayLinkActive = AtomicBool(false)
 
     private func didModifyPendingChanges() {
-        guard !isDisplayLinkActive.get() else {
+        guard !isDisplayLinkActive.get(),
+              willRequestDisplayLinkActive.tryToSetFlag() else {
             return
         }
         DispatchQueue.main.async { [weak self] in
@@ -173,6 +175,8 @@ public class DatabaseChangeObserver: NSObject {
             // TODO: Review.
             return
         }
+
+        let wasDisplayLinkActive = isDisplayLinkActive.get()
 
         let shouldBeActive: Bool = {
             guard AppReadiness.isAppReady else {
@@ -542,7 +546,9 @@ extension DatabaseChangeObserver: TransactionObserver {
             return
         }
 
-        ensureDisplayLink()
+        defer {
+            ensureDisplayLink()
+        }
 
         lastPublishUpdatesDate = Date()
 

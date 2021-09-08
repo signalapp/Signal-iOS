@@ -461,9 +461,6 @@ public class CVLoadCoordinator: NSObject {
 
     // MARK: -
 
-    #if TESTABLE_BUILD
-    public let blockLoads = AtomicBool(false)
-    #endif
     private func loadIfNecessary() {
         AssertIsOnMainThread()
 
@@ -472,8 +469,8 @@ public class CVLoadCoordinator: NSObject {
 
     private lazy var loadIfNecessaryEvent: DebouncedEvent = {
         DebouncedEvents.build(mode: .lastOnly,
-                              onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
                               maxFrequencySeconds: DebouncedEvents.thetaInterval,
+                              onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
             AssertIsOnMainThread()
             self?.loadIfNecessaryDebounced()
         }
@@ -494,11 +491,6 @@ public class CVLoadCoordinator: NSObject {
         if CVLoader.verboseLogging {
             Logger.info("Trying to begin load.")
         }
-        #if TESTABLE_BUILD
-        guard !blockLoads.get() else {
-            return
-        }
-        #endif
         guard loadBuildingRequestId.tryToSetIfNil(loadRequest.requestId) else {
             Logger.verbose("Ignoring; already loading.")
             return
