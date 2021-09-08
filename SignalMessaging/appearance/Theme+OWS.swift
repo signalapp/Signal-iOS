@@ -77,11 +77,13 @@ public enum ThemeIcon: UInt {
     case composeInviteLarge
     case compose32
     case cancel20
+    case search20
 
     case trash24
     case copy24
     case color24
     case text24
+    case cancel24
 
     case checkCircle
     case message
@@ -306,6 +308,10 @@ public extension Theme {
             return isDarkThemeEnabled ? "compose-solid-32" : "compose-outline-32"
         case .cancel20:
             return "x-20"
+        case .cancel24:
+            return "x-24"
+        case .search20:
+            return "search-20"
 
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"

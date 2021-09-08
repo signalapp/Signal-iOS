@@ -22,10 +22,6 @@ public protocol ApprovalFooterDelegate: AnyObject {
 
     func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode
 
-    var approvalFooterHasTextInput: Bool { get }
-
-    var approvalFooterTextInputDefaultText: String? { get }
-
     func approvalFooterDidBeginEditingText()
 }
 
@@ -40,6 +36,8 @@ public class ApprovalFooterView: UIView {
 
     private let backgroundView = UIView()
     private let topStrokeView = UIView()
+    private let hStackView = UIStackView()
+    private let vStackView = UIStackView()
 
     public var textInput: String? {
         textfield.text
@@ -50,6 +48,38 @@ public class ApprovalFooterView: UIView {
             return .send
         }
         return delegate.approvalMode(self)
+    }
+
+    public enum ApprovalTextMode: Equatable {
+        case none
+        case active(placeholderText: String)
+    }
+    public var approvalTextMode: ApprovalTextMode = .none {
+        didSet {
+            if oldValue != approvalTextMode {
+                updateContents()
+
+                struct ViewFrame {
+                    let view: UIView
+                    let frame: CGRect
+
+                    func apply() {
+                        view.frame = self.frame
+                    }
+                }
+                func viewFrames(for views: [UIView]) -> [ViewFrame] {
+                    views.map { ViewFrame(view: $0, frame: $0.frame) }
+                }
+                let animatedViews = [ self, vStackView, hStackView ]
+                let viewFramesBefore = viewFrames(for: animatedViews)
+                self.layoutIfNeeded()
+                let viewFramesAfter = viewFrames(for: animatedViews)
+                for viewFrame in viewFramesBefore { viewFrame.apply() }
+                UIView.animate(withDuration: 0.15) {
+                    for viewFrame in viewFramesAfter { viewFrame.apply() }
+                }
+            }
+        }
     }
 
     override init(frame: CGRect) {
@@ -70,12 +100,12 @@ public class ApprovalFooterView: UIView {
         topStrokeView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         topStrokeView.autoSetDimension(.height, toSize: CGHairlineWidth())
 
-        let hStackView = UIStackView(arrangedSubviews: [labelScrollView, proceedButton])
+        hStackView.addArrangedSubviews([labelScrollView, proceedButton])
         hStackView.axis = .horizontal
         hStackView.spacing = 12
         hStackView.alignment = .center
 
-        let vStackView = UIStackView(arrangedSubviews: [textfieldStack, hStackView])
+        vStackView.addArrangedSubviews([textfieldStack, hStackView])
         vStackView.axis = .vertical
         vStackView.spacing = 16
         vStackView.alignment = .fill
@@ -84,7 +114,7 @@ public class ApprovalFooterView: UIView {
 
         updateContents()
 
-        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        let textfieldBackgroundView = textfieldStack.addBackgroundView(withBackgroundColor: textfieldBackgroundColor)
         textfieldBackgroundView.layer.cornerRadius = 10
         self.textfieldBackgroundView = textfieldBackgroundView
 
@@ -99,8 +129,12 @@ public class ApprovalFooterView: UIView {
         backgroundView.backgroundColor = Theme.keyboardBackgroundColor
         topStrokeView.backgroundColor = Theme.hairlineColor
         namesLabel.textColor = Theme.secondaryTextAndIconColor
-        textfield.textColor = Theme.secondaryTextAndIconColor
-        textfieldBackgroundView?.backgroundColor = Theme.backgroundColor
+        textfield.textColor = Theme.primaryTextColor
+        textfieldBackgroundView?.backgroundColor = textfieldBackgroundColor
+    }
+
+    private var textfieldBackgroundColor: UIColor {
+        OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -197,9 +231,13 @@ public class ApprovalFooterView: UIView {
         proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
 
-        let hasTextInput = delegate?.approvalFooterHasTextInput ?? false
-        textfieldStack.isHidden = !hasTextInput
-        textfield.placeholder = delegate?.approvalFooterTextInputDefaultText
+        switch approvalTextMode {
+        case .none:
+            textfieldStack.isHidden = true
+        case .active(let placeholderText):
+            textfieldStack.isHidden = false
+            textfield.placeholder = placeholderText
+        }
         textfield.delegate = self
         let textfieldHeight = textfield.intrinsicContentSize.height
         if let textfieldHeightConstraint = self.textfieldHeightConstraint {

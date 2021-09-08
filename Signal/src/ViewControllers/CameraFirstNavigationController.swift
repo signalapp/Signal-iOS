@@ -126,10 +126,6 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         return .send
     }
 
-    public var conversationPickerHasTextInput: Bool { false }
-
-    public var conversationPickerTextInputDefaultText: String? { nil }
-
     public func conversationPickerDidBeginEditingText() {}
 
     public func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}

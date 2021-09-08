@@ -523,10 +523,6 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
         return attachments?.isEmpty != false ? .loading : .next
     }
 
-    var conversationPickerHasTextInput: Bool { false }
-
-    var conversationPickerTextInputDefaultText: String? { nil }
-
     func conversationPickerDidBeginEditingText() {}
 
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}

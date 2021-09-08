@@ -42,6 +42,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.init()
 
         selectRecipientsStep()
+        self.pickerVC.shouldShowRecentConversations = false
     }
 
     required init() {
@@ -108,6 +109,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.viewWillAppear(animated)
 
         applyTheme()
+        ensureApprovalTextMode()
     }
 
     private func selectRecipientsStep() {
@@ -155,6 +157,18 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         forwardNavigationViewController.setNavigationBarHidden(pickerVC.isSearchBarActive, animated: false)
         if pickerVC.isSearchBarActive {
             maximizeHeight()
+        }
+    }
+
+    fileprivate func ensureApprovalTextMode() {
+        AssertIsOnMainThread()
+
+        if selectedConversations.isEmpty {
+            pickerVC.approvalTextMode = .none
+        } else {
+            let placeholderText = NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
+                                                    comment: "Indicates that the user can add a text message to forwarded messages.")
+            pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
         }
     }
 
@@ -440,6 +454,7 @@ extension ForwardMessageViewController {
 extension ForwardMessageViewController: ConversationPickerDelegate {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
         updateCurrentMentionableAddresses()
+        ensureApprovalTextMode()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
@@ -458,13 +473,6 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode {
         .send
-    }
-
-    var conversationPickerHasTextInput: Bool { true }
-
-    var conversationPickerTextInputDefaultText: String? {
-        NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
-                          comment: "Indicates that the user can add a text message to forwarded messages.")
     }
 
     func conversationPickerDidBeginEditingText() {
@@ -861,7 +869,7 @@ private class ForwardPickerViewController: ConversationPickerViewController {
         title = NSLocalizedString("FORWARD_MESSAGE_TITLE",
                                   comment: "Title for the 'forward message(s)' view.")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.cancel20),
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.cancel24),
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(didPressCancel))

@@ -15,10 +15,6 @@ public protocol ConversationPickerDelegate: AnyObject {
 
     func approvalMode(_ conversationPickerViewController: ConversationPickerViewController) -> ApprovalMode
 
-    var conversationPickerHasTextInput: Bool { get }
-
-    var conversationPickerTextInputDefaultText: String? { get }
-
     func conversationPickerDidBeginEditingText()
 
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController)
@@ -37,7 +33,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private let footerView = ApprovalFooterView()
 
-    private lazy var searchBar: OWSSearchBar = {
+    fileprivate lazy var searchBar: OWSSearchBar = {
         let searchBar = OWSSearchBar()
         searchBar.placeholder = CommonStrings.searchPlaceholder
         searchBar.delegate = self
@@ -61,6 +57,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public var approvalTextMode: ApprovalFooterView.ApprovalTextMode {
+        get { footerView.approvalTextMode }
+        set { footerView.approvalTextMode = newValue }
+    }
+
     public init(selection: ConversationPickerSelection) {
         self.selection = selection
 
@@ -71,6 +72,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         searchBarWrapper.addArrangedSubview(searchBar)
         self.topHeader = searchBarWrapper
         self.bottomFooter = footerView
+        selection.delegate = self
     }
 
     private var approvalMode: ApprovalMode {
@@ -83,6 +85,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         didSet {
             if isViewLoaded {
                 ensureSearchBarVisibility()
+            }
+        }
+    }
+
+    public var shouldShowRecentConversations: Bool = true {
+        didSet {
+            if isViewLoaded {
+                updateTableContents()
             }
         }
     }
@@ -212,7 +222,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     if pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if recentItems.count < maxRecentCount {
+                    } else if self.shouldShowRecentConversations,
+                              recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
                     } else {
@@ -226,7 +237,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     if pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if recentItems.count < maxRecentCount {
+                    } else if self.shouldShowRecentConversations,
+                              recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
                     } else {
@@ -335,7 +347,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             if !conversationCollection.recentConversations.isEmpty {
-                section.headerTitle = Strings.recentsSection
+                if self.shouldShowRecentConversations {
+                    section.headerTitle = Strings.recentsSection
+                } else {
+                    section.headerTitle = NSLocalizedString("PINNED_SECTION_TITLE",
+                                                            comment: "The title for pinned conversation section on the conversation list")
+                }
                 addConversations(toSection: section,
                                  conversations: conversationCollection.recentConversations)
                 hasContents = true
@@ -569,6 +586,11 @@ extension ConversationPickerViewController: UISearchBarDelegate {
         pickerDelegate?.conversationPickerSearchBarActiveDidChange(self)
     }
 
+    public func resetSearchBarText() {
+        searchBar.text = nil
+        conversationCollection = buildConversationCollection()
+    }
+
     public var isSearchBarActive: Bool {
         searchBar.isFirstResponder
     }
@@ -592,14 +614,6 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
         return approvalMode
-    }
-
-    public var approvalFooterHasTextInput: Bool {
-        pickerDelegate?.conversationPickerHasTextInput ?? false
-    }
-
-    public var approvalFooterTextInputDefaultText: String? {
-        pickerDelegate?.conversationPickerTextInputDefaultText ?? nil
     }
 
     public func approvalFooterDidBeginEditingText() {
@@ -740,7 +754,16 @@ private class ConversationPickerCell: ContactTableViewCell {
 // MARK: -
 
 extension ConversationPickerViewController: ConversationPickerSelectionDelegate {
-    func conversationPickerSelectionDidChange() {
+    func conversationPickerSelectionDidAdd() {
+        AssertIsOnMainThread()
+
+        pickerDelegate?.conversationPickerSelectionDidChange(self)
+
+        // Clear the search text, if any.
+        resetSearchBarText()
+    }
+
+    func conversationPickerSelectionDidRemove() {
         AssertIsOnMainThread()
 
         pickerDelegate?.conversationPickerSelectionDidChange(self)
@@ -750,7 +773,8 @@ extension ConversationPickerViewController: ConversationPickerSelectionDelegate 
 // MARK: -
 
 protocol ConversationPickerSelectionDelegate: AnyObject {
-    func conversationPickerSelectionDidChange()
+    func conversationPickerSelectionDidAdd()
+    func conversationPickerSelectionDidRemove()
 }
 
 // MARK: -
@@ -764,12 +788,12 @@ public class ConversationPickerSelection {
 
     public func add(_ conversation: ConversationItem) {
         conversations.append(conversation)
-        delegate?.conversationPickerSelectionDidChange()
+        delegate?.conversationPickerSelectionDidAdd()
     }
 
     public func remove(_ conversation: ConversationItem) {
         conversations.removeAll { $0.messageRecipient == conversation.messageRecipient }
-        delegate?.conversationPickerSelectionDidChange()
+        delegate?.conversationPickerSelectionDidRemove()
     }
 
     public func isSelected(conversation: ConversationItem) -> Bool {

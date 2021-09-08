@@ -475,10 +475,6 @@ extension SendMessageFlow: ConversationPickerDelegate {
         return unapprovedContent.needsApproval ? .next : .send
     }
 
-    var conversationPickerHasTextInput: Bool { false }
-
-    var conversationPickerTextInputDefaultText: String? { nil }
-
     func conversationPickerDidBeginEditingText() {}
 
     func conversationPickerSearchBarActiveDidChange(_ conversationPickerViewController: ConversationPickerViewController) {}
