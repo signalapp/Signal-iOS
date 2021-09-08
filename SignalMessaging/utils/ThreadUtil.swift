@@ -46,6 +46,10 @@ public extension ThreadUtil {
             title: "Send Message Milestone: Sent (\(message.timestamp))",
             eventId: "sendMessageSent-\(message.timestamp)"
         )
+        BenchManager.startEvent(
+            title: "Send Message Milestone: Sent Displayed (\(message.timestamp))",
+            eventId: "sendMessageSentDisplayed-\(message.timestamp)"
+        )
         BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
             Self.enqueueSendAsyncWrite { writeTransaction in
                 outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
