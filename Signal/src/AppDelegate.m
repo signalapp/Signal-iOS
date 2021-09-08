@@ -689,8 +689,6 @@ void uncaughtExceptionHandler(NSException *exception)
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-
-            [self.socketManager requestSocketOpen];
         }
     }); // end dispatchOnce for first time we become active
 
@@ -699,7 +697,6 @@ void uncaughtExceptionHandler(NSException *exception)
         // At this point, potentially lengthy DB locking migrations could be running.
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManagerImpl fetchSystemContactsOnceIfAlreadyAuthorized];
             [self.messageFetcherJob runObjc];
 

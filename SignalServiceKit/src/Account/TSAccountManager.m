@@ -669,6 +669,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (void)setIsDeregistered:(BOOL)isDeregistered
 {
+    if (isDeregistered && !self.isRegisteredAndReady) {
+        OWSLogInfo(@"Ignoring; not registered and ready.");
+        return;
+    }
+
     if ([self getOrLoadAccountStateWithSneakyTransaction].isDeregistered == isDeregistered) {
         // Skip redundant write.
         return;

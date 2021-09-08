@@ -77,7 +77,7 @@ public class RESTSessionManager: NSObject {
         }
 
         // Then apply any custom headers for the request
-        httpHeaders.addHeaders(request.allHTTPHeaderFields, overwriteOnConflict: true)
+        httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
 
         if canUseAuth,
            request.shouldHaveAuthorizationHeaders {

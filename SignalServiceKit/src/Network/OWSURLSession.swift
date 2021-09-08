@@ -369,9 +369,9 @@ public class OWSURLSession: NSObject {
         request.httpMethod = method.methodName
 
         let httpHeaders = OWSHttpHeaders()
-        httpHeaders.addHeaders(headers, overwriteOnConflict: false)
+        httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
         httpHeaders.addHeader(Self.kUserAgentHeader, value: Self.signalIosUserAgent, overwriteOnConflict: true)
-        httpHeaders.addHeaders(extraHeaders, overwriteOnConflict: true)
+        httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)
         request.add(httpHeaders: httpHeaders)
 
         request.httpBody = body
@@ -944,8 +944,7 @@ public extension OWSURLSession {
 // This class handles conflict resolution.
 @objc
 public class OWSHttpHeaders: NSObject {
-    @objc
-    public var headers = [String: String]()
+    public private(set) var headers = [String: String]()
 
     @objc
     public override init() {}
@@ -971,6 +970,17 @@ public class OWSHttpHeaders: NSObject {
     }
 
     @objc
+    public func value(forHeader header: String) -> String? {
+        let header = header.lowercased()
+        for (key, value) in headers {
+            if key.lowercased() == header {
+                return value
+            }
+        }
+        return nil
+    }
+
+    @objc
     public func removeValueForHeader(_ header: String) {
         headers = headers.filter { $0.key.lowercased() != header.lowercased() }
         owsAssertDebug(!hasValueForHeader(header))
@@ -978,12 +988,12 @@ public class OWSHttpHeaders: NSObject {
 
     @objc(addHeader:value:overwriteOnConflict:)
     public func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
-        addHeaders([header: value], overwriteOnConflict: overwriteOnConflict)
+        addHeaderMap([header: value], overwriteOnConflict: overwriteOnConflict)
     }
 
     @objc
-    public func addHeaders(_ newHttpHeaders: [String: String]?,
-                           overwriteOnConflict: Bool) {
+    public func addHeaderMap(_ newHttpHeaders: [String: String]?,
+                             overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }
@@ -1004,6 +1014,38 @@ public class OWSHttpHeaders: NSObject {
             }
 
             headers[headerField] = headerValue
+        }
+    }
+
+    @objc
+    public func addHeaderList(_ newHttpHeaders: [String]?,
+                             overwriteOnConflict: Bool) {
+        guard let newHttpHeaders = newHttpHeaders else {
+            return
+        }
+        for header in newHttpHeaders {
+            guard let header = header.strippedOrNil else {
+                owsFailDebug("Empty header.")
+                continue
+            }
+            guard let index = header.firstIndex(of: ":") else {
+                Logger.warn("Invalid header: \(header).")
+                owsFailDebug("Invalid header.")
+                continue
+            }
+            let beforeColonIndex = index
+            let afterColonIndex = header.index(index, offsetBy: 1)
+            guard let key = String(header.prefix(upTo: beforeColonIndex)).strippedOrNil else {
+                Logger.warn("Invalid header key: \(header).")
+                owsFailDebug("Invalid header key.")
+                continue
+            }
+            guard let value = String(header.suffix(from: afterColonIndex)).strippedOrNil else {
+                Logger.warn("Invalid header value: \(header), key: \(key).")
+                owsFailDebug("Invalid header value.")
+                continue
+            }
+            self.addHeader(key, value: value, overwriteOnConflict: overwriteOnConflict)
         }
     }
 }

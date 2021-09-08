@@ -9,6 +9,7 @@ public class SocketManager: NSObject {
 
     private let websocketIdentified = OWSWebSocket(webSocketType: .identified)
     private let websocketUnidentified = OWSWebSocket(webSocketType: .unidentified)
+    private var websockets: [OWSWebSocket] { [ websocketIdentified, websocketUnidentified ]}
 
     @objc
     public required override init() {
@@ -32,17 +33,26 @@ public class SocketManager: NSObject {
         webSocket(ofType: webSocketType).canMakeRequests
     }
 
+    public typealias RequestSuccess = OWSWebSocket.RequestSuccess
+    public typealias RequestFailure = OWSWebSocket.RequestFailure
+
     private func makeRequest(_ request: TSRequest,
-                            webSocketType: OWSWebSocketType,
-                            success: @escaping TSSocketMessageSuccess,
-                            failure: @escaping TSSocketMessageFailure) {
-        webSocket(ofType: webSocketType).makeRequest(request, success: success, failure: failure)
+                             unsubmittedRequestToken: OWSWebSocket.UnsubmittedRequestToken,
+                             webSocketType: OWSWebSocketType,
+                             success: @escaping RequestSuccess,
+                             failure: @escaping RequestFailure) {
+
+        let webSocket = self.webSocket(ofType: webSocketType)
+        webSocket.makeRequest(request,
+                              unsubmittedRequestToken: unsubmittedRequestToken,
+                              success: success,
+                              failure: failure)
     }
 
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
         let webSocket = self.webSocket(ofType: webSocketType)
-        if webSocket.canMakeRequests {
+       if webSocket.canMakeRequests {
             // The socket is open; proceed.
             return Promise.value(())
         }
@@ -99,11 +109,15 @@ public class SocketManager: NSObject {
             }
         }
 
+        // Request that the websocket open to make this request, if necessary.
+        let unsubmittedRequestToken = webSocket(ofType: webSocketType).makeUnsubmittedRequestToken()
+
         return firstly(on: .global()) {
             self.waitForSocketToOpen(webSocketType: webSocketType)
         }.then(on: .global()) { () -> Promise<HTTPResponse> in
             let (promise, future) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,
+                             unsubmittedRequestToken: unsubmittedRequestToken,
                              webSocketType: webSocketType,
                              success: { (response: HTTPResponse) in
                                 future.resolve(response)
@@ -117,28 +131,28 @@ public class SocketManager: NSObject {
 
     // This method can be called from any thread.
     @objc
-    public func requestSocketOpen() {
-        websocketIdentified.requestOpen()
-        websocketUnidentified.requestOpen()
+    public func didReceivePush() {
+        for websocket in websockets {
+            websocket.didReceivePush()
+        }
     }
 
     @objc
     public func cycleSocket() {
         AssertIsOnMainThread()
 
-        websocketIdentified.cycle()
-        websocketUnidentified.cycle()
+        for websocket in websockets {
+            websocket.cycleSocket()
+        }
     }
 
     @objc
     public var isAnySocketOpen: Bool {
-        // TODO: Use CaseIterable
-        (socketState(forType: .identified) == .open ||
-         socketState(forType: .unidentified) == .open)
+        !OWSWebSocketType.allCases.compactMap { socketState(forType: $0) == .open }.isEmpty
     }
 
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
-        webSocket(ofType: webSocketType).state
+        webSocket(ofType: webSocketType).currentState
     }
 
     public var hasEmptiedInitialQueue: Bool {

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange;
+extern NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidChange;
 
 @class AFHTTPSessionManager;
 @class OWSCensorshipConfiguration;
