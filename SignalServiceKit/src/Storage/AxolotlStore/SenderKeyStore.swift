@@ -7,11 +7,15 @@ import SignalClient
 @objc
 public class SenderKeyStore: NSObject {
     public typealias DistributionId = UUID
+    fileprivate typealias KeyId = String
+    fileprivate static func buildKeyId(addressUuid: UUID, distributionId: DistributionId) -> KeyId {
+        "\(addressUuid.uuidString).\(distributionId.uuidString)"
+    }
 
     // MARK: - Storage properties
     private let storageLock = UnfairLock()
     private var sendingDistributionIdCache: LRUCache<ThreadUniqueId, DistributionId> = LRUCache(maxSize: 100)
-    private var keyCache: LRUCache<DistributionId, KeyMetadata> = LRUCache(maxSize: 100)
+    private var keyCache: LRUCache<KeyId, KeyMetadata> = LRUCache(maxSize: 100)
 
     public override init() {
         super.init()
@@ -34,8 +38,8 @@ public class SenderKeyStore: NSObject {
     ) -> [SignalServiceAddress] {
         var addressesNeedingSenderKey = Set(addresses)
         storageLock.withLock {
-            let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-            guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+                  let keyMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
                 // No cached metadata. All recipients will need an SKDM
                 return
             }
@@ -71,13 +75,13 @@ public class SenderKeyStore: NSObject {
         to address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
-            let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-            guard let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+                  let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
                 throw OWSAssertionError("Failed to look up key metadata")
             }
             var updatedMetadata = existingMetadata
             updatedMetadata.keyRecipients[address] = try KeyRecipient.currentState(for: address, transaction: writeTx)
-            setMetadata(updatedMetadata, for: distributionId, writeTx: writeTx)
+            setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
 
@@ -87,28 +91,28 @@ public class SenderKeyStore: NSObject {
         address: SignalServiceAddress,
         writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-            guard let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else {
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+                  let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
                 Logger.info("Failed to look up senderkey metadata")
                 return
             }
             var updatedMetadata = existingMetadata
             updatedMetadata.keyRecipients[address] = nil
-            setMetadata(updatedMetadata, for: distributionId, writeTx: writeTx)
+            setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
 
     public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            let distributionId = distributionIdForSendingToThreadId(thread.uniqueId, writeTx: writeTx)
-            guard let keyMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) else { return }
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+                  let keyMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else { return }
 
             let currentKeyRecipients = Set(keyMetadata.keyRecipients.keys)
             let currentGroupMembership = thread.groupMembership.fullMembers
             let didSomeoneLeaveTheGroup = currentKeyRecipients.subtracting(currentGroupMembership).count > 0
 
             if !keyMetadata.isValid || didSomeoneLeaveTheGroup {
-                setMetadata(nil, for: distributionId, writeTx: writeTx)
+                setMetadata(nil, for: keyId, writeTx: writeTx)
             }
         }
     }
@@ -116,8 +120,8 @@ public class SenderKeyStore: NSObject {
     @objc
     public func resetSenderKeySession(for thread: TSGroupThread, transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            let distributionId = distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-            setMetadata(nil, for: distributionId, writeTx: writeTx)
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx) else { return }
+            setMetadata(nil, for: keyId, writeTx: writeTx)
         }
     }
 
@@ -159,17 +163,22 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
         record: SenderKeyRecord,
         context: StoreContext
     ) throws {
-        try storageLock.withLock {
+        guard let addressUuid = sender.uuid else {
+            throw OWSAssertionError("Invalid protocol address: must have UUID")
+        }
+
+        return try storageLock.withLock {
             let writeTx = context.asTransaction
+            let keyId = Self.buildKeyId(addressUuid: addressUuid, distributionId: distributionId)
 
             var updatedValue: KeyMetadata
-            if let existingMetadata = getKeyMetadata(for: distributionId, readTx: writeTx) {
+            if let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) {
                 updatedValue = existingMetadata
             } else {
                 updatedValue = try KeyMetadata(record: record, sender: sender, distributionId: distributionId)
             }
             updatedValue.record = record
-            setMetadata(updatedValue, for: distributionId, writeTx: writeTx)
+            setMetadata(updatedValue, writeTx: writeTx)
         }
     }
 
@@ -178,9 +187,14 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
         distributionId: UUID,
         context: StoreContext
     ) throws -> SenderKeyRecord? {
-        storageLock.withLock {
+        guard let addressUuid = sender.uuid else {
+            throw OWSAssertionError("Invalid protocol address: must have UUID")
+        }
+
+        return storageLock.withLock {
             let readTx = context.asTransaction
-            let metadata = getKeyMetadata(for: distributionId, readTx: readTx)
+            let keyId = Self.buildKeyId(addressUuid: addressUuid, distributionId: distributionId)
+            let metadata = getKeyMetadata(for: keyId, readTx: readTx)
             return metadata?.record
         }
     }
@@ -188,42 +202,47 @@ extension SenderKeyStore: SignalClient.SenderKeyStore {
 
 // MARK: - Storage
 
-fileprivate extension SenderKeyStore {
+extension SenderKeyStore {
     private static let sendingDistributionIdStore = SDSKeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
     private static let keyMetadataStore = SDSKeyValueStore(collection: "SenderKeyStore_KeyMetadata")
     private var sendingDistributionIdStore: SDSKeyValueStore { Self.sendingDistributionIdStore }
     private var keyMetadataStore: SDSKeyValueStore { Self.keyMetadataStore }
 
-    func getKeyMetadata(for distributionId: DistributionId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
+    fileprivate func getKeyMetadata(for keyId: KeyId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
         storageLock.assertOwner()
-        return keyCache[distributionId] ?? {
+        return keyCache[keyId] ?? {
             let persisted: KeyMetadata?
             do {
-                persisted = try keyMetadataStore.getCodableValue(forKey: distributionId.uuidString, transaction: readTx)
+                persisted = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: readTx)
             } catch {
                 owsFailDebug("Failed to deserialize sender key: \(error)")
                 persisted = nil
             }
-            keyCache[distributionId] = persisted
+            keyCache[keyId] = persisted
             return persisted
         }()
     }
 
-    func setMetadata(_ metadata: KeyMetadata?, for distributionId: DistributionId, writeTx: SDSAnyWriteTransaction) {
+    fileprivate func setMetadata(_ metadata: KeyMetadata, writeTx: SDSAnyWriteTransaction) {
+        setMetadata(metadata, for: metadata.keyId, writeTx: writeTx)
+    }
+
+    fileprivate func setMetadata(_ metadata: KeyMetadata?, for keyId: KeyId, writeTx: SDSAnyWriteTransaction) {
         storageLock.assertOwner()
         do {
             if let metadata = metadata {
-                try keyMetadataStore.setCodable(metadata, key: distributionId.uuidString, transaction: writeTx)
+                owsAssertDebug(metadata.keyId == keyId)
+                try keyMetadataStore.setCodable(metadata, key: keyId, transaction: writeTx)
             } else {
-                keyMetadataStore.removeValue(forKey: distributionId.uuidString, transaction: writeTx)
+                keyMetadataStore.removeValue(forKey: keyId, transaction: writeTx)
             }
-            keyCache[distributionId] = metadata
+            keyCache[keyId] = metadata
         } catch {
             owsFailDebug("Failed to persist sender key: \(error)")
         }
     }
 
-    func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
+    fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
         storageLock.assertOwner()
 
         if let cachedValue = sendingDistributionIdCache[threadId] {
@@ -237,6 +256,38 @@ fileprivate extension SenderKeyStore {
             sendingDistributionIdStore.setString(distributionId.uuidString, key: threadId, transaction: writeTx)
             sendingDistributionIdCache[threadId] = distributionId
             return distributionId
+        }
+    }
+
+    fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> KeyId? {
+        guard let localUuid = tsAccountManager.localUuid else {
+            owsFailDebug("No local uuid")
+            return nil
+        }
+        let distributionId = distributionIdForSendingToThreadId(threadId, writeTx: writeTx)
+        return Self.buildKeyId(addressUuid: localUuid, distributionId: distributionId)
+    }
+
+    // MARK: Migration
+
+    static func performKeyIdMigration(transaction writeTx: SDSAnyWriteTransaction) {
+        let oldKeys = keyMetadataStore.allKeys(transaction: writeTx)
+
+        oldKeys.forEach { oldKey in
+            autoreleasepool {
+                Logger.info("Migrating: \(oldKey)")
+                do {
+                    let existingValue: KeyMetadata? = try keyMetadataStore.getCodableValue(forKey: oldKey, transaction: writeTx)
+                    if let existingValue = existingValue, existingValue.keyId != oldKey {
+                        try keyMetadataStore.setCodable(existingValue, key: existingValue.keyId, transaction: writeTx)
+                        keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx)
+                        Logger.info("Migrated: \(oldKey) -> \(existingValue.keyId)")
+                    }
+                } catch {
+                    owsFailDebug("Failed to serialize key metadata: \(error)")
+                    keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx)
+                }
+            }
         }
     }
 }
@@ -315,6 +366,7 @@ private struct KeyMetadata {
     let distributionId: SenderKeyStore.DistributionId
     let ownerUuid: UUID
     let ownerDeviceId: UInt32
+    var keyId: String { SenderKeyStore.buildKeyId(addressUuid: ownerUuid, distributionId: distributionId) }
 
     private var recordData: [UInt8]
     var record: SenderKeyRecord? {

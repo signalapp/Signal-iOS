@@ -152,6 +152,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_cullInvalidIdentityKeySendingErrors
         case dataMigration_moveToThreadAssociatedData
         case dataMigration_markAvatarBuilderMegaphoneCompleteIfNecessary
+        case dataMigration_senderKeyStoreKeyIdMigration
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -1707,6 +1708,13 @@ public class GRDBSchemaMigrator: NSObject {
             if Self.profileManager.localProfileAvatarData() != nil {
                 ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .avatarBuilder, transaction: transaction)
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_senderKeyStoreKeyIdMigration.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
         }
     }
 }
