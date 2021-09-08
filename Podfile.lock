@@ -231,8 +231,8 @@ DEPENDENCIES:
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
-  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`, branch `feature/SignalClient-adoption`)"
+  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
+  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
@@ -309,7 +309,6 @@ EXTERNAL SOURCES:
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
-    :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   SignalRingRTC:
     :path: ThirdParty/SignalRingRTC.podspec
@@ -356,7 +355,7 @@ CHECKOUT OPTIONS:
     :commit: 5f3b598b21c1a5ee9a1fa88b1b86e49840b8a8b7
     :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
-    :commit: 4c8ddf0b04afd179f00d7b024b1c611e3ddd2b7d
+    :commit: 998b7619701edf1ed4c0ad19641132d47f8dc0fc
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -418,6 +417,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 340de2536cbdebd21aa649d12b8f71ad1009633c
+PODFILE CHECKSUM: 1a2f55ee4705ac1727ab85aed9c2bedb50547223
 
 COCOAPODS: 1.10.1
