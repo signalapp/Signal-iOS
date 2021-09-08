@@ -353,7 +353,7 @@ CHECKOUT OPTIONS:
     :commit: ffd2fe1664cd23d1ae7dc5d3a7c6c33bc702b93e
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 3519b7fbca0e1ba684f307cdb8123bc36643e58b
+    :commit: 562ac92a8a5c809573d48c114595bd50f209e191
     :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
     :commit: 4c8ddf0b04afd179f00d7b024b1c611e3ddd2b7d
@@ -418,6 +418,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: e491dcf558b3a4abe4198774c2bbaaf1e99b90db
+PODFILE CHECKSUM: 340de2536cbdebd21aa649d12b8f71ad1009633c
 
 COCOAPODS: 1.10.1
