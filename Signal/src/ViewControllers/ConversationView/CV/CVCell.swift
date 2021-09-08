@@ -41,12 +41,13 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
             if isCellVisible {
                 if let renderItem = renderItem,
                    let outgoingMessage = renderItem.interaction as? TSOutgoingMessage {
-                    BenchManager.completeEvent(eventId: "sendMessageSentDidAppear-\(outgoingMessage.timestamp)")
+                    BenchManager.completeEvent(eventId: "sendMessageSending-\(outgoingMessage.timestamp)")
                 }
                 if let renderItem = renderItem,
                    let outgoingMessage = renderItem.interaction as? TSOutgoingMessage,
                    outgoingMessage.messageState != .sending {
-                    BenchManager.completeEvent(eventId: "sendMessageSentDidAppearSent-\(outgoingMessage.timestamp)")
+                    BenchManager.completeEvent(eventId: "sendMessageSentSent-\(outgoingMessage.timestamp)")
+                    BenchManager.completeEvent(eventId: "sendMessagePostNetwork-\(outgoingMessage.timestamp)")
                 }
 
                 guard let renderItem = renderItem,

@@ -39,12 +39,16 @@ public extension ThreadUtil {
         let message: TSOutgoingMessage = outgoingMessagePreparer.unpreparedMessage
 
         BenchManager.startEvent(
-            title: "Send Message Milestone: Did Appear (\(message.timestamp))",
-            eventId: "sendMessageSentDidAppear-\(message.timestamp)"
+            title: "Send Message Milestone: Sending (\(message.timestamp))",
+            eventId: "sendMessageSending-\(message.timestamp)"
         )
         BenchManager.startEvent(
-            title: "Send Message Milestone: Did Appear Sent (\(message.timestamp))",
-            eventId: "sendMessageSentDidAppearSent-\(message.timestamp)"
+            title: "Send Message Milestone: Sent (\(message.timestamp))",
+            eventId: "sendMessageSentSent-\(message.timestamp)"
+        )
+        BenchManager.startEvent(
+            title: "Send Message Milestone: Marked as Sent (\(message.timestamp))",
+            eventId: "sendMessageMarkedAsSent-\(message.timestamp)"
         )
         BenchManager.benchAsync(title: "Send Message Milestone: Enqueue \(message.timestamp)") { benchmarkCompletion in
             Self.enqueueSendAsyncWrite { writeTransaction in

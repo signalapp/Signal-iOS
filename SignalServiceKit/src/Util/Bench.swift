@@ -24,7 +24,7 @@ public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
 
     block {
         let timeElapsed = CACurrentMediaTime() - startTime
-        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+        let formattedTime = String(format: "%0.3fms", timeElapsed * 1000)
         Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
     }
 }

@@ -862,6 +862,13 @@ public extension MessageSender {
             }
             message.update(withSentRecipient: address, wasSentByUD: wasSentByUD, transaction: transaction)
 
+            transaction.addSyncCompletion {
+                BenchManager.completeEvent(eventId: "sendMessageNetwork-\(message.timestamp)")
+                BenchManager.completeEvent(eventId: "sendMessageMarkedAsSent-\(message.timestamp)")
+                BenchManager.startEvent(title: "Send Message Milestone: Post-Network (\(message.timestamp)))",
+                                        eventId: "sendMessagePostNetwork-\(message.timestamp)")
+            }
+
             // If we've just delivered a message to a user, we know they
             // have a valid Signal account. This is low trust, because we
             // don't actually know for sure the fully qualified address is
