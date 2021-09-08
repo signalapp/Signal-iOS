@@ -11,9 +11,8 @@ source 'https://cdn.cocoapods.org/'
 
 pod 'SwiftProtobuf', ">= 1.14.0"
 
-# pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"], branch: 'charlesmchen/promiseWithError'
-# pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
-pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit', testspecs: ["Tests"]
+# pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
 # pod 'SignalClient', path: '../libsignal-client', testspecs: ["Tests"]
