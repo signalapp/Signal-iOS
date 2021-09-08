@@ -90,17 +90,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
         peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
-        let audioSession = RTCAudioSession.sharedInstance()
-        audioSession.lockForConfiguration()
-        do {
-            try audioSession.setCategory(AVAudioSession.Category.playAndRecord.rawValue)
-            try audioSession.setMode(AVAudioSession.Mode.voiceChat.rawValue)
-            try audioSession.overrideOutputAudioPort(.speaker)
-            try audioSession.setActive(true)
-        } catch let error {
-            SNLog("Couldn't set up WebRTC audio session due to error: \(error)")
-        }
-        audioSession.unlockForConfiguration()
+        configureAudioSession()
     }
     
     // MARK: Signaling
@@ -204,25 +194,18 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         peerConnection.close()
     }
     
-    public func mute() {
-        audioTrack.isEnabled = false
-    }
-    
-    public func unmute() {
-        audioTrack.isEnabled = true
-    }
-    
     // MARK: Delegate
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCSignalingState) {
         print("[Calls] Signaling state changed to: \(state).")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        // Do nothing
+        print("[Calls] Peer connection did add stream.")
+        configureAudioSession()
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        // Do nothing
+        print("[Calls] Peer connection did remove stream.")
     }
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
@@ -247,5 +230,29 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("[Calls] Data channel opened.")
+    }
+}
+
+extension WebRTCSession {
+    private func configureAudioSession() {
+        let audioSession = RTCAudioSession.sharedInstance()
+        audioSession.lockForConfiguration()
+        do {
+            try audioSession.setCategory(AVAudioSession.Category.playAndRecord.rawValue)
+            try audioSession.setMode(AVAudioSession.Mode.voiceChat.rawValue)
+            try audioSession.overrideOutputAudioPort(.speaker)
+            try audioSession.setActive(true)
+        } catch let error {
+            SNLog("Couldn't set up WebRTC audio session due to error: \(error)")
+        }
+        audioSession.unlockForConfiguration()
+    }
+    
+    public func mute() {
+        audioTrack.isEnabled = false
+    }
+    
+    public func unmute() {
+        audioTrack.isEnabled = true
     }
 }
