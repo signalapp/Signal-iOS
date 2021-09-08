@@ -275,13 +275,11 @@ extension SenderKeyStore {
 
         oldKeys.forEach { oldKey in
             autoreleasepool {
-                Logger.info("Migrating: \(oldKey)")
                 do {
                     let existingValue: KeyMetadata? = try keyMetadataStore.getCodableValue(forKey: oldKey, transaction: writeTx)
                     if let existingValue = existingValue, existingValue.keyId != oldKey {
                         try keyMetadataStore.setCodable(existingValue, key: existingValue.keyId, transaction: writeTx)
                         keyMetadataStore.removeValue(forKey: oldKey, transaction: writeTx)
-                        Logger.info("Migrated: \(oldKey) -> \(existingValue.keyId)")
                     }
                 } catch {
                     owsFailDebug("Failed to serialize key metadata: \(error)")
