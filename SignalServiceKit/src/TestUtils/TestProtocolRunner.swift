@@ -175,13 +175,13 @@ public struct FakeSignalClient: TestSignalClient {
     public static func generate() -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: CommonGenerator.e164(),
                                 uuid: UUID(),
-                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), deviceId: 1))
+                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
     }
 
     public static func generate(e164Identifier: SignalE164Identifier? = nil, uuid: UUID? = nil) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
                                 uuid: uuid ?? UUID(),
-                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), deviceId: 1))
+                                protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1))
     }
 }
 
