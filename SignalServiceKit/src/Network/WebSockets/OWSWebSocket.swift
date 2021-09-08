@@ -32,7 +32,7 @@ public class OWSWebSocket: NSObject {
     fileprivate var messageProcessingQueue: DispatchQueue { Self.messageProcessingQueue }
 
     @objc
-    public static var verboseLogging: Bool { true && DebugFlags.internalLogging }
+    public static var verboseLogging: Bool { false && DebugFlags.internalLogging }
     fileprivate var verboseLogging: Bool { Self.verboseLogging }
 
     // MARK: -
