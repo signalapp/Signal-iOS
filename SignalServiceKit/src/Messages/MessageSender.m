@@ -803,6 +803,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         })
         .doneInBackground(^(id value) { successHandler(); })
         .catchInBackground(^(id failure) {
+            // Ignore the failure value; consult sendErrors and sendErrorPerRecipientCopy.
             NSError *firstRetryableError = nil;
             NSError *firstNonRetryableError = nil;
 
