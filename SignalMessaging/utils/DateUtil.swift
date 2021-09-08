@@ -73,7 +73,7 @@ extension DateUtil {
         let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
         if minutesDiff < 1 {
             return NSLocalizedString("DATE_NOW",
-                                     comment: "The present the current time.")
+                                     comment: "The present; the current time.")
         } else if shouldUseLongFormat && minutesDiff == 1 {
             // Long format has a distinction between singular and plural
             return NSLocalizedString("DATE_ONE_MINUTE_AGO_LONG",

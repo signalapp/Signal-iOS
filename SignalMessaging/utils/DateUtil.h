@@ -30,11 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp;
 
-// These two "exemplary" values can be used by views to measure
-// the likely size for recent values formatted using isTimestampFromLastHour:.
-+ (NSString *)exemplaryNowTimeFormat;
-+ (NSString *)exemplaryMinutesTimeFormat;
-
 + (BOOL)dateIsOlderThanYesterday:(NSDate *)date;
 
 @end

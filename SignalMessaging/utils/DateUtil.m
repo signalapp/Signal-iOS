@@ -272,21 +272,6 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return hoursDiff < 1;
 }
 
-+ (NSString *)exemplaryNowTimeFormat
-{
-    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
-}
-
-+ (NSString *)exemplaryMinutesTimeFormat
-{
-    NSString *minutesString = [OWSFormat formatInt:59];
-    return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
-                                          @"Format string for a relative time, expressed as a certain number of "
-                                          @"minutes in the past. Embeds {{The number of minutes}}."),
-                     minutesString]
-        .uppercaseString;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
