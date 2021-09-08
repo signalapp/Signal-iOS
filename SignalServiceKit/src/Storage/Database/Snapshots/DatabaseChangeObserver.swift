@@ -124,7 +124,7 @@ public class DatabaseChangeObserver: NSObject {
 
     private static let committedChangesLock = UnfairLock()
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
-    private var hasPendingCommittedChanges: Bool {
+    private var hasCommittedChanges: Bool {
         Self.committedChangesLock.withLock {
             !self.committedChanges.isEmpty
         }
@@ -154,6 +154,17 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 
+    private let isDisplayLinkActive = AtomicBool(false)
+
+    private func didModifyPendingChanges() {
+        guard !isDisplayLinkActive.get() else {
+            return
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.ensureDisplayLink()
+        }
+    }
+
     private func ensureDisplayLink() {
         AssertIsOnMainThread()
 
@@ -171,10 +182,17 @@ public class DatabaseChangeObserver: NSObject {
             guard !CurrentAppContext().isInBackground() else {
                 return false
             }
-            guard self.hasPendingCommittedChanges else {
-                return false
+            if self.hasCommittedChanges {
+                return true
             }
-            return true
+            var hasPendingChanges = false
+            DatabaseChangeObserver.serializedSync {
+                hasPendingChanges = !self.pendingChanges.isEmpty
+            }
+            if hasPendingChanges {
+                return true
+            }
+            return false
         }()
 
         if shouldBeActive {
@@ -191,6 +209,7 @@ public class DatabaseChangeObserver: NSObject {
             displayLink?.isPaused = true
             recentDisplayLinkDates.removeAll()
         }
+        isDisplayLinkActive.set(shouldBeActive)
     }
 
     @objc
@@ -248,6 +267,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // This should only be called by DatabaseStorage.
@@ -256,6 +277,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // This should only be called by DatabaseStorage.
@@ -264,6 +287,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(attachment: attachment)
         pendingChanges.append(tableName: TSAttachment.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // internal - should only be called by DatabaseStorage
@@ -281,6 +306,8 @@ extension DatabaseChangeObserver: TransactionObserver {
                 owsFailDebug("Could not load thread for interaction.")
             }
         }
+
+        didModifyPendingChanges()
     }
 
     // internal - should only be called by DatabaseStorage
@@ -292,6 +319,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // Database observation operates like so:
@@ -346,6 +375,8 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
             #endif
         }
+
+        didModifyPendingChanges()
     }
 
     // See comment on databaseDidChange.
