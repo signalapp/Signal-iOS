@@ -715,11 +715,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             }
         }
 
+        var extraCacheKeyFactors = [String]()
+        if hasPendingMessageRequest {
+            extraCacheKeyFactors.append("hasPendingMessageRequest")
+        }
+        extraCacheKeyFactors.append("items: \(!bodyTextState.items.isEmpty)")
+
         return CVTextViewConfig(attributedText: attributedText,
                                 font: textMessageFont,
                                 textColor: bodyTextColor,
                                 textAlignment: textAlignment,
-                                linkTextAttributes: linkTextAttributes)
+                                linkTextAttributes: linkTextAttributes,
+                                extraCacheKeyFactors: extraCacheKeyFactors)
     }
 
     private static let measurementKey_stackView = "CVComponentBodyText.measurementKey_stackView"

@@ -310,6 +310,7 @@
 		3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */; };
 		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
 		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
+		3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3494BBDF26E66FC30079B11B /* DateUtilTest.swift */; };
 		34955A73260A366600F3789A /* OnboardingDroppedYdbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34955A72260A366600F3789A /* OnboardingDroppedYdbViewController.swift */; };
 		3495FF0325F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */; };
 		3495FF0525F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */; };
@@ -1399,6 +1400,7 @@
 		3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificateTest.m; sourceTree = "<group>"; };
 		349439D524360C30001045F7 /* AddGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGroupMembersViewController.swift; sourceTree = "<group>"; };
 		349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGroupMemberViewController.swift; sourceTree = "<group>"; };
+		3494BBDF26E66FC30079B11B /* DateUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtilTest.swift; sourceTree = "<group>"; };
 		34955A72260A366600F3789A /* OnboardingDroppedYdbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingDroppedYdbViewController.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3495FF0225F908FE00959D6E /* PaymentsViewPassphraseConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewPassphraseConfirmViewController.swift; sourceTree = "<group>"; };
@@ -4088,6 +4090,7 @@
 			children = (
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
+				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
 				3499997D22EF1E2100654932 /* FTS */,
@@ -6014,6 +6017,7 @@
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
+				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				3485434526BC598800FB9C38 /* EmojiTests.swift in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,

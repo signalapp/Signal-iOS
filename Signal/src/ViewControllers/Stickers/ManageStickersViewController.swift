@@ -112,7 +112,9 @@ public class ManageStickersViewController: OWSTableViewController2 {
     }
 
     private lazy var updateEvent: DebouncedEvent = {
-        DebouncedEvent(maxFrequencySeconds: 0.75, onQueue: .main) { [weak self] in
+        DebouncedEvents.build(mode: .firstLast,
+                              maxFrequencySeconds: 0.75,
+                              onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
             guard let self = self else { return }
             if self.needsStateUpdate {
                 self.updateState()

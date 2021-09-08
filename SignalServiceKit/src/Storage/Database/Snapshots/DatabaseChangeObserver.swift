@@ -114,7 +114,6 @@ public class DatabaseChangeObserver: NSObject {
     }
     #endif
 
-    private let hasPendingUpdates = AtomicBool(false)
     private var lastPublishUpdatesDate: Date?
 
     private var displayLink: CADisplayLink?
@@ -122,7 +121,14 @@ public class DatabaseChangeObserver: NSObject {
     private var recentDisplayLinkDates = [Date]()
 
     fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
-    fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
+
+    private static let committedChangesLock = UnfairLock()
+    fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
+    private var hasPendingCommittedChanges: Bool {
+        Self.committedChangesLock.withLock {
+            !self.committedChanges.isEmpty
+        }
+    }
 
     required override init() {
         super.init()
@@ -165,7 +171,7 @@ public class DatabaseChangeObserver: NSObject {
             guard !CurrentAppContext().isInBackground() else {
                 return false
             }
-            guard self.hasPendingUpdates.get() else {
+            guard self.hasPendingCommittedChanges else {
                 return false
             }
             return true
@@ -183,6 +189,7 @@ public class DatabaseChangeObserver: NSObject {
             }
         } else {
             displayLink?.isPaused = true
+            recentDisplayLinkDates.removeAll()
         }
     }
 
@@ -359,7 +366,7 @@ extension DatabaseChangeObserver: TransactionObserver {
                 let attachmentDeletedUniqueIds = pendingChangesToCommit.attachmentDeletedUniqueIds
                 let collections = pendingChangesToCommit.collections
 
-                DispatchQueue.main.async {
+                Self.committedChangesLock.withLock {
                     self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
                     self.committedChanges.append(threadUniqueIds: threadUniqueIds)
                     self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
@@ -368,7 +375,7 @@ extension DatabaseChangeObserver: TransactionObserver {
                     self.committedChanges.append(collections: collections)
                 }
             } catch {
-                DispatchQueue.main.async {
+                Self.committedChangesLock.withLock {
                     self.committedChanges.setLastError(error)
                 }
             }
@@ -389,8 +396,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             guard let self = self else {
                 return
             }
-            // Enqueue the update.
-            self.hasPendingUpdates.set(true)
+
             self.ensureDisplayLink()
             // Try to publish updates immediately.
             self.publishUpdatesIfNecessary()
@@ -415,14 +421,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
         }
 
-        // We only want to publish updates if the flag is set.
-        guard hasPendingUpdates.tryToClearFlag() else {
-            // If there's no new database changes, we don't need to publish updates.
-            return
-        }
-        ensureDisplayLink()
-
-        publishUpdates()
+        publishUpdates(shouldPublishIfEmpty: false)
     }
 
     private var targetPublishingOfUpdatesInterval: Double {
@@ -448,11 +447,24 @@ extension DatabaseChangeObserver: TransactionObserver {
         //
         // We measure load using a heuristics: Can the display link
         // maintain its preferred frame rate?
-        let windowDuration: TimeInterval = 5 * kSecondInterval
+        let maxWindowDuration: TimeInterval = 5 * kSecondInterval
         recentDisplayLinkDates = recentDisplayLinkDates.filter {
-            abs($0.timeIntervalSinceNow) < windowDuration
+            abs($0.timeIntervalSinceNow) < maxWindowDuration
         }
 
+        // These intervals control publishing of updates frequency.
+        let fastUpdateInterval: TimeInterval = 1 / TimeInterval(20)
+        let slowUpdateInterval: TimeInterval = 1 / TimeInterval(1)
+
+        guard recentDisplayLinkDates.count > 1,
+              let firstDisplayLinkDate = recentDisplayLinkDates.first,
+              let lastDisplayLinkDate = recentDisplayLinkDates.last,
+              firstDisplayLinkDate < lastDisplayLinkDate else {
+            // If the display link hasn't been running long enough to have
+            // two samples, use the fastest update interval.
+            return fastUpdateInterval
+        }
+        let windowDuration = abs(lastDisplayLinkDate.timeIntervalSinceNow - firstDisplayLinkDate.timeIntervalSinceNow)
         let recentDisplayLinkFrequency: Double = Double(recentDisplayLinkDates.count) / windowDuration
         // Under light load, the display link should fire at its preferred frame rate.
         let lightDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond)
@@ -468,9 +480,6 @@ extension DatabaseChangeObserver: TransactionObserver {
         // Select the alpha of our chosen heuristic.
         let alpha: Double = displayLinkAlpha
 
-        // These intervals control publishing of updates frequency.
-        let fastUpdateInterval: TimeInterval = 1 / TimeInterval(5)
-        let slowUpdateInterval: TimeInterval = 1 / TimeInterval(1)
         // Under light load, we want the fastest update frequency.
         // Under heavy load, we want the slowest update frequency.
         let targetPublishingOfUpdatesInterval = alpha.lerp(fastUpdateInterval, slowUpdateInterval)
@@ -482,25 +491,34 @@ extension DatabaseChangeObserver: TransactionObserver {
     func publishUpdatesImmediately() {
         AssertIsOnMainThread()
 
-        Logger.info("")
-
-        publishUpdates()
+        publishUpdates(shouldPublishIfEmpty: true)
     }
 
     // "Updating" entails publishing pending database changes to database change observers.
     // See comment on databaseDidChange.
-    private func publishUpdates() {
+    private func publishUpdates(shouldPublishIfEmpty: Bool) {
         AssertIsOnMainThread()
+
+        let committedChanges = Self.committedChangesLock.withLock { () -> ObservedDatabaseChanges in
+            // Return the current committedChanges.
+            let committedChanges = self.committedChanges
+            // Create a new committedChanges instance for the next batch
+            // of updates.
+            self.committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
+            return committedChanges
+        }
+        guard !committedChanges.isEmpty ||
+                shouldPublishIfEmpty else {
+            // If there's no new database changes, we don't need to publish updates.
+            return
+        }
+
+        ensureDisplayLink()
 
         lastPublishUpdatesDate = Date()
 
-        Logger.verbose("databaseChangesWillUpdate")
         for delegate in databaseChangeDelegates {
             delegate.databaseChangesWillUpdate()
-        }
-
-        defer {
-            committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
         }
 
         Logger.verbose("databaseChangesDidUpdate")
