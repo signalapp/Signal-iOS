@@ -113,12 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - DatabaseChangeDelegate
 
-- (void)databaseChangesWillUpdate
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(AppReadiness.isAppReady);
-}
-
 - (void)databaseChangesDidUpdateWithDatabaseChanges:(id<DatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();

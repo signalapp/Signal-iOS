@@ -182,7 +182,6 @@ class PaymentsHistoryDataSource: Dependencies {
 // MARK: -
 
 extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
-    public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

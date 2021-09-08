@@ -7,7 +7,6 @@ import GRDB
 
 @objc
 public protocol DatabaseChangeDelegate: AnyObject {
-    func databaseChangesWillUpdate()
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
     func databaseChangesDidUpdateExternally()
     func databaseChangesDidReset()
@@ -341,7 +340,6 @@ extension DatabaseChangeObserver: TransactionObserver {
     //     "database did change" event, at the expense of some latency.
     // * When we "publish updates":
     //   * This is done on the main thread.
-    //   * All "database change delegates" receive databaseChangesWillUpdate.
     //   * All "database change delegates" receive databaseChangesDidUpdate with the changes.
     public func databaseDidChange(with event: DatabaseEvent) {
         // Check before serializedSync() to avoid recursively obtaining the
@@ -547,10 +545,6 @@ extension DatabaseChangeObserver: TransactionObserver {
         ensureDisplayLink()
 
         lastPublishUpdatesDate = Date()
-
-        for delegate in databaseChangeDelegates {
-            delegate.databaseChangesWillUpdate()
-        }
 
         Logger.verbose("databaseChangesDidUpdate")
 

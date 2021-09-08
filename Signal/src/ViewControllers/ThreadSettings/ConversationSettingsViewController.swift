@@ -1028,7 +1028,6 @@ extension ConversationSettingsViewController: GroupPermissionsSettingsDelegate {
 }
 
 extension ConversationSettingsViewController: DatabaseChangeDelegate {
-    public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

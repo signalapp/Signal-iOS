@@ -201,10 +201,6 @@ public class LongTextViewController: OWSViewController {
 
 extension LongTextViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
-
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 

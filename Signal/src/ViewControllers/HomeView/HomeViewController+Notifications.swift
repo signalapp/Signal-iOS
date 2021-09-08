@@ -182,14 +182,11 @@ extension HomeViewController {
 // MARK: - Notifications
 
 extension HomeViewController: DatabaseChangeDelegate {
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-
-        BenchManager.startEvent(title: "uiDatabaseUpdate", eventId: "uiDatabaseUpdate")
-    }
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
+
+        BenchManager.startEvent(title: "uiDatabaseUpdate", eventId: "uiDatabaseUpdate")
 
         if databaseChanges.didUpdateModel(collection: TSPaymentModel.collection()) {
             updateUnreadPaymentNotificationsCountWithSneakyTransaction()

@@ -841,7 +841,6 @@ extension CallService {
 }
 
 extension CallService: DatabaseChangeDelegate {
-    public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

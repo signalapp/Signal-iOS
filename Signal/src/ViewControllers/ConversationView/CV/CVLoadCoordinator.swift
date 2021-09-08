@@ -799,11 +799,6 @@ public class CVLoadCoordinator: NSObject {
 
 extension CVLoadCoordinator: DatabaseChangeDelegate {
 
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
-    }
-
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)

@@ -305,11 +305,6 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
 
 extension LinkedDevicesTableViewController: DatabaseChangeDelegate {
 
-    func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
-    }
-
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)

@@ -252,11 +252,6 @@ public class PaymentsProcessor: NSObject {
 
 extension PaymentsProcessor: DatabaseChangeDelegate {
 
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-        owsAssertDebug(AppReadiness.isAppReady)
-    }
-
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
