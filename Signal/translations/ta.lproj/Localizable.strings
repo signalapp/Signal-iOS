@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "தரவுத்தளத்தை மேம்படுத்துகிறது";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@மணி நேரம் ";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ மணி நேரத்திற்க்கு முன்பு";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@நிமிடம்  ";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "இப்போது";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 மணி நேரத்திற்கு முன்பு";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "1 நிமிடம் முன்பு";

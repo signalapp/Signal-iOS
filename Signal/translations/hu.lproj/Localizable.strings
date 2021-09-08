@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Adatbázis optimalizálása";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ó";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ órája";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@p";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "Most";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 órája";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "1 perce";
@@ -1505,7 +1496,7 @@
 "DONATION_VIEW_TITLE" = "A Signalt hozzád hasonló emberek működtetik.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel elősegítse a privát technológiák térnyerését, amelyek a szólásszabadság védelmét és a globális kommunikáció elterjedését védelmezik. Nincs reklám. Nincs követés. Nincs vakítás.\n\nAz adományod segítségével hozzájárulsz a fejlesztés, a szerverek és a sávszélesség költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás létéhez szükségesek.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják. Nincs reklám. Nincs követés. Nincs trükk.\n\nAdományoddal hozzájárulhatsz a fejlesztés, a szerverek és a sávszélesség költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Miért támogassam?";
@@ -5069,7 +5060,7 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Hibanaplók";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefon kontaktokban tárolt profilkép használata.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefon kontaktokban tárolt profilképek használata.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Profilképek telefon kontaktokból";
@@ -5123,7 +5114,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Hívások";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Hangüzenetek, egyszeri média és a 100 KB alatti matricák mindig automatikusan letöltődnek.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "A hangüzenetek, egyszer megtekinthető médiafájlok és a 100 KB alatti matricák mindig automatikusan letöltődnek.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Automatikus letöltés";
@@ -5195,7 +5186,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Üzenet hang";
 
 /* No comment provided by engineer. */
-"SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi & Ált. Szerződési Feltételek";
+"SETTINGS_LEGAL_TERMS_CELL" = "Adatvédelmi és Általános Szerződési Feltételek";
 
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Link előnézetek használata";

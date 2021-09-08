@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Hagræði gagnagrunni";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@klst";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "fyrir %@ klukkustundum";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "Núna";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "fyrir 1 klukkustund";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "fyrir 1 mínútu";
@@ -1598,7 +1589,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Gat ekki hlaðið inn tengiliðalista.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Gat ekki áframsent skilaboð.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Tókst ekki að áframsenda skilaboð því þau eru ekki lengur tiltæk.";
@@ -1607,7 +1598,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Tókst ekki að senda skilaboð því þau eru ekki lengur tiltæk.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Gat ekki áframsent skilaboð";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Gat ekki vistað myndskeið.";
@@ -1700,10 +1691,10 @@
 "ERROR_NETWORK_FAILURE" = "Villa í nettengingu";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Hjálpaðu okkur við að bæta Signal með því að gefa skýrslu um þessa villu og senda villuskráningarskrár úr tækinu þínu til support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Villa kom upp";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Þetta tæki er ekki lengur tengt. Tengdu það aftur til að eiga í frekari samskiptum.";
@@ -4604,7 +4595,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Þú þarft að vera skráður notandi til að geta sent skilaboð.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Annar aðgangur hefur áður verið skráður með þessu númeri sem er tiltækur til flutnings.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Staðfesting mistókst";
@@ -4646,7 +4637,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Símanúmerið sem þú ert að reyna að skrá hefur þegar verið skráð á öðrum netþjóni, afskráðu það þar og reyndu svo aftur.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Fjarlægja forskoðun";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Veldu nýjan stjórnanda";
@@ -5759,13 +5750,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Ljósmyndir og myndskeið";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Deila tengiliðum með iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Gefa iOS aðgang að Signal-tengiliðum og spjalli til að virkja eiginleika á borð við að deila uppástungum.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Gefa iOS aðgang að Signal-tengiliðum og spjalli til að virkja eiginleika á borð við að deila uppástungum og tilkynningum.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Skráningarlæsing";

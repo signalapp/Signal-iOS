@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "डेटाबेस को बेहतर कर रहे हैं";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@घंटे";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ घंटे पहले";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@मिनट";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "अभी";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 घंटे पहले";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "1 मिनट पहले";

@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ottimizzazione del database";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@h";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ ore fa";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@min";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "Ora";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 ora fa";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "1 minuto fa";
@@ -1265,7 +1256,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Sei sicuro di voler eliminare il tuo account?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Codice del Paese";
+"DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Prefisso telefonico internazionale";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Impossibile eliminare l'account. Assicurati che il Wi-Fi o i dati mobili siano attivi, quindi riprova.";

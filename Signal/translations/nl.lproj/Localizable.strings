@@ -1085,7 +1085,7 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Toestemmingen";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Verwijderen van de groep";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Van de groep verwijderen";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@ van de groep verwijderen?";
@@ -1186,12 +1186,6 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Databank aan het optimaliseren";
 
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ u";
-
-/* Full format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_LONG_FORMAT" = "%@ uur geleden";
-
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ min";
 
@@ -1200,9 +1194,6 @@
 
 /* The present; the current time. */
 "DATE_NOW" = "Nu";
-
-/* Full string for a relative time of one hour ago. */
-"DATE_ONE_HOUR_AGO_LONG" = "1 uur geleden";
 
 /* Full string for a relative time of one minute ago. */
 "DATE_ONE_MINUTE_AGO_LONG" = "1 minuut geleden";
@@ -2348,7 +2339,7 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tik hier om ze te vergelijken";
 
 /* A header string above a group member's contact info */
-"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Lid";
+"GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Lid van deze groep maar niet in je contactenlijst";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Groepsleden vergelijken";
@@ -3281,25 +3272,25 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Groep verwijderen en verlaten?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Overweeg de verzoeken zorgvuldig, want er is een andere contactpersoon met dezelfde naam.";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Overweeg dit gespreksverzoek zorgvuldig, want er is een andere contactpersoon met dezelfde naam.";
 
 /* A header string above a known contact's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Je contactpersoon";
+"MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Persoon die in je contactenlijst staat";
 
 /* A header string informing the user about name collisions in a message request */
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Vergelijk als je niet zeker bent van wie het lidmaatschapsverzoek afkomstig is de personen hieronder  en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.";
 
 /* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Verzoek";
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Wil een gesprek met je beginnen";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Lidmaatschapsverzoeken vergelijken";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Contactpersoon bijwerken";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Contactpersoon aanpassen";
 
 /* Button to allow user to review known name collisions with an incoming message request */
-"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Verzoeken vergelijken";
+"MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Personen vergelijken";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Gemeld als spam en geblokkeerd.";
@@ -5798,7 +5789,7 @@
 "SHARE_ACTION_MAIL" = "E-mail";
 
 /* action sheet item to open native messages app */
-"SHARE_ACTION_MESSAGE" = "Een bericht verzenden";
+"SHARE_ACTION_MESSAGE" = "Bericht";
 
 /* action sheet item */
 "SHARE_ACTION_TWEET" = "Twitter";
