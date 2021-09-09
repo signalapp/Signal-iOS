@@ -683,8 +683,7 @@ public class OWSWebSocket: NSObject {
             return false
         }
 
-        guard FeatureFlags.deprecateREST,
-              !signalService.isCensorshipCircumventionActive else {
+        guard !signalService.isCensorshipCircumventionActive else {
             Logger.warn("\(webSocketType) Skipping opening of websocket due to censorship circumvention.")
             return false
         }
