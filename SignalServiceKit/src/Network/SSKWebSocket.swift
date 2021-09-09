@@ -103,7 +103,7 @@ public extension SSKWebSocket {
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
-    func websocketDidDisconnect(socket: SSKWebSocket, error: Error?)
+    func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?)
 
     func websocket(_ socket: SSKWebSocket, didReceiveMessage message: WebSocketProtoWebSocketMessage)
 }
@@ -181,9 +181,7 @@ class SSKWebSocketNative: SSKWebSocket {
             self.isConnected.set(false)
             self.webSocketTask.set(nil)
 
-            self.callbackQueue.asyncIfNecessary {
-                self.delegate?.websocketDidDisconnect(socket: self, error: OWSGenericError("WebSocket did close with code \(closeCode)"))
-            }
+            self.reportError(OWSGenericError("WebSocket did close with code \(closeCode)"))
         })
         webSocketTask.set(task)
     }
@@ -210,7 +208,10 @@ class SSKWebSocketNative: SSKWebSocket {
                         owsFailDebug("We only expect binary frames.")
                     }
                 case .failure(let error):
-                    owsFailDebug("Error receiving websocket message \(error)")
+                    Logger.warn("Error receiving websocket message \(error)")
+                    self?.reportError(error)
+                    // Don't try to listen again.
+                    return
                 }
 
                 self?.listenForNextMessage()
@@ -224,17 +225,36 @@ class SSKWebSocketNative: SSKWebSocket {
     }
 
     func write(data: Data) {
-        webSocketTask.get()?.send(.data(data)) { error in
+        guard let webSocketTask = webSocketTask.get() else {
+            reportError(OWSGenericError("Missing webSocketTask."))
+            return
+        }
+        webSocketTask.send(.data(data)) { [weak self] error in
             if let error = error {
-                owsFailDebug("Error sending websocket data \(error)")
+                Logger.warn("Error sending websocket data \(error)")
             }
+            self?.reportError(error)
         }
     }
 
     func writePing() {
-        webSocketTask.get()?.sendPing { error in
+        guard let webSocketTask = webSocketTask.get() else {
+            reportError(OWSGenericError("Missing webSocketTask."))
+            return
+        }
+        webSocketTask.sendPing { [weak self] error in
             if let error = error {
-                owsFailDebug("Error sending websocket ping \(error)")
+                Logger.warn("Error sending websocket ping \(error)")
+            }
+            self?.reportError(error)
+        }
+    }
+
+    private func reportError(_ error: Error?) {
+        callbackQueue.asyncIfNecessary { [weak self] in
+            if let self = self,
+               let delegate = self.delegate {
+                delegate.websocketDidDisconnectOrFail(socket: self, error: error)
             }
         }
     }
@@ -314,11 +334,13 @@ class SSKWebSocketStarScream: SSKWebSocket {
 
 extension SSKWebSocketStarScream: WebSocketDelegate {
     func websocketDidConnect(socket: WebSocketClient) {
+        assertOnQueue(callbackQueue)
         hasEverConnected.set(true)
         delegate?.websocketDidConnect(socket: self)
     }
 
     func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
+        assertOnQueue(callbackQueue)
         let websocketError: Error?
         switch error {
         case let wsError as WSError:
@@ -334,14 +356,16 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
             websocketError = error
         }
 
-        delegate?.websocketDidDisconnect(socket: self, error: websocketError)
+        delegate?.websocketDidDisconnectOrFail(socket: self, error: websocketError)
     }
 
     func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
+        assertOnQueue(callbackQueue)
         owsFailDebug("We only expect binary frames.")
     }
 
     func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
+        assertOnQueue(callbackQueue)
         do {
             let message = try WebSocketProtoWebSocketMessage(serializedData: data)
             delegate?.websocket(self, didReceiveMessage: message)

@@ -1266,7 +1266,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         notifyStatusChange()
     }
 
-    public func websocketDidDisconnect(socket eventSocket: SSKWebSocket, error: Error?) {
+    public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error?) {
         assertOnQueue(Self.serialQueue)
 
         guard let currentWebSocket = self.currentWebSocket,
