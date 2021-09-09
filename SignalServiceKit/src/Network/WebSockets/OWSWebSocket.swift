@@ -1153,14 +1153,26 @@ private class SocketRequestInfo {
     }
 
     public func timeoutIfNecessary() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     public func didFailInvalidRequest() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
     }
 
     public func didFailDueToNetwork() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
@@ -1168,6 +1180,10 @@ private class SocketRequestInfo {
                         responseHeaders: OWSHttpHeaders,
                         responseError: Error?,
                         responseData: Data?) {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType), responseStatus: \(responseStatus), responseError: \(String(describing: responseError))")
+        }
+
         let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
                                                              requestUrl: requestUrl,
                                                              responseStatus: responseStatus,
