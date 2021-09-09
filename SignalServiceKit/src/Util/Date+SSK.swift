@@ -90,4 +90,8 @@ public extension Date {
     var isAfterNow: Bool {
         (self as NSDate).isAfterNow()
     }
+
+    var formatIntervalSinceNow: String {
+        String(format: "%0.3f", abs(timeIntervalSinceNow))
+    }
 }

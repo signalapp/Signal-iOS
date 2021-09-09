@@ -86,7 +86,7 @@ struct CVLoadRequest {
 
     private let loadStartDate = Date()
     public var loadStartDateFormatted: String {
-        String(format: "%0.3f", abs(loadStartDate.timeIntervalSinceNow))
+        loadStartDate.formatIntervalSinceNow
     }
     private let loadScheduleDelayInterval: TimeInterval
     public var loadScheduleDelayIntervalFormatted: String {
@@ -147,7 +147,7 @@ struct CVLoadRequest {
             guard let loadScheduleDate = loadScheduleDate else {
                 return nil
             }
-            return String(format: "%0.3f", abs(loadScheduleDate.timeIntervalSinceNow))
+            return loadScheduleDate.formatIntervalSinceNow
         }
 
         public func loadBegun() {

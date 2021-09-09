@@ -24,7 +24,7 @@ public class OWSWebSocket: NSObject {
     @objc
     public static let webSocketStateDidChange = Notification.Name("webSocketStateDidChange")
 
-    fileprivate static let serialQueue = DispatchQueue(label: "org.signal.websocket")
+    public static let serialQueue = DispatchQueue(label: "org.signal.websocket")
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
     // TODO: Should we use a higher-priority queue?
@@ -281,13 +281,11 @@ public class OWSWebSocket: NSObject {
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccess,
                                          failure: @escaping RequestFailure) {
-        serialQueue.async {
-            Self.makeRequestInternal(request,
-                                     unsubmittedRequestToken: unsubmittedRequestToken,
-                                     webSocket: self,
-                                     success: success,
-                                     failure: failure)
-        }
+        Self.makeRequestInternal(request,
+                                 unsubmittedRequestToken: unsubmittedRequestToken,
+                                 webSocket: self,
+                                 success: success,
+                                 failure: failure)
     }
 
     fileprivate static func makeRequestInternal(_ request: TSRequest,
@@ -295,6 +293,7 @@ public class OWSWebSocket: NSObject {
                                                 webSocket: OWSWebSocket,
                                                 success: @escaping RequestSuccess,
                                                 failure: @escaping RequestFailure) {
+        assertOnQueue(OWSWebSocket.serialQueue)
 
         defer {
             webSocket.removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -325,6 +324,7 @@ public class OWSWebSocket: NSObject {
 
         let requestInfo = SocketRequestInfo(request: request,
                                             requestUrl: requestUrl,
+                                            webSocketType: webSocket.webSocketType,
                                             success: success,
                                             failure: failure)
 
@@ -1032,6 +1032,7 @@ extension OWSWebSocket {
                             unsubmittedRequestToken: UnsubmittedRequestToken,
                             success successParam: @escaping RequestSuccess,
                             failure failureParam: @escaping RequestFailure) {
+        assertOnQueue(OWSWebSocket.serialQueue)
 
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -1095,6 +1096,14 @@ private class SocketRequestInfo {
 
     let requestId: UInt64 = Cryptography.randomUInt64()
 
+    let webSocketType: OWSWebSocketType
+
+    let startDate = Date()
+
+    var intervalSinceStartDateFormatted: String {
+        startDate.formatIntervalSinceNow
+    }
+
     // We use an enum to ensure that the completion handlers are
     // released as soon as the message completes.
     private enum Status {
@@ -1111,10 +1120,12 @@ private class SocketRequestInfo {
 
     public required init(request: TSRequest,
                          requestUrl: URL,
+                         webSocketType: OWSWebSocketType,
                          success: @escaping RequestSuccess,
                          failure: @escaping RequestFailure) {
         self.request = request
         self.requestUrl = requestUrl
+        self.webSocketType = webSocketType
         self.status = AtomicValue(.incomplete(success: success, failure: failure))
         self.backgroundTask = OWSBackgroundTask(label: "SocketRequestInfo")
     }

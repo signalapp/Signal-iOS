@@ -145,4 +145,8 @@ extension DateUtil {
     public static func isSameDay(date date1: Date, date date2: Date) -> Bool {
         0 == daysFrom(firstDate: date1, toSecondDate: date2)
     }
+
+    public static func format(interval: TimeInterval) -> String {
+        String(format: "%0.3f", interval)
+    }
 }

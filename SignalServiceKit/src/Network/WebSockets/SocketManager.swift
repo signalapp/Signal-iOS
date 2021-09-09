@@ -41,6 +41,7 @@ public class SocketManager: NSObject {
                              webSocketType: OWSWebSocketType,
                              success: @escaping RequestSuccess,
                              failure: @escaping RequestFailure) {
+        assertOnQueue(OWSWebSocket.serialQueue)
 
         let webSocket = self.webSocket(ofType: webSocketType)
         webSocket.makeRequest(request,
@@ -51,6 +52,8 @@ public class SocketManager: NSObject {
 
     private func waitForSocketToOpen(webSocketType: OWSWebSocketType,
                                      waitStartDate: Date = Date()) -> Promise<Void> {
+        assertOnQueue(OWSWebSocket.serialQueue)
+
         let webSocket = self.webSocket(ofType: webSocketType)
        if webSocket.canMakeRequests {
             // The socket is open; proceed.
@@ -67,9 +70,9 @@ public class SocketManager: NSObject {
             // Proceed even though we will probably fail.
             return Promise.value(())
         }
-        return firstly(on: .global()) {
+        return firstly(on: OWSWebSocket.serialQueue) {
             Guarantee.after(seconds: kSecondInterval / 10)
-        }.then(on: .global()) {
+        }.then(on: OWSWebSocket.serialQueue) {
             self.waitForSocketToOpen(webSocketType: webSocketType,
                                      waitStartDate: waitStartDate)
         }
@@ -112,9 +115,9 @@ public class SocketManager: NSObject {
         // Request that the websocket open to make this request, if necessary.
         let unsubmittedRequestToken = webSocket(ofType: webSocketType).makeUnsubmittedRequestToken()
 
-        return firstly(on: .global()) {
+        return firstly(on: OWSWebSocket.serialQueue) {
             self.waitForSocketToOpen(webSocketType: webSocketType)
-        }.then(on: .global()) { () -> Promise<HTTPResponse> in
+        }.then(on: OWSWebSocket.serialQueue) { () -> Promise<HTTPResponse> in
             let (promise, future) = Promise<HTTPResponse>.pending()
             self.makeRequest(request,
                              unsubmittedRequestToken: unsubmittedRequestToken,
