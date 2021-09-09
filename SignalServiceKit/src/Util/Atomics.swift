@@ -307,6 +307,10 @@ public class AtomicArray<T> {
     public func pushTail(_ value: T) {
         append(value)
     }
+    
+    public var count: Int {
+        lock.perform { values.count }
+    }
 }
 
 extension AtomicArray where T: Equatable {
@@ -370,6 +374,10 @@ public class AtomicDictionary<Key: Hashable, Value> {
             return result
         }
     }
+    
+    public var count: Int {
+        lock.perform { values.count }
+    }
 }
 
 // MARK: -
@@ -396,5 +404,9 @@ public class AtomicSet<T: Hashable> {
 
     public var isEmpty: Bool {
         lock.perform { values.isEmpty }
+    }
+
+    public var count: Int {
+        lock.perform { values.count }
     }
 }
