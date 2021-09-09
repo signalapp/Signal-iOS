@@ -4667,7 +4667,7 @@
 "RESEARCH_MODAL_TITLE" = "Έρευνα Signal";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Ξαναδοκίμασε";
+"RETRY_BUTTON_TEXT" = "Επανάληψη";
 
 /* Button to return to current group call */
 "RETURN_CALL_PILL_BUTTON" = "Επιστροφή";
