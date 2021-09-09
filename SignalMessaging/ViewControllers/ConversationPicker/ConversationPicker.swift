@@ -582,6 +582,9 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     }
 
     public func resetSearchBarText() {
+        guard nil != searchBar.text?.nilIfEmpty else {
+            return
+        }
         searchBar.text = nil
         conversationCollection = buildConversationCollection()
     }
