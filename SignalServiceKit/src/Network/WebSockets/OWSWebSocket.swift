@@ -24,7 +24,7 @@ public class OWSWebSocket: NSObject {
     @objc
     public static let webSocketStateDidChange = Notification.Name("webSocketStateDidChange")
 
-    fileprivate static let serialQueue = DispatchQueue(label: "org.signal.websocket")
+    public static let serialQueue = DispatchQueue(label: "org.signal.websocket")
     fileprivate var serialQueue: DispatchQueue { Self.serialQueue }
 
     // TODO: Should we use a higher-priority queue?
@@ -32,7 +32,7 @@ public class OWSWebSocket: NSObject {
     fileprivate var messageProcessingQueue: DispatchQueue { Self.messageProcessingQueue }
 
     @objc
-    public static var verboseLogging: Bool { false && DebugFlags.internalLogging }
+    public static var verboseLogging: Bool { true && DebugFlags.internalLogging }
     fileprivate var verboseLogging: Bool { Self.verboseLogging }
 
     // MARK: -
@@ -41,8 +41,8 @@ public class OWSWebSocket: NSObject {
 
     private static let socketReconnectDelaySeconds: TimeInterval = 5
 
-    private var _currentWebSocket = AtomicOptional<WebSocketWrapper>(nil)
-    private var currentWebSocket: WebSocketWrapper? {
+    private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil)
+    private var currentWebSocket: WebSocketConnection? {
         get {
             _currentWebSocket.get()
         }
@@ -281,13 +281,11 @@ public class OWSWebSocket: NSObject {
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccess,
                                          failure: @escaping RequestFailure) {
-        serialQueue.async {
-            Self.makeRequestInternal(request,
-                                     unsubmittedRequestToken: unsubmittedRequestToken,
-                                     webSocket: self,
-                                     success: success,
-                                     failure: failure)
-        }
+        Self.makeRequestInternal(request,
+                                 unsubmittedRequestToken: unsubmittedRequestToken,
+                                 webSocket: self,
+                                 success: success,
+                                 failure: failure)
     }
 
     fileprivate static func makeRequestInternal(_ request: TSRequest,
@@ -295,6 +293,7 @@ public class OWSWebSocket: NSObject {
                                                 webSocket: OWSWebSocket,
                                                 success: @escaping RequestSuccess,
                                                 failure: @escaping RequestFailure) {
+        assertOnQueue(OWSWebSocket.serialQueue)
 
         defer {
             webSocket.removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -325,6 +324,7 @@ public class OWSWebSocket: NSObject {
 
         let requestInfo = SocketRequestInfo(request: request,
                                             requestUrl: requestUrl,
+                                            webSocketType: webSocket.webSocketType,
                                             success: success,
                                             failure: failure)
 
@@ -380,7 +380,9 @@ public class OWSWebSocket: NSObject {
 
             Logger.info("Making request[\(webSocket.webSocketType)]: \(requestInfo.requestId), \(httpMethod): \(requestPath), jsonData: \(jsonData?.count ?? 0).")
 
-            currentWebSocket.sendRequest(requestInfo: requestInfo, messageData: messageData)
+            currentWebSocket.sendRequest(requestInfo: requestInfo,
+                                         messageData: messageData,
+                                         delegate: webSocket)
         } catch {
             owsFailDebug("Error: \(error).")
             requestInfo.didFailInvalidRequest()
@@ -389,7 +391,7 @@ public class OWSWebSocket: NSObject {
     }
 
     private func processWebSocketResponseMessage(_ message: WebSocketProtoWebSocketResponseMessage,
-                                                 currentWebSocket: WebSocketWrapper) {
+                                                 currentWebSocket: WebSocketConnection) {
         assertOnQueue(serialQueue)
 
         let requestId = message.requestID
@@ -455,7 +457,7 @@ public class OWSWebSocket: NSObject {
     // MARK: -
 
     fileprivate func processWebSocketRequestMessage(_ message: WebSocketProtoWebSocketRequestMessage,
-                                                    currentWebSocket: WebSocketWrapper) {
+                                                    currentWebSocket: WebSocketConnection) {
         assertOnQueue(Self.serialQueue)
 
         let httpMethod = message.verb.nilIfEmpty ?? ""
@@ -486,7 +488,7 @@ public class OWSWebSocket: NSObject {
     }
 
     private func handleIncomingMessage(_ message: WebSocketProtoWebSocketRequestMessage,
-                                       currentWebSocket: WebSocketWrapper) {
+                                       currentWebSocket: WebSocketConnection) {
         assertOnQueue(Self.serialQueue)
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "handleIncomingMessage")
@@ -557,7 +559,7 @@ public class OWSWebSocket: NSObject {
     }
 
     private func handleEmptyQueueMessage(_ message: WebSocketProtoWebSocketRequestMessage,
-                                         currentWebSocket: WebSocketWrapper) {
+                                         currentWebSocket: WebSocketConnection) {
         assertOnQueue(Self.serialQueue)
 
         // Queue is drained.
@@ -590,7 +592,7 @@ public class OWSWebSocket: NSObject {
     }
 
     private func sendWebSocketMessageAcknowledgement(_ request: WebSocketProtoWebSocketRequestMessage,
-                                                     currentWebSocket: WebSocketWrapper) {
+                                                     currentWebSocket: WebSocketConnection) {
         assertOnQueue(Self.serialQueue)
 
         do {
@@ -896,8 +898,8 @@ public class OWSWebSocket: NSObject {
         var webSocket = SSKWebSocketManager.buildSocket(request: request,
                                                         callbackQueue: OWSWebSocket.serialQueue)
         webSocket.delegate = self
-        self.currentWebSocket = WebSocketWrapper(webSocketType: webSocketType,
-                                                 webSocket: webSocket)
+        self.currentWebSocket = WebSocketConnection(webSocketType: webSocketType,
+                                                    webSocket: webSocket)
 
         // `connect` could hypothetically call a delegate method (e.g. if
         // the socket failed immediately for some reason), so we update currentWebSocket
@@ -1032,6 +1034,7 @@ extension OWSWebSocket {
                             unsubmittedRequestToken: UnsubmittedRequestToken,
                             success successParam: @escaping RequestSuccess,
                             failure failureParam: @escaping RequestFailure) {
+        assertOnQueue(OWSWebSocket.serialQueue)
 
         guard !appExpiry.isExpired else {
             removeUnsubmittedRequestToken(unsubmittedRequestToken)
@@ -1095,6 +1098,14 @@ private class SocketRequestInfo {
 
     let requestId: UInt64 = Cryptography.randomUInt64()
 
+    let webSocketType: OWSWebSocketType
+
+    let startDate = Date()
+
+    var intervalSinceStartDateFormatted: String {
+        startDate.formatIntervalSinceNow
+    }
+
     // We use an enum to ensure that the completion handlers are
     // released as soon as the message completes.
     private enum Status {
@@ -1111,10 +1122,12 @@ private class SocketRequestInfo {
 
     public required init(request: TSRequest,
                          requestUrl: URL,
+                         webSocketType: OWSWebSocketType,
                          success: @escaping RequestSuccess,
                          failure: @escaping RequestFailure) {
         self.request = request
         self.requestUrl = requestUrl
+        self.webSocketType = webSocketType
         self.status = AtomicValue(.incomplete(success: success, failure: failure))
         self.backgroundTask = OWSBackgroundTask(label: "SocketRequestInfo")
     }
@@ -1142,14 +1155,26 @@ private class SocketRequestInfo {
     }
 
     public func timeoutIfNecessary() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     public func didFailInvalidRequest() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl))
     }
 
     public func didFailDueToNetwork() {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType) \(requestUrl)")
+        }
+
         didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
@@ -1157,6 +1182,10 @@ private class SocketRequestInfo {
                         responseHeaders: OWSHttpHeaders,
                         responseError: Error?,
                         responseData: Data?) {
+        if OWSWebSocket.verboseLogging {
+            Logger.warn("\(webSocketType), responseStatus: \(responseStatus), responseError: \(String(describing: responseError))")
+        }
+
         let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
                                                              requestUrl: requestUrl,
                                                              responseStatus: responseStatus,
@@ -1274,8 +1303,8 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
 // MARK: -
 
-extension OWSWebSocket: WebSocketWrapperDelegate {
-    fileprivate func webSocketHeartBeat(_ webSocket: WebSocketWrapper) {
+extension OWSWebSocket: WebSocketConnectionDelegate {
+    fileprivate func webSocketSendHeartBeat(_ webSocket: WebSocketConnection) {
         if shouldSocketBeOpen {
             webSocket.writePing()
         } else {
@@ -1283,18 +1312,22 @@ extension OWSWebSocket: WebSocketWrapperDelegate {
             applyDesiredSocketState()
         }
     }
+
+    fileprivate func webSocketRequestDidTimeout() {
+        cycleSocket()
+    }
 }
 
 // MARK: -
 
-private protocol WebSocketWrapperDelegate: AnyObject {
-    func webSocketHeartBeat(_ webSocket: WebSocketWrapper)
+private protocol WebSocketConnectionDelegate: AnyObject {
+    func webSocketSendHeartBeat(_ webSocket: WebSocketConnection)
+    func webSocketRequestDidTimeout()
 }
 
 // MARK: -
 
-// TODO: Combine with SSKWebSocket?
-private class WebSocketWrapper {
+private class WebSocketConnection {
 
     private let webSocketType: OWSWebSocketType
 
@@ -1331,7 +1364,7 @@ private class WebSocketWrapper {
 
     private var heartbeatTimer: OffMainThreadTimer?
 
-    func startHeartbeat(delegate: WebSocketWrapperDelegate) {
+    func startHeartbeat(delegate: WebSocketConnectionDelegate) {
         let heartbeatPeriodSeconds: TimeInterval = 30
         self.heartbeatTimer = OffMainThreadTimer(timeInterval: heartbeatPeriodSeconds,
                                                  repeats: true) { [weak self, weak delegate] timer in
@@ -1341,7 +1374,7 @@ private class WebSocketWrapper {
                 timer.invalidate()
                 return
             }
-            delegate.webSocketHeartBeat(self)
+            delegate.webSocketSendHeartBeat(self)
         }
     }
 
@@ -1375,14 +1408,22 @@ private class WebSocketWrapper {
     }
 
     // This method is thread-safe.
-    fileprivate func sendRequest(requestInfo: SocketRequestInfo, messageData: Data) {
+    fileprivate func sendRequest(requestInfo: SocketRequestInfo,
+                                 messageData: Data,
+                                 delegate: WebSocketConnectionDelegate) {
         requestInfoMap[requestInfo.requestId] = requestInfo
 
         webSocket.write(data: messageData)
 
         let socketTimeoutSeconds: TimeInterval = 10
-        DispatchQueue.global().asyncAfter(deadline: .now() + socketTimeoutSeconds) { [weak requestInfo] in
-            requestInfo?.timeoutIfNecessary()
+        DispatchQueue.global().asyncAfter(deadline: .now() + socketTimeoutSeconds) { [weak delegate, weak requestInfo] in
+            guard let delegate = delegate,
+                  let requestInfo = requestInfo else {
+                return
+            }
+
+            requestInfo.timeoutIfNecessary()
+            delegate.webSocketRequestDidTimeout()
         }
     }
 
