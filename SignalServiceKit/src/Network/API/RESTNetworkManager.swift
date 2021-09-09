@@ -45,7 +45,7 @@ public class RESTSessionManager: NSObject {
                                success: @escaping RESTNetworkManagerSuccess,
                                failure: @escaping RESTNetworkManagerFailure) {
         assertOnQueue(NetworkManagerQueue())
-        owsAssertDebug(!FeatureFlags.deprecateREST)
+        owsAssertDebug(!FeatureFlags.deprecateREST || signalService.isCensorshipCircumventionActive)
 
         guard let rawRequestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")

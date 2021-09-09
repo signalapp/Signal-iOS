@@ -154,10 +154,14 @@ public class MessageFetcherJob: NSObject {
     }
 
     public class var shouldUseWebSocket: Bool {
+        if signalService.isCensorshipCircumventionActive {
+            return false
+        }
         if FeatureFlags.deprecateREST {
             return true
+        } else {
+            return CurrentAppContext().isMainApp
         }
-        return CurrentAppContext().isMainApp && !signalService.isCensorshipCircumventionActive
     }
 
     @objc
