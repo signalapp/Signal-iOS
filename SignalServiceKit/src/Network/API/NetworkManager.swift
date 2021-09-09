@@ -18,11 +18,17 @@ public class NetworkManager: NSObject {
 
     // This method can be called from any thread.
     public func makePromise(request: TSRequest,
+                            websocketSupportsRequest: Bool = false,
                             remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
-        firstly {
-            FeatureFlags.deprecateREST
-                ? websocketRequestPromise(request: request)
-                : restRequestPromise(request: request)
+        firstly { () -> Promise<HTTPResponse> in
+            // Fail over to REST if websocket attempt fails.
+            if remainingRetryCount > 0,
+               OWSWebSocket.canAppUseSocketsToMakeRequests,
+               websocketSupportsRequest {
+                return websocketRequestPromise(request: request)
+            } else {
+                return restRequestPromise(request: request)
+            }
         }.recover(on: .global()) { error -> Promise<HTTPResponse> in
             if error.isRetryable,
                remainingRetryCount > 0 {
@@ -67,7 +73,9 @@ public class NetworkManager: NSObject {
 @objc
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func makePromise(request: TSRequest, remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest,
+                                     websocketSupportsRequest: Bool = false,
+                                     remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         let (promise, _) = Promise<HTTPResponse>.pending()
