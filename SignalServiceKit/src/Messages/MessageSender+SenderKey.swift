@@ -6,7 +6,7 @@ import SignalClient
 import SignalMetadataKit
 
 extension MessageSender {
-    private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
+    private var senderKeyQueue: DispatchQueue { .global(qos: .userInitiated) }
 
     struct Recipient {
         let address: SignalServiceAddress
