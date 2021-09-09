@@ -638,6 +638,20 @@ public class OWSWebSocket: NSObject {
 
     // MARK: - Socket LifeCycle
 
+    public static var canAppUseSocketsToMakeRequests: Bool {
+        if signalService.isCensorshipCircumventionActive {
+            return false
+        } else if CurrentAppContext().isMainApp {
+            return true
+        } else if FeatureFlags.deprecateREST {
+            // When we deprecated REST, we _do_ want to open
+            // both websockets in the app extensions.
+            return true
+        } else {
+            return false
+        }
+    }
+
     // This method is thread-safe.
     public var shouldSocketBeOpen: Bool {
 

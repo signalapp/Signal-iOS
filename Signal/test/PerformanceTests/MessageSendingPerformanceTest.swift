@@ -211,6 +211,7 @@ class StubbableNetworkManager: NetworkManager {
     }
 
     public override func makePromise(request: TSRequest,
+                                     websocketSupportsRequest: Bool = false,
                                      remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
 
