@@ -39,6 +39,8 @@ public class ApprovalFooterView: UIView {
     private let hStackView = UIStackView()
     private let vStackView = UIStackView()
 
+    private var textfieldBackgroundView: UIView?
+
     public var textInput: String? {
         textfield.text
     }
@@ -58,26 +60,6 @@ public class ApprovalFooterView: UIView {
         didSet {
             if oldValue != approvalTextMode {
                 updateContents()
-
-                struct ViewFrame {
-                    let view: UIView
-                    let frame: CGRect
-
-                    func apply() {
-                        view.frame = self.frame
-                    }
-                }
-                func viewFrames(for views: [UIView]) -> [ViewFrame] {
-                    views.map { ViewFrame(view: $0, frame: $0.frame) }
-                }
-                let animatedViews = [ self, vStackView, hStackView ]
-                let viewFramesBefore = viewFrames(for: animatedViews)
-                self.layoutIfNeeded()
-                let viewFramesAfter = viewFrames(for: animatedViews)
-                for viewFrame in viewFramesBefore { viewFrame.apply() }
-                UIView.animate(withDuration: 0.15) {
-                    for viewFrame in viewFramesAfter { viewFrame.apply() }
-                }
             }
         }
     }
@@ -122,14 +104,11 @@ public class ApprovalFooterView: UIView {
         applyTheme()
     }
 
-    private var textfieldBackgroundView: UIView?
-
     @objc
     private func applyTheme() {
         backgroundView.backgroundColor = Theme.keyboardBackgroundColor
         topStrokeView.backgroundColor = Theme.hairlineColor
         namesLabel.textColor = Theme.secondaryTextAndIconColor
-        textfield.textColor = Theme.primaryTextColor
         textfieldBackgroundView?.backgroundColor = textfieldBackgroundColor
     }
 
@@ -194,8 +173,9 @@ public class ApprovalFooterView: UIView {
         return label
     }()
 
-    lazy var textfield: UITextField = {
-        let textfield = UITextField()
+    lazy var textfield: TextFieldWithPlaceholder = {
+        let textfield = TextFieldWithPlaceholder()
+        textfield.delegate = self
         textfield.font = UIFont.ows_dynamicTypeBody
         return textfield
     }()
@@ -225,8 +205,6 @@ public class ApprovalFooterView: UIView {
         return button
     }()
 
-    private var textfieldHeightConstraint: NSLayoutConstraint?
-
     func updateContents() {
         proceedButton.setImage(imageName: approvalMode.proceedButtonImageName)
         proceedButton.accessibilityLabel = approvalMode.proceedButtonAccessibilityLabel
@@ -236,14 +214,7 @@ public class ApprovalFooterView: UIView {
             textfieldStack.isHidden = true
         case .active(let placeholderText):
             textfieldStack.isHidden = false
-            textfield.placeholder = placeholderText
-        }
-        textfield.delegate = self
-        let textfieldHeight = textfield.intrinsicContentSize.height
-        if let textfieldHeightConstraint = self.textfieldHeightConstraint {
-            textfieldHeightConstraint.constant = textfieldHeight
-        } else {
-            textfieldHeightConstraint = textfield.autoSetDimension(.height, toSize: textfieldHeight)
+            textfield.placeholderText = placeholderText
         }
 
         if approvalMode == .loading {
@@ -281,7 +252,7 @@ fileprivate extension ApprovalMode {
 
 // MARK: -
 
-extension ApprovalFooterView: UITextFieldDelegate {
+extension ApprovalFooterView: TextFieldWithPlaceholderDelegate {
     public func textFieldDidBeginEditing(_ textField: UITextField) {
         delegate?.approvalFooterDidBeginEditingText()
     }

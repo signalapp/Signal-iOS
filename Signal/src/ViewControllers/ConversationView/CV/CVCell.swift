@@ -122,23 +122,19 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         layoutAttributes
     }
 
+    private var lastLayoutAttributes: CVCollectionViewLayoutAttributes?
+
     public override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
-
-        // Insist that the cell honor its zIndex.
-        layer.zPosition = CGFloat(layoutAttributes.zIndex)
 
         guard let layoutAttributes = layoutAttributes as? CVCollectionViewLayoutAttributes else {
             owsFailDebug("Could not apply layoutAttributes.")
             return
         }
 
-        guard let rootComponent = self.rootComponent,
-              let componentView = self.componentView else {
-            return
-        }
-        rootComponent.apply(layoutAttributes: layoutAttributes,
-                            componentView: componentView)
+        lastLayoutAttributes = layoutAttributes
+
+        applyLastLayoutAttributes()
     }
 
     func configure(renderItem: CVRenderItem,
@@ -157,6 +153,27 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
                             messageSwipeActionState: messageSwipeActionState)
 
         self.messageSwipeActionState = messageSwipeActionState
+
+        applyLastLayoutAttributes()
+    }
+
+    private func applyLastLayoutAttributes() {
+
+        guard let layoutAttributes = self.lastLayoutAttributes else {
+            Logger.warn("Missing layoutAttributes.")
+            return
+        }
+
+        // Insist that the cell honor its zIndex.
+        layer.zPosition = CGFloat(layoutAttributes.zIndex)
+
+        guard let rootComponent = self.rootComponent,
+              let componentView = self.componentView else {
+            return
+        }
+
+        rootComponent.apply(layoutAttributes: layoutAttributes,
+                            componentView: componentView)
     }
 
     override public func prepareForReuse() {
@@ -183,6 +200,8 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
         isCellVisible = false
         messageSwipeActionState = nil
+        lastLayoutAttributes = nil
+        layer.zPosition = 0
     }
 
     public override func layoutSubviews() {

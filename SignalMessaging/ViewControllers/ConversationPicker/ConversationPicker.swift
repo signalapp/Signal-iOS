@@ -89,7 +89,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    public var shouldShowRecentConversations: Bool = true {
+    public var shouldHideRecentConversationsTitle = false {
         didSet {
             if isViewLoaded {
                 updateTableContents()
@@ -222,8 +222,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     if pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if self.shouldShowRecentConversations,
-                              recentItems.count < maxRecentCount {
+                    } else if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
                     } else {
@@ -237,8 +236,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     if pinnedThreadIds.contains(thread.uniqueId) {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         pinnedItemsByThreadId[thread.uniqueId] = recentItem
-                    } else if self.shouldShowRecentConversations,
-                              recentItems.count < maxRecentCount {
+                    } else if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .group(item))
                         recentItems.append(recentItem)
                     } else {
@@ -347,11 +345,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             if !conversationCollection.recentConversations.isEmpty {
-                if self.shouldShowRecentConversations {
+                if !shouldHideRecentConversationsTitle {
                     section.headerTitle = Strings.recentsSection
-                } else {
-                    section.headerTitle = NSLocalizedString("PINNED_SECTION_TITLE",
-                                                            comment: "The title for pinned conversation section on the conversation list")
                 }
                 addConversations(toSection: section,
                                  conversations: conversationCollection.recentConversations)
@@ -587,6 +582,9 @@ extension ConversationPickerViewController: UISearchBarDelegate {
     }
 
     public func resetSearchBarText() {
+        guard nil != searchBar.text?.nilIfEmpty else {
+            return
+        }
         searchBar.text = nil
         conversationCollection = buildConversationCollection()
     }

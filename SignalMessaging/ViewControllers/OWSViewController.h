@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 // BUT adjust its location upward if the keyboard appears.
 - (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
 
+- (void)removeBottomLayout;
+
 // Override point for any custom handling of keyboard constraint insets
 // Invoked while embedded in an appropriate UIAnimationCurve
 // Default implementation sets the underlying keyboard constraint offset to `after`

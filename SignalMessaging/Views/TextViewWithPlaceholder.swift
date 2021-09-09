@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol TextViewWithPlaceholderDelegate: AnyObject {
+public protocol TextViewWithPlaceholderDelegate: AnyObject {
     /// A method invoked by the text field when its cursor/selection changed without any change
     /// to the text
     func textViewDidUpdateSelection(_ textView: TextViewWithPlaceholder)
@@ -17,26 +17,28 @@ protocol TextViewWithPlaceholderDelegate: AnyObject {
     func textView(_ textView: TextViewWithPlaceholder, uiTextView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool
 }
 
-class TextViewWithPlaceholder: UIView, UITextViewDelegate {
+// MARK: -
+
+public class TextViewWithPlaceholder: UIView {
     // MARK: - Public Properties
 
     /// A delegate to receive callbacks on any data updates
-    weak var delegate: TextViewWithPlaceholderDelegate?
+    public weak var delegate: TextViewWithPlaceholderDelegate?
 
     /// Fallback placeholder text if the field is empty
-    var placeholderText: String = "" {
+    public var placeholderText: String = "" {
         didSet {
             placeholderTextView.text = placeholderText
             textView.accessibilityLabel = placeholderText
         }
     }
 
-    func acceptAutocorrectSuggestion() {
+    public func acceptAutocorrectSuggestion() {
         textView.acceptAutocorrectSuggestion()
     }
 
     /// Any text the user has input
-    var text: String? {
+    public var text: String? {
         get { textView.text }
         set {
             textView.text = newValue
@@ -44,36 +46,36 @@ class TextViewWithPlaceholder: UIView, UITextViewDelegate {
         }
     }
 
-    var dataDetectorTypes: UIDataDetectorTypes {
+    public var dataDetectorTypes: UIDataDetectorTypes {
         get { textView.dataDetectorTypes }
         set { textView.dataDetectorTypes = newValue }
     }
 
-    var isEditable: Bool {
+    public var isEditable: Bool {
         get { textView.isEditable }
         set { textView.isEditable = newValue }
     }
 
-    var linkTextAttributes: [NSAttributedString.Key: Any] {
+    public var linkTextAttributes: [NSAttributedString.Key: Any] {
         get { textView.linkTextAttributes }
         set { textView.linkTextAttributes = newValue }
     }
 
     @discardableResult
-    override func becomeFirstResponder() -> Bool {
+    public override func becomeFirstResponder() -> Bool {
         textView.becomeFirstResponder()
     }
 
     @discardableResult
-    override func resignFirstResponder() -> Bool {
+    public override func resignFirstResponder() -> Bool {
         textView.resignFirstResponder()
     }
 
-    override var canBecomeFirstResponder: Bool {
+    public override var canBecomeFirstResponder: Bool {
         textView.canBecomeFirstResponder
     }
 
-    override var isFirstResponder: Bool {
+    public override var isFirstResponder: Bool {
         textView.isFirstResponder
     }
 
@@ -98,7 +100,7 @@ class TextViewWithPlaceholder: UIView, UITextViewDelegate {
 
     // MARK: - Lifecycle
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         applyTheme()
 
@@ -178,7 +180,7 @@ class TextViewWithPlaceholder: UIView, UITextViewDelegate {
 
     /// Ensures the currently focused area is scrolled into the visible content inset
     /// If it's already visible, this will do nothing
-    func scrollToFocus(in scrollView: UIScrollView, animated: Bool) {
+    public func scrollToFocus(in scrollView: UIScrollView, animated: Bool) {
         let visibleRect = scrollView.bounds.inset(by: scrollView.adjustedContentInset)
         let rawCursorFocusRect = getUpdatedFocusLine()
         let cursorFocusRect = scrollView.convert(rawCursorFocusRect, from: self)
@@ -202,25 +204,28 @@ class TextViewWithPlaceholder: UIView, UITextViewDelegate {
         scrollView.setContentOffset(CGPoint(x: 0, y: targetYOffset), animated: animated)
     }
 
-    // MARK: - <UITextViewDelegate>
+    /// Helper to take a rect and horizontally size it to the current bounds
+    private func createWideRect(from rect: CGRect) -> CGRect {
+        return CGRect(x: 0, y: rect.minY, width: width, height: rect.height)
+    }
+}
 
-    func textViewDidChangeSelection(_ textView: UITextView) {
+// MARK: -
+
+extension TextViewWithPlaceholder: UITextViewDelegate {
+
+    public func textViewDidChangeSelection(_ textView: UITextView) {
         delegate?.textViewDidUpdateSelection(self)
     }
 
-    func textViewDidChange(_ textView: UITextView) {
+    public func textViewDidChange(_ textView: UITextView) {
         let showPlaceholder = (textView.text.count == 0)
         placeholderTextView.isHidden = !showPlaceholder
 
         delegate?.textViewDidUpdateText(self)
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         delegate?.textView(self, uiTextView: textView, shouldChangeTextIn: range, replacementText: text) ?? true
-    }
-
-    /// Helper to take a rect and horizontally size it to the current bounds
-    private func createWideRect(from rect: CGRect) -> CGRect {
-        return CGRect(x: 0, y: rect.minY, width: width, height: rect.height)
     }
 }

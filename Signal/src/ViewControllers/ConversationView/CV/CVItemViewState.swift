@@ -287,16 +287,27 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             itemViewState.accessibilityAuthorName = NSLocalizedString("ACCESSIBILITY_LABEL_SENDER_SELF",
                                                                       comment: "Accessibility label for messages sent by you.")
 
+            // clustering
+            if let previousItem = previousItem,
+               previousItem.interactionType == .outgoingMessage,
+               canClusterMessages(previousItem, item) {
+                itemViewState.isFirstInCluster = false
+            } else {
+                itemViewState.isFirstInCluster = true
+            }
+
             if let nextItem = nextItem,
-               let nextOutgoingMessage = nextItem.interaction as? TSOutgoingMessage {
-                let nextReceiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: nextOutgoingMessage)
-                let nextTimestampText = DateUtil.formatTimestampShort(nextOutgoingMessage.timestamp)
+               let nextOutgoingMessage = nextItem.interaction as? TSOutgoingMessage,
+               canClusterMessages(item, nextItem) {
+                itemViewState.isLastInCluster = false
 
                 // We can skip the "outgoing message status" footer if the next message
                 // has the same footer and no "date break" separates us...
                 // ...but always show the "sending" and "failed to send" statuses...
                 // ...and always show the "disappearing messages" animation...
                 // ...and always show the "tap to read more" footer.
+                let nextReceiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: nextOutgoingMessage)
+                let nextTimestampText = DateUtil.formatTimestampShort(nextOutgoingMessage.timestamp)
                 itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
                                                     receiptStatus == nextReceiptStatus &&
                                                     outgoingMessage.messageState != .failed &&
@@ -304,19 +315,6 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                     outgoingMessage.messageState != .pending &&
                                                     !isDisappearingMessage &&
                                                     !hasTapForMore)
-            }
-
-            // clustering
-            if let previousItem = previousItem {
-                itemViewState.isFirstInCluster = (previousItem.interactionType != .outgoingMessage ||
-                                                    !canClusterMessages(previousItem, item))
-            } else {
-                itemViewState.isFirstInCluster = true
-            }
-
-            if let nextItem = nextItem {
-                itemViewState.isLastInCluster = (nextItem.interactionType != .outgoingMessage ||
-                                                    !canClusterMessages(item, nextItem))
             } else {
                 itemViewState.isLastInCluster = true
             }
@@ -325,37 +323,31 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             owsAssertDebug(incomingSenderAddress.isValid)
             let isDisappearingMessage = incomingMessage.hasPerConversationExpiration
 
-            if let nextItem = nextItem,
-               let nextIncomingMessage = nextItem.interaction as? TSIncomingMessage {
-                let nextIncomingSenderAddress: SignalServiceAddress = nextIncomingMessage.authorAddress
-                owsAssertDebug(nextIncomingMessage.authorAddress.isValid)
-
-                let nextTimestampText = DateUtil.formatTimestampShort(nextIncomingMessage.timestamp)
-
-                // We can skip the "incoming message status" footer in a cluster if the next message
-                // has the same footer and no "date break" separates us...
-                // ...but always show the "disappearing messages" animation...
-                // ...and always show the "tap to read more" footer.
-                itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
-                                                    incomingSenderAddress == nextIncomingSenderAddress &&
-                                                    !isDisappearingMessage &&
-                                                    !hasTapForMore)
-            }
-
             // clustering
 
             if let previousItem = previousItem,
-               let previousIncomingMessage = previousItem.interaction as? TSIncomingMessage {
-                itemViewState.isFirstInCluster = (incomingSenderAddress != previousIncomingMessage.authorAddress ||
-                                                    !canClusterMessages(previousItem, item))
+               let previousIncomingMessage = previousItem.interaction as? TSIncomingMessage,
+               incomingSenderAddress == previousIncomingMessage.authorAddress,
+               canClusterMessages(previousItem, item) {
+                itemViewState.isFirstInCluster = false
             } else {
                 itemViewState.isFirstInCluster = true
             }
 
             if let nextItem = nextItem,
-               let nextIncomingMessage = nextItem.interaction as? TSIncomingMessage {
-                itemViewState.isLastInCluster = (incomingSenderAddress != nextIncomingMessage.authorAddress ||
-                                                    !canClusterMessages(item, nextItem))
+               let nextIncomingMessage = nextItem.interaction as? TSIncomingMessage,
+                incomingSenderAddress == nextIncomingMessage.authorAddress,
+                canClusterMessages(item, nextItem) {
+                itemViewState.isLastInCluster = false
+
+                // We can skip the "incoming message status" footer in a cluster if the next message
+                // has the same footer and no "date break" separates us...
+                // ...but always show the "disappearing messages" animation...
+                // ...and always show the "tap to read more" footer.
+                let nextTimestampText = DateUtil.formatTimestampShort(nextIncomingMessage.timestamp)
+                itemViewState.shouldHideFooter = (timestampText == nextTimestampText &&
+                                                    !isDisappearingMessage &&
+                                                    !hasTapForMore)
             } else {
                 itemViewState.isLastInCluster = true
             }
