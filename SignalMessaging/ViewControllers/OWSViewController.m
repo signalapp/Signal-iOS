@@ -145,6 +145,13 @@ NS_ASSUME_NONNULL_BEGIN
     return self.bottomLayoutConstraint;
 }
 
+- (void)removeBottomLayout
+{
+    [self.bottomLayoutConstraint autoRemove];
+    self.bottomLayoutView = nil;
+    self.bottomLayoutConstraint = nil;
+}
+
 - (void)observeActivation
 {
     [[NSNotificationCenter defaultCenter] addObserver:self

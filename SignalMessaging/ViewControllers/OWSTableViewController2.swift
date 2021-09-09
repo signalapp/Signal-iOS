@@ -157,24 +157,11 @@ open class OWSTableViewController2: OWSViewController {
             bottomFooter.autoPinEdge(.top, to: .bottom, of: tableView)
             bottomFooter.autoPinEdge(toSuperviewSafeArea: .leading)
             bottomFooter.autoPinEdge(toSuperviewSafeArea: .trailing)
-            if shouldAvoidKeyboard {
-                autoPinView(toBottomOfViewControllerOrKeyboard: bottomFooter, avoidNotch: true)
-            } else {
-                bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
-            }
-
             bottomFooter.setContentHuggingVerticalHigh()
             bottomFooter.setCompressionResistanceVerticalHigh()
-        } else if tableView.applyInsetsFix() {
-            // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
-            // we need to pin to the top and bottom layout guides since UIKit
-            // won't adjust our content insets.
-            tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        } else if shouldAvoidKeyboard {
-            autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
-        } else {
-            tableView.autoPinEdge(toSuperviewEdge: .bottom)
         }
+
+        updateBottomConstraint()
 
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.cellIdentifier)
 
@@ -188,6 +175,69 @@ open class OWSTableViewController2: OWSViewController {
                                                object: nil)
     }
 
+    public var shouldHideBottomFooter = false {
+        didSet {
+            let didChange = oldValue != shouldHideBottomFooter
+            if didChange, isViewLoaded {
+                updateBottomConstraint()
+            }
+        }
+    }
+
+    private var bottomFooterConstraint: NSLayoutConstraint?
+
+    private func updateBottomConstraint() {
+        bottomFooterConstraint?.autoRemove()
+        bottomFooterConstraint = nil
+        self.removeBottomLayout()
+
+        // Pin bottom edge of tableView.
+        if !shouldHideBottomFooter,
+           let bottomFooter = bottomFooter {
+            if shouldAvoidKeyboard {
+                bottomFooterConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: bottomFooter, avoidNotch: true)
+            } else {
+                bottomFooterConstraint = bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
+            }
+        } else if tableView.applyInsetsFix() {
+            // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
+            // we need to pin to the top and bottom layout guides since UIKit
+            // won't adjust our content insets.
+            bottomFooterConstraint = tableView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        } else if shouldAvoidKeyboard {
+            bottomFooterConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+        } else {
+            bottomFooterConstraint = tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        }
+
+        guard hasViewAppeared else {
+            return
+        }
+
+        struct ViewFrame {
+            let view: UIView
+            let frame: CGRect
+
+            func apply() {
+                view.frame = self.frame
+            }
+        }
+        func viewFrames(for views: [UIView]) -> [ViewFrame] {
+            views.map { ViewFrame(view: $0, frame: $0.frame) }
+        }
+        var animatedViews: [UIView] = [ tableView ]
+        if let bottomFooter = bottomFooter {
+            animatedViews.append(bottomFooter)
+        }
+        let viewFramesBefore = viewFrames(for: animatedViews)
+        self.view.layoutIfNeeded()
+        let viewFramesAfter = viewFrames(for: animatedViews)
+        for viewFrame in viewFramesBefore { viewFrame.apply() }
+        UIView.animate(withDuration: 0.15) {
+            for viewFrame in viewFramesAfter { viewFrame.apply() }
+        }
+    }
+
     @objc
     private func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("")
@@ -195,12 +245,16 @@ open class OWSTableViewController2: OWSViewController {
         applyContents()
     }
 
+    private var hasViewAppeared = false
+
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         applyTheme()
 
         tableView.tableFooterView = UIView()
+
+        hasViewAppeared = true
     }
 
     open override func viewWillDisappear(_ animated: Bool) {

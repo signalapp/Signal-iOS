@@ -42,7 +42,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.init()
 
         selectRecipientsStep()
-        self.pickerVC.shouldShowRecentConversations = false
+        self.pickerVC.shouldHideRecentConversationsTitle = true
+        let placeholderText = NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
+                                                comment: "Indicates that the user can add a text message to forwarded messages.")
+        pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
     }
 
     required init() {
@@ -109,7 +112,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.viewWillAppear(animated)
 
         applyTheme()
-        ensureApprovalTextMode()
+        ensureBottomFooterVisibility()
     }
 
     private func selectRecipientsStep() {
@@ -160,16 +163,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    fileprivate func ensureApprovalTextMode() {
+    fileprivate func ensureBottomFooterVisibility() {
         AssertIsOnMainThread()
 
-        if selectedConversations.isEmpty {
-            pickerVC.approvalTextMode = .none
-        } else {
-            let placeholderText = NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
-                                                    comment: "Indicates that the user can add a text message to forwarded messages.")
-            pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
-        }
+        pickerVC.shouldHideBottomFooter = selectedConversations.isEmpty
     }
 
     public override func willDismissInteractively() {
@@ -454,7 +451,7 @@ extension ForwardMessageViewController {
 extension ForwardMessageViewController: ConversationPickerDelegate {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
         updateCurrentMentionableAddresses()
-        ensureApprovalTextMode()
+        ensureBottomFooterVisibility()
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {

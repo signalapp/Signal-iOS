@@ -34,7 +34,6 @@
 		32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E958A925C12B3800BF12AD /* AnimatedProgressView.swift */; };
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
-		32ECD09F24C1153000EDDED0 /* TextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD09E24C1153000EDDED0 /* TextViewWithPlaceholder.swift */; };
 		32FC387926295FA50086C32B /* LoopingVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FC387826295FA30086C32B /* LoopingVideoView.swift */; };
 		34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D782367747300F5215A /* VideoEditorModel.swift */; };
 		34035D7B2367747400F5215A /* VideoEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34035D792367747300F5215A /* VideoEditorView.swift */; };
@@ -485,6 +484,8 @@
 		34EB0CEB26289D8800B62DC3 /* MessageTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */; };
 		34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */; };
 		34EB0E722629DC2B00B62DC3 /* MessageSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */; };
+		34ED17DC26EA57CA008C8BC2 /* TextViewWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED17DB26EA57C9008C8BC2 /* TextViewWithPlaceholder.swift */; };
+		34ED17DE26EA5F08008C8BC2 /* TextFieldWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED17DD26EA5F08008C8BC2 /* TextFieldWithPlaceholder.swift */; };
 		34ED55A123D0D59700446E39 /* NSItemProvider+Promises.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */; };
 		34EEECF225E846ED00574F0D /* SendPaymentMemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */; };
 		34F0566A23DA209300265283 /* GroupsV2IncomingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */; };
@@ -1091,7 +1092,6 @@
 		32E958A925C12B3800BF12AD /* AnimatedProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedProgressView.swift; sourceTree = "<group>"; };
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
-		32ECD09E24C1153000EDDED0 /* TextViewWithPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewWithPlaceholder.swift; sourceTree = "<group>"; };
 		32FC387826295FA30086C32B /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34035D782367747300F5215A /* VideoEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
@@ -1601,6 +1601,8 @@
 		34EB0CEA26289D8800B62DC3 /* MessageTimerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimerView.swift; sourceTree = "<group>"; };
 		34EB0DF42628D3B200B62DC3 /* ConversationInternalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationInternalViewController.swift; sourceTree = "<group>"; };
 		34EB0E712629DC2B00B62DC3 /* MessageSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSelectionView.swift; sourceTree = "<group>"; };
+		34ED17DB26EA57C9008C8BC2 /* TextViewWithPlaceholder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextViewWithPlaceholder.swift; sourceTree = "<group>"; };
+		34ED17DD26EA5F08008C8BC2 /* TextFieldWithPlaceholder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldWithPlaceholder.swift; sourceTree = "<group>"; };
 		34ED55A023D0D59700446E39 /* NSItemProvider+Promises.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSItemProvider+Promises.swift"; sourceTree = "<group>"; };
 		34EEECF125E846EC00574F0D /* SendPaymentMemoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendPaymentMemoViewController.swift; sourceTree = "<group>"; };
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
@@ -2773,6 +2775,8 @@
 				887C6A7724DBB16E00141B64 /* ResizingScrollView.swift */,
 				34AC0A05211B39E900997B47 /* TappableStackView.swift */,
 				34AC09FD211B39E700997B47 /* TappableView.swift */,
+				34ED17DD26EA5F08008C8BC2 /* TextFieldWithPlaceholder.swift */,
+				34ED17DB26EA57C9008C8BC2 /* TextViewWithPlaceholder.swift */,
 				4C63550122F15A6700A8ECE6 /* ThemeHeaderView.swift */,
 				34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */,
 				34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */,
@@ -3561,7 +3565,6 @@
 				45D308AC2049A439000189E4 /* PinEntryView.m */,
 				457F671A20746193000EABCD /* QuotedReplyPreview.swift */,
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
-				32ECD09E24C1153000EDDED0 /* TextViewWithPlaceholder.swift */,
 				88A4CC0F246CE2760082211F /* TransferProgressView.swift */,
 				34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */,
 				32AC5CE6255B51E900829BD8 /* JoinGroupCallPill.swift */,
@@ -5400,6 +5403,7 @@
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
 				3470249C238367EA0078D72C /* TextApprovalViewController.swift in Sources */,
 				3416BCAE2277A24000E761B4 /* StickerPackDataSource.swift in Sources */,
+				34ED17DC26EA57CA008C8BC2 /* TextViewWithPlaceholder.swift in Sources */,
 				8860CC1925084AD500A4D18E /* LinkPreviewView.swift in Sources */,
 				34AC09F8211B39B100997B47 /* CountryCodeViewController.m in Sources */,
 				451F8A341FD710C3005CB9DA /* FullTextSearcher.swift in Sources */,
@@ -5513,6 +5517,7 @@
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
 				88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
+				34ED17DE26EA5F08008C8BC2 /* TextFieldWithPlaceholder.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
 				343D69AA260B870600F8638C /* ManualStackView.swift in Sources */,
@@ -5918,7 +5923,6 @@
 				3470518E254B511B00A19468 /* ConversationViewController+CVC.swift in Sources */,
 				88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
-				32ECD09F24C1153000EDDED0 /* TextViewWithPlaceholder.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
 				F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
