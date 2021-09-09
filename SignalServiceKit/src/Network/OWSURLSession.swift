@@ -499,6 +499,13 @@ public class OWSURLSession: NSObject {
         }
     }
 
+    @available(iOS 13, *)
+    private func webSocketState(forTask task: URLSessionTask) -> WebSocketTaskState? {
+        lock.withLock {
+            self.taskStateMap[task.taskIdentifier] as? WebSocketTaskState
+        }
+    }
+
     private func removeCompletedTaskState(_ task: URLSessionTask) -> TaskState? {
         lock.withLock { () -> TaskState? in
             guard let taskState = self.taskStateMap[task.taskIdentifier] else {
@@ -719,6 +726,29 @@ extension OWSURLSession: URLSessionDownloadDelegate {
             dataTask.cancel()
             return
         }
+    }
+}
+
+// MARK: - WebSocket
+
+extension OWSURLSession: URLSessionWebSocketDelegate {
+    @available(iOS 13, *)
+    public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (URLSessionWebSocketTask.CloseCode, Data?) -> Void) -> URLSessionWebSocketTask {
+        let task = session.webSocketTask(with: request)
+        addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
+        task.resume()
+        return task
+    }
+
+    @available(iOS 13, *)
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
+        webSocketState(forTask: webSocketTask)?.openBlock(didOpenWithProtocol)
+    }
+
+    @available(iOS 13, *)
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        guard let webSocketState = removeCompletedTaskState(webSocketTask) as? WebSocketTaskState else { return }
+        webSocketState.closeBlock(closeCode, reason)
     }
 }
 
@@ -1064,7 +1094,6 @@ public extension URLRequest {
 
 private protocol TaskState {
     typealias ProgressBlock = (URLSessionTask, Progress) -> Void
-
     var progressBlock: ProgressBlock? { get }
 
     func reject(error: Error)
@@ -1108,6 +1137,25 @@ private class UploadOrDataTaskState: TaskState {
     func reject(error: Error) {
         future.reject(error)
     }
+}
+
+// MARK: - TaskState
+
+@available(iOS 13, *)
+private class WebSocketTaskState: TaskState {
+    typealias OpenBlock = (String?) -> Void
+    typealias CloseBlock = (URLSessionWebSocketTask.CloseCode, Data?) -> Void
+
+    var progressBlock: ProgressBlock? { nil }
+    let openBlock: OpenBlock
+    let closeBlock: CloseBlock
+
+    init(openBlock: @escaping OpenBlock, closeBlock: @escaping CloseBlock) {
+        self.openBlock = openBlock
+        self.closeBlock = closeBlock
+    }
+
+    func reject(error: Error) {}
 }
 
 // NSURLSession maintains a strong reference to its delegate until explicitly invalidated
@@ -1248,6 +1296,18 @@ private class URLSessionDelegateBox: NSObject {
                                  didReceive: data)
     }
  }
+
+extension URLSessionDelegateBox: URLSessionWebSocketDelegate {
+    @available(iOS 13, *)
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
+        weakDelegate?.urlSession(session, webSocketTask: webSocketTask, didOpenWithProtocol: didOpenWithProtocol)
+    }
+
+    @available(iOS 13, *)
+    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        weakDelegate?.urlSession(session, webSocketTask: webSocketTask, didCloseWith: closeCode, reason: reason)
+    }
+}
 
 // MARK: -
 
