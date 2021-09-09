@@ -1154,12 +1154,13 @@ private class SocketRequestInfo {
         }
     }
 
-    public func timeoutIfNecessary() {
+    // Returns true if the message timed out.
+    public func timeoutIfNecessary() -> Bool {
         if OWSWebSocket.verboseLogging {
             Logger.warn("\(webSocketType) \(requestUrl)")
         }
 
-        didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
+        return didFail(error: OWSHTTPError.networkFailure(requestUrl: requestUrl))
     }
 
     public func didFailInvalidRequest() {
@@ -1195,11 +1196,12 @@ private class SocketRequestInfo {
         didFail(error: error)
     }
 
-    private func didFail(error: Error) {
+    @discardableResult
+    private func didFail(error: Error) -> Bool {
         // Ensure that we only complete once.
         switch status.swap(.complete) {
         case .complete:
-            return
+            return false
         case .incomplete(_, let failure):
             DispatchQueue.global().async {
                 let statusCode = HTTPStatusCodeForError(error) ?? 0
@@ -1209,6 +1211,7 @@ private class SocketRequestInfo {
                 let socketFailure = OWSHTTPErrorWrapper(error: error)
                 failure(socketFailure)
             }
+            return true
         }
     }
 }
@@ -1422,8 +1425,9 @@ private class WebSocketConnection {
                 return
             }
 
-            requestInfo.timeoutIfNecessary()
-            delegate.webSocketRequestDidTimeout()
+            if requestInfo.timeoutIfNecessary() {
+                delegate.webSocketRequestDidTimeout()
+            }
         }
     }
 
