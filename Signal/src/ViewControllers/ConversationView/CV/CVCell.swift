@@ -122,6 +122,8 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
         layoutAttributes
     }
 
+    private var lastLayoutAttributes: CVCollectionViewLayoutAttributes?
+
     public override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
 
@@ -132,6 +134,8 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
             owsFailDebug("Could not apply layoutAttributes.")
             return
         }
+
+        lastLayoutAttributes = layoutAttributes
 
         guard let rootComponent = self.rootComponent,
               let componentView = self.componentView else {
@@ -157,6 +161,13 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
                             messageSwipeActionState: messageSwipeActionState)
 
         self.messageSwipeActionState = messageSwipeActionState
+
+        if let rootComponent = self.rootComponent,
+           let componentView = self.componentView,
+           let layoutAttributes = self.lastLayoutAttributes {
+            rootComponent.apply(layoutAttributes: layoutAttributes,
+                                componentView: componentView)
+        }
     }
 
     override public func prepareForReuse() {
@@ -183,6 +194,7 @@ public class CVCell: UICollectionViewCell, CVItemCell, CVRootComponentHost {
 
         isCellVisible = false
         messageSwipeActionState = nil
+        lastLayoutAttributes = nil
     }
 
     public override func layoutSubviews() {
