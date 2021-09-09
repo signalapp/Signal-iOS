@@ -2177,7 +2177,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualiza Signal en este dispositivo para poder unirte al grupo.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Con esta opción activa, un(a) admin del grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Con esta opción activa, un@ admin del grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Aprobar solicitudes";
@@ -2216,7 +2216,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Enlace al grupo";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Con esta opción activa, un(a) admin del grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Con esta opción activa, un@ admin del grupo debe aprobar las solicitudes de acceso para unirse al grupo.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Restablecer enlace";
@@ -2579,7 +2579,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Contactar con un admin";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Selecciona un(a) nuev@ admin antes de abandonar.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Selecciona un@ nuev@ admin antes de abandonar.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Esta persona ya forma parte del grupo.";
@@ -2759,7 +2759,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "actualiza este grupo";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Antes de abandonar, selecciona un(a) nuev@ admin para este grupo.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Antes de abandonar, selecciona un@ nuev@ admin para este grupo.";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Nuev@ admin";
@@ -3401,7 +3401,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Has bloqueado a %@ participantes de este grupo";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "La identidad más de un(a) participante de este grupo ha cambiado a no verificada. Toca para saber más.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "La identidad más de un@ participante de este grupo ha cambiado a no verificada. Toca para saber más.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Mensajes nuevos";
