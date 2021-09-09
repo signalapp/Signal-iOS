@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureAttributesAPI @"v1/accounts/attributes/"
 
 #define textSecureMessagesAPI @"v1/messages/"
+#define textSecureMultiRecipientMessageAPI @"v1/messages/multi_recipient"
 #define textSecureKeysAPI @"v2/keys"
 #define textSecureSignedKeysAPI @"v2/keys/signed"
 #define textSecureDirectoryAPI @"v1/directory"

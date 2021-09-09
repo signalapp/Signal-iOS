@@ -543,6 +543,33 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
++ (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
+                                           compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
+                                                      timestamp:(uint64_t)timestamp
+                                                       isOnline:(BOOL)isOnline
+{
+    OWSAssertDebug(ciphertext);
+    OWSAssertDebug(udAccessKey);
+    OWSAssertDebug(timestamp > 0);
+
+    // We build the URL by hand instead of passing the query parameters into the query parameters
+    // AFNetworking won't handle both query parameters and an httpBody (which we need here)
+    NSURLComponents *components = [[NSURLComponents alloc] initWithString:textSecureMultiRecipientMessageAPI];
+    components.queryItems = @[
+        [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
+        [NSURLQueryItem queryItemWithName:@"online" value:[@(isOnline) stringValue]],
+    ];
+    NSURL *url = [components URL];
+
+    TSRequest *request = [TSRequest requestWithUrl:url method:@"PUT" parameters:nil];
+    [request setValue:kSenderKeySendRequestBodyContentType forHTTPHeaderField:@"Content-Type"];
+    if (udAccessKey != nil) {
+        [self useUDAuthWithRequest:request accessKey:udAccessKey];
+    }
+    request.HTTPBody = [ciphertext copy];
+    return request;
+}
+
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey
 {
     OWSAssertDebug(signedPreKey);

@@ -6,6 +6,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SMKUDAccessKey;
 
+static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.signal-messenger.mrm";
+
 // TODO: Rework to _not_ extend NSMutableURLRequest.
 @interface TSRequest : NSMutableURLRequest
 
