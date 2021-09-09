@@ -11,9 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSViewController ()
 
-@property (nonatomic, weak) UIView *bottomLayoutView;
-@property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
+@property (nonatomic, nullable, weak) UIView *bottomLayoutView;
+@property (nonatomic, nullable) NSLayoutConstraint *bottomLayoutConstraint;
 @property (nonatomic) BOOL shouldAnimateBottomLayout;
+@property (nonatomic) BOOL hasObservedNotifications;
+@property (nonatomic) CGFloat lastBottomLayoutInset;
 
 @end
 
@@ -111,6 +113,30 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(view);
     OWSAssertDebug(!self.bottomLayoutConstraint);
 
+    [self observeNotificationsForBottomView];
+
+    self.bottomLayoutView = view;
+    if (avoidNotch) {
+        self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self
+                                                                             withInset:self.lastBottomLayoutInset];
+    } else {
+        self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom
+                                                 toEdge:ALEdgeBottom
+                                                 ofView:self.view
+                                             withOffset:self.lastBottomLayoutInset];
+    }
+    return self.bottomLayoutConstraint;
+}
+
+- (void)observeNotificationsForBottomView
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.hasObservedNotifications) {
+        return;
+    }
+    self.hasObservedNotifications = YES;
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -135,14 +161,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(keyboardDidChangeFrame:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
-
-    self.bottomLayoutView = view;
-    if (avoidNotch) {
-        self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
-    } else {
-        self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
-    }
-    return self.bottomLayoutConstraint;
 }
 
 - (void)removeBottomLayout
@@ -248,6 +266,7 @@ NS_ASSUME_NONNULL_BEGIN
     // (height) of the bottomLayoutGuide, else we'd have an unnecessary buffer between the popped keyboard and the input
     // bar.
     CGFloat newInset = MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
+    self.lastBottomLayoutInset = newInset;
 
     UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
     NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];

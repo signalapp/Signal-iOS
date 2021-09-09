@@ -210,6 +210,8 @@ open class OWSTableViewController2: OWSViewController {
             bottomFooterConstraint = tableView.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
+        bottomFooter?.isHidden = shouldHideBottomFooter
+
         guard hasViewAppeared else {
             return
         }
