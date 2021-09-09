@@ -380,7 +380,9 @@ public class OWSWebSocket: NSObject {
 
             Logger.info("Making request[\(webSocket.webSocketType)]: \(requestInfo.requestId), \(httpMethod): \(requestPath), jsonData: \(jsonData?.count ?? 0).")
 
-            currentWebSocket.sendRequest(requestInfo: requestInfo, messageData: messageData)
+            currentWebSocket.sendRequest(requestInfo: requestInfo,
+                                         messageData: messageData,
+                                         delegate: webSocket)
         } catch {
             owsFailDebug("Error: \(error).")
             requestInfo.didFailInvalidRequest()
@@ -1302,7 +1304,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 // MARK: -
 
 extension OWSWebSocket: WebSocketConnectionDelegate {
-    fileprivate func webSocketHeartBeat(_ webSocket: WebSocketConnection) {
+    fileprivate func webSocketSendHeartBeat(_ webSocket: WebSocketConnection) {
         if shouldSocketBeOpen {
             webSocket.writePing()
         } else {
@@ -1310,12 +1312,17 @@ extension OWSWebSocket: WebSocketConnectionDelegate {
             applyDesiredSocketState()
         }
     }
+
+    fileprivate func webSocketRequestDidTimeout() {
+        cycleSocket()
+    }
 }
 
 // MARK: -
 
 private protocol WebSocketConnectionDelegate: AnyObject {
-    func webSocketHeartBeat(_ webSocket: WebSocketConnection)
+    func webSocketSendHeartBeat(_ webSocket: WebSocketConnection)
+    func webSocketRequestDidTimeout()
 }
 
 // MARK: -
@@ -1367,7 +1374,7 @@ private class WebSocketConnection {
                 timer.invalidate()
                 return
             }
-            delegate.webSocketHeartBeat(self)
+            delegate.webSocketSendHeartBeat(self)
         }
     }
 
@@ -1401,14 +1408,22 @@ private class WebSocketConnection {
     }
 
     // This method is thread-safe.
-    fileprivate func sendRequest(requestInfo: SocketRequestInfo, messageData: Data) {
+    fileprivate func sendRequest(requestInfo: SocketRequestInfo,
+                                 messageData: Data,
+                                 delegate: WebSocketConnectionDelegate) {
         requestInfoMap[requestInfo.requestId] = requestInfo
 
         webSocket.write(data: messageData)
 
         let socketTimeoutSeconds: TimeInterval = 10
-        DispatchQueue.global().asyncAfter(deadline: .now() + socketTimeoutSeconds) { [weak requestInfo] in
-            requestInfo?.timeoutIfNecessary()
+        DispatchQueue.global().asyncAfter(deadline: .now() + socketTimeoutSeconds) { [weak delegate, weak requestInfo] in
+            guard let delegate = delegate,
+                  let requestInfo = requestInfo else {
+                return
+            }
+
+            requestInfo.timeoutIfNecessary()
+            delegate.webSocketRequestDidTimeout()
         }
     }
 
