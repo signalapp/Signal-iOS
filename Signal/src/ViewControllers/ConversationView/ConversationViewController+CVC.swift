@@ -573,8 +573,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             }
         }()
 
-        var benchEventIdsToComplete = [String]()
-
         let batchUpdatesBlock = {
             AssertIsOnMainThread()
 
@@ -583,15 +581,12 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                 if !DebugFlags.reduceLogChatter {
                     Logger.verbose("\(item.logSafeDescription)")
                 }
+
                 switch item.updateType {
                 case .delete(let oldIndex):
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.deleteItems(at: [indexPath])
                 case .insert(let newIndex):
-                    if let outgoingMessage = item.value.interaction as? TSOutgoingMessage, outgoingMessage.messageState == .sending {
-                        benchEventIdsToComplete.append("sendMessageSending-\(outgoingMessage.timestamp)")
-                    }
-
                     let indexPath = IndexPath(row: newIndex, section: section)
                     self.collectionView.insertItems(at: [indexPath])
                 case .move(let oldIndex, let newIndex):
@@ -599,10 +594,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
                     let newIndexPath = IndexPath(row: newIndex, section: section)
                     self.collectionView.moveItem(at: oldIndexPath, to: newIndexPath)
                 case .update(let oldIndex, _):
-                    if let outgoingMessage = item.value.interaction as? TSOutgoingMessage, outgoingMessage.messageState != .sending {
-                        benchEventIdsToComplete.append("sendMessagePostNetwork-\(outgoingMessage.timestamp)")
-                        benchEventIdsToComplete.append("sendMessageSent-\(outgoingMessage.timestamp)")
-                    }
                     let indexPath = IndexPath(row: oldIndex, section: section)
                     self.collectionView.reloadItems(at: [indexPath])
                 }
@@ -615,8 +606,6 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             guard let self = self else {
                 return
             }
-
-            BenchManager.completeEvents(eventIds: benchEventIdsToComplete)
 
             // If the scroll action is not animated, perform it _before_
             // updateViewToReflectLoad().

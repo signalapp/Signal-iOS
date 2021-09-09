@@ -988,10 +988,6 @@ class MediaGallery: Dependencies {
 
 extension MediaGallery: DatabaseChangeDelegate {
 
-    func databaseChangesWillUpdate() {
-        // no-op
-    }
-
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         // Process deletions before insertions,
         // because we can modify our existing model for deletions but have to reset with insertions.

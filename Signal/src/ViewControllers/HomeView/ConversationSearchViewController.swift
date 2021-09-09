@@ -625,10 +625,6 @@ class EmptySearchResultCell: UITableViewCell {
 
 extension ConversationSearchViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
-
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 

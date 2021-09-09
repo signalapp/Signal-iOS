@@ -150,10 +150,6 @@ private class BlockObserver: DatabaseChangeDelegate {
         self.block = block
     }
 
-    func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
-
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         block()
     }

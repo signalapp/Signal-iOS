@@ -277,31 +277,17 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
         failure:^(NSError *error) { [self reportError:error]; }];
 }
 
-- (void)completeNetworkEvent
-{
-    [BenchManager
-        completeEventWithEventId:[NSString stringWithFormat:@"sendMessageNetwork-%llu", self.message.timestamp]];
-    [BenchManager
-        startEventWithTitle:[NSString
-                                stringWithFormat:@"Send Message Milestone: Post-Network (%llu)", self.message.timestamp]
-                    eventId:[NSString stringWithFormat:@"sendMessagePostNetwork-%llu", self.message.timestamp]];
-}
-
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
         OWSFailDebug(@"Unexpected message status: %@", self.message.statusDescription);
     }
 
-    [self completeNetworkEvent];
-
     self.successHandler();
 }
 
 - (void)didFailWithError:(NSError *)error
 {
-    [self completeNetworkEvent];
-
     OWSLogError(@"Failed with error: %@ (isRetryable: %d)", error, error.isRetryable);
     self.failureHandler(error);
 }
@@ -1171,6 +1157,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
             OWSAssertDebug(message.recipientAddresses.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
+            //
+            // NOTE: This only applies to the 'note to self' conversation.
             DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 for (SignalServiceAddress *sendingAddress in message.sendingRecipientAddresses) {
                     [message updateWithReadRecipient:sendingAddress

@@ -38,10 +38,6 @@ class MockObserver {
 
 extension MockObserver: DatabaseChangeDelegate {
 
-    func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
-
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 

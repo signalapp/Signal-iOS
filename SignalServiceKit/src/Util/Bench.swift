@@ -19,13 +19,20 @@ import Foundation
 ///             }
 ///         }
 ///     }
-public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
+public func BenchAsync(title: String, logInProduction: Bool = false, block: (@escaping () -> Void) -> Void) {
     let startTime = CACurrentMediaTime()
 
     block {
         let timeElapsed = CACurrentMediaTime() - startTime
-        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-        Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
+        let formattedTime = String(format: "%0.3fms", timeElapsed * 1000)
+        let logMessage = "[Bench] title: \(title), duration: \(formattedTime)"
+        if !DebugFlags.reduceLogChatter {
+            if logInProduction {
+                Logger.info(logMessage)
+            } else {
+                Logger.debug(logMessage)
+            }
+        }
     }
 }
 
@@ -125,8 +132,8 @@ public func Bench(title: String,
 ///    [BenchManager startEventWithTitle:"message sending" eventId:message.id]
 ///    ...
 ///    [BenchManager completeEventWithEventId:message.id]
-public func BenchEventStart(title: String, eventId: BenchmarkEventId) {
-    BenchAsync(title: title) { finish in
+public func BenchEventStart(title: String, eventId: BenchmarkEventId, logInProduction: Bool = false) {
+    BenchAsync(title: title, logInProduction: logInProduction) { finish in
         eventQueue.sync {
             runningEvents[eventId] = Event(title: title, eventId: eventId, completion: finish)
         }
@@ -166,7 +173,12 @@ public class BenchManager: NSObject {
 
     @objc
     public class func startEvent(title: String, eventId: BenchmarkEventId) {
-        BenchEventStart(title: title, eventId: eventId)
+        startEvent(title: title, eventId: eventId, logInProduction: false)
+    }
+
+    @objc
+    public class func startEvent(title: String, eventId: BenchmarkEventId, logInProduction: Bool) {
+        BenchEventStart(title: title, eventId: eventId, logInProduction: logInProduction)
     }
 
     @objc

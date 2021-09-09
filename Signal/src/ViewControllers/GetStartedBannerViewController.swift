@@ -357,7 +357,6 @@ extension GetStartedBannerViewController {
 // MARK: - Database Observation
 
 extension GetStartedBannerViewController: DatabaseChangeDelegate {
-    public func databaseChangesWillUpdate() {}
 
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

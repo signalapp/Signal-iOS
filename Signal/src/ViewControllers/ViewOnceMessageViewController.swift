@@ -431,9 +431,6 @@ class ViewOnceMessageViewController: OWSViewController {
 // MARK: -
 
 extension ViewOnceMessageViewController: DatabaseChangeDelegate {
-    func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()

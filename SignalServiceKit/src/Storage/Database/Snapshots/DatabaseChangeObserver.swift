@@ -7,7 +7,6 @@ import GRDB
 
 @objc
 public protocol DatabaseChangeDelegate: AnyObject {
-    func databaseChangesWillUpdate()
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)
     func databaseChangesDidUpdateExternally()
     func databaseChangesDidReset()
@@ -124,7 +123,7 @@ public class DatabaseChangeObserver: NSObject {
 
     private static let committedChangesLock = UnfairLock()
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
-    private var hasPendingCommittedChanges: Bool {
+    private var hasCommittedChanges: Bool {
         Self.committedChangesLock.withLock {
             !self.committedChanges.isEmpty
         }
@@ -154,6 +153,19 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 
+    private let isDisplayLinkActive = AtomicBool(false)
+    private let willRequestDisplayLinkActive = AtomicBool(false)
+
+    private func didModifyPendingChanges() {
+        guard !isDisplayLinkActive.get(),
+              willRequestDisplayLinkActive.tryToSetFlag() else {
+            return
+        }
+        DispatchQueue.main.async { [weak self] in
+            self?.ensureDisplayLink()
+        }
+    }
+
     private func ensureDisplayLink() {
         AssertIsOnMainThread()
 
@@ -164,6 +176,8 @@ public class DatabaseChangeObserver: NSObject {
             return
         }
 
+        let wasDisplayLinkActive = isDisplayLinkActive.get()
+
         let shouldBeActive: Bool = {
             guard AppReadiness.isAppReady else {
                 return false
@@ -171,10 +185,17 @@ public class DatabaseChangeObserver: NSObject {
             guard !CurrentAppContext().isInBackground() else {
                 return false
             }
-            guard self.hasPendingCommittedChanges else {
-                return false
+            if self.hasCommittedChanges {
+                return true
             }
-            return true
+            var hasPendingChanges = false
+            DatabaseChangeObserver.serializedSync {
+                hasPendingChanges = !self.pendingChanges.isEmpty
+            }
+            if hasPendingChanges {
+                return true
+            }
+            return false
         }()
 
         if shouldBeActive {
@@ -191,6 +212,7 @@ public class DatabaseChangeObserver: NSObject {
             displayLink?.isPaused = true
             recentDisplayLinkDates.removeAll()
         }
+        isDisplayLinkActive.set(shouldBeActive)
     }
 
     @objc
@@ -248,6 +270,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // This should only be called by DatabaseStorage.
@@ -256,6 +280,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(interaction: interaction)
         pendingChanges.append(tableName: TSInteraction.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // This should only be called by DatabaseStorage.
@@ -264,6 +290,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(attachment: attachment)
         pendingChanges.append(tableName: TSAttachment.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // internal - should only be called by DatabaseStorage
@@ -281,6 +309,8 @@ extension DatabaseChangeObserver: TransactionObserver {
                 owsFailDebug("Could not load thread for interaction.")
             }
         }
+
+        didModifyPendingChanges()
     }
 
     // internal - should only be called by DatabaseStorage
@@ -292,6 +322,8 @@ extension DatabaseChangeObserver: TransactionObserver {
 
         pendingChanges.append(thread: thread)
         pendingChanges.append(tableName: TSThread.table.tableName)
+
+        didModifyPendingChanges()
     }
 
     // Database observation operates like so:
@@ -312,7 +344,6 @@ extension DatabaseChangeObserver: TransactionObserver {
     //     "database did change" event, at the expense of some latency.
     // * When we "publish updates":
     //   * This is done on the main thread.
-    //   * All "database change delegates" receive databaseChangesWillUpdate.
     //   * All "database change delegates" receive databaseChangesDidUpdate with the changes.
     public func databaseDidChange(with event: DatabaseEvent) {
         // Check before serializedSync() to avoid recursively obtaining the
@@ -346,6 +377,8 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
             #endif
         }
+
+        didModifyPendingChanges()
     }
 
     // See comment on databaseDidChange.
@@ -513,13 +546,11 @@ extension DatabaseChangeObserver: TransactionObserver {
             return
         }
 
-        ensureDisplayLink()
+        defer {
+            ensureDisplayLink()
+        }
 
         lastPublishUpdatesDate = Date()
-
-        for delegate in databaseChangeDelegates {
-            delegate.databaseChangesWillUpdate()
-        }
 
         Logger.verbose("databaseChangesDidUpdate")
 

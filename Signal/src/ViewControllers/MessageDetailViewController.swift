@@ -655,10 +655,6 @@ extension MediaPresentationContext {
 
 extension MessageDetailViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesWillUpdate() {
-        AssertIsOnMainThread()
-    }
-
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
