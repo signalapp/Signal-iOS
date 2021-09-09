@@ -221,6 +221,22 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dayDifference == 1;
 }
 
+// Returns the difference in minutes, ignoring seconds.
+// If both dates are the same date, returns 0.
+// If firstDate is one minute before secondDate, returns 1.
+//
+// Note: Assumes both dates use the "current" calendar.
++ (NSInteger)MinutesFromFirstDate:(NSDate *)firstDate toSecondDate:(NSDate *)secondDate
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
+    NSDateComponents *comp1 = [calendar components:units fromDate:firstDate];
+    NSDateComponents *comp2 = [calendar components:units fromDate:secondDate];
+    NSDate *date1 = [calendar dateFromComponents:comp1];
+    NSDate *date2 = [calendar dateFromComponents:comp2];
+    return [[calendar components:NSCalendarUnitMinute fromDate:date1 toDate:date2 options:0] minute];
+}
+
 // Returns the difference in hours, ignoring minutes, seconds.
 // If both dates are the same date, returns 0.
 // If firstDate is an hour before secondDate, returns 1.
@@ -495,6 +511,14 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 {
     NSInteger hourDifference = [self hoursFromFirstDate:date1 toSecondDate:date2];
     return hourDifference == 0;
+}
+
++ (BOOL)shouldShowDateBreakForTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2
+{
+    NSInteger maxMinutesBetweenTwoDateBreaks = 5;
+    NSDate *date1 = [NSDate ows_dateWithMillisecondsSince1970:timestamp1];
+    NSDate *date2 = [NSDate ows_dateWithMillisecondsSince1970:timestamp2];
+    return [self MinutesFromFirstDate:date1 toSecondDate:date2] > maxMinutesBetweenTwoDateBreaks;
 }
 
 @end

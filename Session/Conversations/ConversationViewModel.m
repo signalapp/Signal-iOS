@@ -1164,8 +1164,8 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL shouldShowDate = NO;
         if (previousViewItemTimestamp == 0) {
             shouldShowDateOnNextViewItem = YES;
-        } else if (![DateUtil isSameHourWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
-            shouldShowDateOnNextViewItem = YES;
+        } else {
+            shouldShowDateOnNextViewItem = [DateUtil shouldShowDateBreakForTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp];
         }
 
         if (shouldShowDateOnNextViewItem && canShowDate) {
