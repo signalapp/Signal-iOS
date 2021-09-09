@@ -87,6 +87,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline;
 
++ (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
+                                           compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
+                                                      timestamp:(uint64_t)timestamp
+                                                       isOnline:(BOOL)isOnline
+    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:));
+
 + (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                   phoneNumber:(NSString *)phoneNumber
                                                       authKey:(NSString *)authKey

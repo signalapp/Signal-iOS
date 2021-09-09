@@ -330,28 +330,34 @@ public class OWSWebSocket: NSObject {
 
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
         let requestPath = "/".appending(requestUrl.path)
-
-        var jsonData: Data?
-        do {
-            jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
-        } catch {
-            owsFailDebug("Error: \(error).")
-            requestInfo.didFailInvalidRequest()
-            return
-        }
+        let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: httpMethod,
+                                                                           path: requestPath,
+                                                                           requestID: requestInfo.requestId)
 
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: false)
 
-        let requestBuilder = WebSocketProtoWebSocketRequestMessage.builder(verb: httpMethod,
-                                                                           path: requestPath,
-                                                                           requestID: requestInfo.requestId)
-        if let jsonData = jsonData {
+        if let existingBody = request.httpBody {
+            requestBuilder.setBody(existingBody)
+        } else {
             // TODO: Do we need body & headers for requests with no parameters?
-            requestBuilder.setBody(jsonData)
-            httpHeaders.addHeader("content-type",
-                                  value: "application/json",
-                                  overwriteOnConflict: false)
+            let jsonData: Data?
+            do {
+                jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+            } catch {
+                owsFailDebug("Error: \(error).")
+                requestInfo.didFailInvalidRequest()
+                return
+            }
+
+            if let jsonData = jsonData {
+                requestBuilder.setBody(jsonData)
+                // If we're going to use the json serialized parameters as our body, we should overwrite
+                // the Content-Type on the request.
+                httpHeaders.addHeader("Content-Type",
+                                      value: "application/json",
+                                      overwriteOnConflict: true)
+            }
         }
 
         // Set User-Agent header.
@@ -378,7 +384,7 @@ public class OWSWebSocket: NSObject {
                 return
             }
 
-            Logger.info("Making request[\(webSocket.webSocketType)]: \(requestInfo.requestId), \(httpMethod): \(requestPath), jsonData: \(jsonData?.count ?? 0).")
+            Logger.info("Making request[\(webSocket.webSocketType)]: \(requestInfo.requestId), \(httpMethod): \(requestPath), bodyLength: \(requestProto.body?.count ?? 0).")
 
             currentWebSocket.sendRequest(requestInfo: requestInfo,
                                          messageData: messageData,
@@ -677,7 +683,7 @@ public class OWSWebSocket: NSObject {
             return false
         }
 
-        guard !FeatureFlags.deprecateREST,
+        guard FeatureFlags.deprecateREST,
               !signalService.isCensorshipCircumventionActive else {
             Logger.warn("\(webSocketType) Skipping opening of websocket due to censorship circumvention.")
             return false

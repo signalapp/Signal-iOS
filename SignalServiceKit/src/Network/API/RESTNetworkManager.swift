@@ -62,7 +62,13 @@ public class RESTSessionManager: NSObject {
         //
         // NOTE: that we send JSON and receive a binary Blob.
         // NOTE: We could enable HTTPShouldUsePipelining here.
-        sessionManager.requestSerializer = AFJSONRequestSerializer()
+        sessionManager.requestSerializer = {
+            if let requestBody = request.httpBody, request.value(forHTTPHeaderField: "Content-Type") == kSenderKeySendRequestBodyContentType {
+                return OWSSenderKeyBodyRequestSerializer(senderKeyBody: requestBody)
+            } else {
+                return AFJSONRequestSerializer()
+            }
+        }()
         sessionManager.responseSerializer = AFHTTPResponseSerializer()
 
         let httpHeaders = OWSHttpHeaders()

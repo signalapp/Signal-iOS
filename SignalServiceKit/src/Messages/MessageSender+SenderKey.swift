@@ -580,26 +580,13 @@ extension MessageSender {
         let remainingKeys = allAccessKeys.dropFirst()
         let compositeKey = remainingKeys.reduce(firstKey, ^)
 
-        var urlComponents = URLComponents(string: "v1/messages/multi_recipient")
-        urlComponents?.queryItems = [
-            .init(name: "ts", value: "\(timestamp)"),
-            .init(name: "online", value: "\(isOnline)")
-        ]
+        let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
+            ciphertext: ciphertext,
+            compositeUDAccessKey: compositeKey,
+            timestamp: timestamp,
+            isOnline: isOnline)
 
-        guard let urlString = urlComponents?.string else {
-            throw OWSAssertionError("Failed to construct URL")
-        }
-
-        let session = signalService.urlSessionForMainSignalService()
-        return session.dataTaskPromise(
-            urlString,
-            method: .put,
-            headers: [
-                "Unidentified-Access-Key": compositeKey.keyData.base64EncodedString(),
-                "Content-Type": "application/vnd.signal-messenger.mrm"
-            ],
-            body: ciphertext
-        )
+        return networkManager.makePromise(request: request)
     }
 }
 

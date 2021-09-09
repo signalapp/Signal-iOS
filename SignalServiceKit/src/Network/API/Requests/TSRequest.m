@@ -55,7 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(URL);
     OWSAssertDebug(method.length > 0);
-    OWSAssertDebug(parameters);
 
     self = [super initWithURL:URL
                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
