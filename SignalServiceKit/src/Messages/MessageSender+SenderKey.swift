@@ -59,63 +59,106 @@ extension MessageSender {
         }
     }
 
+    @objc
+    class SenderKeyStatus: NSObject {
+        enum ParticipantState {
+            case SenderKeyReady
+            case NeedsSKDM
+            case FanoutOnly
+        }
+        var participants: [SignalServiceAddress: ParticipantState]
+        init(numberOfParticipants: Int) {
+            self.participants = Dictionary(minimumCapacity: numberOfParticipants)
+        }
+
+        init(fanoutOnlyParticipants: [SignalServiceAddress]) {
+            self.participants = Dictionary(minimumCapacity: fanoutOnlyParticipants.count)
+            super.init()
+
+            fanoutOnlyParticipants.forEach { self.participants[$0] = .FanoutOnly }
+        }
+
+        @objc
+        var fanoutParticipants: [SignalServiceAddress] {
+            Array(participants.filter { $0.value == .FanoutOnly }.keys)
+        }
+
+        @objc
+        var allSenderKeyParticipants: [SignalServiceAddress] {
+            Array(participants.filter { $0.value != .FanoutOnly }.keys)
+        }
+
+        var participantsNeedingSKDM: [SignalServiceAddress] {
+            Array(participants.filter { $0.value == .NeedsSKDM }.keys)
+        }
+
+        var readyParticipants: [SignalServiceAddress] {
+            Array(participants.filter { $0.value == .SenderKeyReady }.keys)
+        }
+    }
+
     /// Filters the list of participants for a thread that support SenderKey
     @objc
-    func senderKeyParticipants(
-        thread: TSThread,
+    func senderKeyStatus(
+        for thread: TSThread,
         intendedRecipients: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
-    ) -> [SignalServiceAddress] {
+    ) -> SenderKeyStatus {
         // Sender key requires GV2
-        guard thread.isGroupV2Thread else { return [] }
+        guard let groupThread = thread as? TSGroupThread else { return .init(fanoutOnlyParticipants: intendedRecipients) }
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
-            return []
+            return .init(fanoutOnlyParticipants: intendedRecipients)
         }
 
         return databaseStorage.read { readTx in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("No local address. Sender key not supported")
-                return []
+                return .init(fanoutOnlyParticipants: intendedRecipients)
             }
             guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
                 Logger.info("Local user does not have sender key capability. Sender key not supported.")
-                return []
+                return .init(fanoutOnlyParticipants: intendedRecipients)
             }
 
-            return intendedRecipients
-                .filter { thread.recipientAddresses.contains($0) }
-                .filter { GroupManager.doesUserHaveSenderKeyCapability(address: $0, transaction: readTx) }
-                .filter { !$0.isLocalAddress }
-                .filter { [.enabled, .unrestricted].contains(udAccessMap[$0]?.udAccess.udAccessMode) }
-                .filter { $0.isValid }
-                .filter { address in
-                    // Filter out any addresses that have a session record with an invalid
-                    // registrationId. SignalClient expects registrationIds to fit in 15 bits
-                    // for multiRecipientEncrypt, but there are some reports of clients having
-                    // larger registrationIds.
-                    //
-                    // For now, let's perform a check to filter out invalid registrationIds. An
-                    // investigation into cleaning up these invalid registrationIds is ongoing.
-                    // Once we've done this, we can remove this entire filter clause.
-                    let addresses = Recipient(address: address, transaction: readTx)
-                    return addresses.devices.allSatisfy { deviceId in
-                        do {
-                            guard let sessionRecord = try sessionStore.loadSession(for: address, deviceId: Int32(deviceId), transaction: readTx),
-                                  sessionRecord.hasCurrentState else {
-                                Logger.warn("No session for address: \(address)")
-                                return false
-                            }
-                            let registrationId = try sessionRecord.remoteRegistrationId()
-                            let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
-                            owsAssertDebug(isValidRegistrationId)
-                            return isValidRegistrationId
-                        } catch {
-                            owsFailDebug("Failed to fetch registrationId for \(address): \(error)")
-                            return false
-                        }
-                    }
+            let isCurrentKeyValid = senderKeyStore.isKeyValid(for: groupThread, readTx: readTx)
+            let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
+                for: groupThread,
+                addresses: intendedRecipients,
+                readTx: readTx)
+
+            let senderKeyStatus = SenderKeyStatus(numberOfParticipants: intendedRecipients.count)
+            intendedRecipients.forEach { candidate in
+                // Sender key is UUID-only
+                guard candidate.isValid, candidate.uuid != nil, !candidate.isLocalAddress else {
+                    senderKeyStatus.participants[candidate] = .FanoutOnly
+                    return
                 }
+
+                // Sender key requires that you're a full member of the group and you support UD
+                guard GroupManager.doesUserHaveSenderKeyCapability(address: candidate, transaction: readTx),
+                      thread.recipientAddresses.contains(candidate),
+                      [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode) else {
+                    senderKeyStatus.participants[candidate] = .FanoutOnly
+                    return
+                }
+
+                // If all registrationIds aren't valid, we should fallback to fanout
+                // This should be removed once we've sorted out why there are invalid
+                // registrationIds
+                guard candidate.hasValidRegistrationIds(transaction: readTx) else {
+                    senderKeyStatus.participants[candidate] = .FanoutOnly
+                    return
+                }
+
+
+                if recipientsWithoutSenderKey.contains(candidate) || !isCurrentKeyValid {
+                    senderKeyStatus.participants[candidate] = .NeedsSKDM
+                } else {
+                    senderKeyStatus.participants[candidate] = .SenderKeyReady
+                }
+            }
+            return senderKeyStatus
         }
     }
 
@@ -125,7 +168,7 @@ extension MessageSender {
         plaintextContent: Data?,
         payloadId: NSNumber?,
         thread: TSGroupThread,
-        recipients: [SignalServiceAddress],
+        status: SenderKeyStatus,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
         sendErrorBlock: @escaping (SignalServiceAddress, NSError) -> Void
@@ -137,7 +180,7 @@ extension MessageSender {
                 plaintextContent: plaintextContent,
                 payloadId: payloadId?.int64Value,
                 thread: thread,
-                recipients: recipients,
+                status: status,
                 udAccessMap: udAccessMap,
                 senderCertificates: senderCertificates,
                 sendErrorBlock: sendErrorBlock)
@@ -149,7 +192,7 @@ extension MessageSender {
         plaintextContent: Data?,
         payloadId: Int64?,
         thread: TSGroupThread,
-        recipients: [SignalServiceAddress],
+        status: SenderKeyStatus,
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
         sendErrorBlock: @escaping (SignalServiceAddress, NSError) -> Void
@@ -174,13 +217,21 @@ extension MessageSender {
         // Without calling the perRecipient failures, we declare this as a guarantee.
         // All errors must be caught and handled. If not, we may end up with sends that
         // pend indefinitely.
-        let senderKeyGuarantee: Guarantee<Void> = senderKeyDistributionPromise(
-            recipients: recipients,
-            thread: thread,
-            originalMessage: message,
-            udAccessMap: udAccessMap,
-            sendErrorBlock: wrappedSendErrorBlock
-        ).then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
+        let senderKeyGuarantee: Guarantee<Void>
+
+        senderKeyGuarantee = { () -> Guarantee<[SignalServiceAddress]> in
+            // If none of our recipients need an SKDM let's just skip the database write.
+            if status.participantsNeedingSKDM.count > 0 {
+                return senderKeyDistributionPromise(
+                    recipients: status.allSenderKeyParticipants,
+                    thread: thread,
+                    originalMessage: message,
+                    udAccessMap: udAccessMap,
+                    sendErrorBlock: wrappedSendErrorBlock)
+            } else {
+                return .value(status.readyParticipants)
+            }
+        }().then(on: senderKeyQueue) { (senderKeyRecipients: [SignalServiceAddress]) -> Guarantee<Void> in
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
@@ -274,7 +325,7 @@ extension MessageSender {
             let recipientsNeedingSKDM = self.senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
                 addresses: recipients,
-                writeTx: writeTx)
+                readTx: writeTx)
             recipientsNotNeedingSKDM = Set(recipients).subtracting(recipientsNeedingSKDM)
 
             guard !recipientsNeedingSKDM.isEmpty else { return [] }
@@ -327,13 +378,7 @@ extension MessageSender {
                         self.sendMessage(toRecipient: messageSend)
                         return messageSend.asAnyPromise
                     }.map(on: self.senderKeyQueue) { _ -> SignalServiceAddress in
-                        try self.databaseStorage.write { writeTx in
-                            try self.senderKeyStore.recordSenderKeySent(
-                                for: thread,
-                                to: messageSend.address,
-                                writeTx: writeTx)
-                        }
-                        return messageSend.address
+                        messageSend.address
                     }.recover(on: self.senderKeyQueue) { error -> Promise<SignalServiceAddress> in
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
@@ -345,12 +390,22 @@ extension MessageSender {
             }
         }.map(on: self.senderKeyQueue) { resultArray -> [SignalServiceAddress] in
             // We only want to pass along recipients capable of receiving a senderKey message
-            return Array(recipientsNotNeedingSKDM) + resultArray.compactMap { result in
+            let successfulSends: [SignalServiceAddress] = resultArray.compactMap { result in
                 switch result {
                 case let .success(address): return address
                 case .failure: return nil
                 }
             }
+            if successfulSends.count > 0 {
+                try self.databaseStorage.write { writeTx in
+                    try successfulSends.forEach {
+                        try self.senderKeyStore.recordSenderKeySent(for: thread, to: $0, writeTx: writeTx)
+                    }
+                }
+            }
+            // We want to return all recipients that are now ready for sender key
+            return Array(recipientsNotNeedingSKDM) + successfulSends
+
         }.recover(on: senderKeyQueue) { error in
             // If we hit *any* error that we haven't handled, we should fail the send
             // for everyone.
@@ -643,5 +698,36 @@ extension MessageSender {
             throw OWSAssertionError("No data provided")
         }
         return try JSONDecoder().decode(ResponseBody410.self, from: data)
+    }
+}
+
+fileprivate extension SignalServiceAddress {
+    // We shouldn't send a SenderKey message to addresses with a session record with
+    // an invalid registrationId.
+    //
+    // SignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
+    // but there are some reports of clients having larger registrationIds.
+    //
+    // For now, let's perform a check to filter out invalid registrationIds. An
+    // investigation into cleaning up these invalid registrationIds is ongoing.
+    // Once we've done this, we can remove this entire filter clause.
+    func hasValidRegistrationIds(transaction readTx: SDSAnyReadTransaction) -> Bool {
+        let candidateDevices = MessageSender.Recipient(address: self, transaction: readTx).devices
+        return candidateDevices.allSatisfy { deviceId in
+            do {
+                guard let sessionRecord = try sessionStore.loadSession(for: self, deviceId: Int32(deviceId), transaction: readTx),
+                      sessionRecord.hasCurrentState else {
+                    Logger.warn("No session for address: \(self)")
+                    return false
+                }
+                let registrationId = try sessionRecord.remoteRegistrationId()
+                let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
+                owsAssertDebug(isValidRegistrationId)
+                return isValidRegistrationId
+            } catch {
+                owsFailDebug("Failed to fetch registrationId for \(self): \(error)")
+                return false
+            }
+        }
     }
 }

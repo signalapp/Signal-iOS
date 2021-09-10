@@ -613,24 +613,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     // 3. If we have any participants that support sender key, build a promise for their send.
-    NSArray<SignalServiceAddress *> *senderKeyAddresses = [self senderKeyParticipantsWithThread:thread
-                                                                             intendedRecipients:addresses
-                                                                                    udAccessMap:sendingAccessMap];
+    SenderKeyStatus *senderKeyStatus = [self senderKeyStatusFor:thread
+                                             intendedRecipients:addresses
+                                                    udAccessMap:sendingAccessMap];
 
     AnyPromise *_Nullable senderKeyMessagePromise = nil;
-    NSArray<SignalServiceAddress *> *fanoutSendAddresses = addresses;
-
+    NSArray<SignalServiceAddress *> *senderKeyAddresses = senderKeyStatus.allSenderKeyParticipants;
+    NSArray<SignalServiceAddress *> *fanoutSendAddresses = senderKeyStatus.fanoutParticipants;
     if ([thread isKindOfClass:[TSGroupThread class]] && senderKeyAddresses.count >= 2 && message.canSendWithSenderKey) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-
-        fanoutSendAddresses = [addresses
-            filter:^BOOL(SignalServiceAddress *_Nonnull item) { return ![senderKeyAddresses containsObject:item]; }];
-
         senderKeyMessagePromise = [self senderKeyMessageSendPromiseWithMessage:message
                                                               plaintextContent:plaintext
                                                                      payloadId:plaintextPayloadId
                                                                         thread:groupThread
-                                                                    recipients:senderKeyAddresses
+                                                                        status:senderKeyStatus
                                                                    udAccessMap:sendingAccessMap
                                                             senderCertificates:senderCertificates
                                                                 sendErrorBlock:sendErrorBlock];
@@ -641,6 +637,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             message.timestamp);
     } else {
         senderKeyAddresses = @[];
+        fanoutSendAddresses = addresses;
         if (!message.canSendWithSenderKey) {
             OWSLogInfo(
                 @"Last sender key send attempt failed for message %llu. Falling back to fanout.", message.timestamp);
