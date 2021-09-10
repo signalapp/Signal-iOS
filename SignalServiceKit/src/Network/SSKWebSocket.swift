@@ -173,7 +173,7 @@ class SSKWebSocketNative: SSKWebSocket {
 
             self.listenForNextMessage()
 
-            self.callbackQueue.asyncIfNecessary {
+            self.callbackQueue.async {
                 self.delegate?.websocketDidConnect(socket: self)
             }
         }, didCloseBlock: { [weak self] closeCode, _ in
@@ -187,7 +187,7 @@ class SSKWebSocketNative: SSKWebSocket {
     }
 
     func listenForNextMessage() {
-        DispatchQueue.global().asyncIfNecessary { [weak self] in
+        DispatchQueue.global().async { [weak self] in
             self?.webSocketTask.get()?.receive { result in
                 switch result {
                 case .success(let message):
@@ -196,7 +196,7 @@ class SSKWebSocketNative: SSKWebSocket {
                         do {
                             let message = try WebSocketProtoWebSocketMessage(serializedData: data)
                             guard let self = self else { return }
-                            self.callbackQueue.asyncIfNecessary {
+                            self.callbackQueue.async {
                                 self.delegate?.websocket(self, didReceiveMessage: message)
                             }
                         } catch {
@@ -220,38 +220,37 @@ class SSKWebSocketNative: SSKWebSocket {
     }
 
     func disconnect() {
-        webSocketTask.get()?.cancel()
-        webSocketTask.set(nil)
+        webSocketTask.swap(nil)?.cancel()
     }
 
     func write(data: Data) {
+        owsAssertDebug(hasEverConnected.get())
         guard let webSocketTask = webSocketTask.get() else {
             reportError(OWSGenericError("Missing webSocketTask."))
             return
         }
         webSocketTask.send(.data(data)) { [weak self] error in
-            if let error = error {
-                Logger.warn("Error sending websocket data \(error)")
-            }
+            guard let error = error else { return }
+            Logger.warn("Error sending websocket data \(error)")
             self?.reportError(error)
         }
     }
 
     func writePing() {
+        owsAssertDebug(hasEverConnected.get())
         guard let webSocketTask = webSocketTask.get() else {
             reportError(OWSGenericError("Missing webSocketTask."))
             return
         }
         webSocketTask.sendPing { [weak self] error in
-            if let error = error {
-                Logger.warn("Error sending websocket ping \(error)")
-            }
+            guard let error = error else { return }
+            Logger.warn("Error sending websocket ping \(error)")
             self?.reportError(error)
         }
     }
 
-    private func reportError(_ error: Error?) {
-        callbackQueue.asyncIfNecessary { [weak self] in
+    private func reportError(_ error: Error) {
+        callbackQueue.async { [weak self] in
             if let self = self,
                let delegate = self.delegate {
                 delegate.websocketDidDisconnectOrFail(socket: self, error: error)

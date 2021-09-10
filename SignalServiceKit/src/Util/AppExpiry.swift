@@ -12,7 +12,7 @@ public class AppExpiry: NSObject {
     @objc
     public let keyValueStore = SDSKeyValueStore(collection: "AppExpiry")
 
-    private struct ExpirationState: Codable {
+    private struct ExpirationState: Codable, Equatable {
         let version4: String
 
         enum Mode: String, Codable {
@@ -86,6 +86,16 @@ public class AppExpiry: NSObject {
         logExpirationState()
 
         databaseStorage.asyncWrite { transaction in
+            do {
+                // Don't write or fire notification if the value hasn't changed.
+                if let oldState: ExpirationState = try self.keyValueStore.getCodableValue(forKey: Self.expirationStateKey,
+                                                                                          transaction: transaction),
+                   oldState == state {
+                    return
+                }
+            } catch {
+                owsFailDebug("Error reading expiration state \(error)")
+            }
             do {
                 try self.keyValueStore.setCodable(
                     state,
