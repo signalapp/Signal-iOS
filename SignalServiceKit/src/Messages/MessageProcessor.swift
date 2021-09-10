@@ -228,8 +228,12 @@ public class MessageProcessor: NSObject {
     // This is tricky since there are multiple variables (e.g. network
     // perf affects fetch, CPU perf affects processing).
     public var hasSomeQueuedContent: Bool {
+        queuedContentCount >= 25
+    }
+
+    public var queuedContentCount: Int {
         pendingEnvelopesLock.withLock {
-            return pendingEnvelopes.count >= 25
+            pendingEnvelopes.count
         }
     }
 
@@ -268,17 +272,23 @@ public class MessageProcessor: NSObject {
             // messages from the queue. We should fine tune this number
             // to yield the best perf we can get.
             let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
-            let batchEnvelopes = pendingEnvelopesLock.withLock {
-                pendingEnvelopes.prefix(batchSize)
+            var batchEnvelopes = [PendingEnvelope]()
+            var pendingEnvelopesCount: Int = 0
+            pendingEnvelopesLock.withLock {
+                batchEnvelopes = Array(pendingEnvelopes.prefix(batchSize))
+                pendingEnvelopesCount = pendingEnvelopes.count
             }
 
             guard !batchEnvelopes.isEmpty else {
                 isDrainingPendingEnvelopes = false
+                if DebugFlags.internalLogging {
+                    Logger.info("Processing complete.")
+                }
                 NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
                 return false
             }
 
-            Logger.info("Processing batch of \(batchEnvelopes.count) received envelope(s).")
+            Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s).")
 
             SDSDatabaseStorage.shared.write { transaction in
                 batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }

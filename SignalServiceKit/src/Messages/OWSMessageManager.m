@@ -860,7 +860,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
-            OWSLogVerbose(@"Processing receipt message with delivery receipts.");
+            if (SSKDebugFlags.internalLogging) {
+                OWSLogInfo(@"Processing receipt message with delivery receipts.");
+            } else {
+                OWSLogVerbose(@"Processing receipt message with delivery receipts.");
+            }
             earlyTimestamps = [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
                                                        recipientDeviceId:envelope.sourceDevice
                                                           sentTimestamps:sentTimestamps
@@ -868,7 +872,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                              transaction:transaction];
             return;
         case SSKProtoReceiptMessageTypeRead:
-            OWSLogVerbose(@"Processing receipt message with read receipts.");
+            if (SSKDebugFlags.internalLogging) {
+                OWSLogInfo(@"Processing receipt message with read receipts.");
+            } else {
+                OWSLogVerbose(@"Processing receipt message with read receipts.");
+            }
             earlyTimestamps = [OWSReceiptManager.shared processReadReceiptsFromRecipient:envelope.sourceAddress
                                                                        recipientDeviceId:envelope.sourceDevice
                                                                           sentTimestamps:sentTimestamps
@@ -876,7 +884,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              transaction:transaction];
             break;
         case SSKProtoReceiptMessageTypeViewed:
-            OWSLogVerbose(@"Processing receipt message with viewed receipts.");
+            if (SSKDebugFlags.internalLogging) {
+                OWSLogInfo(@"Processing receipt message with viewed receipts.");
+            } else {
+                OWSLogVerbose(@"Processing receipt message with viewed receipts.");
+            }
             earlyTimestamps = [OWSReceiptManager.shared processViewedReceiptsFromRecipient:envelope.sourceAddress
                                                                          recipientDeviceId:envelope.sourceDevice
                                                                             sentTimestamps:sentTimestamps
@@ -888,6 +900,10 @@ NS_ASSUME_NONNULL_BEGIN
             return;
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"earlyTimestamps: %lu.", (unsigned long)earlyTimestamps.count);
+    }
+
     for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
         UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
         [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
@@ -896,6 +912,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      timestamp:envelope.timestamp
                                                     associatedMessageTimestamp:earlyTimestamp
                                                                    transaction:transaction];
+    }
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"Complete.");
     }
 }
 

@@ -274,7 +274,11 @@ public class MessageFetcherJob: NSObject {
     typealias EnvelopeJob = MessageProcessor.EnvelopeJob
 
     private class func fetchMessagesViaRest() -> Promise<Void> {
-        Logger.debug("")
+        if DebugFlags.internalLogging {
+            Logger.info("")
+        } else {
+            Logger.debug("")
+        }
 
         return firstly(on: .global()) {
             fetchBatchViaRest()
@@ -332,7 +336,13 @@ public class MessageFetcherJob: NSObject {
         // wait before fetching more envelopes.
         // We need to bound peak memory usage in the NSE when processing
         // lots of incoming message.
-        return !Self.messageProcessor.hasSomeQueuedContent
+        if messageProcessor.hasSomeQueuedContent {
+            if DebugFlags.internalLogging {
+                Logger.info("hasSomeQueuedContent: \(messageProcessor.queuedContentCount)")
+            }
+            return false
+        }
+        return true
     }
 
     // MARK: - Run Loop
