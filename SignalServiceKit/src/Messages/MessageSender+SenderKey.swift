@@ -7,6 +7,7 @@ import SignalMetadataKit
 
 extension MessageSender {
     private var senderKeyQueue: DispatchQueue { .global(qos: .userInitiated) }
+    private let maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
 
     struct Recipient {
         let address: SignalServiceAddress
@@ -39,6 +40,7 @@ extension MessageSender {
         case invalidRecipient
         case deviceUpdate
         case staleDevices
+        case oversizeMessage
         case recipientSKDMFailed(Error)
 
         var isRetryableProvider: Bool { true }
@@ -48,7 +50,7 @@ extension MessageSender {
             switch self {
             case let .recipientSKDMFailed(underlyingError):
                 result = underlyingError
-            case .invalidAuthHeader, .invalidRecipient:
+            case .invalidAuthHeader, .invalidRecipient, .oversizeMessage:
                 result = SenderKeyUnavailableError(customLocalizedDescription: localizedDescription)
             case .deviceUpdate, .staleDevices:
                 result = SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
@@ -553,9 +555,9 @@ extension MessageSender {
             contentHint: contentHint.signalClientHint,
             protocolContext: writeTx)
 
-        guard ciphertext.count <= MessageProcessor.largeEnvelopeWarningByteCount else {
-            Logger.error("serializedMessage: \(ciphertext.count) > \(MessageProcessor.largeEnvelopeWarningByteCount)")
-            throw OWSAssertionError("Unexpectedly large encrypted message.")
+        guard ciphertext.count <= maxSenderKeyEnvelopeSize else {
+            Logger.error("serializedMessage: \(ciphertext.count) > \(maxSenderKeyEnvelopeSize)")
+            throw SenderKeyError.oversizeMessage
         }
         return ciphertext
     }
