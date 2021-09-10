@@ -151,7 +151,6 @@ extension MessageSender {
                     return
                 }
 
-
                 if recipientsWithoutSenderKey.contains(candidate) || !isCurrentKeyValid {
                     senderKeyStatus.participants[candidate] = .NeedsSKDM
                 } else {
