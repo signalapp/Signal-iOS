@@ -7,7 +7,7 @@ import SignalMetadataKit
 
 extension MessageSender {
     private var senderKeyQueue: DispatchQueue { .global(qos: .userInitiated) }
-    private let maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
+    private static var maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
 
     struct Recipient {
         let address: SignalServiceAddress
@@ -555,8 +555,8 @@ extension MessageSender {
             contentHint: contentHint.signalClientHint,
             protocolContext: writeTx)
 
-        guard ciphertext.count <= maxSenderKeyEnvelopeSize else {
-            Logger.error("serializedMessage: \(ciphertext.count) > \(maxSenderKeyEnvelopeSize)")
+        guard ciphertext.count <= Self.maxSenderKeyEnvelopeSize else {
+            Logger.error("serializedMessage: \(ciphertext.count) > \(Self.maxSenderKeyEnvelopeSize)")
             throw SenderKeyError.oversizeMessage
         }
         return ciphertext
