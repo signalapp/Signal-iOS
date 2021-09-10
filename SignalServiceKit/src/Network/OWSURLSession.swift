@@ -736,7 +736,6 @@ extension OWSURLSession: URLSessionWebSocketDelegate {
     public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (URLSessionWebSocketTask.CloseCode, Data?) -> Void) -> URLSessionWebSocketTask {
         let task = session.webSocketTask(with: request)
         addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
-        task.resume()
         return task
     }
 

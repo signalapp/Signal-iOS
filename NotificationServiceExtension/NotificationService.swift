@@ -99,10 +99,22 @@ class NotificationService: UNNotificationServiceExtension {
 
         Logger.info("Beginning message fetch.")
 
-        messageFetcherJob.run().promise.then { [weak self] () -> Promise<Void> in
+        let fetchPromise = messageFetcherJob.run().promise
+        fetchPromise.timeout(seconds: 20, description: "Message Fetch Timeout.") {
+            OWSAssertionError("Message Fetch Timeout.")
+        }.catch { error in
+            Logger.warn("Error: \(error)")
+        }
+        fetchPromise.then { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
-            return self.messageProcessor.processingCompletePromise()
+            let processingCompletePromise = self.messageProcessor.processingCompletePromise()
+            fetchPromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
+                OWSAssertionError("Message Processing Timeout.")
+            }.catch { error in
+                Logger.warn("Error: \(error)")
+            }
+            return processingCompletePromise
         }.ensure { [weak self] in
             Logger.info("Message fetch completed.")
             environment.isProcessingMessages.set(false)

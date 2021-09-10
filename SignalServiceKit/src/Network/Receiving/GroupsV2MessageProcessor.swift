@@ -149,7 +149,11 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         })
 
         guard !groupIdsWithJobs.isEmpty else {
-            Logger.verbose("Queue is drained")
+            if DebugFlags.internalLogging {
+                Logger.info("Queue is drained")
+            } else {
+                Logger.verbose("Queue is drained")
+            }
             NotificationCenter.default.postNotificationNameAsync(GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue, object: nil)
             return
         }
@@ -176,7 +180,11 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
     }
 
     func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
-        return self.finder.jobCount(transaction: transaction) > 0
+        self.finder.jobCount(transaction: transaction) > 0
+    }
+
+    func pendingJobCount(transaction: SDSAnyReadTransaction) -> UInt {
+        self.finder.jobCount(transaction: transaction)
     }
 }
 
@@ -934,6 +942,11 @@ public class GroupsV2MessageProcessor: NSObject {
                                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                                 transaction: transaction)
 
+        if DebugFlags.internalLogging {
+            let jobCount = processingQueue.pendingJobCount(transaction: transaction)
+            Logger.info("jobCount: \(jobCount)")
+        }
+
         // The new envelope won't be visible to the finder until this transaction commits,
         // so drainQueue in the transaction completion.
         transaction.addAsyncCompletionOffMain {
@@ -1050,6 +1063,11 @@ public class GroupsV2MessageProcessor: NSObject {
 
     @objc
     public func hasPendingJobs(transaction: SDSAnyReadTransaction) -> Bool {
-        return processingQueue.hasPendingJobs(transaction: transaction)
+        processingQueue.hasPendingJobs(transaction: transaction)
+    }
+
+    @objc
+    public func pendingJobCount(transaction: SDSAnyReadTransaction) -> UInt {
+        processingQueue.pendingJobCount(transaction: transaction)
     }
 }

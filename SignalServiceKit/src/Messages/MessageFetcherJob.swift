@@ -283,6 +283,10 @@ public class MessageFetcherJob: NSObject {
         return firstly(on: .global()) {
             fetchBatchViaRest()
         }.map(on: .global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
+            if DebugFlags.internalLogging {
+                Logger.info("REST fetched envelopes: \(batch.envelopes.count)")
+            }
+
             let envelopeJobs: [EnvelopeJob] = batch.envelopes.compactMap { envelope in
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
