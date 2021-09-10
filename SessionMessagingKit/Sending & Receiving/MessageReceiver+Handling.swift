@@ -318,6 +318,10 @@ extension MessageReceiver {
             tsMessage.openGroupServerMessageID = serverID
             tsMessage.save(with: transaction)
         }
+        // Start expiration for sync messages
+        if let tsOutgoingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSOutgoingMessage {
+            OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsOutgoingMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
+        }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
