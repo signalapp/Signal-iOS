@@ -111,9 +111,13 @@ public protocol SSKWebSocketDelegate: AnyObject {
 // MARK: -
 
 public class SSKWebSocketManager: NSObject {
+
+    private static let canUseNativeWebsocket = false
+
     public class func buildSocket(request: URLRequest,
                                   callbackQueue: DispatchQueue? = nil) -> SSKWebSocket {
-        if #available(iOS 13, *) {
+        if canUseNativeWebsocket,
+           #available(iOS 13, *) {
             return SSKWebSocketNative(request: request, callbackQueue: callbackQueue)
         } else {
             return SSKWebSocketStarScream(request: request, callbackQueue: callbackQueue)
