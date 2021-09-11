@@ -109,7 +109,7 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
             let processingCompletePromise = self.messageProcessor.processingCompletePromise()
-            fetchPromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
+            processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 OWSAssertionError("Message Processing Timeout.")
             }.catch { error in
                 Logger.warn("Error: \(error)")
