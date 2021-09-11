@@ -149,6 +149,7 @@ class SSKWebSocketNative: SSKWebSocket {
 
     private let hasEverConnected = AtomicBool(false)
     private let isConnected = AtomicBool(false)
+    private let isDisconnecting = AtomicBool(false)
 
     // This method is thread-safe.
     var state: SSKWebSocketState {
@@ -181,9 +182,10 @@ class SSKWebSocketNative: SSKWebSocket {
             self.isConnected.set(false)
             self.webSocketTask.set(nil)
 
-            self.reportError(OWSGenericError("WebSocket did close with code \(closeCode)"))
+            self.reportError(OWSGenericError("WebSocket did close with code \(closeCode), [\(self.id)]"))
         })
         webSocketTask.set(task)
+        task.resume()
     }
 
     func listenForNextMessage() {
@@ -220,6 +222,7 @@ class SSKWebSocketNative: SSKWebSocket {
     }
 
     func disconnect() {
+        isDisconnecting.set(true)
         webSocketTask.swap(nil)?.cancel()
     }
 
@@ -230,9 +233,9 @@ class SSKWebSocketNative: SSKWebSocket {
             return
         }
         webSocketTask.send(.data(data)) { [weak self] error in
-            guard let error = error else { return }
-            Logger.warn("Error sending websocket data \(error)")
-            self?.reportError(error)
+            guard let self = self, let error = error else { return }
+            Logger.warn("Error sending websocket data \(error), [\(self.id)]")
+            self.reportError(error)
         }
     }
 
@@ -243,13 +246,18 @@ class SSKWebSocketNative: SSKWebSocket {
             return
         }
         webSocketTask.sendPing { [weak self] error in
-            guard let error = error else { return }
-            Logger.warn("Error sending websocket ping \(error)")
-            self?.reportError(error)
+            guard let self = self, let error = error else { return }
+            Logger.warn("Error sending websocket ping \(error), [\(self.id)]")
+            self.reportError(error)
         }
     }
 
     private func reportError(_ error: Error) {
+        guard !isDisconnecting.get() else {
+            // This is expected.
+            Logger.verbose("Error after disconnecting: \(error), [\(self.id)]")
+            return
+        }
         callbackQueue.async { [weak self] in
             if let self = self,
                let delegate = self.delegate {

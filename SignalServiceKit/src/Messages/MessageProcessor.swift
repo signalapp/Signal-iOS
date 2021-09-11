@@ -29,17 +29,20 @@ public class MessageProcessor: NSObject {
         }
 
         if self.hasPendingEnvelopes {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("hasPendingEnvelopes")
+            if DebugFlags.internalLogging {
+                Logger.info("hasPendingEnvelopes, queuedContentCount: \(self.queuedContentCount)")
             }
             return NotificationCenter.default.observe(
                 once: Self.messageProcessorDidFlushQueue
             ).then { _ in self.processingCompletePromise() }.asVoid()
-        } else if SDSDatabaseStorage.shared.read(
+        } else if databaseStorage.read(
             block: { Self.groupsV2MessageProcessor.hasPendingJobs(transaction: $0) }
         ) {
-            if DebugFlags.isMessageProcessingVerbose {
-                Logger.verbose("hasPendingJobs")
+            if DebugFlags.internalLogging {
+                let pendingJobCount = databaseStorage.read {
+                    Self.groupsV2MessageProcessor.pendingJobCount(transaction: $0)
+                }
+                Logger.verbose("groupsV2MessageProcessor.hasPendingJobs, pendingJobCount: \(pendingJobCount)")
             }
             return NotificationCenter.default.observe(
                 once: GroupsV2MessageProcessor.didFlushGroupsV2MessageQueue
@@ -148,6 +151,9 @@ public class MessageProcessor: NSObject {
         envelopeSource: EnvelopeSource,
         completion: @escaping (Error?) -> Void
     ) {
+        if DebugFlags.internalLogging {
+            Logger.info("")
+        }
         guard !encryptedEnvelopeData.isEmpty else {
             completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
             return
@@ -180,12 +186,17 @@ public class MessageProcessor: NSObject {
         }
 
         pendingEnvelopesLock.withLock {
+            let oldCount = pendingEnvelopes.count
             pendingEnvelopes.append(EncryptedEnvelope(
                 encryptedEnvelopeData: encryptedEnvelopeData,
                 encryptedEnvelope: encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ))
+            let newCount = pendingEnvelopes.count
+            if DebugFlags.internalLogging {
+                Logger.info("\(oldCount) -> \(newCount)")
+            }
         }
 
         drainPendingEnvelopes()
@@ -200,6 +211,7 @@ public class MessageProcessor: NSObject {
         completion: @escaping (Error?) -> Void
     ) {
         pendingEnvelopesLock.withLock {
+            let oldCount = pendingEnvelopes.count
             pendingEnvelopes.append(DecryptedEnvelope(
                 envelopeData: envelopeData,
                 plaintextData: plaintextData,
@@ -207,6 +219,10 @@ public class MessageProcessor: NSObject {
                 wasReceivedByUD: wasReceivedByUD,
                 completion: completion
             ))
+            let newCount = pendingEnvelopes.count
+            if DebugFlags.internalLogging {
+                Logger.info("\(oldCount) -> \(newCount)")
+            }
         }
 
         drainPendingEnvelopes()
@@ -282,7 +298,7 @@ public class MessageProcessor: NSObject {
             guard !batchEnvelopes.isEmpty else {
                 isDrainingPendingEnvelopes = false
                 if DebugFlags.internalLogging {
-                    Logger.info("Processing complete.")
+                    Logger.info("Processing complete: \(self.queuedContentCount).")
                 }
                 NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
                 return false
@@ -300,7 +316,12 @@ public class MessageProcessor: NSObject {
                     pendingEnvelopes = []
                     return
                 }
+                let oldCount = pendingEnvelopes.count
                 pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+                let newCount = pendingEnvelopes.count
+                if DebugFlags.internalLogging {
+                    Logger.info("\(oldCount) -> \(newCount)")
+                }
             }
 
             return true
