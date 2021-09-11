@@ -687,13 +687,32 @@ public class OWSWebSocket: NSObject {
         }
     }
 
-    // This method is thread-safe.
+    // This var is thread-safe.
     public var shouldSocketBeOpen: Bool {
+        desiredSocketState.shouldSocketBeOpen
+    }
+
+    private enum DesiredSocketState: Equatable {
+        case closed(reason: String)
+        case open(reason: String)
+
+        public var shouldSocketBeOpen: Bool {
+            switch self {
+            case .closed:
+                return false
+            case .open:
+                return true
+            }
+        }
+    }
+
+    // This method is thread-safe.
+    private var desiredSocketState: DesiredSocketState {
 
         #if TESTABLE_BUILD
         if CurrentAppContext().isRunningTests {
             Logger.warn("\(logPrefix) Suppressing socket in tests.")
-            return false
+            return .closed(reason: "Running tests")
         }
         #endif
 
@@ -704,52 +723,34 @@ public class OWSWebSocket: NSObject {
                 // When we deprecated REST, we _do_ want to open
                 // both websockets in the app extensions.
             } else {
-                if verboseLogging {
-                    Logger.info("\(logPrefix) isMainApp false")
-                }
-                return false
+                return .closed(reason: "Not main app, REST not deprecated")
             }
         }
 
         guard AppReadiness.isAppReady else {
-            if verboseLogging {
-                Logger.info("\(logPrefix) isAppReady false")
-            }
-            return false
+            return .closed(reason: "!isAppReady")
         }
 
         guard tsAccountManager.isRegisteredAndReady else {
-            if verboseLogging {
-                Logger.info("\(logPrefix) isRegisteredAndReady false")
-            }
-            return false
+            return .closed(reason: "!isRegisteredAndReady")
         }
 
         guard !appExpiry.isExpired else {
-            if verboseLogging {
-                Logger.info("\(logPrefix) isExpired false")
-            }
-            return false
+            return .closed(reason: "appExpiry.isExpired")
         }
 
         guard !signalService.isCensorshipCircumventionActive else {
             Logger.warn("\(logPrefix) Skipping opening of websocket due to censorship circumvention.")
-            return false
+            return .closed(reason: "isCensorshipCircumventionActive")
         }
 
         if let currentWebSocket = self.currentWebSocket,
            currentWebSocket.hasPendingRequests {
-            if verboseLogging {
-                Logger.info("\(logPrefix) hasPendingRequests true")
-            }
-            return true
+            return .open(reason: "hasPendingRequests")
         }
 
         if !unsubmittedRequestTokens.isEmpty {
-            if verboseLogging {
-                Logger.info("\(logPrefix) unsubmittedRequestTokens true")
-            }
-            return true
+            return .open(reason: "unsubmittedRequestTokens")
         }
 
         let shouldDrainQueue: Bool = {
@@ -793,31 +794,19 @@ public class OWSWebSocket: NSObject {
             return true
         }()
         if shouldDrainQueue {
-            return true
+            return .open(reason: "shouldDrainQueue")
         }
 
         if appIsActive.get() {
             // While app is active, keep web socket alive.
-            if verboseLogging {
-                Logger.info("\(logPrefix) appIsActive true")
-            }
-            return true
+            return .open(reason: "appIsActive")
         } else if DebugFlags.keepWebSocketOpenInBackground {
-            if verboseLogging {
-                Logger.info("\(logPrefix) keepWebSocketOpenInBackground true")
-            }
-            return true
+            return .open(reason: "keepWebSocketOpenInBackground")
         } else if hasBackgroundKeepAlive {
             // If app is doing any work in the background, keep web socket alive.
-            if verboseLogging {
-                Logger.info("\(logPrefix) hasBackgroundKeepAlive true")
-            }
-            return true
+            return .open(reason: "hasBackgroundKeepAlive")
         } else {
-            if verboseLogging {
-                Logger.info("\(logPrefix) default false")
-            }
-            return false
+            return .closed(reason: "default false")
         }
     }
 
@@ -841,6 +830,8 @@ public class OWSWebSocket: NSObject {
         }
     }
 
+    private let lastDesiredSocketState = AtomicValue<DesiredSocketState>(.closed(reason: "App launched"))
+
     // This method aligns the socket state with the "desired" socket state.
     //
     // This method is thread-safe.
@@ -859,12 +850,15 @@ public class OWSWebSocket: NSObject {
                 return
             }
 
-            let shouldSocketBeOpen = self.shouldSocketBeOpen
-            if Self.verboseLogging {
-                Logger.info("\(self.logPrefix), shouldSocketBeOpen: \(shouldSocketBeOpen), appIsActive: \(self.appIsActive.get())")
+            let desiredSocketStateNew = self.desiredSocketState
+            let desiredSocketStateOld = self.lastDesiredSocketState.swap(desiredSocketStateNew)
+            if desiredSocketStateNew != desiredSocketStateOld {
+                if Self.verboseLogging {
+                    Logger.info("\(self.logPrefix), desiredSocketState: \(desiredSocketStateOld) -> \(desiredSocketStateNew), appIsActive: \(self.appIsActive.get())")
+                }
             }
             var shouldHaveBackgroundKeepAlive = false
-            if shouldSocketBeOpen {
+            if desiredSocketStateNew.shouldSocketBeOpen {
                 self.ensureWebsocketExists()
 
                 if self.currentState != .open {
