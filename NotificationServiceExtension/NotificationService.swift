@@ -101,18 +101,18 @@ class NotificationService: UNNotificationServiceExtension {
 
         let fetchPromise = messageFetcherJob.run().promise
         fetchPromise.timeout(seconds: 20, description: "Message Fetch Timeout.") {
-            OWSAssertionError("Message Fetch Timeout.")
-        }.catch { error in
-            Logger.warn("Error: \(error)")
+            NotificationServiceError.timeout
+        }.catch { _ in
+            // Do nothing, Promise.timeout() will log timeouts.
         }
         fetchPromise.then { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
             let processingCompletePromise = self.messageProcessor.processingCompletePromise()
             processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
-                OWSAssertionError("Message Processing Timeout.")
-            }.catch { error in
-                Logger.warn("Error: \(error)")
+                NotificationServiceError.timeout
+            }.catch { _ in
+                // Do nothing, Promise.timeout() will log timeouts.
             }
             return processingCompletePromise
         }.ensure { [weak self] in
@@ -122,5 +122,9 @@ class NotificationService: UNNotificationServiceExtension {
         }.catch { error in
             Logger.warn("Error: \(error)")
         }
+    }
+
+    private enum NotificationServiceError: Error {
+        case timeout
     }
 }
