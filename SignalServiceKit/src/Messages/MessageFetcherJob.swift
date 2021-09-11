@@ -306,11 +306,18 @@ public class MessageFetcherJob: NSObject {
         }.then(on: .global()) { (envelopeJobs: [EnvelopeJob],
                                  serverDeliveryTimestamp: UInt64,
                                  hasMore: Bool) -> Promise<Void> in
+
+            let queuedContentCountOld = Self.messageProcessor.queuedContentCount
             Self.messageProcessor.processEncryptedEnvelopes(
                 envelopeJobs: envelopeJobs,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 envelopeSource: .rest
             )
+            let queuedContentCountNew = Self.messageProcessor.queuedContentCount
+
+            if DebugFlags.internalLogging {
+                Logger.info("messageProcessor.queuedContentCount: \(queuedContentCountOld) -> queuedContentCountNew")
+            }
 
             if hasMore {
                 Logger.info("fetching more messages.")
@@ -342,12 +349,18 @@ public class MessageFetcherJob: NSObject {
         // lots of incoming message.
         if messageProcessor.hasSomeQueuedContent {
             if DebugFlags.internalLogging {
-                Logger.info("hasSomeQueuedContent: \(messageProcessor.queuedContentCount)")
+                let queuedContentCount = messageProcessor.queuedContentCount
+                if queuedContentCount != Self.lastQueuedContentCount.get() {
+                    Logger.info("hasSomeQueuedContent: \(queuedContentCount)")
+                    Self.lastQueuedContentCount.set(queuedContentCount)
+                }
             }
             return false
         }
         return true
     }
+
+    private static let lastQueuedContentCount = AtomicValue<Int>(0)
 
     // MARK: - Run Loop
 

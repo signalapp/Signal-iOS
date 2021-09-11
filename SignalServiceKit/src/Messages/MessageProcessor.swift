@@ -151,9 +151,6 @@ public class MessageProcessor: NSObject {
         envelopeSource: EnvelopeSource,
         completion: @escaping (Error?) -> Void
     ) {
-        if DebugFlags.internalLogging {
-            Logger.info("")
-        }
         guard !encryptedEnvelopeData.isEmpty else {
             completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
             return
@@ -186,17 +183,12 @@ public class MessageProcessor: NSObject {
         }
 
         pendingEnvelopesLock.withLock {
-            let oldCount = pendingEnvelopes.count
             pendingEnvelopes.append(EncryptedEnvelope(
                 encryptedEnvelopeData: encryptedEnvelopeData,
                 encryptedEnvelope: encryptedEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 completion: completion
             ))
-            let newCount = pendingEnvelopes.count
-            if DebugFlags.internalLogging {
-                Logger.info("\(oldCount) -> \(newCount)")
-            }
         }
 
         drainPendingEnvelopes()
