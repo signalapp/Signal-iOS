@@ -112,7 +112,7 @@ public protocol SSKWebSocketDelegate: AnyObject {
 
 public class SSKWebSocketManager: NSObject {
 
-    private static let canUseNativeWebsocket = false
+    private static let canUseNativeWebsocket = true
 
     public class func buildSocket(request: URLRequest,
                                   callbackQueue: DispatchQueue? = nil) -> SSKWebSocket {
