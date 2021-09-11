@@ -6,7 +6,7 @@ import SignalClient
 import SignalMetadataKit
 
 extension MessageSender {
-    private var senderKeyQueue: DispatchQueue { .global(qos: .userInitiated) }
+    private var senderKeyQueue: DispatchQueue { .global(qos: .utility) }
     private static var maxSenderKeyEnvelopeSize: UInt64 { 256 * 1024 }
 
     struct Recipient {
