@@ -753,6 +753,9 @@ public class OWSWebSocket: NSObject {
         }
 
         let shouldDrainQueue: Bool = {
+            guard Self.holdWebsocketOpenUntilDrained else {
+                return false
+            }
             guard CurrentAppContext().isMainApp ||
                     CurrentAppContext().isNSE else {
                 return false
@@ -817,6 +820,8 @@ public class OWSWebSocket: NSObject {
             return false
         }
     }
+
+    private static let holdWebsocketOpenUntilDrained = false
 
     // This method is thread-safe.
     public func didReceivePush() {
