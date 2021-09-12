@@ -4700,7 +4700,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Deine Sicherheitsnummer mit %@ hat sich geändert. Möglicherweise möchtest du sie verifizieren.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scanne den auf dem Gerät deines Kontakts angezeigten QR-Code ein.";
+"SCAN_CODE_INSTRUCTIONS" = "Scanne den QR-Code deines Kontakts ein.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "QR-Code einscannen";

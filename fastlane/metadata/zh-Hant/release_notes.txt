@@ -1,3 +1,3 @@
-• Try out the new 'send messages' permission to restrict who can send messages in your groups. Great for organizing an event, making an announcement, or just shouting from the rooftops. All members must be on the latest version of Signal for the setting to appear.
-• We gave our chat bubbles a haircut. Thinner margins and shorter timestamps leave more space for your messages without sacrificing clarity.
-• We know you love speed (and we don't mean the 1994 blockbuster hit starring Sandra Bullock), so sending messages is now faster than ever.
+• 試試新的“傳送訊息”權限來限制哪些人可以在你的群組中傳送訊息。 此非常適合團體活動、發佈公告或只是想大叫讓大家都知道。 所有成員必須使用最新版本的 Signal 才能顯示此設定。
+• 我們給聊天泡泡剃了髮。 更薄的邊距和更短的時間戳在不犧牲解晰度的情況下為你的訊息留下更多空間。
+• 我們知道你喜歡速度（我們不是指 1994 年由 珊卓·布拉克 主演的大片捍衛戰警(英文片名為Speed速度)），因此現在傳送訊息的速度比以往任何時候都快。

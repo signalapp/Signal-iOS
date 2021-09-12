@@ -815,10 +815,10 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Chikumbiro che ficha";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "I have feedback on the app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Ndine mhinduro pa app";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "App Feedback";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Mhinduro pa App";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Zvimwewo";
@@ -854,7 +854,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Edza zvakare";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ma debug log anotibatsira kupedza dambudziko rako nekukurumidza.Kusiya ma log ako isarudzo yako.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Tumira Debug Log?";
@@ -953,10 +953,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Kutadziswa";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, description, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Sarudza anoshandura zita re boka,mifanidzo,tsananguro, uye chiringanguva chetsamba dzinotsakatika";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audhiyo";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Haucha gamuchire tsamba kubva kune mushandisi uyu.";
@@ -1001,7 +1001,7 @@
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Kukokwa";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Zvikumbiro & Kukokwa";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Nhengo";
@@ -1067,16 +1067,16 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "kusvika %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Muted until %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Yakanyararidzwa kusvika %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
-"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ Groups in Common";
+"CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "Mapoka %@ amuri";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Ita kontakt itsva";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares no mutual groups. */
-"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "No Groups in Common";
+"CONVERSATION_SETTINGS_NO_MUTUAL_GROUPS_SECTION_TITLE" = "Hapana mapoka amuri mese";
 
 /* Section title of the 'mutual groups' section in conversation settings view when the contact shares one mutual group. */
 "CONVERSATION_SETTINGS_ONE_MUTUAL_GROUPS_SECTION_TITLE" = "1 Group in Common";
@@ -1190,7 +1190,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@m";
 
 /* Full format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_LONG_FORMAT" = "%@ minutes ago";
+"DATE_MINUTES_AGO_LONG_FORMAT" = "Mamineti %@ apfuura";
 
 /* The present; the current time. */
 "DATE_NOW" = "Izvezvi";
@@ -1301,10 +1301,10 @@
 "DEREGISTRATION_WARNING" = "Mudziyo uyu hauna kunyoreswa.Nhamba dzako dzinogona dzakanyoreswa neSignal pane mumwe mudziyo.Bata unyorese.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Akapedzesera kuonekwa %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "Wakabatanidzwa %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Yatadza kuwana mutaro we midziyo";
@@ -1418,10 +1418,10 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Tsamba munhaurwa ino dzichatsakatika kwapera %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Nguva yako";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "mazuva";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
@@ -2480,7 +2480,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Kukokwa";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Zvikumbiro & Kukokwa";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Boka raziviswa.";

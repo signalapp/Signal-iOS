@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Sain aru";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Sõnumi, kleebise, reaktsiooni, lugemisteate või meediafaili selles vestluses kontaktilt %@ sulle saatmine ei õnnestunud.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Edastustõrge";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Sõnumi, kleebise, reaktsiooni, lugemisteate või meediafaili kontaktilt %@ sulle saatmine ei õnnestunud. Nad võisid püüda saata seda sulle otse või grupi kaudu.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Keeldu";
@@ -1424,7 +1424,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "päeva";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kui lubatud, siis kaovad selle vestluse saadetud ja saadud sõnumid pärast nende nägemist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Hetkel kaovad sõnumid pärast %@";
@@ -1442,7 +1442,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "sekundit";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Kui on lubatud, siis kaovad uutes sinu poolt alustatud vestluses saadetud ja saadud sõnumid pärast seda, kui nad on nähtud.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "nädalat";
@@ -1493,10 +1493,10 @@
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Aitäh sinu toetuse eest!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signalit loovad sinusugused inimesed.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Signali meeskond on pühendunud missioonile arendada avatud lähtekoodiga privaatsustehnoloogiat, mis kaitseb väljendusvabadust ja võimaldab turvalist ülemaailmset suhtlust. Sinu panus toidab seda põhjust. Reklaame pole. Jälgijaid pole. Ilma naljata.\n\nSinu annetus aitab maksta arendustööde, serverite ja ribalaiuse eest, loomaks rakenduste, mida kasutavad miljonid inimesed kogu maailmas privaatseks ja koheseks suhtluseks.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Miks annetada?";
@@ -1652,10 +1652,10 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Manuse allalaadimine ei õnnestunud.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Sõnumit kasutajalt %@ ei õnnestunud edastada";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Sõnumi edastamine ei õnnestunud";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Saabus duplikaatsõnum.";
@@ -1691,10 +1691,10 @@
 "ERROR_NETWORK_FAILURE" = "Võrgutõrge";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Palun aita meil Signalit täiustada, saates selle tõrkekirjelduse koos sinu seadmest pärit silumislogidega aadressil support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal beeta: Ilmnes tõrge";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Su seade pole enam ühendatud. Sõnumite saatmise jätkamiseks ühenda palun uuesti.";
@@ -1742,7 +1742,7 @@
 "FORWARD_MESSAGE" = "Edasta sõnum";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Edastatud sõnumid saadetakse nüüd koheselt.";
 
 /* Label for button to proceed with forwarding a single message. */
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Saada sõnum";
@@ -1862,10 +1862,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ on blokeeritud";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Ainult selle grupi administraatorid saavad kõnet alustada.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Ei saa grupikõnet alustada";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ on blokeeritud";
@@ -2126,22 +2126,22 @@
 "GROUP_INVITES_VIEW_TITLE" = "Liikmekutsed";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Grupi sätteid muudeti nii, et kõigil on lubatud sõnumeid saata.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Sa muutsid grupi sätteid nii, et lubad kõigil liikmetel sõnumeid saata.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ muutis grupi sätteid nii, et kõigil liikmetel on lubatud sõnumeid saata.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Grupi sätteid muudeti nii, et ainult administraatoritel on lubatud sõnumeid saata.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Sa muutsid grupi sätteid nii, et lubad ainult administraatoritel sõnumeid saata.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ muutis grupi sätteid nii, et ainult administraatoritel on lubatud sõnumeid saata.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "See grupilink pole enam kehtiv.";
@@ -2573,7 +2573,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administraatorid";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Ainult %@ saavad sõnumeid saata.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Sõnum administraatorile";
@@ -2900,7 +2900,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Kleebised";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Double tap and hold to record. Release to send or slide left to cancel. Double tap and slide up to lock recording.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Salvestamiseks tee topeltklõps ja hoia all. Saatmiseks lase lahti, tühistamiseks libista vasakule. Tee topeltklõps ja libista üles salvestamise lukustamiseks.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Häälsõnum";
@@ -3116,19 +3116,19 @@
 "MESSAGE_ACTION_DETAILS" = "Rohkem infot";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "New Email Message";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Uus e-posti sõnum";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email not configured.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-post pole seadistatud.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Edasta see sõnum";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Edasta valitud sõnumid";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Open Group Invite";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Ava grupikutse";
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Ava link";
@@ -3158,7 +3158,7 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Meedia jagamine";
 
 /* Title for message actions for a group invite link. */
-"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Group Invite";
+"MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Grupikutse";
 
 /* Title for message actions for a sticker pack. */
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Kleebisepakk";
@@ -5126,7 +5126,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Saadetud meedia kvaliteet";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Vali sinu poolt saadetavate fotode ja videote kvaliteet.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Saadetud meedia";
@@ -5135,7 +5135,7 @@
 "SETTINGS_DATA_TITLE" = "Andmekasutus";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Default Timer for New Chats";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Uute gruppide sõnumite vaikimisi kestus";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Kustuta konto";
@@ -5165,7 +5165,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Kaduvad sõnumid";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Set a default disappearing message timer for all new chats started by you.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Määra kaduvate sõnumite vaikimisi kestus kõigile sinu poolt loodud uutele gruppidele.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Anneta Signalile";
@@ -5294,7 +5294,7 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Kõik valuutad";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Kanna kontojääk üle";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Deaktiveeri";
@@ -5303,7 +5303,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Deaktiveeri maksed";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Kui deaktiveerid maksed, siis pole sul enam võimalik MobileCoine Signali kaudu saata ega saada.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Kas deaktiveerida maksed?";
@@ -5495,7 +5495,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Maksekonto taastatud.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Sisesta käsitsi";
@@ -5627,7 +5627,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Ära tee ekraanipilti ega saada e-postiga.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";
@@ -6008,7 +6008,7 @@
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Ühiseid gruppe pole. Vaata taotlused hoolikalt üle.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Selles grupis pole kontakte. Kontrolli taotlusti tähelepanelikult.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "See sõnum kustutati.";

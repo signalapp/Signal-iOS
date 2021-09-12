@@ -1,3 +1,3 @@
-• Try out the new 'send messages' permission to restrict who can send messages in your groups. Great for organizing an event, making an announcement, or just shouting from the rooftops. All members must be on the latest version of Signal for the setting to appear.
-• We gave our chat bubbles a haircut. Thinner margins and shorter timestamps leave more space for your messages without sacrificing clarity.
-• We know you love speed (and we don't mean the 1994 blockbuster hit starring Sandra Bullock), so sending messages is now faster than ever.
+• In deze versie voegen we een nieuwe machtiging toe aan groepen: 'berichten verzenden'. Hiermee kun je instellen wie er berichten mag verzenden aan de groep. Handig als je een evenement organiseert, als je de groep alleen wilt gebruiken voor aankondigingen of meldingen, of als je alleen je eigen mening tolereert 🤐. Alle groepsleden moeten de nieuwste versie van Signal gebruiken anders verschijnt deze instelling niet in het groepsinstellingen-menu.
+• Dunnere marges en kortere tijdsindicaties geven meer ruimte aan je bericht zonder in te leveren op overzichtelijkheid.
+• Het verzenden van berichten gaat nu sneller dan het ooit eerder ging.
