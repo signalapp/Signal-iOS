@@ -626,7 +626,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
             viewState.scrollActionForUpdate = nil
 
             if !finished {
-                Logger.warn("performBatchUpdates did not finish")
+                Logger.verbose("performBatchUpdates did not finish")
                 if DebugFlags.internalLogging {
                     Logger.warn("Layout: \(self.layout.debugDescription)")
                     Logger.warn("prevRenderState: \(update.prevRenderState.debugDescription)")
