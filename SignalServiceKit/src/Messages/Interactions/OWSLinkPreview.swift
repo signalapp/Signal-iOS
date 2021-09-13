@@ -404,6 +404,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
             }
             return request
         }
+        urlSession.failOnError = false
         return urlSession
     }
 
