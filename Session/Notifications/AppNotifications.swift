@@ -174,7 +174,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let context = Contact.context(for: thread)
-        let senderName = Storage.shared.getContact(with: incomingMessage.authorId)?.displayName(for: context) ?? incomingMessage.authorId
+        let senderName = Storage.shared.getContact(with: incomingMessage.authorId, using: transaction)?.displayName(for: context) ?? incomingMessage.authorId
 
         let notificationTitle: String?
         switch previewType {
