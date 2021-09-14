@@ -145,7 +145,10 @@ extension MessageReceiver {
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: true, durationSeconds: duration)
         configuration.save(with: transaction)
-        let senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+        var senderDisplayName: String? = nil
+        if senderPublicKey != getUserHexEncodedPublicKey() {
+            senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+        }
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
@@ -165,7 +168,10 @@ extension MessageReceiver {
         guard let thread = threadOrNil else { return }
         let configuration = OWSDisappearingMessagesConfiguration(threadId: thread.uniqueId!, enabled: false, durationSeconds: 24 * 60 * 60)
         configuration.save(with: transaction)
-        let senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+        var senderDisplayName: String? = nil
+        if senderPublicKey != getUserHexEncodedPublicKey() {
+            senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
+        }
         let message = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: messageSentTimestamp, thread: thread,
             configuration: configuration, createdByRemoteName: senderDisplayName, createdInExistingGroup: false)
         message.save(with: transaction)
