@@ -34,13 +34,15 @@ public class SenderKeyStore: NSObject {
     public func recipientsInNeedOfSenderKey(
         for thread: TSGroupThread,
         addresses: [SignalServiceAddress],
-        writeTx: SDSAnyWriteTransaction
+        readTx: SDSAnyReadTransaction
     ) -> [SignalServiceAddress] {
         var addressesNeedingSenderKey = Set(addresses)
+
         storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
-                  let keyMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
-                // No cached metadata. All recipients will need an SKDM
+            // If we haven't saved a distributionId yet, then there's no way we have any keyMetadata cached
+            // All intended recipients will certainly need an SKDM (if they even support sender key)
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
+                  let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx) else {
                 return
             }
 
@@ -50,7 +52,7 @@ public class SenderKeyStore: NSObject {
                 do {
                     // Only remove the recipient in question from our send targets if the cached state contains
                     // every device from the current state. Any new devices mean we need to re-send.
-                    let currentRecipientState = try KeyRecipient.currentState(for: address, transaction: writeTx)
+                    let currentRecipientState = try KeyRecipient.currentState(for: address, transaction: readTx)
                     if cachedRecipientState.containsEveryDevice(from: currentRecipientState) {
                         addressesNeedingSenderKey.remove(address)
                     }
@@ -102,16 +104,30 @@ public class SenderKeyStore: NSObject {
         }
     }
 
+    private func _locked_isKeyValid(for thread: TSGroupThread, readTx: SDSAnyReadTransaction) -> Bool {
+        storageLock.assertOwner()
+
+        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
+              let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx) else { return false }
+
+        let currentKeyRecipients = Set(keyMetadata.keyRecipients.keys)
+        let currentGroupMembership = thread.groupMembership.fullMembers
+        let didSomeoneLeaveTheGroup = currentKeyRecipients.subtracting(currentGroupMembership).count > 0
+
+        return keyMetadata.isValid && !didSomeoneLeaveTheGroup
+    }
+
+    public func isKeyValid(for thread: TSGroupThread, readTx: SDSAnyReadTransaction) -> Bool {
+        storageLock.withLock {
+            _locked_isKeyValid(for: thread, readTx: readTx)
+        }
+    }
+
     public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
-                  let keyMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else { return }
+            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else { return }
 
-            let currentKeyRecipients = Set(keyMetadata.keyRecipients.keys)
-            let currentGroupMembership = thread.groupMembership.fullMembers
-            let didSomeoneLeaveTheGroup = currentKeyRecipients.subtracting(currentGroupMembership).count > 0
-
-            if !keyMetadata.isValid || didSomeoneLeaveTheGroup {
+            if !_locked_isKeyValid(for: thread, readTx: writeTx) {
                 setMetadata(nil, for: keyId, writeTx: writeTx)
             }
         }
@@ -242,15 +258,39 @@ extension SenderKeyStore {
         }
     }
 
-    fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
+    fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> DistributionId? {
         storageLock.assertOwner()
 
         if let cachedValue = sendingDistributionIdCache[threadId] {
             return cachedValue
-        } else if let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: writeTx),
+        } else if let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: readTx),
                   let persistedUUID = UUID(uuidString: persistedString) {
             sendingDistributionIdCache[threadId] = persistedUUID
             return persistedUUID
+        } else {
+            // No distributionId yet. Return nil.
+            return nil
+        }
+    }
+
+    fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> KeyId? {
+        storageLock.assertOwner()
+
+        guard let localUuid = tsAccountManager.localUuid else {
+            owsFailDebug("No local uuid")
+            return nil
+        }
+        guard let distributionId = distributionIdForSendingToThreadId(threadId, readTx: readTx) else {
+            return nil
+        }
+        return Self.buildKeyId(addressUuid: localUuid, distributionId: distributionId)
+    }
+
+    fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
+        storageLock.assertOwner()
+
+        if let existingId = distributionIdForSendingToThreadId(threadId, readTx: writeTx) {
+            return existingId
         } else {
             let distributionId = UUID()
             sendingDistributionIdStore.setString(distributionId.uuidString, key: threadId, transaction: writeTx)
@@ -260,6 +300,8 @@ extension SenderKeyStore {
     }
 
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> KeyId? {
+        storageLock.assertOwner()
+
         guard let localUuid = tsAccountManager.localUuid else {
             owsFailDebug("No local uuid")
             return nil
@@ -328,7 +370,7 @@ private struct KeyRecipient: Codable, Dependencies {
     }
 
     /// Build a KeyRecipient for the given address by fetching all of the devices and corresponding registrationIds
-    static func currentState(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) throws -> KeyRecipient {
+    static func currentState(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) throws -> KeyRecipient {
         guard let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: transaction),
               let deviceIds = recipient.devices.array as? [NSNumber] else {
             throw OWSAssertionError("Invalid device array")
@@ -339,7 +381,12 @@ private struct KeyRecipient: Codable, Dependencies {
             // We have to fetch the registrationId since deviceIds can be reused.
             // By comparing a set of (deviceId,registrationId) structs, we should be able to detect reused
             // deviceIds that will need an SKDM
-            let registrationId = try Self.sessionStore.loadSession(for: $0, context: transaction)?.remoteRegistrationId()
+            let registrationId = try Self.sessionStore.loadSession(
+                for: SignalServiceAddress(from: $0),
+                deviceId: Int32($0.deviceId),
+                transaction: transaction
+            )?.remoteRegistrationId()
+
             return Device(deviceId: $0.deviceId, registrationId: registrationId)
         }
         return KeyRecipient(ownerAddress: address, devices: Set(devices))
