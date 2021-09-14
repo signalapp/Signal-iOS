@@ -105,17 +105,19 @@ extension MessageSender {
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
         // Sender key requires GV2
-        guard let groupThread = thread as? TSGroupThread else { return .init(fanoutOnlyParticipants: intendedRecipients) }
+        guard let localAddress = self.tsAccountManager.localAddress else {
+            owsFailDebug("No local address. Sender key not supported")
+            return .init(fanoutOnlyParticipants: intendedRecipients)
+        }
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
             return .init(fanoutOnlyParticipants: intendedRecipients)
         }
+        guard let groupThread = thread as? TSGroupThread, groupThread.isGroupV2Thread else {
+            return .init(fanoutOnlyParticipants: intendedRecipients)
+        }
 
         return databaseStorage.read { readTx in
-            guard let localAddress = self.tsAccountManager.localAddress else {
-                owsFailDebug("No local address. Sender key not supported")
-                return .init(fanoutOnlyParticipants: intendedRecipients)
-            }
             guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
                 Logger.info("Local user does not have sender key capability. Sender key not supported.")
                 return .init(fanoutOnlyParticipants: intendedRecipients)
@@ -151,6 +153,8 @@ extension MessageSender {
                     return
                 }
 
+                // The recipient is good to go for sender key! Though, they need an SKDM
+                // if they don't have a current valid sender key.
                 if recipientsWithoutSenderKey.contains(candidate) || !isCurrentKeyValid {
                     senderKeyStatus.participants[candidate] = .NeedsSKDM
                 } else {
@@ -315,10 +319,10 @@ extension MessageSender {
                 throw OWSAssertionError("Invalid account")
             }
 
-            // Let's expire the key if it went invalid.
-            // If it went invalid, we'll want to make sure we send an SKDM with the new key
-            // to every participant.
-            // If it's *about* to go invalid, that key will still be used for the rest of this send flow.
+            // Even though earlier in the promise chain we check key expiration and who needs an SKDM
+            // We should recheck all of this info again just in case that data is no longer valid.
+            // e.g. The key expired since we last checked. Now *all* recipients need the current SKDM,
+            // not just the ones that needed it when we last checked.
             self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
 
             let recipientsNeedingSKDM = self.senderKeyStore.recipientsInNeedOfSenderKey(

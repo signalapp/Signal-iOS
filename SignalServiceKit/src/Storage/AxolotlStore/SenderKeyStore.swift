@@ -126,9 +126,10 @@ public class SenderKeyStore: NSObject {
     public func expireSendingKeyIfNecessary(for thread: TSGroupThread, writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else { return }
-            guard _locked_isKeyValid(for: thread, readTx: writeTx) else { return }
 
-            setMetadata(nil, for: keyId, writeTx: writeTx)
+            if !_locked_isKeyValid(for: thread, readTx: writeTx) {
+                setMetadata(nil, for: keyId, writeTx: writeTx)
+            }
         }
     }
 
