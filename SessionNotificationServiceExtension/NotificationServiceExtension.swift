@@ -37,10 +37,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 do {
                     let (message, proto) = try MessageReceiver.parse(envelopeAsData, openGroupMessageServerID: nil, using: transaction)
                     let senderPublicKey = message.sender!
-                    if (senderPublicKey == userPublicKey) {
-                        // Ignore PNs for messages sent by the current user
-                        return self.completeSilenty()
-                    }
                     var senderDisplayName = Storage.shared.getContact(with: senderPublicKey)?.displayName(for: .regular) ?? senderPublicKey
                     let snippet: String
                     var userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
@@ -80,6 +76,12 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         default: return self.completeSilenty()
                         }
                     default: return self.completeSilenty()
+                    }
+                    if (senderPublicKey == userPublicKey) {
+                        // Ignore PNs for messages sent by the current user
+                        // after handling the message. Otherwise the closed
+                        // group self-send messages won't show.
+                        return self.completeSilenty()
                     }
                     notificationContent.userInfo = userInfo
                     notificationContent.badge = 1
