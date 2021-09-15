@@ -189,8 +189,10 @@ extension MessageReceiver {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Profile
+        var userProfileKy: OWSAES256Key? = nil
+        if let profileKey = message.profileKey { userProfileKy = OWSAES256Key(data: profileKey) }
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
-            profileKey: given(message.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
+            profileKey: userProfileKy, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         // Initial configuration sync
         if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
             UserDefaults.standard[.hasSyncedInitialConfiguration] = true
@@ -199,7 +201,7 @@ extension MessageReceiver {
             for contactInfo in message.contacts {
                 let sessionID = contactInfo.publicKey!
                 let contact = Contact(sessionID: sessionID)
-                contact.profileEncryptionKey = given(contactInfo.profileKey) { OWSAES256Key(data: $0)! }
+                if let profileKey = contactInfo.profileKey { contact.profileEncryptionKey = OWSAES256Key(data: profileKey) }
                 contact.profilePictureURL = contactInfo.profilePictureURL
                 contact.name = contactInfo.displayName
                 Storage.shared.setContact(contact, using: transaction)
