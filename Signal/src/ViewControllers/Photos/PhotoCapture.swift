@@ -489,7 +489,7 @@ class PhotoCapture: NSObject {
                 try self.startAudioCapture()
                 return try self.captureOutput.beginMovie(delegate: self, aspectRatio: aspectRatio)
             }.done(on: self.captureOutput.movieRecordingQueue) { movieRecording in
-                movieRecordingBox.movieRecording.set(movieRecording)
+                movieRecordingBox.set(movieRecording)
             }
         }.done {
             self.setTorchMode(self.flashMode.toTorchMode)
@@ -716,23 +716,38 @@ class CaptureOutput: NSObject {
     // We handle that case by marking that recording as aborted
     // before it exists using this box.
     struct MovieRecordingBox {
-        let aborted = AtomicBool(false)
-        let movieRecording = AtomicOptional<MovieRecording>(nil)
+        private let invalidated = AtomicBool(false)
+        private let movieRecording = AtomicOptional<MovieRecording>(nil)
+
+        func set(_ value: MovieRecording) {
+            movieRecording.set(value)
+        }
+
+        func invalidate() -> MovieRecording? {
+            let value = self.value
+            invalidated.set(true)
+            return value
+        }
+
+        var value: MovieRecording? {
+            guard !invalidated.get() else {
+                return nil
+            }
+            return movieRecording.get()
+        }
     }
     private let _movieRecordingBox = AtomicOptional<MovieRecordingBox>(nil)
     var currentMovieRecording: MovieRecording? {
-        _movieRecordingBox.get()?.movieRecording.get()
+        _movieRecordingBox.get()?.value
     }
     func clearMovieRecording() -> MovieRecording? {
         let box = _movieRecordingBox.swap(nil)
-        let movieRecording = box?.movieRecording.get()
-        box?.aborted.set(true)
-        return movieRecording
+        return box?.invalidate()
     }
     func newMovieRecordingBox() -> MovieRecordingBox {
         let newBox = MovieRecordingBox()
         let oldBox = _movieRecordingBox.swap(newBox)
-        oldBox?.aborted.set(true)
+        oldBox?.invalidate()
         return newBox
     }
 
