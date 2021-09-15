@@ -93,6 +93,11 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         }
     }
 
+    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
+        let urlString = groupInviteLinkViewModel.url.absoluteString
+        return "\(urlString).\(NSStringForAttachmentThumbnailQuality(thumbnailQuality))"
+    }
+
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
 
     @objc
