@@ -695,14 +695,6 @@ public class OWSLinkPreview: MTLModel {
         guard let imageMimeType = MIMETypeUtil.mimeType(forFileExtension: imageFileExtension) else {
             return nil
         }
-        let kValidMimeTypes = [
-            OWSMimeTypeImagePng,
-            OWSMimeTypeImageJpeg,
-            OWSMimeTypeImageGif,
-        ]
-        guard kValidMimeTypes.contains(imageMimeType) else {
-            return nil
-        }
         return imageMimeType
     }
 
