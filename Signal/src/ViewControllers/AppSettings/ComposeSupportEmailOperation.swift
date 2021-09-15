@@ -52,13 +52,17 @@ struct SupportEmailModel: Dependencies {
 @objc
 final class ComposeSupportEmailOperation: NSObject {
 
-    enum EmailError: LocalizedError {
+    enum EmailError: LocalizedError, UserErrorDescriptionProvider {
         case logUploadTimedOut
         case logUploadFailure(underlyingError: LocalizedError?)
         case invalidURL
         case failedToOpenURL
 
         public var errorDescription: String? {
+            localizedDescription
+        }
+
+        public var localizedDescription: String {
             switch self {
             case .logUploadTimedOut:
                 return NSLocalizedString("ERROR_DESCRIPTION_REQUEST_TIMED_OUT",

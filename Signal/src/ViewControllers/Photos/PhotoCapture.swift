@@ -32,6 +32,8 @@ protocol PhotoCaptureDelegate: AnyObject {
 
 }
 
+// MARK: -
+
 @objc
 class PhotoCapture: NSObject {
 
@@ -40,7 +42,8 @@ class PhotoCapture: NSObject {
     // There can only ever be one `CapturePreviewView` per AVCaptureSession
     lazy private(set) var previewView = CapturePreviewView(session: session)
 
-    private let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
+    fileprivate static let sessionQueue = DispatchQueue(label: "PhotoCapture.sessionQueue")
+    private var sessionQueue: DispatchQueue { PhotoCapture.sessionQueue }
 
     private var currentCaptureInput: AVCaptureDeviceInput?
     private let captureOutput: CaptureOutput
@@ -382,7 +385,7 @@ class PhotoCapture: NSObject {
     private var previousZoomFactor: CGFloat = 1.0
 
     public func updateZoom(alpha: CGFloat) {
-        assert(alpha >= 0 && alpha <= 1)
+        owsAssertDebug(alpha >= 0 && alpha <= 1)
         sessionQueue.async {
             guard let captureDevice = self.captureDevice else {
                 owsFailDebug("captureDevice was unexpectedly nil")
@@ -477,14 +480,17 @@ class PhotoCapture: NSObject {
         }
 
         let aspectRatio = captureOutputAspectRatio
-        sessionQueue.async(.promise) {
-            self.session.beginConfiguration()
-            defer { self.session.commitConfiguration() }
+        firstly(on: captureOutput.movieRecordingQueue) { () -> Promise<Void> in
+            let movieRecordingBox = self.captureOutput.newMovieRecordingBox()
+            return firstly(on: self.sessionQueue) {
+                self.session.beginConfiguration()
+                defer { self.session.commitConfiguration() }
 
-            try self.startAudioCapture()
-            return try self.captureOutput.beginMovie(delegate: self, aspectRatio: aspectRatio)
-        }.done(on: captureOutput.movieRecordingQueue) { movieRecording in
-            self.captureOutput.movieRecording = movieRecording
+                try self.startAudioCapture()
+                return try self.captureOutput.beginMovie(delegate: self, aspectRatio: aspectRatio)
+            }.done(on: self.captureOutput.movieRecordingQueue) { movieRecording in
+                movieRecordingBox.movieRecording.set(movieRecording)
+            }
         }.done {
             self.setTorchMode(self.flashMode.toTorchMode)
             self.delegate?.photoCaptureDidBeginMovie(self)
@@ -529,6 +535,8 @@ class PhotoCapture: NSObject {
     }
 }
 
+// MARK: -
+
 extension PhotoCapture: VolumeButtonObserver {
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         delegate?.beginCaptureButtonAnimation(0.5)
@@ -554,6 +562,8 @@ extension PhotoCapture: VolumeButtonObserver {
         cancelMovieCapture()
     }
 }
+
+// MARK: -
 
 extension PhotoCapture: CaptureButtonDelegate {
     func didTapCaptureButton(_ captureButton: CaptureButton) {
@@ -584,6 +594,8 @@ extension PhotoCapture: CaptureButtonDelegate {
         updateZoom(alpha: zoomAlpha)
     }
 }
+
+// MARK: -
 
 extension PhotoCapture: CaptureOutputDelegate {
 
@@ -635,6 +647,10 @@ extension PhotoCapture: CaptureOutputDelegate {
         case .failure(let error):
             delegate.photoCapture(self, processingDidError: error)
         case .success(let movieUrl):
+            guard OWSMediaUtils.isValidVideo(path: movieUrl.path) else {
+                delegate.photoCapture(self, processingDidError: PhotoCaptureError.invalidVideo)
+                return
+            }
             guard let dataSource = try? DataSourcePath.dataSource(with: movieUrl, shouldDeleteOnDeallocation: true) else {
                 delegate.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
                 return
@@ -672,6 +688,8 @@ protocol CaptureOutputDelegate: AnyObject {
     var captureOutputPhotoRect: CGRect { get }
 }
 
+// MARK: -
+
 protocol ImageCaptureOutput: AnyObject {
     var avOutput: AVCaptureOutput { get }
     var flashMode: AVCaptureDevice.FlashMode { get set }
@@ -680,6 +698,8 @@ protocol ImageCaptureOutput: AnyObject {
     func takePhoto(delegate: CaptureOutputDelegate, captureRect: CGRect)
 }
 
+// MARK: -
+
 class CaptureOutput: NSObject {
 
     let imageOutput: ImageCaptureOutput
@@ -687,8 +707,34 @@ class CaptureOutput: NSObject {
     let videoDataOutput: AVCaptureVideoDataOutput
     let audioDataOutput: AVCaptureAudioDataOutput
 
-    let movieRecordingQueue = DispatchQueue(label: "CaptureOutput.movieRecordingQueue", qos: .userInitiated)
-    var movieRecording: MovieRecording?
+    static let movieRecordingQueue = DispatchQueue(label: "CaptureOutput.movieRecordingQueue", qos: .userInitiated)
+    var movieRecordingQueue: DispatchQueue { CaptureOutput.movieRecordingQueue }
+
+    // A user might cancel movie recording before recording has
+    // begun (e.g. an instance of MovieRecording has been created),
+    // with a very short long press gesture.
+    // We handle that case by marking that recording as aborted
+    // before it exists using this box.
+    struct MovieRecordingBox {
+        let aborted = AtomicBool(false)
+        let movieRecording = AtomicOptional<MovieRecording>(nil)
+    }
+    private let _movieRecordingBox = AtomicOptional<MovieRecordingBox>(nil)
+    var currentMovieRecording: MovieRecording? {
+        _movieRecordingBox.get()?.movieRecording.get()
+    }
+    func clearMovieRecording() -> MovieRecording? {
+        let box = _movieRecordingBox.swap(nil)
+        let movieRecording = box?.movieRecording.get()
+        box?.aborted.set(true)
+        return movieRecording
+    }
+    func newMovieRecordingBox() -> MovieRecordingBox {
+        let newBox = MovieRecordingBox()
+        let oldBox = _movieRecordingBox.swap(newBox)
+        oldBox?.aborted.set(true)
+        return newBox
+    }
 
     // MARK: - Init
 
@@ -750,7 +796,7 @@ class CaptureOutput: NSObject {
         let videoOrientation = delegate.captureOrientation
         videoConnection.videoOrientation = videoOrientation
 
-        assert(movieRecording == nil)
+        owsAssertDebug(currentMovieRecording == nil)
         let outputURL = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
         let assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
 
@@ -776,7 +822,7 @@ class CaptureOutput: NSObject {
             AVVideoWidthKey: outputSize.width,
             AVVideoHeightKey: outputSize.height,
             AVVideoScalingModeKey: AVVideoScalingModeResizeAspectFill,
-            AVVideoCodecKey: AVVideoCodecH264,
+            AVVideoCodecKey: AVVideoCodecType.h264,
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 2000000,
                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
@@ -790,7 +836,7 @@ class CaptureOutput: NSObject {
         videoInput.expectsMediaDataInRealTime = true
         assetWriter.add(videoInput)
 
-        let audioSettings: [String: Any]? =  self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4) as? [String: Any]
+        let audioSettings: [String: Any]? = self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4) as? [String: Any]
         let audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
         audioInput.expectsMediaDataInRealTime = true
         if audioSettings != nil {
@@ -805,10 +851,14 @@ class CaptureOutput: NSObject {
     func completeMovie(delegate: CaptureOutputDelegate) {
         firstly { () -> Promise<URL> in
             assertOnQueue(movieRecordingQueue)
-            guard let movieRecording = self.movieRecording else {
-                throw OWSAssertionError("movie recording was unexpectedly nil")
+            guard let movieRecording = self.clearMovieRecording() else {
+                // If the user cancels a video before recording begins,
+                // the instance of MovieRecording might not be set yet.
+                // clearMovieRecording() will ensure that race does not
+                // cause problems.
+                Logger.warn("Movie recording is nil.")
+                throw PhotoCaptureError.invalidVideo
             }
-            self.movieRecording = nil
             return movieRecording.finish()
         }.done { outputUrl in
             delegate.captureOutputDidCapture(movieUrl: .success(outputUrl))
@@ -823,6 +873,8 @@ class CaptureOutput: NSObject {
         owsFailDebug("video was unexpectedly canceled.")
     }
 }
+
+// MARK: -
 
 class MovieRecording {
     let assetWriter: AVAssetWriter
@@ -855,6 +907,8 @@ class MovieRecording {
     }
 
     func finish() -> Promise<URL> {
+        assertOnQueue(CaptureOutput.movieRecordingQueue)
+
         Logger.verbose("")
         switch state {
         case .recording:
@@ -862,21 +916,32 @@ class MovieRecording {
             audioInput.markAsFinished()
             videoInput.markAsFinished()
             return Promise<URL> { future -> Void in
-                self.assetWriter.finishWriting {
-                    future.resolve(self.assetWriter.outputURL)
+                let assetWriter = self.assetWriter
+                assetWriter.finishWriting {
+                    if assetWriter.status == .completed,
+                       assetWriter.error == nil {
+                        future.resolve(self.assetWriter.outputURL)
+                    } else {
+                        // If the user cancels a video right after recording
+                        // begins, recording is expected to fail.
+                        future.reject(PhotoCaptureError.invalidVideo)
+                    }
                 }
             }
         default:
-            return Promise(error: OWSAssertionError("unexpected state: \(state)"))
+            Logger.warn("Unexpected state: \(state)")
+            return Promise(error: PhotoCaptureError.invalidVideo)
         }
     }
 }
+
+// MARK: -
 
 extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         assertOnQueue(movieRecordingQueue)
 
-        guard let movieRecording = movieRecording else {
+        guard let movieRecording = currentMovieRecording else {
             // `movieRecording` is assigned async after the capture pipeline has been set up.
             // We'll drop a few frames before we're ready to start recording.
             return
@@ -888,7 +953,7 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
             }
 
             guard movieRecording.state == .recording else {
-                assert(movieRecording.state == .finished)
+                owsAssertDebug(movieRecording.state == .finished)
                 Logger.verbose("ignoring samples since recording has finished.")
                 return
             }
@@ -921,6 +986,8 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
         Logger.error("dropped sampleBuffer from connection: \(connection)")
     }
 }
+
+// MARK: -
 
 class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
@@ -990,7 +1057,7 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
                     throw error
                 }
                 guard let rawData = photo.fileDataRepresentation()  else {
-                    throw OWSAssertionError("photo data was unexpectely empty")
+                    throw OWSAssertionError("photo data was unexpectedly empty")
                 }
 
                 let resizedData = try crop(photoData: rawData, toOutputRect: captureRect)
@@ -1005,6 +1072,8 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
         }
     }
 }
+
+// MARK: -
 
 extension AVCaptureVideoOrientation {
     init?(deviceOrientation: UIDeviceOrientation) {
@@ -1038,6 +1107,8 @@ extension AVCaptureVideoOrientation {
     }
 }
 
+// MARK: -
+
 extension AVCaptureDevice.FocusMode: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -1052,6 +1123,8 @@ extension AVCaptureDevice.FocusMode: CustomStringConvertible {
         }
     }
 }
+
+// MARK: -
 
 extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
     public var description: String {
@@ -1070,6 +1143,8 @@ extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
     }
 }
 
+// MARK: -
+
 extension AVCaptureVideoOrientation: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -1086,6 +1161,8 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
         }
     }
 }
+
+// MARK: -
 
 extension UIDeviceOrientation: CustomStringConvertible {
     public var description: String {
@@ -1110,6 +1187,8 @@ extension UIDeviceOrientation: CustomStringConvertible {
     }
 }
 
+// MARK: -
+
 extension UIInterfaceOrientation: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -1128,6 +1207,8 @@ extension UIInterfaceOrientation: CustomStringConvertible {
         }
     }
 }
+
+// MARK: -
 
 extension UIImage.Orientation: CustomStringConvertible {
     public var description: String {
@@ -1153,6 +1234,8 @@ extension UIImage.Orientation: CustomStringConvertible {
         }
     }
 }
+
+// MARK: -
 
 extension CGSize {
     func scaledToFit(max: CGFloat) -> CGSize {
@@ -1187,6 +1270,8 @@ extension CGSize {
     }
 }
 
+// MARK: -
+
 extension AVCaptureDevice.FlashMode {
     var toTorchMode: AVCaptureDevice.TorchMode {
         switch self {
@@ -1202,6 +1287,8 @@ extension AVCaptureDevice.FlashMode {
         }
     }
 }
+
+// MARK: -
 
 private func crop(photoData: Data, toOutputRect outputRect: CGRect) throws -> Data {
     guard let originalImage = UIImage(data: photoData) else {

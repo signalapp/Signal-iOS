@@ -9,8 +9,12 @@ public enum GiphyError: Error {
     case fetchFailure
 }
 
-extension GiphyError: LocalizedError {
+extension GiphyError: LocalizedError, UserErrorDescriptionProvider {
     public var errorDescription: String? {
+        localizedDescription
+    }
+
+    public var localizedDescription: String {
         switch self {
         case .assertionError:
             return NSLocalizedString("GIF_PICKER_ERROR_GENERIC", comment: "Generic error displayed when picking a GIF")
