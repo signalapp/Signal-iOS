@@ -566,9 +566,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         Logger.error("error: \(error)")
 
         OWSActionSheets.showActionSheet(title: nil,
-                            message: error.userErrorDescription,
-                            buttonTitle: CommonStrings.dismissButton,
-                            buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+                                        message: error.userErrorDescription,
+                                        buttonTitle: CommonStrings.dismissButton,
+                                        buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
     }
 
     private func updateFlashModeControl() {

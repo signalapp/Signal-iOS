@@ -573,6 +573,7 @@ class PhotoCapture: NSObject {
             self.setTorchMode(.off)
             self.shouldHaveAudioCapture = false
         }
+        self.lastMovieRecordingEndDate = Date()
         self.delegate?.photoCapture(self, processingDidError: error)
     }
 
