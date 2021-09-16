@@ -182,11 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
                         [[NSNotificationCenter defaultCenter]
                          postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                          object:self];
-                        if (self.notificationIdentifier != NULL) {
-                            UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
-                            [notificationCenter removeDeliveredNotificationsWithIdentifiers:@[self.notificationIdentifier]];
-                            [notificationCenter removePendingNotificationRequestsWithIdentifiers:@[self.notificationIdentifier]];
-                        }
                     }];
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
