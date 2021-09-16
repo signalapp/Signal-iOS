@@ -14,6 +14,7 @@
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
+#import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -181,6 +182,11 @@ NS_ASSUME_NONNULL_BEGIN
                         [[NSNotificationCenter defaultCenter]
                          postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
                          object:self];
+                        if (self.notificationIdentifier != NULL) {
+                            UNUserNotificationCenter *notificationCenter = [UNUserNotificationCenter currentNotificationCenter];
+                            [notificationCenter removeDeliveredNotificationsWithIdentifiers:@[self.notificationIdentifier]];
+                            [notificationCenter removePendingNotificationRequestsWithIdentifiers:@[self.notificationIdentifier]];
+                        }
                     }];
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
