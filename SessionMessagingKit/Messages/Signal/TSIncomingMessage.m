@@ -14,7 +14,6 @@
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
-#import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
