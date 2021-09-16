@@ -531,8 +531,6 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
-        Logger.verbose("isRecordingMovie: \(self.isRecordingMovie) -> \(isRecordingMovie)")
-//        owsAssertDebug(self.isRecordingMovie != isRecordingMovie)
         self.isRecordingMovie = isRecordingMovie
         updateViewState(topViewController: photoCaptureViewController, animated: true)
     }
