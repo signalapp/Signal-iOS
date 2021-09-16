@@ -318,6 +318,11 @@ extension MessageReceiver {
             tsMessage.openGroupServerMessageID = serverID
             tsMessage.save(with: transaction)
         }
+        // Mark previous messages as read if there is a sync message
+        if let tsOutgoingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSOutgoingMessage,
+            let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
+            OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread)
+        }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return tsMessageID }
