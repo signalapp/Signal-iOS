@@ -243,22 +243,14 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                 Logger.info("Will donate interaction")
             }
 
-            let group = DispatchGroup()
-            group.enter()
             interaction.donate(completion: { error in
                 if DebugFlags.internalLogging { Logger.info("Did donate interaction") }
-
-                group.leave()
 
                 if let error = error {
                     owsFailDebug("Failed to donate incoming message intent \(error)")
                     return
                 }
             })
-
-            if case .timedOut = group.wait(timeout: .now() + 1.0) {
-                Logger.warn("Timed out donating intent")
-            }
 
             if DebugFlags.internalLogging {
                 Logger.info("Will update notification content with intent")
