@@ -616,6 +616,11 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
+        isRecordingMovie = false
+        topBar.recordingTimerView.stopCounting()
+        updateNavigationItems()
+        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+
         if case PhotoCaptureError.invalidVideo = error {
             // Don't show an error if the user aborts recording before video
             // recording has begun.

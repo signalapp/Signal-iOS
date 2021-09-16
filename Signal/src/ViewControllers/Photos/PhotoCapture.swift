@@ -469,6 +469,18 @@ class PhotoCapture: NSObject {
 
     // MARK: - Video
 
+    private var _lastMovieRecordingEndDate: Date?
+    private var lastMovieRecordingEndDate: Date? {
+        get {
+            AssertIsOnMainThread()
+            return _lastMovieRecordingEndDate
+        }
+        set {
+            AssertIsOnMainThread()
+            _lastMovieRecordingEndDate = newValue
+        }
+    }
+
     private func beginMovieCapture() {
         AssertIsOnMainThread()
         Logger.verbose("")
@@ -486,44 +498,135 @@ class PhotoCapture: NSObject {
                 self.session.beginConfiguration()
                 defer { self.session.commitConfiguration() }
 
-                try self.startAudioCapture()
+                self.shouldHaveAudioCapture = true
+                self.setTorchMode(self.flashMode.toTorchMode)
                 return try self.captureOutput.beginMovie(delegate: self, aspectRatio: aspectRatio)
             }.done(on: self.captureOutput.movieRecordingQueue) { movieRecording in
                 movieRecordingBox.set(movieRecording)
+            }.done {
+                // Don't mark recording as begun if recording has already been cancelled
+                // or superceded by another recording.
+                let shouldBegin: Bool = {
+                    if let lastMovieRecordingEndDate = self.lastMovieRecordingEndDate,
+                       lastMovieRecordingEndDate > movieRecordingBox.startDate {
+                        return false
+                    }
+                    return true
+                }()
+                guard shouldBegin else {
+                    throw PhotoCaptureError.invalidVideo
+                }
+
+                self.delegate?.photoCaptureDidBeginMovie(self)
             }
-        }.done {
-            self.setTorchMode(self.flashMode.toTorchMode)
-            self.delegate?.photoCaptureDidBeginMovie(self)
         }.catch { error in
-            self.delegate?.photoCapture(self, processingDidError: error)
+            self.handleMovieCaptureError(error)
         }
     }
 
     private func completeMovieCapture() {
         Logger.verbose("")
         BenchEventStart(title: "Movie Processing", eventId: "Movie Processing")
-        captureOutput.movieRecordingQueue.async(.promise) {
+        firstly(on: captureOutput.movieRecordingQueue) { () -> Date in
+            guard let movieRecordingStartDate = self.captureOutput.currentMovieRecordingStartDate else {
+                throw PhotoCaptureError.invalidVideo
+            }
             self.captureOutput.completeMovie(delegate: self)
-            self.setTorchMode(.off)
-        }.done(on: sessionQueue) {
-            self.stopAudioCapture()
-        }
+            return movieRecordingStartDate
+        }.done(on: .main) { movieRecordingStartDate in
+            AssertIsOnMainThread()
 
+            // Don't mark recording as complete if recording has already been cancelled
+            // or superceded by another recording.
+            let shouldComplete: Bool = {
+                if let lastMovieRecordingEndDate = self.lastMovieRecordingEndDate,
+                   lastMovieRecordingEndDate > movieRecordingStartDate {
+                    return false
+                }
+                return true
+            }()
+            guard shouldComplete else {
+                throw PhotoCaptureError.invalidVideo
+            }
+
+            self.sessionQueue.async {
+                self.setTorchMode(.off)
+                self.shouldHaveAudioCapture = false
+            }
+
+            // Inform UI that capture is stopping.
+            self.lastMovieRecordingEndDate = movieRecordingStartDate
+            self.delegate?.photoCaptureDidCompleteMovie(self)
+        }.catch { error in
+            self.handleMovieCaptureError(error)
+        }
+    }
+
+    private func handleMovieCaptureError(_ error: Error) {
         AssertIsOnMainThread()
-        // immediately inform UI that capture is stopping
-        delegate?.photoCaptureDidCompleteMovie(self)
+        if case PhotoCaptureError.invalidVideo = error {
+            Logger.warn("Error: \(error)")
+        } else {
+            owsFailDebug("Error: \(error)")
+        }
+        self.sessionQueue.async {
+            self.setTorchMode(.off)
+            self.shouldHaveAudioCapture = false
+        }
+        self.delegate?.photoCapture(self, processingDidError: error)
     }
 
     private func cancelMovieCapture() {
         Logger.verbose("")
         AssertIsOnMainThread()
-        sessionQueue.async {
-            self.stopAudioCapture()
+
+        firstly(on: captureOutput.movieRecordingQueue) {
+            self.captureOutput.cancelVideo(delegate: self)
+        }.done(on: .main) {
+            AssertIsOnMainThread()
+
+            self.sessionQueue.async {
+                self.setTorchMode(.off)
+                self.shouldHaveAudioCapture = false
+            }
+
+            // Inform UI that capture is stopping.
+            self.lastMovieRecordingEndDate = Date()
+            self.delegate?.photoCaptureDidCancelMovie(self)
+        }.catch { error in
+            self.handleMovieCaptureError(error)
         }
-        delegate?.photoCaptureDidCancelMovie(self)
+    }
+
+    private var _shouldHaveAudioCapture = false
+    private var shouldHaveAudioCapture: Bool {
+        get {
+            assertOnQueue(sessionQueue)
+            return _shouldHaveAudioCapture
+        }
+        set {
+            assertOnQueue(sessionQueue)
+            guard _shouldHaveAudioCapture != newValue else {
+                return
+            }
+            _shouldHaveAudioCapture = newValue
+
+            if newValue {
+                do {
+                    try self.startAudioCapture()
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                    _shouldHaveAudioCapture = false
+                }
+            } else {
+                self.stopAudioCapture()
+            }
+        }
     }
 
     private func setTorchMode(_ mode: AVCaptureDevice.TorchMode) {
+        assertIsOnSessionQueue()
+
         guard let captureDevice = captureDevice, captureDevice.hasTorch, captureDevice.isTorchModeSupported(mode) else { return }
         do {
             try captureDevice.lockForConfiguration()
@@ -645,14 +748,14 @@ extension PhotoCapture: CaptureOutputDelegate {
 
         switch movieUrl {
         case .failure(let error):
-            delegate.photoCapture(self, processingDidError: error)
+            self.handleMovieCaptureError(error)
         case .success(let movieUrl):
             guard OWSMediaUtils.isValidVideo(path: movieUrl.path) else {
-                delegate.photoCapture(self, processingDidError: PhotoCaptureError.invalidVideo)
+                self.handleMovieCaptureError(PhotoCaptureError.invalidVideo)
                 return
             }
             guard let dataSource = try? DataSourcePath.dataSource(with: movieUrl, shouldDeleteOnDeallocation: true) else {
-                delegate.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
+                self.handleMovieCaptureError(PhotoCaptureError.captureFailed)
                 return
             }
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
@@ -716,6 +819,8 @@ class CaptureOutput: NSObject {
     // We handle that case by marking that recording as aborted
     // before it exists using this box.
     struct MovieRecordingBox {
+        let startDate = Date()
+
         private let invalidated = AtomicBool(false)
         private let movieRecording = AtomicOptional<MovieRecording>(nil)
 
@@ -723,6 +828,7 @@ class CaptureOutput: NSObject {
             movieRecording.set(value)
         }
 
+        @discardableResult
         func invalidate() -> MovieRecording? {
             let value = self.value
             invalidated.set(true)
@@ -737,9 +843,13 @@ class CaptureOutput: NSObject {
         }
     }
     private let _movieRecordingBox = AtomicOptional<MovieRecordingBox>(nil)
+    var currentMovieRecordingStartDate: Date? {
+        _movieRecordingBox.get()?.startDate
+    }
     var currentMovieRecording: MovieRecording? {
         _movieRecordingBox.get()?.value
     }
+    @discardableResult
     func clearMovieRecording() -> MovieRecording? {
         let box = _movieRecordingBox.swap(nil)
         return box?.invalidate()
@@ -864,6 +974,8 @@ class CaptureOutput: NSObject {
     }
 
     func completeMovie(delegate: CaptureOutputDelegate) {
+        assertOnQueue(movieRecordingQueue)
+
         firstly { () -> Promise<URL> in
             assertOnQueue(movieRecordingQueue)
             guard let movieRecording = self.clearMovieRecording() else {
@@ -883,9 +995,9 @@ class CaptureOutput: NSObject {
     }
 
     func cancelVideo(delegate: CaptureOutputDelegate) {
-        delegate.assertIsOnSessionQueue()
-        // There's currently no user-visible way to cancel, if so, we may need to do some cleanup here.
-        owsFailDebug("video was unexpectedly canceled.")
+        assertOnQueue(movieRecordingQueue)
+
+        self.clearMovieRecording()
     }
 }
 
