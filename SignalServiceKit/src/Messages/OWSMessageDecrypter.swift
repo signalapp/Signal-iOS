@@ -448,11 +448,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
     func sendResendRequest(envelope: SSKProtoEnvelope,
                            cipherType: CiphertextMessage.MessageType,
-                           failedEnvelopeGroupId: Data?
+                           failedEnvelopeGroupId: Data?,
                            transaction: SDSAnyWriteTransaction) {
         let resendRequest = OWSOutgoingResendRequest(failedEnvelope: envelope,
                                                      cipherType: cipherType.rawValue,
-                                                     failedEnvelopeGroupId: failedEnvelopeGroupId
+                                                     failedEnvelopeGroupId: failedEnvelopeGroupId,
                                                      transaction: transaction)
 
         if let resendRequest = resendRequest {
