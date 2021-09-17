@@ -198,8 +198,8 @@ public class RESTSessionManager: NSObject {
                 }
             }
             let response = HTTPResponseImpl.build(requestUrl: requestUrl,
-                                                     httpUrlResponse: httpUrlResponse,
-                                                     bodyData: responseData)
+                                                  httpUrlResponse: httpUrlResponse,
+                                                  bodyData: responseData)
             success(response)
         }
 

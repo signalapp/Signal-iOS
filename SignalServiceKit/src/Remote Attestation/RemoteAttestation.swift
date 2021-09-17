@@ -77,10 +77,15 @@ extension RemoteAttestation {
                                             auth: attestationResponse.auth)
             }
 
-            return CDSAttestation(cookies: attestationResponse.cookies,
-                                  auth: attestationResponse.auth,
-                                  enclaveConfig: attestationResponse.enclaveConfig,
-                                  remoteAttestations: attestations)
+            let attestation = CDSAttestation(cookies: attestationResponse.cookies,
+                                             auth: attestationResponse.auth,
+                                             enclaveConfig: attestationResponse.enclaveConfig,
+                                             remoteAttestations: attestations)
+            owsAssertDebug(attestation.auth.username.strippedOrNil != nil)
+            owsAssertDebug(attestation.auth.password.strippedOrNil != nil)
+            owsAssertDebug(attestation.enclaveConfig.enclaveName.strippedOrNil != nil)
+            owsAssertDebug(attestation.enclaveConfig.host.strippedOrNil != nil)
+            return attestation
         }
     }
 
