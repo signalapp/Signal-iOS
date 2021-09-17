@@ -26,6 +26,23 @@ public extension DebugUIMessages {
             return nil
         }
     }
+
+    static func processDecryptedEnvelopeData(_ envelopeData: Data,
+                                             plaintextData: Data) {
+        messageProcessor.processDecryptedEnvelopeData(envelopeData,
+                                                      plaintextData: plaintextData,
+                                                      serverDeliveryTimestamp: 0,
+                                                      wasReceivedByUD: false) { outcome in
+            switch outcome {
+            case .duplicate:
+                Logger.warn("Duplicate.")
+            case .processed:
+                break
+            case .failure(let error):
+                owsFailDebug("Error: \(error)")
+            }
+        }
+    }
 }
 
 #endif

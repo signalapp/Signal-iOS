@@ -517,19 +517,29 @@ public class OWSWebSocket: NSObject {
             Logger.info("\(currentWebSocket.logPrefix) 1")
         }
 
-        let ackMessage = { (success: Bool) in
+        let ackMessage = { (outcome: MessageProcessingOutcome) in
             if Self.verboseLogging {
-                Logger.info("\(currentWebSocket.logPrefix) 2 \(success)")
+                Logger.info("\(currentWebSocket.logPrefix) 2 \(outcome)")
             }
-            if !success {
+
+            var shouldAck = true
+            switch outcome {
+            case .duplicate:
+                shouldAck = false
+            case .failure:
                 Self.databaseStorage.write { transaction in
                     let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
                     Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                           transaction: transaction)
                 }
+            case .processed:
+                break
             }
 
-            self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
+            if shouldAck {
+                self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
+            }
+
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
         }
@@ -551,8 +561,7 @@ public class OWSWebSocket: NSObject {
         }
 
         guard let encryptedEnvelope = message.body else {
-            Logger.warn("Missing encrypted envelope on message \(currentWebSocket.logPrefix)")
-            ackMessage(false)
+            ackMessage(.failure(error: OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)")))
             return
         }
         let envelopeSource: EnvelopeSource = {
@@ -570,12 +579,12 @@ public class OWSWebSocket: NSObject {
             }
             Self.messageProcessor.processEncryptedEnvelopeData(encryptedEnvelope,
                                                                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                                                               envelopeSource: envelopeSource) { _ in
+                                                               envelopeSource: envelopeSource) { outcome in
                 if Self.verboseLogging {
                     Logger.info("\(currentWebSocket.logPrefix) 3")
                 }
                 Self.serialQueue.async {
-                    ackMessage(true)
+                    ackMessage(outcome)
                 }
             }
         }
