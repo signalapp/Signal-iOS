@@ -365,7 +365,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 // We always send a resend request, even if the contentHint indicates the sender
                 // won't be able to fulfill the request. This will notify the sender to reset
                 // the session.
-                sendResendRequest(envelope: envelope, cipherType: cipherType, transaction: transaction)
+                sendResendRequest(
+                    envelope: envelope,
+                    cipherType: cipherType,
+                    failedEnvelopeGroupId: untrustedGroupId,
+                    transaction: transaction)
             } else {
                 Logger.info("Performing legacy session reset of \(contentHint) content with timestamp \(envelope.timestamp)")
 
@@ -437,16 +441,18 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                 originalSenderDeviceId: envelope.sourceDevice)
             return true
         } catch {
-            owsFailDebug("Could not build DecryptionError")
+            owsFailDebug("Could not build DecryptionError: \(error)")
             return false
         }
     }
 
     func sendResendRequest(envelope: SSKProtoEnvelope,
                            cipherType: CiphertextMessage.MessageType,
+                           failedEnvelopeGroupId: Data?
                            transaction: SDSAnyWriteTransaction) {
         let resendRequest = OWSOutgoingResendRequest(failedEnvelope: envelope,
                                                      cipherType: cipherType.rawValue,
+                                                     failedEnvelopeGroupId: failedEnvelopeGroupId
                                                      transaction: transaction)
 
         if let resendRequest = resendRequest {
@@ -867,6 +873,7 @@ private extension SSKProtoEnvelope {
         senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
         senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
         identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
+        identifiedEnvelopeBuilder.setContent(error.unsealedContent)
 
         do {
             return try identifiedEnvelopeBuilder.build()

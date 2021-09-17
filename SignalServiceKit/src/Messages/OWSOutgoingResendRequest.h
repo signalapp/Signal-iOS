@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
                                      cipherType:(uint8_t)cipherType
+                          failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
