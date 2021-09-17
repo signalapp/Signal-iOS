@@ -43,28 +43,40 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     switch message {
                     case let visibleMessage as VisibleMessage:
                         let tsIncomingMessageID = try MessageReceiver.handleVisibleMessage(visibleMessage, associatedWithProto: proto, openGroupID: nil, isBackgroundPoll: false, using: transaction)
-                        guard let tsIncomingMessage = TSIncomingMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
+                        guard let tsMessage = TSMessage.fetch(uniqueId: tsIncomingMessageID, transaction: transaction) else {
                             return self.completeSilenty()
                         }
-                        let thread = tsIncomingMessage.thread(with: transaction)
-                        if thread.isMuted {
-                            // Ignore PNs if the thread is muted
-                            return self.completeSilenty()
-                        }
+                        let thread = tsMessage.thread(with: transaction)
                         let threadID = thread.uniqueId!
                         userInfo[NotificationServiceExtension.threadIdKey] = threadID
-                        snippet = tsIncomingMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
+                        snippet = tsMessage.previewText(with: transaction).filterForDisplay?.replacingMentions(for: threadID, using: transaction)
                             ?? "You've got a new message"
-                        if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
-                            group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
-                            senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
-                            if group.isOnlyNotifyingForMentions && !tsIncomingMessage.isUserMentioned {
-                                // Ignore PNs if the group is set to only notify for mentions
+                        if let tsIncomingMessage = tsMessage as? TSIncomingMessage {
+                            if thread.isMuted {
+                                // Ignore PNs if the thread is muted
                                 return self.completeSilenty()
                             }
+                            if let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction), let group = thread as? TSGroupThread,
+                                group.groupModel.groupType == .closedGroup { // Should always be true because we don't get PNs for open groups
+                                senderDisplayName = String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderDisplayName, group.groupModel.groupName ?? MessageStrings.newGroupDefaultTitle)
+                                if group.isOnlyNotifyingForMentions && !tsIncomingMessage.isUserMentioned {
+                                    // Ignore PNs if the group is set to only notify for mentions
+                                    return self.completeSilenty()
+                                }
+                            }
+                            // Store the notification ID for unsend requests to later cancel this notification
+                            tsIncomingMessage.setNotificationIdentifier(request.identifier, transaction: transaction)
+                        } else {
+                            let semaphore = DispatchSemaphore(value: 0)
+                            let center = UNUserNotificationCenter.current()
+                            center.getDeliveredNotifications { notifications in
+                                let matchingNotifications = notifications.filter({ $0.request.content.userInfo[NotificationServiceExtension.threadIdKey] as? String == threadID})
+                                center.removeDeliveredNotifications(withIdentifiers: matchingNotifications.map({ $0.request.identifier }))
+                                // Hack: removeDeliveredNotifications seems to be async,need to wait for some time before the delivered notifications can be removed.
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { semaphore.signal() }
+                            }
+                            semaphore.wait()
                         }
-                        // Store the notification ID for unsend requests to later cancel this notification
-                        tsIncomingMessage.setNotificationIdentifier(request.identifier, transaction: transaction)
                     case let unsendRequest as UnsendRequest:
                         MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
                         return self.completeSilenty()
