@@ -441,7 +441,6 @@ extension MessageSender {
             return .init(error: OWSAssertionError("Nil content"))
         }
 
-
         return self.databaseStorage.write(.promise) { writeTx -> ([Recipient], Data) in
             let recipients = addresses.map { Recipient(address: $0, transaction: writeTx) }
             let ciphertext = try self.senderKeyMessageBody(
