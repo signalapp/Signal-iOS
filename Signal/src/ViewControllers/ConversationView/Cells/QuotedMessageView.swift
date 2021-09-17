@@ -289,9 +289,6 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             } else if MIMETypeUtil.isVideo(contentType) {
                 return NSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
                                          comment: "Indicates this message is a quoted reply to a video file.")
-            } else if MIMETypeUtil.isImage(contentType) {
-                return NSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
-                                         comment: "Indicates this message is a quoted reply to an image file.")
             } else if MIMETypeUtil.isAnimated(contentType) {
                 if contentType.caseInsensitiveCompare(OWSMimeTypeImageGif) == .orderedSame {
                     return NSLocalizedString("QUOTED_REPLY_TYPE_GIF",
@@ -300,6 +297,9 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     return NSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
                                              comment: "Indicates this message is a quoted reply to an image file.")
                 }
+            } else if MIMETypeUtil.isImage(contentType) {
+                return NSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
+                                         comment: "Indicates this message is a quoted reply to a photo file.")
             }
             return nil
         }
