@@ -94,8 +94,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             return
         }
 
-        componentView.logState(label: "configureForRendering 1", skipAsserts: true)
-
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
         let hasWallpaper = conversationStyle.hasWallpaper
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
@@ -121,7 +119,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                             !componentView.hasActionButton)
         if !isReusing {
             componentView.reset(resetReusableState: true)
-            componentView.logState(label: "configureForRendering 2", skipAsserts: true)
         }
 
         componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
@@ -131,8 +128,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         componentView.isShowingSelectionUI = isShowingSelectionUI
         componentView.wasShowingSelectionUI = wasShowingSelectionUI
         componentView.hasActionButton = hasActionButton
-
-        componentView.logState(label: "configureForRendering 2a")
 
         let outerHStack = componentView.outerHStack
         let innerVStack = componentView.innerVStack
@@ -145,9 +140,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         if isReusing {
 
-            componentView.logState(label: "configureForRendering 3")
-            Logger.flush()
-
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_innerVStack)
@@ -158,14 +150,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_outerHStack)
 
-            if hasWallpaper {
-                componentView.wallpaperBlurView?.applyLayout()
+            if hasWallpaper,
+               let wallpaperBlurView = componentView.wallpaperBlurView {
+                wallpaperBlurView.applyLayout()
+                wallpaperBlurView.updateIfNecessary()
             }
-
-            componentView.logState(label: "configureForRendering 3a")
         } else {
-            componentView.logState(label: "configureForRendering 4")
-
             var innerVStackViews: [UIView] = [
                 titleLabel
             ]
@@ -325,11 +315,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             outerVStack.invalidateTransformBlocks()
         }
 
-        componentView.logState(label: "configureForRendering 5a")
-
         outerHStack.applyTransformBlocks()
-
-        componentView.logState(label: "configureForRendering 5b")
     }
 
     private var titleLabelConfig: CVLabelConfig {
@@ -543,8 +529,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         public func reset(resetReusableState: Bool) {
             owsAssertDebug(isDedicatedCellView)
 
-            logState(label: "before reset(resetReusableState: \(resetReusableState))", skipAsserts: true)
-
             if resetReusableState {
                 outerHStack.reset()
                 innerVStack.reset()
@@ -569,26 +553,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
             button?.removeFromSuperview()
             button = nil
-
-            logState(label: "after reset(resetReusableState: \(resetReusableState))", skipAsserts: true)
-        }
-
-        fileprivate func logState(label: String,
-                                  skipAsserts: Bool = false,
-                                  file: String = #file,
-                                  function: String = #function,
-                                  line: Int = #line) {
-            Logger.verbose("---- cvcsm.\(id) \(label) isShowingSelectionUI: \(isShowingSelectionUI), wasShowingSelectionUI: \(wasShowingSelectionUI), outerHStack: \(outerHStack.subviews.count)",
-                           file: file, function: function, line: line)
-            if !skipAsserts, !outerHStack.subviews.isEmpty {
-                let expectedSubviewCount = (isShowingSelectionUI || wasShowingSelectionUI) ? 4 : 3
-                if outerHStack.subviews.count != expectedSubviewCount {
-                    for subview in outerHStack.subviews {
-                        Logger.verbose("\t \(type(of: subview))")
-                    }
-                }
-                owsAssertDebug(outerHStack.subviews.count == expectedSubviewCount)
-            }
         }
     }
 }
