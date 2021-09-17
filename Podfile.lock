@@ -231,8 +231,8 @@ DEPENDENCIES:
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
-  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
+  - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit-Private`, branch `mlin/PR/ExposeUnsealedContent`)"
+  - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit-Private`, branch `mlin/PR/ExposeUnsealedContent`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
@@ -309,7 +309,8 @@ EXTERNAL SOURCES:
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
-    :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
+    :branch: mlin/PR/ExposeUnsealedContent
+    :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
   SignalRingRTC:
     :path: ThirdParty/SignalRingRTC.podspec
   SignalServiceKit:
@@ -355,8 +356,8 @@ CHECKOUT OPTIONS:
     :commit: 5f3b598b21c1a5ee9a1fa88b1b86e49840b8a8b7
     :git: https://github.com/signalapp/SignalCoreKit
   SignalMetadataKit:
-    :commit: 998b7619701edf1ed4c0ad19641132d47f8dc0fc
-    :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
+    :commit: 2ca9aafb27169c32a40c18900439616d1a5d86a5
+    :git: "ssh://git@github.com/signalapp/SignalMetadataKit-Private"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: https://github.com/signalapp/Starscream.git
@@ -417,6 +418,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 1a2f55ee4705ac1727ab85aed9c2bedb50547223
+PODFILE CHECKSUM: aa8f3ca16c9a9274d0c90d7037a40f7f07f9a271
 
 COCOAPODS: 1.10.1
