@@ -11,7 +11,7 @@ public class MessageProcessor: NSObject {
 
     @objc
     public var hasPendingEnvelopes: Bool {
-        pendingEnvelopesLock.withLock { !pendingEnvelopes.isEmpty }
+        !pendingEnvelopes.isEmpty
     }
 
     @objc
@@ -146,7 +146,7 @@ public class MessageProcessor: NSObject {
     @objc
     public func processEncryptedEnvelopeData(
         _ encryptedEnvelopeData: Data,
-        encryptedEnvelope optionalEncryptedEnvelope: SSKProtoEnvelope? = nil,
+        encryptedEnvelope optionalEncryptedEnvelopeProto: SSKProtoEnvelope? = nil,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
         completion: @escaping (Error?) -> Void
@@ -169,12 +169,12 @@ public class MessageProcessor: NSObject {
             owsFailDebug("Unexpectedly large envelope, envelopeSource: \(envelopeSource).")
         }
 
-        let encryptedEnvelope: SSKProtoEnvelope
-        if let optionalEncryptedEnvelope = optionalEncryptedEnvelope {
-            encryptedEnvelope = optionalEncryptedEnvelope
+        let encryptedEnvelopeProto: SSKProtoEnvelope
+        if let optionalEncryptedEnvelopeProto = optionalEncryptedEnvelopeProto {
+            encryptedEnvelopeProto = optionalEncryptedEnvelopeProto
         } else {
             do {
-                encryptedEnvelope = try SSKProtoEnvelope(serializedData: encryptedEnvelopeData)
+                encryptedEnvelopeProto = try SSKProtoEnvelope(serializedData: encryptedEnvelopeData)
             } catch {
                 owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
                 completion(error)
@@ -182,16 +182,19 @@ public class MessageProcessor: NSObject {
             }
         }
 
-        pendingEnvelopesLock.withLock {
-            pendingEnvelopes.append(EncryptedEnvelope(
-                encryptedEnvelopeData: encryptedEnvelopeData,
-                encryptedEnvelope: encryptedEnvelope,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: completion
-            ))
+        let encryptedEnvelope = EncryptedEnvelope(
+            encryptedEnvelopeData: encryptedEnvelopeData,
+            encryptedEnvelope: encryptedEnvelopeProto,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            completion: completion
+        )
+        let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
+        switch result {
+        case .duplicate:
+            completion(OWSGenericError("Duplicate envelope, envelopeSource: \(envelopeSource)."))
+        case .enqueued:
+            drainPendingEnvelopes()
         }
-
-        drainPendingEnvelopes()
     }
 
     @objc
@@ -202,21 +205,14 @@ public class MessageProcessor: NSObject {
         wasReceivedByUD: Bool,
         completion: @escaping (Error?) -> Void
     ) {
-        pendingEnvelopesLock.withLock {
-            let oldCount = pendingEnvelopes.count
-            pendingEnvelopes.append(DecryptedEnvelope(
-                envelopeData: envelopeData,
-                plaintextData: plaintextData,
-                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                wasReceivedByUD: wasReceivedByUD,
-                completion: completion
-            ))
-            let newCount = pendingEnvelopes.count
-            if DebugFlags.internalLogging {
-                Logger.info("\(oldCount) -> \(newCount)")
-            }
-        }
-
+        let decryptedEnvelope = DecryptedEnvelope(
+            envelopeData: envelopeData,
+            plaintextData: plaintextData,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            wasReceivedByUD: wasReceivedByUD,
+            completion: completion
+        )
+        pendingEnvelopes.enqueue(decryptedEnvelope: decryptedEnvelope)
         drainPendingEnvelopes()
     }
 
@@ -240,9 +236,7 @@ public class MessageProcessor: NSObject {
     }
 
     public var queuedContentCount: Int {
-        pendingEnvelopesLock.withLock {
-            pendingEnvelopes.count
-        }
+        pendingEnvelopes.count
     }
 
     private static let maxEnvelopeByteCount = 250 * 1024
@@ -250,8 +244,7 @@ public class MessageProcessor: NSObject {
     private let serialQueue = DispatchQueue(label: "MessageProcessor.processingQueue",
                                             autoreleaseFrequency: .workItem)
 
-    private let pendingEnvelopesLock = UnfairLock()
-    private var pendingEnvelopes = [PendingEnvelope]()
+    private var pendingEnvelopes = PendingEnvelopes()
     private var isDrainingPendingEnvelopes = false {
         didSet { assertOnQueue(serialQueue) }
     }
@@ -280,12 +273,9 @@ public class MessageProcessor: NSObject {
             // messages from the queue. We should fine tune this number
             // to yield the best perf we can get.
             let batchSize = CurrentAppContext().isInBackground() ? 1 : kIncomingMessageBatchSize
-            var batchEnvelopes = [PendingEnvelope]()
-            var pendingEnvelopesCount: Int = 0
-            pendingEnvelopesLock.withLock {
-                batchEnvelopes = Array(pendingEnvelopes.prefix(batchSize))
-                pendingEnvelopesCount = pendingEnvelopes.count
-            }
+            let batch = pendingEnvelopes.nextBatch(batchSize: batchSize)
+            let batchEnvelopes = batch.batchEnvelopes
+            let pendingEnvelopesCount = batch.pendingEnvelopesCount
 
             guard !batchEnvelopes.isEmpty else {
                 isDrainingPendingEnvelopes = false
@@ -303,18 +293,7 @@ public class MessageProcessor: NSObject {
             }
 
             // Remove the processed envelopes from the pending list.
-            pendingEnvelopesLock.withLock {
-                guard pendingEnvelopes.count > batchEnvelopes.count else {
-                    pendingEnvelopes = []
-                    return
-                }
-                let oldCount = pendingEnvelopes.count
-                pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
-                let newCount = pendingEnvelopes.count
-                if DebugFlags.internalLogging {
-                    Logger.info("\(oldCount) -> \(newCount)")
-                }
-            }
+            pendingEnvelopes.removeProcessedBatch(batch)
 
             return true
         }
@@ -463,6 +442,7 @@ private protocol PendingEnvelope {
     var completion: (Error?) -> Void { get }
     var wasReceivedByUD: Bool { get }
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error>
+    func isRedundantWith(_ other: PendingEnvelope) -> Bool
 }
 
 // MARK: -
@@ -502,6 +482,14 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
             return .failure(error)
         }
     }
+
+    func isRedundantWith(_ other: PendingEnvelope) -> Bool {
+        guard let other = other as? EncryptedEnvelope else {
+            return false
+        }
+        return (self.encryptedEnvelopeData == other.encryptedEnvelopeData &&
+            self.serverDeliveryTimestamp == other.serverDeliveryTimestamp)
+    }
 }
 
 // MARK: -
@@ -515,6 +503,12 @@ private struct DecryptedEnvelope: PendingEnvelope {
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
         return .success(self)
+    }
+
+    func isRedundantWith(_ other: PendingEnvelope) -> Bool {
+        // This envelope is only used for legacy envelopes.
+        // We don't need to de-duplicate.
+        false
     }
 }
 
@@ -549,6 +543,85 @@ public enum EnvelopeSource: UInt, CustomStringConvertible {
             return "debugUI"
         case .tests:
             return "tests"
+        }
+    }
+}
+
+// MARK: -
+
+public class PendingEnvelopes {
+    private let unfairLock = UnfairLock()
+    private var pendingEnvelopes = [PendingEnvelope]()
+
+    @objc
+    public var isEmpty: Bool {
+        unfairLock.withLock { pendingEnvelopes.isEmpty }
+    }
+
+    public var count: Int {
+        unfairLock.withLock { pendingEnvelopes.count }
+    }
+
+    fileprivate struct Batch {
+        let batchEnvelopes: [PendingEnvelope]
+        let pendingEnvelopesCount: Int
+    }
+
+    fileprivate func nextBatch(batchSize: Int) -> Batch {
+        unfairLock.withLock {
+            Batch(batchEnvelopes: Array(pendingEnvelopes.prefix(batchSize)),
+                  pendingEnvelopesCount: pendingEnvelopes.count)
+        }
+    }
+
+    fileprivate func removeProcessedBatch(_ batch: Batch) {
+        unfairLock.withLock {
+            let batchEnvelopes = batch.batchEnvelopes
+            guard pendingEnvelopes.count > batchEnvelopes.count else {
+                pendingEnvelopes = []
+                return
+            }
+            let oldCount = pendingEnvelopes.count
+            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            let newCount = pendingEnvelopes.count
+            if DebugFlags.internalLogging {
+                Logger.info("\(oldCount) -> \(newCount)")
+            }
+        }
+    }
+
+    fileprivate func enqueue(decryptedEnvelope: DecryptedEnvelope) {
+        unfairLock.withLock {
+            let oldCount = pendingEnvelopes.count
+            pendingEnvelopes.append(decryptedEnvelope)
+            let newCount = pendingEnvelopes.count
+            if DebugFlags.internalLogging {
+                Logger.info("\(oldCount) -> \(newCount)")
+            }
+        }
+    }
+
+    public enum EnqueueResult {
+        case duplicate
+        case enqueued
+    }
+
+    fileprivate func enqueue(encryptedEnvelope: EncryptedEnvelope) -> EnqueueResult {
+        unfairLock.withLock {
+            let oldCount = pendingEnvelopes.count
+
+            for pendingEnvelope in pendingEnvelopes {
+                if pendingEnvelope.isRedundantWith(encryptedEnvelope) {
+                    return .duplicate
+                }
+            }
+            pendingEnvelopes.append(encryptedEnvelope)
+
+            let newCount = pendingEnvelopes.count
+            if DebugFlags.internalLogging {
+                Logger.info("\(oldCount) -> \(newCount)")
+            }
+            return .enqueued
         }
     }
 }
