@@ -9,12 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingResendRequest ()
 @property (strong, nonatomic, readonly) NSData *decryptionErrorData;
+@property (strong, nonatomic, nullable, readonly) NSData *failedEnvelopeGroupId;
 @end
 
 @implementation OWSOutgoingResendRequest
 
 - (nullable instancetype)initWithFailedEnvelope:(SSKProtoEnvelope *)envelope
                                      cipherType:(uint8_t)cipherType
+                          failedEnvelopeGroupId:(nullable NSData *)failedEnvelopeGroupId
                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(envelope.content);
@@ -39,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initOutgoingMessageWithBuilder:builder];
     if (self) {
         _decryptionErrorData = errorData;
+        _failedEnvelopeGroupId = failedEnvelopeGroupId;
     }
     return self;
 }
@@ -70,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (SealedSenderContentHint)contentHint
 {
     return SealedSenderContentHintDefault;
+}
+
+- (nullable NSData *)envelopeGroupIdWithTransaction:(__unused SDSAnyReadTransaction *)transaction
+{
+    return self.failedEnvelopeGroupId;
 }
 
 @end
