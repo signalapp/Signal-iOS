@@ -470,12 +470,9 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     // It could be the entire item or some part thereof.
     public class CVComponentViewSystemMessage: NSObject, CVComponentView {
 
-        private static let idCounter = AtomicUInt(10000)
-        public let id = CVComponentViewSystemMessage.idCounter.increment()
-
-        fileprivate let outerHStack: ManualStackView
-        fileprivate let innerVStack: ManualStackView
-        fileprivate let outerVStack: ManualStackView
+        fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
+        fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
+        fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
         fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
@@ -511,10 +508,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         // MARK: -
 
         override required init() {
-            outerHStack = ManualStackView(name: "systemMessage.outerHStack.\(id)")
-            innerVStack = ManualStackView(name: "systemMessage.innerVStack.\(id)")
-            outerVStack = ManualStackView(name: "systemMessage.outerVStack.\(id)")
-
             super.init()
 
             titleLabel.textAlignment = .center
