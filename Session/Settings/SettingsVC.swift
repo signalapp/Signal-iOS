@@ -81,6 +81,15 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
+    private lazy var surveyButton: UIButton = {
+        let result = UIButton()
+        result.setTitle(NSLocalizedString("vc_settings_survey_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitleColor(Colors.text, for: UIControl.State.normal)
+        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.addTarget(self, action: #selector(openSurvey), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
     private lazy var helpTranslateButton: UIButton = {
         let result = UIButton()
         result.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
@@ -178,7 +187,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         logoContainer.pin(.bottom, to: .bottom, of: logoImageView)
         logoImageView.centerXAnchor.constraint(equalTo: logoContainer.centerXAnchor, constant: -2).isActive = true
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, faqButton, helpTranslateButton, logoContainer, versionLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, faqButton, surveyButton, helpTranslateButton, logoContainer, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
@@ -470,6 +479,11 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     
     @objc private func openFAQ() {
         let url = URL(string: "https://getsession.org/faq")!
+        UIApplication.shared.open(url)
+    }
+    
+    @objc private func openSurvey() {
+        let url = URL(string: "https://getsession.org/survey")!
         UIApplication.shared.open(url)
     }
     
