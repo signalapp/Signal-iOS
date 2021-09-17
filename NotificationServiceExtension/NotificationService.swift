@@ -31,11 +31,14 @@ let environment = NSEEnvironment()
 
 class NotificationService: UNNotificationServiceExtension {
 
-    var contentHandler: ((UNNotificationContent) -> Void)?
+    private var contentHandler: ((UNNotificationContent) -> Void)?
     var areVersionMigrationsComplete = false
 
     func completeSilenty(timeHasExpired: Bool = false) {
-        guard let contentHandler = contentHandler else { return }
+        guard let contentHandler = contentHandler else {
+            Logger.flush()
+            return
+        }
         let content = UNMutableNotificationContent()
 
         // We cannot perform a database read when the NSE's time
@@ -44,6 +47,8 @@ class NotificationService: UNNotificationServiceExtension {
             let badgeCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
             content.badge = NSNumber(value: badgeCount)
         }
+
+        Logger.flush()
 
         contentHandler(content)
         self.contentHandler = nil
@@ -54,7 +59,9 @@ class NotificationService: UNNotificationServiceExtension {
 
         if let errorContent = environment.setupIfNecessary() {
             Logger.warn("Posting error notification and skipping processing.")
+            Logger.flush()
             contentHandler(errorContent)
+            self.contentHandler = nil
             return
         }
 
