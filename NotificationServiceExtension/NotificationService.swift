@@ -55,15 +55,15 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-        self.contentHandler = contentHandler
 
         if let errorContent = environment.setupIfNecessary() {
             Logger.warn("Posting error notification and skipping processing.")
             Logger.flush()
             contentHandler(errorContent)
-            self.contentHandler = nil
             return
         }
+
+        self.contentHandler = contentHandler
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
