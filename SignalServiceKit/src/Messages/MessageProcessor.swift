@@ -190,7 +190,8 @@ public class MessageProcessor: NSObject {
         let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
         switch result {
         case .duplicate:
-            completion(.failure(error: OWSGenericError("Duplicate envelope, envelopeSource: \(envelopeSource).")))
+            Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
+            completion(.duplicate)
         case .enqueued:
             drainPendingEnvelopes()
         }
