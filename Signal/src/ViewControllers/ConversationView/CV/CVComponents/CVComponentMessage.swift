@@ -952,16 +952,16 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         case .topFullWidth:
             return buildFullWidthStackConfig(includeTopMargin: false)
         case .bottomFullWidth:
-            var applyTopMarginToFullWidthStack = false
+            var applyTopMargin = false
             if previousSectionItems.isEmpty,
                quotedReply != nil {
-                applyTopMarginToFullWidthStack = true
+                applyTopMargin = true
             } else if let previousSectionItem = previousSectionItems.last,
                       previousSectionItem.componentKey == .linkPreview,
                       quotedReply != nil {
-                applyTopMarginToFullWidthStack = true
+                applyTopMargin = true
             }
-            return buildFullWidthStackConfig(includeTopMargin: applyTopMarginToFullWidthStack)
+            return buildFullWidthStackConfig(includeTopMargin: applyTopMargin)
         case .topNested, .bottomNestedShare, .bottomNestedText:
             let topMargin: ContentStackMargin
             if let previousSectionItem = previousSectionItems.last {
