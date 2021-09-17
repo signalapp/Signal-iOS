@@ -6,6 +6,7 @@ import commands
 import subprocess
 import argparse
 import inspect
+import feature_flags_common
 from datetime import date
 
 def fail(message):
@@ -233,6 +234,51 @@ def get_versions(plist_file_path):
 
     return release_version, build_version_1
 
+def get_tag_variant(args):
+    is_internal = args.internal
+    is_nightly = args.nightly
+    is_beta = args.beta
+
+    argument_tag = ""
+    if is_internal:
+        argument_tag = "internal"
+    elif is_nightly:
+        argument_tag = "nightly"
+    elif is_beta:
+        argument_tag = "beta"
+
+    current_flag = feature_flags_common.get_feature_flag()
+    if current_flag in ["dev", "internalPreview", "qa"]:
+        feature_flag_tag = "internal"
+    elif current_flag in ["beta", "openPreview"]:
+        feature_flag_tag = "beta"
+    elif current_flag in ["production"]:
+        feature_flag_tag = ""
+    else:
+        print "Unrecognized feature flag: " + current_flag
+        feature_flag_tag = None
+
+
+    if is_nightly or feature_flag_tag == None:
+        # Just trust the tag variant specified via argument if:
+        # - It's a nightly build. Those are automated and we shouldn't bug a script with interactive input requests
+        # - We don't recognize the build variant.
+        return argument_tag
+    elif argument_tag == feature_flag_tag:
+        return argument_tag
+    else:
+        # A mismatch! Let's check with the user to see if they really wanted
+        # a tag variant that matched the current feature flag.
+        argument_tag_string = argument_tag if len(argument_tag) > 0 else "production"
+        feature_flag_tag_string = feature_flag_tag if len(feature_flag_tag) > 0 else "production"
+
+        print "Feature flag mismatch! Arguments specify a " + argument_tag_string + " tag but the current feature flag indicates a " + feature_flag_tag_string + " tag may be more appropriate."
+        prefer_feature_flag = raw_input("Proceed with a " + feature_flag_tag_string + " instead? (Y/n) ")
+
+        if len(prefer_feature_flag) == 0 or prefer_feature_flag[0] in "Yy":
+            return feature_flag_tag
+        else:
+            return argument_tag
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Precommit cleanup script.')
@@ -244,10 +290,7 @@ if __name__ == '__main__':
     type_group.add_argument('--beta', action='store_true', help='used to indicate beta builds.')
 
     args = parser.parse_args()
-
-    is_internal = args.internal
-    is_nightly = args.nightly
-    is_beta = args.beta
+    tag_variant = get_tag_variant(args)
 
     project_root_path = find_project_root()
     # print 'project_root_path', project_root_path
@@ -340,11 +383,11 @@ if __name__ == '__main__':
     command = ['git', 'add', '.']
     execute_command(command)
 
-    if is_internal:
+    if tag_variant == "internal":
         commit_message = '"Bump build to %s." (Internal)' % new_build_version_4
-    elif is_beta:
+    elif tag_variant == "beta":
         commit_message = '"Bump build to %s." (Beta)' % new_build_version_4
-    elif is_nightly:
+    elif tag_variant == "nightly":
         commit_message = '"Bump build to %s." (nightly-%s)' % ( new_build_version_4, date.today().strftime("%m-%d-%Y") )
     else:
         commit_message = '"Bump build to %s."' % new_build_version_4
@@ -352,12 +395,8 @@ if __name__ == '__main__':
     execute_command(command)
 
     tag_name = new_build_version_4
-    if is_internal:
-        tag_name += "-internal"
-    elif is_nightly:
-        tag_name += "-nightly"
-    elif is_beta:
-        tag_name += "-beta"
+    if len(tag_variant) > 0:
+        tag_name += ("-" + tag_variant)
 
     command = ['git', 'tag', tag_name]
     execute_command(command)

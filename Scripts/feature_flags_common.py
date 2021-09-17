@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
+import re
 import commands
 import subprocess
 import inspect    
@@ -23,6 +24,17 @@ def execute_command(command):
     except subprocess.CalledProcessError as e:
         print e.output
         sys.exit(1)
+
+def get_feature_flag():
+    flags_path = 'SignalServiceKit/src/Util/FeatureFlags.swift'
+    fd = open(flags_path, 'rt')
+    regex = re.compile(r'([^\.\s]+)$')
+
+    for line in fd:
+        if line.strip().startswith('private let build: FeatureBuild'):
+            match = regex.search(line)
+            if match and match.group(1):
+                return match.group(1)
 
 def set_feature_flags(new_flags_level):
     output = subprocess.check_output(['git', 'status', '--porcelain'])
