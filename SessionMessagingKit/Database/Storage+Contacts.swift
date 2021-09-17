@@ -7,8 +7,16 @@ extension Storage {
     public func getContact(with sessionID: String) -> Contact? {
         var result: Contact?
         Storage.read { transaction in
-            result = transaction.object(forKey: sessionID, inCollection: Storage.contactCollection) as? Contact
+            result = self.getContact(with: sessionID, using: transaction)
         }
+        return result
+    }
+    
+    @objc(getContactWithSessionID:using:)
+    public func getContact(with sessionID: String, using transaction: Any) -> Contact? {
+        var result: Contact?
+        let transaction = transaction as! YapDatabaseReadTransaction
+        result = transaction.object(forKey: sessionID, inCollection: Storage.contactCollection) as? Contact
         if let result = result, result.sessionID == getUserHexEncodedPublicKey() {
             result.isTrusted = true // Always trust ourselves
         }

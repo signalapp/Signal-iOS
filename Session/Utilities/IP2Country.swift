@@ -46,7 +46,8 @@ final class IP2Country {
     }
 
     @objc func populateCacheIfNeededAsync() {
-        IP2Country.workQueue.async {
+        // This has to be sync since the `countryNamesCache` dict doesn't like async access
+        IP2Country.workQueue.sync {
             let _ = self.populateCacheIfNeeded()
         }
     }
