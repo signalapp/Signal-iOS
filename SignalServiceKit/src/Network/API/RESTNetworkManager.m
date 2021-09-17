@@ -50,21 +50,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (RESTSessionManager *)get
 {
     AssertOnDispatchQueue(NetworkManagerQueue());
-    
+
+    // Iterate over the pool, discarding expired session managers
+    // until we find a unexpired session manager in the pool or
+    // drain the pool and create a new session manager.
     while (YES) {
         RESTSessionManager *_Nullable sessionManager = [self.pool lastObject];
-        if (sessionManager != nil) {
-            [self.pool removeLastObject];
-            if ([self shouldDiscardSessionManager:sessionManager]) {
-                sessionManager = nil;
-            }
-        }
-
         if (sessionManager == nil) {
+            // Pool is drained; make a new session manager.
             return [RESTSessionManager new];
-        } else {
-            return sessionManager;
         }
+        OWSAssertDebug(sessionManager != nil);
+        [self.pool removeLastObject];
+        if ([self shouldDiscardSessionManager:sessionManager]) {
+            // Discard.
+            continue;
+        }
+        return sessionManager;
     }
 }
 
