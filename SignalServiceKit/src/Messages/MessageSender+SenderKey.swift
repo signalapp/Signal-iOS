@@ -387,7 +387,7 @@ extension MessageSender {
             let recipients = addresses.map { Recipient(address: $0, transaction: writeTx) }
             let ciphertext = try self.senderKeyMessageBody(
                 plaintext: plaintext,
-                contentHint: message.contentHint,
+                message: message,
                 thread: thread,
                 recipients: recipients,
                 senderCertificate: senderCertificate,
@@ -531,12 +531,19 @@ extension MessageSender {
 
     func senderKeyMessageBody(
         plaintext: Data,
-        contentHint: SealedSenderContentHint,
+        message: TSOutgoingMessage,
         thread: TSGroupThread,
         recipients: [Recipient],
         senderCertificate: SenderCertificate,
         transaction writeTx: SDSAnyWriteTransaction
     ) throws -> Data {
+        // multiRecipient messages really need to have the USMC groupId actually match the target thread. Otherwise
+        // this breaks sender key recovery. So we'll always use the thread's groupId here, but we'll verify that
+        // we're not trying to send any messages with a special envelope groupId.
+        // These are only ever set on resend request/response messages, which are only sent through a 1:1 session,
+        // but we should be made aware if that ever changes.
+        owsAssertDebug(message.envelopeGroupIdWithTransaction(writeTx) == thread.groupId)
+
         let protocolAddresses = recipients.flatMap { $0.protocolAddresses }
         let secretCipher = try SMKSecretSessionCipher(
             sessionStore: Self.sessionStore,
@@ -552,7 +559,7 @@ extension MessageSender {
             senderCertificate: senderCertificate,
             groupId: thread.groupId,
             distributionId: distributionId,
-            contentHint: contentHint.signalClientHint,
+            contentHint: message.contentHint.signalClientHint,
             protocolContext: writeTx)
 
         guard ciphertext.count <= Self.maxSenderKeyEnvelopeSize else {
