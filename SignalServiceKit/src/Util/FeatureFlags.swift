@@ -55,6 +55,45 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
 
+    public static var buildVariantString: String? {
+        let featureFlagString: String?
+        switch build {
+        case .dev:
+            featureFlagString = NSLocalizedString("DEVELOPMENT_BUILD", comment: "Development build name")
+        case .internalPreview:
+            featureFlagString = NSLocalizedString("INTERNAL_PREVIEW_BUILD", comment: "Internal preview build name")
+        case .qa:
+            featureFlagString = NSLocalizedString("INTERNAL_BUILD", comment: "Internal build name")
+        case .openPreview:
+            featureFlagString = NSLocalizedString("OPEN_PREVIEW_BUILD", comment: "Open preview build name")
+        case .beta:
+            featureFlagString = NSLocalizedString("BETA_BUILD", comment: "Beta build name")
+        case .production:
+            // Production can be inferred from the lack of flag
+            featureFlagString = nil
+        }
+
+        let configuration: String? = {
+            #if DEBUG
+            NSLocalizedString("DEBUG_VARIANT", comment: "Debug variant name")
+            #elseif TESTABLE_BUILD
+            NSLocalizedString("TESTABLE_BUILD_VARIANT", comment: "Testable build variant name")
+            #elseif RELEASE
+            // RELEASE can be inferred from the lack of configuration
+            nil
+            #else
+            owsFailDebug("Invalid configuration")
+            return "*"
+            #endif
+        }()
+
+        // If we're Production+Release, this will return nil and won't show up in Help Settings
+        return [featureFlagString, configuration]
+            .compactMap { $0 }
+            .joined(separator: " — ")
+            .nilIfEmpty
+    }
+
     @objc
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
