@@ -43,7 +43,7 @@ public struct ContactDiscoveryService: Dependencies {
         owsAssertDebug(enclaveName.strippedOrNil != nil)
         owsAssertDebug(host.strippedOrNil != nil)
 
-        firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
+        return firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
             self.networkManager.makePromise(request: self.buildIntersectionRequest(
                 query: query,
                 cookies: cookies,
