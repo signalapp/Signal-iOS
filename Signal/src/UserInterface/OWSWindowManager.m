@@ -46,7 +46,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIDevice.currentDevice.defaultSupportedOrienations;
+    return UIDevice.currentDevice.defaultSupportedOrientations;
 }
 
 @end
@@ -65,7 +65,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIDevice.currentDevice.defaultSupportedOrienations;
+    return UIDevice.currentDevice.defaultSupportedOrientations;
 }
 
 @end

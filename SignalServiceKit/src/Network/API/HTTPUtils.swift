@@ -184,6 +184,13 @@ public extension Error {
         return error.requestUrl
     }
 
+    var httpResponseHeaders: OWSHttpHeaders? {
+        guard let error = self as? HTTPError else {
+            return nil
+        }
+        return error.responseHeaders
+    }
+
     var httpResponseJson: Any? {
         guard let data = httpResponseData else {
             return nil

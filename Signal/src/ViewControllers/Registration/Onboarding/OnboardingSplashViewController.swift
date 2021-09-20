@@ -10,7 +10,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
     let modeSwitchButton = UIButton()
 
-    override var primaryLayoutMargins: UIEdgeInsets {
+    public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
         // we want the hero image a bit closer to the top than most
         // onboarding content
@@ -100,10 +100,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         guard sender.state == .recognized else {
             return
         }
-        guard let url = URL(string: kLegalTermsUrlString) else {
-            owsFailDebug("Invalid URL.")
-            return
-        }
+        let url = TSConstants.legalTermsUrl
         let safariVC = SFSafariViewController(url: url)
         present(safariVC, animated: true)
     }

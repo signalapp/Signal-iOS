@@ -246,6 +246,26 @@ public class ComposeScreenSearchResultSet: NSObject {
     public var isEmpty: Bool {
         return groups.isEmpty && signalContacts.isEmpty
     }
+
+    @objc
+    public var logDescription: String {
+        var sections = [String]()
+        if !groups.isEmpty {
+            var splits = [String]()
+            for group in groups {
+                splits.append(group.thread.threadRecord.uniqueId)
+            }
+            sections.append("groups: " + splits.joined(separator: ","))
+        }
+        if !signalAccounts.isEmpty {
+            var splits = [String]()
+            for signalAccount in signalAccounts {
+                splits.append(signalAccount.addressComponentsDescription)
+            }
+            sections.append("signalAccounts: " + splits.joined(separator: ","))
+        }
+        return "[" + sections.joined(separator: ",") + "]"
+    }
 }
 
 // MARK: -

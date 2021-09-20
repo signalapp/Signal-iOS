@@ -34,30 +34,50 @@ public class AccountManager: NSObject {
     // MARK: registration
 
     @objc
-    func requestAccountVerificationObjC(recipientId: String, captchaToken: String?, isSMS: Bool) -> AnyPromise {
-        return AnyPromise(requestAccountVerification(recipientId: recipientId, captchaToken: captchaToken, isSMS: isSMS))
+    func requestRegistrationVerificationObjC(e164: String, captchaToken: String?, isSMS: Bool) -> AnyPromise {
+        return AnyPromise(requestRegistrationVerification(e164: e164, captchaToken: captchaToken, isSMS: isSMS))
     }
 
-    func requestAccountVerification(recipientId: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
+    func requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
+        requestAccountVerification(e164: e164,
+                                   captchaToken: captchaToken,
+                                   isSMS: isSMS,
+                                   mode: .registration)
+    }
+
+    public enum VerificationMode {
+        case registration
+        case changePhoneNumber
+    }
+
+    public func requestAccountVerification(e164: String,
+                                           captchaToken: String?,
+                                           isSMS: Bool,
+                                           mode: VerificationMode) -> Promise<Void> {
         let transport: TSVerificationTransport = isSMS ? .SMS : .voice
 
         return firstly { () -> Promise<String?> in
-            guard !self.tsAccountManager.isRegistered else {
-                throw OWSAssertionError("requesting account verification when already registered")
+            switch mode {
+            case .registration:
+                guard !self.tsAccountManager.isRegistered else {
+                    throw OWSAssertionError("requesting account verification when already registered")
+                }
+            case .changePhoneNumber:
+                break
             }
 
-            self.tsAccountManager.phoneNumberAwaitingVerification = recipientId
+            self.tsAccountManager.phoneNumberAwaitingVerification = e164
 
-            return self.getPreauthChallenge(recipientId: recipientId)
+            return self.getPreauthChallenge(e164: e164)
         }.then { (preauthChallenge: String?) -> Promise<Void> in
-            self.accountServiceClient.requestVerificationCode(recipientId: recipientId,
+            self.accountServiceClient.requestVerificationCode(e164: e164,
                                                               preauthChallenge: preauthChallenge,
                                                               captchaToken: captchaToken,
                                                               transport: transport)
         }
     }
 
-    func getPreauthChallenge(recipientId: String) -> Promise<String?> {
+    func getPreauthChallenge(e164: String) -> Promise<String?> {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
@@ -65,7 +85,7 @@ public class AccountManager: NSObject {
             self.pushRegistrationManager.preauthChallengeFuture = pushFuture
 
             return self.accountServiceClient.requestPreauthChallenge(
-                recipientId: recipientId,
+                e164: e164,
                 pushToken: voipToken?.nilIfEmpty ?? vanillaToken,
                 isVoipToken: !voipToken.isEmptyOrNil
             ).then { () -> Promise<String?> in
@@ -120,7 +140,7 @@ public class AccountManager: NSObject {
                 if !self.tsAccountManager.isReregistering {
                     // For new users, read receipts are on by default.
                     self.receiptManager.setAreReadReceiptsEnabled(true,
-                                                                      transaction: transaction)
+                                                                  transaction: transaction)
 
                     // New users also have the onboarding banner cards enabled
                     GetStartedBannerViewController.enableAllCards(writeTx: transaction)
@@ -158,6 +178,128 @@ public class AccountManager: NSObject {
         }.then { _ -> Promise<Void> in
             self.performInitialStorageServiceRestore()
         }
+    }
+
+    func requestChangePhoneNumber(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
+        guard let verificationCode = verificationCode.nilIfEmpty else {
+            let error = OWSError(error: .userError,
+                                 description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
+                                                                comment: "alert body during registration"),
+                                 isRetryable: false)
+            return Promise(error: error)
+        }
+
+        Logger.info("Changing phone number.")
+
+        // Mark a change as in flight.  If the change is interrupted,
+        // we'll use /whoami on next app launch to ensure local client
+        // state reflects current service state.
+        let changeToken = Self.databaseStorage.write { transaction in
+            ChangePhoneNumber.changeWillBegin(transaction: transaction)
+        }
+
+        return firstly {
+            // Change the phone number on the service.
+            self.changePhoneNumberRequest(newPhoneNumber: newPhoneNumber,
+                                          verificationCode: verificationCode,
+                                          registrationLock: registrationLock)
+        }.then(on: .global()) {
+            // Try to take the change from the service.
+            ChangePhoneNumber.updateLocalPhoneNumberPromise()
+
+            // TODO: We need to persist, clear and recover using the "attempt in flight" state.
+            // TODO: We need to store the outcome in tsAccountManager.
+            // TODO: We need to store the outcome in storage service.
+
+//            private func changePhoneNumberRequest(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
+//        }.then { response -> Promise<Void> in
+//            // TODO:
+//            assert(response.uuid != nil)
+//            self.tsAccountManager.uuidAwaitingVerification = response.uuid
+//
+////            self.databaseStorage.write { transaction in
+////                if !self.tsAccountManager.isReregistering {
+////                    // For new users, read receipts are on by default.
+////                    self.receiptManager.setAreReadReceiptsEnabled(true,
+////                                                                  transaction: transaction)
+////
+////                    // New users also have the onboarding banner cards enabled
+////                    GetStartedBannerViewController.enableAllCards(writeTx: transaction)
+////                }
+////
+////                // If the user previously had a PIN, but we don't have record of it,
+////                // mark them as pending restoration during onboarding. Reg lock users
+////                // will have already restored their PIN by this point.
+////                if response.hasPreviouslyUsedKBS, !KeyBackupService.hasMasterKey {
+////                    KeyBackupService.recordPendingRestoration(transaction: transaction)
+////                }
+////            }
+//
+//            return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
+//        }.then {
+//            self.createPreKeys()
+        }.done { localPhoneNumber in
+            owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
+
+            // Mark change as complete.
+            Self.databaseStorage.write { transaction in
+                ChangePhoneNumber.changeDidComplete(changeToken: changeToken, transaction: transaction)
+            }
+
+            self.profileManager.fetchLocalUsersProfile()
+//        }.then { _ -> Promise<Void> in
+//            return self.syncPushTokens().recover { (error) -> Promise<Void> in
+//                switch error {
+//                case PushRegistrationError.pushNotSupported(let description):
+//                    // This can happen with:
+//                    // - simulators, none of which support receiving push notifications
+//                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
+//                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
+//                    self.tsAccountManager.setIsManualMessageFetchEnabled(true)
+//                    return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
+//                default:
+//                    throw error
+//                }
+//            }
+//        }.done {
+//            self.completeRegistration()
+//        }.then { _ -> Promise<Void> in
+//            self.performInitialStorageServiceRestore()
+        }
+    }
+
+    private func changePhoneNumberRequest(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
+        return Promise<Void> { future in
+            let request = OWSRequestFactory.changePhoneNumberRequest(newPhoneNumberE164: newPhoneNumber,
+                                                                     verificationCode: verificationCode,
+                                                                     registrationLock: registrationLock)
+            tsAccountManager.verifyChangePhoneNumber(request: request,
+                                                     success: future.resolve,
+                                                     failure: future.reject)
+        }
+        // TODO: Handle reglock.
+//        }.map(on: .global()) { responseObject throws -> RegistrationResponse in
+//            guard let responseObject = responseObject else {
+//                throw OWSAssertionError("Missing responseObject.")
+//            }
+//            guard let params = ParamParser(responseObject: responseObject) else {
+//                throw OWSAssertionError("Missing or invalid params.")
+//            }
+//
+//            var registrationResponse = RegistrationResponse()
+//
+//            // TODO UUID: this UUID param should be non-optional when the production service is updated
+//            if let uuidString: String = try params.optional(key: "uuid") {
+//                guard let uuid = UUID(uuidString: uuidString) else {
+//                    throw OWSAssertionError("Missing or invalid uuid.")
+//                }
+//                registrationResponse.uuid = uuid
+//            }
+//
+//            registrationResponse.hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
+//
+//            return registrationResponse
+//        }
     }
 
     func performInitialStorageServiceRestore() -> Promise<Void> {
@@ -344,9 +486,9 @@ public class AccountManager: NSObject {
                                                                        pin: pin,
                                                                        checkForAvailableTransfer: checkForAvailableTransfer)
 
-            tsAccountManager.verifyAccount(request: request,
-                                           success: future.resolve,
-                                           failure: future.reject)
+            tsAccountManager.verifyRegistration(request: request,
+                                                success: future.resolve,
+                                                failure: future.reject)
         }.map(on: .global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
@@ -466,7 +608,9 @@ public class AccountManager: NSObject {
             return Promise.value(existingUuid)
         }
 
-        return accountServiceClient.getUuid().map(on: DispatchQueue.global()) { uuid in
+        return accountServiceClient.getAccountWhoAmI().map(on: DispatchQueue.global()) { whoAmIResponse in
+            let uuid = whoAmIResponse.uuid
+
             // It's possible this method could be called multiple times, so we check
             // again if it's been set. We dont bother serializing access since it should
             // be idempotent.

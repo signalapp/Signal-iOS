@@ -1,0 +1,112 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+import UIKit
+
+@objc
+protocol RegistrationCaptchaViewController: AnyObject {
+
+    var viewModel: RegistrationCaptchaViewModel { get }
+    var primaryView: UIView { get }
+
+    func requestCaptchaVerification(captchaToken: String)
+}
+
+// MARK: -
+
+@objc
+class RegistrationCaptchaViewModel: NSObject {
+    weak var viewController: RegistrationCaptchaViewController?
+
+    let captchaView = CaptchaView()
+
+    // MARK: - Methods
+
+    func createViews(vc: RegistrationBaseViewController) {
+        AssertIsOnMainThread()
+
+        let primaryView = vc.primaryView
+        primaryView.backgroundColor = UIColor.ows_white
+
+        let titleLabel = vc.createTitleLabel(text: NSLocalizedString("ONBOARDING_CAPTCHA_TITLE",
+                                                                     comment: "Title of the 'onboarding Captcha' view."))
+        titleLabel.accessibilityIdentifier = "captcha." + "titleLabel"
+
+        let titleRow = UIStackView(arrangedSubviews: [
+            titleLabel
+            ])
+        titleRow.axis = .vertical
+        titleRow.alignment = .fill
+        titleRow.layoutMargins = UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0)
+        titleRow.isLayoutMarginsRelativeArrangement = true
+
+        captchaView.delegate = self
+
+        let stackView = UIStackView(arrangedSubviews: [
+            titleRow,
+            captchaView
+            ])
+        stackView.axis = .vertical
+        stackView.alignment = .fill
+        primaryView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewSafeArea()
+    }
+
+    // MARK: -
+
+    private func requestCaptchaVerification(captchaToken: String) {
+        Logger.info("")
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        viewController.requestCaptchaVerification(captchaToken: captchaToken)
+    }
+
+    func addProgressView() -> AnimatedProgressView? {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return nil
+        }
+        let primaryView = viewController.primaryView
+
+        let progressView = AnimatedProgressView()
+        primaryView.addSubview(progressView)
+        progressView.autoCenterInSuperview()
+        progressView.startAnimating()
+        return progressView
+    }
+
+    func removeProgressView(_ progressView: AnimatedProgressView?) {
+        AssertIsOnMainThread()
+
+        guard let progressView = progressView else {
+            owsFailDebug("Missing progressView.")
+            return
+        }
+
+        UIView.animate(withDuration: 0.15) {
+            progressView.alpha = 0
+        } completion: { _ in
+            progressView.removeFromSuperview()
+        }
+    }
+}
+
+// MARK: -
+
+extension RegistrationCaptchaViewModel: CaptchaViewDelegate {
+
+    public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
+        requestCaptchaVerification(captchaToken: token)
+    }
+
+    public func captchaViewDidFailToCompleteCaptcha(_ captchaView: CaptchaView) {
+        captchaView.loadCaptcha()
+    }
+}

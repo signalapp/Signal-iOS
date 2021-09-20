@@ -2556,6 +2556,9 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if hasUniversalExpireTimer {
             builder.setUniversalExpireTimer(universalExpireTimer)
         }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
         if let _value = subscriberID {
             builder.setSubscriberID(_value)
         }
@@ -2674,6 +2677,16 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setUniversalExpireTimer(_ valueParam: UInt32) {
             proto.universalExpireTimer = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setE164(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.e164 = valueParam
+        }
+
+        public mutating func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
         }
 
         @available(swift, obsoleted: 1.0)
@@ -2841,6 +2854,16 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
     public var hasUniversalExpireTimer: Bool {
         return true
+    }
+
+    public var e164: String? {
+        guard hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    public var hasE164: Bool {
+        return !proto.e164.isEmpty
     }
 
     public var subscriberID: Data? {

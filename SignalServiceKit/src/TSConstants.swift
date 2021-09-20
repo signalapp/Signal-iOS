@@ -53,6 +53,8 @@ public class TSConstants: NSObject {
     // Never instantiate this class.
     private override init() {}
 
+    public static let legalTermsUrl = URL(string: "https://signal.org/legal/")!
+
     @objc
     public static var mainServiceWebSocketAPI_identified: String { shared.mainServiceWebSocketAPI_identified }
     @objc

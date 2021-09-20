@@ -4,7 +4,7 @@
 
 #import "NSUserDefaults+OWS.h"
 #import "AppContext.h"
-#import "TSConstants.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

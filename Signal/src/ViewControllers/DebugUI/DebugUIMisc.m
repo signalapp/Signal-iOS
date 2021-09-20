@@ -198,6 +198,18 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Create chat colors"
                                      actionBlock:^() { [DebugUIMisc createChatColors]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Log Local Account"
+                                     actionBlock:^() { [DebugUIMisc logLocalAccount]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Log SignalRecipients"
+                                     actionBlock:^() { [DebugUIMisc logSignalRecipients]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Log SignalAccounts"
+                                     actionBlock:^() { [DebugUIMisc logSignalAccounts]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Log ContactThreads"
+                                     actionBlock:^() { [DebugUIMisc logContactThreads]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

@@ -7,7 +7,7 @@ import UIKit
 @objc
 public class OnboardingTransferChoiceViewController: OnboardingBaseViewController {
 
-    override var primaryLayoutMargins: UIEdgeInsets {
+    public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
 
         switch traitCollection.horizontalSizeClass {

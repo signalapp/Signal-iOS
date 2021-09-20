@@ -203,3 +203,23 @@ extension TSThread {
         return MessageBody(text: messageDraft, ranges: ranges)
     }
 }
+
+// MARK: - Drafts
+
+extension TSContactThread {
+    @objc
+    public var addressComponentsDescription: String {
+        var splits = [String]()
+        if let uuid = self.contactUUID?.nilIfEmpty {
+            splits.append("uuid: " + uuid)
+        }
+        if let phoneNumber = self.contactPhoneNumber?.nilIfEmpty {
+            splits.append("phoneNumber: " + phoneNumber)
+        }
+        if let uuid = self.contactUUID?.nilIfEmpty,
+           tsAccountManager.localUuid?.uuidString == uuid {
+            splits.append("*local address")
+        }
+        return "[" + splits.joined(separator: ", ") + "]"
+    }
+}

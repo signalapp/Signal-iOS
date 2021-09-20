@@ -147,11 +147,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
-
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.hasEnded) {

@@ -3,59 +3,7 @@
 //
 
 import UIKit
-
-@objc
-public class OnboardingCountryState: NSObject {
-    public let countryName: String
-    public let callingCode: String
-    public let countryCode: String
-
-    @objc
-    public init(countryName: String,
-                callingCode: String,
-                countryCode: String) {
-        self.countryName = countryName
-        self.callingCode = callingCode
-        self.countryCode = countryCode
-    }
-
-    public static var defaultValue: OnboardingCountryState {
-        AssertIsOnMainThread()
-
-        var countryCode: String = PhoneNumber.defaultCountryCode()
-        if let lastRegisteredCountryCode = OnboardingController.lastRegisteredCountryCode(),
-            lastRegisteredCountryCode.count > 0 {
-            countryCode = lastRegisteredCountryCode
-        }
-
-        let callingCodeNumber: NSNumber = phoneNumberUtil.getCountryCode(forRegion: countryCode)
-        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
-
-        var countryName = NSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
-        if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
-            countryName = countryNameDerived
-        }
-
-        return OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
-    }
-}
-
-// MARK: -
-
-@objc
-public class OnboardingPhoneNumber: NSObject {
-    public let e164: String
-    public let userInput: String
-
-    @objc
-    public init(e164: String,
-                userInput: String) {
-        self.e164 = e164
-        self.userInput = userInput
-    }
-}
-
-// MARK: -
+import SignalServiceKit
 
 @objc
 public class OnboardingNavigationController: OWSNavigationController {
@@ -77,6 +25,8 @@ public class OnboardingNavigationController: OWSNavigationController {
         return superOrientations.intersection(onboardingOrientations)
     }
 }
+
+// MARK: -
 
 @objc
 public class OnboardingController: NSObject {
@@ -239,7 +189,7 @@ public class OnboardingController: NSObject {
         case .setupPin:
             return buildPinSetupViewController()
         case .phoneNumberDiscoverability:
-            return OnboardingPhoneNumberDiscoverabilityViewController(onboardingController: self)
+            return RegistrationPhoneNumberDiscoverabilityViewController(onboardingController: self)
         }
     }
 
@@ -318,7 +268,7 @@ public class OnboardingController: NSObject {
             let view = OnboardingTransferChoiceViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)
         } else {
-            let view = OnboardingPhoneNumberViewController(onboardingController: self)
+            let view = RegistrationPhoneNumberViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)
         }
     }
@@ -349,7 +299,7 @@ public class OnboardingController: NSObject {
         // from the "code verification" view.  The "Captcha" view should always appear
         // immediately after the "phone number" view.
         while navigationController.viewControllers.count > 1 &&
-            !(navigationController.topViewController is OnboardingPhoneNumberViewController) {
+            !(navigationController.topViewController is RegistrationPhoneNumberViewController) {
                 navigationController.popViewController(animated: false)
         }
 
@@ -457,9 +407,9 @@ public class OnboardingController: NSObject {
 
     // MARK: - State
 
-    public private(set) var countryState: OnboardingCountryState = .defaultValue
+    public private(set) var countryState: RegistrationCountryState = .defaultValue
 
-    public private(set) var phoneNumber: OnboardingPhoneNumber?
+    public private(set) var phoneNumber: RegistrationPhoneNumber?
 
     public private(set) var captchaToken: String?
 
@@ -472,14 +422,14 @@ public class OnboardingController: NSObject {
     public private(set) var verificationRequestCount: UInt = 0
 
     @objc
-    public func update(countryState: OnboardingCountryState) {
+    public func update(countryState: RegistrationCountryState) {
         AssertIsOnMainThread()
 
         self.countryState = countryState
     }
 
     @objc
-    public func update(phoneNumber: OnboardingPhoneNumber) {
+    public func update(phoneNumber: RegistrationPhoneNumber) {
         AssertIsOnMainThread()
 
         self.phoneNumber = phoneNumber
@@ -508,143 +458,53 @@ public class OnboardingController: NSObject {
 
     // MARK: - Debug
 
-    private static let kKeychainService_LastRegistered = "kKeychainService_LastRegistered"
-    private static let kKeychainKey_LastRegisteredCountryCode = "kKeychainKey_LastRegisteredCountryCode"
-    private static let kKeychainKey_LastRegisteredPhoneNumber = "kKeychainKey_LastRegisteredPhoneNumber"
-
-    private class func debugValue(forKey key: String) -> String? {
-        AssertIsOnMainThread()
-
-        guard OWSIsDebugBuild() else {
-            return nil
-        }
-
-        do {
-            let value = try CurrentAppContext().keychainStorage().string(forService: kKeychainService_LastRegistered, key: key)
-            return value
-        } catch {
-            // The value may not be present in the keychain.
-            return nil
-        }
-    }
-
-    private class func setDebugValue(_ value: String, forKey key: String) {
-        AssertIsOnMainThread()
-
-        guard OWSIsDebugBuild() else {
-            return
-        }
-
-        do {
-            try CurrentAppContext().keychainStorage().set(string: value, service: kKeychainService_LastRegistered, key: key)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
     public class func lastRegisteredCountryCode() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredCountryCode)
+        RegistrationValues.lastRegisteredCountryCode()
     }
 
     private class func setLastRegisteredCountryCode(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredCountryCode)
+        RegistrationValues.setLastRegisteredCountryCode(value: value)
     }
 
     public class func lastRegisteredPhoneNumber() -> String? {
-        return debugValue(forKey: kKeychainKey_LastRegisteredPhoneNumber)
+        RegistrationValues.lastRegisteredPhoneNumber()
     }
 
     private class func setLastRegisteredPhoneNumber(value: String) {
-        setDebugValue(value, forKey: kKeychainKey_LastRegisteredPhoneNumber)
+        RegistrationValues.setLastRegisteredPhoneNumber(value: value)
     }
 
     // MARK: - Registration
 
     public func presentPhoneNumberConfirmationSheet(from vc: UIViewController, number: String, completion: @escaping (_ didApprove: Bool) -> Void) {
-        let titleFormat = NSLocalizedString(
-            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
-            comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}.")
-        let message = NSLocalizedString(
-            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
-            comment: "Message for confirmation alert during phone number registration.")
-        let editButtonTitle = NSLocalizedString(
-            "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
-            comment: "A button allowing user to cancel registration and edit a phone number")
-
-        let sheet = ActionSheetController(title: String(format: titleFormat, number), message: message)
-        sheet.addAction(ActionSheetAction(title: CommonStrings.yesButton, style: .default, handler: { _ in
-            completion(true)
-        }))
-        sheet.addAction(ActionSheetAction(title: editButtonTitle, style: .default, handler: { _ in
-            completion(false)
-        }))
-        vc.present(sheet, animated: true, completion: nil)
+        RegistrationHelper.presentPhoneNumberConfirmationSheet(from: vc, number: number, completion: completion)
     }
 
     public func requestVerification(
         fromViewController: UIViewController,
         isSMS: Bool,
-        completion: ((_ willTransition: Bool, _ error: Error?) -> Void)?) {
+        completion: RegistrationHelper.VerificationCompletion?) {
 
-        AssertIsOnMainThread()
+            AssertIsOnMainThread()
 
-        guard let phoneNumber = phoneNumber else {
-            owsFailDebug("Missing phoneNumber.")
-            return
-        }
-
-        // We eagerly update this state, regardless of whether or not the
-        // registration request succeeds.
-        OnboardingController.setLastRegisteredCountryCode(value: countryState.countryCode)
-        OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumber.userInput)
-
-        let captchaToken = self.captchaToken
-        self.verificationRequestCount += 1
-
-        firstly { () -> Promise<Void> in
-            return self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
-                                                           captchaToken: captchaToken,
-                                                           isSMS: isSMS)
-        }.done {
-            completion?(true, nil)
-            self.requestingVerificationDidSucceed(viewController: fromViewController)
-
-        }.catch { error in
-            Logger.error("Error: \(error)")
-
-            switch error {
-            case let error where error.httpStatusCode == 400:
-                completion?(false, error)
-                OWSActionSheets.showActionSheet(
-                    title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
-
-            case let error where error.httpStatusCode == 413:
-                completion?(false, error)
-                OWSActionSheets.showActionSheet(
-                    title: nil,
-                    message: NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "action sheet body"))
-
-            case let error where error.isNetworkFailureOrTimeout:
-                completion?(false, error)
-                OWSActionSheets.showActionSheet(
-                    title: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE",
-                                             comment: "Alert title for network failure during registration"),
-                    message: NSLocalizedString("REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY",
-                                               comment: "Alert body for network failure during registration"))
-
-            case AccountServiceClientError.captchaRequired:
-                completion?(true, error)
-                self.onboardingDidRequireCaptcha(viewController: fromViewController)
-
-            default:
-                owsFailDebug("unexpected error: \(error)")
-                completion?(false, error)
-                OWSActionSheets.showActionSheet(title: error.userErrorDescription,
-                                                message: (error as NSError).localizedRecoverySuggestion)
+            guard let phoneNumber = phoneNumber else {
+                owsFailDebug("Missing phoneNumber.")
+                if let completion = completion {
+                    DispatchQueue.main.async {
+                        completion(false, OWSAssertionError("Missing newPhoneNumber."))
+                    }
+                }
+                return
             }
+
+            RegistrationHelper.requestRegistrationVerification(delegate: self,
+                                                               fromViewController: fromViewController,
+                                                               phoneNumber: phoneNumber,
+                                                               countryState: countryState,
+                                                               captchaToken: captchaToken,
+                                                               isSMS: isSMS,
+                                                               completion: completion)
         }
-    }
 
     // MARK: - Transfer
 
@@ -707,6 +567,7 @@ public class OnboardingController: NSObject {
 
     // MARK: - Verification
 
+    // TODO: Review
     public enum VerificationOutcome: Equatable {
         case success
         case invalidVerificationCode
@@ -715,7 +576,7 @@ public class OnboardingController: NSObject {
         case exhaustedV2RegistrationLockAttempts
     }
 
-    private var hasPendingRestoration: Bool {
+    internal var hasPendingRestoration: Bool {
         databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
     }
 
@@ -745,12 +606,11 @@ public class OnboardingController: NSObject {
                 if self.hasPendingRestoration {
                     firstly {
                         self.accountManager.performInitialStorageServiceRestore()
-                    }.recover { error in
-                        Logger.warn("Timed out performing storage service restore: \(error). Ignoring...")
-                    }.done {
+                    }.ensure {
                         completion(.success)
+                    }.catch { error in
+                        owsFailDebugUnlessNetworkFailure(error)
                     }
-
                 } else {
                     // We've restored our keys, we can now re-run this method to post our registration token
                     // We need to first mark reglock as enabled so we know to include the reglock token in our
@@ -856,14 +716,13 @@ public class OnboardingController: NSObject {
                                     completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
-        if error.domain == OWSSignalServiceKitErrorDomain &&
-            error.code == OWSErrorCode.registrationMissing2FAPIN.rawValue {
+        if let registrationMissing2FAPinError = error as? RegistrationMissing2FAPinError {
 
             Logger.info("Missing 2FA PIN.")
 
             // If we were provided KBS auth, we'll need to re-register using reg lock v2,
             // store this for that path.
-            kbsAuth = error.userInfo[TSRemoteAttestationAuthErrorKey] as? RemoteAttestationAuth
+            kbsAuth = registrationMissing2FAPinError.remoteAttestationAuth
 
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
@@ -911,5 +770,42 @@ public extension UIView {
         strokeView.autoPinWidthToSuperview()
         strokeView.autoPinEdge(toSuperviewEdge: .bottom)
         return strokeView
+    }
+}
+
+// MARK: -
+
+extension OnboardingController: RegistrationHelperDelegate {
+    public func registrationRequestVerificationDidSucceed(fromViewController: UIViewController) {
+        requestingVerificationDidSucceed(viewController: fromViewController)
+    }
+
+    public func registrationRequestVerificationDidRequireCaptcha(fromViewController: UIViewController) {
+        onboardingDidRequireCaptcha(viewController: fromViewController)
+    }
+
+    public func registrationIncrementVerificationRequestCount() {
+        verificationRequestCount += 1
+    }
+}
+
+// MARK: -
+
+extension OnboardingController: RegistrationPinAttemptsExhaustedViewDelegate {
+
+    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController) {
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        if hasPendingRestoration {
+            SDSDatabaseStorage.shared.write { transaction in
+                KeyBackupService.clearPendingRestoration(transaction: transaction)
+            }
+            showNextMilestone(navigationController: navigationController)
+        } else {
+            navigationController.popToRootViewController(animated: true)
+        }
     }
 }

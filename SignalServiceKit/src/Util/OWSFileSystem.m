@@ -4,7 +4,6 @@
 
 #import "OWSFileSystem.h"
 #import "OWSError.h"
-#import "TSConstants.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

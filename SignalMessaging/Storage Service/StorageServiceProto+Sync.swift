@@ -4,6 +4,7 @@
 
 import Foundation
 import SwiftProtobuf
+import SignalServiceKit
 
 // MARK: - Contact Record
 
@@ -576,10 +577,14 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        let configuration = OWSDisappearingMessagesConfiguration
+        let dmConfiguration = OWSDisappearingMessagesConfiguration
             .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        builder.setUniversalExpireTimer(configuration.isEnabled ? configuration.durationSeconds : 0)
+        if let localPhoneNumber = localAddress.phoneNumber?.strippedOrNil,
+           PhoneNumber.resemblesE164(localPhoneNumber) {
+            builder.setE164(localPhoneNumber)
+        }
 
         if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
            let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
@@ -753,6 +758,26 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
             if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
                 SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
+            }
+        }
+
+        if let localE164 = self.e164?.strippedOrNil,
+           PhoneNumber.resemblesE164(localE164) {
+            if localAddress.phoneNumber != localE164 {
+                Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != localE164: \(localE164)")
+                if tsAccountManager.isPrimaryDevice {
+                    // Primary needs to update the local phone number on the storage service.
+                    Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                } else {
+                    if let uuid = localAddress.uuid {
+                        tsAccountManager.updateLocalPhoneNumber(localE164,
+                                                                uuid: uuid,
+                                                                shouldUpdateStorageService: false,
+                                                                transaction: transaction)
+                    } else {
+                        owsFailDebug("Missing uuid.")
+                    }
+                }
             }
         }
 

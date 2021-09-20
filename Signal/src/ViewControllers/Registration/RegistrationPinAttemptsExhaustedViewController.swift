@@ -5,11 +5,23 @@
 import UIKit
 import SafariServices
 
-@objc
-public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewController {
+protocol RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {
+    var hasPendingRestoration: Bool { get }
 
-    var hasPendingRestoration: Bool {
-        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController)
+}
+
+// MARK: -
+
+@objc
+public class RegistrationPinAttemptsExhaustedViewController: RegistrationBaseViewController {
+
+    private weak var delegate: RegistrationPinAttemptsExhaustedViewDelegate?
+
+    var hasPendingRestoration: Bool { delegate?.hasPendingRestoration ?? false }
+
+    required init(delegate: RegistrationPinAttemptsExhaustedViewDelegate) {
+        self.delegate = delegate
     }
 
     override public func loadView() {
@@ -81,7 +93,8 @@ public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewCon
 
     // MARK: - Events
 
-    @objc func learnMoreLinkTapped() {
+    @objc
+    func learnMoreLinkTapped() {
         Logger.info("")
 
         // TODO PINs: Open the right support center URL
@@ -89,7 +102,8 @@ public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewCon
         present(vc, animated: true, completion: nil)
     }
 
-    @objc func primaryButtonPressed() {
+    @objc
+    func primaryButtonPressed() {
         Logger.info("")
 
         guard let navigationController = navigationController else {
@@ -97,14 +111,6 @@ public class OnboardingPinAttemptsExhaustedViewController: OnboardingBaseViewCon
             return
         }
 
-        if hasPendingRestoration {
-            SDSDatabaseStorage.shared.write { transaction in
-                KeyBackupService.clearPendingRestoration(transaction: transaction)
-            }
-            onboardingController.showNextMilestone(navigationController: navigationController)
-        } else {
-            navigationController.popToRootViewController(animated: true)
-
-        }
+        delegate?.pinAttemptsExhaustedViewDidComplete(viewController: self)
     }
 }

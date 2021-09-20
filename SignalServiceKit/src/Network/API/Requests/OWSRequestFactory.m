@@ -12,7 +12,6 @@
 #import "SSKEnvironment.h"
 #import "SignedPrekeyRecord.h"
 #import "TSAccountManager.h"
-#import "TSConstants.h"
 #import "TSRequest.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/Cryptography.h>
@@ -30,7 +29,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     OWSAssertDebug(pin.length > 0);
 
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecure2FAAPI]
+    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecure2FAAPI]
                               method:@"PUT"
                           parameters:@{
                               @"pin" : pin,
@@ -39,23 +38,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)disable2FARequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecure2FAAPI] method:@"DELETE" parameters:@{}];
-}
-
-+ (TSRequest *)enableRegistrationLockV2RequestWithToken:(NSString *)token
-{
-    OWSAssertDebug(token.length > 0);
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureRegistrationLockV2API]
-                              method:@"PUT"
-                          parameters:@{
-                                       @"registrationLock" : token,
-                                       }];
-}
-
-+ (TSRequest *)disableRegistrationLockV2Request
-{
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureRegistrationLockV2API] method:@"DELETE" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecure2FAAPI] method:@"DELETE" parameters:@{}];
 }
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp
@@ -81,14 +64,14 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     OWSAssertDebug(device);
 
-    NSString *path = [NSString stringWithFormat:textSecureDevicesAPIFormat, @(device.deviceId)];
+    NSString *path = [NSString stringWithFormat:self.textSecureDevicesAPIFormat, @(device.deviceId)];
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
 + (TSRequest *)deviceProvisioningCodeRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureDeviceProvisioningCodeAPI]
+    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecureDeviceProvisioningCodeAPI]
                               method:@"GET"
                           parameters:@{}];
 }
@@ -98,7 +81,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(messageBody.length > 0);
     OWSAssertDebug(deviceId.length > 0);
 
-    NSString *path = [NSString stringWithFormat:textSecureDeviceProvisioningAPIFormat, deviceId];
+    NSString *path = [NSString stringWithFormat:self.textSecureDeviceProvisioningAPIFormat, deviceId];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:@{
@@ -108,7 +91,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)getDevicesRequest
 {
-    NSString *path = [NSString stringWithFormat:textSecureDevicesAPIFormat, @""];
+    NSString *path = [NSString stringWithFormat:self.textSecureDevicesAPIFormat, @""];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
@@ -179,7 +162,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)availablePreKeysCountRequest
 {
-    NSString *path = [NSString stringWithFormat:@"%@", textSecureKeysAPI];
+    NSString *path = [NSString stringWithFormat:@"%@", self.textSecureKeysAPI];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
@@ -187,7 +170,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     OWSAssertDebug(hashes.count > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureDirectoryAPI, @"tokens"];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureDirectoryAPI, @"tokens"];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:@{
@@ -197,13 +180,13 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)currentSignedPreKeyRequest
 {
-    NSString *path = textSecureSignedKeysAPI;
+    NSString *path = self.textSecureSignedKeysAPI;
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
 + (TSRequest *)profileAvatarUploadFormRequest
 {
-    NSString *path = textSecureProfileAvatarFormAPI;
+    NSString *path = self.textSecureProfileAvatarFormAPI;
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
@@ -214,7 +197,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", textSecureKeysAPI, address.serviceIdentifier, deviceId];
+    NSString *path =
+        [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, address.serviceIdentifier, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
@@ -228,7 +212,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     OWSAssertDebug(identifier.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureAccountsAPI, @"apn"];
 
     NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
     if (voipId.length > 0) {
@@ -255,7 +239,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                                              isManualMessageFetchEnabled:isManualMessageFetchEnabled
                                                                        isSecondaryDevice:NO];
 
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureAttributesAPI]
+    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecureAttributesAPI]
                               method:@"PUT"
                           parameters:accountAttributes];
 }
@@ -267,21 +251,19 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)unregisterAccountRequest
 {
-    NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"me"];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", self.textSecureAccountsAPI, @"me"];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
-                                                   pushToken:(NSString *)pushToken
-                                                 isVoipToken:(BOOL)isVoipToken
++ (TSRequest *)requestPreauthChallengeRequestWithE164:(NSString *)e164
+                                            pushToken:(NSString *)pushToken
+                                          isVoipToken:(BOOL)isVoipToken
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(e164.length > 0);
     OWSAssertDebug(pushToken.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@?voip=%@",
-                               pushToken,
-                               recipientId,
-                               isVoipToken ? @"true" : @"false"];
+    NSString *path = [NSString
+        stringWithFormat:@"v1/accounts/apn/preauth/%@/%@?voip=%@", pushToken, e164, isVoipToken ? @"true" : @"false"];
     NSURL *url = [NSURL URLWithString:path];
 
     TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
@@ -290,12 +272,12 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
-                                            preauthChallenge:(nullable NSString *)preauthChallenge
-                                                captchaToken:(nullable NSString *)captchaToken
-                                                   transport:(TSVerificationTransport)transport
++ (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
+                                     preauthChallenge:(nullable NSString *)preauthChallenge
+                                         captchaToken:(nullable NSString *)captchaToken
+                                            transport:(TSVerificationTransport)transport
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(e164.length > 0);
 
     NSMutableArray<NSURLQueryItem *> *queryItems = [NSMutableArray new];
     [queryItems addObject:[NSURLQueryItem queryItemWithName:@"client" value:@"ios"]];
@@ -309,7 +291,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     }
 
     NSString *path = [NSString
-        stringWithFormat:@"%@/%@/code/%@", textSecureAccountsAPI, [self stringForTransport:transport], phoneNumber];
+        stringWithFormat:@"%@/%@/code/%@", self.textSecureAccountsAPI, [self stringForTransport:transport], e164];
 
     NSURLComponents *components = [[NSURLComponents alloc] initWithString:path];
     components.queryItems = queryItems;
@@ -369,7 +351,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(phoneNumber.length > 0);
     OWSAssertDebug(authKey.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode];
+    NSString *path = [NSString stringWithFormat:@"%@/code/%@", self.textSecureAccountsAPI, verificationCode];
 
     if (checkForAvailableTransfer) {
         path = [path stringByAppendingString:@"?transfer=true"];
@@ -515,6 +497,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         capabilities[@"storage"] = @(YES);
     }
 
+    if (RemoteConfig.changePhoneNumberCapability) {
+        capabilities[@"changeNumber"] = @(YES);
+    }
+
     OWSLogInfo(@"local device capabilities: %@", capabilities);
     return [capabilities copy];
 }
@@ -529,7 +515,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timeStamp > 0);
 
-    NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
+    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
 
     // Returns the per-account-message parameters used when submitting a message to
     // the Signal Web Service.
@@ -554,7 +540,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     // We build the URL by hand instead of passing the query parameters into the query parameters
     // AFNetworking won't handle both query parameters and an httpBody (which we need here)
-    NSURLComponents *components = [[NSURLComponents alloc] initWithString:textSecureMultiRecipientMessageAPI];
+    NSURLComponents *components = [[NSURLComponents alloc] initWithString:self.textSecureMultiRecipientMessageAPI];
     components.queryItems = @[
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
         [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
@@ -574,7 +560,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 {
     OWSAssertDebug(signedPreKey);
 
-    NSString *path = textSecureSignedKeysAPI;
+    NSString *path = self.textSecureSignedKeysAPI;
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:[self dictionaryFromSignedPreKey:signedPreKey]];
@@ -588,7 +574,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     OWSAssertDebug(identityKeyPublic.length > 0);
     OWSAssertDebug(signedPreKey);
 
-    NSString *path = textSecureKeysAPI;
+    NSString *path = self.textSecureKeysAPI;
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
     NSMutableArray *serializedPrekeyList = [NSMutableArray array];
     for (PreKeyRecord *preKey in prekeys) {
@@ -846,7 +832,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         parameters[@"badgeIds"] = visibleBadgeIds;
     }
 
-    NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];
+    NSURL *url = [NSURL URLWithString:self.textSecureVersionedProfileAPI];
     return [TSRequest requestWithUrl:url
                               method:@"PUT"
                           parameters:parameters];

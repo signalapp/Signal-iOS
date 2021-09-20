@@ -30,6 +30,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
     UserProfileWriter_Tests,
     UserProfileWriter_Unknown,
     UserProfileWriter_SystemContactsFetch,
+    UserProfileWriter_ChangePhoneNumber,
 };
 
 #pragma mark -

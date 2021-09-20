@@ -485,6 +485,11 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._universalExpireTimer = newValue}
   }
 
+  var e164: String {
+    get {return _storage._e164}
+    set {_uniqueStorage()._e164 = newValue}
+  }
+
   var subscriberID: Data {
     get {return _storage._subscriberID}
     set {_uniqueStorage()._subscriberID = newValue}
@@ -1285,6 +1290,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     15: .same(proto: "preferContactAvatars"),
     16: .same(proto: "payments"),
     17: .same(proto: "universalExpireTimer"),
+    19: .same(proto: "e164"),
     21: .same(proto: "subscriberID"),
     22: .same(proto: "subscriberCurrencyCode")
   ]
@@ -1307,6 +1313,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _preferContactAvatars: Bool = false
     var _payments: StorageServiceProtos_AccountRecord.Payments?
     var _universalExpireTimer: UInt32 = 0
+    var _e164: String = String()
     var _subscriberID: Data = Data()
     var _subscriberCurrencyCode: String = String()
 
@@ -1332,6 +1339,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _preferContactAvatars = source._preferContactAvatars
       _payments = source._payments
       _universalExpireTimer = source._universalExpireTimer
+      _e164 = source._e164
       _subscriberID = source._subscriberID
       _subscriberCurrencyCode = source._subscriberCurrencyCode
     }
@@ -1369,6 +1377,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 15: try { try decoder.decodeSingularBoolField(value: &_storage._preferContactAvatars) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._payments) }()
         case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._universalExpireTimer) }()
+        case 19: try { try decoder.decodeSingularStringField(value: &_storage._e164) }()
         case 21: try { try decoder.decodeSingularBytesField(value: &_storage._subscriberID) }()
         case 22: try { try decoder.decodeSingularStringField(value: &_storage._subscriberCurrencyCode) }()
         default: break
@@ -1434,6 +1443,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._universalExpireTimer != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._universalExpireTimer, fieldNumber: 17)
       }
+      if !_storage._e164.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._e164, fieldNumber: 19)
+      }
       if !_storage._subscriberID.isEmpty {
         try visitor.visitSingularBytesField(value: _storage._subscriberID, fieldNumber: 21)
       }
@@ -1466,6 +1478,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._preferContactAvatars != rhs_storage._preferContactAvatars {return false}
         if _storage._payments != rhs_storage._payments {return false}
         if _storage._universalExpireTimer != rhs_storage._universalExpireTimer {return false}
+        if _storage._e164 != rhs_storage._e164 {return false}
         if _storage._subscriberID != rhs_storage._subscriberID {return false}
         if _storage._subscriberCurrencyCode != rhs_storage._subscriberCurrencyCode {return false}
         return true

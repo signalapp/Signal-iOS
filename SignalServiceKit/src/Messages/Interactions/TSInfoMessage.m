@@ -19,6 +19,10 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewDisappearingMessageToken
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyGroupUpdateSourceAddress
     = @"InfoMessageUserInfoKeyGroupUpdateSourceAddress";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyProfileChanges = @"InfoMessageUserInfoKeyProfileChanges";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberUuid
+    = @"InfoMessageUserInfoKeyChangePhoneNumberUuid";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberOld = @"InfoMessageUserInfoKeyChangePhoneNumberOld";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyChangePhoneNumberNew = @"InfoMessageUserInfoKeyChangePhoneNumberNew";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -264,6 +268,24 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
             return @"";
         case TSInfoMessageProfileUpdate:
             return [self profileChangeDescriptionWithTransaction:transaction];
+        case TSInfoMessagePhoneNumberChange: {
+            NSString *_Nullable uuidString = self.infoMessageUserInfo[InfoMessageUserInfoKeyChangePhoneNumberUuid];
+            if (uuidString == nil) {
+                OWSFailDebug(@"Invalid info message");
+                return @"";
+            }
+            NSUUID *_Nullable uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
+            if (uuid == nil) {
+                OWSFailDebug(@"Invalid info message");
+                return @"";
+            }
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:uuid];
+            NSString *userName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+
+            NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT",
+                @"Indicates that another user has changed their phone number. Embeds: {{ the user's name}}".);
+            return [NSString stringWithFormat:format, userName];
+        }
     }
 
     OWSFailDebug(@"Unknown info message type");
@@ -288,6 +310,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageUnknownProtocolVersion:
         case TSInfoMessageSyncedThread:
         case TSInfoMessageProfileUpdate:
+        case TSInfoMessagePhoneNumberChange:
             return NO;
         case TSInfoMessageUserJoinedSignal:
             // In the conversation list, we want conversations with an unread "new user" notification to

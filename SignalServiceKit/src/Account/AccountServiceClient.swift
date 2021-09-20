@@ -17,18 +17,18 @@ public class AccountServiceClient: NSObject {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        return serviceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: pushToken, isVoipToken: isVoipToken)
+    public func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+        serviceClient.requestPreauthChallenge(e164: e164, pushToken: pushToken, isVoipToken: isVoipToken)
     }
 
-    public func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        return serviceClient.requestVerificationCode(recipientId: recipientId,
-                                                     preauthChallenge: preauthChallenge,
-                                                     captchaToken: captchaToken,
-                                                     transport: transport).recover { error -> Void in
-                                                        if error.httpStatusCode == 402 {
-                                                            throw AccountServiceClientError.captchaRequired
-                                                        }
+    public func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+        serviceClient.requestVerificationCode(e164: e164,
+                                              preauthChallenge: preauthChallenge,
+                                              captchaToken: captchaToken,
+                                              transport: transport).recover { error -> Void in
+            if error.httpStatusCode == 402 {
+                throw AccountServiceClientError.captchaRequired
+            }
             throw error
         }
     }
@@ -49,8 +49,8 @@ public class AccountServiceClient: NSObject {
         return serviceClient.updatePrimaryDeviceAccountAttributes()
     }
 
-    public func getUuid() -> Promise<UUID> {
-        return serviceClient.getAccountUuid()
+    public func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
+        serviceClient.getAccountWhoAmI()
     }
 
     public func verifySecondaryDevice(verificationCode: String,

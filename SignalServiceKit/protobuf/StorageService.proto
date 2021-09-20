@@ -152,6 +152,7 @@ message AccountRecord {
            bool                   preferContactAvatars         = 15;
            Payments               payments                     = 16;
            uint32                 universalExpireTimer         = 17; 
+		   string                 e164                         = 19;
            bytes                  subscriberID                 = 21;
            string                 subscriberCurrencyCode       = 22;
 }

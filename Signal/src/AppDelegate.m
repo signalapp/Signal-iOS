@@ -1055,7 +1055,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     UIViewController *_Nullable rootViewController = self.window.rootViewController;
     if (!rootViewController) {
-        return UIDevice.currentDevice.defaultSupportedOrienations;
+        return UIDevice.currentDevice.defaultSupportedOrientations;
     }
     return rootViewController.supportedInterfaceOrientations;
 }

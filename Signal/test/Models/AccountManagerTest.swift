@@ -25,9 +25,9 @@ class FailingTSAccountManager: TSAccountManager {
         self.phoneNumberAwaitingVerification = "+13235555555"
     }
 
-    override func verifyAccount(request: TSRequest,
-                                success successBlock: @escaping (Any?) -> Void,
-                                failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyRegistration(request: TSRequest,
+                                     success successBlock: @escaping (Any?) -> Void,
+                                     failure failureBlock: @escaping (Error) -> Void) {
         failureBlock(VerificationFailedError())
     }
 
@@ -44,9 +44,9 @@ class FailingTSAccountManager: TSAccountManager {
 }
 
 class VerifyingTSAccountManager: FailingTSAccountManager {
-    override func verifyAccount(request: TSRequest,
-                                success successBlock: @escaping (Any?) -> Void,
-                                failure failureBlock: @escaping (Error) -> Void) {
+    override func verifyRegistration(request: TSRequest,
+                                     success successBlock: @escaping (Any?) -> Void,
+                                     failure failureBlock: @escaping (Error) -> Void) {
         successBlock(["uuid": UUID().uuidString])
     }
 }

@@ -234,6 +234,18 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = false
 
     @objc
+    public static let fetchAndDisplayBadges = build.includes(.qa)
+
+    @objc
+    public static let configureBadges = build.includes(.qa)
+
+    @objc
+    public static let subscriptions = build.includes(.qa)
+
+    @objc
+    public static let canChangePhoneNumber = build.includes(.dev)
+
+    @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
         // however there is a significant bug in iOS 14 where the NSE will not
@@ -568,8 +580,18 @@ public class DebugFlags: BaseFlags {
                                                                title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
                                                                details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
                                                                toggleHandler: { _ in
-                                                                databaseStorage.read { messageDecrypter.schedulePlaceholderCleanup(transaction: $0)}
-                                                               })
+        databaseStorage.read { messageDecrypter.schedulePlaceholderCleanup(transaction: $0)}
+    })
+
+    @objc
+    public static let forceChangePhoneNumberCapability = TestableFlag(build.includes(.dev),
+                                                                      title: LocalizationNotNeeded("Force 'change phone number' capability."),
+                                                                      details: LocalizationNotNeeded("The capability will be advertised."))
+
+    @objc
+    public static let forceChangePhoneNumberUI = TestableFlag(build.includes(.dev),
+                                                              title: LocalizationNotNeeded("Force 'change phone number' UI."),
+                                                              details: LocalizationNotNeeded("The UI will appear in settings."))
 
     public static func buildFlagMap() -> [String: Any] {
         BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in

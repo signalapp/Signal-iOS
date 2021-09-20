@@ -1127,7 +1127,23 @@ extension MessageSender {
     }
 }
 
+// MARK: -
+
+@objc
+public enum TSWhisperMessageType: Int {
+    case unknownMessage = 0
+    case encryptedWhisperMessage = 1
+    case ignoreOnIOSWhisperMessage = 2 // on droid this is the prekey bundle message irrelevant for us
+    case preKeyWhisperMessage = 3
+    case unencryptedWhisperMessage = 4
+    case unidentifiedSenderMessage = 6
+    case plaintextMessage = 7
+}
+
+// MARK: -
+
 extension MessageSender {
+
     @objc(encryptedMessageForMessageSend:deviceId:transaction:error:)
     private func encryptedMessage(for messageSend: OWSMessageSend,
                                   deviceId: Int32,

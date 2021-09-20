@@ -27,6 +27,7 @@ public class SignalServiceProfile: NSObject {
     public let supportsGroupsV2Migration: Bool
     public let supportsAnnouncementOnlyGroups: Bool
     public let supportsSenderKey: Bool
+    public let supportsChangeNumber: Bool
     public let credential: Data?
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
 
@@ -86,6 +87,9 @@ public class SignalServiceProfile: NSObject {
         self.supportsSenderKey = Self.parseCapabilityFlag(capabilityKey: "senderKey",
                                                           params: params,
                                                           requireCapability: true)
+        self.supportsChangeNumber = Self.parseCapabilityFlag(capabilityKey: "changeNumber",
+                                                             params: params,
+                                                             requireCapability: true)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
 

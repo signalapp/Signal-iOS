@@ -60,6 +60,8 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
             return NO;
         case UserProfileWriter_SystemContactsFetch:
             return YES;
+        case UserProfileWriter_ChangePhoneNumber:
+            return YES;
         case UserProfileWriter_Unknown:
             OWSCFailDebug(@"Invalid UserProfileWriter.");
             return NO;
@@ -98,6 +100,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
             return @"Tests";
         case UserProfileWriter_SystemContactsFetch:
             return @"SystemContactsFetch";
+        case UserProfileWriter_ChangePhoneNumber:
+            return @"ChangePhoneNumber";
         case UserProfileWriter_Unknown:
             OWSCFailDebug(@"Invalid UserProfileWriter.");
             return @"Unknown";
@@ -513,6 +517,10 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                 canModifyStorageServiceProperties = YES;
                 break;
             case UserProfileWriter_SystemContactsFetch:
+                OWSFailDebug(@"Invalid UserProfileWriter.");
+                canModifyStorageServiceProperties = NO;
+                break;
+            case UserProfileWriter_ChangePhoneNumber:
                 OWSFailDebug(@"Invalid UserProfileWriter.");
                 canModifyStorageServiceProperties = NO;
                 break;

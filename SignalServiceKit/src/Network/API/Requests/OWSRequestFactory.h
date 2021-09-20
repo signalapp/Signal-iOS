@@ -26,10 +26,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)disable2FARequest;
 
-+ (TSRequest *)enableRegistrationLockV2RequestWithToken:(NSString *)token;
-
-+ (TSRequest *)disableRegistrationLockV2Request;
-
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp;
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;
@@ -71,15 +67,16 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)unregisterAccountRequest;
 
-+ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
-                                                   pushToken:(NSString *)pushToken
-                                                 isVoipToken:(BOOL)isVoipToken
-    NS_SWIFT_NAME(requestPreauthChallengeRequest(recipientId:pushToken:isVoipToken:));
++ (TSRequest *)requestPreauthChallengeRequestWithE164:(NSString *)recipientId
+                                            pushToken:(NSString *)pushToken
+                                          isVoipToken:(BOOL)isVoipToken
+    NS_SWIFT_NAME(requestPreauthChallengeRequest(e164:pushToken:isVoipToken:));
 
-+ (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
-                                            preauthChallenge:(nullable NSString *)preauthChallenge
-                                                captchaToken:(nullable NSString *)captchaToken
-                                                   transport:(TSVerificationTransport)transport;
++ (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
+                                     preauthChallenge:(nullable NSString *)preauthChallenge
+                                         captchaToken:(nullable NSString *)captchaToken
+                                            transport:(TSVerificationTransport)transport
+    NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
                                       messages:(NSArray *)messages

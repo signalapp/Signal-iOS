@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const NSNotificationNameRegistrationStateDidChange = @"NSNotificationNameRegistrationStateDidChange";
 NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
-NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
+NSNotificationName const NSNotificationNameLocalNumberDidChange = @"NSNotificationNameLocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
 NSString *const TSAccountManager_RegistrationDateKey = @"TSAccountManager_RegistrationDateKey";
@@ -274,7 +274,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
     }
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalNumberDidChange
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameLocalNumberDidChange
                                                              object:nil
                                                            userInfo:nil];
 }
@@ -284,6 +284,33 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     @synchronized(self) {
         _uuidAwaitingVerification = uuidAwaitingVerification;
     }
+}
+
+- (void)updateLocalPhoneNumber:(NSString *)phoneNumber
+                          uuid:(NSUUID *)uuid
+    shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
+                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug([PhoneNumber resemblesE164:phoneNumber]);
+    OWSAssertDebug([NSObject isNullableObject:self.localUuid equalTo:uuid]);
+
+    [self storeLocalNumber:phoneNumber uuid:uuid transaction:transaction];
+
+    [transaction addAsyncCompletionOffMain:^{
+        [self updateAccountAttributes].catch(^(NSError *error) { OWSLogError(@"Error: %@.", error); });
+
+        if (shouldUpdateStorageService) {
+            [self.storageServiceManager recordPendingLocalAccountUpdates];
+        }
+
+        [ChangePhoneNumber updateLocalPhoneNumber];
+
+        [self postRegistrationStateDidChangeNotification];
+
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameLocalNumberDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
+    }];
 }
 
 - (OWSRegistrationState)registrationState
@@ -502,13 +529,25 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
              transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized (self) {
+        NSString *_Nullable localNumberOld = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey
+                                                               transaction:transaction];
+        if (![NSObject isNullableObject:localNumber equalTo:localNumberOld]) {
+            OWSLogInfo(@"localNumber: %@ -> %@", localNumberOld, localNumber);
+        }
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
+
         [self.keyValueStore setDate:[NSDate new] key:TSAccountManager_RegistrationDateKey transaction:transaction];
 
         if (localUuid == nil) {
             OWSFail(@"Missing localUuid.");
         } else {
-            [self.keyValueStore setString:localUuid.UUIDString
+            NSString *localUuidString = localUuid.UUIDString;
+            NSString *_Nullable localUuidStringOld = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
+                                                                       transaction:transaction];
+            if (![NSObject isNullableObject:localUuidString equalTo:localUuidStringOld]) {
+                OWSLogInfo(@"localUuid: %@ -> %@", localUuidStringOld, localUuidString);
+            }
+            [self.keyValueStore setString:localUuidString
                                       key:TSAccountManager_RegisteredUUIDKey
                               transaction:transaction];
         }
@@ -519,11 +558,19 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringUUIDKey transaction:transaction];
 
+        // Discard sender certificates whenever local phone number changes.
+        [self.udManager removeSenderCertificatesWithTransaction:transaction];
+
         [self loadAccountStateWithTransaction:transaction];
 
         self.phoneNumberAwaitingVerification = nil;
         self.uuidAwaitingVerification = nil;
     }
+
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:localUuid phoneNumber:localNumber];
+    [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                          trustLevel:SignalRecipientTrustLevelHigh
+                                         transaction:transaction];
 }
 
 - (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction

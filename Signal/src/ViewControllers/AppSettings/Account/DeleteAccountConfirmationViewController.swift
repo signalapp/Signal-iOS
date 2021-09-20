@@ -346,8 +346,10 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 }
 
 extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDelegate {
-    func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
-        updateCountry(callingCode: callingCode, countryCode: countryCode)
+    public func countryCodeViewController(_ vc: CountryCodeViewController,
+                                          didSelectCountry countryState: RegistrationCountryState) {
+        updateCountry(callingCode: countryState.callingCode,
+                      countryCode: countryState.countryCode)
     }
 
     func populateDefaultCountryCode() {

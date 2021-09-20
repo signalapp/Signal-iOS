@@ -45,6 +45,7 @@ class AnimatedProgressView: UIView {
         label.font = .systemFont(ofSize: 17)
         label.textColor = Theme.primaryTextColor
         label.textAlignment = .center
+        label.lineBreakMode = .byWordWrapping
         self.loadingText = loadingText
 
         addSubview(animationContainer)

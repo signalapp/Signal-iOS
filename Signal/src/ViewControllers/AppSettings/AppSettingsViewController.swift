@@ -33,6 +33,13 @@ class AppSettingsViewController: OWSTableViewController2 {
             name: .localProfileDidChange,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localNumberDidChange),
+            name: .localNumberDidChange,
+            object: nil
+        )
     }
 
     @objc
@@ -43,6 +50,14 @@ class AppSettingsViewController: OWSTableViewController2 {
     @objc
     func localProfileDidChange() {
         AssertIsOnMainThread()
+
+        updateTableContents()
+    }
+
+    @objc
+    func localNumberDidChange() {
+        AssertIsOnMainThread()
+
         updateTableContents()
     }
 

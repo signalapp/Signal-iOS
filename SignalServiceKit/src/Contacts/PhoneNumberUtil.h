@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
 + (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode;
-+ (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
++ (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
 
 // Returns the most likely country code for a calling code based on population.
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode;

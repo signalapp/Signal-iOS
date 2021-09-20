@@ -618,6 +618,11 @@ public class ProfileFetcherJob: NSObject {
             self.paymentsHelper.setArePaymentsEnabled(for: address,
                                                          hasPaymentsEnabled: paymentAddress != nil,
                                                          transaction: transaction)
+
+            if address.isLocalAddress {
+                ChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(profile.supportsChangeNumber,
+                                                                        transaction: transaction)
+            }
         }
     }
 

@@ -5,11 +5,11 @@
 import UIKit
 
 @objc
-public class OnboardingPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {
+public class RegistrationPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {
 
     static let hInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
 
-    override var primaryLayoutMargins: UIEdgeInsets {
+    public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
 
         switch traitCollection.horizontalSizeClass {
@@ -155,7 +155,7 @@ private class ButtonRow: UIButton {
     private let selectedImageView = UIImageView()
 
     static let vInset: CGFloat = 11
-    static var hInset: CGFloat { OnboardingPhoneNumberDiscoverabilityViewController.hInset }
+    static var hInset: CGFloat { RegistrationPhoneNumberDiscoverabilityViewController.hInset }
 
     override var isSelected: Bool {
         didSet {

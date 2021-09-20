@@ -12,6 +12,19 @@ public enum OWSUDError: Error {
     case invalidData(description: String)
 }
 
+// MARK: -
+
+extension OWSUDError: IsRetryableProvider {
+    public var isRetryableProvider: Bool {
+        switch self {
+        case .assertionError, .invalidData:
+            return false
+        }
+    }
+}
+
+// MARK: -
+
 @objc
 public enum OWSUDCertificateExpirationPolicy: Int {
     // We want to try to rotate the sender certificate
@@ -21,6 +34,8 @@ public enum OWSUDCertificateExpirationPolicy: Int {
     case permissive
 }
 
+// MARK: -
+
 @objc
 public enum UnidentifiedAccessMode: Int {
     case unknown
@@ -28,6 +43,8 @@ public enum UnidentifiedAccessMode: Int {
     case disabled
     case unrestricted
 }
+
+// MARK: -
 
 extension UnidentifiedAccessMode: CustomStringConvertible {
     public var description: String {
@@ -43,6 +60,8 @@ extension UnidentifiedAccessMode: CustomStringConvertible {
         }
     }
 }
+
+// MARK: -
 
 @objc
 public class OWSUDAccess: NSObject {
@@ -70,6 +89,8 @@ public class OWSUDAccess: NSObject {
     }
 }
 
+// MARK: -
+
 @objc
 public class SenderCertificates: NSObject {
     let defaultCert: SenderCertificate
@@ -79,6 +100,8 @@ public class SenderCertificates: NSObject {
         self.uuidOnlyCert = uuidOnlyCert
     }
 }
+
+// MARK: -
 
 @objc
 public class OWSUDSendingAccess: NSObject {
@@ -93,6 +116,8 @@ public class OWSUDSendingAccess: NSObject {
         self.senderCertificate = senderCertificate
     }
 }
+
+// MARK: -
 
 @objc public protocol OWSUDManager: AnyObject {
     @objc
@@ -755,6 +780,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
     }
 }
+
+// MARK: -
 
 @objc
 public enum PhoneNumberSharingMode: Int {

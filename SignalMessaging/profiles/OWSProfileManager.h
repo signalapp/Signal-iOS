@@ -40,6 +40,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
+// TODO: Should we eliminate the phone number whitelist?
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;

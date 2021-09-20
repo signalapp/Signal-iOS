@@ -45,76 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"Label for button that lets users re-register using the same phone number.")
                               style:ActionSheetActionStyleDestructive
                             handler:^(ActionSheetAction *action) {
-                                [RegistrationUtils reregisterWithFromViewController:fromViewController];
+                                [RegistrationUtils reregisterFromViewController:fromViewController];
                             }]];
 
     [actionSheet addAction:[OWSActionSheets cancelAction]];
 
     [fromViewController presentActionSheet:actionSheet];
-}
-
-+ (void)reregisterWithFromViewController:(UIViewController *)fromViewController
-{
-    OWSLogInfo(@"reregisterWithSamePhoneNumber.");
-
-    if (![self.tsAccountManager resetForReregistration]) {
-        OWSFailDebug(@"could not reset for re-registration.");
-        return;
-    }
-
-    [Environment.shared.preferences unsetRecordedAPNSTokens];
-
-    [ModalActivityIndicatorViewController
-        presentFromViewController:fromViewController
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      NSString *phoneNumber = self.tsAccountManager.reregistrationPhoneNumber;
-                      [self.accountManager requestAccountVerificationObjCWithRecipientId:phoneNumber
-                                                                            captchaToken:nil
-                                                                                   isSMS:true]
-                          .done(^(id value) {
-                              OWSAssertIsOnMainThread();
-
-                              OWSLogInfo(@"re-registering: send verification code succeeded.");
-
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  OnboardingController *onboardingController = [OnboardingController new];
-                                  OnboardingPhoneNumber *onboardingPhoneNumber =
-                                      [[OnboardingPhoneNumber alloc] initWithE164:phoneNumber userInput:phoneNumber];
-                                  [onboardingController updateWithPhoneNumber:onboardingPhoneNumber];
-
-
-                                  OnboardingVerificationViewController *viewController =
-                                      [[OnboardingVerificationViewController alloc]
-                                          initWithOnboardingController:onboardingController];
-                                  [viewController hideBackLink];
-                                  OnboardingNavigationController *navigationController =
-                                      [[OnboardingNavigationController alloc]
-                                          initWithOnboardingController:onboardingController];
-                                  [navigationController setViewControllers:@[ viewController ] animated:NO];
-                                  navigationController.navigationBarHidden = YES;
-
-                                  [UIApplication sharedApplication].delegate.window.rootViewController
-                                      = navigationController;
-                              }];
-                          })
-                          .catch(^(NSError *error) {
-                              OWSAssertIsOnMainThread();
-
-                              OWSLogError(@"re-registering: send verification code failed.");
-                              [modalActivityIndicator dismissWithCompletion:^{
-                                  if (error.code == 400) {
-                                      [OWSActionSheets
-                                          showActionSheetWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                                           message:NSLocalizedString(
-                                                                       @"REGISTRATION_NON_VALID_NUMBER", nil)];
-                                  } else {
-                                      [OWSActionSheets showActionSheetWithTitle:error.userErrorDescription
-                                                                        message:error.localizedRecoverySuggestion];
-                                  }
-                              }];
-                          });
-                  }];
 }
 
 @end

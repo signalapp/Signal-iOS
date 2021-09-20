@@ -146,6 +146,9 @@ public protocol CVComponentDelegate {
 
     func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
                                        newNameComponents: PersonNameComponents)
+    func cvc_didTapPhoneNumberChange(uuid: UUID,
+                                     phoneNumberOld: String,
+                                     phoneNumberNew: String)
 
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction)
 
@@ -184,6 +187,9 @@ struct CVMessageAction: Equatable {
         case cvc_didTapShowUpgradeAppUI
         case cvc_didTapUpdateSystemContact(address: SignalServiceAddress,
                                            newNameComponents: PersonNameComponents)
+        case cvc_didTapPhoneNumberChange(uuid: UUID,
+                                         phoneNumberOld: String,
+                                         phoneNumberNew: String)
         case cvc_didTapIndividualCall(call: TSCall)
         case cvc_didTapGroupCall
         case cvc_didTapSendMessage(contactShare: ContactShareViewModel)
@@ -225,6 +231,10 @@ struct CVMessageAction: Equatable {
                 delegate.cvc_didTapShowUpgradeAppUI()
             case .cvc_didTapUpdateSystemContact(let address, let newNameComponents):
                 delegate.cvc_didTapUpdateSystemContact(address, newNameComponents: newNameComponents)
+            case .cvc_didTapPhoneNumberChange(let uuid, let phoneNumberOld, let phoneNumberNew):
+                delegate.cvc_didTapPhoneNumberChange(uuid: uuid,
+                                                     phoneNumberOld: phoneNumberOld,
+                                                     phoneNumberNew: phoneNumberNew)
             case .cvc_didTapIndividualCall(let call):
                 delegate.cvc_didTapIndividualCall(call)
             case .cvc_didTapGroupCall:
