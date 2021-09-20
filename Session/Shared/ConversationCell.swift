@@ -200,7 +200,7 @@ final class ConversationCell : UITableViewCell {
         unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"
         let fontSize = (unreadCount < 100) ? Values.verySmallFontSize : 8
         unreadCountLabel.font = .boldSystemFont(ofSize: fontSize)
-        hasMentionView.isHidden = !threadViewModel.hasUnreadMentions
+        hasMentionView.isHidden = !(threadViewModel.hasUnreadMentions && thread.isGroupThread())
         profilePictureView.update(for: thread)
         displayNameLabel.text = getDisplayName()
         timestampLabel.text = DateUtil.formatDate(forDisplay: threadViewModel.lastMessageDate)

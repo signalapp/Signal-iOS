@@ -105,7 +105,7 @@ static const int kYapDatabasePageSize = 250;
 static const int kConversationInitialMaxRangeSize = 250;
 
 // Never show more than n messages in conversation view at a time.
-static const int kYapDatabaseRangeMaxLength = 250;
+static const int kYapDatabaseRangeMaxLength = 250000;
 
 #pragma mark -
 

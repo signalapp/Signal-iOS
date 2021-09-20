@@ -85,7 +85,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/x-tiff" : @"tif",
             @"image/bmp" : @"bmp",
             @"image/x-windows-bmp" : @"bmp",
-            @"image/gif" : @"gif"
+            @"image/gif" : @"gif",
+            @"image/x-icon": @"ico"
         };
     });
     return result;

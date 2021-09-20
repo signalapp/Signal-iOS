@@ -79,10 +79,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         return NO;
     }
 
-    if (![data ows_isValidImageWithMimeType:mimeType]) {
-        return NO;
-    }
-
     if (![self ows_hasValidImageDimensionsAtPath:filePath isAnimated:isAnimated]) {
         return NO;
     }

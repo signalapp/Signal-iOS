@@ -361,7 +361,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         guard let currentMentionStartIndex = currentMentionStartIndex else { return }
         mentions.append(mention)
         let oldText = snInputView.text
-        let newText = oldText.replacingCharacters(in: currentMentionStartIndex..., with: "@\(mention.displayName)")
+        let newText = oldText.replacingCharacters(in: currentMentionStartIndex..., with: "@\(mention.displayName) ")
         snInputView.text = newText
         self.currentMentionStartIndex = nil
         snInputView.hideMentionsUI()
