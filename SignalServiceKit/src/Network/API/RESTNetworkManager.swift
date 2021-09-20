@@ -73,6 +73,19 @@ public class RESTSessionManager: NSObject {
 
         let httpHeaders = OWSHttpHeaders()
 
+        // Apply the default headers for this session manager.
+        let defaultHeaders = sessionManager.requestSerializer.httpRequestHeaders
+        httpHeaders.addHeaderMap(defaultHeaders, overwriteOnConflict: false)
+        // Clear all default headers.
+        for headerField in defaultHeaders.keys {
+            sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
+        }
+        // Disable default cookie handling for all requests.
+        sessionManager.requestSerializer.httpShouldHandleCookies = false
+        if signalService.isCensorshipCircumventionActive {
+            httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
+        }
+
         // Set User-Agent header.
         httpHeaders.addHeader(OWSURLSession.kUserAgentHeader,
                               value: OWSURLSession.signalIosUserAgent,
