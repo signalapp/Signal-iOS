@@ -229,8 +229,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
+  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
+  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -307,7 +307,7 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit
+    :git: "git@github.com:signalapp/SignalCoreKit"
   SignalMetadataKit:
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   SignalRingRTC:
@@ -352,8 +352,8 @@ CHECKOUT OPTIONS:
     :commit: aaa24f6efae6114f1252ae86f02aeedc69a8b151
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 5f3b598b21c1a5ee9a1fa88b1b86e49840b8a8b7
-    :git: https://github.com/signalapp/SignalCoreKit
+    :commit: 83b856734ebec1483f36eee6ec710ad9908c197d
+    :git: "git@github.com:signalapp/SignalCoreKit"
   SignalMetadataKit:
     :commit: 90f1776e631e8e232360bbe11db620c77f078567
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -417,6 +417,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 1a2f55ee4705ac1727ab85aed9c2bedb50547223
+PODFILE CHECKSUM: 1b8f7289e81811a4cd2ddff328d0cd267e34c7dc
 
 COCOAPODS: 1.10.1
