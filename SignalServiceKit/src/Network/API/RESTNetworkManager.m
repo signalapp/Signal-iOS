@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSessionManagerPool : NSObject
 
 @property (nonatomic) NSMutableArray<RESTSessionManager *> *pool;
+@property (atomic, nullable) NSDate *lastDiscardDate;
 
 @end
 
@@ -30,28 +31,42 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     self.pool = [NSMutableArray new];
-    
+
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(isCensorshipCircumventionActiveDidChange)
+                                               name:NSNotificationNameIsCensorshipCircumventionActiveDidChange
+                                             object:nil];
+
     return self;
+}
+
+- (void)isCensorshipCircumventionActiveDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    self.lastDiscardDate = [NSDate new];
 }
 
 - (RESTSessionManager *)get
 {
     AssertOnDispatchQueue(NetworkManagerQueue());
-    
+
+    // Iterate over the pool, discarding expired session managers
+    // until we find a unexpired session manager in the pool or
+    // drain the pool and create a new session manager.
     while (YES) {
         RESTSessionManager *_Nullable sessionManager = [self.pool lastObject];
         if (sessionManager == nil) {
-            // Pool is drained.
+            // Pool is drained; make a new session manager.
             return [RESTSessionManager new];
         }
-        
+        OWSAssertDebug(sessionManager != nil);
         [self.pool removeLastObject];
-        
         if ([self shouldDiscardSessionManager:sessionManager]) {
             // Discard.
-        } else {
-            return sessionManager;
+            continue;
         }
+        return sessionManager;
     }
 }
 
@@ -70,6 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldDiscardSessionManager:(RESTSessionManager *)sessionManager
 {
+    NSDate *_Nullable lastDiscardDate = self.lastDiscardDate;
+    if (lastDiscardDate != nil &&
+        [lastDiscardDate isAfterDate:sessionManager.createdDate]) {
+        return YES;
+    }
     return fabs(sessionManager.createdDate.timeIntervalSinceNow) > self.maxSessionManagerAge;
 }
 

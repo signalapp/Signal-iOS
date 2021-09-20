@@ -38,6 +38,10 @@ public struct ContactDiscoveryService: Dependencies {
                                          enclaveName: String,
                                          host: String,
                                          censorshipCircumventionPrefix: String) -> Promise<IntersectionResponse> {
+        owsAssertDebug(authUsername.strippedOrNil != nil)
+        owsAssertDebug(authPassword.strippedOrNil != nil)
+        owsAssertDebug(enclaveName.strippedOrNil != nil)
+        owsAssertDebug(host.strippedOrNil != nil)
 
         firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
             self.networkManager.makePromise(request: self.buildIntersectionRequest(
