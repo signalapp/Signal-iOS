@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 6;
+const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 @interface DebugLogger ()
 
