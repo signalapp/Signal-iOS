@@ -77,6 +77,15 @@ class InternalSettingsViewController: OWSTableViewController2 {
             infoSection.add(.label(withText: "Device Name: \(deviceName)"))
         }
 
+        if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {
+            if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil {
+                infoSection.add(.copyableItem(label: "Signal Commit", value: signalCommit))
+            }
+            if let signalCommit = (buildDetails["WebRTCCommit"] as? String)?.strippedOrNil {
+                infoSection.add(.copyableItem(label: "WebRTC Commit", value: signalCommit))
+            }
+        }
+
         infoSection.add(.label(withText: "Environment: \(TSConstants.isUsingProductionService ? "Production" : "Staging")"))
 
         let (threadCount, messageCount, attachmentCount) = databaseStorage.read { transaction in
