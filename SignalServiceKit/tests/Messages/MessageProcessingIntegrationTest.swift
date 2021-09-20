@@ -101,7 +101,16 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processEncryptedEnvelopeData(envelopeData,
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { XCTAssertNil($0) }
+                                                      envelopeSource: .tests) { outcome in
+            switch outcome {
+            case .duplicate:
+            XCTFail("duplicate")
+            case .failure:
+                XCTFail("failure")
+            case .processed:
+                break
+            }
+        }
 
         waitForExpectations(timeout: 1.0)
     }
@@ -162,8 +171,16 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processEncryptedEnvelopeData(envelopeData,
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { XCTAssertNil($0) }
-
+                                                      envelopeSource: .tests) { outcome in
+            switch outcome {
+            case .duplicate:
+            XCTFail("duplicate")
+            case .failure:
+                XCTFail("failure")
+            case .processed:
+                break
+            }
+        }
         waitForExpectations(timeout: 1.0)
     }
 }

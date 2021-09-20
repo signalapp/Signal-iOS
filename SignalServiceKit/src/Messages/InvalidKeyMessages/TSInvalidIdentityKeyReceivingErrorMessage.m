@@ -2,6 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/OWSFingerprint.h>
@@ -10,7 +11,6 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -189,23 +189,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *_Nullable messagesToDecrypt =
         [self.threadWithSneakyTransaction receivedMessagesForInvalidKey:newKey];
-
-    for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [MessageProcessor.shared
-            processEncryptedEnvelopeData:errorMessage.envelopeData
-                       encryptedEnvelope:nil
-                 serverDeliveryTimestamp:0
-                          envelopeSource:EnvelopeSourceIdentityChangeError
-                              completion:^(NSError *error) {
-                                  // Here we remove the existing error message because handleReceivedEnvelope will
-                                  // either
-                                  //  1.) succeed and create a new successful message in the thread or...
-                                  //  2.) fail and create a new identical error message in the thread.
-                                  DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                      [errorMessage anyRemoveWithTransaction:transaction];
-                                  });
-                              }];
-    }
+    [self decryptWithMessagesToDecrypt:messagesToDecrypt];
 }
 
 - (nullable NSData *)throws_newIdentityKey

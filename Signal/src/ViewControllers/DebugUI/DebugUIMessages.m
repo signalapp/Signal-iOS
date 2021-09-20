@@ -3983,15 +3983,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         return;
     }
 
-    [MessageProcessor.shared processDecryptedEnvelopeData:envelopeData
-                                            plaintextData:plaintextData
-                                  serverDeliveryTimestamp:0
-                                          wasReceivedByUD:NO
-                                               completion:^(NSError *_Nullable processingError) {
-                                                   if (processingError != nil) {
-                                                       OWSFailDebug(@"Error: %@", processingError);
-                                                   }
-                                               }];
+    [self processDecryptedEnvelopeData:envelopeData plaintextData:plaintextData];
 }
 
 + (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
