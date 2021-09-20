@@ -220,12 +220,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (OWSUserProfile *)localUserProfile
 {
     OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
-
-    @synchronized(self)
-    {
+    @synchronized(self) {
         if (_localUserProfile) {
             OWSAssertDebug(_localUserProfile.profileKey);
-
             return [_localUserProfile shallowCopy];
         }
     }
@@ -239,14 +236,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     // We first try using a read block to avoid opening a write block.
     __block OWSUserProfile *_Nullable localUserProfile;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        localUserProfile = [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                        transaction:transaction];
+        localUserProfile = [self getLocalUserProfileWithTransaction:transaction];
     }];
-
     if (localUserProfile != nil) {
-        @synchronized(self) {
-            _localUserProfile = localUserProfile;
-        }
         return [localUserProfile shallowCopy];
     }
 
@@ -266,12 +258,10 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (nullable OWSUserProfile *)getLocalUserProfileWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
-
+    BOOL migrationsAreComplete = GRDBSchemaMigrator.areMigrationsComplete;
     @synchronized(self) {
-        if (_localUserProfile) {
+        if (_localUserProfile && migrationsAreComplete) {
             OWSAssertDebug(_localUserProfile.profileKey);
-
             return [_localUserProfile shallowCopy];
         }
     }
@@ -279,15 +269,12 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSUserProfile *_Nullable localUserProfile =
         [OWSUserProfile getUserProfileForAddress:OWSUserProfile.localProfileAddress transaction:transaction];
 
-    if (localUserProfile != nil) {
+    if (migrationsAreComplete) {
         @synchronized(self) {
             _localUserProfile = localUserProfile;
         }
-        return [localUserProfile shallowCopy];
     }
-
-    OWSFailDebug(@"We're trying to fetch the local user profile before it exists. This shouldn't happen.");
-    return nil;
+    return [localUserProfile shallowCopy];
 }
 
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile
