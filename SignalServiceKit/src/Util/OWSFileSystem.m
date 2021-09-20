@@ -392,7 +392,7 @@ void ClearOldTemporaryDirectoriesSync(void)
             // Don't delete files which were created in the last N minutes.
             NSDate *creationDate = attributes.fileModificationDate;
             if ([creationDate isAfterDate:thresholdDate]) {
-                OWSLogInfo(@"Skipping file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
+                OWSLogVerbose(@"Skipping file due to age: %f", fabs([creationDate timeIntervalSinceNow]));
                 continue;
             }
         }

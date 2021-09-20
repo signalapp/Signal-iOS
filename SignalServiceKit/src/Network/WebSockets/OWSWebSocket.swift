@@ -284,10 +284,11 @@ public class OWSWebSocket: NSObject {
 
     public typealias RequestSuccess = (HTTPResponse) -> Void
     public typealias RequestFailure = (OWSHTTPErrorWrapper) -> Void
+    fileprivate typealias RequestSuccessInternal = (HTTPResponse, SocketRequestInfo) -> Void
 
     fileprivate func makeRequestInternal(_ request: TSRequest,
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
-                                         success: @escaping RequestSuccess,
+                                         success: @escaping RequestSuccessInternal,
                                          failure: @escaping RequestFailure) {
         Self.makeRequestInternal(request,
                                  unsubmittedRequestToken: unsubmittedRequestToken,
@@ -299,7 +300,7 @@ public class OWSWebSocket: NSObject {
     fileprivate static func makeRequestInternal(_ request: TSRequest,
                                                 unsubmittedRequestToken: UnsubmittedRequestToken,
                                                 webSocket: OWSWebSocket,
-                                                success: @escaping RequestSuccess,
+                                                success: @escaping RequestSuccessInternal,
                                                 failure: @escaping RequestFailure) {
         assertOnQueue(OWSWebSocket.serialQueue)
 
@@ -307,15 +308,19 @@ public class OWSWebSocket: NSObject {
             webSocket.removeUnsubmittedRequestToken(unsubmittedRequestToken)
         }
 
+        let webSocketType = webSocket.webSocketType
+        var label = Self.label(forRequest: request,
+                               webSocketType: webSocketType,
+                               requestInfo: nil)
         guard let requestUrl = request.url else {
-            owsFailDebug("Missing requestUrl.")
+            owsFailDebug("\(label) Missing requestUrl.")
             DispatchQueue.global().async {
                 failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: request.url!)))
             }
             return
         }
         guard let httpMethod = request.httpMethod.nilIfEmpty else {
-            owsFailDebug("Missing httpMethod.")
+            owsFailDebug("\(label) Missing httpMethod.")
             DispatchQueue.global().async {
                 failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: requestUrl)))
             }
@@ -323,7 +328,7 @@ public class OWSWebSocket: NSObject {
         }
         guard let currentWebSocket = webSocket.currentWebSocket,
               currentWebSocket.state == .open else {
-            owsFailDebug("Missing currentWebSocket.")
+            owsFailDebug("\(label) Missing currentWebSocket.")
             DispatchQueue.global().async {
                 failure(OWSHTTPErrorWrapper(error: .networkFailure(requestUrl: requestUrl)))
             }
@@ -335,6 +340,9 @@ public class OWSWebSocket: NSObject {
                                             webSocketType: webSocket.webSocketType,
                                             success: success,
                                             failure: failure)
+        label = Self.label(forRequest: request,
+                           webSocketType: webSocketType,
+                           requestInfo: requestInfo)
 
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
         var requestPath = "/".appending(requestUrl.path)
@@ -359,7 +367,7 @@ public class OWSWebSocket: NSObject {
             do {
                 jsonData = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
             } catch {
-                owsFailDebug("Error: \(error).")
+                owsFailDebug("\(label) Error: \(error).")
                 requestInfo.didFailInvalidRequest()
                 return
             }
@@ -393,18 +401,18 @@ public class OWSWebSocket: NSObject {
             let messageData = try messageBuilder.buildSerializedData()
 
             guard currentWebSocket.state == .open else {
-                Logger.warn("makeRequest \(currentWebSocket.logPrefix): socket not open.")
+                owsFailDebug("\(label) Socket not open.")
                 requestInfo.didFailInvalidRequest()
                 return
             }
 
-            Logger.info("Making request \(currentWebSocket.logPrefix): \(requestInfo.requestId), \(httpMethod): \(requestPath), bodyLength: \(requestProto.body?.count ?? 0).")
+            Logger.info("\(label) Making request")
 
             currentWebSocket.sendRequest(requestInfo: requestInfo,
                                          messageData: messageData,
                                          delegate: webSocket)
         } catch {
-            owsFailDebug("Error: \(error).")
+            owsFailDebug("\(label), Error: \(error).")
             requestInfo.didFailInvalidRequest()
             return
         }
@@ -1105,7 +1113,17 @@ public class OWSWebSocket: NSObject {
 
 extension OWSWebSocket {
 
-    // TODO: Combine with makeRequestInternal().
+    fileprivate static func label(forRequest request: TSRequest,
+                                  webSocketType: OWSWebSocketType,
+                                  requestInfo: SocketRequestInfo?) -> String {
+
+        var label = "\(webSocketType), \(request)"
+        if let requestInfo = requestInfo {
+            label += ", [\(requestInfo.requestId)]"
+        }
+        return label
+    }
+
     public func makeRequest(_ request: TSRequest,
                             unsubmittedRequestToken: UnsubmittedRequestToken,
                             success successParam: @escaping RequestSuccess,
@@ -1135,15 +1153,17 @@ extension OWSWebSocket {
             owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
         }
 
-        let label = "\(webSocketType) request"
+        let webSocketType = self.webSocketType
         let canUseAuth = webSocketType == .identified && !request.isUDRequest
-
-        Logger.info("\(logPrefix) Making \(label): \(request)")
 
         self.makeRequestInternal(request,
                                  unsubmittedRequestToken: unsubmittedRequestToken,
-                                 success: { (response: HTTPResponse) in
-                                    Logger.info("Succeeded \(label): \(request)")
+                                 success: { (response: HTTPResponse, requestInfo: SocketRequestInfo) in
+                                    let label = Self.label(forRequest: request,
+                                                           webSocketType: webSocketType,
+                                                           requestInfo: requestInfo)
+
+                                    Logger.info("\(label): Request Succeeded")
 
                                     if canUseAuth,
                                        request.shouldHaveAuthorizationHeaders {
@@ -1193,7 +1213,7 @@ private class SocketRequestInfo {
 
     private let backgroundTask: OWSBackgroundTask
 
-    public typealias RequestSuccess = OWSWebSocket.RequestSuccess
+    public typealias RequestSuccess = OWSWebSocket.RequestSuccessInternal
     public typealias RequestFailure = OWSWebSocket.RequestFailure
 
     public required init(request: TSRequest,
@@ -1225,7 +1245,7 @@ private class SocketRequestInfo {
             return
         case .incomplete(let success, _):
             DispatchQueue.global().async {
-                success(response)
+                success(response, self)
             }
         }
     }

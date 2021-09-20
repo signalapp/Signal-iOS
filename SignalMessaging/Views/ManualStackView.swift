@@ -377,14 +377,18 @@ open class ManualStackView: ManualLayoutView {
             // It is expected in some cases, e.g. when animating an orientation
             // change when the new layout hasn't landed yet.
             let overflow = onAxisSizeTotal - onAxisMaxSize
-            Logger.warn("\(name): overflow[\(name)]: \(overflow)")
+            if DebugFlags.internalLogging {
+                Logger.warn("\(name): overflow[\(name)]: \(overflow)")
+            }
 
             // TODO: We could weight re-distribution by compressionResistence.
             var overflowLayoutItems = layoutItems.filter {
                 $0.subviewInfo.canCompressOnAxis(isHorizontalLayout: isHorizontal)
             }
             if overflowLayoutItems.isEmpty {
-                Logger.warn("\(name): No overflowLayoutItems.")
+                if DebugFlags.internalLogging {
+                    Logger.warn("\(name): No overflowLayoutItems.")
+                }
                 overflowLayoutItems = layoutItems
             }
 
@@ -404,7 +408,7 @@ open class ManualStackView: ManualLayoutView {
         // Determine offAxisSize and offAxisLocation.
         for layoutItem in layoutItems {
             if layoutItem.offAxisMeasuredSize > offAxisMaxSize {
-                Logger.warn("\(name): Off-axis overflow: offAxisMeasuredSize: \(layoutItem.offAxisMeasuredSize) > offAxisMaxSize: \(offAxisMaxSize)")
+                Logger.verbose("\(name): Off-axis overflow: offAxisMeasuredSize: \(layoutItem.offAxisMeasuredSize) > offAxisMaxSize: \(offAxisMaxSize)")
             }
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
             if offAxisAlignment == .fill,
