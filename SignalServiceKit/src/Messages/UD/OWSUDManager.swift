@@ -201,6 +201,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         let parseUnidentifiedAccessMode = { (anyValue: Any) -> UnidentifiedAccessMode? in
             guard let nsNumber = anyValue as? NSNumber else {
                 owsFailDebug("Invalid value.")

@@ -509,6 +509,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     }
 
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         cacheCurrent()
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {

@@ -38,6 +38,7 @@ public enum Wallpaper: String, CaseIterable {
     public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
 
     public static func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
         owsAssertDebug(!Thread.isMainThread)
 
         guard CurrentAppContext().hasUI else { return }

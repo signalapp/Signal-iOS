@@ -248,6 +248,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (void)warmCaches
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     TSAccountState *accountState = [self loadAccountStateWithSneakyTransaction];
 
     [accountState log];

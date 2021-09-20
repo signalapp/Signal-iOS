@@ -423,6 +423,8 @@ public class SignalServiceAddressCache: NSObject {
 
     @objc
     func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         let localNumber = TSAccountManager.shared.localNumber
         let localUuid = TSAccountManager.shared.localUuid
 
