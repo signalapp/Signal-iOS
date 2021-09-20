@@ -11,7 +11,7 @@ source 'https://cdn.cocoapods.org/'
 
 pod 'SwiftProtobuf', ">= 1.14.0"
 
-pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit-Private.git', testspecs: ["Tests"], branch: 'mlin/PR/PromiseChainStackExhaustion'
+pod 'SignalCoreKit', git: 'git@github.com:signalapp/SignalCoreKit', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'SignalClient', git: 'https://github.com/signalapp/libsignal-client.git', testspecs: ["Tests"]
