@@ -79,7 +79,23 @@ class NSEEnvironment: Dependencies {
 
     // MARK: - Setup
 
+    private let unfairLock = UnfairLock()
+    private var hasAppContext = false
+
+    // This should be the first thing we do.
+    public func ensureAppContext() {
+        unfairLock.withLock {
+            if hasAppContext {
+                return
+            }
+            // This should be the first thing we do.
+            SetCurrentAppContext(NSEContext())
+            hasAppContext = true
+        }
+    }
+
     private var isSetup = AtomicBool(false)
+
     func setupIfNecessary() -> UNNotificationContent? {
         guard isSetup.tryToSetFlag() else { return nil }
         return DispatchQueue.main.sync { setup() }
@@ -90,7 +106,7 @@ class NSEEnvironment: Dependencies {
         AssertIsOnMainThread()
 
         // This should be the first thing we do.
-        SetCurrentAppContext(NSEContext())
+        ensureAppContext()
 
         DebugLogger.shared().enableTTYLogging()
         if _isDebugAssertConfiguration() {
@@ -105,7 +121,7 @@ class NSEEnvironment: Dependencies {
 
         Cryptography.seedRandom()
 
-        if let errorContent = verifyDBKeysAvailable() {
+        if let errorContent = Self.verifyDBKeysAvailable() {
             return errorContent
         }
 
@@ -140,7 +156,7 @@ class NSEEnvironment: Dependencies {
         return nil
     }
 
-    private func verifyDBKeysAvailable() -> UNNotificationContent? {
+    public static func verifyDBKeysAvailable() -> UNNotificationContent? {
         AssertIsOnMainThread()
 
         guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return nil }

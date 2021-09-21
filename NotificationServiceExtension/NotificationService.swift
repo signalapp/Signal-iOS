@@ -29,10 +29,11 @@ import SignalServiceKit
 // database, logging, etc. are only ever setup once per *process*
 let environment = NSEEnvironment()
 
+let hasShownFirstUnlockError = AtomicBool(false)
+
 class NotificationService: UNNotificationServiceExtension {
 
     private var contentHandler: ((UNNotificationContent) -> Void)?
-    var areVersionMigrationsComplete = false
 
     func completeSilenty(timeHasExpired: Bool = false) {
         guard let contentHandler = contentHandler else {
@@ -56,11 +57,35 @@ class NotificationService: UNNotificationServiceExtension {
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
 
+        // This should be the first thing we do.
+        environment.ensureAppContext()
+
+        // Detect and handle "no GRDB file" and "no keychain access; device
+        // not yet unlocked for first time" cases _before_ calling
+        // setupIfNecessary().
+        if let errorContent = NSEEnvironment.verifyDBKeysAvailable() {
+            if hasShownFirstUnlockError.tryToSetFlag() {
+                NSLog("DB Keys not accessible; showing error.")
+                contentHandler(errorContent)
+            } else {
+                // Only show a single error if we receive multiple pushes
+                // before first device unlock.
+                NSLog("DB Keys not accessible; completing silently.")
+                let emptyContent = UNMutableNotificationContent()
+                contentHandler(emptyContent)
+            }
+            return
+        }
+
         if let errorContent = environment.setupIfNecessary() {
+            // This should not occur; see above.  If we've reached this
+            // point, the NSEEnvironment.isSetup flag is already set,
+            // but the environment has _not_ been setup successfully.
+            // We need to terminate the NSE to return to a good state.
             Logger.warn("Posting error notification and skipping processing.")
             Logger.flush()
             contentHandler(errorContent)
-            exit(0)
+            fatalError("Posting error notification and skipping processing.")
         }
 
         self.contentHandler = contentHandler
@@ -84,22 +109,14 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
-    private let nseExpirationFlag = AtomicBool(false)
-
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
         owsFailDebug("NSE expired before messages could be processed")
-
-        guard nseExpirationFlag.tryToSetFlag() else {
-            exit(0)
-        }
 
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
         completeSilenty(timeHasExpired: true)
-
-        nseExpirationFlag.set(false)
     }
 
     func fetchAndProcessMessages() {
