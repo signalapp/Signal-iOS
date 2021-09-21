@@ -569,3 +569,5 @@
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"voice_call" = "Voice Call";
+"video_call" = "Video Call";
