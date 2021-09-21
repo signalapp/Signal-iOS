@@ -8,6 +8,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     let mode: Mode
     let webRTCSession: WebRTCSession
     var isMuted = false
+    var conversationVC: ConversationVC? = nil
     
     lazy var cameraManager: CameraManager = {
         let result = CameraManager()
@@ -25,6 +26,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.contentMode = .scaleAspectFill
         result.set(.width, to: 80)
         result.set(.height, to: 173)
+        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
         return result
     }()
     
@@ -47,13 +49,13 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         return result
     }()
     
-    private lazy var closeButton: UIButton = {
+    private lazy var minimizeButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "X")!.withTint(.white)
+        let image = UIImage(named: "Minimize")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
-        result.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        result.addTarget(self, action: #selector(minimize), for: UIControl.Event.touchUpInside)
         return result
     }()
     
@@ -83,7 +85,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
 
     private lazy var switchAudioButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "AudioOn")!.withTint(.white)
+        let image = UIImage(named: "AudioOff")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
@@ -170,14 +172,14 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         fadeView.translatesAutoresizingMaskIntoConstraints = false
         fadeView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
         // Close button
-        view.addSubview(closeButton)
-        closeButton.translatesAutoresizingMaskIntoConstraints = false
-        closeButton.pin(.left, to: .left, of: view)
-        closeButton.pin(.top, to: .top, of: view, withInset: 32)
+        view.addSubview(minimizeButton)
+        minimizeButton.translatesAutoresizingMaskIntoConstraints = false
+        minimizeButton.pin(.left, to: .left, of: view)
+        minimizeButton.pin(.top, to: .top, of: view, withInset: 32)
         // Title label
         view.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.center(.vertical, in: closeButton)
+        titleLabel.center(.vertical, in: minimizeButton)
         titleLabel.center(.horizontal, in: view)
         // End call button
         view.addSubview(hangUpButton)
@@ -220,6 +222,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             self.remoteVideoView.alpha = 0
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
+            self.conversationVC?.showInputAccessoryView()
             self.presentingViewController?.dismiss(animated: true, completion: nil)
         }
     }
@@ -228,7 +231,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         Storage.write { transaction in
             WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
         }
+        self.conversationVC?.showInputAccessoryView()
         presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func minimize() {
+        
     }
     
     @objc private func switchCamera() {
@@ -238,16 +246,43 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     @objc private func switchAudio() {
         if isMuted {
             switchAudioButton.backgroundColor = UIColor(hex: 0x1F1F1F)
-            let image = UIImage(named: "AudioOn")!.withTint(.white)
-            switchAudioButton.setImage(image, for: UIControl.State.normal)
             isMuted = false
             webRTCSession.unmute()
         } else {
             switchAudioButton.backgroundColor = Colors.destructive
-            let image = UIImage(named: "AudioOff")!.withTint(.white)
-            switchAudioButton.setImage(image, for: UIControl.State.normal)
             isMuted = true
             webRTCSession.mute()
+        }
+    }
+    
+    @objc private func handlePanGesture(gesture: UIPanGestureRecognizer) {
+        let location = gesture.location(in: self.view)
+        if let draggedView = gesture.view {
+            draggedView.center = location
+            if gesture.state == .ended {
+                let sideMargin = 40 + Values.verySmallSpacing
+                if draggedView.frame.midX >= self.view.layer.frame.width / 2 {
+                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                        draggedView.center.x = self.view.layer.frame.width - sideMargin
+                    }, completion: nil)
+                }else{
+                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                        draggedView.center.x = sideMargin
+                    }, completion: nil)
+                }
+                let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
+                if draggedView.frame.minY <= topMargin {
+                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                        draggedView.center.y = topMargin + draggedView.frame.size.height / 2
+                    }, completion: nil)
+                }
+                let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+                if draggedView.frame.maxY >= self.view.layer.frame.height {
+                    UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                        draggedView.center.y = self.view.layer.frame.height - draggedView.frame.size.height / 2 - bottomMargin
+                    }, completion: nil)
+                }
+            }
         }
     }
 }

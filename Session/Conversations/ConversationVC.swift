@@ -253,6 +253,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         super.viewDidAppear(animated)
         didFinishInitialLayout = true
         markAllAsRead()
+        self.becomeFirstResponder()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -261,7 +262,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
         Storage.write { transaction in
             self.thread.setDraft(text, transaction: transaction)
         }
-        inputAccessoryView?.resignFirstResponder()
+        self.resignFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
