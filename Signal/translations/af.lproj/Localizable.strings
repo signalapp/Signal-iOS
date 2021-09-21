@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Kontak";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Contact for %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontak vir %@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
@@ -86,7 +86,7 @@
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Voeg by groep";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add “%1$@” to “%2$@”?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Voeg “%1$@” toe tot “%2$@”?";
 
 /* The title on the 'add to group' confirmation action sheet. */
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Voeg nuwe lid by";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ is by %@ gevoeg";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to a Group";
+"ADD_TO_GROUP_TITLE" = "Voeg toe tot ’n groep";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Wil jy jou profiel met hierdie gebruiker deel?";
@@ -335,7 +335,7 @@
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Klankboodskap";
 
 /* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Audio Call";
+"AUDIO_CALL_LABEL" = "Oudio-oproep";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
@@ -506,10 +506,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Bel weer";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Incoming audio call…";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Inkomende oudio-oproep…";
 
 /* notification body */
-"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Missed audio call";
+"CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Gemisde oudio-oproep";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "As u mikrofoontoegang in die iOS Instellingstoep aktiveer, sal u in Signal kan bel en stemboodskappe opneem.";
@@ -617,7 +617,7 @@
 "CHAT_COLOR_OUTGOING_MESSAGE_2" = "Die kleur is slegs vir u sigbaar.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_AUTO" = "auto";
+"CHAT_COLOR_SETTINGS_AUTO" = "outo";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Hierdie pasgemaakte kleur word in 1 klets gebruik. Wil u dit skrap?";
@@ -995,7 +995,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Stel as admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ sal hierdie groep en sy lede kan wysig.";
 
 /* Label for 'member invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_INVITES" = "Uitnodigings";
@@ -1103,7 +1103,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle lede";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Kies wie in hierdie groep boodskappe kan stuur en oproepe kan begin.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Stuur boodskappe";
@@ -1145,7 +1145,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Laai meer boodskappe...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Read More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lees Meer";
 
 /* Indicator that a value has been copied to the clipboard. */
 "COPIED_TO_CLIPBOARD" = "Na knipbord gekopieer";
@@ -1166,7 +1166,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradiënt";
 
 /* Title for the 'hue' section in the chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Hue";
+"CUSTOM_CHAT_COLOR_SETTINGS_HUE" = "Tint";
 
 /* Title for the 'Saturation' section in the chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION" = "Versadiging";
@@ -1244,37 +1244,37 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-herleiding";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
+"DEBUG_LOG_INFO_BUTTON" = "Inligting oor ontfoutlogboek";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Wis rekening";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Skrap rekening";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "This will delete your Signal account and reset the application. The app will close after this process is complete.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Dit sal u Signal-rekening skrap en die toepassing terugstel. Die toep sal afsluit nadat die prosesvoltooi is.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Is jy seker jy wil jou rekening wis?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Is u seker u wil u rekening skrap?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landkode";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Failed to delete account. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Kon nie rekening skrap nie. Maak seker dat u Wi-Fi of mobiele data aan is en probeer dan weer.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Dit sal u rekeninginligting, profiel en al u boodskappe skrap.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Rekening word geskrap…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Geen internetverbinding. Maak seker dat u Wi-Fi of mobiele data aan is en probeer dan weer.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Foonnommer";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Confirm Your Signal Number";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Bevestig u Signal-nommer";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Wis rekening";
@@ -1283,28 +1283,28 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the chat?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Skrap alle boodskappe in die klets?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Wis alle boodskappe";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Skrap alle boodskappe";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Wis %ld boodskappe?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Skrap %ld boodskappe?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Wis boodskap?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Skrap boodskap?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Herregistreer hierdie foonnommer";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Toestel is nie meer geregistreer nie. Jou foonnommer is dalk op ’n ander toestel by Signal geregistreer. Druk om te herregistreer.";
+"DEREGISTRATION_WARNING" = "Toestel is nie meer geregistreer nie. U foonnommer is dalk op ’n ander toestel by Signal geregistreer. Druk om te herregistreer.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Laas aktief %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Linked %@";
+"DEVICE_LINKED_AT_LABEL" = "%@ gekoppel";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Kon nie toestellys opdateer nie.";
@@ -1313,19 +1313,19 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop oordrag";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "As jy hierdie venster toemaak, sal dit die oordrag wat tans besig is, stop. Is jy seker jy wil voortgaan?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "As u hierdie venster toemaak, sal dit die oordrag wat tans besig is, stop. Is u seker u wil voortgaan?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop oordrag?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "As jy jou ou iOS-toestel het, kan jy jou rekening en boodskappe beveiligd na hierdie toestel oordra.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "As u u ou iOS-toestel het, kan u u rekening en boodskappe beveiligd na hierdie toestel oordra.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "As jy voorheen Signal op ’n gekoppelde iPad gebruik het, kan jy jou rekening en boodskappe beveiligd na hierdie toestel oordra.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "As u voorheen Signal op ’n gekoppelde iPad gebruik het, kan u uu rekening en boodskappe beveiligd na hierdie toestel oordra.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Gaan voort sonder om jou rekening en boodskappe oor te dra";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Gaan voort sonder om u rekening en boodskappe oor te dra";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Voeg hierdie iPad by as ’n nuwe gekoppelde toestel sonder om boodskapgeskiedenis oor te dra";
@@ -1352,46 +1352,46 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Dra oor van iOS-toestel";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "As jy voortgaan, sal dit Signal op enige ander toestelle wat tans met dieselfde foonnommer geregistreer is, deaktiveer.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "As u voortgaan, sal dit Signal op enige ander toestelle wat tans met dieselfde foonnommer geregistreer is, deaktiveer.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Kan nie jou nuwe toestel verifieer nie; probeer asseblief weer";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Kon nie die oordrag voltooi nie; maak seker jou toestelle is naby mekaar, en probeer weer";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Kon nie die oordrag voltooi nie; maak seker u toestelle is naby mekaar, en probeer weer";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om hierdie iPad as ’n gekoppelde toestel op te stel, moet jy met jou ou iPad skandeer";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Om hierdie iPad as ’n gekoppelde toestel op te stel, moet u met u ou iPad skandeer";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Om jou rekening oor te dra, moet jy met jou iPhone skandeer";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Om u rekening oor te dra, moet u met u iPhone skandeer";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Nie genoeg ruimte om die oordrag voltooi nie";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Dateer op na die jongste weergawe van Signal, en probeer weer";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Werk by na die jongste weergawe van Signal, en probeer weer";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Dra jou Signal-rekening na ’n nuwe iOS-toestel oor. Maak seker jou nuwe toestel is naby en aangeskakel.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Dra u Signal-rekening na ’n nuwe iOS-toestel oor. Maak seker u nuwe toestel is naby en aangeskakel.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Dra rekening oor";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Maak Signal op jou ou toestel oop, bring dit nader, en maak seker Wi-Fi en Bluetooth is op albei toestelle geaktiveer.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Maak Signal op u ou toestel oop, bring dit nader, en maak seker Wi-Fi en Bluetooth is op albei toestelle geaktiveer.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posisioneer hierdie QR-kode in die raampie van jou ander toestel.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posisioneer hierdie QR-kode in die raampie van u ander toestel.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Sien u nie die por op u ou toestel nie?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Wag tans vir ander toestel...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hou albei toestelle naby mekaar. Moenie enige van die toestelle afskakel nie, en hou Signal oop. Oordragte word van punt tot punt geënkripteer.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hou albei toestelle naby mekaar. Moenie enige van die toestelle afskakel nie, en hou Signal oop. Oordragte is eind-tot-eind-geënkripteer.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Ontvang van data";
@@ -1403,7 +1403,7 @@
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Posisioneer die QR-kode binne die sirkel";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hou jou nuwe toestel by die kamera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Hou u nuwe toestel by die kamera";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Hou albei toestelle naby mekaar. Moenie enige van die toestelle afskakel nie, en hou Signal oop.";
@@ -1415,37 +1415,37 @@
 "DISAPPEARING_MESSAGES" = "Verdwynende boodskappe";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Boodskappe in hierdie klets sal na %@ verdwyn.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Pasgemaakte tyd";
 
 /* The unit for a number of days */
-"DISAPPEARING_MESSAGES_DAYS" = "days";
+"DISAPPEARING_MESSAGES_DAYS" = "dae";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien geaktiveer, sal nuwe boodskappe wat in hierdie klets gestuur en ontvang is, verdwyn nadat dit gesien is.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Tans verdwyn boodskappe ná %@";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "hours";
+"DISAPPEARING_MESSAGES_HOURS" = "uur";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Instellings vir verdwynboodskappe";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "minutes";
+"DISAPPEARING_MESSAGES_MINUTES" = "minute";
 
 /* The unit for a number of seconds */
-"DISAPPEARING_MESSAGES_SECONDS" = "seconds";
+"DISAPPEARING_MESSAGES_SECONDS" = "sekondes";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "When enabled, new messages sent and received in new conversations started by you will disappear after they have been seen.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Indien geaktiveer, sal nuwe boodskappe wat in nuwe gesprekke wat u begin gestuur en ontvang is, verdwyn nadat dit gesien is.";
 
 /* The unit for a number of weeks */
-"DISAPPEARING_MESSAGES_WEEKS" = "weeks";
+"DISAPPEARING_MESSAGES_WEEKS" = "weke";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Wys weg";
@@ -4464,6 +4464,9 @@
 
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Prent";
+
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Foto";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";

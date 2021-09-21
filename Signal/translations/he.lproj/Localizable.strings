@@ -4465,6 +4465,9 @@
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "תמונה";
 
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "תמונה";
+
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "סרטון";
 

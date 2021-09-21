@@ -953,7 +953,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "Inaktiverad";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppens namn, foto, beskrivning och tidtagare för försvinnande meddelanden.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Välj vem som kan redigera gruppens namn, foto, beskrivning och tidsgräns för försvinnande meddelanden.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ljud";
@@ -4465,6 +4465,9 @@
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Bild";
 
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Foto";
+
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
@@ -5135,7 +5138,7 @@
 "SETTINGS_DATA_TITLE" = "Dataanvändning";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standard tidtagare för nya chattar";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standardtidsgräns för nya chattar";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ta bort konto";
@@ -5165,7 +5168,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Försvinnande meddelanden";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ställ in en standardtidtagare för försvinnande meddelanden för alla nya chattar som du startar.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Ställ in en standardtidsgräns för försvinnande meddelanden för alla nya chattar som du startar.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donera till Signal";

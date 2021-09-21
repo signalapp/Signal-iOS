@@ -113,7 +113,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Anladım";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Bu sohbette %@ tarafından gönderilen bir ileti, çıkartma, tepki, okundu bilgisi veya içerik size teslim edilemedi.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Bu konuşmada %@ tarafından gönderilen bir ileti, çıkartma, tepki, okundu bilgisi veya içerik size teslim edilemedi.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Teslim Sıkıntısı";
@@ -599,10 +599,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ülke Seçin";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Sohbet renginin önizlemesi.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Konuşma renginin önizlemesi.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Sohbet renginin önizlemesi.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Konuşma renginin önizlemesi.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Diğer baloncuk";
@@ -620,10 +620,10 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "otomatik";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Bu özel renk 1 sohbette kullanılıyor. Silmek istiyor musunuz?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Bu özel renk 1 konuşmada kullanılıyor. Silmek istiyor musunuz?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Bu özel renk %@ sohbette kullanılıyor. Tüm sohbetler için silmek istiyor musunuz?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Bu özel renk %@ konuşmada kullanılıyor. Tüm konuşmalar için silmek istiyor musunuz?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Rengi Sil";
@@ -635,7 +635,7 @@
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Rengi Düzenle";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Bu renk %@ sohbetlerde kullanılıyor. Tüm sohbetler için değişiklikleri kaydetmek istiyor musunuz?";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Bu renk %@ konuşmalarda kullanılıyor. Tüm konuşmalar için değişiklikleri kaydetmek istiyor musunuz?";
 
 /* Tooltip highlighting the auto chat color option. */
 "CHAT_COLORS_AUTO_TOOLTIP" = "Arkaplana bağlı otomatik olarak renk eşleştirir";
@@ -644,13 +644,13 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "Görünüm";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Şimdi sohbetlerinizdeki renkleri geçişlerle ve daha fazlasıyla değiştirebilirsiniz.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Şimdi konuşmalarınızdaki renkleri geçişlerle ve daha fazlasıyla değiştirebilirsiniz.";
 
 /* Title for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_TITLE" = "Özel Sohbet Renkleri";
+"CHAT_COLORS_MEGAPHONE_TITLE" = "Özel Konuşma Renkleri";
 
 /* Title for the color & wallpaper settings view. */
-"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Sohbet Rengi ve Arkaplan";
+"COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Konuşma Rengi ve Arkaplan";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile Karşılaştır";
@@ -1025,7 +1025,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "ileti";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu sohbeti sessize al...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu konuşmayı sessize al...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Her zaman";
@@ -1424,7 +1424,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "gün";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Etkinleştirildiğinde, bu sohbette gönderilen ve alınan yeni iletiler görüldükten sonra kaybolur.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Etkinleştirildiğinde, bu konuşmada gönderilen ve alınan yeni iletiler görüldükten sonra kaybolur.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Şu anda iletiler %@ sonra kayboluyor";
@@ -1442,7 +1442,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "saniye";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Etkinleştirildiğinde, sizin tarafınızdan başlatılan yeni sohbetlerde gönderilen ve alınan yeni iletiler görüldükten sonra kaybolur.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Etkinleştirildiğinde, sizin tarafınızdan başlatılan yeni konuşmalarda gönderilen ve alınan yeni iletiler görüldükten sonra kaybolur.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "hafta";
@@ -1589,16 +1589,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kişilere erişilemedi.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "İleti yönlendirilemedi.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "İleti artık mevcut olmadığı için yönlendirilemedi.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "İletiler artık mevcut olmadığı için yönlendirilemedi.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "İletiler yönlendirilemedi";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Video kaydedilemedi.";
@@ -1655,7 +1655,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@ tarafından gelen bir ileti teslim edilemedi";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Bir ileti yönlendirilemedi";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Tekrarlanan bir ileti alındı.";
@@ -1691,10 +1691,10 @@
 "ERROR_NETWORK_FAILURE" = "Ağ Hatası";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Lütfen bu hatayı cihazınızdaki hata ayıklama günlükleriyle birlikte support@signal.org adresine bildirerek Signal'i iyileştirmemize yardımcı olun; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Bir hata oluştu";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Cihazınız artık bağlı değil. Lütfen ileti göndermek için tekrar bağlayın.";
@@ -1748,13 +1748,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "İleti gönder";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "%@ ileti gönder";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Hızlı Yönlendirmeler";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "İleti gönderildi";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "İletiler gönderildi";
@@ -1763,7 +1763,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "İleti ekle";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Nereye yönlendirilecek";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Bu konuşmada hiçbir içeriğiniz yok.";
@@ -3125,7 +3125,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Bu İletiyi Yönlendir";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Seçili iletileri yönlendir";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Grup Daveti Aç";
@@ -3164,13 +3164,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Çıkartma Paketi";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 seçili";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 seçili";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ seçili";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "İleti";
@@ -4465,6 +4465,9 @@
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Görüntü";
 
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Fotoğraf";
+
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
@@ -4595,7 +4598,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "İleti göndermeden önce kaydolmanız gerekiyor.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Daha önce bu numaraya kayıtlı ve aktarma için kullanılabilen bir hesap var.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Doğrulama Başarısız Oldu";
@@ -4637,7 +4640,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Kaydetmeye çalıştığınız telefon numarası zaten başka bir sunucuda kayıtlı, lütfen kaydını kaldırın ve tekrar deneyin.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Önizlemeyi kaldır";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Yeni Yönetici Seç";
@@ -5135,7 +5138,7 @@
 "SETTINGS_DATA_TITLE" = "Veri kullanımı";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Yeni Sohbetler için Varsayılan Zamanlayıcı";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Yeni Konuşmalar için Varsayılan Zamanlayıcı";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Hesabı Sil";
@@ -5180,7 +5183,7 @@
 "SETTINGS_INVITE_TWITTER_TEXT" = "@signalapp kullanarak bana ulaşabilirsiniz. Hemen edinin: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
-"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Sohbet Rengi ve Arkaplan";
+"SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Konuşma Rengi ve Arkaplan";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "İleti Sesi";
@@ -5750,13 +5753,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotoğraflar ve Videolar";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Kişileri iOS ile paylaş";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Paylaşma önerileri gibi özellikler için iOS'un Signal kişilerine ve konuşmalarına erişmesine izin verin.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Paylaşma önerileri ve bildirimleri gibi özellikler için iOS'un Signal kişilerine ve konuşmalarına erişmesine izin verin.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kayıt Kilidi";
@@ -6314,10 +6317,10 @@
 "WALLPAPER_PREVIEW_TITLE" = "Ön izleme";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Sohbet Rengini Temizle";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Konuşma Rengini Temizle";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Bu sohbet için renk temizlensin mi?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Bu konuşma için renk temizlensin mi?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Duvar Kağıdını Kaldır";
@@ -6341,13 +6344,13 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Tüm Duvar Kağıtlarını Sıfırla";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Tüm sohbet renklerini değiştirmek ister misiniz?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Tüm konuşma renklerini değiştirmek ister misiniz?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Sohbet Renklerini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Konuşma Renklerini Sıfırla";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Sohbet Rengini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Konuşma Rengini Sıfırla";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Arkaplanı Sıfırla";
@@ -6356,7 +6359,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Varsayılan Renkleri Sıfırla";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Sohbet Renklerini Sıfırla";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Konuşma Renklerini Sıfırla";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Varsayılan Arkaplanı Sıfırla";

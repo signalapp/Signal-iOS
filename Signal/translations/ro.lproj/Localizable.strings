@@ -992,7 +992,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Adresa grupului";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Fă Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Fă Administrator";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ va putea edita acest grup și membri acestuia.";
@@ -1094,7 +1094,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Elimină ca administrator";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Revocați pe %@ ca și admin de grup?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Revocați pe %@ ca administrator de grup?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "căutare";
@@ -2246,7 +2246,7 @@
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ v-a adăugat.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sunteți acum admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sunteți acum administrator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ te-a făcut administrator.";
@@ -2309,7 +2309,7 @@
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Un membru te-a adăugat grupului.";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Administrator";
 
 /* The 'group member count' indicator when there are no members in the group. */
 "GROUP_MEMBER_COUNT_LABEL_0" = "Niciun membru.";
@@ -2465,13 +2465,13 @@
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ a solicitat să se alăture prin linkul de grup.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Privilegiile de admin au fost revocate pentru %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Privilegiile de administrator au fost revocate pentru %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ați revocat privilegiile admin de la %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ați revocat privilegiile de administrator de la %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ a revocat privilegiile de admin pentru %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ a revocat privilegiile de administrator pentru %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Solicitări";
@@ -3965,7 +3965,7 @@
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Destinatar invalid";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer emis";
 
 /* Indicator for unidentified incoming payments. */
 "PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Plată primită";
@@ -4465,6 +4465,9 @@
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Imagine";
 
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Poză";
+
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
@@ -4640,7 +4643,7 @@
 "REMOVE_PREVIEW" = "Eliminați previzualizarea";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Alegeți un nou admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Alegeți un nou administrator";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Înregistrează-te din nou pentru notificări push";
@@ -5147,10 +5150,10 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Aveți un sold de %@. Dacă nu vă transferați fondurile către adresa unui alt portofel înainte de a vă șterge contul, acestea vor fi pierdute definitiv.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transferați soldul plăților?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transferă sold";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Șterge toate datele";
@@ -5267,7 +5270,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Adresa portofelului a fost copiată";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "All Payments";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "Toate plățile";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ la %3$@";
@@ -5276,10 +5279,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Puteți transfera în continuare fonduri către un exchange, dar nu mai puteți trimite sau primi plăți ori adăuga fonduri.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Can't deactivate payments because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Nu puteți dezactiva plățile deoarece soldul dvs. nu este disponibil. Verificați conexiunea și încercați din nou.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Plata nu s-a putut finaliza deoarece soldul dvs. nu este disponibil. Verificați conexiunea și încercați din nou.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Puteți transfera în continuare fonduri către un exchange, dar nu mai puteți trimite sau primi plăți ori adăuga fonduri.";
@@ -5360,7 +5363,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualizați-vă PIN-ul";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Transcrie fraza de recuperare";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Fraza dvs. de recuperare vă oferă încă o metodă de a vă restaura contul de plăți";
@@ -5372,16 +5375,16 @@
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresă portofel invalidă";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Nu există activități recente deocamdată.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Doriți să activați plățile?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Plățile nu sunt activate";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Înregistrați-vă din nou pentru a trimite plăți.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nu este înregistrată";
@@ -5396,13 +5399,13 @@
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Utilizați Signal pentru a trimite și primi MobileCoin, o nouă monedă digitală axată pe confidențialitate. Activați pentru a începe.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivează plățile";
 
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vă prezentăm Plăți (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Soldul dvs. va fi restituit automat când reinstalați Signal dacă vă confirmați PIN-ul Signal. De asemenea vă puteți recupera soldul utilizând o frază de recuperare, ce este formată din 24 de cuvinte și este unică pentru dvs. Ar trebui să o scrieți pe hârtie si să o păstrați într-un loc sigur.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Adăugare fonduri";
@@ -5474,10 +5477,10 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Înainte de a putea dezactiva PIN-ul, trebuie să transcrieți fraza de recuperare, pentru a vă asigura că puteți recăpăta contul de plăți.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Transcrie fraza de recuperare";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Transcrie fraza de recuperare plăți";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Sold rămas";
@@ -5489,7 +5492,7 @@
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restaurează contul de plăți";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Asigurați-vă că ați introdus corect fraza dvs.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirmați fraza de recuperare";
@@ -5501,10 +5504,10 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Introduceți manual";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Restaurarea a eșuat";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Aceasta nu este o frază de recuperare validă.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Frază invalidă";
@@ -5519,7 +5522,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Lipiți fraza de recuperare";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Fraza de recuperare este formată din 24 de cuvinte și este unică pentru dvs. Utilizați această frază pentru a vă recupera contul de plăți.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introduceți fraza de recuperare";
@@ -5540,7 +5543,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Introduceți fraza de recuperare";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanați codul QR pentru destinatarul transferului.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Adresă invalidă";
@@ -5588,7 +5591,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Confirmă";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Introduceți cuvintele %1$@ și %2$@ din fraza dvs. de recuperare.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Un cuvânt este greșit. Încercați din nou.";
@@ -5603,7 +5606,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirmați fraza de recuperare";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Frază de recuperare copiată";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copiere în clipboard";

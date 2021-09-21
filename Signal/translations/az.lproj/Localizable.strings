@@ -551,7 +551,7 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Cavabla";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Səs";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Səsli";
 
 /* label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Rədd et";
@@ -4457,13 +4457,16 @@
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Qoşma";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Səs";
+"QUOTED_REPLY_TYPE_AUDIO" = "Səsli";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Təsvir";
+
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Foto";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";

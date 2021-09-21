@@ -1424,7 +1424,7 @@
 "DISAPPEARING_MESSAGES_DAYS" = "dagen";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen voor iedereen die ze heeft gezien nadat de ingestelde tijd is verlopen worden gewist. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Nieuwe berichten in dit gesprek zullen voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Momenteel verlopen nieuwe berichten na %@";
@@ -1442,7 +1442,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "seconden";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten voor iedereen die ze heeft gezien nadat de ingestelde tijd is verlopen worden gewist. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Voor alle nieuwe gesprekken die jij zelf begint zullen berichten voor iedereen worden gewist nadat de ingestelde tijdspanne is verlopen. De tijdspanne begint voor iedere persoon individueel pas te lopen vanaf het moment dat hij of zij het bericht heeft gezien. — Gebruik dit niet ter beveiliging, want Signal kan niet garanderen dat berichten op het apparaat van een ander ook daadwerkelijk worden gewist.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weken";
@@ -4465,6 +4465,9 @@
 /* Indicates this message is a quoted reply to an image file. */
 "QUOTED_REPLY_TYPE_IMAGE" = "Afbeelding";
 
+/* Indicates this message is a quoted reply to a photo file. */
+"QUOTED_REPLY_TYPE_PHOTO" = "Gallerij";
+
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
@@ -4727,7 +4730,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Om appvergrendeling te kunnen gebruiken, moet je een toegangscode instellen in de iOS-instellingen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Verifiëren om Signal te openen";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Verifieer je identiteit om Signal te openen";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authenticatie mislukt";
