@@ -60,7 +60,7 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.warn("Posting error notification and skipping processing.")
             Logger.flush()
             contentHandler(errorContent)
-            return
+            exit(0)
         }
 
         self.contentHandler = contentHandler
@@ -84,14 +84,22 @@ class NotificationService: UNNotificationServiceExtension {
         }
     }
 
+    private let nseExpirationFlag = AtomicBool(false)
+
     // Called just before the extension will be terminated by the system.
     override func serviceExtensionTimeWillExpire() {
         owsFailDebug("NSE expired before messages could be processed")
+
+        guard nseExpirationFlag.tryToSetFlag() else {
+            exit(0)
+        }
 
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
         completeSilenty(timeHasExpired: true)
+
+        nseExpirationFlag.set(false)
     }
 
     func fetchAndProcessMessages() {
