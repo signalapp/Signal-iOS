@@ -20,6 +20,22 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
+    public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
+        // We should only handoff messages that are likely to cause a ring.
+        guard Date.ows_millisecondTimestamp() - envelope.timestamp < 5 * kMinuteInMs else {
+            Logger.info("Discarding very old call message. No longer relevant.")
+        }
+
+        if callMessage.offer != nil {
+            return .handoff
+        } else if let opaqueMessage = callMessage.opaque, opaqueMessage.urgency == .handleImmediately {
+            return .handoff
+        } else {
+            Logger.info("Ignoring call message. Not an offer or urgent opaque message.")
+            return .ignore
+        }
+    }
+
     public func externallyHandleCallMessage(
         envelope: SSKProtoEnvelope,
         plaintextData: Data,
@@ -27,48 +43,37 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         serverDeliveryTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) -> Bool {
-        do {
-            // There used to be a way to hand off decrypted messages to the main
-            // app for processing, but it was prone to races. We have ideas to fix
-            // this but in the meantime, we'll be more aggressive about blocking
-            // and handoff.
-            //
-            // If we successfully wake the main app, we should kill the NSE mid-
-            // transaction without acking to the service. This will roll back our
-            // sessions to their prior state and the service will re-deliver
-            // the encrypted message to the main app.
-            //
-            // We have to block on a semaphore because we don't want to continue
-            // processing other messages and risk this transaction committing until
-            // we know that the main app isn't going to be launched.
-//            let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
-//                envelope: envelope,
-//                plaintextData: plaintextData,
-//                wasReceivedByUD: wasReceivedByUD,
-//                serverDeliveryTimestamp: serverDeliveryTimestamp,
-//                transaction: transaction
-//            )
+        // There used to be a way to hand off decrypted messages to the main
+        // app for processing, but it was prone to races. We have ideas to fix
+        // this but in the meantime, we'll be more aggressive about blocking
+        // and handoff.
+        //
+        // If we successfully wake the main app, we should kill the NSE mid-
+        // transaction without acking to the service. This will roll back our
+        // sessions to their prior state and the service will re-deliver
+        // the encrypted message to the main app.
+        //
+        // We have to block on a semaphore because we don't want to continue
+        // processing other messages and risk this transaction committing until
+        // we know that the main app isn't going to be launched.
+//      let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
+        let payload = CallMessageRelay.wakeMainAppPayload()
 
-            let payload = CallMessageRelay.wakeMainAppPayload()
-
-            // This semaphore should only be signalled if we failed to wake the main app.
-            // If we successfully wake the main app, we should exit.
-            let sema = DispatchSemaphore(value: 0)
-
-            CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
-                if let error = error {
-                    owsFailDebug("Failed to notify main app of call message: \(error)")
-                    sema.signal()
-                } else {
-                    Logger.info("Successfully notified main app of call message. Quitting...")
-                    exit(0)
-                }
-            }
-            if sema.wait(timeout: .now() + .seconds(30)) == .timedOut {
-                owsFail("Timed out waiting for response from main app")
+        // This semaphore should only be signalled if we failed to wake the main app.
+        // If we successfully wake the main app, we should exit.
+        let sema = DispatchSemaphore(value: 0)
+        CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
+            if let error = error {
+                owsFailDebug("Failed to notify main app of call message: \(error)")
+                sema.signal()
+            } else {
+                Logger.info("Successfully notified main app of call message. Quitting...")
+                exit(0)
             }
         }
-
+        if sema.wait(timeout: .now() + .seconds(30)) == .timedOut {
+            owsFail("Timed out waiting for response from main app")
+        }
         return true
     }
 
@@ -114,6 +119,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         _ update: SSKProtoDataMessageGroupCallUpdate,
         for groupThread: TSGroupThread,
         serverReceivedTimestamp: UInt64) {
-        owsFailDebug("This should never be called, calls are handled externally")
+            // TODO: Let's fix this soon, but for now let's just ignore to unblock iOS 15
+            Logger.warn("Ignoring group call update message delivered to NSE")
     }
 }

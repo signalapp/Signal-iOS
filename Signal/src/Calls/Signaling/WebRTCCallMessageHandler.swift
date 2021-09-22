@@ -20,6 +20,10 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
+    public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
+        .process
+    }
+
     public func receivedOffer(
         _ offer: SSKProtoCallMessageOffer,
         from caller: SignalServiceAddress,
