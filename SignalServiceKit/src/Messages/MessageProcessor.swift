@@ -497,7 +497,9 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
-        guard let serviceTimestamp = serviceTimestamp else {
+        guard let serviceTimestamp = serviceTimestamp,
+              serviceTimestamp > 0,
+              !encryptedEnvelopeData.isEmpty else {
             owsFailDebug("Missing serviceTimestamp.")
             return .nonDuplicate
         }
