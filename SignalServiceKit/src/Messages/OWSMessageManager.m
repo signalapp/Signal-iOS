@@ -983,6 +983,18 @@ NS_ASSUME_NONNULL_BEGIN
         supportsMultiRing = callMessage.supportsMultiRing;
     }
 
+    if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
+        && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
+        // Handle urgent opaque call messages sync if we're already on the main thread.
+        [self.callMessageHandler receivedOpaque:callMessage.opaque
+                                     fromCaller:envelope.sourceAddress
+                                   sourceDevice:envelope.sourceDevice
+                        serverReceivedTimestamp:envelope.serverTimestamp
+                        serverDeliveryTimestamp:serverDeliveryTimestamp
+                                    transaction:transaction];
+        return;
+    }
+
     // By dispatching async, we introduce the possibility that these messages might be lost
     // if the app exits before this block is executed.  This is fine, since the call by
     // definition will end if the app exits.
@@ -1019,11 +1031,14 @@ NS_ASSUME_NONNULL_BEGIN
                                        fromCaller:envelope.sourceAddress
                                      sourceDevice:envelope.sourceDevice];
         } else if (callMessage.opaque) {
-            [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                         fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice
-                            serverReceivedTimestamp:envelope.serverTimestamp
-                            serverDeliveryTimestamp:serverDeliveryTimestamp];
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                [self.callMessageHandler receivedOpaque:callMessage.opaque
+                                             fromCaller:envelope.sourceAddress
+                                           sourceDevice:envelope.sourceDevice
+                                serverReceivedTimestamp:envelope.serverTimestamp
+                                serverDeliveryTimestamp:serverDeliveryTimestamp
+                                            transaction:transaction];
+            }];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }

@@ -92,7 +92,8 @@ public enum PushRegistrationError: Error {
     // MARK: PKPushRegistryDelegate - voIP Push Token
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
-        Logger.info("")
+        AssertIsOnMainThread()
+        Logger.info("isAppReady: \(AppReadiness.isAppReady)")
         owsAssertDebug(type == .voIP)
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             AssertIsOnMainThread()

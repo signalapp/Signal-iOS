@@ -134,6 +134,10 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         callId = callMessage.iceUpdate.firstObject.id;
     } else if (callMessage.opaque) {
         messageType = @"Opaque";
+        if (callMessage.opaque.hasUrgency) {
+            messageType = [NSString stringWithFormat:@"Opaque (%@)",
+                                    [self descriptionForCallMessageOpaqueUrgency:callMessage.opaque.unwrappedUrgency]];
+        }
         callId = 0;
     } else {
         OWSFailDebug(@"failure: unexpected call message type: %@", callMessage);
@@ -142,6 +146,18 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     }
 
     return [NSString stringWithFormat:@"type: %@, id: %llu", messageType, callId];
+}
+
+- (NSString *)descriptionForCallMessageOpaqueUrgency:(SSKProtoCallMessageOpaqueUrgency)urgency
+{
+    switch (urgency) {
+        case SSKProtoCallMessageOpaqueUrgencyDroppable:
+            return @"Droppable";
+        case SSKProtoCallMessageOpaqueUrgencyHandleImmediately:
+            return @"HandleImmediately";
+        default:
+            return @"Unknown";
+    }
 }
 
 /**

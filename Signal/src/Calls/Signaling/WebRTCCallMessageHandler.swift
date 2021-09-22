@@ -128,7 +128,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         from caller: SignalServiceAddress,
         sourceDevice: UInt32,
         serverReceivedTimestamp: UInt64,
-        serverDeliveryTimestamp: UInt64
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyReadTransaction
     ) {
         AssertIsOnMainThread()
         Logger.info("Received opaque call message from \(caller) on device \(sourceDevice)")
@@ -146,10 +147,12 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
         }
 
+        let localDeviceId = Self.tsAccountManager.storedDeviceId(with: transaction)
+
         self.callService.callManager.receivedCallMessage(
             senderUuid: senderUuid,
             senderDeviceId: sourceDevice,
-            localDeviceId: TSAccountManager.shared.storedDeviceId(),
+            localDeviceId: localDeviceId,
             message: message,
             messageAgeSec: messageAgeSec
         )

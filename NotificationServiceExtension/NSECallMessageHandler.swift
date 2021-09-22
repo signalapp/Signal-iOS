@@ -102,7 +102,8 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         from caller: SignalServiceAddress,
         sourceDevice: UInt32,
         serverReceivedTimestamp: UInt64,
-        serverDeliveryTimestamp: UInt64
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyReadTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
