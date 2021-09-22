@@ -255,4 +255,12 @@ extension WebRTCSession {
     public func unmute() {
         audioTrack.isEnabled = true
     }
+    
+    public func turnOffVideo() {
+        localVideoTrack.isEnabled = false
+    }
+    
+    public func turnOnVideo() {
+        localVideoTrack.isEnabled = true
+    }
 }

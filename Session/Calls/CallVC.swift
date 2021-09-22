@@ -236,7 +236,16 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     @objc private func minimize() {
-        
+        if (localVideoView.isHidden) {
+            webRTCSession.turnOnVideo()
+            localVideoView.isHidden = false
+            cameraManager.prepare()
+            cameraManager.start()
+        } else {
+            webRTCSession.turnOffVideo()
+            localVideoView.isHidden = true
+            cameraManager.stop()
+        }
     }
     
     @objc private func switchCamera() {
