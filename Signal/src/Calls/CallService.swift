@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import SignalServiceKit
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
@@ -378,6 +379,15 @@ public final class CallService: NSObject {
      * Clean up any existing call state and get ready to receive a new call.
      */
     func terminate(call: SignalCall) {
+        databaseStorage.read { transaction in
+            self.terminate(call: call, transaction: transaction)
+        }
+    }
+
+    /**
+     * Clean up any existing call state and get ready to receive a new call.
+     */
+    func terminate(call: SignalCall, transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
         Logger.info("call: \(call as Optional)")
 
@@ -402,7 +412,7 @@ public final class CallService: NSObject {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                peekCallAndUpdateThread(thread)
+                peekCallAndUpdateThread(thread, transaction: transaction)
             } else {
                 owsFailDebug("Invalid thread type")
             }
@@ -573,10 +583,17 @@ public final class CallService: NSObject {
     }
 
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
+        databaseStorage.read { transaction in
+            self.groupMemberInfo(for: thread, transaction: transaction)
+        }
+    }
+
+    private func groupMemberInfo(for thread: TSGroupThread,
+                                 transaction: SDSAnyReadTransaction) -> [GroupMemberInfo]? {
         AssertIsOnMainThread()
 
         // Make sure we're working with the latest group state.
-        databaseStorage.read { thread.anyReload(transaction: $0) }
+        thread.anyReload(transaction: transaction)
 
         guard let groupModel = thread.groupModel as? TSGroupModelV2,
               let groupV2Params = try? groupModel.groupV2Params() else {
@@ -712,11 +729,16 @@ extension CallService {
     @objc @available(swift, obsoleted: 1.0)
     func peekCallAndUpdateThread(_ thread: TSGroupThread) {
         AssertIsOnMainThread()
-        self.peekCallAndUpdateThread(thread)
+        databaseStorage.read { transaction in
+            self.peekCallAndUpdateThread(thread, transaction: transaction)
+        }
     }
 
     @objc
-    func peekCallAndUpdateThread(_ thread: TSGroupThread, expectedEraId: String? = nil, triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()) {
+    func peekCallAndUpdateThread(_ thread: TSGroupThread,
+                                 expectedEraId: String? = nil,
+                                 triggerEventTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp(),
+                                 transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
 
         guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
@@ -727,7 +749,7 @@ extension CallService {
             Logger.info("Ignoring peek request for the current call")
             return
         }
-        guard let memberInfo = self.groupMemberInfo(for: thread) else {
+        guard let memberInfo = self.groupMemberInfo(for: thread, transaction: transaction) else {
             owsFailDebug("Failed to fetch group member info to peek \(thread.uniqueId)")
             return
         }

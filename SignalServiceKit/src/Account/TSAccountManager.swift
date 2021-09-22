@@ -55,6 +55,11 @@ public extension TSAccountManager {
     }
 
     @objc
+    func isPrimaryDevice(transaction: SDSAnyReadTransaction) -> Bool {
+        storedDeviceId(with: transaction) == OWSDevicePrimaryDeviceId
+    }
+
+    @objc
     var storedServerUsername: String? {
         guard let serviceIdentifier = self.localAddress?.serviceIdentifier else {
             return nil

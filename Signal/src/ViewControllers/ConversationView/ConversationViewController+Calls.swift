@@ -110,7 +110,9 @@ public extension ConversationViewController {
         // presenting the view. peekCallAndUpdateThread() uses a write
         // transaction.
         DispatchQueue.main.async {
-            Self.callService.peekCallAndUpdateThread(groupThread)
+            Self.databaseStorage.read { transaction in
+                Self.callService.peekCallAndUpdateThread(groupThread, transaction: transaction)
+            }
         }
     }
 

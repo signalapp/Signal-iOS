@@ -1232,3 +1232,18 @@ CREATE
 WHERE
     recordType IS NOT 70
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageDecryptDeduplication" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"serviceTimestamp" INTEGER NOT NULL
+            ,"encryptedEnvelopeDataHash" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "MessageDecryptDeduplication_serviceTimestamp"
+        ON "MessageDecryptDeduplication"("serviceTimestamp"
+)
+;

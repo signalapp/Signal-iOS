@@ -405,29 +405,38 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     __block OWSRecipientIdentity *_Nullable result;
     [self readWithUnfairLock:^(SDSAnyReadTransaction *transaction) {
-        NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
-        OWSRecipientIdentity *_Nullable recipientIdentity;
-
-        if (accountId) {
-            recipientIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
-        }
-
-        if (recipientIdentity == nil) {
-            // trust on first use
-            return;
-        }
-
-        BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
-                                            address:address
-                                          direction:TSMessageDirectionOutgoing
-                                        transaction:transaction];
-        if (isTrusted) {
-            return;
-        } else {
-            result = recipientIdentity;
-        }
+        result = [self untrustedIdentityForSendingToAddress:address transaction:transaction];
     }];
+
     return result;
+}
+
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
+    OWSRecipientIdentity *_Nullable recipientIdentity;
+
+    if (accountId) {
+        recipientIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId transaction:transaction];
+    }
+
+    if (recipientIdentity == nil) {
+        // trust on first use
+        return nil;
+    }
+
+    BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
+                                        address:address
+                                      direction:TSMessageDirectionOutgoing
+                                    transaction:transaction];
+    if (isTrusted) {
+        return nil;
+    } else {
+        return recipientIdentity;
+    }
 }
 
 - (void)fireIdentityStateChangeNotificationAfterTransaction:(SDSAnyWriteTransaction *)transaction
