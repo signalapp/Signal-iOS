@@ -555,10 +555,13 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         }
 
         do {
+            // It is sufficient to cull by record count in batches.
+            // The batch size must be larger than our cull frequency to bound total record count.
             let cullCount: Int = min(Int(cullFrequency) * 2, Int(count2) - Int(maxRecordCount))
 
             Logger.info("Culling \(cullCount) records.")
 
+            // Find and delete the oldest N records.
             let records = try MessageDecryptDeduplicationRecord.order(GRDB.Column("serviceTimestamp"))
                 .limit(cullCount)
                 .fetchAll(transaction.unwrapGrdbRead.database)
@@ -567,7 +570,10 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             }
 
             let count3 = recordCount(transaction: transaction)
-            Logger.info("Culled by count: \(count2) -> \(count3)")
+            if count2 != count3 {
+                Logger.info("Culled by count: \(count2) -> \(count3)")
+            }
+            owsAssertDebug(count3 <= maxRecordCount)
         } catch {
             owsFailDebug("Error: \(error)")
         }
