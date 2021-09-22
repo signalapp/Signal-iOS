@@ -21,12 +21,15 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
     // MARK: - Call Handlers
 
     public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
-        // We should only handoff messages that are likely to cause a ring.
-        guard Date.ows_millisecondTimestamp() - envelope.timestamp < 5 * kMinuteInMs else {
+        // We can skip call messages that are significantly old. They won't trigger a ring anyway
+        let remoteTimestamp = envelope.serverTimestamp > 0 ? envelope.serverTimestamp : envelope.timestamp
+        let approxMessageAge = (Date.ows_millisecondTimestamp() - remoteTimestamp)
+        guard approxMessageAge < 5 * kMinuteInMs else {
             Logger.info("Discarding very old call message. No longer relevant.")
             return .ignore
         }
 
+        // Only offer messages and urgent opaque messages will trigger a ring.
         if callMessage.offer != nil {
             return .handoff
         } else if let opaqueMessage = callMessage.opaque, opaqueMessage.urgency == .handleImmediately {
@@ -43,7 +46,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) -> Bool {
+    ) {
         // There used to be a way to hand off decrypted messages to the main
         // app for processing, but it was prone to races. We have ideas to fix
         // this but in the meantime, we'll be more aggressive about blocking
@@ -72,10 +75,9 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 exit(0)
             }
         }
-        if sema.wait(timeout: .now() + .seconds(30)) == .timedOut {
+        if sema.wait(timeout: .now() + .seconds(15)) == .timedOut {
             owsFail("Timed out waiting for response from main app")
         }
-        return true
     }
 
     public func receivedOffer(

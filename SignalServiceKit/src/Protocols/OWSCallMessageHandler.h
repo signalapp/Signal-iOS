@@ -67,7 +67,7 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
                serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
         NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
 
-- (BOOL)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+- (void)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   plaintextData:(NSData *)plaintextData
                                 wasReceivedByUD:(BOOL)wasReceivedByUD
                         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp

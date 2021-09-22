@@ -71,13 +71,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"");
 }
 
-- (BOOL)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+- (void)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   plaintextData:(NSData *)plaintextData
                                 wasReceivedByUD:(BOOL)wasReceivedByUD
                         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
-    return NO;
+    OWSFailDebug(@"Can't handle externally.");
 }
 
 @end
