@@ -698,6 +698,9 @@ void uncaughtExceptionHandler(NSException *exception)
         // Avoid blocking app launch by putting all further possible DB access in async block
         dispatch_async(dispatch_get_main_queue(), ^{
             [Environment.shared.contactsManagerImpl fetchSystemContactsOnceIfAlreadyAuthorized];
+
+            // TODO: Should we run this immediately even if we would like to process
+            // already decrypted envelopes handed to us by the NSE?
             [self.messageFetcherJob runObjc];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
@@ -1092,6 +1095,7 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
         BOOL isSilentPush = [self handleSilentPushContent:userInfo];
         if (!isSilentPush) {
             [self.messageFetcherJob runObjc];

@@ -7,6 +7,10 @@ import SignalServiceKit
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
+    public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
+        .process
+    }
+
     public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, supportsMultiRing: Bool) {
         owsFailDebug("")
     }
@@ -35,7 +39,7 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         owsFailDebug("")
     }
 
-    public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) -> Bool {
-        return false
+    public func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, transaction: SDSAnyWriteTransaction) {
+        owsFailDebug("Can't handle externally.")
     }
 }
