@@ -428,15 +428,25 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSLogInfo(@"Discarding message with timestamp: %llu", envelope.timestamp);
                 return;
             }
-            if (![self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
-                                                                    plaintextData:plaintextData
-                                                                  wasReceivedByUD:wasReceivedByUD
-                                                          serverDeliveryTimestamp:serverDeliveryTimestamp
-                                                                      transaction:transaction]) {
-                [self handleIncomingEnvelope:envelope
-                             withCallMessage:contentProto.callMessage
-                     serverDeliveryTimestamp:serverDeliveryTimestamp
-                                 transaction:transaction];
+            OWSCallMessageAction action = [self.callMessageHandler actionForEnvelope:envelope
+                                                                         callMessage:contentProto.callMessage];
+            switch (action) {
+                case OWSCallMessageActionIgnore:
+                    OWSLogInfo(@"Ignoring call message with timestamp: %llu", envelope.timestamp);
+                    break;
+                case OWSCallMessageActionHandoff:
+                    [self.callMessageHandler externallyHandleCallMessageWithEnvelope:envelope
+                                                                       plaintextData:plaintextData
+                                                                     wasReceivedByUD:wasReceivedByUD
+                                                             serverDeliveryTimestamp:serverDeliveryTimestamp
+                                                                         transaction:transaction];
+                    break;
+                case OWSCallMessageActionProcess:
+                    [self handleIncomingEnvelope:envelope
+                                 withCallMessage:contentProto.callMessage
+                         serverDeliveryTimestamp:serverDeliveryTimestamp
+                                     transaction:transaction];
+                    break;
             }
         } else if (contentProto.typingMessage) {
             [self handleIncomingEnvelope:envelope

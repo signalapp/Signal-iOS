@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
+@class SSKProtoCallMessage;
 @class SSKProtoCallMessageAnswer;
 @class SSKProtoCallMessageBusy;
 @class SSKProtoCallMessageHangup;
@@ -16,7 +17,19 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSGroupThread;
 
+typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
+    // This message should not be processed
+    OWSCallMessageActionIgnore,
+    // Process the message by deferring to -externallyHandleCallMessage...
+    OWSCallMessageActionHandoff,
+    // Process the message normally
+    OWSCallMessageActionProcess,
+};
+
 @protocol OWSCallMessageHandler <NSObject>
+
+/// Informs caller of how the handler would like to handle this message
+- (OWSCallMessageAction)actionForEnvelope:(SSKProtoEnvelope *)envelope callMessage:(SSKProtoCallMessage *)message;
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
                  fromCaller:(SignalServiceAddress *)caller
@@ -54,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
                serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
         NS_SWIFT_NAME(receivedGroupCallUpdateMessage(_:for:serverReceivedTimestamp:));
 
-- (BOOL)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
+- (void)externallyHandleCallMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   plaintextData:(NSData *)plaintextData
                                 wasReceivedByUD:(BOOL)wasReceivedByUD
                         serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
