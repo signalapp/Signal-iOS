@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import GRDB
+import SignalCoreKit
 
 @objc
 public class MessageProcessor: NSObject {
@@ -467,6 +469,145 @@ private protocol PendingEnvelope {
 
 // MARK: -
 
+class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "MessageDecryptDeduplication"
+
+    var id: Int64?
+    let serviceTimestamp: UInt64
+    let encryptedEnvelopeData: Data
+
+    init(serviceTimestamp: UInt64, encryptedEnvelopeData: Data) {
+        self.serviceTimestamp = serviceTimestamp
+        self.encryptedEnvelopeData = encryptedEnvelopeData
+    }
+
+    func didInsert(with rowID: Int64, for column: String?) {
+        guard column == "id" else { return owsFailDebug("Expected id") }
+        id = rowID
+    }
+
+    public enum Outcome {
+        case nonDuplicate
+        case duplicate
+    }
+
+    public static func deduplicate(
+        serviceTimestamp: UInt64?,
+        encryptedEnvelopeData: Data,
+        transaction: SDSAnyWriteTransaction,
+        skipCull: Bool = false
+    ) -> Outcome {
+        guard let serviceTimestamp = serviceTimestamp,
+              serviceTimestamp > 0,
+              !encryptedEnvelopeData.isEmpty else {
+            owsFailDebug("Missing serviceTimestamp.")
+            return .nonDuplicate
+        }
+
+        do {
+            let records = try MessageDecryptDeduplicationRecord
+                .filter(Column("serviceTimestamp") == serviceTimestamp)
+                .fetchAll(transaction.unwrapGrdbRead.database)
+            for record in records {
+                if record.encryptedEnvelopeData == encryptedEnvelopeData {
+                    Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp)")
+                    return .duplicate
+                }
+            }
+
+            // No existing record found. Create a new one and insert it.
+            let record = MessageDecryptDeduplicationRecord(serviceTimestamp: serviceTimestamp,
+                                                           encryptedEnvelopeData: encryptedEnvelopeData)
+            try record.insert(transaction.unwrapGrdbWrite.database)
+
+            if !skipCull, shouldCull() {
+                cull(latestServiceTimestamp: serviceTimestamp, transaction: transaction)
+            }
+
+            return .nonDuplicate
+        } catch {
+            owsFailDebug("Error: \(error)")
+            // If anything goes wrong with our bookkeeping, we must
+            // proceed with message processing.
+            return .nonDuplicate
+        }
+    }
+
+    static let maxRecordCount: UInt = 1000
+    static let maxRecordAgeMs: UInt64 = 5 * kMinuteInMs
+
+    private static func cull(latestServiceTimestamp: UInt64,
+                             transaction: SDSAnyWriteTransaction) {
+        let count1 = recordCount(transaction: transaction)
+
+        // Client and service time might not match; use service timestamps for
+        // all record bookkeeping.
+        let recordExpirationTimestamp = latestServiceTimestamp - maxRecordAgeMs
+        let sql = """
+            DELETE FROM MessageDecryptDeduplication
+            WHERE serviceTimestamp < ?;
+        """
+        transaction.unwrapGrdbWrite.executeUpdate(sql: sql, arguments: [recordExpirationTimestamp])
+
+        let count2 = recordCount(transaction: transaction)
+        if count1 != count2 {
+            Logger.info("Culled by timestamp: \(count1) -> \(count2)")
+        }
+
+        guard count2 > maxRecordCount else {
+            return
+        }
+
+        do {
+            // It is sufficient to cull by record count in batches.
+            // The batch size must be larger than our cull frequency to bound total record count.
+            let cullCount: Int = min(Int(cullFrequency) * 2, Int(count2) - Int(maxRecordCount))
+
+            Logger.info("Culling \(cullCount) records.")
+
+            // Find and delete the oldest N records.
+            let records = try MessageDecryptDeduplicationRecord.order(GRDB.Column("serviceTimestamp"))
+                .limit(cullCount)
+                .fetchAll(transaction.unwrapGrdbRead.database)
+            for record in records {
+                try record.delete(transaction.unwrapGrdbWrite.database)
+            }
+
+            let count3 = recordCount(transaction: transaction)
+            if count2 != count3 {
+                Logger.info("Culled by count: \(count2) -> \(count3)")
+            }
+            owsAssertDebug(count3 <= maxRecordCount)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    public static func recordCount(transaction: SDSAnyReadTransaction) -> UInt {
+        MessageDecryptDeduplicationRecord.ows_fetchCount(transaction.unwrapGrdbRead.database)
+    }
+
+    private static let unfairLock = UnfairLock()
+    private static var counter: UInt64 = 0
+    static let cullFrequency: UInt64 = 100
+
+    private static func shouldCull() -> Bool {
+        unfairLock.withLock {
+            // Cull records once per N decryptions.
+            //
+            // NOTE: this always return true the first time that this
+            // method is called for a given launch of the process.
+            // We need to err on the side of culling too often to bound
+            // total record count.
+            let shouldCull = counter % cullFrequency == 0
+            counter += 1
+            return shouldCull
+        }
+    }
+}
+
+// MARK: -
+
 private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let encryptedEnvelopeData: Data
     let encryptedEnvelope: SSKProtoEnvelope
@@ -484,6 +625,17 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
+        let deduplicationOutcome = MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serverDeliveryTimestamp,
+                                                                                 encryptedEnvelopeData: encryptedEnvelopeData,
+                                                                                 transaction: transaction)
+        switch deduplicationOutcome {
+        case .nonDuplicate:
+            // Proceed with decryption.
+            break
+        case .duplicate:
+            return .failure(OWSGenericError("Ignoring duplicate envelope with timestamp: \(serverDeliveryTimestamp)."))
+        }
+
         let result = Self.messageDecrypter.decryptEnvelope(
             encryptedEnvelope,
             envelopeData: encryptedEnvelopeData,
