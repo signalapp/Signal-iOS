@@ -1453,7 +1453,7 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                     table.column("serviceTimestamp", .integer)
                         .notNull()
-                    table.column("encryptedEnvelopeData", .blob)
+                    table.column("encryptedEnvelopeDataHash", .blob)
                         .notNull()
                 }
 
