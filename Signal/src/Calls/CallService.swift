@@ -378,7 +378,16 @@ public final class CallService: NSObject {
     /**
      * Clean up any existing call state and get ready to receive a new call.
      */
-    func terminate(call: SignalCall, transaction: SDSAnyReadTransaction? = nil) {
+    func terminate(call: SignalCall) {
+        databaseStorage.read { transaction in
+            self.terminate(call: call, transaction: transaction)
+        }
+    }
+
+    /**
+     * Clean up any existing call state and get ready to receive a new call.
+     */
+    func terminate(call: SignalCall, transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
         Logger.info("call: \(call as Optional)")
 
@@ -403,13 +412,7 @@ public final class CallService: NSObject {
 
             // Kick off a peek now that we've disconnected to get an updated participant state.
             if let thread = call.thread as? TSGroupThread {
-                if let transaction = transaction {
-                    peekCallAndUpdateThread(thread, transaction: transaction)
-                } else {
-                    databaseStorage.read { transaction in
-                        peekCallAndUpdateThread(thread, transaction: transaction)
-                    }
-                }
+                peekCallAndUpdateThread(thread, transaction: transaction)
             } else {
                 owsFailDebug("Invalid thread type")
             }
