@@ -2,6 +2,7 @@ import WebRTC
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
+import UIKit
 
 final class CallVC : UIViewController, WebRTCSessionDelegate {
     let sessionID: String
@@ -152,6 +153,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     func setUpViewHierarchy() {
+        // Background
+        let background = getBackgroudView()
+        view.addSubview(background)
+        background.autoPinEdgesToSuperviewEdges()
         // Call info label
         view.addSubview(callInfoLabel)
         callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -196,6 +201,30 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         switchAudioButton.translatesAutoresizingMaskIntoConstraints = false
         switchAudioButton.center(.vertical, in: hangUpButton)
         switchAudioButton.pin(.left, to: .right, of: hangUpButton, withInset: Values.veryLargeSpacing)
+    }
+    
+    private func getBackgroudView() -> UIView {
+        let background = UIView()
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 150
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: sessionID) {
+            imageView.image = profilePicture
+        } else {
+            let displayName = Storage.shared.getContact(with: sessionID)?.name ?? sessionID
+            imageView.image = Identicon.generatePlaceholderIcon(seed: sessionID, text: displayName, size: 300)
+        }
+        background.addSubview(imageView)
+        imageView.set(.width, to: 300)
+        imageView.set(.height, to: 300)
+        imageView.center(in: background)
+        let blurView = UIView()
+        blurView.alpha = 0.5
+        blurView.backgroundColor = .black
+        background.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
+        return background
     }
     
     override func viewDidAppear(_ animated: Bool) {
