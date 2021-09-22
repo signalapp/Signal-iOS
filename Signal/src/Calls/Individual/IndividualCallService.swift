@@ -265,8 +265,7 @@ import SignalMessaging
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            // TODO:
-            callService.terminate(call: newCall)
+            callService.terminate(call: newCall, transaction: transaction)
 
             return
         }
@@ -299,8 +298,7 @@ import SignalMessaging
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            // TODO:
-            callService.terminate(call: newCall)
+            callService.terminate(call: newCall, transaction: transaction)
 
             return
         }
@@ -318,8 +316,7 @@ import SignalMessaging
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            // TODO:
-            callService.terminate(call: newCall)
+            callService.terminate(call: newCall, transaction: transaction)
 
             return
         }
@@ -353,8 +350,7 @@ import SignalMessaging
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            // TODO:
-            callService.terminate(call: newCall)
+            callService.terminate(call: newCall, transaction: transaction)
 
             return
         }
@@ -374,8 +370,8 @@ import SignalMessaging
                 return
             }
 
-            // TODO:
-            self.handleFailedCall(failedCall: newCall, error: SignalCall.CallError.timeout(description: "background task time ran out before call connected"))
+            let error = SignalCall.CallError.timeout(description: "background task time ran out before call connected")
+            self.handleFailedCall(failedCall: newCall, error: error)
         })
 
         newCall.individualCall.backgroundTask = backgroundTask
