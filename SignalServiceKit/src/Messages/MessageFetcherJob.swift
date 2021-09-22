@@ -339,7 +339,7 @@ public class MessageFetcherJob: NSObject {
             let queuedContentCountNew = Self.messageProcessor.queuedContentCount
 
             if DebugFlags.internalLogging {
-                Logger.info("messageProcessor.queuedContentCount: \(queuedContentCountOld) -> \(queuedContentCountNew)")
+                Logger.info("messageProcessor.queuedContentCount: \(queuedContentCountOld) + \(envelopeJobs.count) -> \(queuedContentCountNew)")
             }
 
             if hasMore {

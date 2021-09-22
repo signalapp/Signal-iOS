@@ -41,7 +41,7 @@ open class OWSDevicesService: NSObject {
         }.catch(on: .global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
 
-            NotificationCenter.default.postNotificationNameAsync(Self.deviceListUpdateFailed, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(Self.deviceListUpdateFailed, object: error)
         }
     }
 

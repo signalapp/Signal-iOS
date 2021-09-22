@@ -115,6 +115,9 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
             owsFailDebug("Missing error.")
             return
         }
+        if IsNetworkConnectivityFailure(error) {
+            return
+        }
 
         showUpdateFailureAlert(error: error)
     }
