@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalServiceKit
 
 class GroupCallErrorView: UIView {
 
@@ -64,7 +65,7 @@ class GroupCallErrorView: UIView {
         button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         return button
     }()
-    
+
     private let miniButton: UIButton = {
         let button = UIButton()
         button.contentVerticalAlignment = .fill
@@ -79,7 +80,7 @@ class GroupCallErrorView: UIView {
         let stackView = UIStackView(arrangedSubviews: [
             iconView,
             label,
-            button,
+            button
         ])
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -110,11 +111,21 @@ class GroupCallErrorView: UIView {
     }
 
     override var bounds: CGRect {
-        didSet { configure() }
+        didSet {
+            let didChange = bounds != oldValue
+            if didChange {
+                configure()
+            }
+        }
     }
 
     override var frame: CGRect {
-        didSet { configure() }
+        didSet {
+            let didChange = frame != oldValue
+            if didChange {
+                configure()
+            }
+        }
     }
 
     private func configure() {

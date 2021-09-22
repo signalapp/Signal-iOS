@@ -578,19 +578,19 @@ public final class CallService: NSObject {
             call.groupCall.updateGroupMembers(members: memberInfo)
         }
     }
-    
+
     private func groupMemberInfo(for thread: TSGroupThread) -> [GroupMemberInfo]? {
         databaseStorage.read { transaction in
             self.groupMemberInfo(for: thread, transaction: transaction)
         }
     }
-    
+
     private func groupMemberInfo(for thread: TSGroupThread,
                                  transaction: SDSAnyReadTransaction) -> [GroupMemberInfo]? {
         AssertIsOnMainThread()
 
         // Make sure we're working with the latest group state.
-        thread.anyReload(transaction: $0) }
+        thread.anyReload(transaction: transaction)
 
         guard let groupModel = thread.groupModel as? TSGroupModelV2,
               let groupV2Params = try? groupModel.groupV2Params() else {

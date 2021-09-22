@@ -398,8 +398,9 @@ import SignalMessaging
                                           senderIdentityKey: identityKeys.contactIdentityKey,
                                           receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
-            // TODO:
-            handleFailedCall(failedCall: newCall, error: error)
+            DispatchQueue.main.async {
+                self.handleFailedCall(failedCall: newCall, error: error)
+            }
         }
     }
 
