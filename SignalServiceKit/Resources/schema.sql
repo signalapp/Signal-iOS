@@ -1238,7 +1238,7 @@ CREATE
         IF NOT EXISTS "MessageDecryptDeduplication" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"serviceTimestamp" INTEGER NOT NULL
-            ,"encryptedEnvelopeData" BLOB NOT NULL
+            ,"encryptedEnvelopeDataHash" BLOB NOT NULL
         )
 ;
 
