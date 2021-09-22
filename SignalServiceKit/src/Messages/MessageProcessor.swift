@@ -525,6 +525,8 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             return .nonDuplicate
         } catch {
             owsFailDebug("Error: \(error)")
+            // If anything goes wrong with our bookkeeping, we must
+            // proceed with message processing.
             return .nonDuplicate
         }
     }
@@ -532,8 +534,8 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     static let maxRecordCount: UInt = 1000
     static let maxRecordAgeMs: UInt64 = 5 * kMinuteInMs
 
-    public static func cull(latestServiceTimestamp: UInt64,
-                            transaction: SDSAnyWriteTransaction) {
+    private static func cull(latestServiceTimestamp: UInt64,
+                             transaction: SDSAnyWriteTransaction) {
         let count1 = recordCount(transaction: transaction)
 
         // Client and service time might not match; use service timestamps for
@@ -589,7 +591,12 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
 
     private static func shouldCull() -> Bool {
         unfairLock.withLock {
-            // Cull records 1/N decryptions.
+            // Cull records once per N decryptions.
+            //
+            // NOTE: this always return true the first time that this
+            // method is called for a given launch of the process.
+            // We need to err on the side of culling too often to bound
+            // total record count.
             let shouldCull = counter % cullFrequency == 0
             counter += 1
             return shouldCull
