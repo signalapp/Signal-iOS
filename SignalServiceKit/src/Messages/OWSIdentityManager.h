@@ -69,6 +69,8 @@ typedef NS_ENUM(NSInteger, TSMessageDirection) {
  *          else returns the untrusted recipient.
  */
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address;
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 // This method can be called from any thread.
 - (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified

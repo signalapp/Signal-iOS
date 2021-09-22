@@ -110,6 +110,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 /// Onboarding state
 - (BOOL)isOnboarded;
+- (BOOL)isOnboardedWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isDiscoverableByPhoneNumber;

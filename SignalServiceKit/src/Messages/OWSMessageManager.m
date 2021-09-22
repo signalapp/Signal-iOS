@@ -999,6 +999,7 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
     if (NSThread.isMainThread && callMessage.offer) {
+        OWSLogInfo(@"Handling 'offer' call message offer sync.");
         [self.callMessageHandler receivedOffer:callMessage.offer
                                     fromCaller:envelope.sourceAddress
                                   sourceDevice:envelope.sourceDevice
@@ -1007,8 +1008,10 @@ NS_ASSUME_NONNULL_BEGIN
                        serverDeliveryTimestamp:serverDeliveryTimestamp
                              supportsMultiRing:supportsMultiRing
                                    transaction:transaction];
+        return;
     } else if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
         && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
+        OWSLogInfo(@"Handling 'urgent opaque' call message offer sync.");
         [self.callMessageHandler receivedOpaque:callMessage.opaque
                                      fromCaller:envelope.sourceAddress
                                    sourceDevice:envelope.sourceDevice

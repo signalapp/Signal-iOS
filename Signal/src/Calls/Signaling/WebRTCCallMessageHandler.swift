@@ -56,7 +56,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             callType: callType,
-            supportsMultiRing: supportsMultiRing
+            supportsMultiRing: supportsMultiRing,
+            transaction: transaction
         )
     }
 

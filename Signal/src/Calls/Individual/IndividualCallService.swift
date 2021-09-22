@@ -184,16 +184,15 @@ import SignalMessaging
 
     // MARK: - Signaling Functions
 
-    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
-        return databaseStorage.read { transaction in
-            // IFF one of the following things is true, we can handle inbound call offers
-            // * The thread is in our profile whitelist
-            // * The thread belongs to someone in our system contacts
-            // * The thread existed before messages requests
-            return self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+    private func allowsInboundCallsInThread(_ thread: TSContactThread,
+                                            transaction: SDSAnyReadTransaction) -> Bool {
+        // IFF one of the following things is true, we can handle inbound call offers
+        // * The thread is in our profile whitelist
+        // * The thread belongs to someone in our system contacts
+        // * The thread existed before messages requests
+        return (self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
                 || self.contactsManager.isSystemContact(address: thread.contactAddress)
-                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
-        }
+                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead))
     }
 
     private struct CallIdentityKeys {
@@ -202,17 +201,21 @@ import SignalMessaging
     }
 
     private func getIdentityKeys(thread: TSContactThread) -> CallIdentityKeys? {
-        return databaseStorage.read { transaction -> CallIdentityKeys? in
-            guard let localIdentityKey = self.identityManager.identityKeyPair(with: transaction)?.publicKey else {
-                owsFailDebug("missing localIdentityKey")
-                return nil
-            }
-            guard let contactIdentityKey = self.identityManager.identityKey(for: thread.contactAddress, transaction: transaction) else {
-                owsFailDebug("missing contactIdentityKey")
-                return nil
-            }
-            return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
+        databaseStorage.read { transaction in
+            self.getIdentityKeys(thread: thread, transaction: transaction)
         }
+    }
+
+    private func getIdentityKeys(thread: TSContactThread, transaction: SDSAnyReadTransaction) -> CallIdentityKeys? {
+        guard let localIdentityKey = self.identityManager.identityKeyPair(with: transaction)?.publicKey else {
+            owsFailDebug("missing localIdentityKey")
+            return nil
+        }
+        guard let contactIdentityKey = self.identityManager.identityKey(for: thread.contactAddress, transaction: transaction) else {
+            owsFailDebug("missing contactIdentityKey")
+            return nil
+        }
+        return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
     }
 
     /**
@@ -228,7 +231,8 @@ import SignalMessaging
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         callType: SSKProtoCallMessageOfferType,
-        supportsMultiRing: Bool
+        supportsMultiRing: Bool,
+        transaction: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
@@ -248,7 +252,7 @@ import SignalMessaging
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.individualCall.localId)")
 
-        guard tsAccountManager.isOnboarded() else {
+        guard tsAccountManager.isOnboarded(with: transaction) else {
             Logger.warn("user is not onboarded, skipping call.")
             let callRecord = TSCall(
                 callType: .incomingMissed,
@@ -258,20 +262,21 @@ import SignalMessaging
             )
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
+            callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
+            // TODO:
             callService.terminate(call: newCall)
 
             return
         }
 
-        if let untrustedIdentity = self.identityManager.untrustedIdentityForSending(to: thread.contactAddress) {
+        if let untrustedIdentity = self.identityManager.untrustedIdentityForSending(to: thread.contactAddress,
+                                                                                    transaction: transaction) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
+            let callerName = self.contactsManager.displayName(for: thread.contactAddress,
+                                                                 transaction: transaction)
 
             switch untrustedIdentity.verificationState {
             case .verified:
@@ -291,17 +296,16 @@ import SignalMessaging
             )
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
+            callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
+            // TODO:
             callService.terminate(call: newCall)
 
             return
         }
 
-        guard let identityKeys = getIdentityKeys(thread: thread) else {
+        guard let identityKeys = getIdentityKeys(thread: thread, transaction: transaction) else {
             owsFailDebug("missing identity keys, skipping call.")
             let callRecord = TSCall(
                 callType: .incomingMissed,
@@ -311,27 +315,27 @@ import SignalMessaging
             )
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
-            databaseStorage.write { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
+            callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
+            // TODO:
             callService.terminate(call: newCall)
 
             return
         }
 
-        guard allowsInboundCallsInThread(thread) else {
+        guard allowsInboundCallsInThread(thread, transaction: transaction) else {
             Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
 
             // Send the need permission message to the caller, so they know why we rejected their call.
+            let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
             callManager(
                 callManager,
                 shouldSendHangup: callId,
                 call: newCall,
                 destinationDeviceId: sourceDevice,
                 hangupType: .needPermission,
-                deviceId: tsAccountManager.storedDeviceId(),
+                deviceId: localDeviceId,
                 useLegacyHangupMessage: true
             )
 
@@ -346,11 +350,10 @@ import SignalMessaging
             )
             assert(newCall.individualCall.callRecord == nil)
             newCall.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
+            callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
+            // TODO:
             callService.terminate(call: newCall)
 
             return
@@ -371,6 +374,7 @@ import SignalMessaging
                 return
             }
 
+            // TODO:
             self.handleFailedCall(failedCall: newCall, error: SignalCall.CallError.timeout(description: "background task time ran out before call connected"))
         })
 
@@ -382,8 +386,8 @@ import SignalMessaging
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
-        let localDeviceId = tsAccountManager.storedDeviceId()
-        let isPrimaryDevice = tsAccountManager.isPrimaryDevice
+        let localDeviceId = tsAccountManager.storedDeviceId(with: transaction)
+        let isPrimaryDevice = tsAccountManager.isPrimaryDevice(transaction: transaction)
 
         do {
             try callManager.receivedOffer(call: newCall,
@@ -398,6 +402,7 @@ import SignalMessaging
                                           senderIdentityKey: identityKeys.contactIdentityKey,
                                           receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
+            // TODO:
             handleFailedCall(failedCall: newCall, error: error)
         }
     }
