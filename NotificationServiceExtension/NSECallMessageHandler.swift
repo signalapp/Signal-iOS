@@ -24,6 +24,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         // We should only handoff messages that are likely to cause a ring.
         guard Date.ows_millisecondTimestamp() - envelope.timestamp < 5 * kMinuteInMs else {
             Logger.info("Discarding very old call message. No longer relevant.")
+            return .ignore
         }
 
         if callMessage.offer != nil {
