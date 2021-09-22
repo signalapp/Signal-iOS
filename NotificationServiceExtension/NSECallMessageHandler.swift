@@ -22,10 +22,11 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
         // We can skip call messages that are significantly old. They won't trigger a ring anyway
+        let localTimestamp = Date.ows_millisecondTimestamp()
         let remoteTimestamp = envelope.serverTimestamp > 0 ? envelope.serverTimestamp : envelope.timestamp
-        let approxMessageAge = (Date.ows_millisecondTimestamp() - remoteTimestamp)
+        let approxMessageAge = (localTimestamp - remoteTimestamp)
         guard approxMessageAge < 5 * kMinuteInMs else {
-            Logger.info("Discarding very old call message. No longer relevant.")
+            Logger.info("Discarding very old call message. No longer relevant. Local: \(localTimestamp). Remote: \(remoteTimestamp)")
             return .ignore
         }
 
