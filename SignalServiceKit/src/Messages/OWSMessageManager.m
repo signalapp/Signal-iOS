@@ -983,9 +983,32 @@ NS_ASSUME_NONNULL_BEGIN
         supportsMultiRing = callMessage.supportsMultiRing;
     }
 
-    if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
+    // Any call message which will result in the posting a new incoming call to CallKit
+    // must be handled sync if we're already on the main thread.  This includes "offer"
+    // and "urgent opaque" call messages.  Otherwise we violate this constraint:
+    //
+    // (PushKit) Apps receving VoIP pushes must post an incoming call via CallKit in the same run loop as
+    // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
+    //
+    // Which can result in the main app being terminated with 0xBAADCA11:
+    //
+    // The exception code "0xbaadca11" indicates that your app was killed for failing to
+    // report a CallKit call in response to a PushKit notification.
+    //
+    // Or this form of crash:
+    //
+    // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
+    if (NSThread.isMainThread && callMessage.offer) {
+        [self.callMessageHandler receivedOffer:callMessage.offer
+                                    fromCaller:envelope.sourceAddress
+                                  sourceDevice:envelope.sourceDevice
+                               sentAtTimestamp:envelope.timestamp
+                       serverReceivedTimestamp:envelope.serverTimestamp
+                       serverDeliveryTimestamp:serverDeliveryTimestamp
+                             supportsMultiRing:supportsMultiRing
+                                   transaction:transaction];
+    } else if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
         && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
-        // Handle urgent opaque call messages sync if we're already on the main thread.
         [self.callMessageHandler receivedOpaque:callMessage.opaque
                                      fromCaller:envelope.sourceAddress
                                    sourceDevice:envelope.sourceDevice
@@ -1000,13 +1023,16 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer
-                                        fromCaller:envelope.sourceAddress
-                                      sourceDevice:envelope.sourceDevice
-                                   sentAtTimestamp:envelope.timestamp
-                           serverReceivedTimestamp:envelope.serverTimestamp
-                           serverDeliveryTimestamp:serverDeliveryTimestamp
-                                 supportsMultiRing:supportsMultiRing];
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [self.callMessageHandler receivedOffer:callMessage.offer
+                                            fromCaller:envelope.sourceAddress
+                                          sourceDevice:envelope.sourceDevice
+                                       sentAtTimestamp:envelope.timestamp
+                               serverReceivedTimestamp:envelope.serverTimestamp
+                               serverDeliveryTimestamp:serverDeliveryTimestamp
+                                     supportsMultiRing:supportsMultiRing
+                                           transaction:transaction];
+            });
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
                                          fromCaller:envelope.sourceAddress

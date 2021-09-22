@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SSKProtoCallMessage;
 @class SSKProtoCallMessageAnswer;
@@ -37,7 +38,9 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
             sentAtTimestamp:(uint64_t)sentAtTimestamp
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
-          supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:serverReceivedTimestamp:serverDeliveryTimestamp:supportsMultiRing:));
+          supportsMultiRing:(BOOL)supportsMultiRing
+                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:serverReceivedTimestamp:serverDeliveryTimestamp:supportsMultiRing:transaction:));
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller

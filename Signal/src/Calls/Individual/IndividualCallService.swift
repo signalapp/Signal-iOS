@@ -386,7 +386,17 @@ import SignalMessaging
         let isPrimaryDevice = tsAccountManager.isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, opaque: opaque, messageAgeSec: messageAgeSec, callMediaType: newCall.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
+            try callManager.receivedOffer(call: newCall,
+                                          sourceDevice: sourceDevice,
+                                          callId: callId,
+                                          opaque: opaque,
+                                          messageAgeSec: messageAgeSec,
+                                          callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
+                                          localDevice: localDeviceId,
+                                          remoteSupportsMultiRing: supportsMultiRing,
+                                          isLocalDevicePrimary: isPrimaryDevice,
+                                          senderIdentityKey: identityKeys.contactIdentityKey,
+                                          receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }

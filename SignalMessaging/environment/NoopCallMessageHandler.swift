@@ -11,7 +11,8 @@ public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
         .process
     }
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, supportsMultiRing: Bool) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice device: UInt32, sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, supportsMultiRing: Bool,
+                              transaction: SDSAnyWriteTransaction) {
         owsFailDebug("")
     }
 

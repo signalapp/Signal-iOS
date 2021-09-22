@@ -31,7 +31,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool
+        supportsMultiRing: Bool,
+        transaction: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
 
@@ -43,7 +44,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             callType = .offerAudioCall
         }
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: caller,
+                                                       transaction: transaction)
         self.callService.individualCallService.handleReceivedOffer(
             thread: thread,
             callId: offer.id,
