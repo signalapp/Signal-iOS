@@ -474,11 +474,11 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
 
     var id: Int64?
     let serviceTimestamp: UInt64
-    let encryptedEnvelopeData: Data
+    let encryptedEnvelopeDataHash: Data
 
-    init(serviceTimestamp: UInt64, encryptedEnvelopeData: Data) {
+    init(serviceTimestamp: UInt64, encryptedEnvelopeDataHash: Data) {
         self.serviceTimestamp = serviceTimestamp
-        self.encryptedEnvelopeData = encryptedEnvelopeData
+        self.encryptedEnvelopeDataHash = encryptedEnvelopeDataHash
     }
 
     func didInsert(with rowID: Int64, for column: String?) {
@@ -499,7 +499,8 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     ) -> Outcome {
         guard let serviceTimestamp = serviceTimestamp,
               serviceTimestamp > 0,
-              !encryptedEnvelopeData.isEmpty else {
+              !encryptedEnvelopeData.isEmpty,
+              let encryptedEnvelopeDataHash = Cryptography.computeSHA256Digest(encryptedEnvelopeData) else {
             owsFailDebug("Missing serviceTimestamp.")
             return .nonDuplicate
         }
@@ -509,7 +510,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 .filter(Column("serviceTimestamp") == serviceTimestamp)
                 .fetchAll(transaction.unwrapGrdbRead.database)
             for record in records {
-                if record.encryptedEnvelopeData == encryptedEnvelopeData {
+                if record.encryptedEnvelopeDataHash == encryptedEnvelopeDataHash {
                     Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp)")
                     return .duplicate
                 }
@@ -517,7 +518,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
 
             // No existing record found. Create a new one and insert it.
             let record = MessageDecryptDeduplicationRecord(serviceTimestamp: serviceTimestamp,
-                                                           encryptedEnvelopeData: encryptedEnvelopeData)
+                                                           encryptedEnvelopeDataHash: encryptedEnvelopeDataHash)
             try record.insert(transaction.unwrapGrdbWrite.database)
 
             if !skipCull, shouldCull() {
