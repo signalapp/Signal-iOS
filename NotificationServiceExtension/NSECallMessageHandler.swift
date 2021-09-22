@@ -48,36 +48,24 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         serverDeliveryTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) {
-        // There used to be a way to hand off decrypted messages to the main
-        // app for processing, but it was prone to races. We have ideas to fix
-        // this but in the meantime, we'll be more aggressive about blocking
-        // and handoff.
-        //
-        // If we successfully wake the main app, we should kill the NSE mid-
-        // transaction without acking to the service. This will roll back our
-        // sessions to their prior state and the service will re-deliver
-        // the encrypted message to the main app.
-        //
-        // We have to block on a semaphore because we don't want to continue
-        // processing other messages and risk this transaction committing until
-        // we know that the main app isn't going to be launched.
-//      let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
-        let payload = CallMessageRelay.wakeMainAppPayload()
+        do {
+            let payload = try CallMessageRelay.enqueueCallMessageForMainApp(
+                envelope: envelope,
+                plaintextData: plaintextData,
+                wasReceivedByUD: wasReceivedByUD,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                transaction: transaction
+            )
 
-        // This semaphore should only be signalled if we failed to wake the main app.
-        // If we successfully wake the main app, we should exit.
-        let sema = DispatchSemaphore(value: 0)
-        CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
-            if let error = error {
-                owsFailDebug("Failed to notify main app of call message: \(error)")
-                sema.signal()
-            } else {
-                Logger.info("Successfully notified main app of call message. Quitting...")
-                exit(0)
+            CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
+                if let error = error {
+                    owsFailDebug("Failed to notify main app of call message: \(error)")
+                } else {
+                    Logger.info("Successfully notified main app of call message.")
+                }
             }
-        }
-        if sema.wait(timeout: .now() + .seconds(15)) == .timedOut {
-            owsFail("Timed out waiting for response from main app")
+        } catch {
+            owsFailDebug("Failed to create relay voip payload for call message \(error)")
         }
     }
 

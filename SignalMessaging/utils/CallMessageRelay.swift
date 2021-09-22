@@ -15,10 +15,6 @@ public class CallMessageRelay: NSObject {
 
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
-
-        // Until we have a more reliable, race-free handoff from NSE to the main app,
-        // we should not expect anything in the pendingCallMessageStore and instead
-        // just let the MessageFetcherJob() re-decrypt and process the message.
         databaseStorage.asyncWrite { transaction in
             defer { pendingCallMessageStore.removeAll(transaction: transaction) }
             let pendingPayloads: [Payload]
@@ -48,12 +44,6 @@ public class CallMessageRelay: NSObject {
         }
 
         return true
-    }
-
-    // Empty wake payload to work around NSE/App launch races
-    // To be removed once we have a fix.
-    public static func wakeMainAppPayload() -> [String: Any] {
-        [callMessagePayloadKey: true]
     }
 
     public static func enqueueCallMessageForMainApp(
