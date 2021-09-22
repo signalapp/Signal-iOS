@@ -15,7 +15,7 @@ public class CallMessageRelay: NSObject {
 
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
-        databaseStorage.asyncWrite { transaction in
+        databaseStorage.write { transaction in
             defer { pendingCallMessageStore.removeAll(transaction: transaction) }
             let pendingPayloads: [Payload]
 

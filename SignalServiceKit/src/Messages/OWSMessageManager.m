@@ -983,18 +983,59 @@ NS_ASSUME_NONNULL_BEGIN
         supportsMultiRing = callMessage.supportsMultiRing;
     }
 
+    // Any call message which will result in the posting a new incoming call to CallKit
+    // must be handled sync if we're already on the main thread.  This includes "offer"
+    // and "urgent opaque" call messages.  Otherwise we violate this constraint:
+    //
+    // (PushKit) Apps receving VoIP pushes must post an incoming call via CallKit in the same run loop as
+    // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
+    //
+    // Which can result in the main app being terminated with 0xBAADCA11:
+    //
+    // The exception code "0xbaadca11" indicates that your app was killed for failing to
+    // report a CallKit call in response to a PushKit notification.
+    //
+    // Or this form of crash:
+    //
+    // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
+    if (NSThread.isMainThread && callMessage.offer) {
+        OWSLogInfo(@"Handling 'offer' call message offer sync.");
+        [self.callMessageHandler receivedOffer:callMessage.offer
+                                    fromCaller:envelope.sourceAddress
+                                  sourceDevice:envelope.sourceDevice
+                               sentAtTimestamp:envelope.timestamp
+                       serverReceivedTimestamp:envelope.serverTimestamp
+                       serverDeliveryTimestamp:serverDeliveryTimestamp
+                             supportsMultiRing:supportsMultiRing
+                                   transaction:transaction];
+        return;
+    } else if (NSThread.isMainThread && callMessage.opaque && callMessage.opaque.hasUrgency
+        && callMessage.opaque.unwrappedUrgency == SSKProtoCallMessageOpaqueUrgencyHandleImmediately) {
+        OWSLogInfo(@"Handling 'urgent opaque' call message offer sync.");
+        [self.callMessageHandler receivedOpaque:callMessage.opaque
+                                     fromCaller:envelope.sourceAddress
+                                   sourceDevice:envelope.sourceDevice
+                        serverReceivedTimestamp:envelope.serverTimestamp
+                        serverDeliveryTimestamp:serverDeliveryTimestamp
+                                    transaction:transaction];
+        return;
+    }
+
     // By dispatching async, we introduce the possibility that these messages might be lost
     // if the app exits before this block is executed.  This is fine, since the call by
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer
-                                        fromCaller:envelope.sourceAddress
-                                      sourceDevice:envelope.sourceDevice
-                                   sentAtTimestamp:envelope.timestamp
-                           serverReceivedTimestamp:envelope.serverTimestamp
-                           serverDeliveryTimestamp:serverDeliveryTimestamp
-                                 supportsMultiRing:supportsMultiRing];
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [self.callMessageHandler receivedOffer:callMessage.offer
+                                            fromCaller:envelope.sourceAddress
+                                          sourceDevice:envelope.sourceDevice
+                                       sentAtTimestamp:envelope.timestamp
+                               serverReceivedTimestamp:envelope.serverTimestamp
+                               serverDeliveryTimestamp:serverDeliveryTimestamp
+                                     supportsMultiRing:supportsMultiRing
+                                           transaction:transaction];
+            });
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
                                          fromCaller:envelope.sourceAddress
@@ -1019,11 +1060,14 @@ NS_ASSUME_NONNULL_BEGIN
                                        fromCaller:envelope.sourceAddress
                                      sourceDevice:envelope.sourceDevice];
         } else if (callMessage.opaque) {
-            [self.callMessageHandler receivedOpaque:callMessage.opaque
-                                         fromCaller:envelope.sourceAddress
-                                       sourceDevice:envelope.sourceDevice
-                            serverReceivedTimestamp:envelope.serverTimestamp
-                            serverDeliveryTimestamp:serverDeliveryTimestamp];
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                [self.callMessageHandler receivedOpaque:callMessage.opaque
+                                             fromCaller:envelope.sourceAddress
+                                           sourceDevice:envelope.sourceDevice
+                                serverReceivedTimestamp:envelope.serverTimestamp
+                                serverDeliveryTimestamp:serverDeliveryTimestamp
+                                            transaction:transaction];
+            }];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }

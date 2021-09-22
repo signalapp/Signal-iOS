@@ -93,11 +93,21 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     }
 
     override var bounds: CGRect {
-        didSet { updateDimensions() }
+        didSet {
+            let didChange = bounds != oldValue
+            if didChange {
+                updateDimensions()
+            }
+        }
     }
 
     override var frame: CGRect {
-        didSet { updateDimensions() }
+        didSet {
+            let didChange = frame != oldValue
+            if didChange {
+                updateDimensions()
+            }
+        }
     }
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
@@ -257,11 +267,21 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     }
 
     override var bounds: CGRect {
-        didSet { updateDimensions() }
+        didSet {
+            let didChange = bounds != oldValue
+            if didChange {
+                updateDimensions()
+            }
+        }
     }
 
     override var frame: CGRect {
-        didSet { updateDimensions() }
+        didSet {
+            let didChange = frame != oldValue
+            if didChange {
+                updateDimensions()
+            }
+        }
     }
 
     var avatarDiameter: UInt {

@@ -76,7 +76,8 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool
+        supportsMultiRing: Bool,
+        transaction: SDSAnyWriteTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
@@ -102,7 +103,8 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         from caller: SignalServiceAddress,
         sourceDevice: UInt32,
         serverReceivedTimestamp: UInt64,
-        serverDeliveryTimestamp: UInt64
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyReadTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }

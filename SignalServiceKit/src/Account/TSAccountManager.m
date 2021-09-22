@@ -567,6 +567,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return [self getOrLoadAccountStateWithSneakyTransaction].isOnboarded;
 }
 
+- (BOOL)isOnboardedWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self getOrLoadAccountStateWithTransaction:transaction].isOnboarded;
+}
+
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized(self) {

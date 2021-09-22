@@ -31,7 +31,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        supportsMultiRing: Bool
+        supportsMultiRing: Bool,
+        transaction: SDSAnyWriteTransaction
     ) {
         AssertIsOnMainThread()
 
@@ -43,7 +44,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             callType = .offerAudioCall
         }
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: caller,
+                                                       transaction: transaction)
         self.callService.individualCallService.handleReceivedOffer(
             thread: thread,
             callId: offer.id,
@@ -54,7 +56,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
             callType: callType,
-            supportsMultiRing: supportsMultiRing
+            supportsMultiRing: supportsMultiRing,
+            transaction: transaction
         )
     }
 
@@ -128,7 +131,8 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         from caller: SignalServiceAddress,
         sourceDevice: UInt32,
         serverReceivedTimestamp: UInt64,
-        serverDeliveryTimestamp: UInt64
+        serverDeliveryTimestamp: UInt64,
+        transaction: SDSAnyReadTransaction
     ) {
         AssertIsOnMainThread()
         Logger.info("Received opaque call message from \(caller) on device \(sourceDevice)")
@@ -146,10 +150,12 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
         }
 
+        let localDeviceId = Self.tsAccountManager.storedDeviceId(with: transaction)
+
         self.callService.callManager.receivedCallMessage(
             senderUuid: senderUuid,
             senderDeviceId: sourceDevice,
-            localDeviceId: TSAccountManager.shared.storedDeviceId(),
+            localDeviceId: localDeviceId,
             message: message,
             messageAgeSec: messageAgeSec
         )

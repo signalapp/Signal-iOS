@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
           supportsMultiRing:(BOOL)supportsMultiRing
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"");
 }
@@ -60,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
                sourceDevice:(uint32_t)device
     serverReceivedTimestamp:(uint64_t)serverReceivedTimestamp
     serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"");
 }
