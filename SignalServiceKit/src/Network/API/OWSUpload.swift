@@ -153,7 +153,9 @@ public class OWSAttachmentUploadV2: NSObject {
         firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
             let formRequest = requestBlock()
             let shouldUseWebsocket: Bool
-            if FeatureFlags.deprecateREST {
+            if Self.signalService.isCensorshipCircumventionActive {
+                shouldUseWebsocket = false
+            } else if FeatureFlags.deprecateREST {
                 shouldUseWebsocket = true
             } else {
                 shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&

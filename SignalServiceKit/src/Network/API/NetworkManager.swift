@@ -22,13 +22,17 @@ public class NetworkManager: NSObject {
                             remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
         firstly { () -> Promise<HTTPResponse> in
             // Fail over to REST if websocket attempt fails.
-            if remainingRetryCount > 0,
-               OWSWebSocket.canAppUseSocketsToMakeRequests,
-               websocketSupportsRequest {
-                return websocketRequestPromise(request: request)
-            } else {
-                return restRequestPromise(request: request)
-            }
+            let shouldUseWebsocket: Bool = {
+                guard !signalService.isCensorshipCircumventionActive else {
+                    return false
+                }
+                return (remainingRetryCount > 0 &&
+                        OWSWebSocket.canAppUseSocketsToMakeRequests &&
+                        websocketSupportsRequest)
+            }()
+            return (shouldUseWebsocket
+                        ? websocketRequestPromise(request: request)
+                        : restRequestPromise(request: request))
         }.recover(on: .global()) { error -> Promise<HTTPResponse> in
             if error.isRetryable,
                remainingRetryCount > 0 {

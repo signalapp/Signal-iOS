@@ -110,7 +110,9 @@ public class RequestMaker: NSObject {
         owsAssertDebug(isUDRequest == request.isUDRequest)
         let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
         let shouldUseWebsocket: Bool
-        if FeatureFlags.deprecateREST {
+        if signalService.isCensorshipCircumventionActive {
+            shouldUseWebsocket = false
+        } else if FeatureFlags.deprecateREST {
             shouldUseWebsocket = true
         } else {
             shouldUseWebsocket = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
@@ -173,7 +175,6 @@ public class RequestMaker: NSObject {
                 }
             }
         } else {
-            owsAssertDebug(!FeatureFlags.deprecateREST)
             return firstly {
                 networkManager.makePromise(request: request)
             }.map(on: .global()) { (response: HTTPResponse) -> RequestMakerResult in
