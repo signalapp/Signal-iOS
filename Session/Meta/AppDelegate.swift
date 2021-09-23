@@ -13,6 +13,11 @@ extension AppDelegate {
                 let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
                 callVC.modalPresentationStyle = .overFullScreen
                 callVC.modalTransitionStyle = .crossDissolve
+                if let conversationVC = presentingVC as? ConversationVC {
+                    callVC.conversationVC = conversationVC
+                    conversationVC.inputAccessoryView?.isHidden = true
+                    conversationVC.inputAccessoryView?.alpha = 0
+                }
                 presentingVC.present(callVC, animated: true, completion: nil)
             }
         }
