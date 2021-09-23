@@ -27,6 +27,8 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
     }
 
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         Self.databaseStorage.read { transaction in
             self.currentCurrencyCode = Self.loadCurrentCurrencyCode(transaction: transaction)
         }

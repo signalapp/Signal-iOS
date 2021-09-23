@@ -197,6 +197,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)warmCaches
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     // Clear out so we re-initialize if we ever re-run the "on launch" logic,
     // such as after a completed database transfer.
     @synchronized(self) {
@@ -217,6 +219,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (OWSUserProfile *)localUserProfile
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     @synchronized(self)
     {
         if (_localUserProfile) {
@@ -262,6 +266,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (nullable OWSUserProfile *)getLocalUserProfileWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     @synchronized(self) {
         if (_localUserProfile) {
             OWSAssertDebug(_localUserProfile.profileKey);
@@ -286,6 +292,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     @synchronized(self) {
         _localUserProfile = [localUserProfile shallowCopy];
     }
@@ -699,6 +707,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
          userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSAssertDebug(GRDBSchemaMigrator.areMigrationsComplete);
+
     OWSUserProfile *localUserProfile;
     
     @synchronized(self)

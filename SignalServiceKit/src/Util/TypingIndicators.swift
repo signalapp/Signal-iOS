@@ -66,6 +66,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     @objc
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         let enabled = databaseStorage.read { transaction in
             self.keyValueStore.getBool(
                 self.kDatabaseKey_TypingIndicatorsEnabled,

@@ -59,6 +59,8 @@ public class AppExpiry: NSObject {
     }
 
     private func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         if let persistedExpirationState: ExpirationState = databaseStorage.read(block: { transaction in
             guard let persistedExpirationState: ExpirationState = try? self.keyValueStore.getCodableValue(
                 forKey: Self.expirationStateKey,

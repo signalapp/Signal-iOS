@@ -229,6 +229,8 @@ public class BlockingManager: NSObject {
 
     @objc
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         loadStateOnLaunch()
     }
 

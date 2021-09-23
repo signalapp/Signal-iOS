@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public struct ChatColor: Equatable, Codable {
     public let id: String
@@ -59,6 +60,8 @@ public class ChatColors: NSObject, Dependencies {
     // The cache should contain all current values at all times.
     @objc
     private func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         guard CurrentAppContext().hasUI else { return }
 
         var valueCache = [String: ChatColor]()

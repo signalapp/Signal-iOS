@@ -22,6 +22,8 @@ public class PinnedThreadManager: NSObject {
 
     @objc
     public class func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         let pinnedThreadIds = SDSDatabaseStorage.shared.read { transaction in
             return keyValueStore.getObject(
                 forKey: pinnedThreadIdsKey,

@@ -8,6 +8,10 @@ import GRDB
 @objc
 public class GRDBSchemaMigrator: NSObject {
 
+    private static let _areMigrationsComplete = AtomicBool(false)
+    @objc
+    public static var areMigrationsComplete: Bool { _areMigrationsComplete.get() }
+
     // Returns true IFF incremental migrations were performed.
     @objc
     public func runSchemaMigrations() -> Bool {
@@ -25,6 +29,8 @@ public class GRDBSchemaMigrator: NSObject {
         Logger.info("Migrations complete.")
 
         SSKPreferences.markGRDBSchemaAsLatest()
+
+        Self._areMigrationsComplete.set(true)
 
         return didPerformIncrementalMigrations
     }

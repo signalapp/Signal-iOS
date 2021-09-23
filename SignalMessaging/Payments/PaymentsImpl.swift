@@ -169,6 +169,8 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     public static let arePaymentsEnabledDidChange = Notification.Name("arePaymentsEnabledDidChange")
 
     public func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         Self.databaseStorage.read { transaction in
             self.paymentStateCache.set(Self.loadPaymentsState(transaction: transaction))
         }

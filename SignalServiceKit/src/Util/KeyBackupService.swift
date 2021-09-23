@@ -650,6 +650,8 @@ public class KeyBackupService: NSObject {
 
     @objc
     public static func warmCaches() {
+        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
+
         let state = getOrLoadStateWithSneakyTransaction()
         migrateEnclavesIfNecessary(state: state)
     }
