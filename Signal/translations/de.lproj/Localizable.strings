@@ -146,7 +146,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Annehmen";
 
 /* notification body */
-"APN_Message" = "Du hast neue Nachrichten";
+"APN_Message" = "Neue Nachricht";
 
 /* Message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kann nicht starten. Bitte sende ein Diagnoseprotokoll an support@signal.org, damit wir dieses Problem beheben können.";
