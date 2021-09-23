@@ -33,8 +33,8 @@ class MessageProcessorTest: SSKBaseTestSwift {
                                                                          serverGuid: serverGuid1,
                                                                          transaction: transaction,
                                                                          skipCull: true))
-            // Not a duplicate if serviceTimestamp doesn't match.
-            XCTAssertEqual(.nonDuplicate,
+            // A duplicate even if serviceTimestamp doesn't match.
+            XCTAssertEqual(.duplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
                                                                          serverGuid: serverGuid1,
                                                                          transaction: transaction,

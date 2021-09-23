@@ -1243,8 +1243,13 @@ CREATE
 ;
 
 CREATE
-    INDEX "MessageDecryptDeduplication_serviceTimestampAndServerGuid"
-        ON "MessageDecryptDeduplication"("serviceTimestamp",
-            "serverGuid"
+    INDEX "MessageDecryptDeduplication_serviceTimestamp"
+        ON "MessageDecryptDeduplication"("serviceTimestamp"
+        )
+;
+
+CREATE
+    INDEX "MessageDecryptDeduplication_serverGuid"
+        ON "MessageDecryptDeduplication"("serverGuid"
         )
 ;

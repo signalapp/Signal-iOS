@@ -517,11 +517,24 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             return .nonDuplicate
         }
         do {
-            let records = try MessageDecryptDeduplicationRecord
-                .filter(Column("serviceTimestamp") == serviceTimestamp)
-                .filter(Column("serverGuid") == serverGuid)
-                .fetchAll(transaction.unwrapGrdbRead.database)
-            guard records.isEmpty else {
+            let duplicateCount: UInt = try {
+                let sql = """
+                    SELECT count(*)
+                    FROM \(MessageDecryptDeduplicationRecord.databaseTableName)
+                    WHERE serverGuid = ?
+                """
+                let arguments: StatementArguments = [serverGuid]
+                guard let duplicateCount = try UInt.fetchOne(
+                    transaction.unwrapGrdbWrite.database,
+                    sql: sql,
+                    arguments: arguments
+                ) else {
+                    owsFailDebug("Failed to find duplicateCount.")
+                    return 0
+                }
+                return duplicateCount
+            }()
+            guard duplicateCount == 0 else {
                 Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
                 return .duplicate
             }

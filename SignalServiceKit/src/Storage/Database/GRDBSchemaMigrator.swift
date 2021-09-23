@@ -113,7 +113,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateMessageSendLogColumnTypes
         case addRecordTypeIndex
         case tunedConversationLoadIndices
-        case messageDecryptDeduplication2
+        case messageDecryptDeduplication3
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1446,7 +1446,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.messageDecryptDeduplication2.rawValue) { db in
+        migrator.registerMigration(MigrationId.messageDecryptDeduplication3.rawValue) { db in
             do {
                 if try db.tableExists("MessageDecryptDeduplication") {
                     try db.drop(table: "MessageDecryptDeduplication")
@@ -1462,9 +1462,15 @@ public class GRDBSchemaMigrator: NSObject {
                 }
 
                 try db.create(
-                    index: "MessageDecryptDeduplication_serviceTimestampAndServerGuid",
+                    index: "MessageDecryptDeduplication_serviceTimestamp",
                     on: "MessageDecryptDeduplication",
-                    columns: ["serviceTimestamp", "serverGuid"]
+                    columns: ["serviceTimestamp"]
+                )
+
+                try db.create(
+                    index: "MessageDecryptDeduplication_serverGuid",
+                    on: "MessageDecryptDeduplication",
+                    columns: ["serverGuid"]
                 )
             } catch {
                 owsFail("Error: \(error)")
