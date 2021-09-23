@@ -1238,12 +1238,18 @@ CREATE
         IF NOT EXISTS "MessageDecryptDeduplication" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"serviceTimestamp" INTEGER NOT NULL
-            ,"encryptedEnvelopeDataHash" BLOB NOT NULL
+            ,"serverGuid" TEXT NOT NULL
         )
 ;
 
 CREATE
     INDEX "MessageDecryptDeduplication_serviceTimestamp"
         ON "MessageDecryptDeduplication"("serviceTimestamp"
-)
+        )
+;
+
+CREATE
+    INDEX "MessageDecryptDeduplication_serverGuid"
+        ON "MessageDecryptDeduplication"("serverGuid"
+        )
 ;
