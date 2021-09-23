@@ -474,11 +474,11 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
 
     var id: Int64?
     let serviceTimestamp: UInt64
-    let encryptedEnvelopeDataHash: Data
+    let serverGuid: String
 
-    init(serviceTimestamp: UInt64, encryptedEnvelopeDataHash: Data) {
+    init(serviceTimestamp: UInt64, serverGuid: String) {
         self.serviceTimestamp = serviceTimestamp
-        self.encryptedEnvelopeDataHash = encryptedEnvelopeDataHash
+        self.serverGuid = serverGuid
     }
 
     func didInsert(with rowID: Int64, for column: String?) {
@@ -492,33 +492,43 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     }
 
     public static func deduplicate(
-        serviceTimestamp: UInt64?,
-        encryptedEnvelopeData: Data,
+        encryptedEnvelope: SSKProtoEnvelope,
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
-        guard let serviceTimestamp = serviceTimestamp,
-              serviceTimestamp > 0,
-              !encryptedEnvelopeData.isEmpty,
-              let encryptedEnvelopeDataHash = Cryptography.computeSHA256Digest(encryptedEnvelopeData) else {
+        deduplicate(serviceTimestamp: encryptedEnvelope.serverTimestamp,
+                    serverGuid: encryptedEnvelope.serverGuid,
+                    transaction: transaction,
+                    skipCull: skipCull)
+    }
+
+    public static func deduplicate(
+        serviceTimestamp: UInt64,
+        serverGuid: String?,
+        transaction: SDSAnyWriteTransaction,
+        skipCull: Bool = false
+    ) -> Outcome {
+        guard serviceTimestamp > 0 else {
             owsFailDebug("Missing serviceTimestamp.")
             return .nonDuplicate
         }
-
+        guard let serverGuid = serverGuid?.nilIfEmpty else {
+            owsFailDebug("Missing serverGuid.")
+            return .nonDuplicate
+        }
         do {
             let records = try MessageDecryptDeduplicationRecord
                 .filter(Column("serviceTimestamp") == serviceTimestamp)
+                .filter(Column("serverGuid") == serverGuid)
                 .fetchAll(transaction.unwrapGrdbRead.database)
-            for record in records {
-                if record.encryptedEnvelopeDataHash == encryptedEnvelopeDataHash {
-                    Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp)")
-                    return .duplicate
-                }
+            guard records.isEmpty else {
+                Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                return .duplicate
             }
 
             // No existing record found. Create a new one and insert it.
             let record = MessageDecryptDeduplicationRecord(serviceTimestamp: serviceTimestamp,
-                                                           encryptedEnvelopeDataHash: encryptedEnvelopeDataHash)
+                                                           serverGuid: serverGuid)
             try record.insert(transaction.unwrapGrdbWrite.database)
 
             if !skipCull, shouldCull() {
@@ -626,8 +636,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
-        let deduplicationOutcome = MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serverDeliveryTimestamp,
-                                                                                 encryptedEnvelopeData: encryptedEnvelopeData,
+        let deduplicationOutcome = MessageDecryptDeduplicationRecord.deduplicate(encryptedEnvelope: encryptedEnvelope,
                                                                                  transaction: transaction)
         switch deduplicationOutcome {
         case .nonDuplicate:

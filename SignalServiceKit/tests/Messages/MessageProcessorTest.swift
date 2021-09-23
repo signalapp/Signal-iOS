@@ -25,36 +25,36 @@ class MessageProcessorTest: SSKBaseTestSwift {
             let now = Date.ows_millisecondTimestamp()
             let serviceTimestamp1: UInt64 = now
             let serviceTimestamp2: UInt64 = now + 10
-            let data1 = Randomness.generateRandomBytes(16)
-            let data2 = Randomness.generateRandomBytes(16)
+            let serverGuid1 = UUID().uuidString
+            let serverGuid2 = UUID().uuidString
 
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction,
                                                                          skipCull: true))
             // Not a duplicate if serviceTimestamp doesn't match.
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction,
                                                                          skipCull: true))
-            // Not a duplicate if encryptedEnvelopeData doesn't match.
+            // Not a duplicate if serverGuid doesn't match.
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data2,
+                                                                         serverGuid: serverGuid2,
                                                                          transaction: transaction,
                                                                          skipCull: true))
             // A duplicate if both match.
             XCTAssertEqual(.duplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction,
                                                                          skipCull: true))
             // A duplicate if both match even if you ask twice.
             XCTAssertEqual(.duplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction,
                                                                          skipCull: true))
         }
@@ -64,16 +64,18 @@ class MessageProcessorTest: SSKBaseTestSwift {
         write { transaction in
             let now = Date.ows_millisecondTimestamp()
             let serviceTimestamp1: UInt64 = now
-            let data1 = Randomness.generateRandomBytes(16)
+            let serviceTimestamp2: UInt64 = now + 10
+            let serverGuid1 = UUID().uuidString
+            let serverGuid2 = UUID().uuidString
 
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction))
             // A duplicate if both match.
             XCTAssertEqual(.duplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction))
 
             // Create enough records to:
@@ -84,17 +86,28 @@ class MessageProcessorTest: SSKBaseTestSwift {
                                    UInt64(MessageDecryptDeduplicationRecord.maxRecordCount))
             for index in 0..<mockRecordCount {
                 let serviceTimestamp: UInt64 = now + index
-                let data = Randomness.generateRandomBytes(16)
+                let serverGuid = UUID().uuidString
                 XCTAssertEqual(.nonDuplicate,
                                MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp,
-                                                                             encryptedEnvelopeData: data,
+                                                                             serverGuid: serverGuid,
                                                                              transaction: transaction))
             }
+
+            XCTAssertEqual(.nonDuplicate,
+                           MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
+                                                                         serverGuid: serverGuid2,
+                                                                         transaction: transaction))
 
             // Due to culling, this is no longer a duplicate.
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
+                                                                         transaction: transaction))
+
+            // Still a duplicate; not yet culled.
+            XCTAssertEqual(.duplicate,
+                           MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
+                                                                         serverGuid: serverGuid2,
                                                                          transaction: transaction))
         }
     }
@@ -103,34 +116,47 @@ class MessageProcessorTest: SSKBaseTestSwift {
         write { transaction in
             let now = Date.ows_millisecondTimestamp()
             let serviceTimestamp1: UInt64 = now
-            let data1 = Randomness.generateRandomBytes(16)
+            let serviceTimestamp2: UInt64 = now + 10
+            let serverGuid1 = UUID().uuidString
+            let serverGuid2 = UUID().uuidString
 
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction))
             // A duplicate if both match.
             XCTAssertEqual(.duplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
                                                                          transaction: transaction))
 
             // Create enough records to ensure that culling is triggered.
             let mockRecordCount = MessageDecryptDeduplicationRecord.cullFrequency
             for index in 0..<mockRecordCount {
                 // "Process" an envelope new enough to trigger culling of first record by age.
-                let serviceTimestamp2: UInt64 = now + index + MessageDecryptDeduplicationRecord.maxRecordAgeMs * 2
-                let data2 = Randomness.generateRandomBytes(16)
+                let serviceTimestamp: UInt64 = now + index + MessageDecryptDeduplicationRecord.maxRecordAgeMs * 2
+                let serverGuid = UUID().uuidString
                 XCTAssertEqual(.nonDuplicate,
-                               MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
-                                                                             encryptedEnvelopeData: data2,
+                               MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp,
+                                                                             serverGuid: serverGuid,
                                                                              transaction: transaction))
             }
+
+            XCTAssertEqual(.nonDuplicate,
+                           MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
+                                                                         serverGuid: serverGuid2,
+                                                                         transaction: transaction))
 
             // Due to culling, this is no longer a duplicate.
             XCTAssertEqual(.nonDuplicate,
                            MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp1,
-                                                                         encryptedEnvelopeData: data1,
+                                                                         serverGuid: serverGuid1,
+                                                                         transaction: transaction))
+
+            // Still a duplicate; not yet culled.
+            XCTAssertEqual(.duplicate,
+                           MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp2,
+                                                                         serverGuid: serverGuid2,
                                                                          transaction: transaction))
         }
     }
@@ -148,10 +174,10 @@ class MessageProcessorTest: SSKBaseTestSwift {
                 XCTAssertTrue(MessageDecryptDeduplicationRecord.recordCount(transaction: transaction) < peakRecordCount)
 
                 let serviceTimestamp: UInt64 = now + index
-                let data = Randomness.generateRandomBytes(16)
+                let serverGuid = UUID().uuidString
                 XCTAssertEqual(.nonDuplicate,
                                MessageDecryptDeduplicationRecord.deduplicate(serviceTimestamp: serviceTimestamp,
-                                                                             encryptedEnvelopeData: data,
+                                                                             serverGuid: serverGuid,
                                                                              transaction: transaction))
 
                 XCTAssertTrue(MessageDecryptDeduplicationRecord.recordCount(transaction: transaction) < peakRecordCount)
