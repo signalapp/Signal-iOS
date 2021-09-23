@@ -182,7 +182,9 @@ public class GRDBSchemaMigrator: NSObject {
         // so we register each migration id with a no-op implementation.
         for migrationId in (MigrationId.allCases.filter { $0 != .createInitialSchema }) {
             migrator.registerMigration(migrationId.rawValue) { _ in
-                Logger.info("skipping migration: \(migrationId) for new user.")
+                if !CurrentAppContext().isRunningTests {
+                    Logger.info("skipping migration: \(migrationId) for new user.")
+                }
                 // no-op
             }
         }
