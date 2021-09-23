@@ -36,7 +36,7 @@ class BaseVC : UIViewController {
 
     internal func setUpNavBarStyle() {
         guard let navigationBar = navigationController?.navigationBar else { return }
-        if #available(iOS 13.0, *) {
+        if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = Colors.navigationBarBackground
