@@ -632,7 +632,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     }
     PhoneNumber *otherPhoneNumber = (PhoneNumber *)other;
 
-    return [self.phoneNumber isEqual:otherPhoneNumber.phoneNumber];
+    return [self.e164 isEqual:otherPhoneNumber.e164];
 }
 
 @end
