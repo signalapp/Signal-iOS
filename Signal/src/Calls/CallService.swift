@@ -60,8 +60,11 @@ public final class CallService: NSObject {
 
             Logger.debug("\(oldValue as Optional) -> \(newValue as Optional)")
 
-            for observer in observers.elements {
-                observer.didUpdateCall(from: oldValue, to: newValue)
+            let observers = self.observers
+            DispatchQueue.main.async {
+                for observer in observers.elements {
+                    observer.didUpdateCall(from: oldValue, to: newValue)
+                }
             }
         }
         get {
