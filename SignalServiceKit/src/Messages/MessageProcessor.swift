@@ -126,7 +126,7 @@ public class MessageProcessor: NSObject {
     public struct EnvelopeJob {
         let encryptedEnvelopeData: Data
         let encryptedEnvelope: SSKProtoEnvelope?
-        let completion: (MessageProcessingOutcome) -> Void
+        let completion: (Error?) -> Void
     }
 
     public func processEncryptedEnvelopes(
@@ -150,16 +150,16 @@ public class MessageProcessor: NSObject {
         encryptedEnvelope optionalEncryptedEnvelopeProto: SSKProtoEnvelope? = nil,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
-        completion: @escaping (MessageProcessingOutcome) -> Void
+        completion: @escaping (Error?) -> Void
     ) {
         guard !encryptedEnvelopeData.isEmpty else {
-            completion(.failure(error: OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource).")))
+            completion(OWSAssertionError("Empty envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
         // Drop any too-large messages on the floor. Well behaving clients should never send them.
         guard encryptedEnvelopeData.count <= Self.maxEnvelopeByteCount else {
-            completion(.failure(error: OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource).")))
+            completion(OWSAssertionError("Oversize envelope, envelopeSource: \(envelopeSource)."))
             return
         }
 
@@ -178,7 +178,7 @@ public class MessageProcessor: NSObject {
                 encryptedEnvelopeProto = try SSKProtoEnvelope(serializedData: encryptedEnvelopeData)
             } catch {
                 owsFailDebug("Failed to parse encrypted envelope \(error), envelopeSource: \(envelopeSource)")
-                completion(.failure(error: error))
+                completion(error)
                 return
             }
         }
@@ -193,7 +193,7 @@ public class MessageProcessor: NSObject {
         switch result {
         case .duplicate:
             Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
-            completion(.duplicate)
+            completion(MessageProcessingError.duplicateMessage)
         case .enqueued:
             drainPendingEnvelopes()
         }
@@ -204,7 +204,7 @@ public class MessageProcessor: NSObject {
         plaintextData: Data?,
         serverDeliveryTimestamp: UInt64,
         wasReceivedByUD: Bool,
-        completion: @escaping (MessageProcessingOutcome) -> Void
+        completion: @escaping (Error?) -> Void
     ) {
         let decryptedEnvelope = DecryptedEnvelope(
             envelopeData: envelopeData,
@@ -317,7 +317,7 @@ public class MessageProcessor: NSObject {
             } catch {
                 owsFailDebug("Failed to parse decrypted envelope \(error)")
                 transaction.addAsyncCompletionOffMain {
-                    pendingEnvelope.completion(.failure(error: error))
+                    pendingEnvelope.completion(error)
                 }
                 return
             }
@@ -331,7 +331,7 @@ public class MessageProcessor: NSObject {
 
                 let error = OWSGenericError("Ignoring blocked envelope: \(sourceAddress)")
                 transaction.addAsyncCompletionOffMain {
-                    pendingEnvelope.completion(.failure(error: error))
+                    pendingEnvelope.completion(error)
                 }
                 return
             }
@@ -418,11 +418,11 @@ public class MessageProcessor: NSObject {
             }
 
             transaction.addAsyncCompletionOffMain {
-                pendingEnvelope.completion(.processed)
+                pendingEnvelope.completion(nil)
             }
         case .failure(let error):
             transaction.addAsyncCompletionOffMain {
-                pendingEnvelope.completion(.failure(error: error))
+                pendingEnvelope.completion(error)
             }
         }
     }
@@ -446,7 +446,7 @@ extension MessageProcessor: MessageProcessingPipelineStage {
 // MARK: -
 
 private protocol PendingEnvelope {
-    var completion: (MessageProcessingOutcome) -> Void { get }
+    var completion: (Error?) -> Void { get }
     var wasReceivedByUD: Bool { get }
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error>
     func isDuplicateOf(_ other: PendingEnvelope) -> Bool
@@ -613,7 +613,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let encryptedEnvelopeData: Data
     let encryptedEnvelope: SSKProtoEnvelope
     let serverDeliveryTimestamp: UInt64
-    let completion: (MessageProcessingOutcome) -> Void
+    let completion: (Error?) -> Void
 
     var wasReceivedByUD: Bool {
         let hasSenderSource: Bool
@@ -633,7 +633,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
             // Proceed with decryption.
             break
         case .duplicate:
-            return .failure(OWSGenericError("Ignoring duplicate envelope with timestamp: \(serverDeliveryTimestamp)."))
+            return .failure(MessageProcessingError.duplicateMessage)
         }
 
         let result = Self.messageDecrypter.decryptEnvelope(
@@ -678,7 +678,7 @@ private struct DecryptedEnvelope: PendingEnvelope {
     let plaintextData: Data?
     let serverDeliveryTimestamp: UInt64
     let wasReceivedByUD: Bool
-    let completion: (MessageProcessingOutcome) -> Void
+    let completion: (Error?) -> Void
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
         return .success(self)
@@ -807,8 +807,6 @@ public class PendingEnvelopes {
 
 // MARK: -
 
-public enum MessageProcessingOutcome {
-    case processed
-    case failure(error: Error)
-    case duplicate
+public enum MessageProcessingError: Error {
+    case duplicateMessage
 }
