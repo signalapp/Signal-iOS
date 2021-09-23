@@ -481,13 +481,15 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
-        deduplicate(serviceTimestamp: encryptedEnvelope.serverTimestamp,
+        deduplicate(envelopeTimestamp: encryptedEnvelope.timestamp,
+                    serviceTimestamp: encryptedEnvelope.serverTimestamp,
                     serverGuid: encryptedEnvelope.serverGuid,
                     transaction: transaction,
                     skipCull: skipCull)
     }
 
     public static func deduplicate(
+        envelopeTimestamp: UInt64,
         serviceTimestamp: UInt64,
         serverGuid: String?,
         transaction: SDSAnyWriteTransaction,
@@ -512,7 +514,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 return try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
             }()
             guard !isDuplicate else {
-                Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.warn("Discarding duplicate envelope:\(envelopeTimestamp) with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
                 return .duplicate
             }
 
