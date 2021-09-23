@@ -28,38 +28,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     // MARK: Call
     @objc func startCall(_ sender: Any) {
-        let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let voiceCallAction = UIAlertAction.init(title: NSLocalizedString("voice_call", comment: ""), style: .default) { _ in
-            self.startVoiceCall()
-        }
-        voiceCallAction.setValue(UIImage(named: "Phone"), forKey: "image")
-        alertVC.addAction(voiceCallAction)
-        
-        let videoCallAction = UIAlertAction.init(title: NSLocalizedString("video_call", comment: ""), style: .default) { _ in
-            self.startVideoCall()
-        }
-        videoCallAction.setValue(UIImage(named: "VideoCall"), forKey: "image")
-        alertVC.addAction(videoCallAction)
-        
-        let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel) {_ in
-            self.showInputAccessoryView()
-        }
-        alertVC.addAction(cancelAction)
-        self.inputAccessoryView?.isHidden = true
-        self.inputAccessoryView?.alpha = 0
-        self.presentAlert(alertVC, animated: true)
-    }
-    
-    private func startVoiceCall() {
-        
-    }
-    
-    private func startVideoCall() {
         guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
         let callVC = CallVC(for: contactSessionID, mode: .offer)
         callVC.conversationVC = self
         callVC.modalPresentationStyle = .overFullScreen
         callVC.modalTransitionStyle = .crossDissolve
+        self.inputAccessoryView?.isHidden = true
+        self.inputAccessoryView?.alpha = 0
         present(callVC, animated: true, completion: nil)
     }
 

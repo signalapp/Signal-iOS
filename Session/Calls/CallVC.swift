@@ -9,6 +9,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     let mode: Mode
     let webRTCSession: WebRTCSession
     var isMuted = false
+    var isVideoEnabled = false
     var conversationVC: ConversationVC? = nil
     
     lazy var cameraManager: CameraManager = {
@@ -24,6 +25,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     // MARK: UI Components
     private lazy var localVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
+        result.isHidden = !isVideoEnabled
         result.contentMode = .scaleAspectFill
         result.set(.width, to: 80)
         result.set(.height, to: 173)
@@ -52,11 +54,24 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     private lazy var minimizeButton: UIButton = {
         let result = UIButton(type: .custom)
+        result.isHidden = true
         let image = UIImage(named: "Minimize")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
         result.addTarget(self, action: #selector(minimize), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var answerButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "AnswerCall")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.backgroundColor = Colors.accent
+        result.layer.cornerRadius = 30
+        result.addTarget(self, action: #selector(answerCall), for: UIControl.Event.touchUpInside)
         return result
     }()
     
@@ -68,12 +83,20 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.set(.height, to: 60)
         result.backgroundColor = Colors.destructive
         result.layer.cornerRadius = 30
-        result.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
+        result.addTarget(self, action: #selector(endCall), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var responsePanel: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [hangUpButton, answerButton])
+        result.axis = .horizontal
+        result.spacing = Values.veryLargeSpacing * 2 + 40
         return result
     }()
 
     private lazy var switchCameraButton: UIButton = {
         let result = UIButton(type: .custom)
+        result.isEnabled = isVideoEnabled
         let image = UIImage(named: "SwitchCamera")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
@@ -93,6 +116,26 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         result.backgroundColor = UIColor(hex: 0x1F1F1F)
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(switchAudio), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var videoButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "VideoCall")!.withTint(.white)
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.layer.cornerRadius = 30
+        result.alpha = 0.5
+        result.addTarget(self, action: #selector(operateCamera), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var operationPanel: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [videoButton, switchAudioButton, switchCameraButton])
+        result.axis = .horizontal
+        result.spacing = Values.veryLargeSpacing
         return result
     }()
     
@@ -146,9 +189,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             Storage.write { transaction in
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
             }
-        } else if case let .answer(sdp) = mode {
-            callInfoLabel.text = "Connecting..."
-            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            answerButton.isHidden = true
         }
     }
     
@@ -186,21 +227,14 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.center(.vertical, in: minimizeButton)
         titleLabel.center(.horizontal, in: view)
-        // End call button
-        view.addSubview(hangUpButton)
-        hangUpButton.translatesAutoresizingMaskIntoConstraints = false
-        hangUpButton.center(.horizontal, in: view)
-        hangUpButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset)
-        // Switch camera button
-        view.addSubview(switchCameraButton)
-        switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
-        switchCameraButton.center(.vertical, in: hangUpButton)
-        switchCameraButton.pin(.right, to: .left, of: hangUpButton, withInset: -Values.veryLargeSpacing)
-        // Switch audio button
-        view.addSubview(switchAudioButton)
-        switchAudioButton.translatesAutoresizingMaskIntoConstraints = false
-        switchAudioButton.center(.vertical, in: hangUpButton)
-        switchAudioButton.pin(.left, to: .right, of: hangUpButton, withInset: Values.veryLargeSpacing)
+        // Response Panel
+        view.addSubview(responsePanel)
+        responsePanel.center(.horizontal, in: view)
+        responsePanel.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset)
+        // Operation Panel
+        view.addSubview(operationPanel)
+        operationPanel.center(.horizontal, in: view)
+        operationPanel.pin(.bottom, to: .top, of: responsePanel, withInset: -Values.veryLargeSpacing)
     }
     
     private func getBackgroudView() -> UIView {
@@ -229,12 +263,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        cameraManager.start()
+        if (isVideoEnabled) { cameraManager.start() }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        cameraManager.stop()
+        if (isVideoEnabled) { cameraManager.stop() }
     }
     
     // MARK: Interaction
@@ -256,7 +290,18 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         }
     }
     
-    @objc private func close() {
+    @objc private func answerCall() {
+        if case let .answer(sdp) = mode {
+            callInfoLabel.text = "Connecting..."
+            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            self.answerButton.alpha = 0
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                self.answerButton.isHidden = true
+            }, completion: nil)
+        }
+    }
+    
+    @objc private func endCall() {
         Storage.write { transaction in
             WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
         }
@@ -265,16 +310,25 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     @objc private func minimize() {
-        if (localVideoView.isHidden) {
+        
+    }
+    
+    @objc private func operateCamera() {
+        if (isVideoEnabled) {
+            webRTCSession.turnOffVideo()
+            localVideoView.isHidden = true
+            cameraManager.stop()
+            videoButton.alpha = 0.5
+            switchCameraButton.isEnabled = false
+        } else {
             webRTCSession.turnOnVideo()
             localVideoView.isHidden = false
             cameraManager.prepare()
             cameraManager.start()
-        } else {
-            webRTCSession.turnOffVideo()
-            localVideoView.isHidden = true
-            cameraManager.stop()
+            videoButton.alpha = 1.0
+            switchCameraButton.isEnabled = true
         }
+        isVideoEnabled = !isVideoEnabled
     }
     
     @objc private func switchCamera() {
