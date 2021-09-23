@@ -527,6 +527,9 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 cull(latestServiceTimestamp: serviceTimestamp, transaction: transaction)
             }
 
+            if DebugFlags.internalLogging {
+                Logger.info("Proceeding with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+            }
             return .nonDuplicate
         } catch {
             owsFailDebug("Error: \(error)")
