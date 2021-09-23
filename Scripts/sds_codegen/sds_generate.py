@@ -904,7 +904,7 @@ def generate_swift_extensions_for_model(clazz):
     # TODO: We'll need to import SignalServiceKit for non-SSK models.
 
     swift_body = '''//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -2072,7 +2072,7 @@ def update_record_type_map(record_type_swift_path, record_type_json_path):
     # TODO: We'll need to import SignalServiceKit for non-SSK classes.
 
     swift_body = '''//
-//  Copyright © 2019 Signal. All rights reserved.
+//  Copyright © 2021 Signal. All rights reserved.
 //
 
 import Foundation
