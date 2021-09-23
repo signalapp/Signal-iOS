@@ -32,14 +32,14 @@ public extension DebugUIMessages {
         messageProcessor.processDecryptedEnvelopeData(envelopeData,
                                                       plaintextData: plaintextData,
                                                       serverDeliveryTimestamp: 0,
-                                                      wasReceivedByUD: false) { outcome in
-            switch outcome {
-            case .duplicate:
+                                                      wasReceivedByUD: false) { error in
+            switch error {
+            case MessageProcessingError.duplicateMessage?:
                 Logger.warn("Duplicate.")
-            case .processed:
+            case let otherError?:
+                owsFailDebug("Error: \(otherError)")
+            case nil:
                 break
-            case .failure(let error):
-                owsFailDebug("Error: \(error)")
             }
         }
     }

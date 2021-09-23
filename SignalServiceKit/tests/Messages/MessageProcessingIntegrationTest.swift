@@ -98,16 +98,18 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
+        envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processEncryptedEnvelopeData(envelopeData,
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { outcome in
-            switch outcome {
-            case .duplicate:
-            XCTFail("duplicate")
-            case .failure:
+                                                      envelopeSource: .tests) { error in
+            switch error {
+            case MessageProcessingError.duplicateMessage?:
+                XCTFail("duplicate")
+            case .some(_):
                 XCTFail("failure")
-            case .processed:
+            case nil:
                 break
             }
         }
@@ -168,16 +170,18 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
+        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
+        envelopeBuilder.setServerGuid(UUID().uuidString)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageProcessor.processEncryptedEnvelopeData(envelopeData,
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                                      envelopeSource: .tests) { outcome in
-            switch outcome {
-            case .duplicate:
-            XCTFail("duplicate")
-            case .failure:
+                                                      envelopeSource: .tests) { error in
+            switch error {
+            case MessageProcessingError.duplicateMessage?:
+                XCTFail("duplicate")
+            case .some(_):
                 XCTFail("failure")
-            case .processed:
+            case nil:
                 break
             }
         }

@@ -525,23 +525,25 @@ public class OWSWebSocket: NSObject {
             Logger.info("\(currentWebSocket.logPrefix) 1")
         }
 
-        let ackMessage = { (outcome: MessageProcessingOutcome) in
+        let ackMessage = { (processingError: Error?) in
             if Self.verboseLogging {
-                Logger.info("\(currentWebSocket.logPrefix) 2 \(outcome)")
+                Logger.info("\(currentWebSocket.logPrefix) 2 \(processingError?.localizedDescription ?? "success!")")
             }
 
-            var shouldAck = true
-            switch outcome {
-            case .duplicate:
+            var shouldAck: Bool
+            switch processingError {
+            case nil:
+                shouldAck = true
+            case MessageProcessingError.duplicateMessage?:
                 shouldAck = false
-            case .failure:
+            case let alertableError?:
+                shouldAck = false
+                Logger.warn("Failed to process message: \(alertableError)")
                 Self.databaseStorage.write { transaction in
                     let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
                     Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
                                                           transaction: transaction)
                 }
-            case .processed:
-                break
             }
 
             if shouldAck {
@@ -569,7 +571,7 @@ public class OWSWebSocket: NSObject {
         }
 
         guard let encryptedEnvelope = message.body else {
-            ackMessage(.failure(error: OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)")))
+            ackMessage(OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)"))
             return
         }
         let envelopeSource: EnvelopeSource = {
