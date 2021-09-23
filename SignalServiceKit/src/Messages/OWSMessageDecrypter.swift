@@ -290,7 +290,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
-        let logString = "Error while decrypting \(Self.description(forEnvelopeType: envelope)) message: \(error)"
+        let logString = "Error while decrypting \(Self.description(for: envelope)), error: \(error)"
 
         if case SignalError.duplicatedMessage(_) = error {
             Logger.info(logString)

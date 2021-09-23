@@ -55,10 +55,13 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
     OWSAssertDebug(envelope != nil);
 
-    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@, timestamp: %llu content.length: %lu />",
+    return [NSString stringWithFormat:@"<Envelope type: %@, source: %@, timestamp: %llu, serverTimestamp: %llu, "
+                                      @"serverGuid: %@, content.length: %lu />",
                      [self descriptionForEnvelopeType:envelope],
                      envelopeAddress(envelope),
                      envelope.timestamp,
+                     envelope.serverTimestamp,
+                     envelope.serverGuid,
                      (unsigned long)envelope.content.length];
 }
 
