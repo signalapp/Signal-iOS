@@ -147,12 +147,30 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
             let processingCompletePromise = self.messageProcessor.processingCompletePromise()
-            processingCompletePromise.then(on: .global()) {
+            processingCompletePromise.then(on: .global()) { () -> Promise<Void> in
+                // Wait until all notifications are enqueued.
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on notificationPresenter.")
+                }
+                guard let notificationPresenter = Self.notificationPresenter as? NotificationPresenter else {
+                    if !CurrentAppContext().isRunningTests {
+                        owsFailDebug("Invalid notificationPresenter.")
+                    }
+                    return Promise.value(())
+                }
+                return notificationPresenter.pendingNotificationsPromise()
+            }.then(on: .global()) { () -> Promise<Void> in
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on acks.")
+                }
                 // Wait until all ACKs are enqueued.
-                Self.messageFetcherJob.pendingAcksPromise()
-            }.then(on: .global()) {
+                return Self.messageFetcherJob.pendingAcksPromise()
+            }.then(on: .global()) { () -> Promise<Void> in
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on sends.")
+                }
                 // Wait until all outgoing messages are sent.
-                Self.messageSender.pendingSendsPromise()
+                return Self.messageSender.pendingSendsPromise()
             }.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 NotificationServiceError.timeout
             }.catch { _ in

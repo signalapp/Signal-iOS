@@ -355,6 +355,15 @@ public class AtomicArray<T> {
     public var count: Int {
         lock.perform { values.count }
     }
+
+    @discardableResult
+    public func removeAll() -> [T] {
+        lock.perform {
+            let oldValues = values
+            values = []
+            return oldValues
+        }
+    }
 }
 
 extension AtomicArray where T: Equatable {
@@ -421,6 +430,10 @@ public class AtomicDictionary<Key: Hashable, Value> {
 
     public var count: Int {
         lock.perform { values.count }
+    }
+
+    public var allValues: [Value] {
+        lock.perform { Array(values.values) }
     }
 }
 

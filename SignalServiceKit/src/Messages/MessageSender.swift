@@ -154,9 +154,14 @@ extension MessageSender {
     }
 
     public func pendingSendsPromise() -> Promise<Void> {
-        firstly(on: .global()) {
-            Self.globalSendingQueue().waitUntilAllOperationsAreFinished()
+        // This promise blocks on all operations already in the queue,
+        // but will not block on new operations added after this promise
+        // is created.
+        let (promise, future) = Promise<Void>.pending()
+        Self.globalSendingQueue().addOperation {
+            future.resolve(())
         }
+        return promise
     }
 }
 

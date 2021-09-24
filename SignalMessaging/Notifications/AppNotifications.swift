@@ -4,6 +4,7 @@
 
 import Foundation
 import Intents
+import SignalServiceKit
 
 /// There are two primary components in our system notification integration:
 ///
@@ -192,6 +193,8 @@ extension NotificationPresenterAdaptee {
     }
 }
 
+// MARK: -
+
 @objc(OWSNotificationPresenter)
 public class NotificationPresenter: NSObject, NotificationsProtocol {
     private let adaptee: NotificationPresenterAdaptee
@@ -256,7 +259,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             self.adaptee.notify(category: .incomingCall,
                                 title: notificationTitle,
                                 body: notificationBody,
@@ -306,7 +309,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -340,7 +343,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
                                 title: notificationTitle,
@@ -375,7 +378,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
             : .missedCallWithoutActions)
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -523,7 +526,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -532,6 +535,58 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 userInfo: userInfo,
                                 interaction: interaction,
                                 sound: sound)
+        }
+    }
+
+    private struct PendingNotification {
+        private static let idCounter = AtomicUInt()
+        let id = PendingNotification.idCounter.increment()
+
+        let promise: Promise<Void>
+        let future: Future<Void>
+
+        init() {
+            let (promise, future) = Promise<Void>.pending()
+            self.promise = promise
+            self.future = future
+        }
+    }
+
+    private let pendingNotifications = AtomicDictionary<UInt, PendingNotification>()
+
+    public func pendingNotificationsPromise() -> Promise<Void> {
+        // This promise blocks on all pending notifications already in flight,
+        // but will not block on new notifications added after this promise
+        // is created.        
+        let promises = pendingNotifications.allValues.map { $0.promise }
+        return Promise.when(resolved: promises).asVoid()
+    }
+
+    private func addPendingNotification() -> PendingNotification {
+        let pendingNotification = PendingNotification()
+        pendingNotifications[pendingNotification.id] = pendingNotification
+        return pendingNotification
+    }
+
+    private func completePendingNotification(_ pendingNotification: PendingNotification) {
+        let wasRemoved = nil != pendingNotifications.removeValue(forKey: pendingNotification.id)
+        owsAssertDebug(wasRemoved)
+        pendingNotification.future.resolve(())
+    }
+
+    private func notifyAsyncOnMainThread(_ block: @escaping () -> Void) {
+        let pendingNotification = addPendingNotification()
+        DispatchQueue.main.async { [weak self] in
+            block()
+            self?.completePendingNotification(pendingNotification)
+        }
+    }
+
+    private func notifyInAsyncCompletionOnMainThread(transaction: SDSAnyWriteTransaction, _ block: @escaping () -> Void) {
+        let pendingNotification = addPendingNotification()
+        transaction.addAsyncCompletionOnMain { [weak self] in
+            block()
+            self?.completePendingNotification(pendingNotification)
         }
     }
 
@@ -638,7 +693,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(
                 category: category,
@@ -667,7 +722,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -690,7 +745,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                               comment: "Format string for an error alert notification message. Embes {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             self.adaptee.notify(
                 category: .internalError,
                 title: title,
@@ -720,7 +775,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
         ]
 
-        DispatchQueue.main.async {
+        notifyAsyncOnMainThread {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -801,7 +856,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        transaction.addAsyncCompletionOnMain {
+        notifyInAsyncCompletionOnMainThread(transaction: transaction) {
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -817,7 +872,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                            transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
-        transaction.addAsyncCompletionOnMain {
+        notifyInAsyncCompletionOnMainThread(transaction: transaction) {
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,
                                 body: notificationBody,

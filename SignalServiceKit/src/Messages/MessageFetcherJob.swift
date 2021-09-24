@@ -274,9 +274,14 @@ public class MessageFetcherJob: NSObject {
     }
 
     public func pendingAcksPromise() -> Promise<Void> {
-        firstly(on: .global()) {
-            self.ackOperationQueue.waitUntilAllOperationsAreFinished()
+        // This promise blocks on all operations already in the queue,
+        // but will not block on new operations added after this promise
+        // is created.
+        let (promise, future) = Promise<Void>.pending()
+        self.ackOperationQueue.addOperation {
+            future.resolve(())
         }
+        return promise
     }
 
     // MARK: -
