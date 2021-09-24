@@ -156,7 +156,8 @@ extension MessageSender {
     public func pendingSendsPromise() -> Promise<Void> {
         // This promise blocks on all operations already in the queue,
         // but will not block on new operations added after this promise
-        // is created.
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
         let (promise, future) = Promise<Void>.pending()
         Self.globalSendingQueue().addOperation {
             future.resolve(())

@@ -152,13 +152,7 @@ class NotificationService: UNNotificationServiceExtension {
                 if DebugFlags.internalLogging {
                     Logger.info("Waiting on notificationPresenter.")
                 }
-                guard let notificationPresenter = Self.notificationPresenter as? NotificationPresenter else {
-                    if !CurrentAppContext().isRunningTests {
-                        owsFailDebug("Invalid notificationPresenter.")
-                    }
-                    return Promise.value(())
-                }
-                return notificationPresenter.pendingNotificationsPromise()
+                return NotificationPresenter.pendingNotificationsPromise()
             }.then(on: .global()) { () -> Promise<Void> in
                 if DebugFlags.internalLogging {
                     Logger.info("Waiting on acks.")
