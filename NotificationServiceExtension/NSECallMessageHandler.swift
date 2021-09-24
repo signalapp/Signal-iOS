@@ -57,7 +57,8 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 transaction: transaction
             )
 
-            CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
+            Logger.info("Notifying primary app of incoming call with push payload: \(payload)")
+            CXProvider.reportNewIncomingVoIPPushPayload(payload.payloadDict) { error in
                 if let error = error {
                     owsFailDebug("Failed to notify main app of call message: \(error)")
                 } else {

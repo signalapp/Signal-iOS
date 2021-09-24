@@ -4,15 +4,35 @@
 
 import Foundation
 
+public class CallMessagePushPayload: CustomStringConvertible {
+    private static let identifierKey = "CallMessageRelayPayload"
+    public let identifier: String
+
+    fileprivate init() {
+        identifier = UUID().uuidString
+    }
+
+    public init?(_ payloadDict: [AnyHashable: Any]) {
+        guard let payloadId = payloadDict[Self.identifierKey] as? String else { return nil }
+        identifier = payloadId
+    }
+
+    public var payloadDict: [String: String] {
+        [Self.identifierKey: identifier]
+    }
+
+    public var description: String {
+        "\(type(of: self)): \(identifier.suffix(6))"
+    }
+}
+
 @objc
 public class CallMessageRelay: NSObject {
-    private static let callMessagePayloadKey = "CallMessageRelayPayload"
     private static let pendingCallMessageStore = SDSKeyValueStore(collection: "PendingCallMessageStore")
 
-    @objc
-    public static func handleVoipPayload(_ payload: [AnyHashable: Any]) -> Bool {
-        guard let payload = payload[callMessagePayloadKey] as? Bool, payload == true else { return false }
-
+    public static func handleVoipPayload(_ payload: CallMessagePushPayload) {
+        Logger.info("Handling incoming VoIP payload: \(payload)")
+        defer { Logger.info("Finished handling incoming VoIP payload: \(payload)") }
         // Process all the pending call messages from the NSE in 1 batch.
         // This should almost always be a batch of one.
         databaseStorage.write { transaction in
@@ -42,8 +62,6 @@ public class CallMessageRelay: NSObject {
                 )
             }
         }
-
-        return true
     }
 
     public static func enqueueCallMessageForMainApp(
@@ -52,7 +70,7 @@ public class CallMessageRelay: NSObject {
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) throws -> [String: Any] {
+    ) throws -> CallMessagePushPayload {
         let payload = Payload(
             envelope: envelope,
             plaintextData: plaintextData,
@@ -61,8 +79,7 @@ public class CallMessageRelay: NSObject {
         )
 
         try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)
-
-        return [callMessagePayloadKey: true]
+        return CallMessagePushPayload()
     }
 
     private struct Payload: Codable {

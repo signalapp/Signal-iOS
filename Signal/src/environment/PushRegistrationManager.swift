@@ -24,6 +24,15 @@ public enum PushRegistrationError: Error {
         SwiftSingletons.register(self)
     }
 
+    private let pendingCallSignal = DispatchSemaphore(value: 0)
+    private let isWaitingForSignal = AtomicBool(false)
+    // Private callout queue that we can use to synchronously wait for our call to start
+    // TODO: Rewrite call message routing to be able to synchronously report calls
+    private let calloutQueue = DispatchQueue(
+        label: "org.whispersystems.signal.PKPushRegistry",
+        autoreleaseFrequency: .workItem
+    )
+
     private var vanillaTokenPromise: Promise<Data>?
     private var vanillaTokenFuture: Future<Data>?
 
@@ -50,6 +59,12 @@ public enum PushRegistrationError: Error {
                     (pushToken: vanillaPushToken, voipToken: voipPushToken)
                 }
             }
+        }
+    }
+
+    public func didFinishReportingIncomingCall() {
+        if isWaitingForSignal.tryToClearFlag() {
+            pendingCallSignal.signal()
         }
     }
 
@@ -92,36 +107,69 @@ public enum PushRegistrationError: Error {
     // MARK: PKPushRegistryDelegate - voIP Push Token
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
-        AssertIsOnMainThread()
-        Logger.info("isAppReady: \(AppReadiness.isAppReady)")
+        dispatchPrecondition(condition: .onQueue(calloutQueue))
         owsAssertDebug(type == .voIP)
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            AssertIsOnMainThread()
-            if CallMessageRelay.handleVoipPayload(payload.dictionaryPayload) {
-                // Do nothing. This was a call message relayed from the NSE
-                Logger.info("Handled call message from NSE.")
-            } else if let preauthChallengeFuture = self.preauthChallengeFuture,
-                let challenge = payload.dictionaryPayload["challenge"] as? String {
-                Logger.info("received preauth challenge")
-                preauthChallengeFuture.resolve(challenge)
-                self.preauthChallengeFuture = nil
-            } else {
-                owsAssertDebug(!FeatureFlags.notificationServiceExtension)
-                Logger.info("Fetching messages.")
-                var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
-                firstly { () -> Promise<Void> in
-                    self.messageFetcherJob.run().promise
-                }.done(on: .main) {
-                    owsAssertDebug(backgroundTask != nil)
-                    backgroundTask = nil
-                }.catch { error in
-                    owsFailDebug("Error: \(error)")
+
+        let callRelayPayload = CallMessagePushPayload(payload.dictionaryPayload)
+        if let callRelayPayload = callRelayPayload {
+            Logger.info("Received VoIP push from the NSE: \(callRelayPayload)")
+            owsAssertDebug(isWaitingForSignal.tryToSetFlag())
+        }
+
+        // One of the few places we dispatch_sync, this should be safe since we can only block our
+        // private calloutQueue while waiting for a chance to run on the main thread.
+        // This should be deadlock free since the only thing dispatching to our calloutQueue is PushKit.
+        DispatchQueue.main.sync {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                AssertIsOnMainThread()
+                if let callRelayPayload = callRelayPayload {
+                    CallMessageRelay.handleVoipPayload(callRelayPayload)
+                } else if let preauthChallengeFuture = self.preauthChallengeFuture,
+                    let challenge = payload.dictionaryPayload["challenge"] as? String {
+                    Logger.info("received preauth challenge")
+                    preauthChallengeFuture.resolve(challenge)
+                    self.preauthChallengeFuture = nil
+                } else {
+                    owsAssertDebug(!FeatureFlags.notificationServiceExtension)
+                    Logger.info("Fetching messages.")
+                    var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
+                    firstly { () -> Promise<Void> in
+                        self.messageFetcherJob.run().promise
+                    }.done(on: .main) {
+                        owsAssertDebug(backgroundTask != nil)
+                        backgroundTask = nil
+                    }.catch { error in
+                        owsFailDebug("Error: \(error)")
+                    }
                 }
             }
+        }
+
+        if let callRelayPayload = callRelayPayload {
+            // We need to handle the incoming call push in the same runloop as it was delivered
+            // RingRTC will callback to us async to start the call after we hand them the call message,
+            // but once we return from here it's too late.
+            //
+            // We'll probably need RingRTC changes to handle this properly and synchronously. Until then,
+            // let's just block the thread for a bit until we hear back that the call was started..
+            Logger.info("Waiting for call to start: \(callRelayPayload)")
+            let waitInterval = DispatchTimeInterval.seconds(5)
+
+            if pendingCallSignal.wait(timeout: .now() + waitInterval) == .timedOut {
+                owsFailDebug("Call didn't start within \(waitInterval) seconds. Continuing anyway, expecting to be killed.")
+                // We want to make sure we increment the semaphore exactly once per call to reset state
+                // for the next call. If we timed-out on the semaphore, we could race with another thread
+                // signaling the semaphore at this instant. We consult the atomic bool before re-incrementing.
+                if isWaitingForSignal.tryToClearFlag() {
+                    pendingCallSignal.signal()
+                }
+            }
+            Logger.info("Returning back to PushKit. Good luck! \(callRelayPayload)")
         }
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
+        dispatchPrecondition(condition: .onQueue(calloutQueue))
         Logger.info("")
         owsAssertDebug(type == .voIP)
         owsAssertDebug(credentials.type == .voIP)
@@ -133,6 +181,7 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         // It's not clear when this would happen. We've never previously handled it, but we should at
         // least start learning if it happens.
+        dispatchPrecondition(condition: .onQueue(calloutQueue))
         owsFailDebug("Invalid state")
     }
 
@@ -231,7 +280,7 @@ public enum PushRegistrationError: Error {
         AssertIsOnMainThread()
 
         guard voipRegistry == nil else { return }
-        let voipRegistry = PKPushRegistry(queue: nil)
+        let voipRegistry = PKPushRegistry(queue: calloutQueue)
         self.voipRegistry  = voipRegistry
         voipRegistry.desiredPushTypes = [.voIP]
         voipRegistry.delegate = self

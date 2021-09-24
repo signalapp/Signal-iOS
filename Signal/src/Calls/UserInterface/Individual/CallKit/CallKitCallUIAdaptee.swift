@@ -169,6 +169,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                  Only add incoming call to the app's list of calls if the call was allowed (i.e. there was no error)
                  since calls may be "denied" for various legitimate reasons. See CXErrorCodeIncomingCallError.
                  */
+                self.pushRegistrationManager.didFinishReportingIncomingCall()
+
                 guard error == nil else {
                     completion(error)
                     Logger.error("failed to report new incoming call, error: \(error!)")
