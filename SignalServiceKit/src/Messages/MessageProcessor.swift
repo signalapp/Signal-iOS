@@ -260,11 +260,16 @@ public class MessageProcessor: NSObject {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
             self.drainNextBatch()
+            self.isDrainingPendingEnvelopes = false
+            if self.pendingEnvelopes.isEmpty {
+                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+            }
         }
     }
 
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
+        owsAssertDebug(isDrainingPendingEnvelopes)
 
         let shouldContinue: Bool = autoreleasepool {
             // We want a value that is just high enough to yield perf benefits.
@@ -278,35 +283,29 @@ public class MessageProcessor: NSObject {
             let batchEnvelopes = batch.batchEnvelopes
             let pendingEnvelopesCount = batch.pendingEnvelopesCount
 
-            guard !batchEnvelopes.isEmpty else {
-                isDrainingPendingEnvelopes = false
+            guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
                 if DebugFlags.internalLogging {
                     Logger.info("Processing complete: \(self.queuedContentCount).")
                 }
-                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
                 return false
             }
 
             Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s).")
 
-            var skippedEnvelopes: [PendingEnvelope] = []
+            var processedEnvelopes: [PendingEnvelope] = []
             SDSDatabaseStorage.shared.write { transaction in
-                batchEnvelopes.forEach {
+                for envelope in batchEnvelopes {
                     if messagePipelineSupervisor.isMessageProcessingPermitted {
-                        self.processEnvelope($0, transaction: transaction)
+                        self.processEnvelope(envelope, transaction: transaction)
+                        processedEnvelopes.append(envelope)
                     } else {
-                        skippedEnvelopes.append($0)
+                        // If we're skipping one message, we have to skip them all to preserve ordering
+                        // Next time around we can process the skipped messages in order
+                        break
                     }
                 }
             }
-
-            // Remove the processed envelopes from the pending list.
-            if skippedEnvelopes.isEmpty {
-                pendingEnvelopes.removeProcessedBatch(batch)
-            } else {
-                pendingEnvelopes.removePartiallySuccessfulBatch(batch, failedEnvelopes: skippedEnvelopes)
-            }
-
+            pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
             return true
         }
 
@@ -759,24 +758,19 @@ public class PendingEnvelopes {
         }
     }
 
-    fileprivate func removePartiallySuccessfulBatch(_ batch: Batch, failedEnvelopes: [PendingEnvelope]) {
+    fileprivate func removeProcessedEnvelopes(_ processedEnvelopes: [PendingEnvelope]) {
         unfairLock.withLock {
-            let batchEnvelopes = batch.batchEnvelopes
-            guard pendingEnvelopes.count > batchEnvelopes.count else {
+            guard pendingEnvelopes.count > processedEnvelopes.count else {
                 pendingEnvelopes = []
                 return
             }
             let oldCount = pendingEnvelopes.count
-            pendingEnvelopes = failedEnvelopes + Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: processedEnvelopes.count))
             let newCount = pendingEnvelopes.count
             if DebugFlags.internalLogging {
                 Logger.info("\(oldCount) -> \(newCount)")
             }
         }
-    }
-
-    fileprivate func removeProcessedBatch(_ batch: Batch) {
-        removePartiallySuccessfulBatch(batch, failedEnvelopes: [])
     }
 
     fileprivate func enqueue(decryptedEnvelope: DecryptedEnvelope) {
