@@ -550,6 +550,8 @@ public class OWSWebSocket: NSObject {
 
             if shouldAck {
                 self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
+            } else {
+                Logger.info("Skipping ack of message with serverTimestamp \(serverTimestamp) because of error: \(String(describing: processingError))")
             }
 
             owsAssertDebug(backgroundTask != nil)
