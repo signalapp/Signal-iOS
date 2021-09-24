@@ -559,7 +559,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             }
 
             if DebugFlags.internalLogging {
-                Logger.info("Proceeding with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), processingTimestamp: \(processingTimestamp), serverGuid: \(serverGuid)")
             }
             return .nonDuplicate
         } catch {
@@ -573,8 +573,13 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     static let maxRecordCount: UInt = 1000
     static let maxRecordAgeMs: UInt64 = 60 * kMinuteInMs
 
+    static let cullCount = AtomicUInt(0)
+
     private static func cull(latestProcessingTimestamp: UInt64,
                              transaction: SDSAnyWriteTransaction) {
+
+        cullCount.increment()
+
         let count1 = recordCount(transaction: transaction)
 
         // Client and service time might not match; use service timestamps for
