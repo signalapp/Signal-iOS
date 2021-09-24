@@ -473,11 +473,9 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     static let databaseTableName = "MessageDecryptDeduplication"
 
     var id: Int64?
-    let serviceTimestamp: UInt64
     let serverGuid: String
 
-    init(serviceTimestamp: UInt64, serverGuid: String) {
-        self.serviceTimestamp = serviceTimestamp
+    init(serverGuid: String) {
         self.serverGuid = serverGuid
     }
 
@@ -496,20 +494,26 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
-        deduplicate(serviceTimestamp: encryptedEnvelope.serverTimestamp,
+        deduplicate(envelopeTimestamp: encryptedEnvelope.timestamp,
+                    serviceTimestamp: encryptedEnvelope.serverTimestamp,
                     serverGuid: encryptedEnvelope.serverGuid,
                     transaction: transaction,
                     skipCull: skipCull)
     }
 
     public static func deduplicate(
+        envelopeTimestamp: UInt64,
         serviceTimestamp: UInt64,
         serverGuid: String?,
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
+        guard envelopeTimestamp > 0 else {
+            owsFailDebug("Invalid envelopeTimestamp.")
+            return .nonDuplicate
+        }
         guard serviceTimestamp > 0 else {
-            owsFailDebug("Missing serviceTimestamp.")
+            owsFailDebug("Invalid serviceTimestamp.")
             return .nonDuplicate
         }
         guard let serverGuid = serverGuid?.nilIfEmpty else {
@@ -527,21 +531,20 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 return try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
             }()
             guard !isDuplicate else {
-                Logger.warn("Discarding duplicate envelope with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.warn("Discarding duplicate envelope with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
                 return .duplicate
             }
 
             // No existing record found. Create a new one and insert it.
-            let record = MessageDecryptDeduplicationRecord(serviceTimestamp: serviceTimestamp,
-                                                           serverGuid: serverGuid)
+            let record = MessageDecryptDeduplicationRecord(serverGuid: serverGuid)
             try record.insert(transaction.unwrapGrdbWrite.database)
 
             if !skipCull, shouldCull() {
-                cull(latestServiceTimestamp: serviceTimestamp, transaction: transaction)
+                cull(transaction: transaction)
             }
 
             if DebugFlags.internalLogging {
-                Logger.info("Proceeding with serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
             }
             return .nonDuplicate
         } catch {
@@ -553,34 +556,23 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     }
 
     static let maxRecordCount: UInt = 1000
-    static let maxRecordAgeMs: UInt64 = 5 * kMinuteInMs
 
-    private static func cull(latestServiceTimestamp: UInt64,
-                             transaction: SDSAnyWriteTransaction) {
-        let count1 = recordCount(transaction: transaction)
+    static let cullCount = AtomicUInt(0)
 
-        // Client and service time might not match; use service timestamps for
-        // all record bookkeeping.
-        let recordExpirationTimestamp = latestServiceTimestamp - maxRecordAgeMs
-        let sql = """
-            DELETE FROM MessageDecryptDeduplication
-            WHERE serviceTimestamp < ?;
-        """
-        transaction.unwrapGrdbWrite.executeUpdate(sql: sql, arguments: [recordExpirationTimestamp])
+    private static func cull(transaction: SDSAnyWriteTransaction) {
 
-        let count2 = recordCount(transaction: transaction)
-        if count1 != count2 {
-            Logger.info("Culled by timestamp: \(count1) -> \(count2)")
-        }
+        cullCount.increment()
 
-        guard count2 > maxRecordCount else {
+        let oldCount = recordCount(transaction: transaction)
+
+        guard oldCount > maxRecordCount else {
             return
         }
 
         do {
             // It is sufficient to cull by record count in batches.
             // The batch size must be larger than our cull frequency to bound total record count.
-            let cullCount: Int = min(Int(cullFrequency) * 2, Int(count2) - Int(maxRecordCount))
+            let cullCount: Int = min(Int(cullFrequency) * 2, Int(oldCount) - Int(maxRecordCount))
 
             Logger.info("Culling \(cullCount) records.")
 
@@ -592,11 +584,11 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 try record.delete(transaction.unwrapGrdbWrite.database)
             }
 
-            let count3 = recordCount(transaction: transaction)
-            if count2 != count3 {
-                Logger.info("Culled by count: \(count2) -> \(count3)")
+            let newCount = recordCount(transaction: transaction)
+            if oldCount != newCount {
+                Logger.info("Culled by count: \(oldCount) -> \(newCount)")
             }
-            owsAssertDebug(count3 <= maxRecordCount)
+            owsAssertDebug(newCount <= maxRecordCount)
         } catch {
             owsFailDebug("Error: \(error)")
         }
