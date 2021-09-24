@@ -110,6 +110,50 @@ public class AtomicUInt: NSObject {
 
 // MARK: -
 
+@objc
+public class AtomicUInt64: NSObject {
+    private let value: AtomicValue<UInt64>
+
+    @objc @available(swift, obsoleted: 1.0)
+    public required convenience init(_ value: UInt64) {
+        self.init(value, lock: nil)
+    }
+
+    public required init(_ value: UInt64 = 0, lock: AtomicLock? = nil) {
+        self.value = AtomicValue(value, lock: lock)
+    }
+
+    @objc
+    public func get() -> UInt64 {
+        value.get()
+    }
+
+    @objc
+    public func set(_ value: UInt64) {
+        self.value.set(value)
+    }
+
+    @discardableResult
+    @objc
+    public func increment() -> UInt64 {
+        value.map { $0 + 1 }
+    }
+
+    @discardableResult
+    @objc
+    public func decrementOrZero() -> UInt64 {
+        value.map { max($0, 1) - 1 }
+    }
+
+    @discardableResult
+    @objc
+    public func add(_ delta: UInt64) -> UInt64 {
+        value.map { $0 + delta }
+    }
+}
+
+// MARK: -
+
 public final class AtomicValue<T> {
     private let lock: AtomicLock
     private var value: T
@@ -307,7 +351,7 @@ public class AtomicArray<T> {
     public func pushTail(_ value: T) {
         append(value)
     }
-    
+
     public var count: Int {
         lock.perform { values.count }
     }
@@ -374,7 +418,7 @@ public class AtomicDictionary<Key: Hashable, Value> {
             return result
         }
     }
-    
+
     public var count: Int {
         lock.perform { values.count }
     }
