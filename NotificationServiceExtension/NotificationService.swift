@@ -58,14 +58,7 @@ class NotificationService: UNNotificationServiceExtension {
         }
         Logger.flush()
 
-        let isSync = timeHasExpired
-        if isSync {
-            contentHandler(content)
-        } else {
-            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(1000)) {
-                contentHandler(content)
-            }
-        }
+        contentHandler(content)
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
@@ -150,11 +143,17 @@ class NotificationService: UNNotificationServiceExtension {
         }.catch { _ in
             // Do nothing, Promise.timeout() will log timeouts.
         }
-        fetchPromise.then { [weak self] () -> Promise<Void> in
+        fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
             let processingCompletePromise = self.messageProcessor.processingCompletePromise()
-            processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
+            processingCompletePromise.then(on: .global()) {
+                // Wait until all ACKs are enqueued.
+                Self.messageFetcherJob.pendingAcksPromise()
+            }.then(on: .global()) {
+                // Wait until all outgoing messages are sent.
+                Self.messageSender.pendingSendsPromise()
+            }.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 NotificationServiceError.timeout
             }.catch { _ in
                 // Do nothing, Promise.timeout() will log timeouts.

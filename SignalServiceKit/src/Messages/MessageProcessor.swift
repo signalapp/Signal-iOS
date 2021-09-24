@@ -654,15 +654,15 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
         guard let other = other as? EncryptedEnvelope else {
             return false
         }
-        // serverDeliveryTimestamp is a cheaper comparison and is likely
-        // to eliminate most candidates.
-        guard self.serverDeliveryTimestamp == other.serverDeliveryTimestamp else {
+        guard let serverGuid = encryptedEnvelope.serverGuid else {
+            owsFailDebug("Missing serverGuid.")
             return false
         }
-        guard self.encryptedEnvelopeData == other.encryptedEnvelopeData else {
+        guard let otherServerGuid = other.encryptedEnvelope.serverGuid else {
+            owsFailDebug("Missing other.serverGuid.")
             return false
         }
-        return true
+        return serverGuid == otherServerGuid
     }
 }
 

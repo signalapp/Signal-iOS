@@ -152,6 +152,12 @@ extension MessageSender {
         }
         return promises
     }
+
+    public func pendingSendsPromise() -> Promise<Void> {
+        firstly(on: .global()) {
+            Self.globalSendingQueue().waitUntilAllOperationsAreFinished()
+        }
+    }
 }
 
 // MARK: -

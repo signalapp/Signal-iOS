@@ -273,6 +273,12 @@ public class MessageFetcherJob: NSObject {
         ackOperationQueue.addOperation(ackOperation)
     }
 
+    public func pendingAcksPromise() -> Promise<Void> {
+        firstly(on: .global()) {
+            self.ackOperationQueue.waitUntilAllOperationsAreFinished()
+        }
+    }
+
     // MARK: -
 
     typealias EnvelopeJob = MessageProcessor.EnvelopeJob
