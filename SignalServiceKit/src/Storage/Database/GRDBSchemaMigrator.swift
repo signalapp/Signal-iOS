@@ -113,7 +113,7 @@ public class GRDBSchemaMigrator: NSObject {
         case updateMessageSendLogColumnTypes
         case addRecordTypeIndex
         case tunedConversationLoadIndices
-        case messageDecryptDeduplicationV4
+        case messageDecryptDeduplicationV5
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1446,7 +1446,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.messageDecryptDeduplicationV4.rawValue) { db in
+        migrator.registerMigration(MigrationId.messageDecryptDeduplicationV5.rawValue) { db in
             do {
                 if try db.tableExists("MessageDecryptDeduplication") {
                     try db.drop(table: "MessageDecryptDeduplication")
@@ -1454,10 +1454,6 @@ public class GRDBSchemaMigrator: NSObject {
 
                 try db.create(table: "MessageDecryptDeduplication") { table in
                     table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("envelopeTimestamp", .integer)
-                        .notNull()
-                    table.column("serviceTimestamp", .integer)
                         .notNull()
                     table.column("serverGuid", .text)
                         .notNull()

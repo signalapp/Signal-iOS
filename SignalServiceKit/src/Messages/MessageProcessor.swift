@@ -473,13 +473,9 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     static let databaseTableName = "MessageDecryptDeduplication"
 
     var id: Int64?
-    let envelopeTimestamp: UInt64
-    let serviceTimestamp: UInt64
     let serverGuid: String
 
-    init(envelopeTimestamp: UInt64, serviceTimestamp: UInt64, serverGuid: String) {
-        self.envelopeTimestamp = envelopeTimestamp
-        self.serviceTimestamp = serviceTimestamp
+    init(serverGuid: String) {
         self.serverGuid = serverGuid
     }
 
@@ -540,9 +536,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             }
 
             // No existing record found. Create a new one and insert it.
-            let record = MessageDecryptDeduplicationRecord(envelopeTimestamp: envelopeTimestamp,
-                                                           serviceTimestamp: serviceTimestamp,
-                                                           serverGuid: serverGuid)
+            let record = MessageDecryptDeduplicationRecord(serverGuid: serverGuid)
             try record.insert(transaction.unwrapGrdbWrite.database)
 
             if !skipCull, shouldCull() {

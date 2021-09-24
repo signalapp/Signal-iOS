@@ -1237,8 +1237,6 @@ CREATE
     TABLE
         IF NOT EXISTS "MessageDecryptDeduplication" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"envelopeTimestamp" INTEGER NOT NULL
-            ,"serviceTimestamp" INTEGER NOT NULL
             ,"serverGuid" TEXT NOT NULL
         )
 ;
