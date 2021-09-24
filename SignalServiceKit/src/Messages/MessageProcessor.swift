@@ -475,13 +475,11 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     var id: Int64?
     let envelopeTimestamp: UInt64
     let serviceTimestamp: UInt64
-    let processingTimestamp: UInt64
     let serverGuid: String
 
-    init(envelopeTimestamp: UInt64, serviceTimestamp: UInt64, processingTimestamp: UInt64, serverGuid: String) {
+    init(envelopeTimestamp: UInt64, serviceTimestamp: UInt64, serverGuid: String) {
         self.envelopeTimestamp = envelopeTimestamp
         self.serviceTimestamp = serviceTimestamp
-        self.processingTimestamp = processingTimestamp
         self.serverGuid = serverGuid
     }
 
@@ -502,7 +500,6 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     ) -> Outcome {
         deduplicate(envelopeTimestamp: encryptedEnvelope.timestamp,
                     serviceTimestamp: encryptedEnvelope.serverTimestamp,
-                    processingTimestamp: Date.ows_millisecondTimestamp(),
                     serverGuid: encryptedEnvelope.serverGuid,
                     transaction: transaction,
                     skipCull: skipCull)
@@ -511,7 +508,6 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     public static func deduplicate(
         envelopeTimestamp: UInt64,
         serviceTimestamp: UInt64,
-        processingTimestamp: UInt64,
         serverGuid: String?,
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
@@ -522,10 +518,6 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         }
         guard serviceTimestamp > 0 else {
             owsFailDebug("Invalid serviceTimestamp.")
-            return .nonDuplicate
-        }
-        guard processingTimestamp > 0 else {
-            owsFailDebug("Invalid processingTimestamp.")
             return .nonDuplicate
         }
         guard let serverGuid = serverGuid?.nilIfEmpty else {
@@ -543,23 +535,22 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 return try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
             }()
             guard !isDuplicate else {
-                Logger.warn("Discarding duplicate envelope with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), processingTimestamp: \(processingTimestamp), serverGuid: \(serverGuid)")
+                Logger.warn("Discarding duplicate envelope with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
                 return .duplicate
             }
 
             // No existing record found. Create a new one and insert it.
             let record = MessageDecryptDeduplicationRecord(envelopeTimestamp: envelopeTimestamp,
                                                            serviceTimestamp: serviceTimestamp,
-                                                           processingTimestamp: processingTimestamp,
                                                            serverGuid: serverGuid)
             try record.insert(transaction.unwrapGrdbWrite.database)
 
             if !skipCull, shouldCull() {
-                cull(latestProcessingTimestamp: processingTimestamp, transaction: transaction)
+                cull(transaction: transaction)
             }
 
             if DebugFlags.internalLogging {
-                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), processingTimestamp: \(processingTimestamp), serverGuid: \(serverGuid)")
+                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
             }
             return .nonDuplicate
         } catch {
@@ -571,39 +562,23 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     }
 
     static let maxRecordCount: UInt = 1000
-    static let maxRecordAgeMs: UInt64 = 60 * kMinuteInMs
 
     static let cullCount = AtomicUInt(0)
 
-    private static func cull(latestProcessingTimestamp: UInt64,
-                             transaction: SDSAnyWriteTransaction) {
+    private static func cull(transaction: SDSAnyWriteTransaction) {
 
         cullCount.increment()
 
-        let count1 = recordCount(transaction: transaction)
+        let oldCount = recordCount(transaction: transaction)
 
-        // Client and service time might not match; use service timestamps for
-        // all record bookkeeping.
-        let recordExpirationTimestamp = latestProcessingTimestamp - maxRecordAgeMs
-        let sql = """
-            DELETE FROM MessageDecryptDeduplication
-            WHERE processingTimestamp < ?;
-        """
-        transaction.unwrapGrdbWrite.executeUpdate(sql: sql, arguments: [recordExpirationTimestamp])
-
-        let count2 = recordCount(transaction: transaction)
-        if count1 != count2 {
-            Logger.info("Culled by timestamp: \(count1) -> \(count2)")
-        }
-
-        guard count2 > maxRecordCount else {
+        guard oldCount > maxRecordCount else {
             return
         }
 
         do {
             // It is sufficient to cull by record count in batches.
             // The batch size must be larger than our cull frequency to bound total record count.
-            let cullCount: Int = min(Int(cullFrequency) * 2, Int(count2) - Int(maxRecordCount))
+            let cullCount: Int = min(Int(cullFrequency) * 2, Int(oldCount) - Int(maxRecordCount))
 
             Logger.info("Culling \(cullCount) records.")
 
@@ -615,11 +590,11 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 try record.delete(transaction.unwrapGrdbWrite.database)
             }
 
-            let count3 = recordCount(transaction: transaction)
-            if count2 != count3 {
-                Logger.info("Culled by count: \(count2) -> \(count3)")
+            let newCount = recordCount(transaction: transaction)
+            if oldCount != newCount {
+                Logger.info("Culled by count: \(oldCount) -> \(newCount)")
             }
-            owsAssertDebug(count3 <= maxRecordCount)
+            owsAssertDebug(newCount <= maxRecordCount)
         } catch {
             owsFailDebug("Error: \(error)")
         }

@@ -1239,14 +1239,7 @@ CREATE
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"envelopeTimestamp" INTEGER NOT NULL
             ,"serviceTimestamp" INTEGER NOT NULL
-            ,"processingTimestamp" INTEGER NOT NULL
             ,"serverGuid" TEXT NOT NULL
-        )
-;
-
-CREATE
-    INDEX "MessageDecryptDeduplication_processingTimestamp"
-        ON "MessageDecryptDeduplication"("processingTimestamp"
         )
 ;
 

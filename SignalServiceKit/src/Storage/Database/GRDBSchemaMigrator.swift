@@ -1459,17 +1459,9 @@ public class GRDBSchemaMigrator: NSObject {
                         .notNull()
                     table.column("serviceTimestamp", .integer)
                         .notNull()
-                    table.column("processingTimestamp", .integer)
-                        .notNull()
                     table.column("serverGuid", .text)
                         .notNull()
                 }
-
-                try db.create(
-                    index: "MessageDecryptDeduplication_processingTimestamp",
-                    on: "MessageDecryptDeduplication",
-                    columns: ["processingTimestamp"]
-                )
 
                 try db.create(
                     index: "MessageDecryptDeduplication_serverGuid",
