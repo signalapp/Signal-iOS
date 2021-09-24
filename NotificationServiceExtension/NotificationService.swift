@@ -37,6 +37,9 @@ class NotificationService: UNNotificationServiceExtension {
 
     func completeSilenty(timeHasExpired: Bool = false) {
         guard let contentHandler = contentHandler else {
+            if DebugFlags.internalLogging {
+                Logger.info("No contentHandler.")
+            }
             Logger.flush()
             return
         }
@@ -49,6 +52,9 @@ class NotificationService: UNNotificationServiceExtension {
             content.badge = NSNumber(value: badgeCount)
         }
 
+        if DebugFlags.internalLogging {
+            Logger.info("Invoking contentHandler.")
+        }
         Logger.flush()
 
         contentHandler(content)

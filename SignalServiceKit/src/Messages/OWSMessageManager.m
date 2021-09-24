@@ -493,6 +493,10 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+    }
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -514,6 +518,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (!transaction) {
         OWSFail(@"Missing transaction.");
         return;
+    }
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
     [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
@@ -547,6 +555,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"2 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+    }
+
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
@@ -563,6 +575,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"3 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+    }
+
     // Pre-process the data message.  For v1 and v2 group messages this involves
     // checking group state, possibly creating the group thread, possibly
     // responding to group info requests, etc.
@@ -573,6 +589,10 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *_Nullable thread = [self preprocessDataMessage:dataMessage envelope:envelope transaction:transaction];
     if (thread == nil) {
         return;
+    }
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"4 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
     TSIncomingMessage *_Nullable message = nil;
@@ -599,6 +619,10 @@ NS_ASSUME_NONNULL_BEGIN
 
             OWSLogDebug(@"Incoming message: %@", message.debugDescription);
         }
+    }
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"5 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
     // Send delivery receipts for "valid data" messages received via UD.
@@ -1858,18 +1882,30 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *messageDescription;
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        messageDescription = [NSString stringWithFormat:@"Incoming message from: %@ for group: %@ with timestamp: %llu",
-                                       envelopeAddress(envelope),
-                                       groupThread.groupModel.groupId,
-                                       timestamp];
+        messageDescription = [NSString
+            stringWithFormat:@"Incoming message from: %@ for group: %@ with timestamp: %llu, serviceTimestamp: %llu",
+            envelopeAddress(envelope),
+            groupThread.groupModel.groupId,
+            timestamp,
+            serverDeliveryTimestamp];
     } else {
-        messageDescription = [NSString stringWithFormat:@"Incoming 1:1 message from: %@ with timestamp: %llu",
-                                       envelopeAddress(envelope),
-                                       timestamp];
+        messageDescription =
+            [NSString stringWithFormat:@"Incoming 1:1 message from: %@ with timestamp: %llu, serviceTimestamp: %llu",
+                      envelopeAddress(envelope),
+                      timestamp,
+                      serverDeliveryTimestamp];
     }
-    OWSLogDebug(@"%@", messageDescription);
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"%@", messageDescription);
+    } else {
+        OWSLogDebug(@"%@", messageDescription);
+    }
 
     if (dataMessage.reaction) {
+        if (SSKDebugFlags.internalLogging) {
+            OWSLogInfo(@"Reaction: %@", messageDescription);
+        }
         OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
                                                                                 threadId:thread.uniqueId
                                                                                  reactor:envelope.sourceAddress
@@ -2062,6 +2098,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"Inserting: %@", messageDescription);
+    }
+
     // Check for any placeholders inserted because of a previously undecryptable message
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
@@ -2108,6 +2148,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                              address:envelope.sourceAddress
                                                             deviceId:envelope.sourceDevice];
     });
+
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogInfo(@"Inserted: %@", messageDescription);
+    }
 
     return message;
 }
