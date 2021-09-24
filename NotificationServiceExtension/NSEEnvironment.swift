@@ -157,8 +157,6 @@ class NSEEnvironment: Dependencies {
     }
 
     public static func verifyDBKeysAvailable() -> UNNotificationContent? {
-        AssertIsOnMainThread()
-
         guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return nil }
 
         Logger.info("Database password is not accessible, posting generic notification.")
