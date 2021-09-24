@@ -289,12 +289,23 @@ public class MessageProcessor: NSObject {
 
             Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s).")
 
+            var skippedEnvelopes: [PendingEnvelope] = []
             SDSDatabaseStorage.shared.write { transaction in
-                batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
+                batchEnvelopes.forEach {
+                    if messagePipelineSupervisor.isMessageProcessingPermitted {
+                        self.processEnvelope($0, transaction: transaction)
+                    } else {
+                        skippedEnvelopes.append($0)
+                    }
+                }
             }
 
             // Remove the processed envelopes from the pending list.
-            pendingEnvelopes.removeProcessedBatch(batch)
+            if skippedEnvelopes.isEmpty {
+                pendingEnvelopes.removeProcessedBatch(batch)
+            } else {
+                pendingEnvelopes.removePartiallySuccessfulBatch(batch, failedEnvelopes: skippedEnvelopes)
+            }
 
             return true
         }
@@ -748,7 +759,7 @@ public class PendingEnvelopes {
         }
     }
 
-    fileprivate func removeProcessedBatch(_ batch: Batch) {
+    fileprivate func removePartiallySuccessfulBatch(_ batch: Batch, failedEnvelopes: [PendingEnvelope]) {
         unfairLock.withLock {
             let batchEnvelopes = batch.batchEnvelopes
             guard pendingEnvelopes.count > batchEnvelopes.count else {
@@ -756,12 +767,16 @@ public class PendingEnvelopes {
                 return
             }
             let oldCount = pendingEnvelopes.count
-            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            pendingEnvelopes = failedEnvelopes + Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
             let newCount = pendingEnvelopes.count
             if DebugFlags.internalLogging {
                 Logger.info("\(oldCount) -> \(newCount)")
             }
         }
+    }
+
+    fileprivate func removeProcessedBatch(_ batch: Batch) {
+        removePartiallySuccessfulBatch(batch, failedEnvelopes: [])
     }
 
     fileprivate func enqueue(decryptedEnvelope: DecryptedEnvelope) {

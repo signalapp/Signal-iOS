@@ -57,6 +57,13 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 transaction: transaction
             )
 
+            // We don't want to risk consuming any call messages that the main app needs to perform the call
+            // We suspend message processing in our process to give the main app a chance to wake and take over
+            let suspension = messagePipelineSupervisor.suspendMessageProcessing(for: "Waking main app for \(payload)")
+            DispatchQueue.sharedUtility.asyncAfter(deadline: .now() + .seconds(10)) {
+                suspension.invalidate()
+            }
+
             Logger.info("Notifying primary app of incoming call with push payload: \(payload)")
             CXProvider.reportNewIncomingVoIPPushPayload(payload.payloadDict) { error in
                 if let error = error {

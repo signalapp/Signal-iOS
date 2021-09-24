@@ -76,11 +76,11 @@ public class MessagePipelineSupervisor: NSObject {
     // MARK: - Private
 
     private func incrementSuspensionCount(for reason: String) {
-        Logger.verbose("Incrementing suspension refcount for reason: \(reason)")
         let updatedCount: Int = lock.withLock {
             suspensionCount += 1
             return suspensionCount
         }
+        Logger.info("Incremented suspension refcount to \(updatedCount) for reason: \(reason)")
         if updatedCount == 1 {
             notifyOfSuspensionStateChange()
         }
@@ -91,7 +91,7 @@ public class MessagePipelineSupervisor: NSObject {
             suspensionCount -= 1
             return suspensionCount
         }
-        Logger.verbose("Decremented suspension refcount for reason: \(reason)")
+        Logger.info("Decremented suspension refcount to \(updatedCount) for reason: \(reason)")
         assert(updatedCount >= 0, "Suspension refcount dipped below zero")
 
         if updatedCount == 0 {
