@@ -295,8 +295,22 @@ public class MessageFetcherJob: NSObject {
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
-                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
-                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { processingError in
+                        var shouldAck: Bool
+                        switch processingError {
+                        case nil:
+                            shouldAck = true
+                        case MessageProcessingError.duplicatePendingEnvelope?:
+                            shouldAck = false
+                        case MessageProcessingError.duplicateDecryption?:
+                            shouldAck = true
+                        default:
+                            shouldAck = true
+                        }
+
+                        if shouldAck {
+                            Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                        }
                     }
                 } catch {
                     owsFailDebug("failed to serialize envelope")

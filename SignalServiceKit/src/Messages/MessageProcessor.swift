@@ -193,7 +193,7 @@ public class MessageProcessor: NSObject {
         switch result {
         case .duplicate:
             Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
-            completion(MessageProcessingError.duplicateMessage)
+            completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
         }
@@ -628,7 +628,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
             // Proceed with decryption.
             break
         case .duplicate:
-            return .failure(MessageProcessingError.duplicateMessage)
+            return .failure(MessageProcessingError.duplicateDecryption)
         }
 
         let result = Self.messageDecrypter.decryptEnvelope(
@@ -803,5 +803,6 @@ public class PendingEnvelopes {
 // MARK: -
 
 public enum MessageProcessingError: Error {
-    case duplicateMessage
+    case duplicatePendingEnvelope
+    case duplicateDecryption
 }

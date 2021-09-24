@@ -33,10 +33,11 @@ let hasShownFirstUnlockError = AtomicBool(false)
 
 class NotificationService: UNNotificationServiceExtension {
 
-    private var contentHandler: ((UNNotificationContent) -> Void)?
+    private typealias ContentHandler = (UNNotificationContent) -> Void
+    private var contentHandler = AtomicOptional<ContentHandler>(nil)
 
     func completeSilenty(timeHasExpired: Bool = false) {
-        guard let contentHandler = contentHandler else {
+        guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
                 Logger.info("No contentHandler.")
             }
@@ -57,8 +58,14 @@ class NotificationService: UNNotificationServiceExtension {
         }
         Logger.flush()
 
-        contentHandler(content)
-        self.contentHandler = nil
+        let isSync = timeHasExpired
+        if isSync {
+            contentHandler(content)
+        } else {
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(1000)) {
+                contentHandler(content)
+            }
+        }
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
@@ -94,7 +101,7 @@ class NotificationService: UNNotificationServiceExtension {
             fatalError("Posting error notification and skipping processing.")
         }
 
-        self.contentHandler = contentHandler
+        self.contentHandler.set(contentHandler)
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
