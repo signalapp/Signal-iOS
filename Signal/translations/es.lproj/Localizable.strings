@@ -5192,7 +5192,7 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Aviso legal y privacidad";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generar vista previa";
+"SETTINGS_LINK_PREVIEWS" = "Vista previa de enlaces";
 
 /* Footer for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_FOOTER" = "Esta opción trasmite la vista previa de los enlaces en los mensajes que envíes. La imagen de la vista previa se descarga directamente desde la página web correspondiente generando una visita (adicional) a esa página web desde tu dispositivo. ";

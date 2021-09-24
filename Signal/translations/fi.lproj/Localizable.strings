@@ -1655,7 +1655,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "Viestiä lähettäjältä %@ ei voitu toimittaa";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Viestiä ei voitu toimittaa";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Vastaanotettiin viestin kaksoiskappale.";
@@ -1694,7 +1694,7 @@
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Tapahtui virhe";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Laitteesi ei ole enää yhdistetty. Yhdistä uudelleen jatkaaksesi viestintää.";
@@ -1748,13 +1748,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Lähetä viesti";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Lähetä %@ viestiä";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Viesti lähetetty";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "Viestit lähetetty";
@@ -3164,13 +3164,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Tarrapaketti";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 valittu";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 valittu";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ valittu";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Viesti";
@@ -4640,7 +4640,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Puhelinnumero, jota yrität rekisteröidä, on jo rekisteröity toisella palvelimella. Pura ensin rekisteröintisi sieltä ja yritä sitten uudelleen.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = " Poista esikatselu";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Valitse uusi ylläpitäjä";

@@ -1751,7 +1751,7 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Dërgo %@ mesazhe";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Përcjellje Më të Shpejta";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Mesazhi u dërgua";

@@ -323,7 +323,7 @@
 "ATTACHMENT_TYPE_IMAGE" = "Afbeelding";
 
 /* Short text label for a photo attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_PHOTO" = "Foto";
+"ATTACHMENT_TYPE_PHOTO" = "Afbeelding";
 
 /* Short text label for a video attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VIDEO" = "Video";
@@ -4064,7 +4064,7 @@
 "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Eenmaligeweergave-video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Foto weergeven";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Afbeelding weergeven";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Video weergeven";
@@ -4466,7 +4466,7 @@
 "QUOTED_REPLY_TYPE_IMAGE" = "Afbeelding";
 
 /* Indicates this message is a quoted reply to a photo file. */
-"QUOTED_REPLY_TYPE_PHOTO" = "Gallerij";
+"QUOTED_REPLY_TYPE_PHOTO" = "Afbeelding";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";

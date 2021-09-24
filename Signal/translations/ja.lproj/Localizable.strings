@@ -5222,7 +5222,7 @@
 "SETTINGS_MESSAGING" = "メッセージ";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "メッセージの既読や入力中の状態の表示し共有します。無効の場合、相手からの既読通知や入力中アイコンを見ることはできません。";
+"SETTINGS_MESSAGING_FOOTER" = "メッセージの既読や入力中の状態を相手に共有します。無効の場合、相手の既読通知や入力中アイコンも表示されません。";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";

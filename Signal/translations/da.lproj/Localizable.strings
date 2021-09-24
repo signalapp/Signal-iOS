@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Forstået";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller et medie kunne ikke leveres til dig fra %@ i denne chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Leveringsproblem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller et medie kunne ikke leveres til dig fra %@. De kan have forsøgt at sende direkte til dig eller i en gruppe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Kassér";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Hurtigere, færre data";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Mediekvalitet";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Besked til %@";
@@ -341,34 +341,34 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Højttaler";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Tilføj billede";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Vælg et look og en farve, eller tilpas dine initialer.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Tilføj et profilbillede";
 
 /* Text prompting the user to choose a color when editing their avatar */
-"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Choose a Color";
+"AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Vælg en farve";
 
 /* Segment indicating the user can edit the color of the avatar */
 "AVATAR_EDIT_VIEW_COLOR_SEGMENT" = "Farve";
 
 /* Segment indicating the user can edit the text of the avatar */
-"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Text";
+"AVATAR_EDIT_VIEW_TEXT_SEGMENT" = "Tekst";
 
 /* Text indicating the user can select an avatar from their camera */
-"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "camera";
+"AVATAR_SETTINGS_VIEW_CAMERA_BUTTON" = "kamera";
 
 /* Text indicating the user can select an avatar from their photos */
-"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "photo";
+"AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "billede";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Select an Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Vælg en avatar";
 
 /* Text indicating the user can create a new avatar with text */
-"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "text";
+"AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "tekst";
 
 /* return to the previous screen */
 "BACK_BUTTON" = "Tilbage";
@@ -905,7 +905,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet chat?";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Kun administratorer kan sende beskeder til denne gruppe.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge flere end %@ chats";
@@ -1103,10 +1103,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Alle medlemmer";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Choose who can send messages and start calls in this group.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Vælg hvem der kan sende beskeder og starte opkald i denne gruppe.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send Messages";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Send beskeder";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Kun administratorer";
@@ -1148,7 +1148,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Læs mere";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "Kopieret til udklipsholder";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Nulstilling af din session giver dig mulighed for at modtage fremtidige meddelelser fra %@, men det vil ikke gendanne allerede beskadigede meddelelser";
@@ -1589,16 +1589,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kunne ikke få adgang til kontakter";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kunne ikke videresende besked.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Kunne ikke videresende beskeden, fordi den ikke længere er tilgængelig.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kunne ikke videresende beskeder, fordi de ikke længere er tilgængelige.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kunne ikke videresende beskeder";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Kunne ikke gemme video";
@@ -1655,7 +1655,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "En besked kunne ikke leveres";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Modtog en duplikeret besked";
@@ -1691,10 +1691,10 @@
 "ERROR_NETWORK_FAILURE" = "Netværksfejl";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Hjælp os venligst med at forbedre Signal ved at rapportere denne fejl sammen med fejlsøgningslogger fra din enhed til support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Der opstod en fejl";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Din enhed er ikke længere linket. Link venligst på ny for at sende beskeder";
@@ -1742,28 +1742,28 @@
 "FORWARD_MESSAGE" = "Videresend besked";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Videresendte beskeder sendes nu øjeblikkeligt.";
 
 /* Label for button to proceed with forwarding a single message. */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Send message";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Send besked";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ beskeder";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Besked sendt";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Beskeder sendt";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Tilføj en besked";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Videresend til";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Der er ingen mediefiler i chatten";
@@ -1784,7 +1784,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Udseende";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Tilføj foto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invitér venner";
@@ -1862,10 +1862,10 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ er blokeret";
 
 /* Message for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Only admins of this group can start a call.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Kun administratorer af denne gruppe kan starte et opkald.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Can’t Start Group Call";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Kan ikke starte gruppesamtale";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ er blokeret";
@@ -2126,19 +2126,19 @@
 "GROUP_INVITES_VIEW_TITLE" = "Medlemsinvitationer";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "The group settings were changed to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Gruppeindstillingerne blev ændret, så alle medlemmer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "You changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så alle medlemmer kan sende meddelelser.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "The group settings were changed to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Gruppeindstillingerne blev ændret, så kun administratorer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "You changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så kun administratorer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
@@ -2570,7 +2570,7 @@
 "GROUP_YOU_LEFT" = "Du har forladt gruppen.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admins";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratorer";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
@@ -3125,7 +3125,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Videresend beskeden";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Videresend valgte beskeder";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Åbn gruppeinvitation";
@@ -3845,7 +3845,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Opdater Signal for at bruge betalinger";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Betaling endnu ikke verificeret";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Betalingen kunne ikke gennemføres. Tjek din forbindelse og prøv igen.";
@@ -4598,7 +4598,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du skal registrere dig, før du kan sende en besked";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Der var tidligere en konto registreret med dette nummer, som kan overføres.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikation mislykkedes";
@@ -5126,10 +5126,10 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Nulstil indstillinger for auto-hentning";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalitet af sendte medier";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Vælg den kvalitet, du sender billeder og videoer i.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
@@ -5747,7 +5747,7 @@
 "SETTINGS_SECURITY_TITLE" = "Appsikkerhed";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Afsendelse af medier i høj kvalitet bruger mere data.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";

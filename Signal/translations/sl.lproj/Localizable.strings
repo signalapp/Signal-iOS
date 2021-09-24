@@ -491,7 +491,7 @@
 "BUTTON_SHARE" = "Deli";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "Start";
+"BUTTON_START" = "Začni";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Oddaj";
@@ -5516,7 +5516,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Paste From Clipboard";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Recovery phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Obnovitvena fraza";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";

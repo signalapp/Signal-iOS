@@ -1652,10 +1652,10 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Échec de téléchargement du fichier joint.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Un message de %@ n’a pas pu être remis";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Un message n’a pas pu être remis";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Réception d’un message en double.";

@@ -4598,7 +4598,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Du musst dich registrieren, bevor du eine Nachricht senden kannst.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Mit dieser Rufnummer war zuvor ein Nutzerkonto registriert, das  nun für eine Übertragung verfügbar ist.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Mit dieser Rufnummer war zuvor ein Nutzerkonto registriert, das nun für eine Übertragung verfügbar ist.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikation gescheitert";
@@ -5747,7 +5747,7 @@
 "SETTINGS_SECURITY_TITLE" = "App-Sicherheit";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Zum Senden von Medien hoher Qualität wird mehr Datenvolumen genutzt.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Das Senden von Medieninhalten hoher Qualität verbraucht mehr Datenvolumen.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Fotos und Videos";

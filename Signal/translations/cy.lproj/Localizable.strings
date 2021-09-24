@@ -4388,7 +4388,7 @@
 "PROFILE_NAME_VIEW_TITLE" = "Eich Enw";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Ynghylch";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Amdanoch";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Enw";
