@@ -24,8 +24,10 @@ public enum PushRegistrationError: Error {
         SwiftSingletons.register(self)
     }
 
+    // Coordinates blocking of the calloutQueue while we wait for an incoming call
     private let pendingCallSignal = DispatchSemaphore(value: 0)
     private let isWaitingForSignal = AtomicBool(false)
+
     // Private callout queue that we can use to synchronously wait for our call to start
     // TODO: Rewrite call message routing to be able to synchronously report calls
     private let calloutQueue = DispatchQueue(
@@ -63,6 +65,13 @@ public enum PushRegistrationError: Error {
     }
 
     public func didFinishReportingIncomingCall() {
+        owsAssertDebug(CurrentAppContext().isMainApp)
+
+        // If we successfully clear the flag, we know we have someone waiting on the calloutQueue
+        // They may be blocked, in which case the signal will wake them up
+        // They could also have timed out, in which case they'll detect the cleared flag and decrement
+        // Either way, we should only signal if we can clear the flag, otherwise the extra increment will
+        // prevent the calloutQueue from blocking in the future.
         if isWaitingForSignal.tryToClearFlag() {
             pendingCallSignal.signal()
         }
@@ -107,8 +116,16 @@ public enum PushRegistrationError: Error {
     // MARK: PKPushRegistryDelegate - voIP Push Token
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
-        dispatchPrecondition(condition: .onQueue(calloutQueue))
+        assertOnQueue(calloutQueue)
+        owsAssertDebug(CurrentAppContext().isMainApp)
         owsAssertDebug(type == .voIP)
+
+        // Concurrency invariants:
+        // At the start of this function: isWaitingForSignal: false. pendingCallSignal: +0.
+        // During this function (if a call message): isWaitingForSignal: true. pendingCallSignal: +{0,1}.
+        // Before returning: isWaitingForSignal: false. pendingCallSignal: +0.
+        owsAssertDebug(isWaitingForSignal.get() == false)
+        // owsAssertDebug(pendingCallSignal.count == 0)     // Not exposed so we can't actually assert this.
 
         let callRelayPayload = CallMessagePushPayload(payload.dictionaryPayload)
         if let callRelayPayload = callRelayPayload {
@@ -146,35 +163,62 @@ public enum PushRegistrationError: Error {
         }
 
         if let callRelayPayload = callRelayPayload {
-            // We need to handle the incoming call push in the same runloop as it was delivered
-            // RingRTC will callback to us async to start the call after we hand them the call message,
-            // but once we return from here it's too late.
+            // iOS will kill our app and refuse to launch it again for an incoming call if we return from
+            // this function without reporting an incoming call.
             //
-            // We'll probably need RingRTC changes to handle this properly and synchronously. Until then,
-            // let's just block the thread for a bit until we hear back that the call was started..
+            // You may see a crash here: -[PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes]
+            // Or a log message like:
+            // > "Apps receving VoIP pushes must post an incoming call via CallKit in the same run loop as
+            //    pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay"
+            // > "Killing app because it never posted an incoming call to the system after receiving a PushKit VoIP push."
+            //
+            // We should be better about handling these pushes faster and synchronously, but for now we
+            // can get away with just block this thread and wait for a call to be reported to signal us.
             Logger.info("Waiting for call to start: \(callRelayPayload)")
             let waitInterval = DispatchTimeInterval.seconds(5)
-
-            if pendingCallSignal.wait(timeout: .now() + waitInterval) == .timedOut {
+            let didTimeout = (pendingCallSignal.wait(timeout: .now() + waitInterval) == .timedOut)
+            if didTimeout {
                 owsFailDebug("Call didn't start within \(waitInterval) seconds. Continuing anyway, expecting to be killed.")
-                // To prepare for the next VoIP push, we need to make sure that when we leave this function:
-                // - isWaitingForSignal is set false
-                // - pendingCallSignal has a count of 0
-                //
-                // There's a tiny race where we timeout then immediately after the call tries to wake
-                // the signal. To guard against this, we check the isWaitingForSignal. If it's been cleared,
-                // we know another thread must have signaled, so we should wait on our semaphore to decrement
-                // it back to zero.
-                if isWaitingForSignal.tryToClearFlag() == false {
-                    pendingCallSignal.wait()
-                }
             }
+
+            // Three cases that we need to account for.
+            // In all of these cases, we need to make sure that we return from this function with
+            // Semaphore: +0. isWaitingForSignal: false.
+            switch (didTimeout: didTimeout, didClearFlag: isWaitingForSignal.tryToClearFlag()) {
+
+            // 1. We're successfully signaled by a reported call:
+            case (didTimeout: false, let didClearFlag):
+                // If we've been signaled, another thread must have called `didFinishReportingIncomingCall`
+                // It should have already cleared the flag for us, so let's assert that we haven't:
+                owsAssertDebug(didClearFlag == false)
+                // It should have also signaled the semaphore to +1. Our successful wait would have decremented back to +0.
+                // Invariant restored ✅: Semaphore: +0. isWaitingForSignal: false
+
+            // 2. A call isn't reported in time, so we timeout before another thread calls `didFinishReportingIncomingCall`
+            case (didTimeout: true, didClearFlag: true):
+                // We successfully cleared the flag, so we know the semaphore cannot be incremented at this point.
+                // Invariant restored ✅: Semaphore: +0. isWaitingForSignal: false
+                break
+
+            // 3. A race. We timeout at the same time that another thread tries to signal us
+            case (didTimeout: true, didClearFlag: false):
+                // We failed to clear the flag, so another thread beat us to clearing it by calling `didFinishReportingIncomingCall`
+                // This means that the semaphore is either at a +1 count, or is about to be signaled to +1
+                // We can safely wait to re-decrement the semaphore:
+
+                // Semaphore: +1. isWaitingForSema: false
+                pendingCallSignal.wait()
+                // Invariant restored ✅: Semaphore: +0. isWaitingForSignal: false
+            }
+
+            owsAssertDebug(isWaitingForSignal.get() == false)
+            // owsAssertDebug(pendingCallSignal.count == 0)     // Not exposed so we can't actually assert this.
             Logger.info("Returning back to PushKit. Good luck! \(callRelayPayload)")
         }
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
-        dispatchPrecondition(condition: .onQueue(calloutQueue))
+        assertOnQueue(calloutQueue)
         Logger.info("")
         owsAssertDebug(type == .voIP)
         owsAssertDebug(credentials.type == .voIP)
@@ -186,7 +230,7 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         // It's not clear when this would happen. We've never previously handled it, but we should at
         // least start learning if it happens.
-        dispatchPrecondition(condition: .onQueue(calloutQueue))
+        assertOnQueue(calloutQueue)
         owsFailDebug("Invalid state")
     }
 
