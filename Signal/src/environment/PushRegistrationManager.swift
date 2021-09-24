@@ -157,11 +157,16 @@ public enum PushRegistrationError: Error {
 
             if pendingCallSignal.wait(timeout: .now() + waitInterval) == .timedOut {
                 owsFailDebug("Call didn't start within \(waitInterval) seconds. Continuing anyway, expecting to be killed.")
-                // We want to make sure we increment the semaphore exactly once per call to reset state
-                // for the next call. If we timed-out on the semaphore, we could race with another thread
-                // signaling the semaphore at this instant. We consult the atomic bool before re-incrementing.
-                if isWaitingForSignal.tryToClearFlag() {
-                    pendingCallSignal.signal()
+                // To prepare for the next VoIP push, we need to make sure that when we leave this function:
+                // - isWaitingForSignal is set false
+                // - pendingCallSignal has a count of 0
+                //
+                // There's a tiny race where we timeout then immediately after the call tries to wake
+                // the signal. To guard against this, we check the isWaitingForSignal. If it's been cleared,
+                // we know another thread must have signaled, so we should wait on our semaphore to decrement
+                // it back to zero.
+                if isWaitingForSignal.tryToClearFlag() == false {
+                    pendingCallSignal.wait()
                 }
             }
             Logger.info("Returning back to PushKit. Good luck! \(callRelayPayload)")
