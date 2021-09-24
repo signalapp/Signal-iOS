@@ -101,6 +101,9 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 // TODO: Make this private.
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend;
 
+// TODO: Make this private.
++ (NSOperationQueue *)globalSendingQueue;
+
 @end
 
 #pragma mark -

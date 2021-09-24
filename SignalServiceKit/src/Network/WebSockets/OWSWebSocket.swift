@@ -534,10 +534,12 @@ public class OWSWebSocket: NSObject {
             switch processingError {
             case nil:
                 shouldAck = true
-            case MessageProcessingError.duplicateMessage?:
+            case MessageProcessingError.duplicatePendingEnvelope?:
                 shouldAck = false
+            case MessageProcessingError.duplicateDecryption?:
+                shouldAck = true
             case let alertableError?:
-                shouldAck = false
+                shouldAck = true
                 Logger.warn("Failed to process message: \(alertableError)")
                 Self.databaseStorage.write { transaction in
                     let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()

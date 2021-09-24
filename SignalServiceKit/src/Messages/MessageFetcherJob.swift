@@ -273,6 +273,18 @@ public class MessageFetcherJob: NSObject {
         ackOperationQueue.addOperation(ackOperation)
     }
 
+    public func pendingAcksPromise() -> Promise<Void> {
+        // This promise blocks on all operations already in the queue,
+        // but will not block on new operations added after this promise
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
+        let (promise, future) = Promise<Void>.pending()
+        self.ackOperationQueue.addOperation {
+            future.resolve(())
+        }
+        return promise
+    }
+
     // MARK: -
 
     typealias EnvelopeJob = MessageProcessor.EnvelopeJob
@@ -295,8 +307,22 @@ public class MessageFetcherJob: NSObject {
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
-                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) {_ in
-                        Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { processingError in
+                        var shouldAck: Bool
+                        switch processingError {
+                        case nil:
+                            shouldAck = true
+                        case MessageProcessingError.duplicatePendingEnvelope?:
+                            shouldAck = false
+                        case MessageProcessingError.duplicateDecryption?:
+                            shouldAck = true
+                        default:
+                            shouldAck = true
+                        }
+
+                        if shouldAck {
+                            Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                        }
                     }
                 } catch {
                     owsFailDebug("failed to serialize envelope")

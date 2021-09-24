@@ -105,8 +105,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                                                       envelopeSource: .tests) { error in
             switch error {
-            case MessageProcessingError.duplicateMessage?:
-                XCTFail("duplicate")
+            case MessageProcessingError.duplicatePendingEnvelope?:
+                XCTFail("duplicatePendingEnvelope")
+            case MessageProcessingError.duplicateDecryption?:
+                XCTFail("duplicateDecryption")
             case .some(_):
                 XCTFail("failure")
             case nil:
@@ -177,8 +179,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                                                       serverDeliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                                                       envelopeSource: .tests) { error in
             switch error {
-            case MessageProcessingError.duplicateMessage?:
-                XCTFail("duplicate")
+            case MessageProcessingError.duplicatePendingEnvelope?:
+                XCTFail("duplicatePendingEnvelope")
+            case MessageProcessingError.duplicateDecryption?:
+                XCTFail("duplicateDecryption")
             case .some(_):
                 XCTFail("failure")
             case nil:

@@ -33,10 +33,14 @@ let hasShownFirstUnlockError = AtomicBool(false)
 
 class NotificationService: UNNotificationServiceExtension {
 
-    private var contentHandler: ((UNNotificationContent) -> Void)?
+    private typealias ContentHandler = (UNNotificationContent) -> Void
+    private var contentHandler = AtomicOptional<ContentHandler>(nil)
 
     func completeSilenty(timeHasExpired: Bool = false) {
-        guard let contentHandler = contentHandler else {
+        guard let contentHandler = contentHandler.swap(nil) else {
+            if DebugFlags.internalLogging {
+                Logger.info("No contentHandler.")
+            }
             Logger.flush()
             return
         }
@@ -49,10 +53,12 @@ class NotificationService: UNNotificationServiceExtension {
             content.badge = NSNumber(value: badgeCount)
         }
 
+        if DebugFlags.internalLogging {
+            Logger.info("Invoking contentHandler.")
+        }
         Logger.flush()
 
         contentHandler(content)
-        self.contentHandler = nil
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
@@ -88,7 +94,7 @@ class NotificationService: UNNotificationServiceExtension {
             fatalError("Posting error notification and skipping processing.")
         }
 
-        self.contentHandler = contentHandler
+        self.contentHandler.set(contentHandler)
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
@@ -137,11 +143,29 @@ class NotificationService: UNNotificationServiceExtension {
         }.catch { _ in
             // Do nothing, Promise.timeout() will log timeouts.
         }
-        fetchPromise.then { [weak self] () -> Promise<Void> in
+        fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
             let processingCompletePromise = self.messageProcessor.processingCompletePromise()
-            processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
+            processingCompletePromise.then(on: .global()) { () -> Promise<Void> in
+                // Wait until all notifications are enqueued.
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on notificationPresenter.")
+                }
+                return NotificationPresenter.pendingNotificationsPromise()
+            }.then(on: .global()) { () -> Promise<Void> in
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on acks.")
+                }
+                // Wait until all ACKs are enqueued.
+                return Self.messageFetcherJob.pendingAcksPromise()
+            }.then(on: .global()) { () -> Promise<Void> in
+                if DebugFlags.internalLogging {
+                    Logger.info("Waiting on sends.")
+                }
+                // Wait until all outgoing messages are sent.
+                return Self.messageSender.pendingSendsPromise()
+            }.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 NotificationServiceError.timeout
             }.catch { _ in
                 // Do nothing, Promise.timeout() will log timeouts.

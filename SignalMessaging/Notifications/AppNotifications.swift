@@ -4,6 +4,7 @@
 
 import Foundation
 import Intents
+import SignalServiceKit
 
 /// There are two primary components in our system notification integration:
 ///
@@ -192,6 +193,8 @@ extension NotificationPresenterAdaptee {
     }
 }
 
+// MARK: -
+
 @objc(OWSNotificationPresenter)
 public class NotificationPresenter: NSObject, NotificationsProtocol {
     private let adaptee: NotificationPresenterAdaptee
@@ -256,7 +259,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             self.adaptee.notify(category: .incomingCall,
                                 title: notificationTitle,
                                 body: notificationBody,
@@ -306,7 +309,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -340,7 +343,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
                                 title: notificationTitle,
@@ -375,7 +378,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
             : .missedCallWithoutActions)
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -523,7 +526,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -533,6 +536,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 interaction: interaction,
                                 sound: sound)
         }
+    }
+
+    // TODO: We could use another (non-concurrent) queue.
+    public static let serialQueue = DispatchQueue(label: "org.signal.notificationPresenter")
+    public static let notifyOnMainThread = true
+    private static var notificationQueue: DispatchQueue { notifyOnMainThread ? .main : serialQueue }
+    private var notificationQueue: DispatchQueue { Self.notificationQueue }
+
+    public static func pendingNotificationsPromise() -> Promise<Void> {
+        // This promise blocks on all pending notifications already in flight,
+        // but will not block on new notifications enqueued after this promise
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
+        let (promise, future) = Promise<Void>.pending()
+        notificationQueue.async {
+            future.resolve(())
+        }
+        return promise
     }
 
     public func notifyUser(forReaction reaction: OWSReaction,
@@ -638,7 +659,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(
                 category: category,
@@ -667,7 +688,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -690,7 +711,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                               comment: "Format string for an error alert notification message. Embes {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             self.adaptee.notify(
                 category: .internalError,
                 title: title,
@@ -720,7 +741,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
         ]
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -801,7 +822,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        transaction.addAsyncCompletionOnMain {
+        transaction.addAsyncCompletion(queue: notificationQueue) {
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -817,7 +838,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                            transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
-        transaction.addAsyncCompletionOnMain {
+        transaction.addAsyncCompletion(queue: notificationQueue) {
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,
                                 body: notificationBody,

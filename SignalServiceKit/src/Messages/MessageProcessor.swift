@@ -193,7 +193,7 @@ public class MessageProcessor: NSObject {
         switch result {
         case .duplicate:
             Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
-            completion(MessageProcessingError.duplicateMessage)
+            completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
         }
@@ -628,7 +628,7 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
             // Proceed with decryption.
             break
         case .duplicate:
-            return .failure(MessageProcessingError.duplicateMessage)
+            return .failure(MessageProcessingError.duplicateDecryption)
         }
 
         let result = Self.messageDecrypter.decryptEnvelope(
@@ -654,15 +654,15 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
         guard let other = other as? EncryptedEnvelope else {
             return false
         }
-        // serverDeliveryTimestamp is a cheaper comparison and is likely
-        // to eliminate most candidates.
-        guard self.serverDeliveryTimestamp == other.serverDeliveryTimestamp else {
+        guard let serverGuid = encryptedEnvelope.serverGuid else {
+            owsFailDebug("Missing serverGuid.")
             return false
         }
-        guard self.encryptedEnvelopeData == other.encryptedEnvelopeData else {
+        guard let otherServerGuid = other.encryptedEnvelope.serverGuid else {
+            owsFailDebug("Missing other.serverGuid.")
             return false
         }
-        return true
+        return serverGuid == otherServerGuid
     }
 }
 
@@ -803,5 +803,6 @@ public class PendingEnvelopes {
 // MARK: -
 
 public enum MessageProcessingError: Error {
-    case duplicateMessage
+    case duplicatePendingEnvelope
+    case duplicateDecryption
 }
