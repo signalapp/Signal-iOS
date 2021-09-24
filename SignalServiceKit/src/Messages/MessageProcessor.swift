@@ -192,7 +192,7 @@ public class MessageProcessor: NSObject {
         let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
         switch result {
         case .duplicate:
-            Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
+            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(serverDeliveryTimestamp). EnvelopeSource: \(envelopeSource).")
             completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
