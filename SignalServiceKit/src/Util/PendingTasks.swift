@@ -7,14 +7,32 @@ import SignalCoreKit
 
 @objc
 public class PendingTasks: NSObject {
+
+    fileprivate let label: String
+
     private let pendingTasks = AtomicDictionary<UInt, PendingTask>()
+
+    @objc
+    public required init(label: String) {
+        self.label = label
+    }
 
     public func pendingTasksPromise() -> Promise<Void> {
         // This promise blocks on all pending tasks already in flight,
         // but will not block on new tasks added after this promise
         // is created.
+        let label = self.label
+        if DebugFlags.internalLogging {
+            Logger.info("Waiting \(label).")
+        }
         let promises = pendingTasks.allValues.map { $0.promise }
-        return Promise.when(resolved: promises).asVoid()
+        return firstly(on: .global()) {
+            Promise.when(resolved: promises).asVoid()
+        }.map(on: .global()) {
+            if DebugFlags.internalLogging {
+                Logger.info("Complete \(label).")
+            }
+        }
     }
 
     @objc

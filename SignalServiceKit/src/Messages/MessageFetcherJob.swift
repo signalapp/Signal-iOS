@@ -268,10 +268,10 @@ public class MessageFetcherJob: NSObject {
         return operationQueue
     }()
 
-    private let pendingAcks = PendingTasks()
+    private let pendingAcks = PendingTasks(label: "Acks")
 
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let pendingAck = pendingAcks.buildPendingTask(label: "ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
         let ackConcurrentOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
                                                          pendingAck: pendingAck)
         ackOperationQueue.addOperation(ackConcurrentOperation)
@@ -307,23 +307,13 @@ public class MessageFetcherJob: NSObject {
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
-                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { processingError in
-                        var shouldAck: Bool
-                        switch processingError {
-                        case nil:
-                            shouldAck = true
-                        case MessageProcessingError.duplicatePendingEnvelope?:
-                            shouldAck = false
-                        case MessageProcessingError.duplicateDecryption?:
-                            shouldAck = true
-                        default:
-                            shouldAck = true
-                        }
-
-                        if shouldAck {
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { error in
+                        let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
+                        switch ackBehavior {
+                        case .shouldAck:
                             Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
-                        } else {
-                            Logger.info("Skipping ack of message with timestamp \(envelope.timestamp) because of error: \(String(describing: processingError))")
+                        case .shouldNotAck(let error):
+                            Logger.info("Skipping ack of message with timestamp \(envelope.timestamp) because of error: \(error)")
                         }
                     }
                 } catch {

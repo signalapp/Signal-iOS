@@ -1232,17 +1232,3 @@ CREATE
 WHERE
     recordType IS NOT 70
 ;
-
-CREATE
-    TABLE
-        IF NOT EXISTS "MessageDecryptDeduplication" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"serverGuid" TEXT NOT NULL
-        )
-;
-
-CREATE
-    INDEX "MessageDecryptDeduplication_serverGuid"
-        ON "MessageDecryptDeduplication"("serverGuid"
-        )
-;
