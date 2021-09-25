@@ -151,24 +151,24 @@ class NotificationService: UNNotificationServiceExtension {
             }.then(on: .global()) { () -> Promise<Void> in
                 // Wait until all notifications are enqueued.
                 if DebugFlags.internalLogging {
-                    Logger.info("----- Waiting on notificationPresenter.")
+                    Logger.info("Waiting on notificationPresenter.")
                 }
                 return NotificationPresenter.pendingNotificationsPromise()
             }.then(on: .global()) { () -> Promise<Void> in
                 if DebugFlags.internalLogging {
-                    Logger.info("----- Waiting on acks.")
+                    Logger.info("Waiting on acks.")
                 }
                 // Wait until all ACKs are enqueued.
                 return Self.messageFetcherJob.pendingAcksPromise()
             }.then(on: .global()) { () -> Promise<Void> in
                 if DebugFlags.internalLogging {
-                    Logger.info("----- Waiting on outgoing receipt send enqueues.")
+                    Logger.info("Waiting on outgoing receipt send enqueues.")
                 }
                 // Wait until all outgoing receipt sends are enqueued.
                 return Self.outgoingReceiptManager.pendingSendsPromise()
             }.then(on: .global()) { () -> Promise<Void> in
                 if DebugFlags.internalLogging {
-                    Logger.info("----- Waiting on sends.")
+                    Logger.info("Waiting on sends.")
                 }
                 // Wait until all outgoing messages are sent.
                 return Self.messageSender.pendingSendsPromise()
