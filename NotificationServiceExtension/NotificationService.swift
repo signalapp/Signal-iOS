@@ -149,29 +149,19 @@ class NotificationService: UNNotificationServiceExtension {
             let processingCompletePromise = firstly {
                 self.messageProcessor.processingCompletePromise()
             }.then(on: .global()) { () -> Promise<Void> in
-                // Wait until all notifications are enqueued.
-                if DebugFlags.internalLogging {
-                    Logger.info("Waiting on notificationPresenter.")
-                }
-                return NotificationPresenter.pendingNotificationsPromise()
-            }.then(on: .global()) { () -> Promise<Void> in
-                if DebugFlags.internalLogging {
-                    Logger.info("Waiting on acks.")
-                }
-                // Wait until all ACKs are enqueued.
-                return Self.messageFetcherJob.pendingAcksPromise()
-            }.then(on: .global()) { () -> Promise<Void> in
-                if DebugFlags.internalLogging {
-                    Logger.info("Waiting on outgoing receipt send enqueues.")
-                }
-                // Wait until all outgoing receipt sends are enqueued.
-                return Self.outgoingReceiptManager.pendingSendsPromise()
-            }.then(on: .global()) { () -> Promise<Void> in
-                if DebugFlags.internalLogging {
-                    Logger.info("Waiting on sends.")
-                }
-                // Wait until all outgoing messages are sent.
-                return Self.messageSender.pendingSendsPromise()
+                // Wait until all async side effects of
+                // message processing are complete.
+                let completionPromises: [Promise<Void>] = [
+                    // Wait until all notifications are posted.
+                    NotificationPresenter.pendingNotificationsPromise(),
+                    // Wait until all ACKs are complete.
+                    Self.messageFetcherJob.pendingAcksPromise(),
+                    // Wait until all outgoing receipt sends are complete.
+                    Self.outgoingReceiptManager.pendingSendsPromise(),
+                    // Wait until all outgoing messages are sent.
+                    Self.messageSender.pendingSendsPromise()
+                ]
+                return Promise.when(resolved: completionPromises).asVoid()
             }
             processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 NotificationServiceError.timeout

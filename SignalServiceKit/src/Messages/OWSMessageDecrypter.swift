@@ -293,7 +293,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         let logString = "Error while decrypting \(Self.description(for: envelope)), error: \(error)"
 
         if case SignalError.duplicatedMessage(_) = error {
-            Logger.info(logString)
+            Logger.warn(logString)
             // Duplicate messages are not recorded in the database.
             return OWSError(error: .failedToDecryptDuplicateMessage,
                             description: "Duplicate message",

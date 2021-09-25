@@ -593,12 +593,12 @@ public class OWSWebSocket: NSObject {
             }
             Self.messageProcessor.processEncryptedEnvelopeData(encryptedEnvelope,
                                                                serverDeliveryTimestamp: serverDeliveryTimestamp,
-                                                               envelopeSource: envelopeSource) { outcome in
+                                                               envelopeSource: envelopeSource) { error in
                 if Self.verboseLogging {
                     Logger.info("\(currentWebSocket.logPrefix) 3")
                 }
                 Self.serialQueue.async {
-                    ackMessage(outcome, serverDeliveryTimestamp)
+                    ackMessage(error, serverDeliveryTimestamp)
                 }
             }
         }

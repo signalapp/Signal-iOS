@@ -268,10 +268,10 @@ public class MessageFetcherJob: NSObject {
         return operationQueue
     }()
 
-    private let pendingAcks = PendingTasks()
+    private let pendingAcks = PendingTasks(label: "Acks")
 
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let pendingAck = pendingAcks.buildPendingTask(label: "ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
         let ackConcurrentOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
                                                          pendingAck: pendingAck)
         ackOperationQueue.addOperation(ackConcurrentOperation)
@@ -316,8 +316,9 @@ public class MessageFetcherJob: NSObject {
                             shouldAck = false
                         case MessageProcessingError.duplicateDecryption?:
                             shouldAck = true
-                        default:
+                        case let error?:
                             shouldAck = true
+                            Logger.warn("Failed to process message: \(error)")
                         }
 
                         if shouldAck {
