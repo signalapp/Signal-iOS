@@ -141,6 +141,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(MessageSender *)messageSender
+                    pendingTask:(PendingTask *)pendingTask
                         success:(void (^)(void))aSuccessHandler
                         failure:(void (^)(NSError *error))aFailureHandler NS_DESIGNATED_INITIALIZER;
 
@@ -162,6 +163,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
 @property (nonatomic, readonly) MessageSender *messageSender;
+@property (nonatomic, readonly) PendingTask *pendingTask;
 @property (nonatomic, readonly) void (^successHandler)(void);
 @property (nonatomic, readonly) void (^failureHandler)(NSError *error);
 
@@ -173,6 +175,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(MessageSender *)messageSender
+                    pendingTask:(PendingTask *)pendingTask
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler
 {
@@ -183,6 +186,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
     _message = message;
     _messageSender = messageSender;
+    _pendingTask = pendingTask;
     _successHandler = successHandler;
     _failureHandler = failureHandler;
 
@@ -284,12 +288,16 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     }
 
     self.successHandler();
+
+    [self.pendingTask complete];
 }
 
 - (void)didFailWithError:(NSError *)error
 {
     OWSLogError(@"Failed with error: %@ (isRetryable: %d)", error, error.isRetryable);
     self.failureHandler(error);
+
+    [self.pendingTask complete];
 }
 
 @end
@@ -326,6 +334,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     _sendingQueueMap = [NSMutableDictionary new];
+    _pendingTasks = [PendingTasks new];
 
     OWSSingletonAssert();
 
@@ -412,9 +421,13 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             || message.groupMetaMessage == TSGroupMetaMessageUnspecified
             || message.groupMetaMessage == TSGroupMetaMessageDeliver);
 
+        // We create a PendingTask so we can block on flushing all current message sends.
+        PendingTask *pendingTask = [self.pendingTasks buildPendingTaskWithLabel:@"Message Send"];
+
         OWSSendMessageOperation *sendMessageOperation =
             [[OWSSendMessageOperation alloc] initWithMessage:message
                                                messageSender:self
+                                                 pendingTask:pendingTask
                                                      success:successHandler
                                                      failure:failureHandler];
 

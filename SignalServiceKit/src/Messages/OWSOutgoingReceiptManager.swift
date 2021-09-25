@@ -109,7 +109,17 @@ extension OWSOutgoingReceiptManager {
             store.removeValue(forKey: identifier, transaction: transaction)
         }
     }
+
+    public func pendingSendsPromise() -> Promise<Void> {
+        // This promise blocks on all operations already in the queue,
+        // but will not block on new operations added after this promise
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
+        pendingTasks.pendingTasksPromise()
+    }
 }
+
+// MARK: -
 
 fileprivate extension SignalServiceAddress {
     convenience init?(identifier: String) {
