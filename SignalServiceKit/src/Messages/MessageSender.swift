@@ -158,11 +158,7 @@ extension MessageSender {
         // but will not block on new operations added after this promise
         // is created. That's intentional to ensure that NotificationService
         // instances complete in a timely way.
-        let (promise, future) = Promise<Void>.pending()
-        Self.globalSendingQueue().addOperation {
-            future.resolve(())
-        }
-        return promise
+        pendingTasks.pendingTasksPromise()
     }
 }
 

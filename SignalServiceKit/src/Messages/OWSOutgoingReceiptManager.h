@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PendingTasks;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoEnvelope;
@@ -21,6 +22,9 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 + (SDSKeyValueStore *)readReceiptStore;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+// TODO: Make this private.
+@property (nonatomic, readonly) PendingTasks *pendingTasks;
 
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
                           messageUniqueId:(nullable NSString *)messageUniqueId

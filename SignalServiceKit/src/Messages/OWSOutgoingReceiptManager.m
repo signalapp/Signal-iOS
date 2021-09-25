@@ -14,6 +14,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^ReceiptProcessCompletion)(void);
+
+NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType);
+
+NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
+{
+    switch (receiptType) {
+        case OWSReceiptType_Delivery:
+            return @"Delivery";
+        case OWSReceiptType_Read:
+            return @"Read";
+        case OWSReceiptType_Viewed:
+            return @"Viewed";
+        default:
+            return @"Unknown";
+    }
+}
+
+#pragma mark -
+
 @interface OWSOutgoingReceiptManager ()
 
 // This property should only be accessed on the serialQueue.
@@ -52,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    _pendingTasks = [PendingTasks new];
+
     // We skip any sends to untrusted identities since we know they'll fail anyway. If an identity state changes
     // we should recheck our pendingReceipts to re-attempt a send to formerly untrusted recipients.
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -87,13 +109,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Schedules a processing pass, unless one is already scheduled.
 - (void)process {
+    [self processWithCompletion:nil];
+}
+
+// Schedules a processing pass, unless one is already scheduled.
+- (void)processWithCompletion:(nullable ReceiptProcessCompletion)completion
+{
     if (!AppReadiness.isAppReady && !CurrentAppContext().isRunningTests) {
         OWSFailDebug(@"Outgoing receipts require app is ready");
+        if (completion) {
+            completion();
+        }
         return;
     }
 
     dispatch_async(self.serialQueue, ^{
         if (self.isProcessing) {
+            if (completion) {
+                completion();
+            }
             return;
         }
 
@@ -104,6 +138,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (!self.reachabilityManager.isReachable) {
             // No network availability; abort.
             self.isProcessing = NO;
+            if (completion) {
+                completion();
+            }
             return;
         }
 
@@ -115,11 +152,17 @@ NS_ASSUME_NONNULL_BEGIN
         if (sendPromises.count < 1) {
             // No work to do; abort.
             self.isProcessing = NO;
+            if (completion) {
+                completion();
+            }
             return;
         }
 
         AnyPromise *completionPromise = [AnyPromise whenResolved:sendPromises];
         completionPromise.ensure(^() {
+            if (completion) {
+                completion();
+            }
             // Wait N seconds before conducting another pass.
             // This allows time for a batch to accumulate.
             //
@@ -171,22 +214,19 @@ NS_ASSUME_NONNULL_BEGIN
 
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
         OWSReceiptsForSenderMessage *message;
-        NSString *receiptName;
+        NSString *receiptName = NSStringForOWSReceiptType(receiptType);
         switch (receiptType) {
             case OWSReceiptType_Delivery:
                 message = [OWSReceiptsForSenderMessage deliveryReceiptsForSenderMessageWithThread:thread
                                                                                        receiptSet:receiptSet];
-                receiptName = @"Delivery";
                 break;
             case OWSReceiptType_Read:
                 message = [OWSReceiptsForSenderMessage readReceiptsForSenderMessageWithThread:thread
                                                                                    receiptSet:receiptSet];
-                receiptName = @"Read";
                 break;
             case OWSReceiptType_Viewed:
                 message = [OWSReceiptsForSenderMessage viewedReceiptsForSenderMessageWithThread:thread
                                                                                      receiptSet:receiptSet];
-                receiptName = @"Viewed";
                 break;
         }
 
@@ -272,15 +312,16 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    NSString *label = [NSString stringWithFormat:@"receipt %@", NSStringForOWSReceiptType(receiptType)];
+    PendingTask *pendingTask = [self.pendingTasks buildPendingTaskWithLabel:label];
+
     MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType
                                                             address:address
                                                         transaction:transaction];
     [persistedSet insertWithTimestamp:timestamp messageUniqueId:messageUniqueId];
     [self storeReceiptSet:persistedSet type:receiptType address:address transaction:transaction];
     [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                       block:^{
-                                           [self process];
-                                       }];
+                                       block:^{ [self processWithCompletion:^{ [pendingTask complete]; }]; }];
 }
 
 - (void)dequeueReceiptsForAddress:(SignalServiceAddress *)address

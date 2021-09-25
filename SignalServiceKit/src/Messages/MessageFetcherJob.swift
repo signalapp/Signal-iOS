@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // This token can be used to observe the completion of a given fetch cycle.
 public struct MessageFetchCycle: Hashable, Equatable {
@@ -259,8 +260,7 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-    // This operation queue ensures that only one fetch operation is
-    // running at a given time.
+    // We want to have multiple ACKs in flight at a time.
     private let ackOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "MessageFetcherJob.ackOperationQueue"
@@ -268,9 +268,13 @@ public class MessageFetcherJob: NSObject {
         return operationQueue
     }()
 
+    private let pendingAcks = PendingTasks()
+
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo)
-        ackOperationQueue.addOperation(ackOperation)
+        let pendingAck = pendingAcks.buildPendingTask(label: "ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+        let ackConcurrentOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
+                                                         pendingAck: pendingAck)
+        ackOperationQueue.addOperation(ackConcurrentOperation)
     }
 
     public func pendingAcksPromise() -> Promise<Void> {
@@ -278,11 +282,7 @@ public class MessageFetcherJob: NSObject {
         // but will not block on new operations added after this promise
         // is created. That's intentional to ensure that NotificationService
         // instances complete in a timely way.
-        let (promise, future) = Promise<Void>.pending()
-        self.ackOperationQueue.addOperation {
-            future.resolve(())
-        }
-        return promise
+        pendingAcks.pendingTasksPromise()
     }
 
     // MARK: -
@@ -525,12 +525,14 @@ public class MessageFetcherJob: NSObject {
         let sourceAddress: SignalServiceAddress?
         let serverGuid: String?
         let timestamp: UInt64
+        let serviceTimestamp: UInt64
     }
 
     private class func buildEnvelopeInfo(envelope: SSKProtoEnvelope) -> EnvelopeInfo {
         EnvelopeInfo(sourceAddress: envelope.sourceAddress,
                      serverGuid: envelope.serverGuid,
-                     timestamp: envelope.timestamp)
+                     timestamp: envelope.timestamp,
+                     serviceTimestamp: envelope.serverTimestamp)
     }
 }
 
@@ -568,9 +570,12 @@ private class MessageAckOperation: OWSOperation {
     fileprivate typealias EnvelopeInfo = MessageFetcherJob.EnvelopeInfo
 
     private let envelopeInfo: EnvelopeInfo
+    private let pendingAck: PendingTask
 
-    fileprivate required init(envelopeInfo: EnvelopeInfo) {
+    fileprivate required init(envelopeInfo: EnvelopeInfo,
+                              pendingAck: PendingTask) {
         self.envelopeInfo = envelopeInfo
+        self.pendingAck = pendingAck
 
         super.init()
 
@@ -599,12 +604,32 @@ private class MessageAckOperation: OWSOperation {
         firstly(on: .global()) {
             self.networkManager.makePromise(request: request)
         }.done(on: .global()) { _ in
-            Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp)")
+            if DebugFlags.internalLogging {
+                Logger.info("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+            } else {
+                Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+            }
             self.reportSuccess()
         }.catch(on: .global()) { error in
-            Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp) " + " failed with error: \(error)")
+            if DebugFlags.internalLogging {
+                Logger.info("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) " + " failed with error: \(error)")
+            } else {
+                Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) " + " failed with error: \(error)")
+            }
             self.reportError(error)
         }
+    }
+
+    @objc
+    public override func didSucceed() {
+        super.didSucceed()
+        pendingAck.complete()
+    }
+
+    @objc
+    public override func didFail(error: Error) {
+        super.didFail(error: error)
+        pendingAck.complete()
     }
 }
 

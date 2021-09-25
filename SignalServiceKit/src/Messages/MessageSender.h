@@ -12,6 +12,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class NetworkManager;
 @class OWSMessageSend;
 @class OutgoingMessagePreparer;
+@class PendingTasks;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
@@ -64,6 +65,9 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 @interface MessageSender : NSObject
 
+// TODO: Make this private.
+@property (nonatomic, readonly) PendingTasks *pendingTasks;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
@@ -100,9 +104,6 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 // TODO: Make this private.
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend;
-
-// TODO: Make this private.
-+ (NSOperationQueue *)globalSendingQueue;
 
 @end
 

@@ -146,8 +146,9 @@ class NotificationService: UNNotificationServiceExtension {
         fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
-            let processingCompletePromise = self.messageProcessor.processingCompletePromise()
-            processingCompletePromise.then(on: .global()) { () -> Promise<Void> in
+            let processingCompletePromise = firstly {
+                self.messageProcessor.processingCompletePromise()
+            }.then(on: .global()) { () -> Promise<Void> in
                 // Wait until all notifications are enqueued.
                 if DebugFlags.internalLogging {
                     Logger.info("Waiting on notificationPresenter.")
@@ -161,11 +162,18 @@ class NotificationService: UNNotificationServiceExtension {
                 return Self.messageFetcherJob.pendingAcksPromise()
             }.then(on: .global()) { () -> Promise<Void> in
                 if DebugFlags.internalLogging {
+                    Logger.info("Waiting on outgoing receipt send enqueues.")
+                }
+                // Wait until all outgoing receipt sends are enqueued.
+                return Self.outgoingReceiptManager.pendingSendsPromise()
+            }.then(on: .global()) { () -> Promise<Void> in
+                if DebugFlags.internalLogging {
                     Logger.info("Waiting on sends.")
                 }
                 // Wait until all outgoing messages are sent.
                 return Self.messageSender.pendingSendsPromise()
-            }.timeout(seconds: 20, description: "Message Processing Timeout.") {
+            }
+            processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
                 NotificationServiceError.timeout
             }.catch { _ in
                 // Do nothing, Promise.timeout() will log timeouts.
