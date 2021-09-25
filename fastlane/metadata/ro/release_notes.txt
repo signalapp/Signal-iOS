@@ -1,3 +1,3 @@
+• Fixed some issues related to notifications
 • Încercați noua permisiune "trimitere mesaje" pentru a limita cine poate trimite mesaje in grupurile dvs. Ideală pentru a organiza un eveniment, a face un anunț, sau doar pentru a da sfoară în țară. Toți membri grupului trebuie să folosească cea mai recentă versiune Signal pentru ca setarea să fie vizibilă.
-• Am îmbunătățit bulele de conversație. Marginile subțiate și mărcile de timp scurtate lasă loc mai mult pentru mesajele dvs. fără a le face mai puțin lizibile.
 • Știm că vă place Speed (și nu ne referim la blockbuster-ul din 1994 cu Sandra Bullock in rolul principal), ne referim la viteza mai mare ca niciodată cu care se face acum trimiterea de mesaje.

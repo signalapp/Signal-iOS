@@ -1,3 +1,3 @@
+• Fixed some issues related to notifications
 • Proveu el nou permís "envia missatges" per restringir qui pot enviar missatges als vostres grups. Ideal per organitzar un esdeveniment, fer un anunci o simplement cridar des dels terrats. Per tal que aparegui la configuració, tots els membres han de tenir la versió més recent del Signal.
-• Hem retallat les bombolles de converses. Els marges més prims i les marques de temps més curtes deixen més espai als missatges sense sacrificar-ne la claredat.
 • Sabem que us agrada la velocitat (i no ens referim al gran èxit de 1994 protagonitzat per Sandra Bullock), de manera que l’enviament de missatges ara és més ràpid que mai.
