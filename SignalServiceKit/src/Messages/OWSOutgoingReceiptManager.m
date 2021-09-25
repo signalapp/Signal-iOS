@@ -72,7 +72,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
     OWSSingletonAssert();
 
-    _pendingTasks = [PendingTasks new];
+    _pendingTasks = [[PendingTasks alloc] initWithLabel:@"Receipt Sends"];
 
     // We skip any sends to untrusted identities since we know they'll fail anyway. If an identity state changes
     // we should recheck our pendingReceipts to re-attempt a send to formerly untrusted recipients.
@@ -312,7 +312,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
         return;
     }
 
-    NSString *label = [NSString stringWithFormat:@"receipt %@", NSStringForOWSReceiptType(receiptType)];
+    NSString *label = [NSString stringWithFormat:@"Receipt Send: %@", NSStringForOWSReceiptType(receiptType)];
     PendingTask *pendingTask = [self.pendingTasks buildPendingTaskWithLabel:label];
 
     MessageReceiptSet *persistedSet = [self fetchReceiptSetWithType:receiptType
