@@ -192,7 +192,7 @@ public class MessageProcessor: NSObject {
         let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
         switch result {
         case .duplicate:
-            Logger.warn("Duplicate envelope, envelopeSource: \(envelopeSource).")
+            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(serverDeliveryTimestamp). EnvelopeSource: \(envelopeSource).")
             completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
@@ -260,11 +260,16 @@ public class MessageProcessor: NSObject {
             guard !self.isDrainingPendingEnvelopes else { return }
             self.isDrainingPendingEnvelopes = true
             self.drainNextBatch()
+            self.isDrainingPendingEnvelopes = false
+            if self.pendingEnvelopes.isEmpty {
+                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
+            }
         }
     }
 
     private func drainNextBatch() {
         assertOnQueue(serialQueue)
+        owsAssertDebug(isDrainingPendingEnvelopes)
 
         let shouldContinue: Bool = autoreleasepool {
             // We want a value that is just high enough to yield perf benefits.
@@ -278,24 +283,29 @@ public class MessageProcessor: NSObject {
             let batchEnvelopes = batch.batchEnvelopes
             let pendingEnvelopesCount = batch.pendingEnvelopesCount
 
-            guard !batchEnvelopes.isEmpty else {
-                isDrainingPendingEnvelopes = false
+            guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
                 if DebugFlags.internalLogging {
                     Logger.info("Processing complete: \(self.queuedContentCount).")
                 }
-                NotificationCenter.default.postNotificationNameAsync(Self.messageProcessorDidFlushQueue, object: nil)
                 return false
             }
 
             Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s).")
 
+            var processedEnvelopes: [PendingEnvelope] = []
             SDSDatabaseStorage.shared.write { transaction in
-                batchEnvelopes.forEach { self.processEnvelope($0, transaction: transaction) }
+                for envelope in batchEnvelopes {
+                    if messagePipelineSupervisor.isMessageProcessingPermitted {
+                        self.processEnvelope(envelope, transaction: transaction)
+                        processedEnvelopes.append(envelope)
+                    } else {
+                        // If we're skipping one message, we have to skip them all to preserve ordering
+                        // Next time around we can process the skipped messages in order
+                        break
+                    }
+                }
             }
-
-            // Remove the processed envelopes from the pending list.
-            pendingEnvelopes.removeProcessedBatch(batch)
-
+            pendingEnvelopes.removeProcessedEnvelopes(processedEnvelopes)
             return true
         }
 
@@ -748,15 +758,14 @@ public class PendingEnvelopes {
         }
     }
 
-    fileprivate func removeProcessedBatch(_ batch: Batch) {
+    fileprivate func removeProcessedEnvelopes(_ processedEnvelopes: [PendingEnvelope]) {
         unfairLock.withLock {
-            let batchEnvelopes = batch.batchEnvelopes
-            guard pendingEnvelopes.count > batchEnvelopes.count else {
+            guard pendingEnvelopes.count > processedEnvelopes.count else {
                 pendingEnvelopes = []
                 return
             }
             let oldCount = pendingEnvelopes.count
-            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: batchEnvelopes.count))
+            pendingEnvelopes = Array(pendingEnvelopes.suffix(from: processedEnvelopes.count))
             let newCount = pendingEnvelopes.count
             if DebugFlags.internalLogging {
                 Logger.info("\(oldCount) -> \(newCount)")

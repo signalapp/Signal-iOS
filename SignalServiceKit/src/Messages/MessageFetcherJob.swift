@@ -322,6 +322,8 @@ public class MessageFetcherJob: NSObject {
 
                         if shouldAck {
                             Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
+                        } else {
+                            Logger.info("Skipping ack of message with timestamp \(envelope.timestamp) because of error: \(String(describing: processingError))")
                         }
                     }
                 } catch {

@@ -525,7 +525,7 @@ public class OWSWebSocket: NSObject {
             Logger.info("\(currentWebSocket.logPrefix) 1")
         }
 
-        let ackMessage = { (processingError: Error?) in
+        let ackMessage = { (processingError: Error?, serverTimestamp: UInt64) in
             if Self.verboseLogging {
                 Logger.info("\(currentWebSocket.logPrefix) 2 \(processingError?.localizedDescription ?? "success!")")
             }
@@ -550,6 +550,8 @@ public class OWSWebSocket: NSObject {
 
             if shouldAck {
                 self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
+            } else {
+                Logger.info("Skipping ack of message with serverTimestamp \(serverTimestamp) because of error: \(String(describing: processingError))")
             }
 
             owsAssertDebug(backgroundTask != nil)
@@ -573,7 +575,7 @@ public class OWSWebSocket: NSObject {
         }
 
         guard let encryptedEnvelope = message.body else {
-            ackMessage(OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)"))
+            ackMessage(OWSGenericError("Missing encrypted envelope on message \(currentWebSocket.logPrefix)"), serverDeliveryTimestamp)
             return
         }
         let envelopeSource: EnvelopeSource = {
@@ -596,7 +598,7 @@ public class OWSWebSocket: NSObject {
                     Logger.info("\(currentWebSocket.logPrefix) 3")
                 }
                 Self.serialQueue.async {
-                    ackMessage(outcome)
+                    ackMessage(outcome, serverDeliveryTimestamp)
                 }
             }
         }
