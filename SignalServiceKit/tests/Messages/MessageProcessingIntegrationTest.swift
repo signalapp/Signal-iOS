@@ -107,8 +107,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 XCTFail("duplicatePendingEnvelope")
-            case MessageProcessingError.duplicateDecryption?:
-                XCTFail("duplicateDecryption")
             case .some(_):
                 XCTFail("failure")
             case nil:
@@ -181,8 +179,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 XCTFail("duplicatePendingEnvelope")
-            case MessageProcessingError.duplicateDecryption?:
-                XCTFail("duplicateDecryption")
             case .some(_):
                 XCTFail("failure")
             case nil:
