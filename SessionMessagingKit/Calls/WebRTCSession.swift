@@ -69,6 +69,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         return peerConnection.transceivers.first { $0.mediaType == .video }?.receiver.track as? RTCVideoTrack
     }()
     
+    // Data Channel
+    internal var dataChannel: RTCDataChannel?
+    
     // MARK: Error
     public enum Error : LocalizedError {
         case noThread
@@ -87,6 +90,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         self.contactSessionID = contactSessionID
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
+        createDataChannel()
         peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
         peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
@@ -194,7 +198,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         peerConnection.close()
     }
     
-    // MARK: Delegate
+    // MARK: Peer connection delegate
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCSignalingState) {
         print("[Calls] Signaling state changed to: \(state).")
     }
