@@ -15,7 +15,7 @@ public class OutageDetection: NSObject {
 
     private let _hasOutage = AtomicBool(false)
     @objc
-    public var hasOutage: Bool {
+    public private(set) var hasOutage: Bool {
         get {
             _hasOutage.get()
         }
