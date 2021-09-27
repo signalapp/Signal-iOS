@@ -443,6 +443,36 @@ public class MessageProcessor: NSObject {
             self.drainPendingEnvelopes()
         }
     }
+
+    public enum MessageAckBehavior {
+        case shouldAck
+        case shouldNotAck(error: Error)
+    }
+
+    public static func handleMessageProcessingOutcome(error: Error?) -> MessageAckBehavior {
+        guard let error = error else {
+            // Success.
+            return .shouldAck
+        }
+        if case MessageProcessingError.duplicatePendingEnvelope = error {
+            // _DO NOT_ ACK if de-duplicated before decryption.
+            return .shouldNotAck(error: error)
+        } else if case MessageProcessingError.duplicateDecryption = error {
+            return .shouldAck
+        } else if let owsError = error as? OWSError,
+                  owsError.errorCode == OWSErrorCode.failedToDecryptDuplicateMessage.rawValue {
+            // _DO_ ACK if de-duplicated during decryption.
+            return .shouldAck
+        } else {
+            Logger.warn("Failed to process message: \(error)")
+            Self.databaseStorage.write { transaction in
+                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
+                Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
+                                                      transaction: transaction)
+            }
+            return .shouldAck
+        }
+    }
 }
 
 // MARK: -

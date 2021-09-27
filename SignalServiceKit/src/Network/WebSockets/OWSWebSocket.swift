@@ -530,28 +530,12 @@ public class OWSWebSocket: NSObject {
                 Logger.info("\(currentWebSocket.logPrefix) 2 \(processingError?.localizedDescription ?? "success!")")
             }
 
-            var shouldAck: Bool
-            switch processingError {
-            case nil:
-                shouldAck = true
-            case MessageProcessingError.duplicatePendingEnvelope?:
-                shouldAck = false
-            case MessageProcessingError.duplicateDecryption?:
-                shouldAck = true
-            case let alertableError?:
-                shouldAck = true
-                Logger.warn("Failed to process message: \(alertableError)")
-                Self.databaseStorage.write { transaction in
-                    let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                    Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                          transaction: transaction)
-                }
-            }
-
-            if shouldAck {
+            let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: processingError)
+            switch ackBehavior {
+            case .shouldAck:
                 self.sendWebSocketMessageAcknowledgement(message, currentWebSocket: currentWebSocket)
-            } else {
-                Logger.info("Skipping ack of message with serverTimestamp \(serverTimestamp) because of error: \(String(describing: processingError))")
+            case .shouldNotAck(let error):
+                Logger.info("Skipping ack of message with serverTimestamp \(serverTimestamp) because of error: \(error)")
             }
 
             owsAssertDebug(backgroundTask != nil)

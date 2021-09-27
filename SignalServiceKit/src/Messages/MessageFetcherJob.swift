@@ -307,24 +307,13 @@ public class MessageFetcherJob: NSObject {
                 let envelopeInfo = Self.buildEnvelopeInfo(envelope: envelope)
                 do {
                     let envelopeData = try envelope.serializedData()
-                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { processingError in
-                        var shouldAck: Bool
-                        switch processingError {
-                        case nil:
-                            shouldAck = true
-                        case MessageProcessingError.duplicatePendingEnvelope?:
-                            shouldAck = false
-                        case MessageProcessingError.duplicateDecryption?:
-                            shouldAck = true
-                        case let error?:
-                            shouldAck = true
-                            Logger.warn("Failed to process message: \(error)")
-                        }
-
-                        if shouldAck {
+                    return EnvelopeJob(encryptedEnvelopeData: envelopeData, encryptedEnvelope: envelope) { error in
+                        let ackBehavior = MessageProcessor.handleMessageProcessingOutcome(error: error)
+                        switch ackBehavior {
+                        case .shouldAck:
                             Self.messageFetcherJob.acknowledgeDelivery(envelopeInfo: envelopeInfo)
-                        } else {
-                            Logger.info("Skipping ack of message with timestamp \(envelope.timestamp) because of error: \(String(describing: processingError))")
+                        case .shouldNotAck(let error):
+                            Logger.info("Skipping ack of message with timestamp \(envelope.timestamp) because of error: \(error)")
                         }
                     }
                 } catch {
