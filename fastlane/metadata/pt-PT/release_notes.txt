@@ -1,3 +1,3 @@
-• Fixed some issues related to notifications
+• Corrigidos alguns erros relacionados com as notificações
 • Experimente a nova permissão 'enviar mensagens' num grupo para restringir quem pode enviar mensagens no grupo. Um excelente recurso para organizar um evento ou para criar um canal de anúncios. Lembramos que todos os membros do grupo devem atualizar o Signal para a versão mais recente, de modo a usufruírem desta definição.
 • Sabemos que você adora velocidade (e não queremos dizer o sucesso de bilheteria de 1994 estrelado por Sandra Bullock), como tal agora enviar mensagens é mais rápido do que nunca. 

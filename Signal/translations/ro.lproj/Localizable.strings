@@ -2891,7 +2891,7 @@
 "INCOMING_CALL_FORMAT" = "%@ te-a sunat";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Poți trimite sau primi mesaje sincronizate de pe telefon sau iPad.↵Pentru a păstra securitatea conversațiilor tale, istoricul acestora nu este transferat pe noile dispozitive asociate. ";
+"INFO_MESSAGE_SYNCED_THREAD" = "Poți trimite sau primi mesaje sincronizate de pe telefon sau iPad.  Pentru a păstra securitatea conversațiilor tale, istoricul acestora nu este transferat pe noile dispozitive asociate.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ este pe Signal!";

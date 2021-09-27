@@ -1,3 +1,3 @@
-• Fixed some issues related to notifications
+• Naprawiliśmy kilka problemów z powiadomieniami
 • Wypróbuj nowe uprawnienie "wysyłanie wiadomości", aby ograniczyć, kto może wysyłać wiadomości w Twoich grupach. Świetna opcja do organizacji wydarzenia albo ogłaszania czegoś. Wszyscy członkowie grupy muszą używać najnowszej wersji aplikacji Signal, aby pojawiła się ta opcja.
 • Wiemy, że uwielbiasz szybkość (i nie mamy tu na myśli tego filmowego hitu z 1994 r., z Sandrą Bullock), więc wysyłanie wiadomości jest teraz szybsze, niż kiedykolwiek.
