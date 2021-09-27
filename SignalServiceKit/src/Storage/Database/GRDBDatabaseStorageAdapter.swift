@@ -130,8 +130,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MediaGalleryRecord.self,
         MessageSendLog.Payload.self,
         MessageSendLog.Recipient.self,
-        MessageSendLog.Message.self,
-        MessageDecryptDeduplicationRecord.self
+        MessageSendLog.Message.self
     ]
 
     // MARK: - DatabaseChangeObserver

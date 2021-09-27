@@ -36,8 +36,6 @@ public extension DebugUIMessages {
             switch error {
             case MessageProcessingError.duplicatePendingEnvelope?:
                 Logger.warn("duplicatePendingEnvelope.")
-            case MessageProcessingError.duplicateDecryption?:
-                Logger.warn("duplicateDecryption.")
             case let otherError?:
                 owsFailDebug("Error: \(otherError)")
             case nil:

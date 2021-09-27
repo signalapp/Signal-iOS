@@ -55,6 +55,17 @@ public class OWSError: NSObject, CustomNSError, IsRetryableProvider, UserErrorDe
                  isRetryable: customIsRetryable) as Error as NSError
     }
 
+    @objc
+    public override var description: String {
+        var result = "[OWSError code: \(errorCode), description: \(customLocalizedDescription)"
+        if let customUserInfo = self.customUserInfo,
+           !customUserInfo.isEmpty {
+            result += ", userInfo: \(customUserInfo)"
+        }
+        result += "]"
+        return result
+    }
+
     // MARK: - CustomNSError
 
     // NSError bridging: the domain of the error.

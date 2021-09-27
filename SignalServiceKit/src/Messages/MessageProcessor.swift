@@ -443,6 +443,34 @@ public class MessageProcessor: NSObject {
             self.drainPendingEnvelopes()
         }
     }
+
+    public enum MessageAckBehavior {
+        case shouldAck
+        case shouldNotAck(error: Error)
+    }
+
+    public static func handleMessageProcessingOutcome(error: Error?) -> MessageAckBehavior {
+        guard let error = error else {
+            // Success.
+            return .shouldAck
+        }
+        if case MessageProcessingError.duplicatePendingEnvelope = error {
+            // _DO NOT_ ACK if de-duplicated before decryption.
+            return .shouldNotAck(error: error)
+        } else if let owsError = error as? OWSError,
+                  owsError.errorCode == OWSErrorCode.failedToDecryptDuplicateMessage.rawValue {
+            // _DO_ ACK if de-duplicated during decryption.
+            return .shouldAck
+        } else {
+            Logger.warn("Failed to process message: \(error)")
+            Self.databaseStorage.write { transaction in
+                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
+                Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
+                                                      transaction: transaction)
+            }
+            return .shouldAck
+        }
+    }
 }
 
 // MARK: -
@@ -464,156 +492,6 @@ private protocol PendingEnvelope {
 
 // MARK: -
 
-class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRecord {
-    static let databaseTableName = "MessageDecryptDeduplication"
-
-    var id: Int64?
-    let serverGuid: String
-
-    init(serverGuid: String) {
-        self.serverGuid = serverGuid
-    }
-
-    func didInsert(with rowID: Int64, for column: String?) {
-        guard column == "id" else { return owsFailDebug("Expected id") }
-        id = rowID
-    }
-
-    public enum Outcome {
-        case nonDuplicate
-        case duplicate
-    }
-
-    public static func deduplicate(
-        encryptedEnvelope: SSKProtoEnvelope,
-        transaction: SDSAnyWriteTransaction,
-        skipCull: Bool = false
-    ) -> Outcome {
-        deduplicate(envelopeTimestamp: encryptedEnvelope.timestamp,
-                    serviceTimestamp: encryptedEnvelope.serverTimestamp,
-                    serverGuid: encryptedEnvelope.serverGuid,
-                    transaction: transaction,
-                    skipCull: skipCull)
-    }
-
-    public static func deduplicate(
-        envelopeTimestamp: UInt64,
-        serviceTimestamp: UInt64,
-        serverGuid: String?,
-        transaction: SDSAnyWriteTransaction,
-        skipCull: Bool = false
-    ) -> Outcome {
-        guard envelopeTimestamp > 0 else {
-            owsFailDebug("Invalid envelopeTimestamp.")
-            return .nonDuplicate
-        }
-        guard serviceTimestamp > 0 else {
-            owsFailDebug("Invalid serviceTimestamp.")
-            return .nonDuplicate
-        }
-        guard let serverGuid = serverGuid?.nilIfEmpty else {
-            owsFailDebug("Missing serverGuid.")
-            return .nonDuplicate
-        }
-        do {
-            let isDuplicate: Bool = try {
-                let sql = """
-                    SELECT EXISTS ( SELECT 1
-                    FROM \(MessageDecryptDeduplicationRecord.databaseTableName)
-                    WHERE serverGuid = ? )
-                """
-                let arguments: StatementArguments = [serverGuid]
-                return try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
-            }()
-            guard !isDuplicate else {
-                Logger.warn("Discarding duplicate envelope with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
-                return .duplicate
-            }
-
-            // No existing record found. Create a new one and insert it.
-            let record = MessageDecryptDeduplicationRecord(serverGuid: serverGuid)
-            try record.insert(transaction.unwrapGrdbWrite.database)
-
-            if !skipCull, shouldCull() {
-                cull(transaction: transaction)
-            }
-
-            if DebugFlags.internalLogging {
-                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
-            }
-            return .nonDuplicate
-        } catch {
-            owsFailDebug("Error: \(error)")
-            // If anything goes wrong with our bookkeeping, we must
-            // proceed with message processing.
-            return .nonDuplicate
-        }
-    }
-
-    static let maxRecordCount: UInt = 1000
-
-    static let cullCount = AtomicUInt(0)
-
-    private static func cull(transaction: SDSAnyWriteTransaction) {
-
-        cullCount.increment()
-
-        let oldCount = recordCount(transaction: transaction)
-
-        guard oldCount > maxRecordCount else {
-            return
-        }
-
-        do {
-            // It is sufficient to cull by record count in batches.
-            // The batch size must be larger than our cull frequency to bound total record count.
-            let cullCount: Int = min(Int(cullFrequency) * 2, Int(oldCount) - Int(maxRecordCount))
-
-            Logger.info("Culling \(cullCount) records.")
-
-            // Find and delete the oldest N records.
-            let records = try MessageDecryptDeduplicationRecord.order(GRDB.Column("serviceTimestamp"))
-                .limit(cullCount)
-                .fetchAll(transaction.unwrapGrdbRead.database)
-            for record in records {
-                try record.delete(transaction.unwrapGrdbWrite.database)
-            }
-
-            let newCount = recordCount(transaction: transaction)
-            if oldCount != newCount {
-                Logger.info("Culled by count: \(oldCount) -> \(newCount)")
-            }
-            owsAssertDebug(newCount <= maxRecordCount)
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    public static func recordCount(transaction: SDSAnyReadTransaction) -> UInt {
-        MessageDecryptDeduplicationRecord.ows_fetchCount(transaction.unwrapGrdbRead.database)
-    }
-
-    private static let unfairLock = UnfairLock()
-    private static var counter: UInt64 = 0
-    static let cullFrequency: UInt64 = 100
-
-    private static func shouldCull() -> Bool {
-        unfairLock.withLock {
-            // Cull records once per N decryptions.
-            //
-            // NOTE: this always return true the first time that this
-            // method is called for a given launch of the process.
-            // We need to err on the side of culling too often to bound
-            // total record count.
-            let shouldCull = counter % cullFrequency == 0
-            counter += 1
-            return shouldCull
-        }
-    }
-}
-
-// MARK: -
-
 private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let encryptedEnvelopeData: Data
     let encryptedEnvelope: SSKProtoEnvelope
@@ -631,16 +509,6 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
 
     func decrypt(transaction: SDSAnyWriteTransaction) -> Swift.Result<DecryptedEnvelope, Error> {
-        let deduplicationOutcome = MessageDecryptDeduplicationRecord.deduplicate(encryptedEnvelope: encryptedEnvelope,
-                                                                                 transaction: transaction)
-        switch deduplicationOutcome {
-        case .nonDuplicate:
-            // Proceed with decryption.
-            break
-        case .duplicate:
-            return .failure(MessageProcessingError.duplicateDecryption)
-        }
-
         let result = Self.messageDecrypter.decryptEnvelope(
             encryptedEnvelope,
             envelopeData: encryptedEnvelopeData,
@@ -813,5 +681,4 @@ public class PendingEnvelopes {
 
 public enum MessageProcessingError: Error {
     case duplicatePendingEnvelope
-    case duplicateDecryption
 }

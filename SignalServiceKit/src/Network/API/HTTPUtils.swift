@@ -44,7 +44,7 @@ extension HTTPUtils {
                                           responseError: Error?,
                                           responseData: Data?) -> OWSHTTPError {
 
-        var errorDescription = "URL: \(requestUrl.absoluteString), status: \(responseStatus)"
+        var errorDescription = "URL: \(request.httpMethod) \(requestUrl.absoluteString), status: \(responseStatus)"
         if let responseError = responseError {
             errorDescription += ", error: \(responseError)"
         }
@@ -68,7 +68,7 @@ extension HTTPUtils {
 
         switch responseStatus {
         case 0:
-            Logger.warn("The network request failed because of a connectivity error: \(requestUrl.absoluteString)")
+            Logger.warn("The network request failed because of a connectivity error: \(request.httpMethod) \(requestUrl.absoluteString)")
             let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
             return error
         case 400:
@@ -101,7 +101,7 @@ extension HTTPUtils {
                                                   recoverySuggestion: recoverySuggestion)
             return error
         case 413:
-            Logger.warn("Rate limit exceeded: \(requestUrl.absoluteString)")
+            Logger.warn("Rate limit exceeded: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = NSLocalizedString("REGISTER_RATE_LIMITING_ERROR", comment: "")
             let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
             let error = buildServiceResponseError(description: description,
@@ -109,7 +109,7 @@ extension HTTPUtils {
             return error
         case 417:
             // TODO: Is this response code obsolete?
-            Logger.warn("The number is already registered on a relay. Please unregister there first: \(requestUrl.absoluteString)")
+            Logger.warn("The number is already registered on a relay. Please unregister there first: \(request.httpMethod) \(requestUrl.absoluteString)")
             let description = NSLocalizedString("REGISTRATION_ERROR", comment: "")
             let recoverySuggestion = NSLocalizedString("RELAY_REGISTERED_ERROR_RECOVERY", comment: "")
             let error = buildServiceResponseError(description: description,
@@ -149,11 +149,11 @@ extension HTTPUtils {
                 if Self.tsAccountManager.isRegisteredAndReady {
                     Self.tsAccountManager.setIsDeregistered(true)
                 } else {
-                    Logger.warn("Ignoring auth failure not registered and ready: \(requestUrl.absoluteString).")
+                    Logger.warn("Ignoring auth failure not registered and ready: \(request.httpMethod) \(requestUrl.absoluteString).")
                 }
             }
         } else {
-            Logger.warn("Ignoring \(statusCode) for URL: \(requestUrl.absoluteString)")
+            Logger.warn("Ignoring \(statusCode) for URL: \(request.httpMethod) \(requestUrl.absoluteString)")
         }
     }
 }
