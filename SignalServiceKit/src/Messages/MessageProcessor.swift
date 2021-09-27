@@ -489,7 +489,10 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
         transaction: SDSAnyWriteTransaction,
         skipCull: Bool = false
     ) -> Outcome {
-        deduplicate(envelopeTimestamp: encryptedEnvelope.timestamp,
+        deduplicate(sourceUuid: encryptedEnvelope.sourceUuid,
+                    sourceE164: encryptedEnvelope.sourceE164,
+                    sourceDevice: encryptedEnvelope.sourceDevice,
+                    envelopeTimestamp: encryptedEnvelope.timestamp,
                     serviceTimestamp: encryptedEnvelope.serverTimestamp,
                     serverGuid: encryptedEnvelope.serverGuid,
                     transaction: transaction,
@@ -497,6 +500,9 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
     }
 
     public static func deduplicate(
+        sourceUuid: String?,
+        sourceE164: String?,
+        sourceDevice: UInt32,
         envelopeTimestamp: UInt64,
         serviceTimestamp: UInt64,
         serverGuid: String?,
@@ -515,6 +521,26 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             owsFailDebug("Missing serverGuid.")
             return .nonDuplicate
         }
+
+        var descriptionComponents: [String] = [
+            "timestamp: \(envelopeTimestamp)",
+            "serviceTimestamp: \(serviceTimestamp)",
+            "serverGuid: \(serverGuid)"
+        ]
+        var hasSource = false
+        if let sourceUuid = sourceUuid?.strippedOrNil {
+            descriptionComponents.append("sourceUuid: \(sourceUuid)")
+            hasSource = true
+        }
+        if let sourceE164 = sourceE164?.strippedOrNil {
+            descriptionComponents.append("sourceE164: \(sourceE164)")
+            hasSource = true
+        }
+        if hasSource {
+            descriptionComponents.append("sourceDevice: \(sourceDevice)")
+        }
+        let description = "[" + descriptionComponents.joined(separator: ", ") + "]"
+
         do {
             let isDuplicate: Bool = try {
                 let sql = """
@@ -526,7 +552,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
                 return try Bool.fetchOne(transaction.unwrapGrdbWrite.database, sql: sql, arguments: arguments) ?? false
             }()
             guard !isDuplicate else {
-                Logger.warn("Discarding duplicate envelope with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.warn("Discarding duplicate envelope: \(description)")
                 return .duplicate
             }
 
@@ -539,7 +565,7 @@ class MessageDecryptDeduplicationRecord: Codable, FetchableRecord, PersistableRe
             }
 
             if DebugFlags.internalLogging {
-                Logger.info("Proceeding with envelopeTimestamp: \(envelopeTimestamp), serviceTimestamp: \(serviceTimestamp), serverGuid: \(serverGuid)")
+                Logger.info("Proceeding with envelope: \(description)")
             }
             return .nonDuplicate
         } catch {
