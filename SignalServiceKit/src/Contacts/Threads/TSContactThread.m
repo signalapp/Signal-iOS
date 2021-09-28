@@ -201,6 +201,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    OWSLogInfo(@"Inserted contact thread: %@", self.contactAddress);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

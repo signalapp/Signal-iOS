@@ -255,6 +255,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     }
 }
 
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    OWSLogInfo(@"Inserted group thread: %@", self.groupId.hexadecimalString);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
