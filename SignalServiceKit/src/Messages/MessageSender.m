@@ -334,7 +334,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     _sendingQueueMap = [NSMutableDictionary new];
-    _pendingTasks = [PendingTasks new];
+    _pendingTasks = [[PendingTasks alloc] initWithLabel:@"Message Sends"];
 
     OWSSingletonAssert();
 

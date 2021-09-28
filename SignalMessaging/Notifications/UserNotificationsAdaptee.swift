@@ -136,6 +136,8 @@ public class UserNotificationConfig {
 
 }
 
+// MARK: -
+
 class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     private let notificationCenter: UNUserNotificationCenter
@@ -167,16 +169,19 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?,
+                completion: NotificationCompletion?) {
         AssertIsOnMainThread()
-        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, interaction: interaction, sound: sound, replacingIdentifier: nil)
+        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, interaction: interaction, sound: sound, replacingIdentifier: nil, completion: completion)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?,
+                completion: NotificationCompletion?) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isOnboarded() else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
+            completion?()
             return
         }
 
@@ -235,6 +240,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                 if let error = error {
                     owsFailDebug("Error: \(error)")
                 }
+                completion?()
             }
         }
         #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
