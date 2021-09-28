@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import os
+import SignalCoreKit
 
 @objc
 public class OutageDetection: NSObject {
@@ -12,24 +13,45 @@ public class OutageDetection: NSObject {
 
     @objc public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
 
-    // These properties should only be accessed on the main thread.
     @objc
-    public var hasOutage = false {
-        didSet {
-            AssertIsOnMainThread()
+    public override required init() {
+        super.init()
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.ensureCheckTimer()
+        }
+    }
 
-            if hasOutage != oldValue {
-                Logger.info("hasOutage: \(hasOutage).")
+    private let _hasOutage = AtomicBool(false)
+    @objc
+    public var hasOutage: Bool {
+        get {
+            _hasOutage.get()
+        }
+        set {
+            let oldValue = _hasOutage.swap(newValue)
+
+            if oldValue != newValue {
+                Logger.info("hasOutage: \(oldValue) -> \(newValue).")
 
                 NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
             }
         }
     }
-    private var shouldCheckForOutage = false {
-        didSet {
-            AssertIsOnMainThread()
+    private let _shouldCheckForOutage = AtomicBool(false)
+    private var shouldCheckForOutage: Bool {
+        get {
+            _shouldCheckForOutage.get()
+        }
+        set {
+            let oldValue = _shouldCheckForOutage.swap(newValue)
 
-            ensureCheckTimer()
+            if oldValue != newValue {
+                Logger.info("shouldCheckForOutage: \(oldValue) -> \(newValue).")
+
+                DispatchQueue.main.async {
+                    self.ensureCheckTimer()
+                }
+            }
         }
     }
 
@@ -40,11 +62,11 @@ public class OutageDetection: NSObject {
         CFHostStartInfoResolution(host, .addresses, nil)
         var success: DarwinBoolean = false
         guard let addresses = CFHostGetAddressing(host, &success)?.takeUnretainedValue() as NSArray? else {
-            Logger.error("CFHostGetAddressing failed: no addresses.")
+            owsFailDebug("CFHostGetAddressing failed: no addresses.")
             return false
         }
         guard success.boolValue else {
-            Logger.error("CFHostGetAddressing failed.")
+            owsFailDebug("CFHostGetAddressing failed.")
             return false
         }
         var isOutageDetected = false
@@ -71,15 +93,14 @@ public class OutageDetection: NSObject {
         Logger.info("")
 
         DispatchQueue.global().async {
-            let isOutageDetected = self.checkForOutageSync()
-            DispatchQueue.main.async {
-                self.hasOutage = isOutageDetected
-            }
+            self.hasOutage = self.checkForOutageSync()
         }
     }
 
     private var checkTimer: Timer?
     private func ensureCheckTimer() {
+        AssertIsOnMainThread()
+
         // Only monitor for outages in the main app.
         guard CurrentAppContext().isMainApp else {
             return
@@ -92,6 +113,7 @@ public class OutageDetection: NSObject {
             }
 
             // The TTL of the DNS record is 60 seconds.
+            checkTimer?.invalidate()
             checkTimer = WeakTimer.scheduledTimer(timeInterval: 60, target: self, userInfo: nil, repeats: true) { [weak self] _ in
                 AssertIsOnMainThread()
 
@@ -99,30 +121,23 @@ public class OutageDetection: NSObject {
                     return
                 }
 
-                guard let strongSelf = self else {
-                    return
-                }
-
-                strongSelf.checkForOutageAsync()
+                self?.checkForOutageAsync()
             }
         } else {
             checkTimer?.invalidate()
             checkTimer = nil
-        }
-    }
-
-    @objc
-    public func reportConnectionSuccess() {
-        DispatchMainThreadSafe {
-            self.shouldCheckForOutage = false
             self.hasOutage = false
         }
     }
 
     @objc
+    public func reportConnectionSuccess() {
+        self.shouldCheckForOutage = false
+        self.hasOutage = false
+    }
+
+    @objc
     public func reportConnectionFailure() {
-        DispatchMainThreadSafe {
-            self.shouldCheckForOutage = true
-        }
+        self.shouldCheckForOutage = true
     }
 }
