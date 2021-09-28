@@ -8,6 +8,8 @@ import GRDB
 extension SignalRecipient {
     @objc
     func changePhoneNumber(_ phoneNumber: String?, transaction: GRDBWriteTransaction) {
+        Logger.info("uuid: \(String(describing: self.recipientUUID)), phoneNumber: \(String(describing: self.recipientPhoneNumber)) -> \(String(describing: phoneNumber)) ")
+
         if phoneNumber == nil && recipientUUID == nil {
             owsFailDebug("Unexpectedly tried to clear out the phone number on a recipient with no UUID")
             // Fill in a random UUID, so we can complete the change and maintain a common

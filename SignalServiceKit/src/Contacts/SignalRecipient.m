@@ -599,6 +599,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [super anyDidInsertWithTransaction:transaction];
 
     [self.modelReadCaches.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
+
+    OWSLogInfo(@"Inserted: %@", self.address);
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
