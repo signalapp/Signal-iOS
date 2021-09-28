@@ -106,8 +106,9 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
                     continue
                 }
 
-                Logger.verbose("signal user: \(e164PhoneNumber)")
-                registeredContacts.insert(CDSRegisteredContact(signalUuid: uuids[index],
+                let uuid = uuids[index]
+                Logger.verbose("Signal user. e164: \(e164PhoneNumber), uuid: \(uuid)")
+                registeredContacts.insert(CDSRegisteredContact(signalUuid: uuid,
                                                                e164PhoneNumber: e164PhoneNumber))
             }
 
