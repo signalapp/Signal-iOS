@@ -28,6 +28,8 @@ public final class CallService: NSObject {
 
     lazy private(set) var audioService = CallAudioService()
 
+    public var earlyRingNextIncomingCall = false
+
     private var _currentCall: SignalCall?
     @objc
     public private(set) var currentCall: SignalCall? {

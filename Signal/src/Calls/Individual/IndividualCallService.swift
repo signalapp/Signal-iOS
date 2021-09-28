@@ -92,6 +92,13 @@ import SignalMessaging
         AssertIsOnMainThread()
         Logger.info("\(call)")
 
+        defer {
+            // This should only be non-nil if we had to defer accepting the call while waiting for RingRTC
+            // If it's set, we need to make sure we call it before returning.
+            call.individualCall.deferredAnswerCompletion?()
+            call.individualCall.deferredAnswerCompletion = nil
+        }
+
         guard callService.currentCall === call else {
             let error = OWSAssertionError("accepting call: \(call) which is different from currentCall: \(callService.currentCall as Optional)")
             handleFailedCall(failedCall: call, error: error)
@@ -148,7 +155,7 @@ import SignalMessaging
             if callRecord.callType == .outgoingIncomplete {
                 callRecord.updateCallType(.outgoingMissed)
             }
-        } else if call.individualCall.state == .localRinging {
+        } else if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) {
             let callRecord = TSCall(
                 callType: .incomingDeclined,
                 offerType: call.individualCall.offerMediaType,
@@ -508,6 +515,15 @@ import SignalMessaging
         owsAssertDebug(call.isIndividualCall)
         Logger.info("call: \(call)")
 
+        if isOutgoing == false, callService.earlyRingNextIncomingCall {
+            // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
+            // has resulted in the NSE waking up the main app.
+            owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
+            Logger.info("Performing early ring")
+            handleRinging(call: call, isAnticipatory: true)
+            callService.earlyRingNextIncomingCall = false
+        }
+
         // Start the call, asynchronously.
         getIceServers().done(on: .main) { iceServers in
             guard self.callService.currentCall === call else {
@@ -579,7 +595,7 @@ import SignalMessaging
             audioSession.isRTCAudioEnabled = false
 
             switch call.individualCall.state {
-            case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
+            case .idle, .dialing, .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting, .localFailure, .remoteBusy, .remoteRinging:
                 handleMissedCall(call)
             case .connected, .reconnecting, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
                 Logger.info("call is finished")
@@ -601,7 +617,7 @@ import SignalMessaging
             audioSession.isRTCAudioEnabled = false
 
             switch call.individualCall.state {
-            case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
+            case .idle, .dialing, .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting, .localFailure, .remoteBusy, .remoteRinging:
                 handleMissedCall(call)
             case .connected, .reconnecting, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
                 Logger.info("call is finished")
@@ -626,10 +642,10 @@ import SignalMessaging
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.individualCall.state)"))
                 return
-            case .answering, .connected:
+            case .answering, .accepting, .connected:
                 Logger.info("tried answering locally, but answered somewhere else first. state: \(call.individualCall.state)")
                 handleAnsweredElsewhere(call: call)
-            case .localRinging, .reconnecting:
+            case .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .reconnecting:
                 handleAnsweredElsewhere(call: call)
             case  .localFailure, .localHangup:
                 Logger.info("ignoring 'endedRemoteHangupAccepted' since call is already finished")
@@ -647,10 +663,10 @@ import SignalMessaging
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.individualCall.state)"))
                 return
-            case .answering, .connected:
+            case .answering, .accepting, .connected:
                 Logger.info("tried answering locally, but declined somewhere else first. state: \(call.individualCall.state)")
                 handleDeclinedElsewhere(call: call)
-            case .localRinging, .reconnecting:
+            case .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .reconnecting:
                 handleDeclinedElsewhere(call: call)
             case  .localFailure, .localHangup:
                 Logger.info("ignoring 'endedRemoteHangupDeclined' since call is already finished")
@@ -668,10 +684,10 @@ import SignalMessaging
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupBusy: \(call.individualCall.state)"))
                 return
-            case .answering, .connected:
+            case .answering, .accepting, .connected:
                 Logger.info("tried answering locally, but already in a call somewhere else first. state: \(call.individualCall.state)")
                 handleBusyElsewhere(call: call)
-            case .localRinging, .reconnecting:
+            case .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .reconnecting:
                 handleBusyElsewhere(call: call)
             case  .localFailure, .localHangup:
                 Logger.info("ignoring 'endedRemoteHangupBusy' since call is already finished")
@@ -1145,13 +1161,22 @@ import SignalMessaging
     }
 
     /**
-     * The clients can now communicate via WebRTC, so we can let the UI know.
+     * Present UI to begin ringing.
      *
-     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote
-     * client.
+     * This can be performed in response to:
+     * - Established communication via WebRTC
+     * - Anticipation of an expected future ring.
+     *
+     * In the former case, compatible ICE messages have been exchanged between the local and remote
+     * client and we can ring with confidence that the call will connect.
+     *
+     * In the latter case, the ring is performed before any messages have been exchanged. This is to satisfy
+     * callservicesd which requires that we post a CallKit ring shortly after the NSE wakes the main app.
      */
-    private func handleRinging(call: SignalCall) {
+    private func handleRinging(call: SignalCall, isAnticipatory: Bool = false) {
         AssertIsOnMainThread()
+        // Only incoming calls can use the early ring states
+        owsAssertDebug(!(call.individualCall.direction == .outgoing && isAnticipatory))
         Logger.info("call: \(call)")
 
         guard call === callService.currentCall else {
@@ -1161,19 +1186,23 @@ import SignalMessaging
 
         switch call.individualCall.state {
         case .dialing:
-            if call.individualCall.state != .remoteRinging {
-                BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
-            }
+            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
             call.individualCall.state = .remoteRinging
         case .answering:
-            if call.individualCall.state != .localRinging {
-                BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
-            }
-            call.individualCall.state = .localRinging
+            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
+            call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
             self.callUIAdapter.reportIncomingCall(call, thread: call.individualCall.thread)
+        case .localRinging_Anticipatory:
+            // RingRTC became ready during our anticipatory ring. User hasn't tried to answer yet.
+            owsAssertDebug(isAnticipatory == false)
+            call.individualCall.state = .localRinging_ReadyToAnswer
+        case .accepting:
+            // The user answered during our early ring, but we've been waiting for RingRTC to tell us to start
+            // actually ringing before trying to accept. We can do that now.
+            handleAcceptCall(call)
         case .remoteRinging:
             Logger.info("call already ringing. Ignoring \(#function): \(call).")
-        case .idle, .localRinging, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+        case .idle, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .localRinging_ReadyToAnswer:
             owsFailDebug("unexpected call state: \(call.individualCall.state): \(call).")
         }
     }
@@ -1188,7 +1217,7 @@ import SignalMessaging
         }
 
         switch call.individualCall.state {
-        case .remoteRinging, .localRinging:
+        case .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
             Logger.debug("disconnect while ringing... we'll keep ringing")
         case .connected:
             call.individualCall.state = .reconnecting
@@ -1326,7 +1355,7 @@ import SignalMessaging
         }()
 
         switch failedCall.individualCall.state {
-        case .answering, .localRinging:
+        case .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
             assert(failedCall.individualCall.callRecord == nil)
             // call failed before any call record could be created, make one now.
             handleMissedCall(failedCall)
