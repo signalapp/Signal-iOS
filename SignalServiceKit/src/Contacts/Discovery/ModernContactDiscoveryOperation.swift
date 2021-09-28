@@ -101,12 +101,12 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
             var registeredContacts: Set<CDSRegisteredContact> = Set()
 
             for (index, e164PhoneNumber) in e164sToLookup.enumerated() {
-                guard uuids[index] != unregisteredUuid else {
+                let uuid = uuids[index]
+                guard uuid != unregisteredUuid else {
                     Logger.verbose("not a signal user: \(e164PhoneNumber)")
                     continue
                 }
 
-                let uuid = uuids[index]
                 Logger.verbose("Signal user. e164: \(e164PhoneNumber), uuid: \(uuid)")
                 registeredContacts.insert(CDSRegisteredContact(signalUuid: uuid,
                                                                e164PhoneNumber: e164PhoneNumber))
