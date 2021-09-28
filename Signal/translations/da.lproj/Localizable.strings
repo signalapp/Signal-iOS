@@ -1025,13 +1025,13 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "besked";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Udsæt chatten...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dæmp chatten...";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Altid";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "udsæt";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "dæmp";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 timer";
@@ -1058,16 +1058,16 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Altid";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Altid udsat";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Altid dæmpet";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "udsat";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "dæmpet";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "indtil %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Udsat indtil %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Dæmpet indtil %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ fællesgrupper";
@@ -1451,7 +1451,7 @@
 "DISMISS_BUTTON_TEXT" = "Afvis";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Afvis kontekstmenu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Område for censuromgåelse";
@@ -1652,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Download af vedhæftning fejlet";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "En besked fra %@ kunne ikke leveres";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "En besked kunne ikke leveres";
@@ -1751,7 +1751,7 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ beskeder";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Hurtigere videresendelser";
 
 /* Indicates that a single message was forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Besked sendt";
@@ -2132,7 +2132,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så alle medlemmer kan sende meddelelser.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to allow all members to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ændrede gruppeindstillingerne, så alle medlemmer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Gruppeindstillingerne blev ændret, så kun administratorer kan sende beskeder.";
@@ -2141,7 +2141,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så kun administratorer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ changed the group settings to only allow admins to send messages.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ ændrede gruppeindstillingerne, så kun administratorer kan sende beskeder.";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Gruppelinket er ikke længere gyldigt";
@@ -2573,10 +2573,10 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratorer";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Only %@ can send messages";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Kun %@ kan sende beskeder.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Send en besked til en administrator";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Vælg en ny administrator for gruppen, inden du forlader den";
@@ -3164,13 +3164,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Klistermærkepakke";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 valgte";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 valgt";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ valgte";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Besked";
@@ -3230,7 +3230,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Beskeddetaljer";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Forhåndsvisning af besked";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokér";
@@ -4640,7 +4640,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Dit angivne telefonnummer er allerede registreret på en anden server. Fjern det venligst derfra først og prøv derefter igen";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Fjern forhåndsvisning";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Vælg ny administrator";
@@ -5132,7 +5132,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Vælg den kvalitet, du sender billeder og videoer i.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sendte medier";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Dataforbrug";
@@ -5228,7 +5228,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder Udsatte chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder dæmpede chats";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Emblem tæller";
@@ -5750,16 +5750,16 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Afsendelse af medier i høj kvalitet bruger mere data.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Billeder og video";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "Del kontakter med iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter and chats for at få adgang til funktioner såsom delingsforslag.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter and chats for at få adgang til funktioner såsom delingsforslag og meddelelser.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
