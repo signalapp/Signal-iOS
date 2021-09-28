@@ -13,14 +13,6 @@ public class OutageDetection: NSObject {
 
     @objc public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
 
-    @objc
-    public override required init() {
-        super.init()
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            self.ensureCheckTimer()
-        }
-    }
-
     private let _hasOutage = AtomicBool(false)
     @objc
     public var hasOutage: Bool {
