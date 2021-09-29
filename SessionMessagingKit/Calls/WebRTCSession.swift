@@ -3,6 +3,8 @@ import WebRTC
 
 public protocol WebRTCSessionDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
+    
+    func webRTCDidConnected()
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
@@ -218,6 +220,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
         print("[Calls] ICE connection state changed to: \(state).")
+        if state == .connected {
+            delegate?.webRTCDidConnected()
+        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceGatheringState) {

@@ -271,6 +271,19 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         if (isVideoEnabled) { cameraManager.stop() }
     }
     
+    // MARK: Delegate
+    func webRTCDidConnected() {
+        DispatchQueue.main.async {
+            self.callInfoLabel.text = "Connected"
+            UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
+                self.callInfoLabel.alpha = 0
+            }, completion: { _ in
+                self.callInfoLabel.isHidden = true
+                self.callInfoLabel.alpha = 1
+            })
+        }
+    }
+    
     // MARK: Interaction
     func handleAnswerMessage(_ message: CallMessage) {
         callInfoLabel.text = "Connecting..."
@@ -278,6 +291,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     func handleEndCallMessage(_ message: CallMessage) {
         print("[Calls] Ending call.")
+        callInfoLabel.isHidden = false
         callInfoLabel.text = "Call Ended"
         WebRTCSession.current?.dropConnection()
         WebRTCSession.current = nil

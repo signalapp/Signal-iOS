@@ -10,15 +10,17 @@ extension AppDelegate {
             DispatchQueue.main.async {
                 let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-                let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
-                callVC.modalPresentationStyle = .overFullScreen
-                callVC.modalTransitionStyle = .crossDissolve
-                if let conversationVC = presentingVC as? ConversationVC {
+                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == message.sender! {
+                    let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
+                    callVC.modalPresentationStyle = .overFullScreen
+                    callVC.modalTransitionStyle = .crossDissolve
                     callVC.conversationVC = conversationVC
                     conversationVC.inputAccessoryView?.isHidden = true
                     conversationVC.inputAccessoryView?.alpha = 0
+                    presentingVC.present(callVC, animated: true, completion: nil)
+                } else {
+                    
                 }
-                presentingVC.present(callVC, animated: true, completion: nil)
             }
         }
         // Answer messages

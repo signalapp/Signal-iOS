@@ -37,6 +37,18 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         self.inputAccessoryView?.alpha = 0
         present(callVC, animated: true, completion: nil)
     }
+    
+    internal func showCallVCIfNeeded() {
+        guard hasIncomingCall, let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
+        hasIncomingCall = false
+        let callVC = CallVC(for: contactSessionID, mode: .offer) // TODO: change to answer
+        callVC.conversationVC = self
+        callVC.modalPresentationStyle = .overFullScreen
+        callVC.modalTransitionStyle = .crossDissolve
+        self.inputAccessoryView?.isHidden = true
+        self.inputAccessoryView?.alpha = 0
+        present(callVC, animated: true, completion: nil)
+    }
 
     // MARK: Blocking
     @objc func unblock() {
