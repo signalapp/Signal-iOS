@@ -522,7 +522,6 @@ protocol CallAudioServiceDelegate: AnyObject {
                     Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
                 }
                 try avAudioSession.setCategory(category, mode: mode, options: options)
-
             } else {
                 let oldCategory = avAudioSession.category
                 let oldOptions = avAudioSession.categoryOptions
@@ -542,12 +541,12 @@ protocol CallAudioServiceDelegate: AnyObject {
                 try avAudioSession.ows_setCategory(category, with: options)
             }
         } catch {
-            let message = "failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"
+            let message = "failed to set category: \(category), mode: \(String(describing: mode)), options: \(options) with error: \(error)"
             owsFailDebug(message)
         }
 
         if audioSessionChanged {
-            Logger.info("")
+            Logger.info("audio session changed category: \(category), mode: \(String(describing: mode)), options: \(options)")
             self.delegate?.callAudioServiceDidChangeAudioSession(self)
         }
     }
