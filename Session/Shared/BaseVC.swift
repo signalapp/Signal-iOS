@@ -36,10 +36,19 @@ class BaseVC : UIViewController {
 
     internal func setUpNavBarStyle() {
         guard let navigationBar = navigationController?.navigationBar else { return }
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
+        if #available(iOS 15.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = Colors.navigationBarBackground
+            appearance.shadowColor = .clear
+            navigationBar.standardAppearance = appearance;
+            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
+        } else {
+            navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+            navigationBar.shadowImage = UIImage()
+            navigationBar.isTranslucent = false
+            navigationBar.barTintColor = Colors.navigationBarBackground
+        }
     }
 
     internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {
