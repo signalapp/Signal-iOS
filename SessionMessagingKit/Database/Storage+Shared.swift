@@ -39,7 +39,7 @@ extension Storage {
         guard let userPublicKey = getUserPublicKey() else { return nil }
         var result: Contact?
         Storage.read { transaction in
-            result = Storage.shared.getContact(with: userPublicKey)
+            result = Storage.shared.getContact(with: userPublicKey, using: transaction)
         }
         return result
     }
