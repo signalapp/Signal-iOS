@@ -119,6 +119,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                     let message = CallMessage()
                     message.kind = .offer
                     message.sdps = [ sdp.sdp ]
+                    let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+                    tsMessage.save(with: transaction)
                     MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
                         seal.fulfill(())
                     }.catch2 { error in

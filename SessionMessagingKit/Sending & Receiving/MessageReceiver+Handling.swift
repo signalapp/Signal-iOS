@@ -280,6 +280,13 @@ extension MessageReceiver {
             // Delegate to the main app, which is expected to show a dialog confirming
             // that the user wants to pick up the call. When they do, the SDP contained
             // in the offer message will be passed to WebRTCSession.handleRemoteSDP(_:from:).
+            let storage = SNMessagingKitConfiguration.shared.storage
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
+            if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
+                let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
+                let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
+                tsMessage.save(with: transaction)
+            }
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")

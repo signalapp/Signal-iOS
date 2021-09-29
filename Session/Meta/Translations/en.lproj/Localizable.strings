@@ -572,3 +572,5 @@
 "OPEN_SETTINGS_BUTTON" = "Settings";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
+"call_outgoing" = "Outgoing Call";
+"call_incoming" = "Incoming Call";

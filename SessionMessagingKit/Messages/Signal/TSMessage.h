@@ -40,6 +40,7 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @property (nonatomic, readonly, nullable) NSString *openGroupInvitationURL;
 @property (nonatomic, nullable) NSString *serverHash;
 @property (nonatomic) BOOL isDeleted;
+@property (nonatomic) BOOL isCallMessage;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

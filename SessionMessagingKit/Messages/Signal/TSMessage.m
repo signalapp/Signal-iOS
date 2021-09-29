@@ -87,6 +87,7 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
     _openGroupInvitationURL = openGroupInvitationURL;
     _serverHash = serverHash;
     _isDeleted = false;
+    _isCallMessage = false;
 
     return self;
 }

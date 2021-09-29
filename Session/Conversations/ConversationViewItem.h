@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
+    OWSMessageCellType_CallMessage,
     OWSMessageCellType_DeletedMessage
 };
 

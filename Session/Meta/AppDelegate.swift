@@ -19,7 +19,6 @@ extension AppDelegate {
                     conversationVC.inputAccessoryView?.alpha = 0
                     presentingVC.present(callVC, animated: true, completion: nil)
                 } else {
-                    
                 }
             }
         }
