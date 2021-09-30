@@ -29,7 +29,7 @@ extension OWSAudioSession {
      */
     @objc
     public func configureRTCAudio() {
-        Logger.info("")
+        Logger.info("rtcAudioSession.useManualAudio")
         rtcAudioSession.useManualAudio = true
     }
 
@@ -43,6 +43,7 @@ extension OWSAudioSession {
             return rtcAudioSession.isAudioEnabled
         }
         set {
+            Logger.info("rtcAudioSession.isAudioEnabled = \(newValue)")
             rtcAudioSession.isAudioEnabled = newValue
         }
     }
