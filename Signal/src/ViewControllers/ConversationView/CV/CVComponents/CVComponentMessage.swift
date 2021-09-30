@@ -1384,7 +1384,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 case .right:
                     isBodyTextAlignedLeft = false
                 default:
-                    Logger.warn("Unknown text alignment: \(bodyTextLabelConfig.textAlignment).")
+                    // This is expected for edge cases: oversize text messages, remotely deleted, etc.
+                    Logger.verbose("Unknown text alignment: \(bodyTextLabelConfig.textAlignment).")
                     return
                 }
 
