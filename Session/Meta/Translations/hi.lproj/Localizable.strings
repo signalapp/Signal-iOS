@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "लिंक पूर्वावलोकन सक्षम करें?";
 "modal_link_previews_explanation" = "लिंक पूर्वावलोकन सक्षम करने से आपके द्वारा भेजे और प्राप्त किए जाने वाले URL के पूर्वावलोकन दिखाई देंगे. यह उपयोगी हो सकता है, लेकिन Session को पूर्वावलोकन उत्पन्न करने के लिए लिंक की गई वेबसाइटों से संपर्क करने की आवश्यकता होगी। आप कभी भी Session की सेटिंग में लिंक पूर्वावलोकन अक्षम कर सकते हैं।";
 "modal_link_previews_button_title" = "सक्षम करें";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "सत्र में साझा करें";
 "vc_share_loading_message" = "अटैचमेंट तैयार किए जा रहे हैं...";
 "vc_share_sending_message" = "भेजा जा रहा है...";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "सदस्य जोड़ें";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";

@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "Włączyć podgląd linków?";
 "modal_link_previews_explanation" = "Włączanie podglądów linków wyświetli podgląd dla adresów URL które wysyłasz i otrzymujesz. Może to być użyteczne, ale Session będzie musiał się połączyć ze stronami których linki wysyłasz aby wygenerować podgląd. Możesz zawsze wyłączyć podgląd linków w ustawieniach Session.";
 "modal_link_previews_button_title" = "Włącz";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Udostępnij w Session";
 "vc_share_loading_message" = "Przygotowywanie załączników...";
 "vc_share_sending_message" = "Wysyłanie...";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "Dodaj użytkowników";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";
