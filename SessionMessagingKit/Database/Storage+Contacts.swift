@@ -25,8 +25,8 @@ extension Storage {
     
     @objc(setContact:usingTransaction:)
     public func setContact(_ contact: Contact, using transaction: Any) {
-        let oldContact = getContact(with: contact.sessionID)
         let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let oldContact = getContact(with: contact.sessionID, using: transaction)
         if contact.sessionID == getUserHexEncodedPublicKey() {
             contact.isTrusted = true // Always trust ourselves
         }

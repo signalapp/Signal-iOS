@@ -181,6 +181,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let senderName = Storage.shared.getContact(with: incomingMessage.authorId, using: transaction)?.displayName(for: context) ?? incomingMessage.authorId
 
         let notificationTitle: String?
+        let previewType = preferences.notificationPreviewType(with: transaction)
         switch previewType {
         case .noNameNoPreview:
             notificationTitle = nil
