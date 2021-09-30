@@ -75,7 +75,6 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = Colors.navigationBarBackground
-            appearance.shadowColor = .clear
             navigationBar.standardAppearance = appearance;
             navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
         }
