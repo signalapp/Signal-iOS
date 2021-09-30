@@ -28,6 +28,8 @@ public final class CallService: NSObject {
 
     lazy private(set) var audioService = CallAudioService()
 
+    public var earlyRingNextIncomingCall = false
+
     private var _currentCall: SignalCall?
     @objc
     public private(set) var currentCall: SignalCall? {
@@ -57,6 +59,9 @@ public final class CallService: NSObject {
                     individualCallService.stopAnyCallTimer()
                 }
             }
+
+            // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change
+            earlyRingNextIncomingCall = false
 
             Logger.debug("\(oldValue as Optional) -> \(newValue as Optional)")
 
@@ -1062,6 +1067,10 @@ extension CallService: CallManagerDelegate {
 
         call.individualCall.callId = callId
 
+        // We grab this before updating the currentCall since it will unset it by default as a precaution.
+        let shouldEarlyRing = earlyRingNextIncomingCall && !isOutgoing
+        earlyRingNextIncomingCall = false
+
         // The call to be started is provided by the event.
         currentCall = call
 
@@ -1070,7 +1079,8 @@ extension CallService: CallManagerDelegate {
             shouldStartCall: call,
             callId: callId,
             isOutgoing: isOutgoing,
-            callMediaType: callMediaType
+            callMediaType: callMediaType,
+            shouldEarlyRing: shouldEarlyRing
         )
     }
 

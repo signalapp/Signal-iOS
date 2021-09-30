@@ -132,6 +132,7 @@ public enum PushRegistrationError: Error {
         if let callRelayPayload = callRelayPayload {
             Logger.info("Received VoIP push from the NSE: \(callRelayPayload)")
             owsAssertDebug(isWaitingForSignal.tryToSetFlag())
+            callService.earlyRingNextIncomingCall = true
         }
 
         let isUnexpectedPush = AtomicBool(false)

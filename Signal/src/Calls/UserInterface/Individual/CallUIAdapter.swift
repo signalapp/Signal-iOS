@@ -8,7 +8,7 @@ import SignalServiceKit
 import SignalMessaging
 import WebRTC
 
-protocol CallUIAdaptee {
+protocol CallUIAdaptee: AnyObject {
     var notificationPresenter: NotificationPresenter { get }
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
