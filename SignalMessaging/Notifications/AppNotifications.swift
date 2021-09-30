@@ -35,6 +35,7 @@ public enum AppNotificationCategory: CaseIterable {
     case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
     case internalError
+    case incomingMessageGeneric
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -88,6 +89,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.missedCallFromNoLongerVerifiedIdentity"
         case .internalError:
             return "Signal.AppNotificationCategory.internalError"
+        case .incomingMessageGeneric:
+            return "Signal.AppNotificationCategory.incomingMessageGeneric"
         }
     }
 
@@ -121,6 +124,8 @@ extension AppNotificationCategory {
         case .missedCallFromNoLongerVerifiedIdentity:
             return []
         case .internalError:
+            return []
+        case .incomingMessageGeneric:
             return []
         }
     }
@@ -182,6 +187,8 @@ protocol NotificationPresenterAdaptee: AnyObject {
                 sound: OWSSound?,
                 replacingIdentifier: String?,
                 completion: NotificationCompletion?)
+
+    func postGenericIncomingMessageNotification() -> Promise<Void>
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(messageId: String)
@@ -881,6 +888,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 sound: self.requestGlobalSound(),
                                 completion: completion)
         }
+    }
+
+    // This method is thread-safe.
+    public func postGenericIncomingMessageNotification() -> Promise<Void> {
+        adaptee.postGenericIncomingMessageNotification()
     }
 
     @objc

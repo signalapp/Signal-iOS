@@ -12,12 +12,7 @@ class SyncPushTokensJob: NSObject {
 
     @objc var uploadOnlyIfStale = true
 
-    private class func run() -> Promise<Void> {
-        let job = SyncPushTokensJob()
-        return job.run()
-    }
-
-    func run() -> Promise<Void> {
+    func runAsPromise() -> Promise<Void> {
         Logger.info("Starting.")
 
         return firstly {
@@ -60,7 +55,7 @@ class SyncPushTokensJob: NSObject {
     @objc
     class func run() {
         firstly {
-            self.run()
+            SyncPushTokensJob().runAsPromise()
         }.done {
             Logger.info("completed successfully.")
         }.catch { error in
@@ -69,9 +64,9 @@ class SyncPushTokensJob: NSObject {
     }
 
     @objc
-    func run() -> AnyPromise {
-        let promise: Promise<Void> = self.run()
-        return AnyPromise(promise)
+    @available(swift, obsoleted: 1.0)
+    func runAsPromise() -> AnyPromise {
+        AnyPromise(self.runAsPromise())
     }
 
     // MARK: 

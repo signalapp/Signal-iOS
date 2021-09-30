@@ -160,7 +160,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     private func syncPushTokens() {
         let job = SyncPushTokensJob()
         job.uploadOnlyIfStale = false
-        job.run().done {
+        job.runAsPromise().done {
             OWSActionSheets.showActionSheet(title: NSLocalizedString(
                 "PUSH_REGISTER_SUCCESS",
                 comment: "Title of alert shown when push tokens sync job succeeds."
