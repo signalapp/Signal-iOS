@@ -53,7 +53,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         // we re-present the notifiation every 3 seconds to make sure
         // the user sees that their phone is ringing
         incomingCallNotificationTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
-            guard call.individualCall.state == .localRinging else {
+            guard call.individualCall.state == .localRinging_ReadyToAnswer else {
                 self?.incomingCallNotificationTimer?.invalidate()
                 self?.incomingCallNotificationTimer = nil
                 return

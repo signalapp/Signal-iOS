@@ -1724,7 +1724,11 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            if Self.profileManager.localProfileAvatarData() != nil {
+            let avatarData = Self.profileManager.profileAvatarData(
+                for: OWSUserProfile.localProfileAddress,
+                transaction: transaction.asAnyWrite)
+
+            if avatarData != nil {
                 ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: .avatarBuilder, transaction: transaction)
             }
         }

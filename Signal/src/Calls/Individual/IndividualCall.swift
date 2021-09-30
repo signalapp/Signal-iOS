@@ -11,7 +11,14 @@ public enum CallState: String {
     case dialing
     case answering
     case remoteRinging
-    case localRinging
+
+    // The local ringing state is a bit more complex since we sometimes kick off
+    // a CallKit ring before RingRTC is ready to answer. We can only answer the call
+    // once both the user has answered and RingRTC is ready.
+    case localRinging_Anticipatory      // RingRTC not ready. User has not answered
+    case localRinging_ReadyToAnswer     // RingRTC ready. User has not answered
+    case accepting                      // RingRTC not ready. User has answered
+
     case connected
     case reconnecting
     case localFailure // terminal
@@ -109,7 +116,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             return true
-        case .idle, .dialing, .answering, .remoteRinging, .localRinging, .connected, .reconnecting:
+        case .idle, .dialing, .answering, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting, .connected, .reconnecting:
             return false
         }
     }
@@ -138,6 +145,12 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
             AssertIsOnMainThread()
 
             delegate?.individualCallLocalVideoMuteDidChange(self, isVideoMuted: !hasLocalVideo)
+        }
+    }
+
+    var deferredAnswerCompletion: (() -> Void)? {
+        didSet {
+            owsAssertDebug(deferredAnswerCompletion == nil || state == .accepting)
         }
     }
 

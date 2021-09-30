@@ -175,7 +175,7 @@ protocol CallAudioServiceDelegate: AnyObject {
             return
         }
 
-        if call.state == .localRinging {
+        if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.state) {
             // The AudioSession for playing a ring tone.
             setAudioSession(category: .playback, mode: .default)
         } else if call.hasLocalVideo {
@@ -210,7 +210,8 @@ protocol CallAudioServiceDelegate: AnyObject {
         case .dialing: handleDialing(call: call)
         case .answering: handleAnswering(call: call)
         case .remoteRinging: handleRemoteRinging(call: call)
-        case .localRinging: handleLocalRinging(call: call)
+        case .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
+            handleLocalRinging(call: call)
         case .connected: handleConnected(call: call)
         case .reconnecting: handleReconnecting(call: call)
         case .localFailure: handleLocalFailure(call: call)
@@ -369,6 +370,9 @@ protocol CallAudioServiceDelegate: AnyObject {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return
         }
+
+        // Only CallKit calls should be in the transitory ringing states
+        owsAssertDebug(call.state == .localRinging_ReadyToAnswer)
 
         vibrateTimer?.invalidate()
         vibrateTimer = .scheduledTimer(withTimeInterval: vibrateRepeatDuration, repeats: true) { [weak self] _ in

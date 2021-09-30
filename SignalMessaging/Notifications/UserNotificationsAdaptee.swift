@@ -282,6 +282,29 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         #endif
     }
 
+    // This method is thread-safe.
+    func postGenericIncomingMessageNotification() -> Promise<Void> {
+        let content = UNMutableNotificationContent()
+        content.categoryIdentifier = AppNotificationCategory.incomingMessageGeneric.identifier
+        content.userInfo = [:]
+        // We use a fixed identifier so that if we post multiple "generic"
+        // notifications, they replace each other.
+        let notificationIdentifier = "org.signal.genericIncomingMessageNotification"
+        content.body = NotificationStrings.genericIncomingMessageNotification
+        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: nil)
+        if DebugFlags.internalLogging {
+            Logger.info("Presenting notification with identifier: \(notificationIdentifier)")
+        }
+        let (promise, future) = Promise<Void>.pending()
+        notificationCenter.add(request) { (error: Error?) in
+            if let error = error {
+                owsFailDebug("Error: \(error)")
+            }
+            future.resolve(())
+        }
+        return promise
+    }
+
     private var pendingCancelations = Set<PendingCancelation>() {
         didSet {
             AssertIsOnMainThread()
@@ -415,6 +438,9 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
             // Show notifications for any *other* thread than the currently selected thread
             return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
+        case .incomingMessageGeneric:
+            owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
+            return true
         }
     }
 

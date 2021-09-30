@@ -30,10 +30,11 @@ public enum PushRegistrationError: Error {
 
     // Private callout queue that we can use to synchronously wait for our call to start
     // TODO: Rewrite call message routing to be able to synchronously report calls
-    private let calloutQueue = DispatchQueue(
+    private static let calloutQueue = DispatchQueue(
         label: "org.whispersystems.signal.PKPushRegistry",
         autoreleaseFrequency: .workItem
     )
+    private var calloutQueue: DispatchQueue { Self.calloutQueue }
 
     private var vanillaTokenPromise: Promise<Data>?
     private var vanillaTokenFuture: Future<Data>?
@@ -131,7 +132,10 @@ public enum PushRegistrationError: Error {
         if let callRelayPayload = callRelayPayload {
             Logger.info("Received VoIP push from the NSE: \(callRelayPayload)")
             owsAssertDebug(isWaitingForSignal.tryToSetFlag())
+            callService.earlyRingNextIncomingCall = true
         }
+
+        let isUnexpectedPush = AtomicBool(false)
 
         // One of the few places we dispatch_sync, this should be safe since we can only block our
         // private calloutQueue while waiting for a chance to run on the main thread.
@@ -158,8 +162,16 @@ public enum PushRegistrationError: Error {
                     }.catch { error in
                         owsFailDebug("Error: \(error)")
                     }
+
+                    if FeatureFlags.notificationServiceExtension {
+                        isUnexpectedPush.set(true)
+                    }
                 }
             }
+        }
+
+        if isUnexpectedPush.get() {
+            Self.handleUnexpectedVoidPush()
         }
 
         if let callRelayPayload = callRelayPayload {
@@ -214,6 +226,43 @@ public enum PushRegistrationError: Error {
             owsAssertDebug(isWaitingForSignal.get() == false)
             // owsAssertDebug(pendingCallSignal.count == 0)     // Not exposed so we can't actually assert this.
             Logger.info("Returning back to PushKit. Good luck! \(callRelayPayload)")
+        }
+    }
+
+    private static func handleUnexpectedVoidPush() {
+        assertOnQueue(calloutQueue)
+
+        Logger.info("")
+
+        guard #available(iOS 15, *) else {
+            owsFailDebug("Voip push is expected.")
+            return
+        }
+
+        // If the main app receives an unexpected VOIP push on iOS 15,
+        // we need to:
+        //
+        // * Post a generic incoming message notification.
+        // * Try to sync push tokens.
+        // * Block on completion of both activities to avoid
+        //   being terminated by PKPush for not starting a call.
+        let completionSignal = DispatchSemaphore(value: 0)
+        firstly { () -> Promise<Void> in
+            let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
+            let pushTokensPromise = SyncPushTokensJob().run()
+            return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
+        }.ensure(on: .global()) {
+            completionSignal.signal()
+        }.catch(on: .global()) { error in
+            owsFailDebugUnlessNetworkFailure(error)
+        }
+        let waitInterval = DispatchTimeInterval.seconds(20)
+        let didTimeout = (completionSignal.wait(timeout: .now() + waitInterval) == .timedOut)
+        if didTimeout {
+            owsFailDebug("Timed out.")
+        } else {
+            Logger.info("Complete.")
+            Logger.flush()
         }
     }
 

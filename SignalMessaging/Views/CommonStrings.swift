@@ -214,7 +214,7 @@ public class NotificationStrings: NSObject {
     static public let missedCallBecauseOfIdentityChangeBody = NSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY", comment: "notification body")
 
     @objc
-    static public let incomingMessageBody = NSLocalizedString("APN_Message", comment: "notification body")
+    static public let genericIncomingMessageNotification = NSLocalizedString("APN_Message", comment: "notification body")
 
     @objc
     static public let incomingGroupMessageTitleFormat = NSLocalizedString("NEW_GROUP_MESSAGE_NOTIFICATION_TITLE", comment: "notification title. Embeds {{author name}} and {{group name}}")

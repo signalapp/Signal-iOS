@@ -641,7 +641,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     private var isRenderingLocalVanityVideo: Bool {
-        return [.idle, .dialing, .remoteRinging, .localRinging].contains(call.individualCall.state) && !localVideoView.isHidden
+        return [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) && !localVideoView.isHidden
     }
 
     private var previousOrigin: CGPoint!
@@ -726,14 +726,14 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
             return NSLocalizedString("IN_CALL_CONNECTING", comment: "Call setup status label")
         case .remoteRinging:
             return NSLocalizedString("IN_CALL_RINGING", comment: "Call setup status label")
-        case .localRinging:
+        case .localRinging_Anticipatory, .localRinging_ReadyToAnswer:
             switch call.individualCall.offerMediaType {
             case .audio:
                 return NSLocalizedString("IN_CALL_RINGING_AUDIO", comment: "Call setup status label")
             case .video:
                 return NSLocalizedString("IN_CALL_RINGING_VIDEO", comment: "Call setup status label")
             }
-        case .answering:
+        case .answering, .accepting:
             return NSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
             let callDuration = call.connectionDuration()
@@ -827,7 +827,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         )
 
         // Show Incoming vs. Ongoing call controls
-        if call.individualCall.state == .localRinging {
+        if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) {
             let isVideoOffer = call.individualCall.offerMediaType == .video
             incomingVideoCallControls.isHidden = !isVideoOffer
             incomingAudioCallControls.isHidden = isVideoOffer

@@ -350,15 +350,24 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         AssertIsOnMainThread()
 
-        Logger.info("Received \(#function) CXAnswerCallAction")
+        Logger.info("Received \(#function) CXAnswerCallAction \(action.timeoutDate)")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             owsFailDebug("call as unexpectedly nil")
             action.fail()
             return
         }
 
-        self.callService.individualCallService.handleAcceptCall(call)
-        action.fulfill()
+        if call.individualCall.state == .localRinging_Anticipatory {
+            // We can't answer the call until RingRTC is ready
+            call.individualCall.state = .accepting
+            call.individualCall.deferredAnswerCompletion = {
+                action.fulfill()
+            }
+        } else {
+            owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
+            self.callService.individualCallService.handleAcceptCall(call)
+            action.fulfill()
+        }
     }
 
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {

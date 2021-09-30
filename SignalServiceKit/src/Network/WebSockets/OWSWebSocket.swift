@@ -935,7 +935,7 @@ public class OWSWebSocket: NSObject {
             }
         }
 
-        Logger.warn("Creating new websocket: \(webSocketType)")
+        Logger.info("Creating new websocket: \(webSocketType)")
 
         let mainServiceWebSocketAPI: String = {
             switch webSocketType {
