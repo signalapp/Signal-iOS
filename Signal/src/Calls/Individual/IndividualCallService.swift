@@ -510,18 +510,21 @@ import SignalMessaging
 
     // MARK: - Call Manager Events
 
-    public func callManager(_ callManager: CallService.CallManagerType, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool, callMediaType: CallMediaType) {
+    public func callManager(_ callManager: CallService.CallManagerType, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool, callMediaType: CallMediaType, shouldEarlyRing: Bool) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
         Logger.info("call: \(call)")
 
-        if isOutgoing == false, callService.earlyRingNextIncomingCall {
-            // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
-            // has resulted in the NSE waking up the main app.
-            owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
-            Logger.info("Performing early ring")
-            handleRinging(call: call, isAnticipatory: true)
-            callService.earlyRingNextIncomingCall = false
+        if shouldEarlyRing {
+            if isOutgoing {
+                // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
+                // has resulted in the NSE waking up the main app.
+                owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
+                Logger.info("Performing early ring")
+                handleRinging(call: call, isAnticipatory: true)
+            } else {
+                owsFailDebug("Cannot early ring an outgoing call")
+            }
         }
 
         // Start the call, asynchronously.
