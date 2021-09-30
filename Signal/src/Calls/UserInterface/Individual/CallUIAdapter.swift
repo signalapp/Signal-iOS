@@ -154,7 +154,6 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             AssertIsOnMainThread()
 
             guard let error = error else { return }
-            owsFailDebug("Failed to report incoming call with error \(error)")
 
             let nsError: NSError = error as NSError
             Logger.warn("Error: \(nsError.domain), \(nsError.code), error: \(error)")

@@ -374,7 +374,7 @@ public final class CallService: NSObject {
         failedCall.error = callError
 
         if failedCall.isIndividualCall {
-            individualCallService.handleFailedCall(failedCall: failedCall, error: callError)
+            individualCallService.handleFailedCall(failedCall: failedCall, error: callError, shouldResetUI: false, shouldResetRingRTC: true)
         }
     }
 

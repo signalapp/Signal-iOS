@@ -105,7 +105,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
         case disconnected
         case externalError(underlyingError: Error)
         case timeout(description: String)
-        case messageSendFailure(underlyingError: Error)
+        case signaling
     }
 
     var participantAddresses: [SignalServiceAddress] {

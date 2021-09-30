@@ -81,7 +81,7 @@ import SignalMessaging
         do {
             try callManager.placeCall(call: call, callMediaType: call.individualCall.offerMediaType.asCallMediaType, localDevice: localDeviceId)
         } catch {
-            self.handleFailedCall(failedCall: call, error: error)
+            self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
     }
 
@@ -94,12 +94,12 @@ import SignalMessaging
 
         guard callService.currentCall === call else {
             let error = OWSAssertionError("accepting call: \(call) which is different from currentCall: \(callService.currentCall as Optional)")
-            handleFailedCall(failedCall: call, error: error)
+            handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
             return
         }
 
         guard let callId = call.individualCall.callId else {
-            handleFailedCall(failedCall: call, error: OWSAssertionError("no callId for call: \(call)"))
+            handleFailedCall(failedCall: call, error: OWSAssertionError("no callId for call: \(call)"), shouldResetUI: true, shouldResetRingRTC: true)
             return
         }
 
@@ -128,7 +128,7 @@ import SignalMessaging
             // confirming that the call has connected.
             handleConnected(call: call)
         } catch {
-            self.handleFailedCall(failedCall: call, error: error)
+            self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
     }
 
@@ -371,7 +371,7 @@ import SignalMessaging
             }
 
             let error = SignalCall.CallError.timeout(description: "background task time ran out before call connected")
-            self.handleFailedCall(failedCall: newCall, error: error)
+            self.handleFailedCall(failedCall: newCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         })
 
         newCall.individualCall.backgroundTask = backgroundTask
@@ -399,7 +399,7 @@ import SignalMessaging
                                           receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             DispatchQueue.main.async {
-                self.handleFailedCall(failedCall: newCall, error: error)
+                self.handleFailedCall(failedCall: newCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
             }
         }
     }
@@ -420,7 +420,7 @@ import SignalMessaging
 
         guard let identityKeys = getIdentityKeys(thread: thread) else {
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"))
+                handleFailedCall(failedCall: currentCall, error: OWSAssertionError("missing identity keys"), shouldResetUI: true, shouldResetRingRTC: true)
             }
             return
         }
@@ -430,7 +430,7 @@ import SignalMessaging
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error)
+                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
             }
         }
     }
@@ -479,7 +479,7 @@ import SignalMessaging
         } catch {
             owsFailDebug("\(error)")
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error)
+                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
             }
         }
     }
@@ -496,7 +496,7 @@ import SignalMessaging
         } catch {
             owsFailDebug("\(error)")
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
-                handleFailedCall(failedCall: currentCall, error: error)
+                handleFailedCall(failedCall: currentCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
             }
         }
     }
@@ -538,7 +538,7 @@ import SignalMessaging
             }
 
             callManager.drop(callId: callId)
-            self.handleFailedCall(failedCall: call, error: error)
+            self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: false)
         }
 
         Logger.debug("")
@@ -624,7 +624,7 @@ import SignalMessaging
 
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
-                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.individualCall.state)"))
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.individualCall.state)"), shouldResetUI: true, shouldResetRingRTC: true)
                 return
             case .answering, .connected:
                 Logger.info("tried answering locally, but answered somewhere else first. state: \(call.individualCall.state)")
@@ -645,7 +645,7 @@ import SignalMessaging
 
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
-                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.individualCall.state)"))
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.individualCall.state)"), shouldResetUI: true, shouldResetRingRTC: true)
                 return
             case .answering, .connected:
                 Logger.info("tried answering locally, but declined somewhere else first. state: \(call.individualCall.state)")
@@ -666,7 +666,7 @@ import SignalMessaging
 
             switch call.individualCall.state {
             case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
-                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupBusy: \(call.individualCall.state)"))
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupBusy: \(call.individualCall.state)"), shouldResetUI: true, shouldResetRingRTC: true)
                 return
             case .answering, .connected:
                 Logger.info("tried answering locally, but already in a call somewhere else first. state: \(call.individualCall.state)")
@@ -732,7 +732,7 @@ import SignalMessaging
                 call.individualCall.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
             }
-            call.individualCall.state = .localFailure
+            call.individualCall.state = .localHangup
             callService.terminate(call: call)
 
         case .endedTimeout:
@@ -744,16 +744,16 @@ import SignalMessaging
                 description = "timeout for incoming call"
             }
 
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: description))
+            handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedSignalingFailure:
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: "signaling failure for call"))
+            handleFailedCall(failedCall: call, error: SignalCall.CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedInternalFailure:
-            handleFailedCall(failedCall: call, error: OWSAssertionError("call manager internal error"))
+            handleFailedCall(failedCall: call, error: OWSAssertionError("call manager internal error"), shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedConnectionFailure:
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.disconnected)
+            handleFailedCall(failedCall: call, error: SignalCall.CallError.disconnected, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedDropped:
             Logger.debug("")
@@ -1302,17 +1302,17 @@ import SignalMessaging
 
         // Return to a known good state by ending the current call, if any.
         if let call = callService.currentCall {
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.providerReset)
+            handleFailedCall(failedCall: call, error: SignalCall.CallError.providerReset, shouldResetUI: false, shouldResetRingRTC: true)
         }
-        callManager.reset()
     }
 
-    // This method should be called when a fatal error occurred for a call.
+    // This method should be called when an error occurred for a call from
+    // the UI/UX or the RingRTC library.
     //
     // * If we know which call it was, we should update that call's state
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
-    public func handleFailedCall(failedCall: SignalCall, error: Error) {
+    public func handleFailedCall(failedCall: SignalCall, error: Error, shouldResetUI: Bool, shouldResetRingRTC: Bool) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -1341,7 +1341,14 @@ import SignalMessaging
 
         failedCall.error = callError
         failedCall.individualCall.state = .localFailure
-        self.callUIAdapter.failCall(failedCall, error: callError)
+
+        if shouldResetUI {
+            self.callUIAdapter.failCall(failedCall, error: callError)
+        }
+
+        if shouldResetRingRTC {
+            callManager.reset()
+        }
 
         Logger.error("call: \(failedCall) failed with error: \(error)")
         callService.terminate(call: failedCall)
@@ -1412,7 +1419,7 @@ import SignalMessaging
         }
 
         owsFailDebug("Call terminated due to missing call view.")
-        self.handleFailedCall(failedCall: call, error: OWSAssertionError("Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
+        self.handleFailedCall(failedCall: call, error: OWSAssertionError("Call view didn't present after \(kMaxViewPresentationDelay) seconds"), shouldResetUI: true, shouldResetRingRTC: true)
     }
 
     func stopAnyCallTimer() {
