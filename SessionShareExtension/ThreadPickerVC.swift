@@ -36,6 +36,7 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavBar()
         // Gradient
         view.backgroundColor = .clear
         let gradient = Gradients.defaultBackground
@@ -66,6 +67,18 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
         fadeView.pin(.bottom, to: .bottom, of: view)
         // Reload
         reload()
+    }
+    
+    private func setupNavBar() {
+        guard let navigationBar = navigationController?.navigationBar else { return }
+        if #available(iOS 15.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = Colors.navigationBarBackground
+            appearance.shadowColor = .clear
+            navigationBar.standardAppearance = appearance;
+            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
+        }
     }
     
     // MARK: Table View Data Source
