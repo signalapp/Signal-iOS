@@ -495,7 +495,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let notificationBody: String?
         switch previewType {
         case .noNameNoPreview, .nameNoPreview:
-            notificationBody = NotificationStrings.incomingMessageBody
+            notificationBody = NotificationStrings.genericIncomingMessageNotification
         case .namePreview:
             notificationBody = messageText
         }
@@ -831,7 +831,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let notificationBody: String
         switch previewType {
         case .noNameNoPreview, .nameNoPreview:
-            notificationBody = NotificationStrings.incomingMessageBody
+            notificationBody = NotificationStrings.genericIncomingMessageNotification
         case .namePreview:
             notificationBody = previewableInteraction.previewText(transaction: transaction)
         }
