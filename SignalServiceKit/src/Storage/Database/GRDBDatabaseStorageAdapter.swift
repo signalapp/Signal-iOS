@@ -13,15 +13,72 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public enum DirectoryMode: Int {
+        public static let primaryFolderNameKey = "GRDBPrimaryDirectoryNameKey"
+        public static let transferFolderNameKey = "GRDBTransferDirectoryNameKey"
+
+        case primaryLegacy
+        case hotswapLegacy
+
         case primary
-        case hotswap
+        case transfer
 
         var folderName: String {
             switch self {
-            case .primary: return "grdb"
-            case .hotswap: return "grdb-hotswap"
+            case .primary:
+                let storedName = CurrentAppContext().appUserDefaults().string(forKey: Self.primaryFolderNameKey)
+                return storedName ?? DirectoryMode.primaryLegacy.folderName
+            case .transfer:
+                if let storedName = CurrentAppContext().appUserDefaults().string(forKey: Self.transferFolderNameKey) {
+                    return storedName
+                } else {
+                    return Self.rotateTransferDirectory()
+                }
+
+            case .primaryLegacy: return "grdb"
+            case .hotswapLegacy: return "grdb-hotswap"
             }
         }
+
+        @discardableResult
+        fileprivate static func rotateTransferDirectory() -> String {
+            let newName = "grdb_\(Date.ows_millisecondTimestamp())_\(Int.random(in: 0..<1000))"
+            CurrentAppContext().appUserDefaults().set(newName, forKey: DirectoryMode.transferFolderNameKey)
+            return newName
+        }
+    }
+
+    @objc
+    public static var hasActiveTransferDirectory: Bool {
+        CurrentAppContext().appUserDefaults().string(forKey: DirectoryMode.transferFolderNameKey) != nil
+    }
+
+    public static func resetTransferDirectory() {
+        CurrentAppContext().appUserDefaults().removeObject(forKey: DirectoryMode.transferFolderNameKey)
+    }
+
+    public static func createNewTransferDirectory() {
+        if DirectoryMode.primary.folderName == DirectoryMode.transfer.folderName {
+            let oldTransferPath = Self.databaseDirUrl(baseDir: SDSDatabaseStorage.baseDir, directoryMode: .transfer).path
+            try? FileManager.default.removeItem(atPath: oldTransferPath)
+            DirectoryMode.rotateTransferDirectory()
+        }
+
+        if DirectoryMode.primary.folderName == DirectoryMode.transfer.folderName {
+            owsFailDebug("Folder names collide after rotation")
+            createNewTransferDirectory()
+        }
+    }
+
+    public static func promoteTransferDirectoryToPrimary() {
+        guard CurrentAppContext().isMainApp else {
+            // Failing intentionally since if we get here we're really close to corrupting data
+            owsFail("Only the main app can't swap databases")
+        }
+
+        // Ordering matters here. We should be able to crash and recover
+        let newPrimaryName = DirectoryMode.transfer.folderName
+        CurrentAppContext().appUserDefaults().set(newPrimaryName, forKey: DirectoryMode.primaryFolderNameKey)
+        resetTransferDirectory()
     }
 
     @objc
@@ -75,6 +132,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
 
         super.init()
+        setupDatabasePathKVO()
 
         AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
             // This adapter may have been discarded after running
@@ -132,6 +190,44 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         MessageSendLog.Recipient.self,
         MessageSendLog.Message.self
     ]
+
+    // MARK: - DatabasePathObservation
+
+    var databasePathKVOContext = "DatabasePathKVOContext"
+    func setupDatabasePathKVO() {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey)
+
+        if CurrentAppContext().isMainApp == false {
+            appUserDefaults.addObserver(
+                self,
+                forKeyPath: DirectoryMode.primaryFolderNameKey,
+                options: [],
+                context: &databasePathKVOContext
+            )
+        }
+    }
+
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+        if (object as? UserDefaults) === CurrentAppContext().appUserDefaults(),
+           keyPath == DirectoryMode.primaryFolderNameKey,
+           context == &databasePathKVOContext {
+            checkForDatabasePathChange()
+        }
+
+        super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+    }
+
+    private func checkForDatabasePathChange() {
+        if databaseUrl != GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: SDSDatabaseStorage.baseDir) {
+            Logger.warn("Remote process changed the active database path. Exiting...")
+            Logger.flush()
+            exit(0)
+        } else {
+            Logger.info("Spurious database change observation")
+        }
+    }
 
     // MARK: - DatabaseChangeObserver
 

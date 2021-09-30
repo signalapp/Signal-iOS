@@ -127,7 +127,7 @@ extension DeviceTransferService: MCSessionDelegate {
 
             // Record that we have a pending restore, so even if the app exits
             // we can still know to restore the data that was transferred.
-            hasPendingRestore = true
+            rawRestorationPhase = RestorationPhase.start.rawValue
 
             // Try and notify the old device that we agree, everything is done.
             // At this point, we consider the transfer complete regardless of
@@ -148,8 +148,21 @@ extension DeviceTransferService: MCSessionDelegate {
             // Try and restore the received data. If for some reason the app exits
             // or crashes at this point, we will retry the restore when the app next
             // launches.
-            guard restoreTransferredData(hotswapDatabase: true) else {
-                owsFail("Restore failed. Crashing, will try again on next launch.")
+            do {
+                try restoreTransferredData()
+            } catch {
+                owsFail("Restore failed. Crashing, will try again on next launch. Error: \(error)")
+            }
+
+            DispatchMainThreadSafe {
+                // A successful restoration means we've updated our database path.
+                self.databaseStorage.reload(directoryMode: .primary)
+
+                self.finalizeRestorationIfNecessary {
+                    SignalApp.shared().showConversationSplitView()
+                    // After transfer our push token has changed, update it.
+                    SyncPushTokensJob.run()
+                }
             }
 
             stopTransfer()
