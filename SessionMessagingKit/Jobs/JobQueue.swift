@@ -7,6 +7,8 @@ public final class JobQueue : NSObject, JobDelegate {
 
     internal static var currentlyExecutingJobs: Set<String> = []
     
+    private let internalQueue: DispatchQueue = DispatchQueue(label:"executingJobQueue")
+    
     @objc public static let shared = JobQueue()
 
     @objc public func add(_ job: Job, using transaction: Any) {
@@ -47,7 +49,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobSucceeded(_ job: Job) {
-        given(job.id) { JobQueue.currentlyExecutingJobs.remove($0) }
+        given(job.id) { removeExecutingJob($0) }
         SNMessagingKitConfiguration.shared.storage.write(with: { transaction in
             SNMessagingKitConfiguration.shared.storage.markJobAsSucceeded(job, using: transaction)
         }, completion: {
@@ -56,7 +58,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobFailed(_ job: Job, with error: Error) {
-        given(job.id) { JobQueue.currentlyExecutingJobs.remove($0) }
+        given(job.id) { removeExecutingJob($0) }
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
         guard !storage.isJobCanceled(job) else { return SNLog("\(type(of: job)) canceled.") }
@@ -78,7 +80,7 @@ public final class JobQueue : NSObject, JobDelegate {
     }
 
     public func handleJobFailedPermanently(_ job: Job, with error: Error) {
-        given(job.id) { JobQueue.currentlyExecutingJobs.remove($0) }
+        given(job.id) { removeExecutingJob($0) }
         job.failureCount += 1
         let storage = SNMessagingKitConfiguration.shared.storage
         storage.write(with: { transaction in
@@ -90,6 +92,10 @@ public final class JobQueue : NSObject, JobDelegate {
                 // Do nothing
             })
         })
+    }
+    
+    private func removeExecutingJob(_ jobID: String) {
+        let _ = internalQueue.sync { JobQueue.currentlyExecutingJobs.remove(jobID) }
     }
 
     private func getRetryInterval(for job: Job) -> TimeInterval {
