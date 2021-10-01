@@ -243,16 +243,18 @@ extension DeviceTransferService {
         resetTransferDirectory()
 
         if hotswapDatabase {
-            DispatchMainThreadSafe {
-                self.databaseStorage.reload(directoryMode: .hotswapLegacy)
-                self.tsAccountManager.wasTransferred = false
-                LegacyRestorationFlags.pendingWasTransferredClear = false
-                self.tsAccountManager.isTransferInProgress = false
-                SignalApp.shared().showConversationSplitView()
-
-                // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run()
-            }
+            owsFail("Hotswapping databases is no longer supported")
+            // Kept for future reference
+//            DispatchMainThreadSafe {
+//                self.databaseStorage.reload(directoryMode: .hotswapLegacy)
+//                self.tsAccountManager.wasTransferred = false
+//                LegacyRestorationFlags.pendingWasTransferredClear = false
+//                self.tsAccountManager.isTransferInProgress = false
+//                SignalApp.shared().showConversationSplitView()
+//
+//                // After transfer our push token has changed, update it.
+//                SyncPushTokensJob.run()
+//            }
         }
 
         return true
@@ -489,6 +491,7 @@ extension DeviceTransferService {
         }
     }
 
+    // We create the directory but do not touch anything about it until this phase has committed
     private func allocateNewDatabaseDirectory() {
         GRDBDatabaseStorageAdapter.createNewTransferDirectory()
     }

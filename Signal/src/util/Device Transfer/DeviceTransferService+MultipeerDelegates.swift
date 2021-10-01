@@ -151,12 +151,13 @@ extension DeviceTransferService: MCSessionDelegate {
             do {
                 try restoreTransferredData()
             } catch {
-                owsFail("Restore failed. Crashing, will try again on next launch. Error: \(error)")
+                owsFail("Restore failed. Will try again on next launch. Error: \(error)")
             }
 
             DispatchMainThreadSafe {
                 // A successful restoration means we've updated our database path.
-                self.databaseStorage.reload(directoryMode: .primary)
+                // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
+                self.databaseStorage.reloadDatabase()
 
                 self.finalizeRestorationIfNecessary {
                     SignalApp.shared().showConversationSplitView()

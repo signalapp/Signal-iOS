@@ -89,8 +89,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
     private var lastSuccessfulCheckpointDate: Date?
 
-    init(directoryMode: DirectoryMode = .primary) {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: directoryMode)
+    override init() {
+        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary)
 
         do {
             // Crash if keychain is inaccessible.

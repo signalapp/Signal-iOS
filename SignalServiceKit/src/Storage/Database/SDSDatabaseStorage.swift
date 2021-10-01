@@ -111,10 +111,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reopenGRDBStorage(
-        directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary,
-        completion: @escaping () -> Void = {}
-    ) {
+    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
         let benchSteps = BenchSteps()
 
         // There seems to be a rare issue where at least one reader or writer
@@ -125,7 +122,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = createGrdbStorage(directoryMode: directoryMode)
+        _grdbStorage = createGrdbStorage()
 
         DispatchQueue.main.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
@@ -141,7 +138,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reload(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) {
+    public func reloadDatabase() {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -149,7 +146,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
-        reopenGRDBStorage(directoryMode: directoryMode) {
+        reopenGRDBStorage {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
 
             self.grdbStorage.publishUpdatesImmediately()
@@ -165,9 +162,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    func createGrdbStorage(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) -> GRDBDatabaseStorageAdapter {
+    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(directoryMode: directoryMode)
+            return GRDBDatabaseStorageAdapter()
         }
     }
 
