@@ -365,17 +365,19 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
         let hasAnyRemoteMembers = groupThread.groupModel.groupMembership.allMembersOfAnyKind.count > 1
 
-        let navigateToNewGroup = { (completion: (() -> Void)?) in
-            SignalApp.shared().presentConversation(for: groupThread,
-                                                   action: hasAnyRemoteMembers ? .none : .newGroupActionSheet,
-                                                   animated: false)
-            self.presentingViewController?.dismiss(animated: true, completion: completion)
+        func navigateToNewGroup(completion: (() -> Void)?) {
+            _ = self.presentingViewController?.dismiss(animated: true) {
+                SignalApp.shared().presentConversation(for: groupThread,
+                                                          action: hasAnyRemoteMembers ? .none : .newGroupActionSheet,
+                                                          animated: false)
+                completion?()
+            }
         }
 
         let pendingMembers = groupThread.groupModel.groupMembership.invitedMembers
         guard let firstPendingMember = pendingMembers.first else {
             // No pending members.
-            return navigateToNewGroup(nil)
+            return navigateToNewGroup(completion: nil)
         }
 
         let alertTitle: String
@@ -408,7 +410,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         })
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                                 style: .default) { _ in
-                                                    navigateToNewGroup(nil)
+                                                    navigateToNewGroup(completion: nil)
         })
 
         modalActivityIndicator.dismiss {
