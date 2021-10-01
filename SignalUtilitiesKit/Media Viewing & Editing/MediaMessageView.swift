@@ -269,7 +269,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private func createGenericPreview() {
         var subviews = [UIView]()
 
-        let imageView = createHeroImageView(imageName: "file-thin-black-filled-large")
+        let imageView = createHeroImageView(imageName: "actionsheet_document_black")
         subviews.append(imageView)
 
         let fileNameLabel = createFileNameLabel()
