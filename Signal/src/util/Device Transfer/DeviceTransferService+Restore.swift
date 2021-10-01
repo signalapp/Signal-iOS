@@ -352,7 +352,8 @@ extension DeviceTransferService {
         } else {
             success = true
         }
-        finalizeRestorationIfNecessary()
+        // TODO: This should return a guarantee
+        finalizeRestorationIfNecessary().cauterize()
         return success
     }
 }
@@ -506,7 +507,15 @@ extension DeviceTransferService {
 
         try databaseSourceFiles.forEach { file in
             let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
-            let destUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .transfer)
+            let destUrl: URL
+            switch file.identifier {
+            case DeviceTransferService.databaseIdentifier:
+                destUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .transfer)
+            case DeviceTransferService.databaseWALIdentifier:
+                destUrl = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .transfer)
+            default:
+                throw OWSAssertionError("Unknown file identifier")
+            }
 
             if OWSFileSystem.fileOrFolderExists(url: destUrl) {
                 Logger.info("Skipping restoration of database file that was already restored: \(file.identifier)")
@@ -530,8 +539,10 @@ extension DeviceTransferService {
         GRDBDatabaseStorageAdapter.promoteTransferDirectoryToPrimary()
     }
 
-    func finalizeRestorationIfNecessary(completion: (() -> Void)? = nil) {
+    func finalizeRestorationIfNecessary() -> Promise<Void> {
         resetTransferDirectory()
+
+        let (promise, future) = Promise<Void>.pending()
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.tsAccountManager.isTransferInProgress = false
 
@@ -543,7 +554,8 @@ extension DeviceTransferService {
                 self.rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
             }
 
-            completion?()
+            future.resolve()
         }
+        return promise
     }
 }

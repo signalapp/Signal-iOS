@@ -4,6 +4,7 @@
 
 import Foundation
 import MultipeerConnectivity
+import SignalCoreKit
 
 extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer newDevicePeerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
@@ -154,17 +155,17 @@ extension DeviceTransferService: MCSessionDelegate {
                 owsFail("Restore failed. Will try again on next launch. Error: \(error)")
             }
 
-            DispatchMainThreadSafe {
+            firstly(on: .main) { () -> Promise<Void> in
                 // A successful restoration means we've updated our database path.
                 // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
                 self.databaseStorage.reloadDatabase()
-
-                self.finalizeRestorationIfNecessary {
-                    SignalApp.shared().showConversationSplitView()
-                    // After transfer our push token has changed, update it.
-                    SyncPushTokensJob.run()
-                }
-            }
+            }.then(on: .main) { () -> Promise<Void> in
+                self.finalizeRestorationIfNecessary()
+            }.done(on: .main) {
+                // After transfer our push token has changed, update it.
+                SyncPushTokensJob.run()
+                SignalApp.shared().showConversationSplitView()
+            }.cauterize() // TODO: Everything in this promise chain is a guarantee.
 
             stopTransfer()
         }

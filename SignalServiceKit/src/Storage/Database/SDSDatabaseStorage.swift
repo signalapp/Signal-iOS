@@ -138,7 +138,8 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reloadDatabase() {
+    // TODO: This should return a guarantee
+    public func reloadDatabase() -> Promise<Void> {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -146,6 +147,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
+        let (promise, future) = Promise<Void>.pending()
         reopenGRDBStorage {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
 
@@ -159,7 +161,9 @@ public class SDSDatabaseStorage: SDSTransactable {
             if wasRegistered != TSAccountManager.shared.isRegistered {
                 NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
             }
+            future.resolve()
         }
+        return promise
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
