@@ -562,6 +562,21 @@ private class MessageAckOperation: OWSOperation {
     private let envelopeInfo: EnvelopeInfo
     private let pendingAck: PendingTask
 
+    // A heuristic to quickly filter out multiple ack attempts for the same message
+    // This doesn't affect correctness, just tries to guard against backing up our operation queue with repeat work
+    static private var inFlightAcks = AtomicSet<String>()
+    private var didRecordAckId = false
+    private var inFlightAckId: String {
+        if let serverGuid = envelopeInfo.serverGuid?.nilIfEmpty {
+            return serverGuid
+        } else if let sourceUuid = envelopeInfo.sourceAddress?.uuid {
+            return "\(sourceUuid.uuidString)_\(envelopeInfo.timestamp)"
+        } else {
+            // This *could* collide, but we don't have enough info to ack the message anyway. So it should be fine.
+            return "\(envelopeInfo.serviceTimestamp)"
+        }
+    }
+
     fileprivate required init(envelopeInfo: EnvelopeInfo,
                               pendingAck: PendingTask) {
         self.envelopeInfo = envelopeInfo
@@ -574,6 +589,13 @@ private class MessageAckOperation: OWSOperation {
         // MessageAckOperation must have a higher priority than than the
         // operations used to flush the ack operation queue.
         self.queuePriority = .high
+        if Self.inFlightAcks.contains(inFlightAckId) {
+            Logger.info("Cancelling new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
+            self.cancel()
+        } else {
+            Self.inFlightAcks.insert(inFlightAckId)
+            didRecordAckId = true
+        }
     }
 
     public override func run() {
@@ -611,14 +633,11 @@ private class MessageAckOperation: OWSOperation {
     }
 
     @objc
-    public override func didSucceed() {
-        super.didSucceed()
-        pendingAck.complete()
-    }
-
-    @objc
-    public override func didFail(error: Error) {
-        super.didFail(error: error)
+    public override func didComplete() {
+        super.didComplete()
+        if didRecordAckId {
+            Self.inFlightAcks.remove(inFlightAckId)
+        }
         pendingAck.complete()
     }
 }
