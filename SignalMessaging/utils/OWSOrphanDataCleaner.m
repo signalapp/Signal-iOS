@@ -322,11 +322,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // This should be redundant, but this will future-proof us against
     // ever accidentally removing the GRDB databases during
     // orphan clean up.
-    NSString *grdbPrimaryDirectoryPath = [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModePrimary].path;
-    NSString *grdbHotswapDirectoryPath = [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeHotswapLegacy].path;
+    NSString *grdbPrimaryDirectoryPath =
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModePrimary].path;
+    NSString *grdbHotswapDirectoryPath =
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeHotswapLegacy].path;
     NSString *grdbTransferDirectoryPath = nil;
     if (GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory && TSAccountManager.shared.isTransferInProgress) {
-        grdbTransferDirectoryPath = [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeTransfer].path;
+        grdbTransferDirectoryPath =
+            [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeTransfer].path;
     }
 
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];

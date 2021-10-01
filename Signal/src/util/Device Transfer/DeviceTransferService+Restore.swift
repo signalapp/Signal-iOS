@@ -51,7 +51,6 @@ extension DeviceTransferService {
         }
     }
 
-
     func verifyTransferCompletedSuccessfully(receivedFileIds: [String], skippedFileIds: [String]) -> Bool {
         guard let manifest = readManifestFromTransferDirectory() else {
             owsFailDebug("Missing manifest file")
