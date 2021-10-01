@@ -423,6 +423,7 @@ extension DeviceTransferService {
             try moveDatabaseFiles(manifest: manifest)
         case .updateDatabase:
             try updateCurrentDatabase(manifest: manifest)
+            // At this point, we've restored all of the data we need. Just some bits of cleanup left.
             hasBeenRestored = true
         }
     }

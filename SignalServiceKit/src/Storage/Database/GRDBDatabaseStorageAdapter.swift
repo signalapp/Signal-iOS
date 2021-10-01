@@ -124,6 +124,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
+    deinit {
+        unregisterKVO?()
+    }
+
     public func add(function: DatabaseFunction) {
         pool.add(function: function)
     }
@@ -169,9 +173,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // MARK: - DatabasePathObservation
 
     var databasePathKVOContext = "DatabasePathKVOContext"
+    var unregisterKVO: (() -> Void)? = nil
+
     func setupDatabasePathKVO() {
         let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey)
 
         if CurrentAppContext().isMainApp == false {
             appUserDefaults.addObserver(
@@ -180,6 +185,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 options: [],
                 context: &databasePathKVOContext
             )
+            unregisterKVO = {
+                appUserDefaults.removeObserver(self, forKeyPath: DirectoryMode.primaryFolderNameKey, context: &self.databasePathKVOContext)
+                self.unregisterKVO = nil
+            }
         }
     }
 
@@ -405,7 +414,7 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     private static func clearTransferDirectory() {
-        if hasAssignedTransferDirectory {
+        if hasAssignedTransferDirectory, DirectoryMode.primary.folderName != DirectoryMode.transfer.folderName {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: databaseDirUrl(directoryMode: .transfer))
             } catch {
