@@ -218,4 +218,61 @@ extension OWSMessageManager {
             owsFailDebug("Failed to process decryption error message \(error)")
         }
     }
+
+    @objc
+    public static func descriptionForDataMessageContents(_ dataMessage: SSKProtoDataMessage) -> String {
+        var splits = [String]()
+        if !dataMessage.attachments.isEmpty {
+            splits.append("attachments: \(dataMessage.attachments.count)")
+        }
+        if dataMessage.group != nil {
+            splits.append("groupV1")
+        }
+        if dataMessage.groupV2 != nil {
+            splits.append("groupV2")
+        }
+        if dataMessage.quote != nil {
+            splits.append("quote")
+        }
+        if !dataMessage.contact.isEmpty {
+            splits.append("contacts: \(dataMessage.contact.count)")
+        }
+        if !dataMessage.preview.isEmpty {
+            splits.append("previews: \(dataMessage.preview.count)")
+        }
+        if dataMessage.sticker != nil {
+            splits.append("sticker")
+        }
+        if dataMessage.reaction != nil {
+            splits.append("reaction")
+        }
+        if dataMessage.delete != nil {
+            splits.append("delete")
+        }
+        if !dataMessage.bodyRanges.isEmpty {
+            splits.append("bodyRanges: \(dataMessage.bodyRanges.count)")
+        }
+        if dataMessage.groupCallUpdate != nil {
+            splits.append("groupCallUpdate")
+        }
+        if dataMessage.payment != nil {
+            splits.append("payment")
+        }
+        if dataMessage.body?.nilIfEmpty != nil {
+            splits.append("body")
+        }
+        if dataMessage.expireTimer > 0 {
+            splits.append("expireTimer")
+        }
+        if dataMessage.profileKey != nil {
+            splits.append("profileKey")
+        }
+        if dataMessage.isViewOnce {
+            splits.append("isViewOnce")
+        }
+        if dataMessage.flags > 0 {
+            splits.append("flags: \(dataMessage.flags)")
+        }
+        return "[" + splits.joined(separator: ", ") + "]"
+    }
 }

@@ -233,7 +233,7 @@ public class MessageProcessor: NSObject {
     // This is tricky since there are multiple variables (e.g. network
     // perf affects fetch, CPU perf affects processing).
     public var hasSomeQueuedContent: Bool {
-        queuedContentCount >= 25
+        queuedContentCount >= 10
     }
 
     public var queuedContentCount: Int {

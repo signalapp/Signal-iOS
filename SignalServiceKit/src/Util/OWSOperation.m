@@ -111,6 +111,13 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     // Override in subclass if necessary
 }
 
+// Called exactly once after the operation is marked complete, either with success, failure, or cancellation
+- (void)didComplete
+{
+    // no-op
+    // Override in subclass if necessary
+}
+
 #pragma mark - NSOperation overrides
 
 - (NSString *)eventId
@@ -271,6 +278,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     [self didChangeValueForKey:OWSOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSOperationKeyIsFinished];
+    [self didComplete];
 
     [BenchManager completeEventWithEventId:self.eventId];
 }

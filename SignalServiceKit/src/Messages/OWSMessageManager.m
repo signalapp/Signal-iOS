@@ -494,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 }
@@ -520,8 +520,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
+        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, %@",
+            envelope.timestamp,
+            serverDeliveryTimestamp,
+            [OWSMessageManager descriptionForDataMessageContents:dataMessage]);
     }
 
     [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
@@ -555,7 +558,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"2 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
@@ -575,7 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"3 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
@@ -591,7 +594,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"4 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
@@ -621,7 +624,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"5 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 
@@ -630,6 +633,9 @@ NS_ASSUME_NONNULL_BEGIN
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope
                                                        messageUniqueId:message.uniqueId
                                                            transaction:transaction];
+    }
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
+        OWSLogInfo(@"6 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 }
 
@@ -1896,14 +1902,14 @@ NS_ASSUME_NONNULL_BEGIN
                       serverDeliveryTimestamp];
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"%@", messageDescription);
     } else {
         OWSLogDebug(@"%@", messageDescription);
     }
 
     if (dataMessage.reaction) {
-        if (SSKDebugFlags.internalLogging) {
+        if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
             OWSLogInfo(@"Reaction: %@", messageDescription);
         }
         OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
@@ -2098,7 +2104,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"Inserting: %@", messageDescription);
     }
 
@@ -2149,7 +2155,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             deviceId:envelope.sourceDevice];
     });
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"Inserted: %@", messageDescription);
     }
 
