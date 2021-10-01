@@ -18,6 +18,7 @@ BOOL IsNoteToSelfEnabled(void);
 
 @property (nonatomic) BOOL shouldBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
+@property (nonatomic, readonly, nullable) NSDate *lastInteractionDate;
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
