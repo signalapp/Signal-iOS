@@ -521,7 +521,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, %@",
+            envelope.timestamp,
+            serverDeliveryTimestamp,
+            [OWSMessageManager descriptionForDataMessageContents:dataMessage]);
     }
 
     [self ensureGroupIdMapping:envelope withDataMessage:dataMessage transaction:transaction];
@@ -630,6 +633,9 @@ NS_ASSUME_NONNULL_BEGIN
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope
                                                        messageUniqueId:message.uniqueId
                                                            transaction:transaction];
+    }
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
+        OWSLogInfo(@"6 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
     }
 }
 
