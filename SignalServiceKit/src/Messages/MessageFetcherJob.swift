@@ -567,6 +567,9 @@ private class MessageAckOperation: OWSOperation {
     static private var inFlightAcks = AtomicSet<String>()
     private var didRecordAckId = false
     private var inFlightAckId: String {
+        // All messages *should* have a guid, but we'll handle things correctly if they don't
+        owsAssertDebug(envelopeInfo.serverGuid?.nilIfEmpty != nil)
+
         if let serverGuid = envelopeInfo.serverGuid?.nilIfEmpty {
             return serverGuid
         } else if let sourceUuid = envelopeInfo.sourceAddress?.uuid {
@@ -591,6 +594,7 @@ private class MessageAckOperation: OWSOperation {
         self.queuePriority = .high
         if Self.inFlightAcks.contains(inFlightAckId) {
             Logger.info("Cancelling new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
+            pendingAck.complete()
             self.cancel()
         } else {
             Self.inFlightAcks.insert(inFlightAckId)
