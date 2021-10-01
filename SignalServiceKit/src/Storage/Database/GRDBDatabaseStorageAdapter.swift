@@ -15,85 +15,60 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     public enum DirectoryMode: Int {
         public static let primaryFolderNameKey = "GRDBPrimaryDirectoryNameKey"
         public static let transferFolderNameKey = "GRDBTransferDirectoryNameKey"
+        static var storedPrimaryFolderName: String? {
+            get {
+                CurrentAppContext().appUserDefaults().string(forKey: primaryFolderNameKey)
+            } set {
+                guard newValue != nil else { return owsFailDebug("Stored primary database name can never be cleared") }
+                CurrentAppContext().appUserDefaults().set(newValue, forKey: primaryFolderNameKey)
+            }
+        }
+        static var storedTransferFolderName: String? {
+            get { CurrentAppContext().appUserDefaults().string(forKey: transferFolderNameKey) }
+            set { CurrentAppContext().appUserDefaults().set(newValue, forKey: transferFolderNameKey) }
+        }
 
+        /// A static directory that always stored our primary database
         case primaryLegacy
+        /// A static directory that served as the temporary home of our post-restore database
         case hotswapLegacy
-
+        /// A dynamic directory that refers to the current location of our primary database (defaults to "grdb" initially), but can post-restore
         case primary
+
+        /// A dynamic directory that refers to a staging directory that our post-restore database is setup in during restoration
+        @available(iOSApplicationExtension, unavailable)
         case transfer
 
-        var folderName: String {
+        /// The name for a given directoryMode
+        /// All directory modes will always be non-nil *except* for the transfer directory
+        /// It is incorrect to request a transfer directory without first calling `createNewTransferDirectory()`
+        var folderName: String! {
             switch self {
-            case .primary:
-                let storedName = CurrentAppContext().appUserDefaults().string(forKey: Self.primaryFolderNameKey)
-                return storedName ?? DirectoryMode.primaryLegacy.folderName
-            case .transfer:
-                if let storedName = CurrentAppContext().appUserDefaults().string(forKey: Self.transferFolderNameKey) {
-                    return storedName
-                } else {
-                    return Self.rotateTransferDirectory()
-                }
-
+            case .primary: return Self.storedPrimaryFolderName ?? DirectoryMode.primaryLegacy.folderName
+            case .transfer: return Self.storedTransferFolderName
             case .primaryLegacy: return "grdb"
             case .hotswapLegacy: return "grdb-hotswap"
             }
         }
 
-        @discardableResult
-        fileprivate static func rotateTransferDirectory() -> String {
-            let newName = "grdb_\(Date.ows_millisecondTimestamp())_\(Int.random(in: 0..<1000))"
-            CurrentAppContext().appUserDefaults().set(newName, forKey: DirectoryMode.transferFolderNameKey)
-            return newName
+        static func updateTransferDirectoryName() {
+            storedTransferFolderName = "grdb_\(Date.ows_millisecondTimestamp())_\(Int.random(in: 0..<1000))"
         }
     }
 
     @objc
-    public static var hasActiveTransferDirectory: Bool {
-        CurrentAppContext().appUserDefaults().string(forKey: DirectoryMode.transferFolderNameKey) != nil
+    public static func databaseDirUrl(directoryMode: DirectoryMode = .primary) -> URL {
+        return SDSDatabaseStorage.baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
-    public static func resetTransferDirectory() {
-        CurrentAppContext().appUserDefaults().removeObject(forKey: DirectoryMode.transferFolderNameKey)
-    }
-
-    public static func createNewTransferDirectory() {
-        if DirectoryMode.primary.folderName == DirectoryMode.transfer.folderName {
-            let oldTransferPath = Self.databaseDirUrl(baseDir: SDSDatabaseStorage.baseDir, directoryMode: .transfer).path
-            try? FileManager.default.removeItem(atPath: oldTransferPath)
-            DirectoryMode.rotateTransferDirectory()
-        }
-
-        if DirectoryMode.primary.folderName == DirectoryMode.transfer.folderName {
-            owsFailDebug("Folder names collide after rotation")
-            createNewTransferDirectory()
-        }
-    }
-
-    public static func promoteTransferDirectoryToPrimary() {
-        guard CurrentAppContext().isMainApp else {
-            // Failing intentionally since if we get here we're really close to corrupting data
-            owsFail("Only the main app can't swap databases")
-        }
-
-        // Ordering matters here. We should be able to crash and recover
-        let newPrimaryName = DirectoryMode.transfer.folderName
-        CurrentAppContext().appUserDefaults().set(newPrimaryName, forKey: DirectoryMode.primaryFolderNameKey)
-        resetTransferDirectory()
-    }
-
-    @objc
-    public static func databaseDirUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
-        return baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
-    }
-
-    public static func databaseFileUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
-        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
+    public static func databaseFileUrl(directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite", isDirectory: false)
     }
 
-    public static func databaseWalUrl(baseDir: URL, directoryMode: DirectoryMode = .primary) -> URL {
-        let databaseDir = databaseDirUrl(baseDir: baseDir, directoryMode: directoryMode)
+    public static func databaseWalUrl(directoryMode: DirectoryMode = .primary) -> URL {
+        let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
         return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
     }
@@ -114,12 +89,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
     private var lastSuccessfulCheckpointDate: Date?
 
-    init(baseDir: URL, directoryMode: DirectoryMode = .primary) {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir, directoryMode: directoryMode)
+    init(directoryMode: DirectoryMode = .primary) {
+        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: directoryMode)
 
         do {
             // Crash if keychain is inaccessible.
-            try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(baseDir: baseDir)
+            try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists()
         } catch {
             owsFail("\(error.grdbErrorForLogging)")
         }
@@ -220,7 +195,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     private func checkForDatabasePathChange() {
-        if databaseUrl != GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: SDSDatabaseStorage.baseDir) {
+        if databaseUrl != GRDBDatabaseStorageAdapter.databaseFileUrl() {
             Logger.warn("Remote process changed the active database path. Exiting...")
             Logger.flush()
             exit(0)
@@ -295,7 +270,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     @objc
-    public static func ensureDatabaseKeySpecExists(baseDir: URL) throws {
+    public static func ensureDatabaseKeySpecExists() throws {
 
         do {
             _ = try keyspec.fetchString()
@@ -334,7 +309,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         //
         // * This is a new install so there's no existing password to retrieve.
         // * The keychain has become corrupt.
-        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
         let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
         if doesDBExist {
             owsFail("Could not load database metadata")
@@ -344,12 +319,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     @objc
-    public static func resetAllStorage(baseDir: URL) {
+    public static func resetAllStorage() {
         Logger.info("")
 
         // This might be redundant but in the spirit of thoroughness...
 
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
+        GRDBDatabaseStorageAdapter.removeAllFiles()
 
         deleteDBKeys()
 
@@ -379,6 +354,66 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         let keyspec = try keyspec.fetchString()
         try db.execute(sql: "PRAGMA \(prefix)key = \"\(keyspec)\"")
         try db.execute(sql: "PRAGMA \(prefix)cipher_plaintext_header_size = 32")
+    }
+}
+
+// MARK: - Directory Swaps
+
+@available(iOSApplicationExtension, unavailable)
+extension GRDBDatabaseStorageAdapter {
+    @objc
+    public static var hasAssignedTransferDirectory: Bool { DirectoryMode.storedTransferFolderName != nil }
+
+    /// This should be called during restoration to set up a staging database directory name
+    /// Once a transfer directory has been written to, it's a fatal error to call this again until restoration has completed and `promoteTransferDirectoryToPrimary` is called
+    public static func createNewTransferDirectory() {
+        // A bit of a preamble to make sure we're not clearing out important data.
+        if hasAssignedTransferDirectory {
+            Logger.warn("Transfer directory already assigned a name. Verifying it contains no data...")
+            let transferDatabaseDir = databaseDirUrl(directoryMode: .transfer)
+            var isDirectory: ObjCBool = false
+
+            // We're already in an unexpected (but recoverable) state. However if the currently active transfer
+            // path is a file or a non-empty directory, we're too close to losing data and we should fail.
+            if FileManager.default.fileExists(atPath: transferDatabaseDir.path, isDirectory: &isDirectory) {
+                owsAssert(isDirectory.boolValue)
+                owsAssert(try! FileManager.default.contentsOfDirectory(atPath: transferDatabaseDir.path).isEmpty)
+            }
+            OWSFileSystem.deleteFileIfExists(transferDatabaseDir.path)
+            clearTransferDirectory()
+        }
+
+        DirectoryMode.updateTransferDirectoryName()
+
+        // Double check everything turned out okay. These should never happen, but if it does we can recover by trying again.
+        if DirectoryMode.transfer.folderName == DirectoryMode.primary.folderName || DirectoryMode.transfer.folderName == nil {
+            owsFailDebug("Unexpected transfer name. Primary: \(DirectoryMode.primary.folderName ?? "nil"). Transfer: \(DirectoryMode.primary.folderName ?? "nil")")
+            clearTransferDirectory()
+            createNewTransferDirectory()
+        }
+    }
+
+    public static func promoteTransferDirectoryToPrimary() {
+        owsAssert(CurrentAppContext().isMainApp, "Only the main app can't swap databases")
+
+        // Ordering matters here. We should be able to crash and recover without issue
+        // A prior run may have already performed the swap but crashed, so we should not expect a transfer folder
+        if let newPrimaryName = DirectoryMode.transfer.folderName {
+            DirectoryMode.storedPrimaryFolderName = newPrimaryName
+            clearTransferDirectory()
+        }
+    }
+
+    private static func clearTransferDirectory() {
+        if hasAssignedTransferDirectory {
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: databaseDirUrl(directoryMode: .transfer))
+            } catch {
+                // Unexpected, but not unrecoverable. Orphan data cleaner can take care of this since we're clearing the folder name
+                owsFailDebug("Failed to reset transfer directory: \(error)")
+            }
+        }
+        DirectoryMode.storedTransferFolderName = nil
     }
 }
 
@@ -926,8 +961,8 @@ extension GRDBDatabaseStorageAdapter {
         return databaseUrl.path + "-shm"
     }
 
-    static func removeAllFiles(baseDir: URL) {
-        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+    static func removeAllFiles() {
+        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
         OWSFileSystem.deleteFileIfExists(databaseUrl.path)
         OWSFileSystem.deleteFileIfExists(databaseUrl.path + "-wal")
         OWSFileSystem.deleteFileIfExists(databaseUrl.path + "-shm")

@@ -170,15 +170,9 @@ extension DeviceTransferService {
             // path will be later overriden with the hotswap path.
             let newFilePath: String
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .primary
-                ).path
+                newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .primary
-                ).path
+                newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .primary).path
             } else {
                 newFilePath = URL(
                     fileURLWithPath: file.relativePath,
@@ -193,15 +187,9 @@ extension DeviceTransferService {
             // tries to perform a write.
             var hotswapFilePath: String?
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .hotswapLegacy
-                ).path
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .hotswapLegacy).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .hotswapLegacy
-                ).path
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .hotswapLegacy).path
             }
 
             let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath)
@@ -321,14 +309,8 @@ extension DeviceTransferService {
     private func promoteTransferDatabaseToPrimaryDatabase() -> Bool {
         Logger.info("Promoting the hotswap database to the primary database")
 
-        let primaryDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .primary
-        ).path
-        let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .hotswapLegacy
-        ).path
+        let primaryDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .primary).path
+        let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
 
         if OWSFileSystem.fileOrFolderExists(atPath: hotswapDatabaseDirectoryPath) {
             guard move(pendingFilePath: hotswapDatabaseDirectoryPath, to: primaryDatabaseDirectoryPath) else {
@@ -387,7 +369,9 @@ extension DeviceTransferService {
         case moveDatabaseFiles
         case updateDatabase
 
-        // Performed by `finishRestoration()`
+        // This state represents that there's some one-time cleanup that's left to be done
+        // Restoration is complete, but every time the app launches `finalizeRestorationIfNecessary`
+        // will run and transition to `noCurrentRestoration` once successful
         case cleanup
 
         var next: RestorationPhase {
@@ -518,9 +502,7 @@ extension DeviceTransferService {
 
         try databaseSourceFiles.forEach { file in
             let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
-            let destUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(
-                baseDir: SDSDatabaseStorage.baseDir,
-                directoryMode: .primary)
+            let destUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .transfer)
 
             if OWSFileSystem.fileOrFolderExists(url: destUrl) {
                 Logger.info("Skipping restoration of database file that was already restored: \(file.identifier)")
@@ -546,8 +528,6 @@ extension DeviceTransferService {
 
     func finalizeRestorationIfNecessary(completion: (() -> Void)? = nil) {
         resetTransferDirectory()
-        GRDBDatabaseStorageAdapter.resetTransferDirectory()
-
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.tsAccountManager.isTransferInProgress = false
 

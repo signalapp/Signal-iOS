@@ -79,12 +79,12 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public static var grdbDatabaseDirUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseDirUrl(baseDir: baseDir)
+        return GRDBDatabaseStorageAdapter.databaseDirUrl()
     }
 
     @objc
     public static var grdbDatabaseFileUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+        return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
     @objc
@@ -167,19 +167,19 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     func createGrdbStorage(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir, directoryMode: directoryMode)
+            return GRDBDatabaseStorageAdapter(directoryMode: directoryMode)
         }
     }
 
     @objc
     public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.removeAllFiles()
     }
 
     @objc
     public func resetAllStorage() {
         YDBStorage.deleteYDBStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.resetAllStorage()
     }
 
     // MARK: - Observation
