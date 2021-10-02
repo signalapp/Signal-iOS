@@ -152,7 +152,7 @@ class PhotoCapture: NSObject {
         videoConnection.videoOrientation = orientation
     }
 
-    public func startVideoCapture() -> Promise<Void> {
+    public func prepareVideoCapture() -> Promise<Void> {
         AssertIsOnMainThread()
         guard !Platform.isSimulator else {
             // Trying to actually set up the capture session will fail on a simulator
@@ -219,8 +219,6 @@ class PhotoCapture: NSObject {
             } else {
                 owsFailDebug("couldn't add audioDataOutput")
             }
-        }.done(on: sessionQueue) {
-            self.session.startRunning()
         }
     }
 
