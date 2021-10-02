@@ -515,25 +515,23 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
     }
 
     var hasCaptureStarted = false
+
+    private func captureReady() {
+      self.hasCaptureStarted = true
+      BenchEventComplete(eventId: "Show-Camera")
+    }
+
     private func setupPhotoCapture() {
         photoCapture.delegate = self
         captureButton.delegate = photoCapture
 
-        let captureReady = { [weak self] in
-            guard let self = self else { return }
-            self.hasCaptureStarted = true
-            BenchEventComplete(eventId: "Show-Camera")
-        }
-
         // If the session is already running, we're good to go.
         guard !photoCapture.session.isRunning else {
-            return captureReady()
+            return self.captureReady()
         }
 
         firstly {
-            photoCapture.startVideoCapture()
-        }.done {
-            captureReady()
+            photoCapture.prepareVideoCapture()
         }.catch { [weak self] error in
             guard let self = self else { return }
             self.showFailureUI(error: error)
@@ -556,7 +554,7 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         firstly {
             photoCapture.resumeCapture()
         }.done { [weak self] in
-            self?.hasCaptureStarted = true
+            self?.captureReady()
         }.catch { [weak self] error in
             self?.showFailureUI(error: error)
         }
