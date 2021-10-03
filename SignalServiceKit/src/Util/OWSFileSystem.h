@@ -25,6 +25,7 @@ void ClearOldTemporaryDirectories(void);
 
 + (NSString *)appLibraryDirectoryPath;
 
++ (NSURL *)appSharedDataDirectoryURL;
 + (NSString *)appSharedDataDirectoryPath;
 
 + (NSString *)cachesDirectoryPath;

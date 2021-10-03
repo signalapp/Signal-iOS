@@ -129,6 +129,13 @@ public extension OWSFileSystem {
                 isPosixNoSuchFileError || isCocoaNoSuchFileError {
                 // Ignore "No such file or directory" error.
                 return true
+            } else if nsError.hasDomain(NSCocoaErrorDomain, code: NSFileWriteNoPermissionError) {
+                let attemptedUrl = URL(fileURLWithPath: filePath)
+                let knownNoWritePermissionUrls = [
+                    OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent(".com.apple.mobile_container_manager.metadata.plist")
+                ]
+                owsAssertDebug(knownNoWritePermissionUrls.contains(attemptedUrl))
+                return false
             } else {
                 owsFailDebug("Error: \(error)")
             }

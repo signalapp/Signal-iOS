@@ -270,8 +270,10 @@ extension DeviceTransferService {
         OWSFileSystem.ensureDirectoryExists(DeviceTransferService.pendingTransferDirectory.path)
 
         // If we had a pending restore, we no longer do.
-        let updatedPhase: RestorationPhase = ((try? restorationPhase) == .cleanup) ? .cleanup : .noCurrentRestoration
-        rawRestorationPhase = updatedPhase.rawValue
+        switch try? restorationPhase {
+        case .noCurrentRestoration, .cleanup: break
+        default: rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
+        }
         LegacyRestorationFlags.hasPendingRestore = false
     }
 
@@ -549,6 +551,7 @@ extension DeviceTransferService {
             let currentPhase = (try? self.restorationPhase) ?? .noCurrentRestoration
             if currentPhase == .cleanup || LegacyRestorationFlags.pendingWasTransferredClear {
                 self.tsAccountManager.wasTransferred = false
+                GRDBDatabaseStorageAdapter.removeOrphanedGRDBDirectories()
                 LegacyRestorationFlags.pendingWasTransferredClear = false
                 self.rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
             }

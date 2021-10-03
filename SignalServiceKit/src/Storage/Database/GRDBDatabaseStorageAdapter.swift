@@ -13,6 +13,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     @objc
     public enum DirectoryMode: Int {
+        public static let commonGRDBPrefix = "grdb"
         public static let primaryFolderNameKey = "GRDBPrimaryDirectoryNameKey"
         public static let transferFolderNameKey = "GRDBTransferDirectoryNameKey"
         static var storedPrimaryFolderName: String? {
@@ -43,16 +44,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         /// All directory modes will always be non-nil *except* for the transfer directory
         /// It is incorrect to request a transfer directory without first calling `createNewTransferDirectory()`
         var folderName: String! {
+            let result: String?
             switch self {
-            case .primary: return Self.storedPrimaryFolderName ?? DirectoryMode.primaryLegacy.folderName
-            case .transfer: return Self.storedTransferFolderName
-            case .primaryLegacy: return "grdb"
-            case .hotswapLegacy: return "grdb-hotswap"
+            case .primary: result = Self.storedPrimaryFolderName ?? DirectoryMode.primaryLegacy.folderName
+            case .transfer: result = Self.storedTransferFolderName
+            case .primaryLegacy: result = "grdb"
+            case .hotswapLegacy: result = "grdb-hotswap"
             }
+            owsAssertDebug(result?.hasPrefix(Self.commonGRDBPrefix) != false)
+            return result
         }
 
         static func updateTransferDirectoryName() {
-            storedTransferFolderName = "grdb_\(Date.ows_millisecondTimestamp())_\(Int.random(in: 0..<1000))"
+            storedTransferFolderName = "\(Self.commonGRDBPrefix)_\(Date.ows_millisecondTimestamp())_\(Int.random(in: 0..<1000))"
         }
     }
 
@@ -410,19 +414,38 @@ extension GRDBDatabaseStorageAdapter {
         if let newPrimaryName = DirectoryMode.transfer.folderName {
             DirectoryMode.storedPrimaryFolderName = newPrimaryName
             clearTransferDirectory()
+            Logger.info("michlin promoted!")
+        } else {
+            Logger.info("No need")
         }
     }
 
     private static func clearTransferDirectory() {
+        Logger.info("michlin clearing out transfer directory if necessary")
         if hasAssignedTransferDirectory, DirectoryMode.primary.folderName != DirectoryMode.transfer.folderName {
             do {
+                Logger.info("michlin deleting: \(databaseDirUrl(directoryMode: .transfer))")
                 try OWSFileSystem.deleteFileIfExists(url: databaseDirUrl(directoryMode: .transfer))
             } catch {
                 // Unexpected, but not unrecoverable. Orphan data cleaner can take care of this since we're clearing the folder name
-                owsFailDebug("Failed to reset transfer directory: \(error)")
+                Logger.error("Failed to reset transfer directory: \(error)")
             }
         }
         DirectoryMode.storedTransferFolderName = nil
+        Logger.info("michlin reset transfer dir: \(DirectoryMode.transfer.folderName)")
+    }
+
+    // Removes all directories with the common prefix that aren't the current primary GRDB directory
+    public static func removeOrphanedGRDBDirectories() {
+        allGRDBDirectories
+            .filter { $0 != databaseDirUrl(directoryMode: .primary) }
+            .forEach {
+                do {
+                    try OWSFileSystem.deleteFileIfExists(url: $0)
+                } catch {
+                    owsFailDebug("Failed to delete: \($0). Error: \(error)")
+                }
+            }
     }
 }
 
@@ -971,10 +994,39 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     static func removeAllFiles() {
+        // First, delete our primary database
         let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl()
         OWSFileSystem.deleteFileIfExists(databaseUrl.path)
         OWSFileSystem.deleteFileIfExists(databaseUrl.path + "-wal")
         OWSFileSystem.deleteFileIfExists(databaseUrl.path + "-shm")
+
+        // In the spirit of thoroughness, since we're deleting all of our data anyway, let's
+        // also delete every item in our container directory with the "grdb" prefix just in
+        // case we have a leftover database directory from a prior restoration.
+        allGRDBDirectories.forEach {
+            do {
+                try OWSFileSystem.deleteFileIfExists(url: $0)
+            } catch {
+                owsFailDebug("Failed to delete: \($0). Error: \(error)")
+            }
+        }
+    }
+
+    /// A list of the URLs for every GRDB directory, both primary and orphaned
+    /// Returns all directories with the DirectoryMode.commonGRDBPrefix in the database base directory
+    static var allGRDBDirectories: [URL] {
+        let containerDirectory = SDSDatabaseStorage.baseDir
+        let containerPathItems: [String]
+        do {
+            containerPathItems = try FileManager.default.contentsOfDirectory(atPath: containerDirectory.path)
+        } catch {
+            owsFailDebug("Failed to fetch other diretory items: \(error)")
+            containerPathItems = []
+        }
+
+        return containerPathItems
+            .filter { $0.hasPrefix(DirectoryMode.commonGRDBPrefix) }
+            .map { containerDirectory.appendingPathComponent($0) }
     }
 }
 

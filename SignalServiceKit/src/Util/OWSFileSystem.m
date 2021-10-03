@@ -128,6 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
     return CurrentAppContext().appDocumentDirectoryPath;
 }
 
++ (NSURL *)appSharedDataDirectoryURL
+{
+    return [NSURL fileURLWithPath:self.appSharedDataDirectoryPath];
+}
+
 + (NSString *)appSharedDataDirectoryPath
 {
     return CurrentAppContext().appSharedDataDirectoryPath;
