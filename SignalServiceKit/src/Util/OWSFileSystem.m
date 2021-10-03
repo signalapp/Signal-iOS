@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSFileSystem.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
 

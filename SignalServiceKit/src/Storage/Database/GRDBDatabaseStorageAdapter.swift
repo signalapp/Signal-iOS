@@ -421,14 +421,12 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     private static func clearTransferDirectory() {
-        Logger.info("michlin clearing out transfer directory if necessary")
         if hasAssignedTransferDirectory, DirectoryMode.primary.folderName != DirectoryMode.transfer.folderName {
             do {
-                Logger.info("michlin deleting: \(databaseDirUrl(directoryMode: .transfer))")
                 try OWSFileSystem.deleteFileIfExists(url: databaseDirUrl(directoryMode: .transfer))
             } catch {
                 // Unexpected, but not unrecoverable. Orphan data cleaner can take care of this since we're clearing the folder name
-                Logger.error("Failed to reset transfer directory: \(error)")
+                owsFailDebug("Failed to reset transfer directory: \(error)")
             }
         }
         DirectoryMode.storedTransferFolderName = nil
