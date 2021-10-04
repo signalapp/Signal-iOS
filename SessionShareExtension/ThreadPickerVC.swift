@@ -36,6 +36,7 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavBar()
         // Gradient
         view.backgroundColor = .clear
         let gradient = Gradients.defaultBackground
@@ -66,6 +67,17 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
         fadeView.pin(.bottom, to: .bottom, of: view)
         // Reload
         reload()
+    }
+    
+    private func setupNavBar() {
+        guard let navigationBar = navigationController?.navigationBar else { return }
+        if #available(iOS 15.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = Colors.navigationBarBackground
+            navigationBar.standardAppearance = appearance;
+            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
+        }
     }
     
     // MARK: Table View Data Source
@@ -109,16 +121,14 @@ final class ThreadPickerVC : UIViewController, UITableViewDataSource, UITableVie
         }
         shareVC!.dismiss(animated: true, completion: nil)
         ModalActivityIndicatorViewController.present(fromViewController: shareVC!, canCancel: false, message: NSLocalizedString("vc_share_sending_message", comment: "")) { activityIndicator in
-            Storage.write { transaction in
-                MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!, using: transaction).done { [weak self] _ in
-                    guard let self = self else { return }
-                    activityIndicator.dismiss { }
-                    self.shareVC!.shareViewWasCompleted()
-                }.catch { [weak self] error in
-                    guard let self = self else { return }
-                    activityIndicator.dismiss { }
-                    self.shareVC!.shareViewFailed(error: error)
-                }
+            MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!).done { [weak self] _ in
+                guard let self = self else { return }
+                activityIndicator.dismiss { }
+                self.shareVC!.shareViewWasCompleted()
+            }.catch { [weak self] error in
+                guard let self = self else { return }
+                activityIndicator.dismiss { }
+                self.shareVC!.shareViewFailed(error: error)
             }
         }
     }

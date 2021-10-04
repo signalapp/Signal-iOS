@@ -189,10 +189,10 @@ extension MessageReceiver {
         let storage = SNMessagingKitConfiguration.shared.storage
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Profile
-        var userProfileKy: OWSAES256Key? = nil
-        if let profileKey = message.profileKey { userProfileKy = OWSAES256Key(data: profileKey) }
+        var userProfileKey: OWSAES256Key? = nil
+        if let profileKey = message.profileKey { userProfileKey = OWSAES256Key(data: profileKey) }
         updateProfileIfNeeded(publicKey: userPublicKey, name: message.displayName, profilePictureURL: message.profilePictureURL,
-            profileKey: userProfileKy, sentTimestamp: message.sentTimestamp!, transaction: transaction)
+            profileKey: userProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         // Initial configuration sync
         if !UserDefaults.standard[.hasSyncedInitialConfiguration] {
             UserDefaults.standard[.hasSyncedInitialConfiguration] = true
@@ -280,8 +280,10 @@ extension MessageReceiver {
         // Update profile if needed
         if let profile = message.profile {
             let sessionID = message.sender!
+            var contactProfileKey: OWSAES256Key? = nil
+            if let profileKey = profile.profileKey { contactProfileKey = OWSAES256Key(data: profileKey) }
             updateProfileIfNeeded(publicKey: sessionID, name: profile.displayName, profilePictureURL: profile.profilePictureURL,
-                profileKey: given(profile.profileKey) { OWSAES256Key(data: $0)! }, sentTimestamp: message.sentTimestamp!, transaction: transaction)
+                profileKey: contactProfileKey, sentTimestamp: message.sentTimestamp!, transaction: transaction)
         }
         // Get or create thread
         guard let threadID = storage.getOrCreateThread(for: message.syncTarget ?? message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: openGroupID, using: transaction) else { throw Error.noThread }
@@ -330,8 +332,6 @@ extension MessageReceiver {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             // Mark previous messages as read if there is a sync message
             OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread)
-            // Start expiration for sync messages
-            OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsOutgoingMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,

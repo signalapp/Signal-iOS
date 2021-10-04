@@ -36,6 +36,9 @@ import SignalUtilitiesKit
 
     @objc
     public var backup: OWSBackup
+    
+    @objc
+    public var fileLogger: DDFileLogger
 
     // Stored properties cannot be marked as `@available`, only classes and functions.
     // Instead, store a private `Any` and wrap it with a public `@available` getter
@@ -56,6 +59,7 @@ import SignalUtilitiesKit
         self.backup = OWSBackup()
         self.backupLazyRestore = BackupLazyRestore()
         self._userNotificationActionHandler = UserNotificationActionHandler()
+        self.fileLogger = DDFileLogger()
 
         super.init()
 
@@ -66,5 +70,12 @@ import SignalUtilitiesKit
     public func setup() {
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManager = notificationPresenter
+        setupLogFiles()
+    }
+    
+    private func setupLogFiles() {
+        fileLogger.rollingFrequency = kDayInterval // Refresh everyday
+        fileLogger.logFileManager.maximumNumberOfLogFiles = 3 // Save 3 days' log files
+        DDLog.add(fileLogger)
     }
 }

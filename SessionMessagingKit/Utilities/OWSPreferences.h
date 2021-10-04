@@ -3,6 +3,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <SessionMessagingKit/SSKEnvironment.h>
+#import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
+#import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
+#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,6 +51,7 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setScreenSecurity:(BOOL)flag;
 
 - (NotificationType)notificationPreviewType;
+- (NotificationType)notificationPreviewTypeWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
 

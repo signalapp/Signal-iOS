@@ -243,6 +243,6 @@ extension ConfigurationMessage {
             }
         }
 
-        public override var description: String { displayName! }
+        public override var description: String { displayName ?? "" }
     }
 }

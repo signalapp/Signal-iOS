@@ -167,7 +167,7 @@ final class QuoteView : UIView {
         if !hasAttachments {
             mainStackView.addArrangedSubview(lineView)
         } else {
-            let isAudio = MIMETypeUtil.isAudio(attachments.first!.contentType!)
+            let isAudio = MIMETypeUtil.isAudio(attachments.first!.contentType ?? "")
             let fallbackImageName = isAudio ? "attachment_audio" : "actionsheet_document_black"
             let fallbackImage = UIImage(named: fallbackImageName)?.withTint(.white)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
             let imageView = UIImageView(image: thumbnail ?? fallbackImage)

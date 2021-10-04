@@ -67,4 +67,38 @@ extension MessageSender {
         let destination = Message.Destination.from(thread)
         return MessageSender.send(message, to: destination, using: transaction)
     }
+    
+    public static func sendNonDurably(_ message: VisibleMessage, with attachments: [SignalAttachment], in thread: TSThread) -> Promise<Void> {
+        Storage.writeSync{ transaction in
+            prep(attachments, for: message, using: transaction)
+        }
+        let attachments = message.attachmentIDs.compactMap { TSAttachment.fetch(uniqueId: $0) as? TSAttachmentStream }
+        let attachmentsToUpload = attachments.filter { !$0.isUploaded }
+        let attachmentUploadPromises: [Promise<Void>] = attachmentsToUpload.map { stream in
+            let storage = SNMessagingKitConfiguration.shared.storage
+            if let v2OpenGroup = storage.getV2OpenGroup(for: thread.uniqueId!) {
+                let (promise, seal) = Promise<Void>.pending()
+                AttachmentUploadJob.upload(stream, using: { data in return OpenGroupAPIV2.upload(data, to: v2OpenGroup.room, on: v2OpenGroup.server) }, encrypt: false, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
+                return promise
+            } else {
+                let (promise, seal) = Promise<Void>.pending()
+                AttachmentUploadJob.upload(stream, using: FileServerAPIV2.upload, encrypt: true, onSuccess: { seal.fulfill(()) }, onFailure: { seal.reject($0) })
+                return promise
+            }
+        }
+        let (promise, seal) = Promise<Void>.pending()
+        let results = when(resolved: attachmentUploadPromises).wait()
+        let errors = results.compactMap { result -> Swift.Error? in
+            if case .rejected(let error) = result { return error } else { return nil }
+        }
+        if let error = errors.first { seal.reject(error) }
+        Storage.write{ transaction in
+            sendNonDurably(message, in: thread, using: transaction).done {
+                seal.fulfill(())
+            }.catch { error in
+                seal.reject(error)
+            }
+        }
+        return promise
+    }
 }
