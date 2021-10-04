@@ -231,8 +231,31 @@ public class DatabaseChangeObserver: NSObject {
         ensureDisplayLink()
     }
 
+    private var _didUpdateExternallyEvent: DebouncedEvent?
+    private func didUpdateExternallyEvent() -> DebouncedEvent {
+        AssertIsOnMainThread()
+        if let event = _didUpdateExternallyEvent {
+            return event
+        }
+        let event = DebouncedEvents.build(mode: .firstLast,
+                                          maxFrequencySeconds: 1.0,
+                                          onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
+            guard let self = self else { return }
+            self.fireDidUpdateExternally()
+        }
+        _didUpdateExternallyEvent = event
+        return event
+    }
+
     @objc
     func didReceiveCrossProcessNotification(_ notification: Notification) {
+        AssertIsOnMainThread()
+        Logger.verbose("")
+
+        didUpdateExternallyEvent().requestNotify()
+    }
+
+    private func fireDidUpdateExternally() {
         AssertIsOnMainThread()
         Logger.verbose("")
 
@@ -241,6 +264,8 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 }
+
+// MARK: -
 
 extension DatabaseChangeObserver: TransactionObserver {
 
