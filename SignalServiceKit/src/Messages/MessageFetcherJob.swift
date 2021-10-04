@@ -271,10 +271,11 @@ public class MessageFetcherJob: NSObject {
     private let pendingAcks = PendingTasks(label: "Acks")
 
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
-        let ackConcurrentOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
-                                                         pendingAck: pendingAck)
-        ackOperationQueue.addOperation(ackConcurrentOperation)
+        guard let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
+                                                     pendingAcks: pendingAcks) else {
+            return
+        }
+        ackOperationQueue.addOperation(ackOperation)
     }
 
     public func pendingAcksPromise() -> Promise<Void> {
@@ -566,7 +567,9 @@ private class MessageAckOperation: OWSOperation {
     // This doesn't affect correctness, just tries to guard against backing up our operation queue with repeat work
     static private var inFlightAcks = AtomicSet<String>()
     private var didRecordAckId = false
-    private var inFlightAckId: String {
+    private let inFlightAckId: String
+
+    private static func inFlightAckId(forEnvelopeInfo envelopeInfo: EnvelopeInfo) -> String {
         // All messages *should* have a guid, but we'll handle things correctly if they don't
         owsAssertDebug(envelopeInfo.serverGuid?.nilIfEmpty != nil)
 
@@ -580,8 +583,41 @@ private class MessageAckOperation: OWSOperation {
         }
     }
 
-    fileprivate required init(envelopeInfo: EnvelopeInfo,
-                              pendingAck: PendingTask) {
+    private static let unfairLock = UnfairLock()
+    private static var successfulAckSet = OrderedSet<String>()
+    private static func didAck(inFlightAckId: String) {
+        unfairLock.withLock {
+            successfulAckSet.append(inFlightAckId)
+            // REST fetches are batches of 100.
+            let maxAckCount: Int = 128
+            while successfulAckSet.count > maxAckCount,
+                  let firstAck = successfulAckSet.first {
+                successfulAckSet.remove(firstAck)
+            }
+        }
+    }
+    private static func hasAcked(inFlightAckId: String) -> Bool {
+        unfairLock.withLock {
+            successfulAckSet.contains(inFlightAckId)
+        }
+    }
+
+    fileprivate required init?(envelopeInfo: EnvelopeInfo, pendingAcks: PendingTasks) {
+
+        let inFlightAckId = Self.inFlightAckId(forEnvelopeInfo: envelopeInfo)
+        self.inFlightAckId = inFlightAckId
+
+        guard !Self.hasAcked(inFlightAckId: inFlightAckId) else {
+            Logger.info("Skipping new ack operation for \(envelopeInfo). Duplicate ack already complete")
+            return nil
+        }
+        guard !Self.inFlightAcks.contains(inFlightAckId) else {
+            Logger.info("Skipping new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
+            return nil
+        }
+
+        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+
         self.envelopeInfo = envelopeInfo
         self.pendingAck = pendingAck
 
@@ -592,14 +628,8 @@ private class MessageAckOperation: OWSOperation {
         // MessageAckOperation must have a higher priority than than the
         // operations used to flush the ack operation queue.
         self.queuePriority = .high
-        if Self.inFlightAcks.contains(inFlightAckId) {
-            Logger.info("Cancelling new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
-            pendingAck.complete()
-            self.cancel()
-        } else {
-            Self.inFlightAcks.insert(inFlightAckId)
-            didRecordAckId = true
-        }
+        Self.inFlightAcks.insert(inFlightAckId)
+        didRecordAckId = true
     }
 
     public override func run() {
@@ -617,9 +647,12 @@ private class MessageAckOperation: OWSOperation {
         }
 
         let envelopeInfo = self.envelopeInfo
+        let inFlightAckId = self.inFlightAckId
         firstly(on: .global()) {
             self.networkManager.makePromise(request: request)
         }.done(on: .global()) { _ in
+            Self.didAck(inFlightAckId: inFlightAckId)
+
             if DebugFlags.internalLogging {
                 Logger.info("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
             } else {
