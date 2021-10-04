@@ -247,15 +247,17 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [self.databaseStorage resetAllStorage];
-    [OWSUserProfile resetProfileStorage];
-    [Environment.shared.preferences removeAllValues];
-    [AppEnvironment.shared.notificationPresenter clearAllNotifications];
-    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
-    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
-    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
-    [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
-    [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
+    DispatchSyncMainThreadSafe(^{
+        [self.databaseStorage resetAllStorage];
+        [OWSUserProfile resetProfileStorage];
+        [Environment.shared.preferences removeAllValues];
+        [AppEnvironment.shared.notificationPresenter clearAllNotifications];
+        [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
+        [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
+        [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
+        [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
+        [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
+    });
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);

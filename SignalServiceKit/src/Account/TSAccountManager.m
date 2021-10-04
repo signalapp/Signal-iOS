@@ -820,26 +820,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     [self postRegistrationStateDidChangeNotification];
 }
 
-- (BOOL)hasPendingBackupRestoreDecision
-{
-    __block BOOL result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.keyValueStore getBool:TSAccountManager_HasPendingRestoreDecisionKey
-                                defaultValue:NO
-                                 transaction:transaction];
-    }];
-    return result;
-}
-
-- (void)setHasPendingBackupRestoreDecision:(BOOL)value
-{
-    OWSLogInfo(@"%d", value);
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setBool:value key:TSAccountManager_HasPendingRestoreDecisionKey transaction:transaction];
-    });
-    [self postRegistrationStateDidChangeNotification];
-}
-
 - (BOOL)isManualMessageFetchEnabled
 {
     __block BOOL result;
