@@ -3,10 +3,6 @@
 //
 
 #import "OWSPreferences.h"
-#import <SessionMessagingKit/SSKEnvironment.h>
-#import <SessionMessagingKit/YapDatabaseConnection+OWS.h>
-#import <SessionMessagingKit/YapDatabaseTransaction+OWS.h>
-#import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -376,6 +372,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (NotificationType)notificationPreviewType
 {
     NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyNotificationPreviewType];
+
+    if (preference) {
+        return [preference unsignedIntegerValue];
+    } else {
+        return NotificationNamePreview;
+    }
+}
+
+- (NotificationType)notificationPreviewTypeWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyNotificationPreviewType transaction:transaction];
 
     if (preference) {
         return [preference unsignedIntegerValue];

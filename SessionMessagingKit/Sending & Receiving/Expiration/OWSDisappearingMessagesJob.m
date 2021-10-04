@@ -329,6 +329,17 @@ void AssertIsOnDisappearingMessagesQueue()
 
 #pragma mark - Cleanup
 
+- (void)cleanupMessagesWhichFailedToStartExpiringFromNow
+{
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.disappearingMessagesFinder
+            enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
+                [self startAnyExpirationForMessage:message expirationStartedAt:[NSDate millisecondTimestamp] transaction:transaction];
+            }
+         transaction:transaction];
+    }];
+}
+
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self.disappearingMessagesFinder

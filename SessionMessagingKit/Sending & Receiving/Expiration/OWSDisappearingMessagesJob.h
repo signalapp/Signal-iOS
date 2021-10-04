@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 // and continue cleaning in the background.
 - (void)startIfNecessary;
 
+- (void)cleanupMessagesWhichFailedToStartExpiringFromNow;
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

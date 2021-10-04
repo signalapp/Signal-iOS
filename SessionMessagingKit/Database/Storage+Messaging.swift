@@ -32,8 +32,9 @@ extension Storage {
             var recipients: [String] = []
             if let syncTarget = message.syncTarget {
                 recipients.append(syncTarget)
-            } else if let thread = thread as? TSGroupThread, thread.isClosedGroup {
-                recipients = thread.groupModel.groupMemberIds
+            } else if let thread = thread as? TSGroupThread {
+                if thread.isClosedGroup { recipients = thread.groupModel.groupMemberIds }
+                else { recipients.append(LKGroupUtilities.getDecodedGroupID(thread.groupModel.groupId)) }
             }
             recipients.forEach { recipient in
                 tsOutgoingMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)

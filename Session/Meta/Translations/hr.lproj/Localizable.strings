@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "Omogući preglede poveznica?";
 "modal_link_previews_explanation" = "Omogućavanjem pregleda poveznica prikazat će se pregledi za URL-ove koje šaljete i primate. To može biti korisno, ali Session će trebati kontaktirati povezane web stranice kako bi generirao preglede. Uvijek možete onemogućiti preglede poveznica u postavkama Session-a.";
 "modal_link_previews_button_title" = "Uključi";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Podijeli sa Session-om";
 "vc_share_loading_message" = "Priprema privitaka...";
 "vc_share_sending_message" = "Slanje...";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "Dodaj članove";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";

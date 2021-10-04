@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "是否要啟用連結預覽？";
 "modal_link_previews_explanation" = "啟用連結預覽將會讓您送出與接收的 URLs 啟用預覽，這是一項好用的功能，但是 Session 會需要連結這些網站來產生預覽，您可以隨時關閉連結預覽功能。";
 "modal_link_previews_button_title" = "啟用";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "分享至 Session";
 "vc_share_loading_message" = "準備附件中⋯";
 "vc_share_sending_message" = "傳送中⋯";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "新增成員";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";

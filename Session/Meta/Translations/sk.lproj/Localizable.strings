@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "Povoliť náhľad odkazov?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Povoliť";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Share to Session";
 "vc_share_loading_message" = "Pripravujú sa prílohy...";
 "vc_share_sending_message" = "Odosiela sa...";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "Pridať členov";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";

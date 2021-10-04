@@ -538,6 +538,8 @@
 "modal_link_previews_title" = "Linkvoorbeeld inschakelen?";
 "modal_link_previews_explanation" = "Link previews inschakelen zal previews tonen voor URLs die u verstuurt en ontvangt. Dit kan nuttig zijn, maar Session moet contact opnemen met gekoppelde websites om previews te genereren. U kunt links altijd uitschakelen in de Session’s-instellingen.";
 "modal_link_previews_button_title" = "Inschakelen";
+"modal_share_logs_title" = "Share Logs";
+"modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Delen naar de Session";
 "vc_share_loading_message" = "Bijlagen voorbereiden...";
 "vc_share_sending_message" = "Aan het verzenden...";
@@ -545,6 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "Voeg deelnemers toe";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
+"vc_settings_support_button_title" = "Support";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";

@@ -21,6 +21,7 @@ BOOL IsNoteToSelfEnabled(void)
 @interface TSThread ()
 
 @property (nonatomic) NSDate *creationDate;
+@property (nonatomic, nullable) NSDate *lastInteractionDate;
 @property (nonatomic, nullable) NSNumber *archivedAsOfMessageSortId;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
@@ -355,6 +356,8 @@ BOOL IsNoteToSelfEnabled(void)
     if (![self.class shouldInteractionAppearInInbox:lastMessage]) {
         return;
     }
+    
+    _lastInteractionDate = lastMessage.receivedAtDate;
 
     if (!self.shouldBeVisible) {
         self.shouldBeVisible = YES;
