@@ -4,6 +4,7 @@
 
 import Foundation
 import MultipeerConnectivity
+import SignalCoreKit
 
 extension DeviceTransferService: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer newDevicePeerID: MCPeerID, withDiscoveryInfo info: [String: String]?) {
@@ -127,7 +128,9 @@ extension DeviceTransferService: MCSessionDelegate {
 
             // Record that we have a pending restore, so even if the app exits
             // we can still know to restore the data that was transferred.
-            hasPendingRestore = true
+            let startPhase = RestorationPhase.start
+            Logger.info("Setting restoration phase to: \(startPhase)")
+            rawRestorationPhase = startPhase.rawValue
 
             // Try and notify the old device that we agree, everything is done.
             // At this point, we consider the transfer complete regardless of
@@ -148,9 +151,23 @@ extension DeviceTransferService: MCSessionDelegate {
             // Try and restore the received data. If for some reason the app exits
             // or crashes at this point, we will retry the restore when the app next
             // launches.
-            guard restoreTransferredData(hotswapDatabase: true) else {
-                owsFail("Restore failed. Crashing, will try again on next launch.")
+            do {
+                try restoreTransferredData()
+            } catch {
+                owsFail("Restore failed. Will try again on next launch. Error: \(error)")
             }
+
+            firstly(on: .main) { () -> Promise<Void> in
+                // A successful restoration means we've updated our database path.
+                // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
+                self.databaseStorage.reloadDatabase()
+            }.then(on: .main) { () -> Promise<Void> in
+                self.finalizeRestorationIfNecessary()
+            }.done(on: .main) {
+                // After transfer our push token has changed, update it.
+                SyncPushTokensJob.run()
+                SignalApp.shared().showConversationSplitView()
+            }.cauterize() // TODO: Everything in this promise chain is a guarantee.
 
             stopTransfer()
         }

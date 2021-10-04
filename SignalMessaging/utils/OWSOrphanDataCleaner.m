@@ -323,13 +323,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // ever accidentally removing the GRDB databases during
     // orphan clean up.
     NSString *grdbPrimaryDirectoryPath =
-        [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
-                                                directoryMode:DirectoryModePrimary]
-            .path;
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModePrimary].path;
     NSString *grdbHotswapDirectoryPath =
-        [GRDBDatabaseStorageAdapter databaseDirUrlWithBaseDir:SDSDatabaseStorage.baseDir
-                                                directoryMode:DirectoryModeHotswap]
-            .path;
+        [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeHotswapLegacy].path;
+    NSString *grdbTransferDirectoryPath = nil;
+    if (GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory && TSAccountManager.shared.isTransferInProgress) {
+        grdbTransferDirectoryPath =
+            [GRDBDatabaseStorageAdapter databaseDirUrlWithDirectoryMode:DirectoryModeTransfer].path;
+    }
 
     NSMutableSet<NSString *> *databaseFilePaths = [NSMutableSet new];
     for (NSString *filePath in allOnDiskFilePaths) {
@@ -337,6 +338,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             OWSLogInfo(@"Protecting database file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         } else if ([filePath hasPrefix:grdbHotswapDirectoryPath]) {
+            OWSLogInfo(@"Protecting database hotswap file: %@", filePath);
+            [databaseFilePaths addObject:filePath];
+        } else if (grdbTransferDirectoryPath && [filePath hasPrefix:grdbTransferDirectoryPath]) {
             OWSLogInfo(@"Protecting database hotswap file: %@", filePath);
             [databaseFilePaths addObject:filePath];
         }

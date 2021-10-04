@@ -144,11 +144,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 @property (nonatomic) BOOL isTransferInProgress;
 @property (nonatomic) BOOL wasTransferred;
 
-#pragma mark - Backup
-
-- (BOOL)hasPendingBackupRestoreDecision;
-- (void)setHasPendingBackupRestoreDecision:(BOOL)value;
-
 #pragma mark - Re-registration
 
 // Re-registration is the process of re-registering _with the same phone number_.

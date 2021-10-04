@@ -3,27 +3,52 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 extension DeviceTransferService {
-    private static let pendingRestoreKey = "DeviceTransferHasPendingRestore"
-    var hasPendingRestore: Bool {
-        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.pendingRestoreKey) }
-        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.pendingRestoreKey) }
-    }
-    private static let beenRestoredKey = "DeviceTransferHasBeenRestored"
+    private static let hasBeenRestoredKey = "DeviceTransferHasBeenRestored"
     var hasBeenRestored: Bool {
-        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.beenRestoredKey) }
-        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.beenRestoredKey) }
+        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.hasBeenRestoredKey) }
+        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.hasBeenRestoredKey) }
     }
-    private static let pendingWasTransferedClearKey = "DeviceTransferPendingWasTransferredClear"
-    var pendingWasTransferredClear: Bool {
-        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.pendingWasTransferedClearKey) }
-        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.pendingWasTransferedClearKey) }
+
+    private static let restorePhaseKey = "DeviceTransferRestorationPhase"
+    var rawRestorationPhase: Int {
+        get { CurrentAppContext().appUserDefaults().integer(forKey: DeviceTransferService.restorePhaseKey) }
+        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.restorePhaseKey) }
     }
-    private static let pendingPromotionFromHotSwapToPrimaryDatabaseKey = "DeviceTransferPendingPromotionFromHotSwapToPrimaryDatabase"
-    var pendingPromotionFromHotSwapToPrimaryDatabase: Bool {
-        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.pendingPromotionFromHotSwapToPrimaryDatabaseKey) }
-        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.pendingPromotionFromHotSwapToPrimaryDatabaseKey) }
+
+    var restorationPhase: RestorationPhase {
+        get throws {
+            try RestorationPhase(rawValue: rawRestorationPhase) ?? {
+                throw OWSAssertionError("Invalid raw value: \(rawRestorationPhase)")
+            }()
+        }
+    }
+
+    private enum LegacyRestorationFlags {
+        static let pendingRestoreKey = "DeviceTransferHasPendingRestore"
+        static var hasPendingRestore: Bool {
+            get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingRestoreKey) }
+            set {
+                owsAssertDebug(newValue == false) // Future transfers should use the `restorationPhase` key
+                CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingRestoreKey)
+            }
+        }
+        static let pendingWasTransferedClearKey = "DeviceTransferPendingWasTransferredClear"
+        static var pendingWasTransferredClear: Bool {
+            get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingWasTransferedClearKey) }
+            set { CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingWasTransferedClearKey) }
+        }
+
+        static let pendingPromotionFromHotSwapToPrimaryDatabaseKey = "DeviceTransferPendingPromotionFromHotSwapToPrimaryDatabase"
+        static var pendingPromotionFromHotSwapToPrimaryDatabase: Bool {
+            get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingPromotionFromHotSwapToPrimaryDatabaseKey) }
+            set {
+                owsAssertDebug(newValue == false) // Hotswapping databases is deprecated
+                CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingPromotionFromHotSwapToPrimaryDatabaseKey)
+            }
+        }
     }
 
     func verifyTransferCompletedSuccessfully(receivedFileIds: [String], skippedFileIds: [String]) -> Bool {
@@ -96,10 +121,14 @@ extension DeviceTransferService {
         return true
     }
 
-    func restoreTransferredData(hotswapDatabase: Bool) -> Bool {
+    func restoreTransferredDataLegacy(hotswapDatabase: Bool) -> Bool {
+        // Hotswapping databases is deprecated. Future transfers should use
+        // `restoreTransferredData()`
+        owsAssertDebug(hotswapDatabase == false)
+
         Logger.info("Attempting to restore transferred data.")
 
-        guard hasPendingRestore else {
+        guard LegacyRestorationFlags.hasPendingRestore else {
             owsFailDebug("Cannot restore data when there was no pending restore")
             return false
         }
@@ -121,28 +150,11 @@ extension DeviceTransferService {
             return false
         }
 
-        for userDefault in manifest.standardDefaults {
-            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
-                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
-                continue
-            }
-
-            UserDefaults.standard.set(unarchivedValue, forKey: userDefault.key)
-        }
-
-        for userDefault in manifest.appDefaults {
-            guard ![
-                DeviceTransferService.pendingRestoreKey,
-                DeviceTransferService.beenRestoredKey,
-                DeviceTransferService.pendingWasTransferedClearKey
-            ].contains(userDefault.key) else { continue }
-
-            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
-                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
-                continue
-            }
-
-            CurrentAppContext().appUserDefaults().set(unarchivedValue, forKey: userDefault.key)
+        do {
+            try updateUserDefaults(manifest: manifest)
+        } catch {
+            owsFailDebug("Failed to update user defaults: \(error)")
+            return false
         }
 
         for file in manifest.files + [database.database, database.wal] {
@@ -157,15 +169,9 @@ extension DeviceTransferService {
             // path will be later overriden with the hotswap path.
             let newFilePath: String
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .primary
-                ).path
+                newFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .primary
-                ).path
+                newFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .primary).path
             } else {
                 newFilePath = URL(
                     fileURLWithPath: file.relativePath,
@@ -180,15 +186,9 @@ extension DeviceTransferService {
             // tries to perform a write.
             var hotswapFilePath: String?
             if DeviceTransferService.databaseIdentifier == file.identifier {
-                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .hotswap
-                ).path
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .hotswapLegacy).path
             } else if DeviceTransferService.databaseWALIdentifier == file.identifier {
-                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(
-                    baseDir: SDSDatabaseStorage.baseDir,
-                    directoryMode: .hotswap
-                ).path
+                hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .hotswapLegacy).path
             }
 
             let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath)
@@ -235,23 +235,25 @@ extension DeviceTransferService {
             }
         }
 
-        pendingWasTransferredClear = true
-        pendingPromotionFromHotSwapToPrimaryDatabase = hotswapDatabase
+        LegacyRestorationFlags.pendingWasTransferredClear = true
+        LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase = hotswapDatabase
         hasBeenRestored = true
 
         resetTransferDirectory()
 
         if hotswapDatabase {
-            DispatchMainThreadSafe {
-                self.databaseStorage.reload(directoryMode: .hotswap)
-                self.tsAccountManager.wasTransferred = false
-                self.pendingWasTransferredClear = false
-                self.tsAccountManager.isTransferInProgress = false
-                SignalApp.shared().showConversationSplitView()
-
-                // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run()
-            }
+            owsFail("Hotswapping databases is no longer supported")
+            // Kept for future reference
+//            DispatchMainThreadSafe {
+//                self.databaseStorage.reload(directoryMode: .hotswapLegacy)
+//                self.tsAccountManager.wasTransferred = false
+//                LegacyRestorationFlags.pendingWasTransferredClear = false
+//                self.tsAccountManager.isTransferInProgress = false
+//                SignalApp.shared().showConversationSplitView()
+//
+//                // After transfer our push token has changed, update it.
+//                SyncPushTokensJob.run()
+//            }
         }
 
         return true
@@ -268,7 +270,11 @@ extension DeviceTransferService {
         OWSFileSystem.ensureDirectoryExists(DeviceTransferService.pendingTransferDirectory.path)
 
         // If we had a pending restore, we no longer do.
-        hasPendingRestore = false
+        switch try? restorationPhase {
+        case .noCurrentRestoration, .cleanup: break
+        default: rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
+        }
+        LegacyRestorationFlags.hasPendingRestore = false
     }
 
     private func move(pendingFilePath: String, to newFilePath: String) -> Bool {
@@ -306,14 +312,8 @@ extension DeviceTransferService {
     private func promoteTransferDatabaseToPrimaryDatabase() -> Bool {
         Logger.info("Promoting the hotswap database to the primary database")
 
-        let primaryDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .primary
-        ).path
-        let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(
-            baseDir: SDSDatabaseStorage.baseDir,
-            directoryMode: .hotswap
-        ).path
+        let primaryDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .primary).path
+        let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
 
         if OWSFileSystem.fileOrFolderExists(atPath: hotswapDatabaseDirectoryPath) {
             guard move(pendingFilePath: hotswapDatabaseDirectoryPath, to: primaryDatabaseDirectoryPath) else {
@@ -328,7 +328,7 @@ extension DeviceTransferService {
             Logger.info("Missing hotswap database, we may have previously restored. Assuming primary database is correct.")
         }
 
-        pendingPromotionFromHotSwapToPrimaryDatabase = false
+        LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase = false
 
         return true
     }
@@ -337,22 +337,231 @@ extension DeviceTransferService {
     func launchCleanup() -> Bool {
         Logger.info("hasBeenRestored: \(hasBeenRestored)")
 
+        let success: Bool
+        if hasIncompleteRestoration {
+            do {
+                try restoreTransferredData()
+                success = true
+            } catch {
+                owsFailDebug("Failed to finish restoration: \(error)")
+                success = false
+            }
+        } else if LegacyRestorationFlags.hasPendingRestore {
+            success = restoreTransferredDataLegacy(hotswapDatabase: false)
+        } else if LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase {
+            success = promoteTransferDatabaseToPrimaryDatabase()
+        } else {
+            success = true
+        }
+        if success {
+            // TODO: This should return a guarantee
+            finalizeRestorationIfNecessary().cauterize()
+        }
+        return success
+    }
+}
+
+extension DeviceTransferService {
+
+    enum RestorationPhase: Int {
+        // Start/Complete: Nothing to do.
+        case noCurrentRestoration = 0
+
+        // Performed by `restoreTransferredData()`
+        case start
+        case updateUserDefaults
+        case moveManifestFiles
+        case allocateNewDatabaseDirectory
+        case moveDatabaseFiles
+        case updateDatabase
+
+        // This state represents that there's some one-time cleanup that's left to be done
+        // Restoration is complete, but every time the app launches `finalizeRestorationIfNecessary`
+        // will run and transition to `noCurrentRestoration` once successful
+        case cleanup
+
+        var next: RestorationPhase {
+            RestorationPhase(rawValue: rawValue + 1) ?? .noCurrentRestoration
+        }
+    }
+
+    var hasIncompleteRestoration: Bool { rawRestorationPhase > 0 }
+    func restoreTransferredData() throws {
+        do {
+            let manifest: DeviceTransferProtoManifest? = readManifestFromTransferDirectory()
+
+            // Run through the restoration steps. The deal here is:
+            // - The phase we're currently on has not been completed yet
+            // - Each phase must be idempotent and capable of handling arbitrary interruption (i.e. crashes)
+            // - If a phase completes without error, it should be durable
+            // - We return once we've hit `noCurrentRestoration` or `cleanup`
+            var currentPhase = try restorationPhase
+            while currentPhase != .noCurrentRestoration, currentPhase != .cleanup {
+                Logger.info("Performing restoration phase: \(currentPhase)")
+                try performRestorationPhase(currentPhase, manifest: manifest)
+                Logger.info("Completed restoration phase: \(currentPhase)")
+
+                currentPhase = currentPhase.next
+                rawRestorationPhase = currentPhase.rawValue
+            }
+        } catch {
+            owsFailDebug("Hit error during restoration phase \(rawRestorationPhase): \(error)")
+            throw error
+        }
+    }
+
+    private func performRestorationPhase(_ phase: RestorationPhase, manifest: DeviceTransferProtoManifest?) throws {
+        switch phase {
+        case .noCurrentRestoration, .cleanup:
+            owsFailDebug("Unexpected state")
+        case .start:
+            // No-op, having a start case jut makes the logs look nice
+            break
+        case .updateUserDefaults:
+            try updateUserDefaults(manifest: manifest)
+        case .moveManifestFiles:
+            try moveManifestFiles(manifest: manifest)
+        case .allocateNewDatabaseDirectory:
+            allocateNewDatabaseDirectory()
+        case .moveDatabaseFiles:
+            try moveDatabaseFiles(manifest: manifest)
+        case .updateDatabase:
+            try updateCurrentDatabase(manifest: manifest)
+            // At this point, we've restored all of the data we need. Just some bits of cleanup left.
+            hasBeenRestored = true
+        }
+    }
+
+    private func updateUserDefaults(manifest: DeviceTransferProtoManifest?) throws {
+        guard let manifest = manifest else {
+            throw OWSAssertionError("No manifest available")
+        }
+
+        // TODO: We should codify how we want to use standardDefaults. Either we should
+        // get rid of them, or expand them to support all of our extensions
+        for userDefault in manifest.standardDefaults {
+            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
+                continue
+            }
+
+            UserDefaults.standard.set(unarchivedValue, forKey: userDefault.key)
+        }
+
+        // TODO: Do we want to transfer all of our app defaults?
+        for userDefault in manifest.appDefaults {
+            guard ![
+                GRDBDatabaseStorageAdapter.DirectoryMode.primaryFolderNameKey,
+                GRDBDatabaseStorageAdapter.DirectoryMode.transferFolderNameKey,
+                DeviceTransferService.hasBeenRestoredKey,
+                LegacyRestorationFlags.pendingRestoreKey,
+                LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabaseKey,
+                LegacyRestorationFlags.pendingWasTransferedClearKey
+            ].contains(userDefault.key) else { continue }
+
+            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
+                continue
+            }
+            CurrentAppContext().appUserDefaults().set(unarchivedValue, forKey: userDefault.key)
+        }
+    }
+
+    private func moveManifestFiles(manifest: DeviceTransferProtoManifest?) throws {
+        guard let manifest = manifest else {
+            throw OWSAssertionError("No manifest available")
+        }
+        let sourceDir = DeviceTransferService.pendingTransferFilesDirectory
+        let destDir = DeviceTransferService.appSharedDataDirectory
+
+        try manifest.files.forEach { file in
+            let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
+            let destUrl = URL(fileURLWithPath: file.relativePath, relativeTo: destDir)
+
+            if OWSFileSystem.fileOrFolderExists(url: destUrl) {
+                Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
+            } else if OWSFileSystem.fileOrFolderExists(url: sourceUrl) {
+                let didSucceed = move(pendingFilePath: sourceUrl.path, to: destUrl.path)
+                if !didSucceed {
+                    throw OWSAssertionError("Failed to move file \(file.identifier)")
+                }
+            } else {
+                // We sometimes don't receive a file because it goes missing on the old
+                // device between when we generate the manifest and when we perform the
+                // restoration. Our verification process ensures that the only files that
+                // could be missing in this way are non-essential files. It's better to
+                // let the user continue than to lock them out of the app in this state.
+                Logger.info("Skipping restoration of missing file: \(file.identifier)")
+            }
+        }
+    }
+
+    // We create the directory but do not touch anything about it until this phase has committed
+    private func allocateNewDatabaseDirectory() {
+        GRDBDatabaseStorageAdapter.createNewTransferDirectory()
+    }
+
+    private func moveDatabaseFiles(manifest: DeviceTransferProtoManifest?) throws {
+        guard let database = manifest?.database else {
+            throw OWSAssertionError("No manifest database available")
+        }
+        let sourceDir = DeviceTransferService.pendingTransferFilesDirectory
+        let databaseSourceFiles = [database.database, database.wal]
+
+        try databaseSourceFiles.forEach { file in
+            let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
+            let destUrl: URL
+            switch file.identifier {
+            case DeviceTransferService.databaseIdentifier:
+                destUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .transfer)
+            case DeviceTransferService.databaseWALIdentifier:
+                destUrl = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .transfer)
+            default:
+                throw OWSAssertionError("Unknown file identifier")
+            }
+
+            if OWSFileSystem.fileOrFolderExists(url: destUrl) {
+                Logger.info("Skipping restoration of database file that was already restored: \(file.identifier)")
+            } else if OWSFileSystem.fileOrFolderExists(url: sourceUrl) {
+                let didSucceed = move(pendingFilePath: sourceUrl.path, to: destUrl.path)
+                if !didSucceed {
+                    throw OWSAssertionError("Failed to move database file \(file.identifier)")
+                }
+            } else {
+                throw OWSAssertionError("Unable to restore missing database file: \(file.identifier)")
+            }
+        }
+    }
+
+    private func updateCurrentDatabase(manifest: DeviceTransferProtoManifest?) throws {
+        guard let database = manifest?.database else {
+            throw OWSAssertionError("No manifest database available")
+        }
+
+        try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
+        GRDBDatabaseStorageAdapter.promoteTransferDirectoryToPrimary()
+    }
+
+    func finalizeRestorationIfNecessary() -> Promise<Void> {
+        resetTransferDirectory()
+
+        let (promise, future) = Promise<Void>.pending()
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.tsAccountManager.isTransferInProgress = false
 
-            if self.pendingWasTransferredClear {
+            // Consult both the modern and legacy restoration flag
+            let currentPhase = (try? self.restorationPhase) ?? .noCurrentRestoration
+            if currentPhase == .cleanup || LegacyRestorationFlags.pendingWasTransferredClear {
+                Logger.info("Performing one-time post-restore cleanup...")
                 self.tsAccountManager.wasTransferred = false
-                self.pendingWasTransferredClear = false
+                GRDBDatabaseStorageAdapter.removeOrphanedGRDBDirectories()
+                LegacyRestorationFlags.pendingWasTransferredClear = false
+                self.rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
+                Logger.info("Done!")
             }
-        }
 
-        if hasPendingRestore {
-            return restoreTransferredData(hotswapDatabase: false)
-        } else if pendingPromotionFromHotSwapToPrimaryDatabase {
-            return promoteTransferDatabaseToPrimaryDatabase()
-        } else {
-            resetTransferDirectory()
-            return true
+            future.resolve()
         }
+        return promise
     }
 }

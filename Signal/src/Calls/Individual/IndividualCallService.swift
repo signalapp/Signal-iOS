@@ -516,7 +516,7 @@ import SignalMessaging
         Logger.info("call: \(call)")
 
         if shouldEarlyRing {
-            if isOutgoing {
+            if !isOutgoing {
                 // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
                 // has resulted in the NSE waking up the main app.
                 owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)

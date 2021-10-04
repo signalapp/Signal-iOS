@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSFileSystem.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
 
@@ -126,6 +126,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)appDocumentDirectoryPath
 {
     return CurrentAppContext().appDocumentDirectoryPath;
+}
+
++ (NSURL *)appSharedDataDirectoryURL
+{
+    return [NSURL fileURLWithPath:self.appSharedDataDirectoryPath];
 }
 
 + (NSString *)appSharedDataDirectoryPath

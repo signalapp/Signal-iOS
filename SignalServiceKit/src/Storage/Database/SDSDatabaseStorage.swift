@@ -79,12 +79,12 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public static var grdbDatabaseDirUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseDirUrl(baseDir: baseDir)
+        return GRDBDatabaseStorageAdapter.databaseDirUrl()
     }
 
     @objc
     public static var grdbDatabaseFileUrl: URL {
-        return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+        return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
     @objc
@@ -111,10 +111,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reopenGRDBStorage(
-        directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary,
-        completion: @escaping () -> Void = {}
-    ) {
+    public func reopenGRDBStorage(completion: @escaping () -> Void = {}) {
         let benchSteps = BenchSteps()
 
         // There seems to be a rare issue where at least one reader or writer
@@ -125,7 +122,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         weak var weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
         owsAssertDebug(weakGrdbStorage != nil)
-        _grdbStorage = createGrdbStorage(directoryMode: directoryMode)
+        _grdbStorage = createGrdbStorage()
 
         DispatchQueue.main.async {
             // We want to make sure all db connections from the old adapter/pool are closed.
@@ -141,7 +138,8 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reload(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) {
+    // TODO: This should return a guarantee
+    public func reloadDatabase() -> Promise<Void> {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -149,7 +147,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let wasRegistered = TSAccountManager.shared.isRegistered
 
-        reopenGRDBStorage(directoryMode: directoryMode) {
+        let (promise, future) = Promise<Void>.pending()
+        reopenGRDBStorage {
             _ = GRDBSchemaMigrator().runSchemaMigrations()
 
             self.grdbStorage.publishUpdatesImmediately()
@@ -162,24 +161,26 @@ public class SDSDatabaseStorage: SDSTransactable {
             if wasRegistered != TSAccountManager.shared.isRegistered {
                 NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
             }
+            future.resolve()
         }
+        return promise
     }
 
-    func createGrdbStorage(directoryMode: GRDBDatabaseStorageAdapter.DirectoryMode = .primary) -> GRDBDatabaseStorageAdapter {
+    func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir, directoryMode: directoryMode)
+            return GRDBDatabaseStorageAdapter()
         }
     }
 
     @objc
     public func deleteGrdbFiles() {
-        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.removeAllFiles()
     }
 
     @objc
     public func resetAllStorage() {
         YDBStorage.deleteYDBStorage()
-        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: type(of: self).baseDir)
+        GRDBDatabaseStorageAdapter.resetAllStorage()
     }
 
     // MARK: - Observation

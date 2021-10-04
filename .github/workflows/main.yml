@@ -14,6 +14,26 @@ jobs:
     runs-on: macos-11
 
     steps:
+      - name: Setup environment
+        shell: bash
+        run: |
+          # Set this if there's a code change that requires a newer Xcode than the default
+          REQUIRED_VERSION=13.0
+          CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+
+          echo "Current Xcode version: $CURRENT_VERSION"
+          echo "Required Xcode version: $REQUIRED_VERSION"
+
+          if [[ $CURRENT_VERSION < $REQUIRED_VERSION ]]; then
+            # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
+            NEW_XCODE="/Applications/Xcode_$REQUIRED_VERSION.app"
+            echo "Updating selected Xcode to $NEW_XCODE"
+            sudo xcode-select -s $NEW_XCODE
+
+            CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
+            echo "$?: Current Xcode version: $CURRENT_VERSION"
+          fi
+
       - name: Checkout Repo
         uses: actions/checkout@v2
 
