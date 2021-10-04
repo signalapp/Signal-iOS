@@ -332,8 +332,6 @@ extension MessageReceiver {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
             // Mark previous messages as read if there is a sync message
             OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: tsOutgoingMessage.sortId, thread: thread)
-            // Start expiration for sync messages
-            OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsOutgoingMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
         // Notify the user if needed
         guard (isMainAppAndActive || isBackgroundPoll), let tsIncomingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSIncomingMessage,

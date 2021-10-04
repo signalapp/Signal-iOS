@@ -443,6 +443,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func markAllAsRead() {
         guard let lastSortID = viewItems.last?.interaction.sortId else { return }
         OWSReadReceiptManager.shared().markAsReadLocally(beforeSortId: lastSortID, thread: thread)
+        SSKEnvironment.shared.disappearingMessagesJob.cleanupMessagesWhichFailedToStartExpiringFromNow()
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
