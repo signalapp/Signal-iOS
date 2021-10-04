@@ -396,7 +396,7 @@ extension PhotoCapture: CaptureOutputDelegate {
 
         let dataSource = DataSourceValue.dataSource(with: photoData, utiType: kUTTypeJPEG as String)
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .high)
         delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
     }
 

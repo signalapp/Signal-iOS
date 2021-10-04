@@ -623,7 +623,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         dataSource.sourceFilename = filename
 
-        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .high)
         if let attachmentError = dstAttachment.error {
             owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
             return attachmentItem.attachment
