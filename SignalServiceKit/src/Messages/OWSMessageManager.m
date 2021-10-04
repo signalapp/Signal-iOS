@@ -520,7 +520,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (SSKDebugFlags.internalLogging) {
+    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, %@",
             envelope.timestamp,
             serverDeliveryTimestamp,
@@ -2171,11 +2171,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Inserted 6: %@", messageDescription);
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.typingIndicatorsImpl didReceiveIncomingMessageInThread:thread
-                                                             address:envelope.sourceAddress
-                                                            deviceId:envelope.sourceDevice];
-    });
+    if (CurrentAppContext().isMainApp) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.typingIndicatorsImpl didReceiveIncomingMessageInThread:thread
+                                                                 address:envelope.sourceAddress
+                                                                deviceId:envelope.sourceDevice];
+        });
+    }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"Inserted 7: %@", messageDescription);
