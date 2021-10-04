@@ -397,6 +397,7 @@ extension GRDBDatabaseStorageAdapter {
         }
 
         DirectoryMode.updateTransferDirectoryName()
+        Logger.info("Established new transfer directory: \(String(describing: DirectoryMode.transfer.folderName))")
 
         // Double check everything turned out okay. These should never happen, but if it does we can recover by trying again.
         if DirectoryMode.transfer.folderName == DirectoryMode.primary.folderName || DirectoryMode.transfer.folderName == nil {
@@ -413,24 +414,24 @@ extension GRDBDatabaseStorageAdapter {
         // A prior run may have already performed the swap but crashed, so we should not expect a transfer folder
         if let newPrimaryName = DirectoryMode.transfer.folderName {
             DirectoryMode.storedPrimaryFolderName = newPrimaryName
+            Logger.info("Updated primary database directory to: \(newPrimaryName)")
             clearTransferDirectory()
-            Logger.info("michlin promoted!")
-        } else {
-            Logger.info("No need")
         }
     }
 
     private static func clearTransferDirectory() {
         if hasAssignedTransferDirectory, DirectoryMode.primary.folderName != DirectoryMode.transfer.folderName {
             do {
-                try OWSFileSystem.deleteFileIfExists(url: databaseDirUrl(directoryMode: .transfer))
+                let transferDirectoryUrl = databaseDirUrl(directoryMode: .transfer)
+                Logger.info("Deleting contents of \(transferDirectoryUrl)")
+                try OWSFileSystem.deleteFileIfExists(url: transferDirectoryUrl)
             } catch {
                 // Unexpected, but not unrecoverable. Orphan data cleaner can take care of this since we're clearing the folder name
                 owsFailDebug("Failed to reset transfer directory: \(error)")
             }
         }
         DirectoryMode.storedTransferFolderName = nil
-        Logger.info("michlin reset transfer dir: \(DirectoryMode.transfer.folderName)")
+        Logger.info("Finished resetting database transfer directory")
     }
 
     // Removes all directories with the common prefix that aren't the current primary GRDB directory
@@ -439,6 +440,7 @@ extension GRDBDatabaseStorageAdapter {
             .filter { $0 != databaseDirUrl(directoryMode: .primary) }
             .forEach {
                 do {
+                    Logger.info("Deleting: \($0)")
                     try OWSFileSystem.deleteFileIfExists(url: $0)
                 } catch {
                     owsFailDebug("Failed to delete: \($0). Error: \(error)")

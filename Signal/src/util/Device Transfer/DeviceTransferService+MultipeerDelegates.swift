@@ -128,7 +128,9 @@ extension DeviceTransferService: MCSessionDelegate {
 
             // Record that we have a pending restore, so even if the app exits
             // we can still know to restore the data that was transferred.
-            rawRestorationPhase = RestorationPhase.start.rawValue
+            let startPhase = RestorationPhase.start
+            Logger.info("Setting restoration phase to: \(startPhase)")
+            rawRestorationPhase = startPhase.rawValue
 
             // Try and notify the old device that we agree, everything is done.
             // At this point, we consider the transfer complete regardless of

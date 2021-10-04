@@ -353,8 +353,10 @@ extension DeviceTransferService {
         } else {
             success = true
         }
-        // TODO: This should return a guarantee
-        finalizeRestorationIfNecessary().cauterize()
+        if success {
+            // TODO: This should return a guarantee
+            finalizeRestorationIfNecessary().cauterize()
+        }
         return success
     }
 }
@@ -550,10 +552,12 @@ extension DeviceTransferService {
             // Consult both the modern and legacy restoration flag
             let currentPhase = (try? self.restorationPhase) ?? .noCurrentRestoration
             if currentPhase == .cleanup || LegacyRestorationFlags.pendingWasTransferredClear {
+                Logger.info("Performing one-time post-restore cleanup...")
                 self.tsAccountManager.wasTransferred = false
                 GRDBDatabaseStorageAdapter.removeOrphanedGRDBDirectories()
                 LegacyRestorationFlags.pendingWasTransferredClear = false
                 self.rawRestorationPhase = RestorationPhase.noCurrentRestoration.rawValue
+                Logger.info("Done!")
             }
 
             future.resolve()
