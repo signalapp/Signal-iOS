@@ -207,7 +207,7 @@ class PhotoCollectionContents {
         switch asset.mediaType {
         case .image:
             return requestImageDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .high)
+                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
             }
         case .video:
             return requestVideoDataSource(for: asset).map { (dataSource: DataSource, dataUTI: String) in

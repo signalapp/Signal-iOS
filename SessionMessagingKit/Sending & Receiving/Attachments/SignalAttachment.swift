@@ -75,7 +75,6 @@ public enum TSImageQualityTier: UInt {
 @objc
 public enum TSImageQuality: UInt {
     case original
-    case high
     case medium
     case compact
 
@@ -83,8 +82,6 @@ public enum TSImageQuality: UInt {
         switch self {
         case .original:
             return .original
-        case .high:
-            return .high
         case .medium:
             return .mediumHigh
         case .compact:
