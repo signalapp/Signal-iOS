@@ -264,7 +264,7 @@ public class MessageFetcherJob: NSObject {
     private let ackOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "MessageFetcherJob.ackOperationQueue"
-        operationQueue.maxConcurrentOperationCount = 3
+        operationQueue.maxConcurrentOperationCount = 5
         return operationQueue
     }()
 
@@ -366,24 +366,48 @@ public class MessageFetcherJob: NSObject {
             // If not NSE, fetch more immediately.
             return true
         }
-        // In NSE, if messageProcessor queue has enough content,
-        // wait before fetching more envelopes.
-        // We need to bound peak memory usage in the NSE when processing
-        // lots of incoming message.
-        if messageProcessor.hasSomeQueuedContent {
-            if DebugFlags.internalLogging {
-                let queuedContentCount = messageProcessor.queuedContentCount
-                if queuedContentCount != Self.lastQueuedContentCount.get() {
-                    Logger.info("hasSomeQueuedContent: \(queuedContentCount)")
-                    Self.lastQueuedContentCount.set(queuedContentCount)
-                }
+
+        // The NSE has tight memory constraints.
+        // For perf reasons, MessageProcessor keeps its queue in memory.
+        // It is not safe for the NSE to fetch more messages
+        // and cause this queue to grow in an unbounded way.
+        // Therefore, the NSE should wait to fetch more messages if
+        // the queue has "some/enough" content.
+        // However, the NSE needs to process messages with high
+        // throughput.
+        // Therfore we need to identify a constant N small enough to
+        // place an acceptable upper bound on memory usage of the processor
+        // (N + next fetched batch size, fetch size in practice is 100),
+        // large enough to avoid introducing latency (e.g. the next fetch
+        // will complete before the queue is empty).
+        // This is tricky since there are multiple variables (e.g. network
+        // perf affects fetch, CPU perf affects processing).
+        let maxQueuedEnvelopeCount: Int = 10
+        let queuedContentCount = messageProcessor.queuedContentCount
+        guard queuedContentCount < maxQueuedEnvelopeCount else {
+            if DebugFlags.internalLogging,
+               queuedContentCount != Self.lastQueuedContentCount.get() {
+                Logger.info("queuedContentCount: \(queuedContentCount)")
+                Self.lastQueuedContentCount.set(queuedContentCount)
             }
             return false
         }
+        let maxPendingAckCount: Int = 10
+        let pendingAcksCount = MessageAckOperation.pendingAcksCount
+        guard pendingAcksCount < maxPendingAckCount else {
+            if DebugFlags.internalLogging,
+               pendingAcksCount != Self.lastPendingAcksCount.get() {
+                Logger.info("pendingAcksCount: \(pendingAcksCount)")
+                Self.lastPendingAcksCount.set(pendingAcksCount)
+            }
+            return false
+        }
+
         return true
     }
 
     private static let lastQueuedContentCount = AtomicValue<Int>(0)
+    private static let lastPendingAcksCount = AtomicValue<Int>(0)
 
     // MARK: - Run Loop
 
@@ -568,6 +592,10 @@ private class MessageAckOperation: OWSOperation {
     static private var inFlightAcks = AtomicSet<String>()
     private var didRecordAckId = false
     private let inFlightAckId: String
+
+    public static var pendingAcksCount: Int {
+        inFlightAcks.count
+    }
 
     private static func inFlightAckId(forEnvelopeInfo envelopeInfo: EnvelopeInfo) -> String {
         // All messages *should* have a guid, but we'll handle things correctly if they don't
