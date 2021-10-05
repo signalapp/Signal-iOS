@@ -466,4 +466,13 @@ public class AtomicSet<T: Hashable> {
     public var count: Int {
         lock.perform { values.count }
     }
+
+    @discardableResult
+    public func removeAllValues() -> Set<T> {
+        lock.perform {
+            let result = values
+            values.removeAll()
+            return result
+        }
+    }
 }

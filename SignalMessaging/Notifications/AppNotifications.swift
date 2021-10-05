@@ -556,10 +556,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    // TODO: We could use another (non-concurrent) queue.
-    public static let serialQueue = DispatchQueue(label: "org.signal.notificationPresenter")
-    public static let notifyOnMainThread = true
-    private static var notificationQueue: DispatchQueue { notifyOnMainThread ? .main : serialQueue }
+    private static var notificationQueue: DispatchQueue { .main }
     private var notificationQueue: DispatchQueue { Self.notificationQueue }
 
     private static let pendingTasks = PendingTasks(label: "Notifications")
@@ -917,7 +914,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: -
 
-    var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
+    private let unfairLock = UnfairLock()
+    private var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
     private func requestSound(thread: TSThread) -> OWSSound? {
         guard checkIfShouldPlaySound() else {
@@ -931,9 +929,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
     }
 
+    // This method is thread-safe.
     private func checkIfShouldPlaySound() -> Bool {
-        AssertIsOnMainThread()
-
         guard CurrentAppContext().isMainAppAndActive else {
             return true
         }
@@ -945,14 +942,16 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let now = NSDate.ows_millisecondTimeStamp()
         let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
 
-        let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
+        return unfairLock.withLock {
+            let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
-        guard recentNotifications.count < kAudioNotificationsThrottleCount else {
-            return false
+            guard recentNotifications.count < kAudioNotificationsThrottleCount else {
+                return false
+            }
+
+            mostRecentNotifications.append(now)
+            return true
         }
-
-        mostRecentNotifications.append(now)
-        return true
     }
 }
 

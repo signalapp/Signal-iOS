@@ -129,9 +129,7 @@ public extension TSMessage {
         reaction.anyRemove(transaction: transaction)
         databaseStorage.touch(interaction: self, shouldReindex: false, transaction: transaction)
 
-        DispatchQueue.main.async {
-            Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
-        }
+        Self.notificationsManager?.cancelNotifications(reactionId: reaction.uniqueId)
     }
 
     // MARK: - Remote Delete
@@ -195,8 +193,6 @@ public extension TSMessage {
     private func markMessageAsRemotelyDeleted(transaction: SDSAnyWriteTransaction) {
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
-        DispatchQueue.main.async {
-            Self.notificationsManager?.cancelNotifications(messageId: self.uniqueId)
-        }
+        Self.notificationsManager?.cancelNotifications(messageId: self.uniqueId)
     }
 }
