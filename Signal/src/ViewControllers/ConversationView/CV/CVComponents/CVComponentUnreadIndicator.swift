@@ -50,22 +50,27 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
             return
         }
 
+        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
+        let hasWallpaper = conversationStyle.hasWallpaper
+        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
+
+        let isReusing = (componentView.rootView.superview != nil &&
+                            !themeHasChanged &&
+                            !wallpaperModeHasChanged)
+
+        if !isReusing {
+            componentView.reset(resetReusableState: true)
+        }
+
+        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+        componentView.hasWallpaper = hasWallpaper
+
         let outerStack = componentView.outerStack
         let innerStack = componentView.innerStack
         let strokeView = componentView.strokeView
         let titleLabel = componentView.titleLabel
         titleLabelConfig.applyForRendering(label: titleLabel)
 
-        let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
-        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
-
-        let hasWallpaper = conversationStyle.hasWallpaper
-        let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
-        componentView.hasWallpaper = hasWallpaper
-
-        let isReusing = (componentView.rootView.superview != nil &&
-                            !themeHasChanged &&
-                            !wallpaperModeHasChanged)
         if isReusing {
             innerStack.configureForReuse(config: innerStackConfig,
                                          cellMeasurement: cellMeasurement,
@@ -200,11 +205,15 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
+            reset(resetReusableState: false)
+        }
+
+        public func reset(resetReusableState: Bool) {
             owsAssertDebug(isDedicatedCellView)
 
             titleLabel.text = nil
 
-            if !isDedicatedCellView {
+            if resetReusableState {
                 outerStack.reset()
                 innerStack.reset()
 
@@ -215,6 +224,5 @@ public class CVComponentUnreadIndicator: CVComponentBase, CVRootComponent {
                 isDarkThemeEnabled = false
             }
         }
-
     }
 }

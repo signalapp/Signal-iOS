@@ -75,15 +75,22 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             return
         }
 
-        let outerStack = componentView.outerStack
-        let doubleContentWrapper = componentView.doubleContentWrapper
-
         let themeHasChanged = isDarkThemeEnabled != componentView.isDarkThemeEnabled
-        componentView.isDarkThemeEnabled = isDarkThemeEnabled
-
         let hasWallpaper = conversationStyle.hasWallpaper
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
+
+        let isReusing = (componentView.rootView.superview != nil &&
+                            !themeHasChanged &&
+                            !wallpaperModeHasChanged)
+        if !isReusing {
+            componentView.reset(resetReusableState: true)
+        }
+
+        componentView.isDarkThemeEnabled = isDarkThemeEnabled
         componentView.hasWallpaper = hasWallpaper
+
+        let outerStack = componentView.outerStack
+        let doubleContentWrapper = componentView.doubleContentWrapper
 
         let blurBackgroundColor: UIColor = {
             if componentDelegate.isConversationPreview {
@@ -93,9 +100,6 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             }
         }()
 
-        let isReusing = (componentView.rootView.superview != nil &&
-                            !themeHasChanged &&
-                            !wallpaperModeHasChanged)
         if isReusing {
             outerStack.configureForReuse(config: outerStackConfig,
                                           cellMeasurement: cellMeasurement,
@@ -269,12 +273,16 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
+            reset(resetReusableState: false)
+        }
+
+        public func reset(resetReusableState: Bool) {
             owsAssertDebug(isDedicatedCellView)
 
-            contentViewDefault?.reset(isDedicatedCellView: isDedicatedCellView)
-            contentViewForBlur?.reset(isDedicatedCellView: isDedicatedCellView)
+            contentViewDefault?.reset(resetReusableState: resetReusableState)
+            contentViewForBlur?.reset(resetReusableState: resetReusableState)
 
-            if !isDedicatedCellView {
+            if resetReusableState {
                 outerStack.reset()
                 doubleContentWrapper.reset()
 
@@ -318,7 +326,7 @@ private class ContentViewForBlur {
                    isReusing: Bool) {
 
         if !isReusing {
-            reset(isDedicatedCellView: false)
+            reset(resetReusableState: true)
         }
 
         titleLabelConfig.applyForRendering(label: titleLabel)
@@ -337,8 +345,9 @@ private class ContentViewForBlur {
         }
     }
 
-    func reset(isDedicatedCellView: Bool) {
-        if !isDedicatedCellView {
+    public func reset(resetReusableState: Bool) {
+
+        if resetReusableState {
             titleLabel.removeFromSuperview()
         }
 
@@ -374,7 +383,7 @@ private class ContentViewDefault {
                    isReusing: Bool) {
 
         if !isReusing {
-            reset(isDedicatedCellView: false)
+            reset(resetReusableState: true)
         }
 
         titleLabelConfig.applyForRendering(label: titleLabel)
@@ -398,8 +407,9 @@ private class ContentViewDefault {
         }
     }
 
-    func reset(isDedicatedCellView: Bool) {
-        if !isDedicatedCellView {
+    public func reset(resetReusableState: Bool) {
+
+        if resetReusableState {
             innerStack.reset()
 
             titleLabel.removeFromSuperview()

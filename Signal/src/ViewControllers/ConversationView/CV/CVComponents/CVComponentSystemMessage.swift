@@ -95,28 +95,14 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         }
 
         let themeHasChanged = conversationStyle.isDarkThemeEnabled != componentView.isDarkThemeEnabled
-        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
-
         let hasWallpaper = conversationStyle.hasWallpaper
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
-        componentView.hasWallpaper = hasWallpaper
-
         let isFirstInCluster = itemModel.itemViewState.isFirstInCluster
         let isLastInCluster = itemModel.itemViewState.isLastInCluster
         let hasClusteringChanges = (componentView.isFirstInCluster != isFirstInCluster ||
                                         componentView.isLastInCluster != isLastInCluster)
-        componentView.isFirstInCluster = isFirstInCluster
-        componentView.isLastInCluster = isLastInCluster
-
-        let outerHStack = componentView.outerHStack
-        let innerVStack = componentView.innerVStack
-        let outerVStack = componentView.outerVStack
-        let selectionView = componentView.selectionView
-        let titleLabel = componentView.titleLabel
-
-        titleLabelConfig.applyForRendering(label: titleLabel)
-        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
-
+        let hasSelectionChanges = (componentView.isShowingSelectionUI != isShowingSelectionUI ||
+                                    componentView.wasShowingSelectionUI != wasShowingSelectionUI)
         var hasActionButton = false
         if nil != action,
            !itemViewState.shouldCollapseSystemMessageAction,
@@ -128,10 +114,32 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                             !themeHasChanged &&
                             !wallpaperModeHasChanged &&
                             !hasClusteringChanges &&
-                            componentView.isShowingSelectionUI == isShowingSelectionUI &&
-                            !componentView.hasActionButton &&
-                            !hasActionButton)
+                            !hasSelectionChanges &&
+                            !hasActionButton &&
+                            !componentView.hasActionButton)
+        if !isReusing {
+            componentView.reset(resetReusableState: true)
+        }
+
+        componentView.isDarkThemeEnabled = conversationStyle.isDarkThemeEnabled
+        componentView.hasWallpaper = hasWallpaper
+        componentView.isFirstInCluster = isFirstInCluster
+        componentView.isLastInCluster = isLastInCluster
+        componentView.isShowingSelectionUI = isShowingSelectionUI
+        componentView.wasShowingSelectionUI = wasShowingSelectionUI
+        componentView.hasActionButton = hasActionButton
+
+        let outerHStack = componentView.outerHStack
+        let innerVStack = componentView.innerVStack
+        let outerVStack = componentView.outerVStack
+        let selectionView = componentView.selectionView
+        let titleLabel = componentView.titleLabel
+
+        titleLabelConfig.applyForRendering(label: titleLabel)
+        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
+
         if isReusing {
+
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_innerVStack)
@@ -141,6 +149,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             outerHStack.configureForReuse(config: outerHStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_outerHStack)
+
+            if hasWallpaper,
+               let wallpaperBlurView = componentView.wallpaperBlurView {
+                wallpaperBlurView.applyLayout()
+                wallpaperBlurView.updateIfNecessary()
+            }
         } else {
             var innerVStackViews: [UIView] = [
                 titleLabel
@@ -186,10 +200,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 button.isUserInteractionEnabled = false
                 innerVStackViews.append(button)
             }
-
-            outerHStack.reset()
-            innerVStack.reset()
-            outerVStack.reset()
 
             innerVStack.configure(config: innerVStackConfig,
                                   cellMeasurement: cellMeasurement,
@@ -247,8 +257,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 }
             }
         }
-        componentView.isShowingSelectionUI = isShowingSelectionUI
-        componentView.hasActionButton = hasActionButton
 
         // Configure hOuterStack/hInnerStack animations animations
         if isShowingSelectionUI || wasShowingSelectionUI {
@@ -308,7 +316,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         }
 
         outerHStack.applyTransformBlocks()
-
     }
 
     private var titleLabelConfig: CVLabelConfig {
@@ -491,6 +498,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         public var isDedicatedCellView = false
 
         public var isShowingSelectionUI = false
+        public var wasShowingSelectionUI = false
         public var hasActionButton = false
 
         public var rootView: UIView {
@@ -508,9 +516,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         public func setIsCellVisible(_ isCellVisible: Bool) {}
 
         public func reset() {
+            reset(resetReusableState: false)
+        }
+
+        public func reset(resetReusableState: Bool) {
             owsAssertDebug(isDedicatedCellView)
 
-            if !isDedicatedCellView {
+            if resetReusableState {
                 outerHStack.reset()
                 innerVStack.reset()
                 outerVStack.reset()
@@ -526,6 +538,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 isFirstInCluster = false
                 isLastInCluster = false
                 isShowingSelectionUI = false
+                wasShowingSelectionUI = false
                 hasActionButton = false
             }
 
@@ -534,7 +547,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             button?.removeFromSuperview()
             button = nil
         }
-
     }
 }
 

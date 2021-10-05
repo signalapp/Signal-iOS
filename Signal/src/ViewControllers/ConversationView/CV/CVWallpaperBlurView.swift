@@ -35,7 +35,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         }
     }
 
-    private func applyLayout() {
+    public func applyLayout() {
         imageView.frame = imageViewFrame
         maskLayer.frame = imageView.bounds
         let maskPath = UIBezierPath(roundedRect: maskFrame, cornerRadius: maskCornerRadius)
