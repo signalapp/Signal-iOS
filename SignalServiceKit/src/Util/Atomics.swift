@@ -39,6 +39,10 @@ public class AtomicBool: NSObject {
         self.value.set(value)
     }
 
+    public func swap(_ value: Bool) -> Bool {
+        self.value.swap(value)
+    }
+
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
     private func transition(from fromValue: Bool, to toValue: Bool) throws {
