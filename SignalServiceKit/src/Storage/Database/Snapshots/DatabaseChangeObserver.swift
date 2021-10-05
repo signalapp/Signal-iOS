@@ -228,28 +228,23 @@ public class DatabaseChangeObserver: NSObject {
         ensureDisplayLink()
     }
 
-    private var _didUpdateExternallyEvent: DebouncedEvent?
-    private func didUpdateExternallyEvent() -> DebouncedEvent {
+    private lazy var didUpdateExternallyEvent: DebouncedEvent = {
         AssertIsOnMainThread()
-        if let event = _didUpdateExternallyEvent {
-            return event
-        }
-        let event = DebouncedEvents.build(mode: .firstLast,
-                                          maxFrequencySeconds: 3.0,
-                                          onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
+
+        return DebouncedEvents.build(mode: .firstLast,
+                                     maxFrequencySeconds: 3.0,
+                                     onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
             guard let self = self else { return }
             self.fireDidUpdateExternally()
         }
-        _didUpdateExternallyEvent = event
-        return event
-    }
+    }()
 
     @objc
     func didReceiveCrossProcessNotification(_ notification: Notification) {
         AssertIsOnMainThread()
         Logger.verbose("")
 
-        didUpdateExternallyEvent().requestNotify()
+        didUpdateExternallyEvent.requestNotify()
     }
 
     private func fireDidUpdateExternally() {
