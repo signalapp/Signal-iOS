@@ -286,9 +286,13 @@ public class SDSDatabaseStorage: SDSTransactable {
             return
         }
 
+        // Post these notifications always, sync.
+        NotificationCenter.default.post(name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync, object: nil, userInfo: nil)
+
+        // Post these notifications async and defer if inactive.
         if CurrentAppContext().isMainAppAndActive {
             // If already active, update immediately.
-            postCrossProcessNotification()
+            postCrossProcessNotificationActiveAsync()
         } else {
             // If not active, set flag to update when we become active.
             hasPendingCrossProcessWrite = true
@@ -303,13 +307,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
         hasPendingCrossProcessWrite = false
 
-        postCrossProcessNotification()
+        postCrossProcessNotificationActiveAsync()
     }
 
     @objc
-    public static let didReceiveCrossProcessNotification = Notification.Name("didReceiveCrossProcessNotification")
+    public static let didReceiveCrossProcessNotificationActiveAsync = Notification.Name("didReceiveCrossProcessNotificationActiveAsync")
+    @objc
+    public static let didReceiveCrossProcessNotificationAlwaysSync = Notification.Name("didReceiveCrossProcessNotificationAlwaysSync")
 
-    private func postCrossProcessNotification() {
+    private func postCrossProcessNotificationActiveAsync() {
         Logger.info("")
 
         // TODO: The observers of this notification will inevitably do
@@ -322,7 +328,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         //       de-bouncing notifications while inactive and only updating
         //       once when we become active, we should be able to effectively
         //       skip most of the perf cost.
-        NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync, object: nil)
     }
 
     // MARK: - SDSTransactable
