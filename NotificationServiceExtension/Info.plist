@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.22.0</string>
 	<key>CFBundleVersion</key>
-	<string>17</string>
+	<string>18</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -55,7 +55,7 @@
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
 	<key>OWSBundleVersion4</key>
-	<string>5.22.0.17</string>
+	<string>5.22.0.18</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Medium.otf</string>
