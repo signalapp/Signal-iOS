@@ -134,9 +134,8 @@ public class DatabaseChangeObserver: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveCrossProcessNotification),
-                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
+                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync,
                                                object: nil)
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.applicationStateDidChange),
                                                name: .OWSApplicationDidEnterBackground,
@@ -238,7 +237,7 @@ public class DatabaseChangeObserver: NSObject {
             return event
         }
         let event = DebouncedEvents.build(mode: .firstLast,
-                                          maxFrequencySeconds: 1.0,
+                                          maxFrequencySeconds: 3.0,
                                           onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
             guard let self = self else { return }
             self.fireDidUpdateExternally()

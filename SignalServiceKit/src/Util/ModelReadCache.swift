@@ -145,7 +145,7 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
         case .read:
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(didReceiveCrossProcessNotification),
-                                                   name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
+                                                   name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
                                                    object: nil)
         }
     }
