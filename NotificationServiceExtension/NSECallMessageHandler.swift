@@ -33,7 +33,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         // Only offer messages and urgent opaque messages will trigger a ring.
         if callMessage.offer != nil {
             return .handoff
-        } else if let opaqueMessage = callMessage.opaque, opaqueMessage.urgency == .handleImmediately {
+        } else if let opaqueMessage = callMessage.opaque, opaqueMessage.urgency == .handleImmediately, FeatureFlags.groupRings {
             return .handoff
         } else {
             Logger.info("Ignoring call message. Not an offer or urgent opaque message.")
