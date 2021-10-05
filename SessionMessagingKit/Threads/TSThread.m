@@ -357,7 +357,9 @@ BOOL IsNoteToSelfEnabled(void)
         return;
     }
     
-    _lastInteractionDate = lastMessage.receivedAtDate;
+    if ([_lastInteractionDate compare: lastMessage.receivedAtDate] == NSOrderedAscending) {
+        _lastInteractionDate = lastMessage.receivedAtDate;
+    }
 
     if (!self.shouldBeVisible) {
         self.shouldBeVisible = YES;
