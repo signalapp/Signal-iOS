@@ -217,25 +217,6 @@ public class MessageProcessor: NSObject {
         drainPendingEnvelopes()
     }
 
-    // The NSE has tight memory constraints.
-    // For perf reasons, MessageProcessor keeps its queue in memory.
-    // It is not safe for the NSE to fetch more messages
-    // and cause this queue to grow in an unbounded way.
-    // Therefore, the NSE should wait to fetch more messages if
-    // the queue has "some/enough" content.
-    // However, the NSE needs to process messages with high
-    // throughput.
-    // Therfore we need to identify a constant N small enough to
-    // place an acceptable upper bound on memory usage of the processor
-    // (N + next fetched batch size, fetch size in practice is 100),
-    // large enough to avoid introducing latency (e.g. the next fetch
-    // will complete before the queue is empty).
-    // This is tricky since there are multiple variables (e.g. network
-    // perf affects fetch, CPU perf affects processing).
-    public var hasSomeQueuedContent: Bool {
-        queuedContentCount >= 10
-    }
-
     public var queuedContentCount: Int {
         pendingEnvelopes.count
     }
