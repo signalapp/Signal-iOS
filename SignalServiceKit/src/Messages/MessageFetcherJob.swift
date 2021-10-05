@@ -382,23 +382,15 @@ public class MessageFetcherJob: NSObject {
         // will complete before the queue is empty).
         // This is tricky since there are multiple variables (e.g. network
         // perf affects fetch, CPU perf affects processing).
-        let maxQueuedEnvelopeCount: Int = 10
         let queuedContentCount = messageProcessor.queuedContentCount
-        guard queuedContentCount < maxQueuedEnvelopeCount else {
-            if DebugFlags.internalLogging,
-               queuedContentCount != Self.lastQueuedContentCount.get() {
-                Logger.info("queuedContentCount: \(queuedContentCount)")
-                Self.lastQueuedContentCount.set(queuedContentCount)
-            }
-            return false
-        }
-        let maxPendingAckCount: Int = 10
         let pendingAcksCount = MessageAckOperation.pendingAcksCount
-        guard pendingAcksCount < maxPendingAckCount else {
+        let incompleteEnvelopeCount = queuedContentCount + pendingAcksCount
+        let maxIncompleteEnvelopeCount: Int = 20
+        guard incompleteEnvelopeCount < maxIncompleteEnvelopeCount else {
             if DebugFlags.internalLogging,
-               pendingAcksCount != Self.lastPendingAcksCount.get() {
-                Logger.info("pendingAcksCount: \(pendingAcksCount)")
-                Self.lastPendingAcksCount.set(pendingAcksCount)
+               incompleteEnvelopeCount != Self.lastIncompleteEnvelopeCount.get() {
+                Logger.info("queuedContentCount: \(queuedContentCount) + pendingAcksCount: \(pendingAcksCount) = \(incompleteEnvelopeCount)")
+                Self.lastIncompleteEnvelopeCount.set(incompleteEnvelopeCount)
             }
             return false
         }
@@ -406,8 +398,7 @@ public class MessageFetcherJob: NSObject {
         return true
     }
 
-    private static let lastQueuedContentCount = AtomicValue<Int>(0)
-    private static let lastPendingAcksCount = AtomicValue<Int>(0)
+    private static let lastIncompleteEnvelopeCount = AtomicValue<Int>(0)
 
     // MARK: - Run Loop
 
