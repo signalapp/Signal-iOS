@@ -57,8 +57,11 @@ final class ShareLogsModal : Modal {
     
     // MARK: Interaction
     @objc private func shareLogs() {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        OWSLogger.info("[Version] iOS \(UIDevice.current.systemVersion) \(version)")
+        DDLog.flushLog()
         let logFilePaths = AppEnvironment.shared.fileLogger.logFileManager.sortedLogFilePaths
-        if let latestLogFilePath = logFilePaths.last {
+        if let latestLogFilePath = logFilePaths.first {
             let latestLogFileURL = URL(fileURLWithPath: latestLogFilePath)
             self.dismiss(animated: true, completion: {
                 AttachmentSharing.showShareUI(for: latestLogFileURL)
