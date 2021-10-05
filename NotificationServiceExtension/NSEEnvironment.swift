@@ -12,26 +12,32 @@ class NSEEnvironment: Dependencies {
     // MARK: - Main App Comms
 
     func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {
-        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             // We track whether we've ever handled the call back to ensure
             // we only notify the caller once and avoid any races that may
             // occur between the notification observer and the dispatch
             // after block.
-            var hasCalledBack = false
+            let hasCalledBack = AtomicBool(false)
+
+            if DebugFlags.internalLogging {
+                Logger.info("Requesting main app to handle incoming message.")
+            }
 
             // Listen for an indication that the main app is going to handle
             // this notification. If the main app is active we don't want to
             // process any messages here.
-            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: .main) { token in
-                guard !hasCalledBack else { return }
-
-                hasCalledBack = true
-
-                handledCallback(true)
+            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: .global()) { token in
+                guard hasCalledBack.tryToSetFlag() else { return }
 
                 if DarwinNotificationCenter.isValidObserver(token) {
                     DarwinNotificationCenter.removeObserver(token)
                 }
+
+                if DebugFlags.internalLogging {
+                    Logger.info("Main app ack'd.")
+                }
+
+                handledCallback(true)
             }
 
             // Notify the main app that we received new content to process.
@@ -41,14 +47,16 @@ class NSEEnvironment: Dependencies {
             // The main app should notify us nearly instantaneously if it's
             // going to process this notification so we only wait a fraction
             // of a second to hear back from it.
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.001) {
+            DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + 0.001) {
+                guard hasCalledBack.tryToSetFlag() else { return }
+
                 if DarwinNotificationCenter.isValidObserver(token) {
                     DarwinNotificationCenter.removeObserver(token)
                 }
 
-                guard !hasCalledBack else { return }
-
-                hasCalledBack = true
+                if DebugFlags.internalLogging {
+                    Logger.info("Did timeout.")
+                }
 
                 // If we haven't called back yet and removed the observer token,
                 // the main app is not running and will not handle receipt of this
