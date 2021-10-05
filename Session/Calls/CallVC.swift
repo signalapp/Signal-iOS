@@ -189,7 +189,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             Storage.write { transaction in
                 self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
                     self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
-                }
+                }.retainUntilComplete()
             }
             answerButton.isHidden = true
         }
@@ -274,7 +274,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     // MARK: Delegate
-    func webRTCDidConnected() {
+    func webRTCIsConnected() {
         DispatchQueue.main.async {
             self.callInfoLabel.text = "Connected"
             UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
@@ -284,6 +284,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
                 self.callInfoLabel.alpha = 1
             })
         }
+    }
+    
+    func isRemoteVideoDidChange(isEnabled: Bool) {
+        remoteVideoView.isHidden = !isEnabled
     }
     
     // MARK: Interaction

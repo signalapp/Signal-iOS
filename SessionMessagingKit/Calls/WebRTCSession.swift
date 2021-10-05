@@ -4,7 +4,8 @@ import WebRTC
 public protocol WebRTCSessionDelegate : AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
     
-    func webRTCDidConnected()
+    func webRTCIsConnected()
+    func isRemoteVideoDidChange(isEnabled: Bool)
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
@@ -244,7 +245,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
         print("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
-            delegate?.webRTCDidConnected()
+            delegate?.webRTCIsConnected()
         }
     }
     
@@ -290,9 +291,11 @@ extension WebRTCSession {
     
     public func turnOffVideo() {
         localVideoTrack.isEnabled = false
+        sendJSON(["video": false])
     }
     
-    public func turnOnVideo() {
+    public func turnOnVideo() { 
         localVideoTrack.isEnabled = true
+        sendJSON(["video": true])
     }
 }
