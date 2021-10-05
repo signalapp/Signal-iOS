@@ -3,6 +3,7 @@ import WebRTC
 /// See https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription for more information.
 @objc(SNCallMessage)
 public final class CallMessage : ControlMessage {
+    public var uuid: String?
     public var kind: Kind?
     /// See https://developer.mozilla.org/en-US/docs/Glossary/SDP for more information.
     public var sdps: [String]?
@@ -13,6 +14,7 @@ public final class CallMessage : ControlMessage {
     
     // MARK: Kind
     public enum Kind : Codable, CustomStringConvertible {
+        case preOffer
         case offer
         case answer
         case provisionalAnswer
@@ -21,6 +23,7 @@ public final class CallMessage : ControlMessage {
         
         public var description: String {
             switch self {
+            case .preOffer: return "preOffer"
             case .offer: return "offer"
             case .answer: return "answer"
             case .provisionalAnswer: return "provisionalAnswer"
@@ -33,8 +36,9 @@ public final class CallMessage : ControlMessage {
     // MARK: Initialization
     public override init() { super.init() }
     
-    internal init(kind: Kind, sdps: [String]) {
+    internal init(uuid: String, kind: Kind, sdps: [String]) {
         super.init()
+        self.uuid = uuid
         self.kind = kind
         self.sdps = sdps
     }
@@ -42,7 +46,7 @@ public final class CallMessage : ControlMessage {
     // MARK: Validation
     public override var isValid: Bool {
         guard super.isValid else { return false }
-        return kind != nil
+        return kind != nil && uuid != nil
     }
     
     // MARK: Coding
@@ -50,6 +54,7 @@ public final class CallMessage : ControlMessage {
         super.init(coder: coder)
         guard let rawKind = coder.decodeObject(forKey: "kind") as! String? else { return nil }
         switch rawKind {
+        case "preOffer": kind = .preOffer
         case "offer": kind = .offer
         case "answer": kind = .answer
         case "provisionalAnswer": kind = .provisionalAnswer
@@ -61,11 +66,13 @@ public final class CallMessage : ControlMessage {
         default: preconditionFailure()
         }
         if let sdps = coder.decodeObject(forKey: "sdps") as! [String]? { self.sdps = sdps }
+        if let uuid = coder.decodeObject(forKey: "uuid") as! String? { self.uuid = uuid }
     }
 
     public override func encode(with coder: NSCoder) {
         super.encode(with: coder)
         switch kind {
+        case .preOffer: coder.encode("preOffer", forKey: "kind")
         case .offer: coder.encode("offer", forKey: "kind")
         case .answer: coder.encode("answer", forKey: "kind")
         case .provisionalAnswer: coder.encode("provisionalAnswer", forKey: "kind")
@@ -77,6 +84,7 @@ public final class CallMessage : ControlMessage {
         default: preconditionFailure()
         }
         coder.encode(sdps, forKey: "sdps")
+        coder.encode(uuid, forKey: "uuid")
     }
     
     // MARK: Proto Conversion
@@ -84,6 +92,7 @@ public final class CallMessage : ControlMessage {
         guard let callMessageProto = proto.callMessage else { return nil }
         let kind: Kind
         switch callMessageProto.type {
+        case .preOffer: kind = .preOffer
         case .offer: kind = .offer
         case .answer: kind = .answer
         case .provisionalAnswer: kind = .provisionalAnswer
@@ -94,23 +103,25 @@ public final class CallMessage : ControlMessage {
         case .endCall: kind = .endCall
         }
         let sdps = callMessageProto.sdps
-        return CallMessage(kind: kind, sdps: sdps)
+        let uuid = callMessageProto.uuid
+        return CallMessage(uuid: uuid, kind: kind, sdps: sdps)
     }
 
     public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
-        guard let kind = kind else {
+        guard let kind = kind, let uuid = uuid else {
             SNLog("Couldn't construct call message proto from: \(self).")
             return nil
         }
         let type: SNProtoCallMessage.SNProtoCallMessageType
         switch kind {
+        case .preOffer: type = .preOffer
         case .offer: type = .offer
         case .answer: type = .answer
         case .provisionalAnswer: type = .provisionalAnswer
         case .iceCandidates(_, _): type = .iceCandidates
         case .endCall: type = .endCall
         }
-        let callMessageProto = SNProtoCallMessage.builder(type: type)
+        let callMessageProto = SNProtoCallMessage.builder(type: type, uuid: uuid)
         if let sdps = sdps, !sdps.isEmpty {
             callMessageProto.setSdps(sdps)
         }
@@ -132,6 +143,7 @@ public final class CallMessage : ControlMessage {
     public override var description: String {
         """
         CallMessage(
+            uuid: \(uuid ?? "null"),
             kind: \(kind?.description ?? "null"),
             sdps: \(sdps?.description ?? "null")
         )

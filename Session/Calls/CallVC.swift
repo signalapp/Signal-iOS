@@ -165,7 +165,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     init(for sessionID: String, mode: Mode) {
         self.sessionID = sessionID
         self.mode = mode
-        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID)
+        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: UUID().uuidString)
         super.init(nibName: nil, bundle: nil)
         self.webRTCSession.delegate = self
     }
@@ -187,7 +187,9 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         if case .offer = mode {
             callInfoLabel.text = "Ringing..."
             Storage.write { transaction in
-                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
+                self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
+                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
+                }
             }
             answerButton.isHidden = true
         }

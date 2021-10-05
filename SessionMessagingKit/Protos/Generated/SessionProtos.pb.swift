@@ -311,7 +311,7 @@ struct SessionProtos_CallMessage {
 
   /// @required
   var type: SessionProtos_CallMessage.TypeEnum {
-    get {return _type ?? .offer}
+    get {return _type ?? .preOffer}
     set {_type = newValue}
   }
   /// Returns true if `type` has been explicitly set.
@@ -325,10 +325,21 @@ struct SessionProtos_CallMessage {
 
   var sdpMids: [String] = []
 
+  /// @required
+  var uuid: String {
+    get {return _uuid ?? String()}
+    set {_uuid = newValue}
+  }
+  /// Returns true if `uuid` has been explicitly set.
+  var hasUuid: Bool {return self._uuid != nil}
+  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+  mutating func clearUuid() {self._uuid = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
     typealias RawValue = Int
+    case preOffer // = 6
     case offer // = 1
     case answer // = 2
     case provisionalAnswer // = 3
@@ -336,7 +347,7 @@ struct SessionProtos_CallMessage {
     case endCall // = 5
 
     init() {
-      self = .offer
+      self = .preOffer
     }
 
     init?(rawValue: Int) {
@@ -346,6 +357,7 @@ struct SessionProtos_CallMessage {
       case 3: self = .provisionalAnswer
       case 4: self = .iceCandidates
       case 5: self = .endCall
+      case 6: self = .preOffer
       default: return nil
       }
     }
@@ -357,6 +369,7 @@ struct SessionProtos_CallMessage {
       case .provisionalAnswer: return 3
       case .iceCandidates: return 4
       case .endCall: return 5
+      case .preOffer: return 6
       }
     }
 
@@ -365,6 +378,7 @@ struct SessionProtos_CallMessage {
   init() {}
 
   fileprivate var _type: SessionProtos_CallMessage.TypeEnum? = nil
+  fileprivate var _uuid: String? = nil
 }
 
 #if swift(>=4.2)
@@ -1798,10 +1812,12 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     2: .same(proto: "sdps"),
     3: .same(proto: "sdpMLineIndexes"),
     4: .same(proto: "sdpMids"),
+    5: .same(proto: "uuid"),
   ]
 
   public var isInitialized: Bool {
     if self._type == nil {return false}
+    if self._uuid == nil {return false}
     return true
   }
 
@@ -1815,6 +1831,7 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 2: try { try decoder.decodeRepeatedStringField(value: &self.sdps) }()
       case 3: try { try decoder.decodeRepeatedUInt32Field(value: &self.sdpMlineIndexes) }()
       case 4: try { try decoder.decodeRepeatedStringField(value: &self.sdpMids) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._uuid) }()
       default: break
       }
     }
@@ -1833,6 +1850,9 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.sdpMids.isEmpty {
       try visitor.visitRepeatedStringField(value: self.sdpMids, fieldNumber: 4)
     }
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1841,6 +1861,7 @@ extension SessionProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if lhs.sdps != rhs.sdps {return false}
     if lhs.sdpMlineIndexes != rhs.sdpMlineIndexes {return false}
     if lhs.sdpMids != rhs.sdpMids {return false}
+    if lhs._uuid != rhs._uuid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1853,6 +1874,7 @@ extension SessionProtos_CallMessage.TypeEnum: SwiftProtobuf._ProtoNameProviding 
     3: .same(proto: "PROVISIONAL_ANSWER"),
     4: .same(proto: "ICE_CANDIDATES"),
     5: .same(proto: "END_CALL"),
+    6: .same(proto: "PRE_OFFER"),
   ]
 }
 

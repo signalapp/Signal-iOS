@@ -658,6 +658,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case provisionalAnswer = 3
         case iceCandidates = 4
         case endCall = 5
+        case preOffer = 6
     }
 
     private class func SNProtoCallMessageTypeWrap(_ value: SessionProtos_CallMessage.TypeEnum) -> SNProtoCallMessageType {
@@ -667,6 +668,7 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .provisionalAnswer: return .provisionalAnswer
         case .iceCandidates: return .iceCandidates
         case .endCall: return .endCall
+        case .preOffer: return .preOffer
         }
     }
 
@@ -677,18 +679,19 @@ extension SNProtoContent.SNProtoContentBuilder {
         case .provisionalAnswer: return .provisionalAnswer
         case .iceCandidates: return .iceCandidates
         case .endCall: return .endCall
+        case .preOffer: return .preOffer
         }
     }
 
     // MARK: - SNProtoCallMessageBuilder
 
-    @objc public class func builder(type: SNProtoCallMessageType) -> SNProtoCallMessageBuilder {
-        return SNProtoCallMessageBuilder(type: type)
+    @objc public class func builder(type: SNProtoCallMessageType, uuid: String) -> SNProtoCallMessageBuilder {
+        return SNProtoCallMessageBuilder(type: type, uuid: uuid)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoCallMessageBuilder {
-        let builder = SNProtoCallMessageBuilder(type: type)
+        let builder = SNProtoCallMessageBuilder(type: type, uuid: uuid)
         builder.setSdps(sdps)
         builder.setSdpMlineIndexes(sdpMlineIndexes)
         builder.setSdpMids(sdpMids)
@@ -701,10 +704,11 @@ extension SNProtoContent.SNProtoContentBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(type: SNProtoCallMessageType) {
+        @objc fileprivate init(type: SNProtoCallMessageType, uuid: String) {
             super.init()
 
             setType(type)
+            setUuid(uuid)
         }
 
         @objc public func setType(_ valueParam: SNProtoCallMessageType) {
@@ -741,6 +745,10 @@ extension SNProtoContent.SNProtoContentBuilder {
             proto.sdpMids = wrappedItems
         }
 
+        @objc public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
         @objc public func build() throws -> SNProtoCallMessage {
             return try SNProtoCallMessage.parseProto(proto)
         }
@@ -753,6 +761,8 @@ extension SNProtoContent.SNProtoContentBuilder {
     fileprivate let proto: SessionProtos_CallMessage
 
     @objc public let type: SNProtoCallMessageType
+
+    @objc public let uuid: String
 
     @objc public var sdps: [String] {
         return proto.sdps
@@ -767,9 +777,11 @@ extension SNProtoContent.SNProtoContentBuilder {
     }
 
     private init(proto: SessionProtos_CallMessage,
-                 type: SNProtoCallMessageType) {
+                 type: SNProtoCallMessageType,
+                 uuid: String) {
         self.proto = proto
         self.type = type
+        self.uuid = uuid
     }
 
     @objc
@@ -788,12 +800,18 @@ extension SNProtoContent.SNProtoContentBuilder {
         }
         let type = SNProtoCallMessageTypeWrap(proto.type)
 
+        guard proto.hasUuid else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: uuid")
+        }
+        let uuid = proto.uuid
+
         // MARK: - Begin Validation Logic for SNProtoCallMessage -
 
         // MARK: - End Validation Logic for SNProtoCallMessage -
 
         let result = SNProtoCallMessage(proto: proto,
-                                        type: type)
+                                        type: type,
+                                        uuid: uuid)
         return result
     }
 

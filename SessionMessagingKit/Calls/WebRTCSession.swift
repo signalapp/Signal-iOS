@@ -11,6 +11,7 @@ public protocol WebRTCSessionDelegate : AnyObject {
 public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: WebRTCSessionDelegate?
     private let contactSessionID: String
+    private let uuid: String
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
     
@@ -88,8 +89,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     // MARK: Initialization
     public static var current: WebRTCSession?
     
-    public init(for contactSessionID: String) {
+    public init(for contactSessionID: String, with uuid: String) {
         self.contactSessionID = contactSessionID
+        self.uuid = uuid
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
         createDataChannel()
@@ -100,6 +102,24 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Signaling
+    public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+        print("[Calls] Sending pre-offer message.")
+        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
+        let (promise, seal) = Promise<Void>.pending()
+        DispatchQueue.main.async {
+            let message = CallMessage()
+            message.uuid = self.uuid
+            message.kind = .preOffer
+            MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
+                print("[Calls] Pre-offer message has been sent.")
+                seal.fulfill(())
+            }.catch2 { error in
+                seal.reject(error)
+            }
+        }
+        return promise
+    }
+    
     public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
@@ -117,6 +137,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                 }
                 DispatchQueue.main.async {
                     let message = CallMessage()
+                    message.uuid = self.uuid
                     message.kind = .offer
                     message.sdps = [ sdp.sdp ]
                     let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
