@@ -172,14 +172,14 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?,
                 completion: NotificationCompletion?) {
-        AssertIsOnMainThread()
+        assertOnQueue(NotificationPresenter.notificationQueue)
 
         notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, interaction: interaction, sound: sound, replacingIdentifier: nil, completion: completion)
     }
 
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?,
                 completion: NotificationCompletion?) {
-        AssertIsOnMainThread()
+        assertOnQueue(NotificationPresenter.notificationQueue)
 
         guard tsAccountManager.isOnboarded() else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
@@ -446,7 +446,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     }
 
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
-        AssertIsOnMainThread()
+        assertOnQueue(NotificationPresenter.notificationQueue)
 
         switch category {
         case .incomingMessageFromNoLongerVerifiedIdentity,
