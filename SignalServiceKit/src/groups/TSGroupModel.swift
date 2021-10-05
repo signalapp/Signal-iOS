@@ -182,6 +182,7 @@ public class TSGroupModelV2: TSGroupModel {
         result += "wasJustCreatedByLocalUser: \(wasJustCreatedByLocalUser),\n"
         result += "didJustAddSelfViaGroupLink: \(didJustAddSelfViaGroupLink),\n"
         result += "droppedMembers: \(droppedMembers),\n"
+        result += "descriptionText: \(String(describing: descriptionText)),\n"
         result += "]"
         return result
     }

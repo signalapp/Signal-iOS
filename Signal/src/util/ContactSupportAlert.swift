@@ -95,8 +95,12 @@ public class ContactSupportAlert: NSObject {
 enum ContactSupportError: Error {
     case pasteLogError(localizedDescription: String)
 }
-extension ContactSupportError: LocalizedError {
+extension ContactSupportError: LocalizedError, UserErrorDescriptionProvider {
     var errorDescription: String? {
+        localizedDescription
+    }
+
+    public var localizedDescription: String {
         switch self {
         case .pasteLogError(let localizedDescription):
             return localizedDescription

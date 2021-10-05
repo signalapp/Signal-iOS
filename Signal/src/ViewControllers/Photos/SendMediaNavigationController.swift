@@ -288,7 +288,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     private func didTapBatchModeButton() {
         isInBatchSelectMode = !isInBatchSelectMode
-        assert(isInBatchSelectMode || attachmentCount <= 1)
+        owsAssertDebug(isInBatchSelectMode || attachmentCount <= 1)
     }
 
     private func didTapCameraModeButton() {
@@ -523,15 +523,14 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func discardDraft() {
-        assert(attachmentDraftCollection.attachmentDrafts.count <= 1)
+        owsAssertDebug(attachmentDraftCollection.attachmentDrafts.count <= 1)
         if let lastAttachmentDraft = attachmentDraftCollection.attachmentDrafts.last {
             attachmentDraftCollection.remove(lastAttachmentDraft)
         }
-        assert(attachmentDraftCollection.attachmentDrafts.count == 0)
+        owsAssertDebug(attachmentDraftCollection.attachmentDrafts.count == 0)
     }
 
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, isRecordingMovie: Bool) {
-        assert(self.isRecordingMovie != isRecordingMovie)
         self.isRecordingMovie = isRecordingMovie
         updateViewState(topViewController: photoCaptureViewController, animated: true)
     }
@@ -652,7 +651,7 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
         // Current design dicates we'll go "back" to the single thing before us.
-        assert(viewControllers.count == 2)
+        owsAssertDebug(viewControllers.count == 2)
 
         // regardless of which VC we're going "back" to, we're in "batch" mode at this point.
         isInBatchSelectMode = true
@@ -804,7 +803,7 @@ extension SendMediaNavigationController: DoneButtonDelegate {
     }
 
     fileprivate func doneButtonWasTapped(_ doneButton: DoneButton) {
-        assert(attachmentDraftCollection.count > 0)
+        owsAssertDebug(attachmentDraftCollection.count > 0)
         showApprovalAfterProcessingAnyMediaLibrarySelections()
     }
 }

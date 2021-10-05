@@ -38,8 +38,12 @@ extension String {
     }
 }
 
-extension SignalAttachmentError: LocalizedError {
+extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
     public var errorDescription: String? {
+        localizedDescription
+    }
+
+    public var localizedDescription: String {
         switch self {
         case .missingData:
             return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")

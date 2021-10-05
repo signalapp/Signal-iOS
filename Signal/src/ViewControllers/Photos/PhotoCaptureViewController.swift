@@ -18,16 +18,17 @@ enum PhotoCaptureError: Error {
     case assertionError(description: String)
     case initializationFailed
     case captureFailed
+    case invalidVideo
 }
 
-extension PhotoCaptureError: LocalizedError {
+extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
     var localizedDescription: String {
         switch self {
         case .initializationFailed:
             return NSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA", comment: "alert title")
         case .captureFailed:
             return NSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE", comment: "alert title")
-        case .assertionError:
+        case .assertionError, .invalidVideo:
             return NSLocalizedString("PHOTO_CAPTURE_GENERIC_ERROR", comment: "alert title, generic error preventing user from capturing a photo")
         }
     }
@@ -565,9 +566,9 @@ class PhotoCaptureViewController: OWSViewController, InteractiveDismissDelegate 
         Logger.error("error: \(error)")
 
         OWSActionSheets.showActionSheet(title: nil,
-                            message: error.userErrorDescription,
-                            buttonTitle: CommonStrings.dismissButton,
-                            buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+                                        message: error.userErrorDescription,
+                                        buttonTitle: CommonStrings.dismissButton,
+                                        buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
     }
 
     private func updateFlashModeControl() {
@@ -615,6 +616,16 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func photoCapture(_ photoCapture: PhotoCapture, processingDidError error: Error) {
+        isRecordingMovie = false
+        topBar.recordingTimerView.stopCounting()
+        updateNavigationItems()
+        delegate?.photoCaptureViewController(self, isRecordingMovie: isRecordingMovie)
+
+        if case PhotoCaptureError.invalidVideo = error {
+            // Don't show an error if the user aborts recording before video
+            // recording has begun.
+            return
+        }
         showFailureUI(error: error)
     }
 
