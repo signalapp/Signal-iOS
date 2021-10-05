@@ -11,8 +11,10 @@ class NSEEnvironment: Dependencies {
 
     // MARK: - Main App Comms
 
+    private static var mainAppDarwinQueue: DispatchQueue { .global(qos: .userInitiated) }
+
     func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {
-        DispatchQueue.global().async {
+        Self.mainAppDarwinQueue.async {
             // We track whether we've ever handled the call back to ensure
             // we only notify the caller once and avoid any races that may
             // occur between the notification observer and the dispatch
@@ -26,7 +28,7 @@ class NSEEnvironment: Dependencies {
             // Listen for an indication that the main app is going to handle
             // this notification. If the main app is active we don't want to
             // process any messages here.
-            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: .global()) { token in
+            let token = DarwinNotificationCenter.addObserver(for: .mainAppHandledNotification, queue: Self.mainAppDarwinQueue) { token in
                 guard hasCalledBack.tryToSetFlag() else { return }
 
                 if DarwinNotificationCenter.isValidObserver(token) {
@@ -47,7 +49,7 @@ class NSEEnvironment: Dependencies {
             // The main app should notify us nearly instantaneously if it's
             // going to process this notification so we only wait a fraction
             // of a second to hear back from it.
-            DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + 0.001) {
+            Self.mainAppDarwinQueue.asyncAfter(deadline: DispatchTime.now() + 0.010) {
                 guard hasCalledBack.tryToSetFlag() else { return }
 
                 if DarwinNotificationCenter.isValidObserver(token) {

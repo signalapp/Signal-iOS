@@ -175,8 +175,6 @@ public class DatabaseChangeObserver: NSObject {
             return
         }
 
-        let wasDisplayLinkActive = isDisplayLinkActive.get()
-
         let shouldBeActive: Bool = {
             guard AppReadiness.isAppReady else {
                 return false
