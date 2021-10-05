@@ -86,9 +86,7 @@
                                  reaction.read = YES;
                              }];
 
-    [transaction addAsyncCompletionOnMain:^{
-        [SSKEnvironment.shared.notificationsManager cancelNotificationsForReactionId:self.uniqueId];
-    }];
+    [SSKEnvironment.shared.notificationsManager cancelNotificationsForReactionId:self.uniqueId];
 }
 
 @end
