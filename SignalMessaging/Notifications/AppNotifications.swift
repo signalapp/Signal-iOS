@@ -272,7 +272,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             self.adaptee.notify(category: .incomingCall,
                                 title: notificationTitle,
                                 body: notificationBody,
@@ -323,7 +323,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -358,7 +358,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
                                 title: notificationTitle,
@@ -394,7 +394,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
             : .missedCallWithoutActions)
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -543,7 +543,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: category,
                                 title: notificationTitle,
@@ -556,10 +556,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    // TODO: We could use another (non-concurrent) queue.
+    public static var notifyOnMainThread: Bool {
+        // The NSE can safely post notifications off the main thread;
+        // the main app cannot.
+        !CurrentAppContext().isNSE
+    }
     public static let serialQueue = DispatchQueue(label: "org.signal.notificationPresenter")
-    public static let notifyOnMainThread = true
-    private static var notificationQueue: DispatchQueue { notifyOnMainThread ? .main : serialQueue }
+    public static var notificationQueue: DispatchQueue { notifyOnMainThread ? .main : serialQueue }
     private var notificationQueue: DispatchQueue { Self.notificationQueue }
 
     private static let pendingTasks = PendingTasks(label: "Notifications")
@@ -572,7 +575,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         pendingTasks.pendingTasksPromise()
     }
 
-    private func notifyAsyncOnMainThread(_ block: @escaping (@escaping NotificationCompletion) -> Void) {
+    private func notifyAsync(_ block: @escaping (@escaping NotificationCompletion) -> Void) {
         let pendingTask = Self.pendingTasks.buildPendingTask(label: "Notification")
         notificationQueue.async {
             block {
@@ -581,8 +584,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    private func notifyInAsyncCompletionOnMainThread(transaction: SDSAnyWriteTransaction,
-                                                     _ block: @escaping (@escaping NotificationCompletion) -> Void) {
+    private func notifyInAsyncCompletion(transaction: SDSAnyWriteTransaction,
+                                         _ block: @escaping (@escaping NotificationCompletion) -> Void) {
         let pendingTask = Self.pendingTasks.buildPendingTask(label: "Notification")
         transaction.addAsyncCompletion(queue: notificationQueue) {
             block {
@@ -694,7 +697,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(
                 category: category,
@@ -724,7 +727,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -748,7 +751,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                               comment: "Format string for an error alert notification message. Embes {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             self.adaptee.notify(
                 category: .internalError,
                 title: title,
@@ -779,7 +782,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
         ]
 
-        notifyAsyncOnMainThread { completion in
+        notifyAsync { completion in
             let sound = self.requestSound(thread: thread)
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -861,7 +864,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyInAsyncCompletionOnMainThread(transaction: transaction) { completion in
+        notifyInAsyncCompletion(transaction: transaction) { completion in
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
@@ -878,7 +881,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                            transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
-        notifyInAsyncCompletionOnMainThread(transaction: transaction) { completion in
+        notifyInAsyncCompletion(transaction: transaction) { completion in
             self.adaptee.notify(category: .threadlessErrorMessage,
                                 title: nil,
                                 body: notificationBody,
@@ -917,7 +920,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: -
 
-    var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
+    private let unfairLock = UnfairLock()
+    private var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
     private func requestSound(thread: TSThread) -> OWSSound? {
         guard checkIfShouldPlaySound() else {
@@ -931,9 +935,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         checkIfShouldPlaySound() ? OWSSounds.globalNotificationSound() : nil
     }
 
+    // This method is thread-safe.
     private func checkIfShouldPlaySound() -> Bool {
-        AssertIsOnMainThread()
-
         guard CurrentAppContext().isMainAppAndActive else {
             return true
         }
@@ -945,14 +948,16 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let now = NSDate.ows_millisecondTimeStamp()
         let recentThreshold = now - UInt64(kAudioNotificationsThrottleInterval * Double(kSecondInMs))
 
-        let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
+        return unfairLock.withLock {
+            let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
-        guard recentNotifications.count < kAudioNotificationsThrottleCount else {
-            return false
+            guard recentNotifications.count < kAudioNotificationsThrottleCount else {
+                return false
+            }
+
+            mostRecentNotifications.append(now)
+            return true
         }
-
-        mostRecentNotifications.append(now)
-        return true
     }
 }
 

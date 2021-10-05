@@ -192,7 +192,7 @@ public class MessageProcessor: NSObject {
         let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
         switch result {
         case .duplicate:
-            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(serverDeliveryTimestamp). EnvelopeSource: \(envelopeSource).")
+            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(serverDeliveryTimestamp), serverGuid: \(encryptedEnvelope.serverGuidFormatted), EnvelopeSource: \(envelopeSource).")
             completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
@@ -215,25 +215,6 @@ public class MessageProcessor: NSObject {
         )
         pendingEnvelopes.enqueue(decryptedEnvelope: decryptedEnvelope)
         drainPendingEnvelopes()
-    }
-
-    // The NSE has tight memory constraints.
-    // For perf reasons, MessageProcessor keeps its queue in memory.
-    // It is not safe for the NSE to fetch more messages
-    // and cause this queue to grow in an unbounded way.
-    // Therefore, the NSE should wait to fetch more messages if
-    // the queue has "some/enough" content.
-    // However, the NSE needs to process messages with high
-    // throughput.
-    // Therfore we need to identify a constant N small enough to
-    // place an acceptable upper bound on memory usage of the processor
-    // (N + next fetched batch size, fetch size in practice is 100),
-    // large enough to avoid introducing latency (e.g. the next fetch
-    // will complete before the queue is empty).
-    // This is tricky since there are multiple variables (e.g. network
-    // perf affects fetch, CPU perf affects processing).
-    public var hasSomeQueuedContent: Bool {
-        queuedContentCount >= 10
     }
 
     public var queuedContentCount: Int {
@@ -498,6 +479,13 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     let serverDeliveryTimestamp: UInt64
     let completion: (Error?) -> Void
 
+    public var serverGuid: String? {
+        encryptedEnvelope.serverGuid
+    }
+    public var serverGuidFormatted: String {
+        String(describing: serverGuid)
+    }
+
     var wasReceivedByUD: Bool {
         let hasSenderSource: Bool
         if encryptedEnvelope.hasValidSource {
@@ -532,11 +520,11 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
         guard let other = other as? EncryptedEnvelope else {
             return false
         }
-        guard let serverGuid = encryptedEnvelope.serverGuid else {
+        guard let serverGuid = self.serverGuid else {
             owsFailDebug("Missing serverGuid.")
             return false
         }
-        guard let otherServerGuid = other.encryptedEnvelope.serverGuid else {
+        guard let otherServerGuid = other.serverGuid else {
             owsFailDebug("Missing other.serverGuid.")
             return false
         }

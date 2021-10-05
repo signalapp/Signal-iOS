@@ -223,8 +223,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // Since we wait for message processing to finish with a promise on the main
     // queue, dispatching to main here *before* it's finished ensures that it always
     // happens before the processing promise completes.
-    dispatch_async(dispatch_get_main_queue(),
-        ^{ [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageId:self.uniqueId]; });
+    [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageId:self.uniqueId];
 }
 
 - (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp

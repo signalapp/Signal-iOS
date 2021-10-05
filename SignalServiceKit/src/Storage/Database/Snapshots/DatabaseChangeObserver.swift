@@ -134,9 +134,8 @@ public class DatabaseChangeObserver: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didReceiveCrossProcessNotification),
-                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
+                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync,
                                                object: nil)
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.applicationStateDidChange),
                                                name: .OWSApplicationDidEnterBackground,
@@ -175,8 +174,6 @@ public class DatabaseChangeObserver: NSObject {
             // TODO: Review.
             return
         }
-
-        let wasDisplayLinkActive = isDisplayLinkActive.get()
 
         let shouldBeActive: Bool = {
             guard AppReadiness.isAppReady else {
@@ -231,8 +228,26 @@ public class DatabaseChangeObserver: NSObject {
         ensureDisplayLink()
     }
 
+    private lazy var didUpdateExternallyEvent: DebouncedEvent = {
+        AssertIsOnMainThread()
+
+        return DebouncedEvents.build(mode: .firstLast,
+                                     maxFrequencySeconds: 3.0,
+                                     onQueue: .asyncOnQueue(queue: .main)) { [weak self] in
+            guard let self = self else { return }
+            self.fireDidUpdateExternally()
+        }
+    }()
+
     @objc
     func didReceiveCrossProcessNotification(_ notification: Notification) {
+        AssertIsOnMainThread()
+        Logger.verbose("")
+
+        didUpdateExternallyEvent.requestNotify()
+    }
+
+    private func fireDidUpdateExternally() {
         AssertIsOnMainThread()
         Logger.verbose("")
 
@@ -241,6 +256,8 @@ public class DatabaseChangeObserver: NSObject {
         }
     }
 }
+
+// MARK: -
 
 extension DatabaseChangeObserver: TransactionObserver {
 

@@ -20,7 +20,7 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
 
 @interface OWSDeviceManager ()
 
-@property (atomic) NSDate *lastReceivedSyncMessage;
+@property (atomic, nullable) NSDate *lastReceivedSyncMessage;
 
 @end
 
@@ -104,7 +104,8 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds
 {
-    return (self.lastReceivedSyncMessage && fabs(self.lastReceivedSyncMessage.timeIntervalSinceNow) < intervalSeconds);
+    NSDate *_Nullable lastReceivedSyncMessage = self.lastReceivedSyncMessage;
+    return (lastReceivedSyncMessage && fabs(lastReceivedSyncMessage.timeIntervalSinceNow) < intervalSeconds);
 }
 
 - (void)setHasReceivedSyncMessage

@@ -264,17 +264,18 @@ public class MessageFetcherJob: NSObject {
     private let ackOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "MessageFetcherJob.ackOperationQueue"
-        operationQueue.maxConcurrentOperationCount = 3
+        operationQueue.maxConcurrentOperationCount = 5
         return operationQueue
     }()
 
     private let pendingAcks = PendingTasks(label: "Acks")
 
     private func acknowledgeDelivery(envelopeInfo: EnvelopeInfo) {
-        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
-        let ackConcurrentOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
-                                                         pendingAck: pendingAck)
-        ackOperationQueue.addOperation(ackConcurrentOperation)
+        guard let ackOperation = MessageAckOperation(envelopeInfo: envelopeInfo,
+                                                     pendingAcks: pendingAcks) else {
+            return
+        }
+        ackOperationQueue.addOperation(ackOperation)
     }
 
     public func pendingAcksPromise() -> Promise<Void> {
@@ -365,24 +366,39 @@ public class MessageFetcherJob: NSObject {
             // If not NSE, fetch more immediately.
             return true
         }
-        // In NSE, if messageProcessor queue has enough content,
-        // wait before fetching more envelopes.
-        // We need to bound peak memory usage in the NSE when processing
-        // lots of incoming message.
-        if messageProcessor.hasSomeQueuedContent {
-            if DebugFlags.internalLogging {
-                let queuedContentCount = messageProcessor.queuedContentCount
-                if queuedContentCount != Self.lastQueuedContentCount.get() {
-                    Logger.info("hasSomeQueuedContent: \(queuedContentCount)")
-                    Self.lastQueuedContentCount.set(queuedContentCount)
-                }
+
+        // The NSE has tight memory constraints.
+        // For perf reasons, MessageProcessor keeps its queue in memory.
+        // It is not safe for the NSE to fetch more messages
+        // and cause this queue to grow in an unbounded way.
+        // Therefore, the NSE should wait to fetch more messages if
+        // the queue has "some/enough" content.
+        // However, the NSE needs to process messages with high
+        // throughput.
+        // Therfore we need to identify a constant N small enough to
+        // place an acceptable upper bound on memory usage of the processor
+        // (N + next fetched batch size, fetch size in practice is 100),
+        // large enough to avoid introducing latency (e.g. the next fetch
+        // will complete before the queue is empty).
+        // This is tricky since there are multiple variables (e.g. network
+        // perf affects fetch, CPU perf affects processing).
+        let queuedContentCount = messageProcessor.queuedContentCount
+        let pendingAcksCount = MessageAckOperation.pendingAcksCount
+        let incompleteEnvelopeCount = queuedContentCount + pendingAcksCount
+        let maxIncompleteEnvelopeCount: Int = 20
+        guard incompleteEnvelopeCount < maxIncompleteEnvelopeCount else {
+            if DebugFlags.internalLogging,
+               incompleteEnvelopeCount != Self.lastIncompleteEnvelopeCount.get() {
+                Logger.info("queuedContentCount: \(queuedContentCount) + pendingAcksCount: \(pendingAcksCount) = \(incompleteEnvelopeCount)")
+                Self.lastIncompleteEnvelopeCount.set(incompleteEnvelopeCount)
             }
             return false
         }
+
         return true
     }
 
-    private static let lastQueuedContentCount = AtomicValue<Int>(0)
+    private static let lastIncompleteEnvelopeCount = AtomicValue<Int>(0)
 
     // MARK: - Run Loop
 
@@ -566,7 +582,13 @@ private class MessageAckOperation: OWSOperation {
     // This doesn't affect correctness, just tries to guard against backing up our operation queue with repeat work
     static private var inFlightAcks = AtomicSet<String>()
     private var didRecordAckId = false
-    private var inFlightAckId: String {
+    private let inFlightAckId: String
+
+    public static var pendingAcksCount: Int {
+        inFlightAcks.count
+    }
+
+    private static func inFlightAckId(forEnvelopeInfo envelopeInfo: EnvelopeInfo) -> String {
         // All messages *should* have a guid, but we'll handle things correctly if they don't
         owsAssertDebug(envelopeInfo.serverGuid?.nilIfEmpty != nil)
 
@@ -580,8 +602,41 @@ private class MessageAckOperation: OWSOperation {
         }
     }
 
-    fileprivate required init(envelopeInfo: EnvelopeInfo,
-                              pendingAck: PendingTask) {
+    private static let unfairLock = UnfairLock()
+    private static var successfulAckSet = OrderedSet<String>()
+    private static func didAck(inFlightAckId: String) {
+        unfairLock.withLock {
+            successfulAckSet.append(inFlightAckId)
+            // REST fetches are batches of 100.
+            let maxAckCount: Int = 128
+            while successfulAckSet.count > maxAckCount,
+                  let firstAck = successfulAckSet.first {
+                successfulAckSet.remove(firstAck)
+            }
+        }
+    }
+    private static func hasAcked(inFlightAckId: String) -> Bool {
+        unfairLock.withLock {
+            successfulAckSet.contains(inFlightAckId)
+        }
+    }
+
+    fileprivate required init?(envelopeInfo: EnvelopeInfo, pendingAcks: PendingTasks) {
+
+        let inFlightAckId = Self.inFlightAckId(forEnvelopeInfo: envelopeInfo)
+        self.inFlightAckId = inFlightAckId
+
+        guard !Self.hasAcked(inFlightAckId: inFlightAckId) else {
+            Logger.info("Skipping new ack operation for \(envelopeInfo). Duplicate ack already complete")
+            return nil
+        }
+        guard !Self.inFlightAcks.contains(inFlightAckId) else {
+            Logger.info("Skipping new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
+            return nil
+        }
+
+        let pendingAck = pendingAcks.buildPendingTask(label: "Ack, timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
+
         self.envelopeInfo = envelopeInfo
         self.pendingAck = pendingAck
 
@@ -592,14 +647,8 @@ private class MessageAckOperation: OWSOperation {
         // MessageAckOperation must have a higher priority than than the
         // operations used to flush the ack operation queue.
         self.queuePriority = .high
-        if Self.inFlightAcks.contains(inFlightAckId) {
-            Logger.info("Cancelling new ack operation for \(envelopeInfo). Duplicate ack already enqueued")
-            pendingAck.complete()
-            self.cancel()
-        } else {
-            Self.inFlightAcks.insert(inFlightAckId)
-            didRecordAckId = true
-        }
+        Self.inFlightAcks.insert(inFlightAckId)
+        didRecordAckId = true
     }
 
     public override func run() {
@@ -617,9 +666,12 @@ private class MessageAckOperation: OWSOperation {
         }
 
         let envelopeInfo = self.envelopeInfo
+        let inFlightAckId = self.inFlightAckId
         firstly(on: .global()) {
             self.networkManager.makePromise(request: request)
         }.done(on: .global()) { _ in
+            Self.didAck(inFlightAckId: inFlightAckId)
+
             if DebugFlags.internalLogging {
                 Logger.info("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
             } else {
