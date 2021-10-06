@@ -224,6 +224,13 @@ public class InteractiveSheetViewController: OWSViewController {
             heightConstraint?.constant = startingHeight
         }
     }
+    
+    public func openSheet() {
+        UIView.animate(withDuration: maxAnimationDuration) {
+            self.heightConstraint?.constant = self.maximizedHeight
+            self.view.layoutIfNeeded()
+        }
+    }
 
     private func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
         let panningScrollView = interactiveScrollViews.first { $0.panGestureRecognizer == sender }
