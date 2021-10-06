@@ -55,10 +55,14 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
 
-    #if TESTABLE_BUILD
-    // Leaving this internal only for now. Revert the commit in git-blame to re-publish this
-    // in Settings with localizations (though we probably only need the "Beta" string localized)
     public static var buildVariantString: String? {
+        // Leaving this internal only for now. If we ever move this to
+        // HelpSettings we need to localize these strings
+        guard DebugFlags.internalSettings else {
+            owsFailDebug("Incomplete implementation. Needs localization")
+            return nil
+        }
+
         let featureFlagString: String?
         switch build {
         case .dev:
@@ -96,7 +100,6 @@ public class FeatureFlags: BaseFlags {
             .joined(separator: " — ")
             .nilIfEmpty
     }
-    #endif
 
     @objc
     public static var storageMode: StorageMode {
