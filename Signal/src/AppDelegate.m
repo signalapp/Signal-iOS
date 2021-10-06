@@ -1322,6 +1322,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
 - (void)setupNSEInteroperation
 {
+    OWSLogInfo(@"");
     // We immediately post a notification letting the NSE know the main app has launched.
     // If it's running it should take this as a sign to terminate so we don't unintentionally
     // try and fetch messages from two processes at once.
