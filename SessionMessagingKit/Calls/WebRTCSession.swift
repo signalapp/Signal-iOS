@@ -11,8 +11,8 @@ public protocol WebRTCSessionDelegate : AnyObject {
 /// See https://webrtc.org/getting-started/overview for more information.
 public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: WebRTCSessionDelegate?
+    public let uuid: String
     private let contactSessionID: String
-    private let uuid: String
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
     
@@ -138,6 +138,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                 }
                 DispatchQueue.main.async {
                     let message = CallMessage()
+                    message.sentTimestamp = NSDate.millisecondTimestamp()
                     message.uuid = self.uuid
                     message.kind = .offer
                     message.sdps = [ sdp.sdp ]
@@ -171,6 +172,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                 }
                 DispatchQueue.main.async {
                     let message = CallMessage()
+                    message.uuid = self.uuid
                     message.kind = .answer
                     message.sdps = [ sdp.sdp ]
                     MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
@@ -203,6 +205,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
             let sdps = candidates.map { $0.sdp }
             let sdpMLineIndexes = candidates.map { UInt32($0.sdpMLineIndex) }
             let sdpMids = candidates.map { $0.sdpMid! }
+            message.uuid = self.uuid
             message.kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
             message.sdps = sdps
             self.queuedICECandidates.removeAll()
@@ -213,6 +216,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public func endCall(with sessionID: String, using transaction: YapDatabaseReadWriteTransaction) {
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return }
         let message = CallMessage()
+        message.uuid = self.uuid
         message.kind = .endCall
         print("[Calls] Sending end call message.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
@@ -294,7 +298,7 @@ extension WebRTCSession {
         sendJSON(["video": false])
     }
     
-    public func turnOnVideo() { 
+    public func turnOnVideo() {
         localVideoTrack.isEnabled = true
         sendJSON(["video": true])
     }

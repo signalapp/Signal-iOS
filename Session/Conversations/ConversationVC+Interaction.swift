@@ -29,7 +29,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     // MARK: Call
     @objc func startCall(_ sender: Any) {
         guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
-        let callVC = CallVC(for: contactSessionID, mode: .offer)
+        let callVC = CallVC(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
         callVC.conversationVC = self
         callVC.modalPresentationStyle = .overFullScreen
         callVC.modalTransitionStyle = .crossDissolve
@@ -39,15 +39,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     internal func showCallVCIfNeeded() {
-        guard hasIncomingCall, let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
-        hasIncomingCall = false
-        let callVC = CallVC(for: contactSessionID, mode: .offer) // TODO: change to answer
-        callVC.conversationVC = self
-        callVC.modalPresentationStyle = .overFullScreen
-        callVC.modalTransitionStyle = .crossDissolve
-        self.inputAccessoryView?.isHidden = true
-        self.inputAccessoryView?.alpha = 0
-        present(callVC, animated: true, completion: nil)
+        guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID(),
+              let incomingCallBanner = IncomingCallBanner.current, incomingCallBanner.sessionID == contactSessionID
+        else { return }
+        incomingCallBanner.showCallVC(answer: false)
     }
 
     // MARK: Blocking

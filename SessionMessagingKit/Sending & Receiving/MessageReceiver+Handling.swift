@@ -277,7 +277,10 @@ extension MessageReceiver {
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
-            // TODO: Notify incoming call
+            let currentSession = getWebRTCSession()
+            if currentSession.uuid != message.uuid! {
+                // TODO: Call in progress, put the new call on hold/reject
+            }
         case .offer:
             print("[Calls] Received offer message.")
             let storage = SNMessagingKitConfiguration.shared.storage

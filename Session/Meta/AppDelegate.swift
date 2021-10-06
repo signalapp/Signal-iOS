@@ -1,5 +1,7 @@
 import PromiseKit
 import WebRTC
+import SessionUIKit
+import UIKit
 
 extension AppDelegate {
 
@@ -11,7 +13,7 @@ extension AppDelegate {
                 let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                 if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == message.sender! {
-                    let callVC = CallVC(for: message.sender!, mode: .answer(sdp: sdp))
+                    let callVC = CallVC(for: message.sender!, uuid: message.uuid!, mode: .answer(sdp: sdp))
                     callVC.modalPresentationStyle = .overFullScreen
                     callVC.modalTransitionStyle = .crossDissolve
                     callVC.conversationVC = conversationVC
@@ -19,19 +21,24 @@ extension AppDelegate {
                     conversationVC.inputAccessoryView?.alpha = 0
                     presentingVC.present(callVC, animated: true, completion: nil)
                 } else {
+                    let incomingCallBanner = IncomingCallBanner(for: message.sender!, uuid: message.uuid!, sdp: sdp)
+                    incomingCallBanner.show()
                 }
             }
         }
         // Answer messages
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
-                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
-                callVC.handleAnswerMessage(message)
+                if let incomingCallBanner = IncomingCallBanner.current, incomingCallBanner.uuid == message.uuid! { incomingCallBanner.dismiss() }
+                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleAnswerMessage(message) }
+                WebRTCSession.current?.dropConnection()
+                WebRTCSession.current = nil
             }
         }
         // End call messages
         MessageReceiver.handleEndCallMessage = { message in
             DispatchQueue.main.async {
+                if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
                 guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
                 callVC.handleEndCallMessage(message)
             }

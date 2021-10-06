@@ -6,8 +6,10 @@ import UIKit
 
 final class CallVC : UIViewController, WebRTCSessionDelegate {
     let sessionID: String
+    let uuid: String
     let mode: Mode
     let webRTCSession: WebRTCSession
+    var shouldAnswer = false
     var isMuted = false
     var isVideoEnabled = false
     var conversationVC: ConversationVC? = nil
@@ -162,10 +164,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     // MARK: Lifecycle
-    init(for sessionID: String, mode: Mode) {
+    init(for sessionID: String, uuid: String, mode: Mode) {
         self.sessionID = sessionID
+        self.uuid = uuid
         self.mode = mode
-        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: UUID().uuidString)
+        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
         super.init(nibName: nil, bundle: nil)
         self.webRTCSession.delegate = self
     }
@@ -193,6 +196,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             }
             answerButton.isHidden = true
         }
+        if shouldAnswer { answerCall() }
     }
     
     func setUpViewHierarchy() {
@@ -299,8 +303,6 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         print("[Calls] Ending call.")
         callInfoLabel.isHidden = false
         callInfoLabel.text = "Call Ended"
-        WebRTCSession.current?.dropConnection()
-        WebRTCSession.current = nil
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
         }

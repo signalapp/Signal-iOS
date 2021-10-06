@@ -1,15 +1,141 @@
-// Copyright © 2021 Rangeproof Pty Ltd. All rights reserved.
-
 import UIKit
+import WebRTC
+import SessionMessagingKit
 
-class IncomingCallBanner: UIView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+final class IncomingCallBanner: UIView {
+    let sessionID: String
+    let uuid: String
+    let sdp: RTCSessionDescription
+    
+    // MARK: UI Components
+    private lazy var profilePictureView: ProfilePictureView = {
+        let result = ProfilePictureView()
+        let size = CGFloat(60)
+        result.size = size
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        return result
+    }()
+    
+    private lazy var displayNameLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = UIColor.white
+        result.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        result.lineBreakMode = .byTruncatingTail
+        result.textAlignment = .center
+        return result
+    }()
+    
+    private lazy var answerButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "AnswerCall")!.withTint(.white)?.resizedImage(to: CGSize(width: 24.8, height: 24.8))
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 48)
+        result.set(.height, to: 48)
+        result.backgroundColor = Colors.accent
+        result.layer.cornerRadius = 24
+        result.addTarget(self, action: #selector(answerCall), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    private lazy var hangUpButton: UIButton = {
+        let result = UIButton(type: .custom)
+        let image = UIImage(named: "EndCall")!.withTint(.white)?.resizedImage(to: CGSize(width: 29.6, height: 11.2))
+        result.setImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 48)
+        result.set(.height, to: 48)
+        result.backgroundColor = Colors.destructive
+        result.layer.cornerRadius = 24
+        result.addTarget(self, action: #selector(endCall), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+    
+    // MARK: Initialization
+    public static var current: IncomingCallBanner?
+    
+    init(for sessionID: String, uuid: String, sdp: RTCSessionDescription) {
+        self.uuid = uuid
+        self.sessionID = sessionID
+        self.sdp = sdp
+        super.init(frame: CGRect.zero)
+        setUpViewHierarchy()
+        if let incomingCallBanner = IncomingCallBanner.current {
+            incomingCallBanner.dismiss()
+        }
+        IncomingCallBanner.current = self
     }
-    */
+    
+    override init(frame: CGRect) {
+        preconditionFailure("Use init(message:) instead.")
+    }
+    
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init(coder:) instead.")
+    }
+    
+    private func setUpViewHierarchy() {
+        self.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(0.9)
+        self.layer.cornerRadius = Values.veryLargeSpacing
+        self.layer.masksToBounds = true
+        self.set(.height, to: 100)
+        profilePictureView.publicKey = self.sessionID
+        profilePictureView.update()
+        displayNameLabel.text = Storage.shared.getContact(with: sessionID)?.name
+        let stackView = UIStackView(arrangedSubviews: [profilePictureView, displayNameLabel, UIView.hStretchingSpacer(), hangUpButton, answerButton])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = Values.largeSpacing
+        self.addSubview(stackView)
+        stackView.center(.vertical, in: self)
+        stackView.autoPinWidthToSuperview(withMargin: Values.mediumSpacing)
+    }
+    
+    @objc private func answerCall() {
+        showCallVC(answer: true)
+    }
+    
+    @objc private func endCall() {
+        Storage.write { transaction in
+            WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
+        }
+        dismiss()
+    }
+    
+    public func showCallVC(answer: Bool) {
+        dismiss()
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        let callVC = CallVC(for: sessionID, uuid: uuid, mode: .answer(sdp: sdp))
+        callVC.shouldAnswer = answer
+        callVC.modalPresentationStyle = .overFullScreen
+        callVC.modalTransitionStyle = .crossDissolve
+        if let conversationVC = presentingVC as? ConversationVC {
+            callVC.conversationVC = conversationVC
+            conversationVC.inputAccessoryView?.isHidden = true
+            conversationVC.inputAccessoryView?.alpha = 0
+        }
+        presentingVC.present(callVC, animated: true, completion: nil)
+    }
+    
+    public func show() {
+        self.alpha = 0.0
+        let window = CurrentAppContext().mainWindow!
+        window.addSubview(self)
+        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top - Values.smallSpacing
+        self.autoPinWidthToSuperview(withMargin: Values.smallSpacing)
+        self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
+            self.alpha = 1.0
+        }, completion: nil)
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+    
+    public func dismiss() {
+        UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
+            self.alpha = 0.0
+        }, completion: { _ in
+            IncomingCallBanner.current = nil
+            self.removeFromSuperview()
+        })
+    }
 
 }

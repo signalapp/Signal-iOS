@@ -10,7 +10,6 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     let focusedMessageID: String? // This isn't actually used ATM
     var unreadViewItems: [ConversationViewItem] = []
     var scrollButtonConstraint: NSLayoutConstraint?
-    var hasIncomingCall = false
     // Search
     var isShowingSearchUI = false
     var lastSearchedText: String?
