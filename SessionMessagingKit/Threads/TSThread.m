@@ -359,11 +359,12 @@ BOOL IsNoteToSelfEnabled(void)
     
     if ([_lastInteractionDate compare: lastMessage.receivedAtDate] == NSOrderedAscending) {
         _lastInteractionDate = lastMessage.receivedAtDate;
+        [super saveWithTransaction:transaction];
     }
 
     if (!self.shouldBeVisible) {
         self.shouldBeVisible = YES;
-        [self saveWithTransaction:transaction];
+        [super saveWithTransaction:transaction];
     } else {
         [self touchWithTransaction:transaction];
     }
