@@ -257,7 +257,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         messageStatusImageView.image = image
         messageStatusImageView.backgroundColor = backgroundColor
         if let message = message as? TSOutgoingMessage {
-            messageStatusImageView.isHidden = (message.messageState == .sent && message.thread.lastInteraction != message)
+            messageStatusImageView.isHidden = (message.isCallMessage || message.messageState == .sent && message.thread.lastInteraction != message)
         } else {
             messageStatusImageView.isHidden = true
         }
