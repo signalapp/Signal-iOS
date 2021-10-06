@@ -192,7 +192,7 @@ public class MessageProcessor: NSObject {
         let result = pendingEnvelopes.enqueue(encryptedEnvelope: encryptedEnvelope)
         switch result {
         case .duplicate:
-            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(serverDeliveryTimestamp), serverGuid: \(encryptedEnvelope.serverGuidFormatted), EnvelopeSource: \(envelopeSource).")
+            Logger.warn("Duplicate envelope \(encryptedEnvelopeProto.timestamp). Server timestamp: \(encryptedEnvelope.serverTimestamp), serverGuid: \(encryptedEnvelope.serverGuidFormatted), EnvelopeSource: \(envelopeSource).")
             completion(MessageProcessingError.duplicatePendingEnvelope)
         case .enqueued:
             drainPendingEnvelopes()
@@ -484,6 +484,9 @@ private struct EncryptedEnvelope: PendingEnvelope, Dependencies {
     }
     public var serverGuidFormatted: String {
         String(describing: serverGuid)
+    }
+    public var serverTimestamp: UInt64 {
+        encryptedEnvelope.serverTimestamp
     }
 
     var wasReceivedByUD: Bool {
