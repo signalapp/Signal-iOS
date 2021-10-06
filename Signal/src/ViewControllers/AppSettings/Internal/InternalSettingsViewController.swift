@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 class InternalSettingsViewController: OWSTableViewController2 {
@@ -61,7 +62,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         contents.addSection(debugSection)
 
         let infoSection = OWSTableSection()
-
+        infoSection.add(.copyableItem(label: "Build variant", value: FeatureFlags.buildVariantString))
         infoSection.add(.copyableItem(label: "App Release Version", value: AppVersion.shared().currentAppReleaseVersion))
         infoSection.add(.copyableItem(label: "App Build Version", value: AppVersion.shared().currentAppBuildVersion))
         infoSection.add(.copyableItem(label: "App Version 4", value: AppVersion.shared().currentAppVersion4))

@@ -55,19 +55,22 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
 
+    #if TESTABLE_BUILD
+    // Leaving this internal only for now. Revert the commit in git-blame to re-publish this
+    // in Settings with localizations (though we probably only need the "Beta" string localized)
     public static var buildVariantString: String? {
         let featureFlagString: String?
         switch build {
         case .dev:
-            featureFlagString = NSLocalizedString("DEVELOPMENT_BUILD", comment: "Development build name")
+            featureFlagString = LocalizationNotNeeded("Development")
         case .internalPreview:
-            featureFlagString = NSLocalizedString("INTERNAL_PREVIEW_BUILD", comment: "Internal preview build name")
+            featureFlagString = LocalizationNotNeeded("Internal Preview")
         case .qa:
-            featureFlagString = NSLocalizedString("INTERNAL_BUILD", comment: "Internal build name")
+            featureFlagString = LocalizationNotNeeded("Internal")
         case .openPreview:
-            featureFlagString = NSLocalizedString("OPEN_PREVIEW_BUILD", comment: "Open preview build name")
+            featureFlagString = LocalizationNotNeeded("Open Preview")
         case .beta:
-            featureFlagString = NSLocalizedString("BETA_BUILD", comment: "Beta build name")
+            featureFlagString = LocalizationNotNeeded("Beta")
         case .production:
             // Production can be inferred from the lack of flag
             featureFlagString = nil
@@ -75,11 +78,11 @@ public class FeatureFlags: BaseFlags {
 
         let configuration: String? = {
             #if DEBUG
-            NSLocalizedString("DEBUG_VARIANT", comment: "Debug variant name")
+            LocalizationNotNeeded("Debug")
             #elseif TESTABLE_BUILD
-            NSLocalizedString("TESTABLE_BUILD_VARIANT", comment: "Testable build variant name")
+            LocalizationNotNeeded("Testable build")
             #elseif RELEASE
-            // RELEASE can be inferred from the lack of configuration
+            // RELEASE can be inferred from the lack of configuration. This will only be hit if the outer #if is removed.
             nil
             #else
             owsFailDebug("Invalid configuration")
@@ -93,6 +96,7 @@ public class FeatureFlags: BaseFlags {
             .joined(separator: " — ")
             .nilIfEmpty
     }
+    #endif
 
     @objc
     public static var storageMode: StorageMode {

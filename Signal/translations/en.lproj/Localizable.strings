@@ -376,9 +376,6 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
 
-/* Beta build name */
-"BETA_BUILD" = "Beta";
-
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
 
@@ -450,9 +447,6 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
-
-/* Build variant header in Help Settings */
-"BUILD_VARIANT" = "Configuration";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Add";
@@ -1252,9 +1246,6 @@
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
 
-/* Debug variant name */
-"DEBUG_VARIANT" = "Debug";
-
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Delete Account";
 
@@ -1308,9 +1299,6 @@
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
-
-/* Development build name */
-"DEVELOPMENT_BUILD" = "Development";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active %@";
@@ -2917,12 +2905,6 @@
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Voice Message";
 
-/* Internal build name */
-"INTERNAL_BUILD" = "Internal";
-
-/* Internal preview build name */
-"INTERNAL_PREVIEW_BUILD" = "Internal preview";
-
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
 
@@ -3771,9 +3753,6 @@
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verification code";
-
-/* Open preview build name */
-"OPEN_PREVIEW_BUILD" = "Open preview";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
@@ -6033,9 +6012,6 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
-
-/* Testable build variant name */
-"TESTABLE_BUILD_VARIANT" = "Testable build";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
