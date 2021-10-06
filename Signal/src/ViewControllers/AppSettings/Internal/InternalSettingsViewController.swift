@@ -79,11 +79,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
         }
 
         if let buildDetails = Bundle.main.object(forInfoDictionaryKey: "BuildDetails") as? [String: AnyObject] {
-            if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil {
-                infoSection.add(.copyableItem(label: "Signal Commit", value: signalCommit))
+            if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil?.prefix(12) {
+                infoSection.add(.copyableItem(label: "Signal Commit", value: String(signalCommit)))
             }
-            if let signalCommit = (buildDetails["WebRTCCommit"] as? String)?.strippedOrNil {
-                infoSection.add(.copyableItem(label: "WebRTC Commit", value: signalCommit))
+            if let webRTCCommit = (buildDetails["WebRTCCommit"] as? String)?.strippedOrNil?.prefix(12) {
+                infoSection.add(.copyableItem(label: "WebRTC Commit", value: String(webRTCCommit)))
             }
         }
 
