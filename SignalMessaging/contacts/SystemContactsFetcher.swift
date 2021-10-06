@@ -239,7 +239,11 @@ public class SystemContactsFetcher: NSObject {
                 completionParam?(error)
             })
         }
-
+        guard !CurrentAppContext().isNSE else {
+            Logger.info("Skipping contacts fetch in NSE.")
+            completion(nil)
+            return
+        }
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
             completion(nil)
             return
@@ -283,6 +287,11 @@ public class SystemContactsFetcher: NSObject {
     @objc
     public func fetchOnceIfAlreadyAuthorized() {
         AssertIsOnMainThread()
+
+        guard !CurrentAppContext().isNSE else {
+            Logger.info("Skipping contacts fetch in NSE.")
+            return
+        }
         guard authorizationStatus == .authorized else {
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             return
@@ -298,6 +307,11 @@ public class SystemContactsFetcher: NSObject {
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
+        guard !CurrentAppContext().isNSE else {
+            Logger.info("Skipping contacts fetch in NSE.")
+            completion(nil)
+            return
+        }
         guard authorizationStatus == .authorized else {
             owsFailDebug("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
@@ -312,6 +326,10 @@ public class SystemContactsFetcher: NSObject {
     public func refreshAfterContactsChange() {
         AssertIsOnMainThread()
 
+        guard !CurrentAppContext().isNSE else {
+            Logger.info("Skipping contacts fetch in NSE.")
+            return
+        }
         guard authorizationStatus == .authorized else {
             Logger.info("ignoring contacts change; no access.")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
@@ -323,6 +341,14 @@ public class SystemContactsFetcher: NSObject {
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
         AssertIsOnMainThread()
+
+        guard !CurrentAppContext().isNSE else {
+            let error = OWSAssertionError("Skipping contacts fetch in NSE.")
+            DispatchMainThreadSafe({
+                completionParam?(error)
+            })
+            return
+        }
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
