@@ -240,8 +240,8 @@ public class SystemContactsFetcher: NSObject {
             })
         }
         guard !CurrentAppContext().isNSE else {
-            Logger.info("Skipping contacts fetch in NSE.")
-            completion(nil)
+            let error = OWSAssertionError("Skipping contacts fetch in NSE.")
+            completion(error)
             return
         }
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
@@ -308,8 +308,8 @@ public class SystemContactsFetcher: NSObject {
         AssertIsOnMainThread()
 
         guard !CurrentAppContext().isNSE else {
-            Logger.info("Skipping contacts fetch in NSE.")
-            completion(nil)
+            let error = OWSAssertionError("Skipping contacts fetch in NSE.")
+            completion(error)
             return
         }
         guard authorizationStatus == .authorized else {
