@@ -495,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"Done timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 }
 
@@ -523,7 +523,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
         OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, %@",
             envelope.timestamp,
-            serverDeliveryTimestamp,
+            envelope.serverTimestamp,
             [OWSMessageManager descriptionForDataMessageContents:dataMessage]);
     }
 
@@ -559,7 +559,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"2 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"2 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 
     if ([dataMessage hasProfileKey]) {
@@ -579,7 +579,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"3 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"3 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 
     // Pre-process the data message.  For v1 and v2 group messages this involves
@@ -595,7 +595,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"4 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"4 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 
     TSIncomingMessage *_Nullable message = nil;
@@ -625,7 +625,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"5 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"5 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 
     // Send delivery receipts for "valid data" messages received via UD.
@@ -635,7 +635,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            transaction:transaction];
     }
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"6 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, serverDeliveryTimestamp);
+        OWSLogInfo(@"6 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 }
 
@@ -1893,13 +1893,13 @@ NS_ASSUME_NONNULL_BEGIN
             envelopeAddress(envelope),
             groupThread.groupModel.groupId,
             timestamp,
-            serverDeliveryTimestamp];
+            envelope.serverTimestamp];
     } else {
         messageDescription =
             [NSString stringWithFormat:@"Incoming 1:1 message from: %@ with timestamp: %llu, serviceTimestamp: %llu",
                       envelopeAddress(envelope),
                       timestamp,
-                      serverDeliveryTimestamp];
+                      envelope.serverTimestamp];
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
