@@ -4,6 +4,7 @@
 
 import Foundation
 
+typealias EmojiSearchBarDelegate = UISearchBarDelegate
 class EmojiSearchBar: UISearchBar {
     override init(frame: CGRect) {
         super.init(frame: frame)

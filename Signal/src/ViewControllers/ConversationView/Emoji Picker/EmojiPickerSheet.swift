@@ -36,6 +36,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         contentView.addSubview(searchView)
         searchView.autoPinEdge(.top, to: .top, of: contentView)
         searchView.autoPinWidthToSuperview()
+        searchView.delegate = self
         
         contentView.addSubview(collectionView)
         collectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
@@ -94,5 +95,11 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
 
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int) {
         sectionToolbar.setSelectedSection(section)
+    }
+}
+
+extension EmojiPickerSheet: EmojiSearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        openSheet()
     }
 }
