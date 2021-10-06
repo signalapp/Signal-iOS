@@ -277,6 +277,17 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    func wasBusyElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            // Callkit doesn't have a reason for "busy elsewhere", .declinedElsewhere is close enough.
+            self.provider.reportCall(with: call.individualCall.localId, endedAt: nil, reason: .declinedElsewhere)
+            self.callManager.removeCall(call)
+        }
+    }
+
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
         Logger.info("")
