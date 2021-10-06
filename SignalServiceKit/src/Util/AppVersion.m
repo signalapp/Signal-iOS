@@ -152,6 +152,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
 
     NSDictionary<NSString *, NSString *> *buildDetails =
         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
+    OWSLogInfo(@"Signal Commit: %@", buildDetails[@"SignalCommit"]);
     OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
     OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);

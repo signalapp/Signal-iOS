@@ -55,6 +55,49 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
 
+    #if TESTABLE_BUILD
+    // Leaving this internal only for now. Revert the commit in git-blame to re-publish this
+    // in Settings with localizations (though we probably only need the "Beta" string localized)
+    public static var buildVariantString: String? {
+        let featureFlagString: String?
+        switch build {
+        case .dev:
+            featureFlagString = LocalizationNotNeeded("Development")
+        case .internalPreview:
+            featureFlagString = LocalizationNotNeeded("Internal Preview")
+        case .qa:
+            featureFlagString = LocalizationNotNeeded("Internal")
+        case .openPreview:
+            featureFlagString = LocalizationNotNeeded("Open Preview")
+        case .beta:
+            featureFlagString = LocalizationNotNeeded("Beta")
+        case .production:
+            // Production can be inferred from the lack of flag
+            featureFlagString = nil
+        }
+
+        let configuration: String? = {
+            #if DEBUG
+            LocalizationNotNeeded("Debug")
+            #elseif TESTABLE_BUILD
+            LocalizationNotNeeded("Testable build")
+            #elseif RELEASE
+            // RELEASE can be inferred from the lack of configuration. This will only be hit if the outer #if is removed.
+            nil
+            #else
+            owsFailDebug("Invalid configuration")
+            return "*"
+            #endif
+        }()
+
+        // If we're Production+Release, this will return nil and won't show up in Help Settings
+        return [featureFlagString, configuration]
+            .compactMap { $0 }
+            .joined(separator: " — ")
+            .nilIfEmpty
+    }
+    #endif
+
     @objc
     public static var storageMode: StorageMode {
         if CurrentAppContext().isRunningTests {
