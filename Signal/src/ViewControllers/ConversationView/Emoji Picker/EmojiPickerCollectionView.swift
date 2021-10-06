@@ -7,6 +7,7 @@ import Foundation
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int)
+    func emojiPickerDidBeginScrolling(_ emojiPicker: EmojiPickerCollectionView)
 }
 
 class EmojiPickerCollectionView: UICollectionView {
@@ -224,6 +225,9 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
         }
 
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
+    }
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        pickerDelegate?.emojiPickerDidBeginScrolling(self)
     }
 }
 

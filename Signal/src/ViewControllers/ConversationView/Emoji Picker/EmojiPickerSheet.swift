@@ -96,6 +96,9 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int) {
         sectionToolbar.setSelectedSection(section)
     }
+    func emojiPickerDidBeginScrolling(_ emojiPicker: EmojiPickerCollectionView) {
+        searchView.resignFirstResponder()
+    }
 }
 
 extension EmojiPickerSheet: EmojiSearchBarDelegate {
