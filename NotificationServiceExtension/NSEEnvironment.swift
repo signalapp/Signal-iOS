@@ -8,7 +8,7 @@ import SignalMessaging
 
 class NSEEnvironment: Dependencies {
     var processingMessageCounter = AtomicUInt(0)
-    var isProcessingMessages {
+    var isProcessingMessages: Bool {
         processingMessageCounter.get() > 0
     }
 

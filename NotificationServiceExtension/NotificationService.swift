@@ -171,7 +171,7 @@ class NotificationService: UNNotificationServiceExtension {
             return processingCompletePromise
         }.ensure(on: .global()) { [weak self] in
             Logger.info("Message fetch completed.")
-            environment.isProcessingMessages.decrementOrZero()
+            environment.processingMessageCounter.decrementOrZero()
             self?.completeSilenty()
         }.catch(on: .global()) { error in
             Logger.warn("Error: \(error)")
