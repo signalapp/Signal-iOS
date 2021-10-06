@@ -636,18 +636,27 @@ extension OWSContactsManager {
     }
 
     private static func buildContactAvatarHash(contact: Contact) -> Data? {
-        guard let cnContactId: String = contact.cnContactId else {
-            owsFailDebug("Missing cnContactId.")
-            return nil
+        func buildHash() -> Data? {
+            guard let cnContactId: String = contact.cnContactId else {
+                owsFailDebug("Missing cnContactId.")
+                return nil
+            }
+            guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
+                return nil
+            }
+            guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
+                owsFailDebug("Could not digest contactAvatarData.")
+                return nil
+            }
+            return contactAvatarHash
         }
-        guard let contactAvatarData = Self.contactsManager.avatarData(forCNContactId: cnContactId) else {
-            return nil
+        if CurrentAppContext().isMainApp {
+            return buildHash()
+        } else {
+            return autoreleasepool {
+                buildHash()
+            }
         }
-        guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
-            owsFailDebug("Could not digest contactAvatarData.")
-            return nil
-        }
-        return contactAvatarHash
     }
 
     private struct SystemContactsState {

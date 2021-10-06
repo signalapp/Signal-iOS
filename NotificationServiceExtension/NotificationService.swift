@@ -36,10 +36,11 @@ class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private var contentHandler = AtomicOptional<ContentHandler>(nil)
 
+    // This method is thread-safe.
     func completeSilenty(timeHasExpired: Bool = false) {
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
-                Logger.info("No contentHandler.")
+                Logger.warn("No contentHandler.")
             }
             Logger.flush()
             return
@@ -110,9 +111,7 @@ class NotificationService: UNNotificationServiceExtension {
 
                 Logger.info("Processing received notification.")
 
-                DispatchMainThreadSafe {
-                    self?.fetchAndProcessMessages()
-                }
+                self?.fetchAndProcessMessages()
             }
         }
     }
@@ -127,22 +126,21 @@ class NotificationService: UNNotificationServiceExtension {
         completeSilenty(timeHasExpired: true)
     }
 
-    func fetchAndProcessMessages() {
-        AssertIsOnMainThread()
-
+    // This method is thread-safe.
+    private func fetchAndProcessMessages() {
         guard !AppExpiry.shared.isExpired else {
             owsFailDebug("Not processing notifications for expired application.")
             return completeSilenty()
         }
 
-        environment.isProcessingMessages.set(true)
+        environment.processingMessageCounter.increment()
 
         Logger.info("Beginning message fetch.")
 
         let fetchPromise = messageFetcherJob.run().promise
         fetchPromise.timeout(seconds: 20, description: "Message Fetch Timeout.") {
             NotificationServiceError.timeout
-        }.catch { _ in
+        }.catch(on: .global()) { _ in
             // Do nothing, Promise.timeout() will log timeouts.
         }
         fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
@@ -171,11 +169,11 @@ class NotificationService: UNNotificationServiceExtension {
                 // Do nothing, Promise.timeout() will log timeouts.
             }
             return processingCompletePromise
-        }.ensure { [weak self] in
+        }.ensure(on: .global()) { [weak self] in
             Logger.info("Message fetch completed.")
-            environment.isProcessingMessages.set(false)
+            environment.processingMessageCounter.decrementOrZero()
             self?.completeSilenty()
-        }.catch { error in
+        }.catch(on: .global()) { error in
             Logger.warn("Error: \(error)")
         }
     }

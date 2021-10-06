@@ -9,7 +9,7 @@ public extension RESTNetworkManager {
     func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
         let (promise, future) = Promise<HTTPResponse>.pending()
         self.makeRequest(request,
-                         completionQueue: DispatchQueue.global(),
+                         completionQueue: .global(),
                          success: { (response: HTTPResponse) in
                             future.resolve(response)
                          },
