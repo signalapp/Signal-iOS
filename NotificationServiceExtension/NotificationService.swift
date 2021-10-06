@@ -110,7 +110,9 @@ class NotificationService: UNNotificationServiceExtension {
 
                 Logger.info("Processing received notification.")
 
-                self?.fetchAndProcessMessages()
+                DispatchMainThreadSafe {
+                    self?.fetchAndProcessMessages()
+                }
             }
         }
     }
