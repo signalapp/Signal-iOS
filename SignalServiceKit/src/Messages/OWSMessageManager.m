@@ -2162,13 +2162,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.attachmentDownloads enqueueDownloadOfAttachmentsForNewMessage:message transaction:transaction];
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 5: %@", messageDescription);
+        OWSLogInfo(@"Inserted 5: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
     }
 
     [self.notificationsManager notifyUserForIncomingMessage:message thread:thread transaction:transaction];
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 6: %@", messageDescription);
+        OWSLogInfo(@"Inserted 6: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
     }
 
     if (CurrentAppContext().isMainApp) {
@@ -2180,7 +2180,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 7: %@", messageDescription);
+        OWSLogInfo(@"Inserted 7: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
     }
 
     return message;
