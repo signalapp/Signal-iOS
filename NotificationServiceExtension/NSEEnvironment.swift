@@ -7,7 +7,10 @@ import SignalServiceKit
 import SignalMessaging
 
 class NSEEnvironment: Dependencies {
-    var isProcessingMessages = AtomicBool(false)
+    var processingMessageCounter = AtomicUInt(0)
+    var isProcessingMessages {
+        processingMessageCounter.get() > 0
+    }
 
     // MARK: - Main App Comms
 
@@ -80,8 +83,9 @@ class NSEEnvironment: Dependencies {
             // ourselves as a last resort.
             // TODO: We could eventually make the message fetch process
             // cancellable to never have to exit here.
-            guard self.isProcessingMessages.get() else { return }
-            Logger.info("Exiting because main app launched while we were processing messages.")
+            Logger.warn("Main app launched.")
+            guard self.isProcessingMessages else { return }
+            Logger.warn("Exiting because main app launched while we were processing messages.")
             Logger.flush()
             exit(0)
         })
