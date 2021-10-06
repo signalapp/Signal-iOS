@@ -10,6 +10,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
+    let searchView = EmojiSearchBar()
     let collectionView = EmojiPickerCollectionView()
     lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
 
@@ -32,8 +33,13 @@ class EmojiPickerSheet: InteractiveSheetViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        contentView.addSubview(searchView)
+        searchView.autoPinEdge(.top, to: .top, of: contentView)
+        searchView.autoPinWidthToSuperview()
+        
         contentView.addSubview(collectionView)
-        collectionView.autoPinEdgesToSuperviewEdges()
+        collectionView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+        collectionView.autoPinEdge(.top, to: .bottom, of: searchView)
         collectionView.pickerDelegate = self
 
         contentView.addSubview(sectionToolbar)
