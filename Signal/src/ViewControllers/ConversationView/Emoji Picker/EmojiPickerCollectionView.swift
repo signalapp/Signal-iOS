@@ -22,6 +22,16 @@ class EmojiPickerCollectionView: UICollectionView {
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
 
     private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
+    var emojiKeywordMatcher = EmojiKeywordMatcher(searchString: "") {
+        didSet {
+            reloadData()
+        }
+    }
+    private var filteredEmojisByCategory: [Emoji.Category: [EmojiWithSkinTones]] {
+        return allAvailableEmojiByCategory.mapValues { emojiWithSkinTones in
+            return emojiWithSkinTones.filter { emojiKeywordMatcher.matches($0.baseEmoji) }
+        }
+    }
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
@@ -88,7 +98,7 @@ class EmojiPickerCollectionView: UICollectionView {
             return []
         }
 
-        guard let categoryEmoji = allAvailableEmojiByCategory[category] else {
+        guard let categoryEmoji = filteredEmojisByCategory[category] else {
             owsFailDebug("Unexpectedly missing emoji for category \(category)")
             return []
         }
@@ -106,7 +116,7 @@ class EmojiPickerCollectionView: UICollectionView {
                                      comment: "The name for the emoji category 'Recents'")
         }
 
-        guard let category = Emoji.Category.allCases[safe: section - categoryIndexOffset] else {
+        guard let category = Emoji.Category.allCases.filter({ filteredEmojisByCategory[$0]?.count ?? 0 > 0 })[safe: section - categoryIndexOffset] else {
             owsFailDebug("Unexpectedly missing category for section \(section)")
             return nil
         }
@@ -237,7 +247,8 @@ extension EmojiPickerCollectionView: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return Emoji.Category.allCases.count + categoryIndexOffset
+        return Emoji.Category.allCases.filter { filteredEmojisByCategory[$0]?.count ?? 0 > 0 }.count
+            + categoryIndexOffset
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
