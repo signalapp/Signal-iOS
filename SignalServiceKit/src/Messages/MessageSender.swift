@@ -1254,7 +1254,6 @@ extension MessageSender {
             messageType = .plaintextMessageType
         }
 
-
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
         // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java

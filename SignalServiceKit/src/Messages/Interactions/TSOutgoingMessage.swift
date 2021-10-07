@@ -146,7 +146,6 @@ public extension TSOutgoingMessage {
 
 // MARK: Sender Key + Message Send Log
 
-
 @objc
 enum EncryptionStyle: Int {
     case whisper

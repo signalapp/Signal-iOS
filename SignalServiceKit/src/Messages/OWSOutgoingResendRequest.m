@@ -53,11 +53,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldRecordSendLog
 {
-    /// We have to return NO since our preferred style is Plaintext. If we returned YES, a future resend response would encrypt since MessageSender
-    /// only deals with plaintext as Data. This is fine since its contentHint is `default` anyway.
+    /// We have to return NO since our preferred style is Plaintext. If we returned YES, a future resend response would
+    /// encrypt since MessageSender only deals with plaintext as Data. This is fine since its contentHint is `default`
+    /// anyway.
     /// TODO: Maybe we should explore having a first class type to represent the plaintex message content mid-send?
-    /// That way we don't need to call back to the original TSOutgoingMessage for questions about the plaintext. This makes sense in a world where the
-    /// TSOutgoingMessage is divorced from the constructed plaintext because of the MessageSendLog and OWSOutgoingResendResponse
+    /// That way we don't need to call back to the original TSOutgoingMessage for questions about the plaintext. This
+    /// makes sense in a world where the TSOutgoingMessage is divorced from the constructed plaintext because of the
+    /// MessageSendLog and OWSOutgoingResendResponse
     return NO;
 }
 
