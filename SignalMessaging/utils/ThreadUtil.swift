@@ -339,8 +339,10 @@ extension TSThread {
 
     private func addAvatarWithBlock(_ block: () -> Void) {
         guard !Self.skipIntentAvatars else {
+            Logger.warn("Skipping intent avatar.")
             return
         }
+        Logger.warn("Adding intent avatar.")
         if CurrentAppContext().isNSE {
             autoreleasepool {
                 block()
