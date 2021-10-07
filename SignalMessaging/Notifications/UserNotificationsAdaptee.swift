@@ -331,10 +331,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     private func drainCancelations() {
         assertOnQueue(Self.cancelQueue)
 
-        guard isDrainCancelationInFlight.tryToSetFlag() else {
+        guard !pendingCancelations.isEmpty else {
             return
         }
-        guard !pendingCancelations.isEmpty else {
+        guard isDrainCancelationInFlight.tryToSetFlag() else {
             return
         }
 
@@ -408,6 +408,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         // De-duplicate.
         identifiersToCancel = Array(Set(identifiersToCancel))
+
+        guard !identifiersToCancel.isEmpty else {
+            return
+        }
 
         notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
