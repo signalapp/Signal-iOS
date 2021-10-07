@@ -1250,7 +1250,7 @@ extension MessageSender {
             messageType = .unidentifiedSenderMessageType
 
         } else {
-            serializedMessage = Data(plaintext.body)
+            serializedMessage = Data(plaintext.serialize())
             messageType = .plaintextMessageType
         }
 
