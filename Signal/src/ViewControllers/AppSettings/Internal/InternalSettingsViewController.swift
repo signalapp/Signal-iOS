@@ -88,6 +88,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         }
 
+        infoSection.add(.label(withText: "Memory Usage: \(LocalDevice.memoryUsage)"))
+
         let (threadCount, messageCount, attachmentCount) = databaseStorage.read { transaction in
             return (
                 TSThread.anyCount(transaction: transaction),

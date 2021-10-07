@@ -37,7 +37,7 @@ public class GRDBSchemaMigrator: NSObject {
 
     private var hasCreatedInitialSchema: Bool {
         let appliedMigrations = self.appliedMigrations
-        Logger.info("appliedMigrations: \(appliedMigrations).")
+        Logger.info("appliedMigrations: \(appliedMigrations.sorted()).")
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
 
