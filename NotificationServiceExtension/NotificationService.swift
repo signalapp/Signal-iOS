@@ -54,7 +54,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
-                Logger.warn("No contentHandler, nseCount: \(nseCount).")
+                Logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount).")
             }
             Logger.flush()
             return
@@ -70,7 +70,7 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         if DebugFlags.internalLogging {
-            Logger.info("Invoking contentHandler, nseCount: \(nseCount).")
+            Logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount).")
         }
         Logger.flush()
 
