@@ -46,7 +46,7 @@ public class ReactionManager: NSObject {
         }
 
         if DebugFlags.internalLogging {
-            Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving)")
+            Logger.info("Sending reaction: \(emoji) isRemoving: \(isRemoving), message.timestamp: \(message.timestamp)")
         } else {
             Logger.info("Sending reaction, isRemoving: \(isRemoving)")
         }
@@ -118,7 +118,7 @@ public class ReactionManager: NSObject {
         }
         if DebugFlags.internalLogging {
             let base64 = emoji.data(using: .utf8)?.base64EncodedString() ?? "?"
-            Logger.info("Processing reaction: \(emoji), \(base64)")
+            Logger.info("Processing reaction: \(emoji), \(base64), message.timestamp: \(reaction.timestamp)")
             Logger.flush()
         }
         guard emoji.isSingleEmoji else {
