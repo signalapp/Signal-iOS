@@ -320,7 +320,7 @@ public class MessageProcessor: NSObject {
             if let sourceAddress = envelope.sourceAddress, blockingManager.isAddressBlocked(sourceAddress) {
                 Logger.info("Skipping processing for blocked envelope: \(sourceAddress)")
 
-                let error = OWSGenericError("Ignoring blocked envelope: \(sourceAddress)")
+                let error = MessageProcessingError.blockedSender
                 transaction.addAsyncCompletionOffMain {
                     pendingEnvelope.completion(error)
                 }
@@ -438,17 +438,16 @@ public class MessageProcessor: NSObject {
         if case MessageProcessingError.duplicatePendingEnvelope = error {
             // _DO NOT_ ACK if de-duplicated before decryption.
             return .shouldNotAck(error: error)
+        } else if case MessageProcessingError.blockedSender = error {
+            return .shouldAck
         } else if let owsError = error as? OWSError,
                   owsError.errorCode == OWSErrorCode.failedToDecryptDuplicateMessage.rawValue {
             // _DO_ ACK if de-duplicated during decryption.
             return .shouldAck
         } else {
             Logger.warn("Failed to process message: \(error)")
-            Self.databaseStorage.write { transaction in
-                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
-                Self.notificationsManager?.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                      transaction: transaction)
-            }
+            // This should only happen for malformed envelopes. We may eventually
+            // want to show an error in this case.
             return .shouldAck
         }
     }
@@ -672,4 +671,5 @@ public class PendingEnvelopes {
 
 public enum MessageProcessingError: Error {
     case duplicatePendingEnvelope
+    case blockedSender
 }
