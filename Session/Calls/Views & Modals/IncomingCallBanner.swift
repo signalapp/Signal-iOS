@@ -2,7 +2,9 @@ import UIKit
 import WebRTC
 import SessionMessagingKit
 
-final class IncomingCallBanner: UIView {
+final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
+    private static let swipeToOperateThreshold: CGFloat = 60
+    private var previousY: CGFloat = 0
     let sessionID: String
     let uuid: String
     let sdp: RTCSessionDescription
@@ -50,6 +52,12 @@ final class IncomingCallBanner: UIView {
         return result
     }()
     
+    private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
+        let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        result.delegate = self
+        return result
+    }()
+    
     // MARK: Initialization
     public static var current: IncomingCallBanner?
     
@@ -59,6 +67,7 @@ final class IncomingCallBanner: UIView {
         self.sdp = sdp
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
+        setUpGestureRecognizers()
         if let incomingCallBanner = IncomingCallBanner.current {
             incomingCallBanner.dismiss()
         }
@@ -88,6 +97,47 @@ final class IncomingCallBanner: UIView {
         self.addSubview(stackView)
         stackView.center(.vertical, in: self)
         stackView.autoPinWidthToSuperview(withMargin: Values.mediumSpacing)
+    }
+    
+    private func setUpGestureRecognizers() {
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        addGestureRecognizer(tapGestureRecognizer)
+        addGestureRecognizer(panGestureRecognizer)
+    }
+    
+    // MARK: Interaction
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == panGestureRecognizer {
+            let v = panGestureRecognizer.velocity(in: self)
+            return abs(v.y) > abs(v.x) // It has to be more vertical than horizontal
+        } else {
+            return true
+        }
+    }
+    
+    @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
+        showCallVC(answer: false)
+    }
+    
+    @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let translationY = gestureRecognizer.translation(in: self).y
+        switch gestureRecognizer.state {
+        case .changed:
+            self.transform = CGAffineTransform(translationX: 0, y: min(translationY, IncomingCallBanner.swipeToOperateThreshold))
+            if abs(translationY) > IncomingCallBanner.swipeToOperateThreshold && abs(previousY) < IncomingCallBanner.swipeToOperateThreshold {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred() // Let the user know when they've hit the swipe to reply threshold
+            }
+            previousY = translationY
+        case .ended, .cancelled:
+            if abs(translationY) > IncomingCallBanner.swipeToOperateThreshold {
+                if translationY > 0 { showCallVC(answer: false) }
+                else { endCall() } // TODO: Or just put the call on hold?
+            } else {
+                self.transform = .identity
+            }
+        default: break
+        }
     }
     
     @objc private func answerCall() {
