@@ -29,4 +29,16 @@ extension OWSOutgoingResendRequest {
             return nil
         }
     }
+
+    @objc
+    open override func buildPlainTextData(_ thread: TSThread, transaction: SDSAnyWriteTransaction) -> Data? {
+        do {
+            let decryptionErrorMessage = try DecryptionErrorMessage(bytes: decryptionErrorData)
+            let plaintextContent = PlaintextContent(decryptionErrorMessage)
+            return Data(plaintextContent.serialize())
+        } catch {
+            owsFailDebug("Failed to build plaintext: \(error)")
+            return nil
+        }
+    }
 }
