@@ -29,18 +29,17 @@ extension AppDelegate {
         // Answer messages
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
-                if let incomingCallBanner = IncomingCallBanner.current, incomingCallBanner.uuid == message.uuid! { incomingCallBanner.dismiss() }
-                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleAnswerMessage(message) }
-                WebRTCSession.current?.dropConnection()
-                WebRTCSession.current = nil
+                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
+                callVC.handleAnswerMessage(message)
             }
         }
         // End call messages
         MessageReceiver.handleEndCallMessage = { message in
             DispatchQueue.main.async {
                 if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
-                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
-                callVC.handleEndCallMessage(message)
+                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage(message) }
+                WebRTCSession.current?.dropConnection()
+                WebRTCSession.current = nil
             }
         }
     }
