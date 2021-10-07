@@ -320,6 +320,10 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                                                  deviceId:(int)deviceId
                                               transaction:(SDSAnyWriteTransaction *)transaction
                                                     error:(NSError **)error;
+- (nullable NSDictionary *)wrappedPlaintextMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                        deviceId:(int)deviceId
+                                                     transaction:(SDSAnyWriteTransaction *)transaction
+                                                           error:(NSError **)error;
 @end
 
 #pragma mark -
@@ -1346,14 +1350,27 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     __block NSError *encryptionError;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *deviceId in deviceIds) {
-            NSDictionary *_Nullable messageDict = [self encryptedMessageForMessageSend:messageSend
-                                                                              deviceId:deviceId.intValue
-                                                                           transaction:transaction
-                                                                                 error:&encryptionError];
-            if (!messageDict) {
+            NSDictionary *_Nullable messageDict = nil;
+            switch (messageSend.message.encryptionStyle) {
+                case EncryptionStyleWhisper:
+                    messageDict = [self encryptedMessageForMessageSend:messageSend
+                                                              deviceId:deviceId.intValue
+                                                           transaction:transaction
+                                                                 error:&encryptionError];
+                    break;
+                case EncryptionStylePlaintext:
+                    messageDict = [self wrappedPlaintextMessageForMessageSend:messageSend
+                                                                     deviceId:deviceId.intValue
+                                                                  transaction:transaction
+                                                                        error:&encryptionError];
+                    break;
+                default:
+                    encryptionError = OWSErrorMakeAssertionError(@"Unrecognized encryption style");
+                    break;
+            }
+            if (!messageDict || encryptionError) {
                 return;
             }
-
             [messagesArray addObject:messageDict];
         }
     });

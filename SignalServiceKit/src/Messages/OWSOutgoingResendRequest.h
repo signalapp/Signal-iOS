@@ -51,4 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface OWSOutgoingResendRequest (SwiftBridge)
+@property (strong, nonatomic, readonly) NSData *decryptionErrorData;
+@end
+
 NS_ASSUME_NONNULL_END

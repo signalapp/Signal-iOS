@@ -146,6 +146,12 @@ public extension TSOutgoingMessage {
 
 // MARK: Sender Key + Message Send Log
 
+@objc
+enum EncryptionStyle: Int {
+    case whisper
+    case plaintext
+}
+
 extension TSOutgoingMessage {
 
     /// A collection of message unique IDs related to the outgoing message
@@ -190,4 +196,9 @@ extension TSOutgoingMessage {
     /// it is a good indicator)
     @objc
     var shouldRecordSendLog: Bool { true }
+
+    /// Used in MessageSender to signal how a message should be encrypted before sending
+    /// Currently only overridden by OWSOutgoingResendRequest (this is asserted in the MessageSender implementation)
+    @objc
+    var encryptionStyle: EncryptionStyle { .whisper }
 }

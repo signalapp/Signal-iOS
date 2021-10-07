@@ -1213,4 +1213,57 @@ extension MessageSender {
             "content": serializedMessage.base64EncodedString()
         ]
     }
+
+    @objc(wrappedPlaintextMessageForMessageSend:deviceId:transaction:error:)
+    private func wrappedPlaintextMessage(for messageSend: OWSMessageSend,
+                                         deviceId: Int32,
+                                         transaction: SDSAnyWriteTransaction) throws -> NSDictionary {
+        let recipientAddress = messageSend.address
+        owsAssertDebug(!Thread.isMainThread)
+        guard recipientAddress.isValid else { throw OWSAssertionError("Invalid address") }
+        let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
+
+        let permittedMessageTypes = [OWSOutgoingResendRequest.self]
+        guard permittedMessageTypes.contains(where: { messageSend.message.isKind(of: $0) }) else {
+            throw OWSAssertionError("Unexpected message type")
+        }
+        guard let rawPlaintext = messageSend.plaintextContent else { throw OWSAssertionError("Missing plaintext") }
+        let plaintext = try PlaintextContent(bytes: rawPlaintext)
+
+        let serializedMessage: Data
+        let messageType: TSWhisperMessageType
+
+        if let udSendingAccess = messageSend.udSendingAccess {
+            let usmc = try UnidentifiedSenderMessageContent(
+                CiphertextMessage(plaintext),
+                from: udSendingAccess.senderCertificate,
+                contentHint: messageSend.message.contentHint.signalClientHint,
+                groupId: messageSend.message.envelopeGroupIdWithTransaction(transaction) ?? Data()
+            )
+            let outerBytes = try sealedSenderEncrypt(
+                usmc,
+                for: protocolAddress,
+                identityStore: identityManager,
+                context: transaction)
+
+            serializedMessage = Data(outerBytes)
+            messageType = .unidentifiedSenderMessageType
+
+        } else {
+            serializedMessage = Data(plaintext.body)
+            messageType = .plaintextMessageType
+        }
+
+        // Returns the per-device-message parameters used when submitting a message to
+        // the Signal Web Service.
+        // See: https://github.com/signalapp/Signal-Server/blob/master/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
+        let session = try Self.sessionStore.loadSession(for: protocolAddress, context: transaction)!
+        return [
+            "type": messageType.rawValue,
+            "destination": protocolAddress.name,
+            "destinationDeviceId": protocolAddress.deviceId,
+            "destinationRegistrationId": Int32(bitPattern: try session.remoteRegistrationId()),
+            "content": serializedMessage.base64EncodedString()
+        ]
+    }
 }
