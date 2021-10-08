@@ -336,6 +336,12 @@ def process(filepath):
     text = sort_class_statements(filepath, filename, file_ext, text)
 
     lines = text.split('\n')
+
+    shebang = ""
+    if lines[0].startswith('#!'):
+        shebang = lines[0] + '\n'
+        lines = lines[1:]
+
     while lines and lines[0].startswith('//'):
         lines = lines[1:]
     text = '\n'.join(lines)
@@ -348,7 +354,7 @@ def process(filepath):
 ''' % (
     datetime.datetime.now().year,
     )
-    text = header + text + '\n'
+    text = shebang + header + text + '\n'
 
     if original_text == text:
         return
