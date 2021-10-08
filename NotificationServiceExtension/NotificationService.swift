@@ -36,15 +36,30 @@ class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private var contentHandler = AtomicOptional<ContentHandler>(nil)
 
+    private var logTimer: OffMainThreadTimer?
+
+    private static let nseCounter = AtomicUInt(0)
+
+    deinit {
+        logTimer?.invalidate()
+        logTimer = nil
+    }
+
     // This method is thread-safe.
     func completeSilenty(timeHasExpired: Bool = false) {
+        let nseCount = Self.nseCounter.decrementOrZero()
+
+        logTimer?.invalidate()
+        logTimer = nil
+
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
-                Logger.warn("No contentHandler.")
+                Logger.warn("No contentHandler, nseCount: \(nseCount).")
             }
             Logger.flush()
             return
         }
+
         let content = UNMutableNotificationContent()
 
         // We cannot perform a database read when the NSE's time
@@ -55,7 +70,7 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         if DebugFlags.internalLogging {
-            Logger.info("Invoking contentHandler.")
+            Logger.info("Invoking contentHandler, nseCount: \(nseCount).")
         }
         Logger.flush()
 
@@ -99,7 +114,15 @@ class NotificationService: UNNotificationServiceExtension {
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
-        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier)")
+        let nseCount = Self.nseCounter.increment()
+
+        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount)")
+
+        owsAssertDebug(logTimer == nil)
+        logTimer?.invalidate()
+        logTimer = OffMainThreadTimer(timeInterval: 2.0, repeats: true) { _ in
+            Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
