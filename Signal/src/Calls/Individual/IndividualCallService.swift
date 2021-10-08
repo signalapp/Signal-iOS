@@ -1158,7 +1158,7 @@ import SignalMessaging
         call.individualCall.state = .busyElsewhere
 
         // Notify UI
-        callUIAdapter.reportMissedCall(call)
+        callUIAdapter.wasBusyElsewhere(call: call)
 
         callService.terminate(call: call)
     }

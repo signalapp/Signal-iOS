@@ -25,6 +25,7 @@ protocol CallUIAdaptee: AnyObject {
     func remoteBusy(_ call: SignalCall)
     func didAnswerElsewhere(call: SignalCall)
     func didDeclineElsewhere(call: SignalCall)
+    func wasBusyElsewhere(call: SignalCall)
     func failCall(_ call: SignalCall, error: SignalCall.CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
@@ -243,6 +244,10 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
 
     internal func didDeclineElsewhere(call: SignalCall) {
         adaptee(for: call).didDeclineElsewhere(call: call)
+    }
+
+    internal func wasBusyElsewhere(call: SignalCall) {
+        adaptee(for: call).wasBusyElsewhere(call: call)
     }
 
     internal func localHangupCall(localId: UUID) {

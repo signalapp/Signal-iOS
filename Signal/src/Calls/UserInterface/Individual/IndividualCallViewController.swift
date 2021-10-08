@@ -773,7 +773,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         case .declinedElsewhere:
             return NSLocalizedString("IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient declined on another device.")
         case .busyElsewhere:
-            owsFailDebug("busy elsewhere triggered on call screen, this should never happen")
             return NSLocalizedString("IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient has a call in progress on another device.")
         }
     }
