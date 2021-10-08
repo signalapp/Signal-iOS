@@ -7,7 +7,11 @@ import SignalServiceKit
 @objc
 public class NoopCallMessageHandler: NSObject, OWSCallMessageHandler {
 
-    public func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage) -> OWSCallMessageAction {
+    public func action(
+        for envelope: SSKProtoEnvelope,
+        callMessage: SSKProtoCallMessage,
+        serverDeliveryTimestamp: UInt64
+    ) -> OWSCallMessageAction {
         .process
     }
 

@@ -10,7 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeCallMessageHandler
 
-- (OWSCallMessageAction)actionForEnvelope:(SSKProtoEnvelope *)envelope callMessage:(SSKProtoCallMessage *)message;
+- (OWSCallMessageAction)actionForEnvelope:(SSKProtoEnvelope *)envelope
+                              callMessage:(SSKProtoCallMessage *)message
+                  serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp
 {
     return OWSCallMessageActionProcess;
 }

@@ -429,7 +429,8 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             OWSCallMessageAction action = [self.callMessageHandler actionForEnvelope:envelope
-                                                                         callMessage:contentProto.callMessage];
+                                                                         callMessage:contentProto.callMessage
+                                                             serverDeliveryTimestamp:serverDeliveryTimestamp];
             switch (action) {
                 case OWSCallMessageActionIgnore:
                     OWSLogInfo(@"Ignoring call message with timestamp: %llu", envelope.timestamp);
