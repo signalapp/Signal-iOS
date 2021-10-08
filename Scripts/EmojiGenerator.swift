@@ -1,3 +1,7 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
 #!/usr/bin/env xcrun --sdk macosx swift
 
 import Foundation

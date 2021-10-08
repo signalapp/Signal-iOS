@@ -85,10 +85,12 @@ extension Emoji {
                     .neutralFace,
                     .expressionless,
                     .noMouth,
+                    .faceInClouds,
                     .smirk,
                     .unamused,
                     .faceWithRollingEyes,
                     .grimacing,
+                    .faceExhaling,
                     .lyingFace,
                     .relieved,
                     .pensive,
@@ -105,6 +107,7 @@ extension Emoji {
                     .coldFace,
                     .woozyFace,
                     .dizzyFace,
+                    .faceWithSpiralEyes,
                     .explodingHead,
                     .faceWithCowboyHat,
                     .partyingFace,
@@ -176,6 +179,8 @@ extension Emoji {
                     .heartDecoration,
                     .heavyHeartExclamationMarkOrnament,
                     .brokenHeart,
+                    .heartOnFire,
+                    .mendingHeart,
                     .heart,
                     .orangeHeart,
                     .yellowHeart,
@@ -258,6 +263,8 @@ extension Emoji {
                     .personWithBlondHair,
                     .man,
                     .beardedPerson,
+                    .manWithBeard,
+                    .womanWithBeard,
                     .redHairedMan,
                     .curlyHairedMan,
                     .whiteHairedMan,
@@ -447,8 +454,8 @@ extension Emoji {
                     .manDancing,
                     .manInBusinessSuitLevitating,
                     .dancers,
-                    .manWithBunnyEarsPartying,
-                    .womanWithBunnyEarsPartying,
+                    .menWithBunnyEarsPartying,
+                    .womenWithBunnyEarsPartying,
                     .personInSteamyRoom,
                     .manInSteamyRoom,
                     .womanInSteamyRoom,
@@ -1918,10 +1925,12 @@ extension Emoji {
         case .neutralFace: return .smileysAndPeople
         case .expressionless: return .smileysAndPeople
         case .noMouth: return .smileysAndPeople
+        case .faceInClouds: return .smileysAndPeople
         case .smirk: return .smileysAndPeople
         case .unamused: return .smileysAndPeople
         case .faceWithRollingEyes: return .smileysAndPeople
         case .grimacing: return .smileysAndPeople
+        case .faceExhaling: return .smileysAndPeople
         case .lyingFace: return .smileysAndPeople
         case .relieved: return .smileysAndPeople
         case .pensive: return .smileysAndPeople
@@ -1938,6 +1947,7 @@ extension Emoji {
         case .coldFace: return .smileysAndPeople
         case .woozyFace: return .smileysAndPeople
         case .dizzyFace: return .smileysAndPeople
+        case .faceWithSpiralEyes: return .smileysAndPeople
         case .explodingHead: return .smileysAndPeople
         case .faceWithCowboyHat: return .smileysAndPeople
         case .partyingFace: return .smileysAndPeople
@@ -2009,6 +2019,8 @@ extension Emoji {
         case .heartDecoration: return .smileysAndPeople
         case .heavyHeartExclamationMarkOrnament: return .smileysAndPeople
         case .brokenHeart: return .smileysAndPeople
+        case .heartOnFire: return .smileysAndPeople
+        case .mendingHeart: return .smileysAndPeople
         case .heart: return .smileysAndPeople
         case .orangeHeart: return .smileysAndPeople
         case .yellowHeart: return .smileysAndPeople
@@ -2091,6 +2103,8 @@ extension Emoji {
         case .personWithBlondHair: return .smileysAndPeople
         case .man: return .smileysAndPeople
         case .beardedPerson: return .smileysAndPeople
+        case .manWithBeard: return .smileysAndPeople
+        case .womanWithBeard: return .smileysAndPeople
         case .redHairedMan: return .smileysAndPeople
         case .curlyHairedMan: return .smileysAndPeople
         case .whiteHairedMan: return .smileysAndPeople
@@ -2280,8 +2294,8 @@ extension Emoji {
         case .manDancing: return .smileysAndPeople
         case .manInBusinessSuitLevitating: return .smileysAndPeople
         case .dancers: return .smileysAndPeople
-        case .manWithBunnyEarsPartying: return .smileysAndPeople
-        case .womanWithBunnyEarsPartying: return .smileysAndPeople
+        case .menWithBunnyEarsPartying: return .smileysAndPeople
+        case .womenWithBunnyEarsPartying: return .smileysAndPeople
         case .personInSteamyRoom: return .smileysAndPeople
         case .manInSteamyRoom: return .smileysAndPeople
         case .womanInSteamyRoom: return .smileysAndPeople
