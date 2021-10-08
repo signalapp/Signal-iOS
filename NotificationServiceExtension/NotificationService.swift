@@ -104,12 +104,12 @@ class NotificationService: UNNotificationServiceExtension {
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {
-                    Logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsage).")
+                    Logger.info("Received notification handled by main application.")
                     self?.completeSilenty()
                     return
                 }
 
-                Logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsage).")
+                Logger.info("Processing received notification.")
 
                 self?.fetchAndProcessMessages()
             }
