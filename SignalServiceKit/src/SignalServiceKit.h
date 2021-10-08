@@ -56,6 +56,7 @@
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/OutgoingPaymentSyncMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RESTNetworkManager.h>
 #import <SignalServiceKit/RemoteAttestation.h>
