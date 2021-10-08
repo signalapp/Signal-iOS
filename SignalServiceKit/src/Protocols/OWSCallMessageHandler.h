@@ -30,7 +30,9 @@ typedef NS_ENUM(NSUInteger, OWSCallMessageAction) {
 @protocol OWSCallMessageHandler <NSObject>
 
 /// Informs caller of how the handler would like to handle this message
-- (OWSCallMessageAction)actionForEnvelope:(SSKProtoEnvelope *)envelope callMessage:(SSKProtoCallMessage *)message;
+- (OWSCallMessageAction)actionForEnvelope:(SSKProtoEnvelope *)envelope
+                              callMessage:(SSKProtoCallMessage *)message
+                  serverDeliveryTimestamp:(uint64_t)serverDeliveryTimestamp;
 
 - (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
                  fromCaller:(SignalServiceAddress *)caller
