@@ -8,6 +8,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     private var callingCode = "+1"
     private var countryCode = "US"
     private let phoneNumberTextField = UITextField()
+    private let nameLabel = UILabel()
 
     // Don't allow swipe to dismiss
     override var isModalInPresentation: Bool {
@@ -45,7 +46,8 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
 
     override func themeDidChange() {
         super.themeDidChange()
-
+        nameLabel.textColor = Theme.primaryTextColor
+        phoneNumberTextField.textColor = Theme.primaryTextColor
         updateTableContents()
     }
 
@@ -81,7 +83,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         ))
         confirmSection.add(.init(customCellBlock: { [weak self] in
             guard let self = self else { return UITableViewCell() }
-            return self.buildPhoneNumberCell()
+            return self.phoneNumberCell
         },
             actionBlock: { [weak self] in
                 self?.phoneNumberTextField.becomeFirstResponder()
@@ -135,12 +137,11 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         return cell
     }
 
-    func buildPhoneNumberCell() -> UITableViewCell {
+    lazy var phoneNumberCell: UITableViewCell = {
         let cell = OWSTableItem.newCell()
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
 
-        let nameLabel = UILabel()
         nameLabel.text = NSLocalizedString(
             "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE",
             comment: "Title for the 'phone number' row of the 'delete account confirmation' view controller."
@@ -149,8 +150,6 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.adjustsFontForContentSizeCategory = true
         nameLabel.lineBreakMode = .byTruncatingTail
-        nameLabel.setCompressionResistanceHorizontalHigh()
-        nameLabel.setContentHuggingHorizontalHigh()
         nameLabel.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
 
         phoneNumberTextField.textColor = Theme.primaryTextColor
@@ -161,11 +160,11 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
             includeExampleLabel: false
         )
 
-        phoneNumberTextField.setCompressionResistanceHorizontalHigh()
+        nameLabel.setCompressionResistanceHigh()
         phoneNumberTextField.setContentHuggingHorizontalHigh()
 
         let contentRow = UIStackView(arrangedSubviews: [
-            nameLabel, .hStretchingSpacer(), phoneNumberTextField
+            nameLabel, phoneNumberTextField
         ])
         contentRow.spacing = OWSTableItem.iconSpacing
         contentRow.alignment = .center
@@ -173,7 +172,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         contentRow.autoPinEdgesToSuperviewMargins()
 
         return cell
-    }
+    }()
 
     @objc
     func didTapDelete() {
