@@ -212,8 +212,10 @@ extension TSThread {
         var inSender: INPerson?
         // Recipients are required for iOS 15 Communication style notifications
         for recipient in self.recipientAddresses {
-            let generateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
-            let person = inPersonForRecipient(recipient, generateAvatar: generateAvatar, transaction: transaction)
+            let shouldGenerateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
+            let person = inPersonForRecipient(recipient,
+                                              shouldGenerateAvatar: shouldGenerateAvatar,
+                                              transaction: transaction)
 
             if recipient == sender {
                 inSender = person
@@ -233,8 +235,10 @@ extension TSThread {
                                                     attachments: nil)
 
         if isGroupThread {
-            if let image = intentThreadAvatarImage(transaction: transaction) {
-                sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
+            addAvatarWithBlock {
+                if let image = intentThreadAvatarImage(transaction: transaction) {
+                    sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
+                }
             }
         }
 
@@ -255,8 +259,10 @@ extension TSThread {
             sender: nil
         )
 
-        if let image = intentThreadAvatarImage(transaction: transaction) {
-            sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
+        addAvatarWithBlock {
+            if let image = intentThreadAvatarImage(transaction: transaction) {
+                sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
+            }
         }
 
         return sendMessageIntent
@@ -270,8 +276,8 @@ extension TSThread {
 
             var recipients: [INPerson] = []
             for recipient in self.recipientAddresses {
-                let generateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
-                let person = inPersonForRecipient(recipient, generateAvatar: generateAvatar, transaction: transaction)
+                let shouldGenerateAvatar = !isGroupThread || (isGroupThread && !CurrentAppContext().isNSE)
+                let person = inPersonForRecipient(recipient, shouldGenerateAvatar: shouldGenerateAvatar, transaction: transaction)
                 recipients.append(person)
             }
 
@@ -283,8 +289,10 @@ extension TSThread {
                                                     callCapability: .unknown)
 
             if self.isGroupThread {
-                if let image = intentThreadAvatarImage(transaction: transaction) {
-                    startCallIntent.setImage(image, forParameterNamed: \.callRecordToCallBack)
+                addAvatarWithBlock {
+                    if let image = intentThreadAvatarImage(transaction: transaction) {
+                        startCallIntent.setImage(image, forParameterNamed: \.callRecordToCallBack)
+                    }
                 }
             }
 
@@ -297,7 +305,9 @@ extension TSThread {
 
 #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
-    private func inPersonForRecipient(_ recipient: SignalServiceAddress, generateAvatar: Bool, transaction: SDSAnyReadTransaction) -> INPerson {
+    private func inPersonForRecipient(_ recipient: SignalServiceAddress,
+                                      shouldGenerateAvatar: Bool,
+                                      transaction: SDSAnyReadTransaction) -> INPerson {
 
         // Generate recipient name
         let contactName = contactsManager.displayName(for: recipient, transaction: transaction)
@@ -316,11 +326,32 @@ extension TSThread {
 
         // Generate avatar
         var image: INImage?
-        if generateAvatar {
-            image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
+        if shouldGenerateAvatar {
+            addAvatarWithBlock {
+                image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
+            }
         }
 
         return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+    }
+
+    // This is temporary until we can find a safer way to build avatars
+    // for notification intents in the NSE.
+    private static var skipIntentAvatars: Bool { CurrentAppContext().isNSE }
+
+    private func addAvatarWithBlock(_ block: () -> Void) {
+        guard !Self.skipIntentAvatars else {
+            Logger.warn("Skipping intent avatar.")
+            return
+        }
+        Logger.warn("Adding intent avatar.")
+        if CurrentAppContext().isNSE {
+            autoreleasepool {
+                block()
+            }
+        } else {
+            block()
+        }
     }
 
     private func intentRecipientAvatarImage(recipient: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> INImage? {
