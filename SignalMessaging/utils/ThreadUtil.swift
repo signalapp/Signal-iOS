@@ -335,6 +335,8 @@ extension TSThread {
         return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
     }
 
+    // This is temporary until we can find a safer way to build avatars
+    // for notification intents in the NSE.
     private static var skipIntentAvatars: Bool { CurrentAppContext().isNSE }
 
     private func addAvatarWithBlock(_ block: () -> Void) {
