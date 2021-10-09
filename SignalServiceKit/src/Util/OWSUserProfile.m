@@ -154,6 +154,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
+                profileBadgeInfo:(NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -175,6 +176,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _isUuidCapable = isUuidCapable;
     _lastFetchDate = lastFetchDate;
     _lastMessagingDate = lastMessagingDate;
+    _profileBadgeInfo = profileBadgeInfo;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
