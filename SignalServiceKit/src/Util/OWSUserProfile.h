@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
+@class OWSUserProfileBadgeInfo;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
@@ -54,6 +55,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 // received a message from this user.  It is coarse;
 // we only update it every N hours.
 @property (atomic, readonly, nullable) NSDate *lastMessagingDate;
+@property (atomic, readonly) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

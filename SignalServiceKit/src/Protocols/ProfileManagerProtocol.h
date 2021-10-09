@@ -3,6 +3,8 @@
 //
 
 @class AnyPromise;
+@class BadgeStore;
+@class OWSUserProfileBadgeInfo;
 @class OWSAES256Key;
 @class OWSUserProfile;
 @class SDSAnyReadTransaction;
@@ -33,6 +35,8 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 #pragma mark -
 
 @protocol ProfileManagerProtocol <NSObject>
+
+@property (nonatomic, readonly) BadgeStore *badgeStore;
 
 - (OWSAES256Key *)localProfileKey;
 // localUserProfileExists is true if there is _ANY_ local profile.
@@ -138,8 +142,10 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
-              userProfileWriter:(UserProfileWriter)userProfileWriter;
+              userProfileWriter:(UserProfileWriter)userProfileWriter
+                    transaction:(SDSAnyWriteTransaction *)writeTx;
 
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 

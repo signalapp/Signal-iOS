@@ -28,6 +28,7 @@ public class SignalServiceProfile: NSObject {
     public let supportsAnnouncementOnlyGroups: Bool
     public let supportsSenderKey: Bool
     public let credential: Data?
+    public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
 
     public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
@@ -87,6 +88,32 @@ public class SignalServiceProfile: NSObject {
                                                           requireCapability: true)
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
+
+        // Should we be fetching badges in the non-main app?
+        if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
+            self.badges = badgeArray.compactMap {
+                do {
+                    let expiration: TimeInterval? = try params.optional(key: "expiration")
+                    let expirationMills = expiration.flatMap { Int64($0 * 1000) }
+
+                    let isVisible: Bool? = try params.optional(key: "visible")
+                    let badge = try ProfileBadge(jsonDictionary: $0)
+
+                    let badgeMetadata: OWSUserProfileBadgeInfo
+                    if let expirationMills = expirationMills, let isVisible = isVisible {
+                        badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id, expiration: expirationMills, isVisible: isVisible)
+                    } else {
+                        badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id)
+                    }
+                    return (badgeMetadata, badge)
+                } catch {
+                    owsFailDebug("Invalid badge: \(error)")
+                    return nil
+                }
+            }
+        } else {
+            self.badges = []
+        }
     }
 
     private static func parseCapabilityFlag(capabilityKey: String,

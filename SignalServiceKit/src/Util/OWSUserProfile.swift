@@ -6,6 +6,38 @@ import Foundation
 import Mantle
 
 @objc
+public class OWSUserProfileBadgeInfo: NSObject, Codable {
+    let badgeId: String
+
+    // These properties are only valid for the current user
+    let expiration: UInt64?
+    let isVisible: Bool?
+
+    init(badgeId: String) {
+        self.badgeId = badgeId
+        self.expiration = nil
+        self.isVisible = nil
+    }
+
+    init(badgeId: String, expiration: UInt64, isVisible: Bool) {
+        self.badgeId = badgeId
+        self.expiration = expiration
+        self.isVisible = isVisible
+    }
+
+    override var description: String {
+        var description = "Badge: \(badgeId)"
+        if let expiration = expiration {
+            description += ", Expires: \(Date(millisecondsSince1970: expiration))"
+        }
+        if let isVisible = isVisible {
+            description += ", Visible: \(isVisible ? "Yes" : "No")"
+        }
+        return description
+    }
+}
+
+@objc
 public extension OWSUserProfile {
 
     static var maxNameLengthGlyphs: Int = 26
@@ -278,6 +310,8 @@ public class UserProfileChanges: NSObject {
     public var lastMessagingDate: DateValue?
     @objc
     public var profileKey: OptionalProfileKeyValue?
+    @objc
+    public var badges: [OWSUserProfileBadgeInfo]?
 
     @objc
     public let updateMethodName: String
@@ -328,13 +362,14 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:lastFetchDate:userProfileWriter:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:badges:avatarUrlPath:lastFetchDate:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
                 bioEmoji: String?,
                 username: String?,
                 isUuidCapable: Bool,
+                badges: [OWSUserProfileBadgeInfo],
                 avatarUrlPath: String?,
                 lastFetchDate: Date,
                 userProfileWriter: UserProfileWriter,
@@ -347,6 +382,7 @@ public extension OWSUserProfile {
         changes.bioEmoji = .init(bioEmoji)
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
+        changes.badges = badges
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.lastFetchDate = .init(lastFetchDate)
         apply(changes,
@@ -355,13 +391,14 @@ public extension OWSUserProfile {
               completion: completion)
     }
 
-    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:avatarUrlPath:avatarFileName:lastFetchDate:userProfileWriter:transaction:completion:)
+    @objc(updateWithGivenName:familyName:bio:bioEmoji:username:isUuidCapable:badges:avatarUrlPath:avatarFileName:lastFetchDate:userProfileWriter:transaction:completion:)
     func update(givenName: String?,
                 familyName: String?,
                 bio: String?,
                 bioEmoji: String?,
                 username: String?,
                 isUuidCapable: Bool,
+                badges: [OWSUserProfileBadgeInfo],
                 avatarUrlPath: String?,
                 avatarFileName: String?,
                 lastFetchDate: Date,
@@ -375,6 +412,7 @@ public extension OWSUserProfile {
         changes.bioEmoji = .init(bioEmoji)
         changes.username = .init(username)
         changes.isUuidCapable = .init(isUuidCapable)
+        changes.badges = badges
         changes.avatarUrlPath = .init(avatarUrlPath)
         changes.avatarFileName = .init(avatarFileName)
         changes.lastFetchDate = .init(lastFetchDate)

@@ -120,6 +120,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addRecordTypeIndex
         case tunedConversationLoadIndices
         case messageDecryptDeduplicationV6
+        case createProfileBadgeTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1463,6 +1464,27 @@ public class GRDBSchemaMigrator: NSObject {
                 owsFail("Error: \(error)")
             }
         }
+
+        migrator.registerMigration(MigrationId.createProfileBadgeTable.rawValue) { db in
+            do {
+                try db.create(table: "ProfileBadgeTable") { table in
+                    // Retrieved from profile endpoint
+                    table.column("id", .text).primaryKey()
+                    table.column("category", .integer)
+                    table.column("name", .text)
+                    table.column("description", .text)
+                    table.column("url", .text)
+
+                    // Metadata *about* the fetch itself, a change here indicates a device/language
+                    // change and that we should refetch the profile content
+                    table.column("urlFormat", .integer)
+                    table.column("localization", .text)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
 
         // MARK: - Schema Migration Insertion Point
     }

@@ -119,6 +119,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *bioEmoji;
 @property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isUuidCapable;
+@property (atomic) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
 
@@ -536,6 +537,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
     if (changes.isUuidCapable != nil) {
         profile.isUuidCapable = changes.isUuidCapable.value;
+    }
+    if (changes.badges != nil) {
+        profile.profileBadgeInfo = changes.badges;
     }
 
     BOOL canUpdateAvatar = (canModifyStorageServiceProperties || userProfileWriter == UserProfileWriter_Reupload);

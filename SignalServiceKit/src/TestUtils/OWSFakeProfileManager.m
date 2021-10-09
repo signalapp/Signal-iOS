@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSFakeProfileManager
 
 @synthesize localProfileKey = _localProfileKey;
+@synthesize badgeStore = _badgeStore;
 
 - (instancetype)init
 {
@@ -43,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
     _stubbedUuidCapabilitiesMap = [NSMutableDictionary new];
+    _badgeStore = [[BadgeStore alloc] init];
 
     return self;
 }
@@ -291,8 +293,10 @@ NS_ASSUME_NONNULL_BEGIN
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
+                    transaction:(SDSAnyWriteTransaction *)writeTx
 {
     // Do nothing.
 }
