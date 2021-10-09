@@ -25,7 +25,7 @@ public class OWSUserProfileBadgeInfo: NSObject, Codable {
         self.isVisible = isVisible
     }
 
-    override var description: String {
+    override public var description: String {
         var description = "Badge: \(badgeId)"
         if let expiration = expiration {
             description += ", Expires: \(Date(millisecondsSince1970: expiration))"

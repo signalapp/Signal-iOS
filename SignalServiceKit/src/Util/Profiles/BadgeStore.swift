@@ -8,13 +8,16 @@ import GRDB
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
 @objc
 public class ProfileBadge: NSObject, Codable {
-    static let badgeAssetPath = URL(string: "https://updates2.signal.org/static/badges/")!
+    static let remoteAssetPrefix = URL(string: "https://updates2.signal.org/static/badges/")!
 
     let id: String
     let rawCategory: String
     let localizedName: String
     let localizedDescriptionFormatString: String
-    let spriteSheetUrl: URL
+    let resourcePath: String
+
+    var remoteResourceUrl: URL { URL(string: resourcePath, relativeTo: Self.remoteAssetPrefix)! }
+
     let badgeVariant: BadgeVariant
     let localization: String
 
@@ -27,11 +30,7 @@ public class ProfileBadge: NSObject, Codable {
         localizedDescriptionFormatString = try params.required(key: "description")
 
         let preferredVariant = BadgeVariant.devicePreferred
-        let spriteSheetPath: String = try params.required(key: preferredVariant.rawValue)
-        guard let url = URL(string: spriteSheetPath, relativeTo: Self.badgeAssetPath) else {
-            throw OWSGenericError("Invalid URL")
-        }
-        spriteSheetUrl = url
+        resourcePath = try params.required(key: preferredVariant.rawValue)
         badgeVariant = preferredVariant
 
         // TODO: Check with server to see if they'll return a Content-language

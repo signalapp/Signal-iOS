@@ -1467,17 +1467,21 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.createProfileBadgeTable.rawValue) { db in
             do {
+                if try db.tableExists("ProfileBadgeTable") {
+                    try db.drop(table: "ProfileBadgeTable")
+                }
+
                 try db.create(table: "ProfileBadgeTable") { table in
                     // Retrieved from profile endpoint
                     table.column("id", .text).primaryKey()
-                    table.column("category", .integer)
-                    table.column("name", .text)
-                    table.column("description", .text)
-                    table.column("url", .text)
+                    table.column("rawCategory", .text).notNull()
+                    table.column("localizedName", .text).notNull()
+                    table.column("localizedDescriptionFormatString", .text).notNull()
+                    table.column("resourcePath", .text).notNull()
 
                     // Metadata *about* the fetch itself, a change here indicates a device/language
                     // change and that we should refetch the profile content
-                    table.column("urlFormat", .integer)
+                    table.column("badgeVariant", .integer)
                     table.column("localization", .text)
                 }
             } catch {

@@ -559,7 +559,7 @@ public class ProfileFetcherJob: NSObject {
                     try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: writeTx)
                     return $0.id
                 } catch {
-                    owsFailDebug("Failed to save badgeId: \($0.id)")
+                    owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
                     return nil
                 }
             }

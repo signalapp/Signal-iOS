@@ -1232,3 +1232,16 @@ CREATE
 WHERE
     recordType IS NOT 70
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "ProfileBadgeTable" (
+            "id" TEXT PRIMARY KEY
+            ,"rawCategory" TEXT NOT NULL
+            ,"localizedName" TEXT NOT NULL
+            ,"localizedDescriptionFormatString" TEXT NOT NULL
+            ,"resourcePath" TEXT NOT NULL
+            ,"badgeVariant" INTEGER
+            ,"localization" TEXT
+        )
+;
