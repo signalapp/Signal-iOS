@@ -1467,22 +1467,19 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.createProfileBadgeTable.rawValue) { db in
             do {
-                if try db.tableExists("ProfileBadgeTable") {
-                    try db.drop(table: "ProfileBadgeTable")
-                }
+                try db.alter(table: "model_OWSUserProfile", body: { alteration in
+                    alteration.add(column: "profileBadgeInfo", .blob)
+                })
 
-                try db.create(table: "ProfileBadgeTable") { table in
-                    // Retrieved from profile endpoint
+                try db.create(table: "model_ProfileBadgeTable") { table in
                     table.column("id", .text).primaryKey()
                     table.column("rawCategory", .text).notNull()
                     table.column("localizedName", .text).notNull()
                     table.column("localizedDescriptionFormatString", .text).notNull()
                     table.column("resourcePath", .text).notNull()
 
-                    // Metadata *about* the fetch itself, a change here indicates a device/language
-                    // change and that we should refetch the profile content
-                    table.column("badgeVariant", .integer)
-                    table.column("localization", .text)
+                    table.column("badgeVariant", .integer).notNull()
+                    table.column("localization", .text).notNull()
                 }
             } catch {
                 owsFail("Error: \(error)")

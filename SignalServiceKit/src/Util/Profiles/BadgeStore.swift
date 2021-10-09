@@ -84,7 +84,7 @@ extension ProfileBadge {
 }
 
 extension ProfileBadge: FetchableRecord, PersistableRecord {
-    public static let databaseTableName = "ProfileBadgeTable"
+    public static let databaseTableName = "model_ProfileBadgeTable"
 }
 
 

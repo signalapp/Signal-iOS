@@ -119,7 +119,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *bioEmoji;
 @property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isUuidCapable;
-@property (atomic) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
+@property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
 
@@ -154,7 +154,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
-                profileBadgeInfo:(NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
+                profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber

@@ -47,6 +47,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSString *bioEmoji;
 @property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly) BOOL isUuidCapable;
+@property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -55,7 +56,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 // received a message from this user.  It is coarse;
 // we only update it every N hours.
 @property (atomic, readonly, nullable) NSDate *lastMessagingDate;
-@property (atomic, readonly) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -84,7 +84,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
-                profileBadgeInfo:(NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
+                profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
