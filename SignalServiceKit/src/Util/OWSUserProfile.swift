@@ -6,7 +6,7 @@ import Foundation
 import Mantle
 
 @objc
-public class OWSUserProfileBadgeInfo: NSObject, Codable {
+public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
     let badgeId: String
 
     // These properties are only valid for the current user
