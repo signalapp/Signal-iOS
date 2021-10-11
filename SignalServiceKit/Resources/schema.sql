@@ -1242,7 +1242,7 @@ CREATE
             ,"localizedName" TEXT NOT NULL
             ,"localizedDescriptionFormatString" TEXT NOT NULL
             ,"resourcePath" TEXT NOT NULL
-            ,"badgeVariant" INTEGER NOT NULL
+            ,"badgeVariant" TEXT NOT NULL
             ,"localization" TEXT NOT NULL
         )
 ;

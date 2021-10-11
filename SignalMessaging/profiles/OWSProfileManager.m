@@ -1250,14 +1250,15 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                 batched:YES
                                   block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                       OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@",
+                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@, badges: %@",
                                           userProfile.publicAddress,
                                           userProfile.profileKey != nil,
                                           userProfile.avatarUrlPath != nil,
                                           userProfile.avatarFileName != nil,
                                           userProfile.givenName,
                                           userProfile.familyName,
-                                          userProfile.username);
+                                          userProfile.username,
+                                          userProfile.profileBadgeInfo);
                                   }];
     }];
 }
@@ -1733,7 +1734,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:writeTx];
     if (!userProfile.profileKey) {
-        // badges?
         [userProfile updateWithUsername:username
                           isUuidCapable:isUuidCapable
                           lastFetchDate:lastFetchDate

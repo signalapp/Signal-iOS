@@ -33,8 +33,8 @@ public class ProfileBadge: NSObject, Codable {
         resourcePath = try params.required(key: preferredVariant.rawValue)
         badgeVariant = preferredVariant
 
-        // TODO: Check with server to see if they'll return a Content-language
-        // TODO: What about reordered languages? Maybe clear if any change?
+        // TODO: Badges — Check with server to see if they'll return a Content-language
+        // TODO: Badges — What about reordered languages? Maybe clear if any change?
         localization = Locale.preferredLanguages[0]
     }
 }
@@ -63,8 +63,8 @@ extension ProfileBadge {
         }
 
         static var devicePreferred: BadgeVariant {
-            // TODO: Is this safe from an app extension? I'm pretty sure it isn't, but I'm not seeing anything in
-            // the docs that indicates this is this case. Should double check this.
+            // TODO: Badges — Is this safe from an app extension? I'm pretty sure it isn't, but I'm
+            // not seeing anything in the docs that indicates this is this case. Should double check this.
             switch UIScreen.main.scale {
             case 0..<1.5:
                 owsAssertDebug(UIScreen.main.scale == 1.0, "Unrecognized scale: \(UIScreen.main.scale)")
@@ -94,6 +94,7 @@ extension ProfileBadge: FetchableRecord, PersistableRecord {
 public class BadgeStore: NSObject {
     override init() {}
 
+    // TODO: Badging — Caching?
     func createOrUpdateBadge(_ badge: ProfileBadge, transaction writeTx: SDSAnyWriteTransaction) throws {
         try badge.save(writeTx.unwrapGrdbWrite.database)
     }

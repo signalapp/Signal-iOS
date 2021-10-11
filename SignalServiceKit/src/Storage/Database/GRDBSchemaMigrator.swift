@@ -1478,7 +1478,7 @@ public class GRDBSchemaMigrator: NSObject {
                     table.column("localizedDescriptionFormatString", .text).notNull()
                     table.column("resourcePath", .text).notNull()
 
-                    table.column("badgeVariant", .integer).notNull()
+                    table.column("badgeVariant", .text).notNull()
                     table.column("localization", .text).notNull()
                 }
             } catch {
