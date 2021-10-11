@@ -243,7 +243,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        // Do nothing
+        print("[Calls] Peer connection should negotiate.")
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {

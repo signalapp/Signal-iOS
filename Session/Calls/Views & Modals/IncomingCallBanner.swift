@@ -9,6 +9,8 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     let uuid: String
     let sdp: RTCSessionDescription
     
+    private var vibrationTimer: Timer?
+    
     // MARK: UI Components
     private lazy var profilePictureView: ProfilePictureView = {
         let result = ProfilePictureView()
@@ -176,10 +178,13 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 1.0
         }, completion: nil)
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        vibrationTimer = WeakTimer.scheduledTimer(timeInterval: 0.5, target: self, userInfo: nil, repeats: true) { _ in
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        }
     }
     
     public func dismiss() {
+        vibrationTimer?.invalidate()
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 0.0
         }, completion: { _ in
