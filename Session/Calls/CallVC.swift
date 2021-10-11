@@ -191,7 +191,9 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             callInfoLabel.text = "Ringing..."
             Storage.write { transaction in
                 self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
-                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
+                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).done {
+                        self.minimizeButton.isHidden = false
+                    }.retainUntilComplete()
                 }.retainUntilComplete()
             }
             answerButton.isHidden = true
@@ -203,7 +205,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         // Background
         let background = getBackgroudView()
         view.addSubview(background)
-        background.autoPinEdgesToSuperviewEdges()
+        background.pin(to: view)
         // Call info label
         view.addSubview(callInfoLabel)
         callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -332,7 +334,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     @objc private func minimize() {
-        
+        let miniCallView = MiniCallView(from: self)
+        miniCallView.show()
+        self.conversationVC?.showInputAccessoryView()
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     @objc private func operateCamera() {

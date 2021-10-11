@@ -38,6 +38,7 @@ extension AppDelegate {
             DispatchQueue.main.async {
                 if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
                 if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage(message) }
+                if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
                 WebRTCSession.current?.dropConnection()
                 WebRTCSession.current = nil
             }

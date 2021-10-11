@@ -95,7 +95,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         self.uuid = uuid
         super.init()
         let mediaStreamTrackIDS = ["ARDAMS"]
-        createDataChannel()
         peerConnection.add(audioTrack, streamIds: mediaStreamTrackIDS)
         peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
@@ -105,6 +104,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     // MARK: Signaling
     public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Sending pre-offer message.")
+        createDataChannel()
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         DispatchQueue.main.async {
@@ -267,6 +267,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("[Calls] Data channel opened.")
+        self.dataChannel = dataChannel
+        self.dataChannel?.delegate = self
     }
 }
 
