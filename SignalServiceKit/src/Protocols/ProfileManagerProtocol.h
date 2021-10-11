@@ -4,9 +4,9 @@
 
 @class AnyPromise;
 @class BadgeStore;
-@class OWSUserProfileBadgeInfo;
 @class OWSAES256Key;
 @class OWSUserProfile;
+@class OWSUserProfileBadgeInfo;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;

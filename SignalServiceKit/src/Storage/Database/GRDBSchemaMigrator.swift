@@ -1486,7 +1486,6 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-
         // MARK: - Schema Migration Insertion Point
     }
 

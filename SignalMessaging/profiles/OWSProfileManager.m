@@ -1700,15 +1700,15 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
                 @"avatarData: %d, userProfileWriter: %@",
-                addressParam,
-                address,
-                givenName,
-                familyName,
-                bio,
-                bioEmoji,
-                avatarUrlPath,
-                optionalDecryptedAvatarData.length > 0,
-                NSStringForUserProfileWriter(userProfileWriter));
+        addressParam,
+        address,
+        givenName,
+        familyName,
+        bio,
+        bioEmoji,
+        avatarUrlPath,
+        optionalDecryptedAvatarData.length > 0,
+        NSStringForUserProfileWriter(userProfileWriter));
 
     // If the optional avatar data is present, prepare for
     // its possible usage by trying to write it to disk
@@ -1772,11 +1772,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
         if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
             OWSLogError(@"downloaded file is missing for profile: %@, userProfileWriter: %@",
-                        userProfile.address,
-                        NSStringForUserProfileWriter(userProfileWriter));
-            [userProfile updateWithAvatarFileName:nil
-                                userProfileWriter:userProfileWriter
-                                      transaction:writeTx];
+                userProfile.address,
+                NSStringForUserProfileWriter(userProfileWriter));
+            [userProfile updateWithAvatarFileName:nil userProfileWriter:userProfileWriter transaction:writeTx];
         }
     }
 
