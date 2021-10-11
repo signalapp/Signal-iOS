@@ -87,6 +87,13 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         case .new(_, let name, _, _, _, _): snippet = "\(senderDisplayName) added you to \(name)"
                         default: return self.completeSilenty()
                         }
+                    case let callMessage as CallMessage:
+                        MessageReceiver.handleCallMessage(callMessage, using: transaction)
+                        notificationContent.userInfo = userInfo
+                        notificationContent.badge = 1
+                        notificationContent.title = "Session"
+                        notificationContent.body = "\(senderDisplayName) is calling..."
+                        return self.handleSuccess(for: notificationContent)
                     default: return self.completeSilenty()
                     }
                     if (senderPublicKey == userPublicKey) {
