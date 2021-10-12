@@ -178,13 +178,11 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 1.0
         }, completion: nil)
-        vibrationTimer = WeakTimer.scheduledTimer(timeInterval: 0.5, target: self, userInfo: nil, repeats: true) { _ in
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-        }
+        Vibration.shared.startVibration()
     }
     
     public func dismiss() {
-        vibrationTimer?.invalidate()
+        Vibration.shared.stopVibrationIfPossible()
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 0.0
         }, completion: { _ in
