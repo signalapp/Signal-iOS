@@ -224,6 +224,10 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
     
     [self setUpCallHandling];
+    if (@available(iOS 13.0, *)) {
+        [self registerBackgroundTasks];
+    }
+    
 
     return YES;
 }

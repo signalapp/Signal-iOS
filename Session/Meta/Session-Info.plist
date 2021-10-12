@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.loki-project.loki-messenger.vibrate</string>
+		<string>com.loki-project.loki-messenger.refresh</string>
+	</array>
 	<key>BuildDetails</key>
 	<dict>
 		<key>CarthageVersion</key>
@@ -90,7 +95,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Session's Screen Lock feature uses Face ID.</string>
+	<string>Session&apos;s Screen Lock feature uses Face ID.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Session needs access to your microphone to record media.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -119,6 +124,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -135,5 +141,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>com.loki-project.loki-messenger</string>
 </dict>
 </plist>

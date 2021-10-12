@@ -1,4 +1,5 @@
 import UserNotifications
+import BackgroundTasks
 import SessionMessagingKit
 import SignalUtilitiesKit
 
@@ -93,7 +94,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         notificationContent.badge = 1
                         notificationContent.title = "Session"
                         notificationContent.body = "\(senderDisplayName) is calling..."
-                        return self.handleSuccess(for: notificationContent)
+                        return self.handleSuccessForIncomingCall(for: notificationContent)
                     default: return self.completeSilenty()
                     }
                     if (senderPublicKey == userPublicKey) {
@@ -119,7 +120,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     }
                     self.handleSuccess(for: notificationContent)
                 } catch {
-                    self.handleFailure(for: notificationContent)
+                    if let error = error as? MessageReceiver.Error, error.isRetryable {
+                        self.handleFailure(for: notificationContent)
+                    }
+                    self.completeSilenty()
                 }
             }
         }
@@ -208,6 +212,19 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     
     private func completeSilenty() {
         contentHandler!(.init())
+    }
+    
+    private func handleSuccessForIncomingCall(for content: UNMutableNotificationContent) {
+        // TODO: poll for the real offer, play incoming call ring
+        if #available(iOSApplicationExtension 13.0, *) {
+            let request = BGAppRefreshTaskRequest(identifier: "com.loki-project.loki-messenger.refresh")
+            do {
+                try BGTaskScheduler.shared.submit(request)
+            } catch {
+                print("Could not schedule app refresh: \(error)")
+            }
+        }
+        contentHandler!(content)
     }
 
     private func handleSuccess(for content: UNMutableNotificationContent) {

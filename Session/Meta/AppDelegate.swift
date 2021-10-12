@@ -2,11 +2,13 @@ import PromiseKit
 import WebRTC
 import SessionUIKit
 import UIKit
+import BackgroundTasks
+import SessionUtilitiesKit
 
 extension AppDelegate {
 
-    @objc
-    func setUpCallHandling() {
+    // MARK: Call handling
+    @objc func setUpCallHandling() {
         // Offer messages
         MessageReceiver.handleOfferCallMessage = { message in
             DispatchQueue.main.async {
@@ -45,6 +47,7 @@ extension AppDelegate {
         }
     }
     
+    // MARK: Configuration message
     @objc(syncConfigurationIfNeeded)
     func syncConfigurationIfNeeded() {
         guard Storage.shared.getUser()?.name != nil else { return }
@@ -75,6 +78,7 @@ extension AppDelegate {
         return promise
     }
 
+    // MARK: Closed group poller
     @objc func startClosedGroupPoller() {
         guard OWSIdentityManager.shared().identityKeyPair() != nil else { return }
         ClosedGroupPoller.shared.start()
@@ -84,6 +88,7 @@ extension AppDelegate {
         ClosedGroupPoller.shared.stop()
     }
     
+    // MARK: Theme
     @objc func getAppModeOrSystemDefault() -> AppMode {
         let userDefaults = UserDefaults.standard
         if userDefaults.dictionaryRepresentation().keys.contains("appMode") {
@@ -97,5 +102,47 @@ extension AppDelegate {
             }
         }
     }
+    
+    // MARK: Background tasks
+    @available(iOS 13.0, *)
+    @objc func registerBackgroundTasks() {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.loki-project.loki-messenger.refresh", using: nil) { task in
+            self.handleAppRefresh(task: task as! BGAppRefreshTask)
+        }
+        
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.loki-project.loki-messenger.vibrate", using: nil) { task in
+            Vibration.shared.startVibration()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 60, execute: {
+                Vibration.shared.stopVibrationIfPossible()
+                task.setTaskCompleted(success: true)
+            })
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    @objc func cancelAllPendingBGTask() {
+        BGTaskScheduler.shared.cancelAllTaskRequests()
+    }
+    
+    @available(iOS 13.0, *)
+    @objc func scheduleAppRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: "com.loki-project.loki-messenger.refresh")
+        // Fetch no earlier than 15 minutes from now.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+                
+        do {
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Could not schedule app refresh: \(error)")
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    private func handleAppRefresh(task: BGAppRefreshTask) {
+        // Schedule a new refresh task.
+        scheduleAppRefresh()
+        
+        
+     }
     
 }
