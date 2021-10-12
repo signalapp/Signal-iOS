@@ -320,6 +320,11 @@ def process(filepath):
         env_copy["SCRIPT_INPUT_FILE_COUNT"] = "1"
         env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
         try:
+            lint_output = subprocess.check_output(['swiftlint', '--fix', '--use-script-input-files'], env=env_copy)
+        except subprocess.CalledProcessError, e:
+            lint_output = e.output
+        print lint_output
+        try:
             lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
         except subprocess.CalledProcessError, e:
             lint_output = e.output
