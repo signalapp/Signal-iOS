@@ -319,7 +319,10 @@ def process(filepath):
         env_copy = os.environ.copy()
         env_copy["SCRIPT_INPUT_FILE_COUNT"] = "1"
         env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
-        lint_output = subprocess.check_output(['swiftlint', '--fix', '--use-script-input-files'], env=env_copy)
+        try:
+            lint_output = subprocess.check_output(['swiftlint', '--fix', '--use-script-input-files'], env=env_copy)
+        except subprocess.CalledProcessError, e:
+            lint_output = e.output
         print lint_output
         try:
             lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
@@ -336,6 +339,12 @@ def process(filepath):
     text = sort_class_statements(filepath, filename, file_ext, text)
 
     lines = text.split('\n')
+
+    shebang = ""
+    if lines[0].startswith('#!'):
+        shebang = lines[0] + '\n'
+        lines = lines[1:]
+
     while lines and lines[0].startswith('//'):
         lines = lines[1:]
     text = '\n'.join(lines)
@@ -348,7 +357,7 @@ def process(filepath):
 ''' % (
     datetime.datetime.now().year,
     )
-    text = header + text + '\n'
+    text = shebang + header + text + '\n'
 
     if original_text == text:
         return
