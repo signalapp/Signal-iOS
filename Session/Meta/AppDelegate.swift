@@ -146,7 +146,6 @@ extension AppDelegate {
             BackgroundPoller.poll(completionHandler: { result in
                 if result == .failed {
                     task.setTaskCompleted(success: false)
-                    
                 } else {
                     task.setTaskCompleted(success: true)
                 }
