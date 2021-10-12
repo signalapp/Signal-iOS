@@ -902,7 +902,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "بۇ سۆھبەت مەزكۇر ئۈسكۈنىدىن ئۆچۈرۈلىدۇ.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "سۆھبەتنى ئۆچۈرەمدۇ؟";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "سۆھبەتنى ئۆچۈرەمسىز؟";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "گۇرۇپپىغا پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدۇ.";
@@ -1289,10 +1289,10 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "ھەممە ئۇچۇرنى ئۆچۈر";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld ئۇچۇرنى ئۆچۈرەمدۇ؟";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld ئۇچۇرنى ئۆچۈرەمسىز؟";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "ئۇچۇرنى ئۆچۈرەمدۇ؟";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "ئۇچۇرنى ئۆچۈرەمسىز؟";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "بۇ تېلېفون نومۇرنى قايتا تىزىملات";
@@ -2825,7 +2825,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "ئارخىپ";
 
 /* Title for the conversation list's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "سىگنال";
+"HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "خالىغان جاي سىزىلسا تۇتۇقلىشىدۇ";
@@ -3260,7 +3260,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "بۇ سۆھبەت بارلىق ئۈسكۈنىلىرىڭىزدىن ئۆچۈرۈلىدۇ.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "سۆھبەتنى ئۆچۈرەمدۇ؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "سۆھبەتنى ئۆچۈرەمسىز؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ئۆچۈرۈڭ ۋە ئايرىلىڭ";
@@ -4313,7 +4313,7 @@
 "PRIVACY_TAP_TO_SCAN" = "سايىلاش ئۈچۈن چىكىڭ";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "دەلىللەشنى تازلاڭ";
+"PRIVACY_UNVERIFY_BUTTON" = "دەلىللەشنى تازىلا";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "بۇ قارىماققا سىزنىڭ %@ بىلەن بولغان بىخەتەر نومۇرىدەك قىلمايدۇ. نۆۋەتتىكى ئالاقەداشنى دەلىللەمسىز؟";

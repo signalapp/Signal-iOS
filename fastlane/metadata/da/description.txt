@@ -1,4 +1,4 @@
-Millioner af mennesker bruger Signal hver dag til gratis og øjeblikkelig kommunikation overalt i verden. Send og modtag beskeder i høj kvalitet, deltag i tale/videoopkald i HD, og udforsk et voksende sæt af nye funktioner, der hjælper dig med at holde kontakten. Signals avancerede teknologi til beskyttelse af privatsfære er altid aktiveret, så du kan fokusere på at dele de øjeblikke, der betyder noget med de mennesker, der betyder noget for dig.
+Millioner af mennesker bruger Signal hver dag til gratis og øjeblikkelig kommunikation overalt i verden. Send og modtag beskeder i høj kvalitet, deltag i tale/videoopkald i HD, og udforsk et voksende sæt af nye funktioner, der hjælper dig med at holde kontakten. Signals avancerede teknologi til beskyttelse af privatlivet fred er altid aktiveret, så du kan fokusere på at dele de øjeblikke, der betyder noget med de mennesker, der betyder noget for dig.
 
 • Sig hvad som helst - Avanceret end-to-end kryptering (drevet af open source Signal Protocol™) holder dine samtaler private. Privatlivet er ikke en valgfri tilstand - det er blot den måde, Signal fungerer på. Hver besked, hvert opkald, hver gang.
 

@@ -53,10 +53,10 @@
 "ACTION_VIDEO_CALL" = "ਵੀਡੀਓ ਕਾਲ";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "ਮੈਂਬਰ ਸ਼ਾਮਲ ਕਰੋ";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "ਮੈਂਬਰ ਜੋੜੋ";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "ਮੈਂਬਰਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "ਮੈਂਬਰ ਜੋੜੋ";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "“%2$@” ਵਿੱਚ ਮੈਂਬਰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?";
@@ -1748,13 +1748,13 @@
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "ਸੁਨੇਹਾ ਭੇਜੋ";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "%@ਸੁਨੇਹੇ ਭੇਜੋ";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "ਸੁਨੇਹਾ ਭੇਜਿਆ";
 
 /* Indicates that multiple messages were forwarded. */
 "FORWARD_MESSAGE_MESSAGES_SENT_N" = "ਸੁਨੇਹੇ ਭੇਜੇ";
@@ -1763,7 +1763,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "ਸੁਨੇਹਾ ਜੋੜੋ";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "ਅੱਗੇ ਭੇਜੋ";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਵਾਰਤਾਲਾਪ ਵਿੱਚ ਕੋਈ ਵੀ ਮੀਡੀਆ ਨਹੀਂ ਹੈ।";
@@ -3125,7 +3125,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ਇਸ ਸੁਨੇਹੇ ਨੂੰ ਅੱਗੇ ਭੇਜੋ";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "ਚੁਣੇ ਸੁਨੇਹੇ ਅੱਗੇ ਭੇਜੋ";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "ਗਰੁੱਪ ਸੱਦੇ ਖੋਲੋ";
@@ -3164,13 +3164,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "ਸਟਿੱਕਰ ਪੈਕ";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 ਚੁਣਿਆ";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 ਚੁਣਿਆ";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ਚੁਣੇ";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "ਸੁਨੇਹਾ";
@@ -4640,7 +4640,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "ਜਿਸ ਫੋਨ ਨੰਬਰ ਨੂੰ ਤੁਸੀਂ ਰਜਿਸਟਰ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ, ਉਹ ਕਿਸੇ ਹੋਰ ਸਰਵਰ ਦੇ ਨਾਲ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਰਜਿਸਟਰ ਕੀਤਾ ਜਾ ਚੁੱਕਾ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉੱਥੋਂ ਅਨਰਜਿਸਟਰ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "ਝਲਕ ਹਟਾਓ";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "ਨਵਾਂ ਐਡਮਿਨ ਚੁਣੋ";

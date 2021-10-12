@@ -1,3 +1,3 @@
-• Fixed some issues related to notifications
-• Try out the new 'send messages' permission to restrict who can send messages in your groups. Great for organizing an event, making an announcement, or just shouting from the rooftops. All members must be on the latest version of Signal for the setting to appear.
-• We know you love speed (and we don't mean the 1994 blockbuster hit starring Sandra Bullock), so sending messages is now faster than ever.
+• Néhány értesítéssel kapcsolatos hiba javítása
+• Próbáld ki az új 'üzenetek küldése' jogosultságot, hogy korlátozd, ki küldhet üzentet a csoportjaidban. Kiváló események szervezéséhez, vagy közleményekhez vagy csak kiabálni a háztetőkről. Minden tagnak a Signal legfrissebb verzióját kell használni, ahhoz, hogy a beállítás megjelenjen.
+• Tudjuk hogy szereted a sebességet (és nem az 1994-es sikerfilmre gondolunk Sandra Bullock-kal), így az üzentek küldése gyorsabb, mint valaha.

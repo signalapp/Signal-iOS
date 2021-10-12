@@ -4490,7 +4490,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "הגיב עם %@ אל הקובץ שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "הגיב עם %@ אל ה־GIF שלך";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "הגיב %@ אל ה־GIF שלך";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "הגיב עם %@ אל התמונה שלך";

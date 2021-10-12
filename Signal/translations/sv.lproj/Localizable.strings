@@ -4490,7 +4490,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerade %@ på din fil";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerade %@ på din GIF-bild";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerade %@ på din GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerade %@ på ditt foto";

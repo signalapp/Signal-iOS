@@ -35,7 +35,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "Talebesked %@ sekunder";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal opkald";
+"ACTION_AUDIO_CALL" = "Signal-opkald";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invitér til Signal";
@@ -50,7 +50,7 @@
 "ACTION_TAP_TO_DOWNLOAD" = "Tryk for at hente";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video opkald";
+"ACTION_VIDEO_CALL" = "Video-opkald";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Tilføj medlem";
@@ -140,16 +140,16 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Du har ingen medlemmer til fælles med gruppen. Gennemgå anmodninger nøje, inden du accepterer for at undgå uønskede beskeder.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Ang. Beskedanmodning";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om beskedanmodninger";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
 
 /* notification body */
-"APN_Message" = "Du har nye beskeder";
+"APN_Message" = "Du har måske nye beskeder";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan ikke starte. Send venligst en fejllog til support@signal.org, så vi kan undersøge problemet";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan ikke starte. Send venligst en fejlsøgningslog til support@signal.org, så vi kan undersøge problemet.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fejl";
@@ -164,10 +164,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Ukendt version af database";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Overførte data fra din gamle enhed kunne ikke gendannes. Send en fejlsøgningslog til support@signal.org, så vi kan løse problemet. Hvis du geninstallerer Signal, kan din beskedhistorik gå tabt";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Overførte data fra din gamle enhed kunne ikke gendannes. Send en fejlsøgningslog til support@signal.org, så vi kan undersøge problemet. Hvis du geninstallerer Signal, kan din beskedhistorik gå tabt.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Gennemførelsen af overførslen mislykkedes";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Kunne ikke gennemføre overførsel";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv dit navn ";
@@ -248,10 +248,10 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kan ikke konvertere billede";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Behandling af video er ikke muligt";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Behandling af video er ikke mulig.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kan ikke analysere billede";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kan ikke fortolke billede.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Kan ikke fjerne metadata fra billede";
@@ -287,7 +287,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Lokation";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Placering";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Giv adgang til dine fotos i Indstillinger, for at sende dem";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Luk banner";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra denne gruppe.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokér";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "I vil være i stand til at sende beskeder og ringe til hinanden";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Eksisterende medlemmer vil kunne tilføje dig til gruppen igen";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Eksisterende medlemmer vil kunne tilføje dig til gruppen igen.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Medlemmer af gruppen kan tilføje dig til gruppen igen";
@@ -446,7 +446,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokerede brugere vil ikke kunne ringe eller sende beskeder til dig";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nyt: Tilslør ansigter eller tegn hvor som helst for at usynliggøre.";
+"BLUR_TOOLTIP" = "Nyt: Tilslør ansigter eller tegn hvor som helst for at sløre.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Tilføj";
@@ -512,7 +512,7 @@
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Mistet lydopkald";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i iOS Indstillinger-appen, for at foretage opkald og optage talebeskeder i Signal";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i iOS Indstillinger-appen for at foretage opkald og optage talebeskeder i Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Adgang til mikrofonen er påkrævet";
@@ -521,7 +521,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Ubesvaret opkald, fordi opkalderens sikkerhedsnummer er ændret";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Tilbage til samtale";
+"CALL_RETURN_BUTTON" = "Tilbage til opkald";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Intet svar";
@@ -560,7 +560,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Afslut opkald";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Déaktiver lyd";
+"CALL_VIEW_MUTE_LABEL" = "Ignorer";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ vil modtage en beskedanmodning fra dig. Du kan ringe når din beskedanmodning er accepteret";
@@ -581,7 +581,7 @@
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Din kamera er slået fra";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal bruger";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-bruger";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Tag et billed og send det";
@@ -620,16 +620,16 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Denne brugerdefinerede farve bruges i 1 chat. Vil du slette det?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_1" = "Denne brugerdefinerede farve bruges i 1 chat. Vil du slette den?";
 
 /* Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Denne brugerdefinerede farve bruges i %@ chats. Vil du slette det for alle chats?";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_N_FORMAT" = "Denne brugerdefinerede farve bruges i %@ chats. Vil du slette den for alle chats?";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Slet farve";
 
 /* Title for the chat color settings view. */
-"CHAT_COLOR_SETTINGS_TITLE" = "Chat farve";
+"CHAT_COLOR_SETTINGS_TITLE" = "Chatfarve";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Rediger farve";
@@ -644,7 +644,7 @@
 "CHAT_COLORS_MEGAPHONE_ACTION" = "Udseende";
 
 /* Body for chat colors megaphone */
-"CHAT_COLORS_MEGAPHONE_BODY" = "Nu kan du ændre farverne i dine chats med farveovergang og meget mere.";
+"CHAT_COLORS_MEGAPHONE_BODY" = "Nu kan du ændre farverne i dine chats med farveovergange og meget mere.";
 
 /* Title for chat colors megaphone */
 "CHAT_COLORS_MEGAPHONE_TITLE" = "Tilpas chatfarver";
@@ -818,7 +818,7 @@
 "CONTACT_SUPPORT_FILTER_FEEDBACK" = "Jeg har feedback på appen";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Feedback af appen";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Feedback på app";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Noget andet";
@@ -854,19 +854,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Prøv igen";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Dine fejllogs hjælper os med at fejlsøge hurtigere. Det er frivilligt om du ønsker at vedhæfte dem";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Dine fejlsøgningslogs hjælper os med at fejlsøge hurtigere. Det er frivilligt om du ønsker at vedhæfte dem.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Vedhæft fejllog?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Indsend fejlsøgningslog?";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "Vælg årsag";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Send med fejllog";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Send med fejlsøgningslog";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Send uden fejllog";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Send uden fejlsøgningslog";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Åbn i Maps";
@@ -1013,10 +1013,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Underret altid";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Underret ikke hvis udsat";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Underret ikke hvis ignoreret";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vil du modtage meddelelser, når du er omtalt i udsatte chats?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Vil du modtage meddelelser, når du omtales i ignorerede chats?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Omtaler";
@@ -1025,22 +1025,22 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "besked";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dæmp chatten...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Ignorer denne chat i…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Altid";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "dæmp";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Ignorer";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 timer";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Udsæt";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Ignorer";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ikke udsat";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ikke ignoreret";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 dag";
@@ -1058,16 +1058,16 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Altid";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Altid dæmpet";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Altid ignoreret";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "dæmpet";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Ignoreret";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "indtil %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Dæmpet indtil %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Ignoreres indtil %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ fællesgrupper";
@@ -1118,7 +1118,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Fjern blokering af bruger";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Aktivér lyd";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ignorer ikke";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
@@ -1151,7 +1151,7 @@
 "COPIED_TO_CLIPBOARD" = "Kopieret til udklipsholder";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Nulstilling af din session giver dig mulighed for at modtage fremtidige meddelelser fra %@, men det vil ikke gendanne allerede beskadigede meddelelser";
+"CORRUPTED_SESSION_DESCRIPTION" = "Nulstilling af din session giver dig mulighed for at modtage fremtidige beskeder fra %@, men det vil ikke gendanne allerede beskadigede beskeder.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Vælg landekode";
@@ -1178,7 +1178,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Tilpasset farve";
 
 /* Tooltip highlighting the custom chat color controls. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Træk for at ændre retningen af farveovergang";
+"CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Træk for at ændre retningen af farveovergangen";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dette kan tage et par minutter";
@@ -1244,7 +1244,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Omdirigering til GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
-"DEBUG_LOG_INFO_BUTTON" = "Info om fejlfindingslogfiler";
+"DEBUG_LOG_INFO_BUTTON" = "Information om fejlsøgningslogger";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Slet konto";
@@ -1259,7 +1259,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Landekode";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Kontoen kunne ikke slettes. Sørg for Wi-Fi eller mobildata er slået til, og prøv derefter igen.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Kontoen kunne ikke slettes. Sørg for at Wi-Fi eller mobildata er slået til, og prøv derefter igen.";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Dette vil slette din kontooplysning, profil, og alle dine beskeder.";
@@ -1268,7 +1268,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Sletter kontoen...";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ingen internetforbindelse. Sørg for Wi-Fi eller mobildata er slået til, og prøv derefter igen.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ingen internetforbindelse. Sørg for at Wi-Fi eller mobildata er slået til, og prøv derefter igen.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonnummer";
@@ -1298,7 +1298,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registrer dette telefonnummer igen";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Enheden er ikke længere registreret. Dit telefonnummer kan være registreret med Signal på en anden enhed. Tap for at registrere igen";
+"DEREGISTRATION_WARNING" = "Enheden er ikke længere registreret. Dit telefonnummer kan være registreret med Signal på en anden enhed. Tryk for at registrere igen.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Sidst aktiv %@";
@@ -1313,7 +1313,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop overførslen";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Luk af dette vindue vil stoppe igangværende overførsel, er du sikker på, at du vil fortsætte?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Lukning af dette vindue vil stoppe den igangværende overførsel. Er du sikker på, at du vil fortsætte?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop overførslen?";
@@ -1412,7 +1412,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Overfører data";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Beskeder med tidsudløb";
+"DISAPPEARING_MESSAGES" = "Forsvindende beskeder";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Beskeder i chatten vil forsvinde efter %@.";
@@ -1433,7 +1433,7 @@
 "DISAPPEARING_MESSAGES_HOURS" = "timer";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Indstillinger for beskeder med tidsudløb";
+"DISAPPEARING_MESSAGES_LABEL" = "Indstillinger for forsvindende beskeder";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "Minutter";
@@ -1667,7 +1667,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Modtaget besked var ude af synkronisering";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Modtaget en meddelelse, der ikke er kompatibel med denne version";
+"ERROR_MESSAGE_INVALID_VERSION" = "Modtog en besked, der ikke er kompatibel med denne version.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Ingen tilgængelig session med kontakten";
@@ -1709,13 +1709,13 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ikke registreret som bruger: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Din version af Signal udløber i dag. Tap for at opdatere til den nyeste version";
+"EXPIRATION_ERROR" = "Din version af Signal udløber i dag. Tryk for at opdatere til den nyeste version.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Din version af Signal vil udløbe om %d dage. Tap for at opdatere til den nyeste version";
+"EXPIRATION_WARNING_SOON" = "Din version af Signal vil udløbe om %d dage. Tryk for at opdatere til den nyeste version.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Din version af Signal udløber i dag. Tap for at opdatere til den nyeste version";
+"EXPIRATION_WARNING_TODAY" = "Din version af Signal udløber i dag. Tryk for at opdatere til den nyeste version.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Fejlet for ofte. Prøv venligst igen senere";
@@ -1778,7 +1778,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Vedhæftning";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Kom igang";
+"GET_STARTED_BANNER_TITLE" = "Kom i gang";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Udseende";
@@ -1808,7 +1808,7 @@
 "GIF_PICKER_VIEW_TITLE" = "GIF søgning";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Fejl. Tap for at prøve igen";
+"GIF_VIEW_SEARCH_ERROR" = "Fejl. Tryk for at prøve igen.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Ingen resultater";
@@ -1865,34 +1865,34 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Kun administratorer af denne gruppe kan starte et opkald.";
 
 /* Title for eror alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Kan ikke starte gruppesamtale";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Kan ikke starte gruppeopkald";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ er blokeret";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Fortsæt samtale";
+"GROUP_CALL_CONTINUE_BUTTON" = "Fortsæt opkald";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "Gruppesamtalen er afsluttet";
+"GROUP_CALL_ENDED_MESSAGE" = "Gruppeopkaldet er afsluttet";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Mere info";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}. */
-"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Det maksimale antal på %ld deltagere er nået til denne samtale. Prøv igen senere.";
+"GROUP_CALL_HAS_MAX_DEVICES_FORMAT" = "Det maksimale antal på %ld deltagere er nået for dette opkald. Prøv igen senere.";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Det maksimale antal deltagere er nået for denne samtale. Prøv igen senere.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Det maksimale antal deltagere er nået for dette opkald. Prøv igen senere.";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Samtalen er fuld";
+"GROUP_CALL_IS_FULL" = "Opkaldet er fuldt";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Deltag i opkaldet";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Forlad samtale";
+"GROUP_CALL_LEAVE_BUTTON" = "Forlad opkald";
 
 /* String indicating how many people are current in the call */
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "I dette opkald · %ld personer";
@@ -1904,7 +1904,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Der modtages ikke lyd & video fra %@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dette kan skyldes at de ikke har verificeret dit skifte af sikkerhedsnummer, det er et problem med deres enhed eller at de har blokeret dig.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Dette kan skyldes at de ikke har verificeret dit skifte af sikkerhedsnummer, at der er et problem med deres enhed eller at de har blokeret dig.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Der modtages ikke lyd og video fra %@";
@@ -1913,25 +1913,25 @@
 "GROUP_CALL_NO_ONE_HERE" = "Ingen andre deltager";
 
 /* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Ingen deltager i samtalen endnu.";
+"GROUP_CALL_NOBODY_IS_IN_YET" = "Ingen i dette opkald endnu.";
 
 /* Copy explaining that many new users have joined the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ og %ld andre sluttede sig til samtalen";
+"GROUP_CALL_NOTIFICATION_MANY_JOINED_FORMAT" = "%@, %@ og %ld andre sluttede sig til opkaldet";
 
 /* Copy explaining that many users have left the group call. Embeds {first member name}, {second member name}, {number of additional members} */
-"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ og %ld andre forlod samtalen";
+"GROUP_CALL_NOTIFICATION_MANY_LEFT_FORMAT" = "%@, %@ og %ld andre forlod opkaldet";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ sluttede sig til samtalen";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ sluttede sig til opkaldet";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ har forladt samtalen";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ har forladt opkaldet";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ og %@ sluttede sig til samtalen";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ og %@ sluttede sig til opkaldet";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ og %@ har forladt samtalen";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ og %@ har forladt opkaldet";
 
 /* String indicating one person is currently in the call */
 "GROUP_CALL_ONE_IN_THIS_CALL" = "I dette opkald · 1 person";
@@ -1952,7 +1952,7 @@
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Stryg op for at få vist skærmdeling";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Nogen startede en gruppesamtale";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Nogen startede et gruppeopkald";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Stryg op for at skifte skærm";
@@ -1961,37 +1961,37 @@
 "GROUP_CALL_START_BUTTON" = "Foretag opkald";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Tryk her for at starte en gruppesamtale";
+"GROUP_CALL_START_TOOLTIP" = "Tryk her for at starte et gruppeopkald";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "Du startede en gruppesamtale";
+"GROUP_CALL_STARTED_BY_YOU" = "Du startede et gruppeopkald";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ startede en gruppesamtale";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ startede et gruppeopkald";
 
 /* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ og 1 anden deltager i samtalen";
+"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ og 1 anden deltager i dette opkald";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ og %2$@ deltager i samtalen";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ og %2$@ deltager i dette opkald";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du blev afbrudt fra samtalen. Tjek din forbindelse, og prøv igen.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du mistede forbindelsen til opkaldet. Tjek din forbindelse, og prøv igen.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Dig";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "Du er i gruppesamtalen";
+"GROUP_CALL_YOU_ARE_HERE" = "Du er i gruppeopkaldet";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Dig (på en anden enhed)";
 
 /* Body for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_BODY" = "Åben en ny gruppe for at starte en gratis krypteret gruppesamtale";
+"GROUP_CALLS_MEGAPHONE_BODY" = "Åben en ny gruppe for at starte et gratis krypteret gruppeopkald";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducerer gruppesamtaler";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducerer gruppeopkald";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Du oprettede gruppen";
@@ -2003,7 +2003,7 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Gruppen oprettet";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Ikke alle medlemmer kunne blive tilføjet gruppen. Tap for at prøve igen";
+"GROUP_CREATION_FAILED" = "Ikke alle medlemmer kunne blive tilføjet gruppen. Tryk for at prøve igen.";
 
 /* Text indication the user can tap to view the full group description */
 "GROUP_DESCRIPTION_MORE" = "mere";
@@ -2129,7 +2129,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Gruppeindstillingerne blev ændret, så alle medlemmer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så alle medlemmer kan sende meddelelser.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Du ændrede gruppeindstillingerne, så alle medlemmer kan sende beskeder.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ ændrede gruppeindstillingerne, så alle medlemmer kan sende beskeder.";
@@ -2276,10 +2276,10 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Du er inviteret til gruppen";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Du er medlem i gruppen";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Du har tilsluttet dig gruppen.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Du deltager i gruppen via gruppelinket";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Du sluttede dig til gruppen via gruppelinket.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ fjernede dig";
@@ -2336,7 +2336,7 @@
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ gruppemedlemmer har lignende navne.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tap for at gennemgå";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Tryk for at gennemgå";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Medlem";
@@ -2345,7 +2345,7 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Gennemgå medlemmer";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ gruppemedlemmer har lignende navne, gennemgå nedenstående medlemmer eller vælg at tage affære.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ gruppemedlemmer har enslydende navne, gennemgå nedenstående medlemmer eller vælg at tage affære.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ gruppemedlemmer har det samme navn, gennemgå nedenstående medlemmer eller vælg at tage affære.";
@@ -2429,10 +2429,10 @@
 "GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ personer blev inviteret til gruppen";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ deltager i gruppen";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ sluttede sig til gruppen.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ deltager i gruppen via gruppelinket";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ sluttede sig til gruppen via gruppelinket.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ har forladt gruppen";
@@ -2858,7 +2858,7 @@
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvares på en anden enhed";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Mistet pga. et igangværende opkald på en anden enhed";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Mistet pga. et igangværende opkald på en anden enhed.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Afvises på anden enhed";
@@ -2891,7 +2891,7 @@
 "INCOMING_CALL_FORMAT" = "%@ ringede til mig";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller modtage synkroniserede meddelelser fra din telefon eller iPad. \nAf hensyn til din sikkerhed overføres chathistorik ikke til nye sammenkædede enheder";
+"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller modtage synkroniserede beskeder fra din telefon eller iPad. \nAf hensyn til din sikkerhed overføres chathistorik ikke til nye sammenkædede enheder";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ bruger nu også Signal!";
@@ -2900,7 +2900,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Klistermærker";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Dobbeltklik og hold nede for at optage. Slip for at sende eller skub til venstre for at annullere. Dobbeltklik og skub op for at låse optagelsen.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Tryk to gange og hold nede for at optage. Slip for at sende eller skub til venstre for at annullere. Dobbelttryk og skub op for at låse optagelsen.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Talebesked";
@@ -2924,7 +2924,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Invitér venner";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Hvis du inviterer flere brugere på samme tid, starter dette en gruppemeddelelse, og modtagerne kan se hinanden";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Hvis du inviterer flere brugere på samme tid, starter dette en gruppebesked, og modtagerne kan se hinanden.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Deltag";
@@ -2969,7 +2969,7 @@
 "KEY_COMMAND_STICKERS" = "Vis klistermærker";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Déarkiver chat";
+"KEY_COMMAND_UNARCHIVE" = "Ophæv arkivering af chat";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Lær mere";
@@ -3047,13 +3047,13 @@
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Søg efter navn eller adresse";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Vælg lokation";
+"LOCATION_PICKER_TITLE" = "Vælg placering";
 
 /* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "Log";
 
 /* Footer for the 'logging' help section. */
-"LOGGING_SECTION_FOOTER" = "Fejlfindingslogfiler kan hjælpe Signal med at løse problemer og nedbrud.";
+"LOGGING_SECTION_FOOTER" = "Fejlsøgningslogger kan hjælpe Signal med at løse problemer og nedbrud.";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "Besked";
@@ -3116,7 +3116,7 @@
 "MESSAGE_ACTION_DETAILS" = "Mere info";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Ny e-mail-besked";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Ny e-mailbesked";
 
 /* Error show when user tries to send email without email being configured. */
 "MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail ikke konfigureret.";
@@ -3389,10 +3389,10 @@
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Ny besked";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tap for muligheder.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tryk for muligheder.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tap for muligheder";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ er ikke længere markeret som verificeret. Tryk for muligheder.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Du blokerede 1 medlem af gruppen";
@@ -3401,7 +3401,7 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Du blokerede %@ medlemmer af gruppen";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mere end et medlem af gruppen er ikke længere markeret som verificeret. Tap for muligheder";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mere end et medlem af gruppen er ikke længere markeret som verificeret. Tryk for muligheder.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nye beskeder";
@@ -3410,7 +3410,7 @@
 "MISSED_CALL" = "Ubesvaret opkald";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kan tillade adgang til  kameraet i Indstillinger-appen, for at foretage videoopkald i Signal";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kan tillade adgang til kameraet i Indstillinger-appen for at foretage videoopkald i Signal";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal kræver adgang til dit kamera";
@@ -3419,7 +3419,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Du kan give denne tilladelse i appen Indstillinger";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal kræver adgang til din lokation for denne funktion";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal kræver adgang til din placering for denne funktion.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Du kan give tilladelsen i appen Indstillinger";
@@ -3437,10 +3437,10 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nået det maksimale antal enheder, du i øjeblikket kan tilkoble din konto. Fjern en enhed, og prøv igen";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Udsat";
+"MUTED_BADGE" = "Ignoreret";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "For nylig er deres profilnavn ændret fra %1$@ til %2$@.";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Har for nylig ændret deres profilnavn fra %1$@ til %2$@.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Spring over";
@@ -3524,7 +3524,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Ingen andre grupper til fælles";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Vælg en kontakt eller gruppe, for at komme igang med at chatte";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Vælg en kontakt eller gruppe for at komme i gang med at chatte.";
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Velkommen til Signal";
@@ -3593,40 +3593,40 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Forkert PIN. Du har ikke flere forsøg";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Forkert pinkode. Du har ikke flere forsøg.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Opret ny PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Opret ny pinkode";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Skriv alfanumerisk PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Indtast alfanumerisk pinkode";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Skriv numerisk PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Indtast numerisk pinkode";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Brug for hjælp?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Forkert PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Forkert pinkode";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Forkert PIN. %lu forsøg tilbage";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Forkert pinkode. %lu forsøg tilbage.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Forkert PIN. 1 forsøg tilbage";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Forkert pinkode. 1 forsøg tilbage.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Forlad og opret ny PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Spring over og opret ny pinkode";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Hvis du glemmer din PIN, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle indstillinger, såsom din profil information";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Hvis du ikke kan huske din pinkode, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Forlad indtastning af PIN?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Spring indtastning af pinkode over?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Tilføj lidt personlighed til dine meddelelser";
+"ONBOARDING_CAPTCHA_TITLE" = "Tilføj lidt personlighed til dine beskeder";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_EXPLANATION" = "Fordi du har været inaktiv i lang tid, skal du registrere igen for at bruge Signal.";
@@ -3641,10 +3641,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tap på \"Registrer iPad\" og opret en helt ny Signal konto, eller flyt en eksisterende konto til denne iPad. Dette vil deaktivere Signal på alle andre enheder, hvor samme telefonnummer bruges ";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tryk på \"Registrer iPad\" og opret en helt ny Signal-konto, eller flyt en eksisterende konto til denne iPad. Dette vil deaktivere Signal på alle andre enheder, hvor samme telefonnummer bruges.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tap på \"Link iPhone\" for at forbinde mobilen til en eksisterende konto. At linke din mobil kan generelt ikke anbefales, da det medfører begrænsninger af funktionalitet, såsom opkald";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tryk på \"Link iPhone\" for at forbinde mobilen til en eksisterende konto. At linke din mobil kan generelt ikke anbefales, da det medfører begrænsninger af funktionalitet, såsom opkald.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrer denne iPad";
@@ -3659,13 +3659,13 @@
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "At linke din iPhone anbefales ikke, da det vil begrænse kernefunktionalitet";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Tillad tilladelser";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Giv tilladelser";
 
 /* Explanation in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_EXPLANATION" = "Hvis du tillader meddelelser og kontakter, kan du se, hvornår beskeder ankommer, og hjælpe dig med at finde personer, du kender. Kontakter er krypteret, så Signal-tjenesten kan ikke se dem.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Tillad tilladelser";
+"ONBOARDING_PERMISSIONS_TITLE" = "Giv tilladelser";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Vælg, hvem der kan finde dig på Signal med dit telefonnummer %@";
@@ -3689,13 +3689,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ugyldigt telefonnummer. Indtast et gyldigt telefonnummer til at registrere.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har ikke flere gæt til din PIN, men du kan stadig tilgå din Signal konto ved at oprette en nu PIN. For at sikre din sikkerhed og dit privatliv, vil din konto blive gendannet uden gemte profil informationer eller indstillinger";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har ikke flere pinkode-gæt, men du kan stadig tilgå din Signal-konto ved at oprette en ny pinkode. For at sikre din sikkerhed og dit privatliv, vil din konto blive gendannet uden gemte profiloplysninger eller indstillinger.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lær mere om PINs";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Lær mere om pinkoder";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "For at beskytte din konto og dit privatliv, er kontoen låst i 7 dage.\n\nEfter 7 dages inaktivitet, vil du have mulighed for at genregistrere dit telefonnummer uden din PIN. Alt indhold vil blive slettet";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "For at beskytte din konto og dit privatliv, er kontoen låst i 7 dage.\n\nEfter 7 dages inaktivitet, vil du have mulighed for at genregistrere dette telefonnummer uden din pinkode. Alt indhold vil blive slettet.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Lær mere om låste konti";
@@ -3704,13 +3704,13 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Konto låst";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Forkert PIN";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Forkert pinkode";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Skriv den PIN du oprettede til din konto. Den er anderledes end din SMS sikkerhedsnøgle";
+"ONBOARDING_PIN_EXPLANATION" = "Indtast den pinkode du oprettede til din konto. Den er forskellig fra din SMS-verifikationskode.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Skriv din PIN";
+"ONBOARDING_PIN_TITLE" = "Indtast din pinkode";
 
 /* Title label for profile creation step of onboarding */
 "ONBOARDING_PROFILE_CREATION_TITLE" = "Din profil";
@@ -3758,10 +3758,10 @@
 "OPEN_SETTINGS_BUTTON" = "Indstillinger";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ deaktiverede beskeder med tidsudløb";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ deaktiverede forsvindende beskeder.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ satte beskeder med tidsudløb til at udløbe efter %@";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ satte tiden for forsvindende beskeder til %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal oplever tekniske vanskeligheder. Vi arbejder hårdt på at genoprette tjenesten så hurtigt som muligt!";
@@ -3785,7 +3785,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Afvis anmodningen?";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Oprykningsgebyr for mønter";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Mønt-oprydningsgebyr";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Anmodning kunne ikke annulleres.";
@@ -4052,16 +4052,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fejl i forbindelse med indgående besked";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Se medie én gang";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vis medie én gang";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Medie";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Se foto én gang";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vis foto én gang";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Se video én gang";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Vis video én gang";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Vis foto";
@@ -4070,7 +4070,7 @@
 "PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Se video";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Er læst";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Set";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Alle";
@@ -4157,103 +4157,103 @@
 "PIN_ACTION" = "Fastgør";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koden skal være på mindst 4 karakterer";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Pinkoden skal være på mindst 4 karakterer";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Skift din PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Skift din pinkode";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Bekræft din PIN-kode";
+"PIN_CREATION_CONFIRM_TITLE" = "Bekræft din pinkode";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Indtast pinkoden du lige har oprettet";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Indtast pinkoden du lige har oprettet.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Opret alfanumerisk PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Opret alfanumerisk pinkode";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Opret numerisk PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Opret numerisk pinkode";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Déaktiver PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Déaktiver pinkode";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Hvis du deaktiverer din PIN, mister du alle data når du genregistrerer Signal, medmindre du overfører den fra en anden iOS-enhed. Du kan ikke aktivere Registreringslås, mens PIN er déaktiveret";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Hvis du deaktiverer din pinkode, mister du alle data når du genregistrerer Signal, medmindre du overfører den fra en anden iOS-enhed. Du kan ikke aktivere registreringslås, mens pinkoden er déaktiveret.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Advarsel";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Din PIN blev ikke gemt. Du vil blive mindet om at oprette en PIN senere";
+"PIN_CREATION_ERROR_MESSAGE" = "Din pinkode blev ikke gemt. Du vil blive mindet om at oprette en pinkode senere.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "Oprettelse af PIN fejlede";
+"PIN_CREATION_ERROR_TITLE" = "Oprettelse af pinkode mislykkedes";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN opbevarer krypteret information lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes mens du geninstallerer. Du har ikke brug for din PIN for at åbne app'en.";
+"PIN_CREATION_EXPLANATION" = "Pinkoder sørger for at kryptere information lagret hos Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne app'en.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Lær mere om PIN";
+"PIN_CREATION_LEARN_MORE" = "Lær mere om pinkoder";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs matcher ikke. Prøv igen.";
+"PIN_CREATION_MISMATCH_ERROR" = "Pinkoder matcher ikke. Prøv igen.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN-koden skal være mindst 4 cifre";
+"PIN_CREATION_NUMERIC_HINT" = "Pinkoden skal være på mindst 4 cifre";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Skriv PIN igen";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Indtast pinkode igen";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Opretter PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Opretter pinkode...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ændre din PIN-kode, så længe denne enheden er registreret";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ændre din pinkode, så længe denne enheden er registreret.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Skift din PIN-kode";
+"PIN_CREATION_RECREATION_TITLE" = "Skift din pinkode";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Déaktiver";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "For at déaktivere din PIN skal du først déaktivere registreringslåsen";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "For at déaktivere din pinkode skal du først déaktivere registreringslåsen.";
 
 /* Title of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Déaktiver registreringslås?";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Déaktiver PIN";
+"PIN_CREATION_SKIP" = "Déaktiver pinkode";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Opret din PIN";
+"PIN_CREATION_TITLE" = "Opret din pinkode";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Vælg en stærkere pinkode";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Din PIN kunne ikke deaktiveres. Du vil blive mindet om det igen senere";
+"PIN_DISABLE_ERROR_MESSAGE" = "Din pinkode kunne ikke deaktiveres. Du vil blive mindet om det igen senere.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Déaktivering af PIN mislykkedes";
+"PIN_DISABLE_ERROR_TITLE" = "Déaktivering af pinkode mislykkedes";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "For at hjælpe dig med at huske din PIN, vil du blive bedt om at indtaste den periodisk. Det vil ske sjældnere over tid";
+"PIN_REMINDER_EXPLANATION" = "For at hjælpe dig med at huske din pinkode, vil du blive bedt om at indtaste den periodisk. Det vil ske sjældnere over tid.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Glemt din PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Glemt din pinkode?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verificer PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verificer pinkode";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Du vil indimellem blive bedt om at verificere din PIN, så du husker den";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Du vil indimellem blive bedt om at verificere din pinkode, så du husker den.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Du vil blive mindet om det igen om nogle dage";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verificer din Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Verificer din Signal-pinkode";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Du vil blive mindet om det igen i morgen";
@@ -4265,37 +4265,37 @@
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Du bliver mindet om det igen om en uge";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Forkert PIN, forsøg igen";
+"PIN_REMINDER_MISMATCH_ERROR" = "Forkert pinkode, forsøg igen.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Skriv din Signal PIN";
+"PIN_REMINDER_TITLE" = "Indtast din Signal-pinkode";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden skal være mindst 4 cifre";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Pinkoden skal være på mindst 4 cifre.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 chats";
+"PINNED_CONVERSATION_LIMIT" = "Du kan kun fastgøre op til 4 chats.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fastgjort";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Opret PIN-kode";
+"PINS_MEGAPHONE_ACTION" = "Opret pinkode";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PIN-koder sikrer informationer der er gemt med Signal, er krypteret";
+"PINS_MEGAPHONE_BODY" = "Pinkoder sikrer, at informationer der er gemt hos Signal, er krypteret.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Du vil blive påmindet senere. Oprettelse af PIN-kode vil blive obligatorisk om %ld dage";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Du vil blive påmindet senere. Oprettelse af pinkode vil blive obligatorisk om %ld dage.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Opret PIN-kode";
+"PINS_MEGAPHONE_TITLE" = "Opret en pinkode";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN oprettet. Du kan ændre den i Indstillinger";
+"PINS_MEGAPHONE_TOAST" = "Pinkode oprettet. Du kan ændre den i indstillinger.";
 
 /* Toast indicating that a PIN has been disabled. */
-"PINS_MEGAPHONE_TOAST_DISABLED" = "PIN er déaktiveret";
+"PINS_MEGAPHONE_TOAST_DISABLED" = "Pinkode déaktiveret.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medier";
@@ -4310,7 +4310,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ er verificeret";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tap for at skanne";
+"PRIVACY_TAP_TO_SCAN" = "Tryk for at skanne";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Ryd verifikation";
@@ -4337,7 +4337,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den scannede kode ligner ikke et sikkerhedsnummer. Bruger I begge en opdateret version af Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Hvis du ønsker at bekræfte sikkerheden for din ende-til-ende kryptering med %@, skal du sammenligne tallene ovenfor med numrene på deres enhed.\n\nAlternativt kan du skanne koden på deres telefon eller bede dem om at scanne din kode";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Hvis du ønsker at bekræfte sikkerheden af din end-to-end kryptering med %@, skal du sammenligne tallene ovenfor med tallene på deres enhed.\n\nAlternativt kan du scanne koden på deres telefon eller bede dem om at scanne din kode.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Verificer sikkerhedsnummer";
@@ -4433,7 +4433,7 @@
 "PUSH_MANAGER_REPLY" = "Svar";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Push notifikationer er aktiveret";
+"PUSH_REGISTER_SUCCESS" = "Push-meddelelser er aktiveret";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -4475,40 +4475,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Alle· %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%@ reagerede på din besked";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagerede med %@ på din besked";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "%@ reagerede på dit album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagerede med %@ på dit album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "%@ reagerede på din lydfil";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagerede med %@ på din lydfil";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "%@ reagerede på din deling af kontakt";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagerede med %@ på din kontaktdeling";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "%@ reagerede på din fil";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagerede med %@ på din fil";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "%@ reagerede på din GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagerede med %@ på din GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "%@ reagerede på dit foto";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagerede med %@ på dit billede";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "%@ reagerede på dit klistermærke";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på dit klistermærke";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%@ reagerede på: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "%@ reagerede på din video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerede med %@ på din video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "%@ reagerede på din vis én gang medie";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på dit vis-én-gang medie";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "%@ reagerede på din lydbesked";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på din talebesked";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Dig";
@@ -4520,40 +4520,40 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Bruger kan ikke vælges";
 
 /* Error message indicating that a user can't be selected until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "Brugeren kan ikke tilføjes gruppen, før Signal opdateres";
+"RECIPIENT_PICKER_ERROR_USER_HAS_OUTDATED_CLIENT" = "Brugeren kan ikke tilføjes gruppen, før vedkommende opdaterer Signal";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "Jeg har glemt min PIN";
+"REGISTER_2FA_FORGOT_PIN" = "Jeg har glemt min pinkode.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Brug for hjælp?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din PIN-kode er en 4+ cifret kode du oprettede, som kan være numerisk eller alfanumerisk. Hvis du ikke kan huske din PIN-kode, bliver du nødt til at vente 7 dage på at omregistrere din konto";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din pinkode er en 4+ cifret kode du oprettede, som kan være numerisk eller alfanumerisk. Hvis du ikke kan huske din pinkode, bliver du nødt til at vente 7 dage på at omregistrere din konto.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Din PIN er en 4+ cifret kode du opretter som enten numerisk eller alfanumerisk format. Hvis du glemmer din PIN, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom din profil information";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Din pinkode er en 4+ cifret kode du oprettede, som er enten numerisk eller alfanumerisk. Hvis du glemmer din pinkode, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Din PIN er en 4+ cifret kode du har oprettet. Hvis du glemmer din PIN, skal du vente 7 dage før du kan genregistrere din konto";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Din pinkode er en 4+ cifret, numerisk kode du har oprettet. Hvis du glemmer din pinkode, skal du vente 7 dage før du kan genregistrere din konto.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du har %lu få forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny PIN. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom din profil information";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du har %lu få forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny pinkode. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Du har %lu forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din PIN. Din konto vil blive fjernet og alt indhold slettet";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Du har %lu forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Du har 1 forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din PIN. Din konto vil blive fjernet og alt indhold slettet";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Du har 1 forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny PIN. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom din profil information";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny pinkode. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom dine profiloplysninger.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Forkert PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Forkert pinkode";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verificerer PIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "Verificerer pinkode...";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Indsend";
@@ -4568,7 +4568,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Du har forsøgt for ofte. Vent venligst et minut inden du prøver igen";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Kunne ikke aktivere push notifikationer";
+"REGISTRATION_BODY" = "Kunne ikke aktivere push-meddelelser";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landekode";
@@ -4583,7 +4583,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan ikke aktivere din konto før du bekræfter koden vi har sendt dig";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "For at fortsætte, skal du tjekkre telefonens internetforbindelse og prøv igen.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "For at fortsætte, skal du tjekke telefonens internetforbindelse og prøve igen.";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Tjek forbindelse";
@@ -4607,7 +4607,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Tallene du skrev matcher ikke dem vi sendte. Tjek venligst efter?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Invalid registreringslås PIN";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Forkert registreringslås-pinkode.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Indtast venligst et gyldigt telefonnummer for at registrere";
@@ -4622,7 +4622,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Intet telefonnummer";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "En bekræftelseskode vil blive sendt til dette nummer. Er telefonnummeret over korrekt?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "En bekræftelseskode vil blive sendt til dette nummer. Er telefonnummeret ovenfor korrekt?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Nummerbekræftelse: %@";
@@ -4898,7 +4898,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Ikke muligt at hente link kode";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "For at forbinde denne enhed til en anden konto skal du først nulstille denne enhed. Er du sikker på, at du vil slette al historik (beskeder, vedhæftede filer, opkald osv.)? Denne handling kan ikke gendannes.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "For at forbinde denne enhed til en anden konto skal du først nulstille denne enhed. Er du sikker på, at du vil slette al historik (beskeder, vedhæftede filer, opkald osv.)? Denne handling kan ikke omgøres.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Slet alt";
@@ -4946,7 +4946,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installér Signal på din mobil";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap på dit profilbillede for at åbne indstillingerne i Signal på din mobil. Tap derefter på \"Linkede enheder\", så \"Link til ny enhed\", for at scanne koden her med din mobil:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tryk på dit profilbillede for at åbne indstillingerne i Signal på din mobil. Tryk derefter på \"Linkede enheder\", så \"Link til ny enhed\", for at scanne koden her med din mobil:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjælp til at linke din iPad her";
@@ -4988,7 +4988,7 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Tilbage til mediebiblioteket";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Invitér en ven via ukrypteret SMS?";
+"SEND_SMS_CONFIRM_TITLE" = "Invitér en ven via usikret SMS?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Ønsker du at invitere det følgende nummer til at bruge Signal?";
@@ -5000,7 +5000,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Standard";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal bruger end-to-end kryptering, og det kan undertiden være nødvendigt at opdatere din chatsession. Dette påvirker ikke din chats sikkerhed, men du har muligvis gået glip af en besked fra denne kontakt, og du kan bede dem om at sende det igen";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal bruger end-to-end kryptering, og det kan undertiden være nødvendigt at opdatere din chatsession. Dette påvirker ikke din chats sikkerhed, men du har muligvis gået glip af en besked fra denne kontakt, og du kan bede dem om at sende den igen.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Chatsession opdateret";
@@ -5042,28 +5042,28 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Omgåelse af censur er ikke nødvendigt; du har allerede forbindelse til Signal tjenesten";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlrapporteringslog";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Aktiver fejlsøgningslog";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avancerede indstillinger for PIN";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Avancerede pinkode-indstillinger";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Avancerede indstillinger for PIN";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Avancerede pinkode-indstillinger";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Déaktiver PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Déaktiver pinkode";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivér PIN";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Aktivér pinkode";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Indsend fejlrapporteringslog";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Indsend fejlsøgningslog";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Fejllogs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis kontaktbilleder i systemet, hvis tilgængelige.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Vis systemets kontaktbilleder, hvis tilgængelige.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Brug kontaktbilleder i systemet";
@@ -5147,7 +5147,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Overfør ikke";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Du har en balance på %@. Hvis du ikke overfører dine penge til en anden pengeadresse, før du sletter din konto, vil du miste den for evigt.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Du har en saldo på %@. Hvis du ikke overfører dine penge til en anden wallet-adresse, før du sletter din konto, vil du miste dem for evigt.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Overfør betalingssaldo?";
@@ -5168,7 +5168,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Forsvindende beskeder";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Indstil en standard tidsindstilling til forsvindende beskeder for alle nye chats, startet af dig.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Indstil en timer for forsvindende beskeder der skal gælde som standard for alle nye chats, du starter.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Donér til Signal";
@@ -5222,22 +5222,22 @@
 "SETTINGS_MESSAGING" = "Meddelelse";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Se og del, når beskeder læses og indtastes. Hvis deaktiveret, kan du ikke se læsekvitteringer eller skriveindikatorer fra andre.";
+"SETTINGS_MESSAGING_FOOTER" = "Se og del, når beskeder læses og indtastes. Hvis deaktiveret, kan du heller ikke se læsekvitteringer eller skriveindikatorer fra andre.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder dæmpede chats";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkluder ignorerede chats";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Emblem tæller";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Emblem-tæller";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Opkalds- og beskedmeddelelser kan vises mens telefonen er låst.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notifikations indhold";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meddelelsesindhold";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt anvender nu Signal";
@@ -5246,13 +5246,13 @@
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Underret når...";
 
 /* The title for the notification settings. */
-"SETTINGS_NOTIFICATIONS" = "Notifikationer";
+"SETTINGS_NOTIFICATIONS" = "Meddelelser";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktivér";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du kan bruge Signal til at sende og modtage MobileCoin. Alle betalinger er underlagt brugsbetingelserne for MobileCoins og MobileCoin Wallet. Dette er en beta-funktion, så du kan støde på nogle problemer, og betalinger eller saldi, du kan miste, kan ikke gendannes.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Du kan bruge Signal til at sende og modtage MobileCoin. Alle betalinger er underlagt brugsbetingelserne for MobileCoins og MobileCoin Wallet. Dette er en beta-funktion, så du kan støde på nogle problemer, og betalinger eller saldi, du måtte miste, kan ikke gendannes.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktivér";
@@ -5264,10 +5264,10 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Tilføj midler";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "For at tilføje midler skal du sende MobileCoin til din pengeadresse. Start en transaktion fra din konto på et system, som understøtter MobileCoin, derefter scan QR-koden eller kopier pengeadressen.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "For at tilføje midler skal du sende MobileCoin til din wallet-adresse. Start en transaktion fra din konto på en børs, som understøtter MobileCoin, derefter scan QR-koden eller kopier wallet-adressen.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Pengeadresse kopieret";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet-adresse kopieret";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Alle betalinger";
@@ -5276,7 +5276,7 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ ved %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en udveksling, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en børs, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Betalinger kan ikke deaktiveres , fordi din saldo ikke er tilgængelig. Tjek din forbindelse, og prøv igen.";
@@ -5285,10 +5285,10 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Betalingen kunne ikke gennemføres. fordi din saldo ikke er tilgængelig. Tjek din forbindelse og prøv igen.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en udveksling, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en børs, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en udveksling, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Betalinger i Signal er ikke længere tilgængelige. Du kan stadig overføre penge til en børs, men du kan ikke længere sende og modtage betalinger eller tilføje midler.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Konverteringer er blot estimater og er muligvis ikke korrekte.";
@@ -5315,10 +5315,10 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Deaktivér Betalinger";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Det anbefales, at du overfører dine midler til en anden pengeadresse, før du deaktiverer betalinger. Hvis du vælger ikke at overføre dine midler nu, forbliver de i din tegnebog, der er knyttet til Signal, hvis du genaktiverer betalinger.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Det anbefales, at du overfører dine midler til en anden wallet-adresse, før du deaktiverer betalinger. Hvis du vælger ikke at overføre dine midler nu, forbliver de i din wallet, der er knyttet til Signal, hvis du genaktiverer betalinger.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Din saldo forbliver i din tegnebog, der er knyttet til Signal, hvis du vælger at genaktivere betalinger.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Din saldo forbliver i din wallet, der er knyttet til Signal, hvis du vælger at genaktivere betalinger.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deaktiver uden at overføre?";
@@ -5342,28 +5342,28 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Om MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Du kan tilføje midler til brug i Signal ved at sende MobileCoin til din pengeadresse.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Du kan tilføje midler til brug i Signal ved at sende MobileCoin til din wallet-adresse.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Tilføjer midler";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Du kan når som helst udbetale MobileCoin på en udveksling, der understøtter MobileCoin. Foretag blot en overførsel til din konto ved denne udveksling.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Du kan når som helst få udbetalt MobileCoin på en børs, der understøtter MobileCoin. Foretag blot en overførsel til din konto ved denne børs.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Udbetaler";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Opdatér PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Opdatér pinkode";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Med en høj saldo kan du opdatere til en alfanumerisk PIN-kode for at tilføje mere beskyttelse til din konto.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Med en høj saldo kan du opdatere til en alfanumerisk pinkode for at tilføje mere beskyttelse til din konto.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Opdatér PIN-koden";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Opdatér din pinkode";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Registrer Gendannelsessætning";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Registrer gendannelsessætning";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Din gendannelsessætning giver dig en anden måde at gendanne din betalingskonto på.";
@@ -5372,7 +5372,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Registrer gendannelsessætning";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ugyldig Pengeadresse";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Ugyldig wallet-adresse";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Ingen nylig aktivitet endnu.";
@@ -5405,7 +5405,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducerer Betalinger (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Din saldo gendannes automatisk, når du geninstallerer Signal, hvis du bekræfter din Signal PIN-kode. Du kan også gendanne din saldo ved hjælp af en gendannelsessætning, som er en 24-ords sætning, der er unik for dig. Skriv det ned, og opbevar det et sikkert sted.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Din saldo gendannes automatisk, når du geninstallerer Signal, hvis du bekræfter din Signal-pinkode. Du kan også gendanne din saldo ved hjælp af en gendannelsessætning, som er en 24-ords sætning, der er unik for dig. Skriv den ned, og opbevar den et sikkert sted.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Tilføj midler";
@@ -5444,7 +5444,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaktionsdetaljer herunder betalingsbeløb og tidspunkt for transaktionen er en del af MobileCoin Ledger.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "En \"oprydningsgebyr af mønter\" opkræves, når mønterne i din besiddelse ikke kan kombineres for at fuldføre en transaktion. Oprydning tillader dig fortsætte med at sende betalinger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Et \"Mønt-oprydningsgebyr\" opkræves, når mønterne i din besiddelse ikke kan kombineres for at fuldføre en transaktion. Oprydning vil gøre det muligt for dig fortsat at sende betalinger.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Du har ikke saldo nok til at gennemføre denne betaling. Din nuværende saldo er %@.";
@@ -5495,7 +5495,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Sørg for at du har indtastet din sætning korrekt.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Bekræft Gendannelsessætning";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Bekræft gendannelsessætning";
 
 /* Message indicating that 'restore payments wallet' is complete. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Betalingskonto gendannet.";
@@ -5519,13 +5519,13 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Gendannelsessætning";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Indsæt Gendannelsessætning";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Indsæt gendannelsessætning";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Din gendannelsessætning er en sætning på 12 ord, der er unik for dig. Brug den til at gendanne din betalingskonto.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Indtast Gendannelsessætning";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Indtast gendannelsessætning";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Gendannelsessætning";
@@ -5540,7 +5540,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Ordet er forkert stavet.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Indtast Gendannelsessætning";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Indtast gendannelsessætning";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan QR-koden for overførselsmodtageren.";
@@ -5564,25 +5564,25 @@
 "SETTINGS_PAYMENTS_TITLE" = "Betalinger";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Du kan ikke overføre til din egen pengeadresse i Signal. Indtast pengeadressen fra din konto på en understøttet udveksling.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Du kan ikke overføre til din egen wallet-adresse i Signal. Indtast wallet-adressen fra din konto på en understøttet børs.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Du kan overføre MobileCoin ved at gennemføre en overførsel til pengeadressen, der er angivet af udveksling. Pengeadressen er strengen med tal og bogstaver, der oftest er under QR-koden.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Du kan overføre MobileCoin ved at gennemføre en overførsel til wallet-adressen, der er angivet af børs. Wallet-adressen er strengen med tal og bogstaver, der oftest er under QR-koden.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Tjek pengeadressen du forsøger at overføre til, og prøv igen.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Tjek wallet-adressen du forsøger at overføre til, og prøv igen.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Forkert adresse";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Til: Scan eller indtast pengeadresse";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Til: Scan eller indtast wallet-adresse";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Overfør til Udveksling";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Overfør til børs";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Overfør til Udveksling";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Overfør til børs";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Opsætning af gendannelsessætning er gennemført.";
@@ -5603,7 +5603,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Ord %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Bekræft Gendannelsessætning";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Bekræft gendannelsessætning";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Gendannelsessætning kopieret";
@@ -5621,7 +5621,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Se sætning igen";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Vis Gendannelsessætning";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Vis gendannelsessætning";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Gendannelsessætning";
@@ -5639,7 +5639,7 @@
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Betalinger (Beta)";
 
 /* Label for the payments wallet address. */
-"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Din Wallet-adresse";
+"SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Din wallet-adresse";
 
 /* Label for the 'phone number discoverability' setting. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY" = "Find mig via telefonnummer";
@@ -5657,25 +5657,25 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Déaktiver påmindelser";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Vær sikker på at du husker eller sikkert gemmer din PIN, da den ikke kan gendannes. Hvis du glemmer din PIN, kan du miste data når du genregistrerer din Signal konto";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Vær sikker på at du husker eller gemmer din pinkode sikkert, da den ikke kan gendannes. Hvis du glemmer din pinkode, kan du miste data når du genregistrerer din Signal-konto.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Bekræft din Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Bekræft din Signal-pinkode";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN påmindelser";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Pinkode-påmindelser";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-koder opbevarer oplysninger, der er gemt med Signal krypteret, så kun du kan få adgang til dem. Din pinkode kan ikke gendannes. Din profil, dine indstillinger og dine kontaktpersoner gendannes, når du geninstallerer Signal.";
+"SETTINGS_PINS_FOOTER" = "Pinkoder sørger for at oplysninger, der er gemt hos Signal, er krypteret, så kun du kan få adgang til dem. Din pinkode kan ikke gendannes. Din profil, dine indstillinger og dine kontaktpersoner gendannes, når du geninstallerer Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "Skift din PIN";
+"SETTINGS_PINS_ITEM" = "Skift din pinkode";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Opret en PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Opret en pinkode";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "Signal PIN";
+"SETTINGS_PINS_TITLE" = "Signal-pinkode";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Omgåelse af censur, videregiv opkald og forseglede afsenderindstillinger.";
@@ -5702,7 +5702,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Aktivér";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Hvis du glemmer din PIN-kode til Signal ved genregistrering af Signal, vil du blive låst ude af din konto i 7 dage";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Hvis du glemmer din Signal-pinkode ved genregistrering af Signal, vil du blive låst ude af din konto i 7 dage.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Aktiver registreringslås?";
@@ -5720,7 +5720,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Skærmlås";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Skjul skærm i App Switcher";
+"SETTINGS_SCREEN_SECURITY" = "Skjul skærm i appskifter";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Vis opkald på listen \"Seneste\" i iOS-telefonappen.";
@@ -5744,7 +5744,7 @@
 "SETTINGS_SECURITY_DETAIL_TOUCHID" = "Brug Touch ID for at oplåse Signal.";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Appsikkerhed";
+"SETTINGS_SECURITY_TITLE" = "App-sikkerhed";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Afsendelse af medier i høj kvalitet bruger mere data.";
@@ -5765,7 +5765,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Din Signal PIN-kode kræves for at registrere dit telefonnummer igen med Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Kræv din Signal-pinkode for at registrere dit telefonnummer med Signal igen.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Skriveindikatorer";
@@ -5774,7 +5774,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Forseglet afsender";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis Statusikon";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Vis statusikon";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Tillad fra alle";
@@ -5819,7 +5819,7 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Kunne ikke sende vedhæftede fil";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Udsender %1$@ af %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploader %1$@ af %2$@...";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Sender...";
@@ -5894,7 +5894,7 @@
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_TITLE" = "Nye grupper er her!";
 
 /* Body text for 'groups v2 and mentions' splash screen */
-"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Nye gruppefunktioner inkluderer @omtaler, administratorer og mere. Prøv det ved at tappe på:";
+"SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_SPLASH_BODY" = "Nye gruppefunktioner inkluderer @omtaler, administratorer og mere. Prøv det ved at trykke på:";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Klistermærke besked";
@@ -5948,7 +5948,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Kontakt os";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Fortæl os, hvad der foregår";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Fortæl os, hvad der sker";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Fortæl os om problemet:";
@@ -5984,13 +5984,13 @@
 "SUPPORT_EMAIL_SUBJECT" = "Signal IOS-supportanmodning";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "Hvordan har du det? (Frivilligt)";
+"SUPPORT_EMOJI_PROMPT" = "Hvordan har du det? (valgfrit)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "Har du læst i vores FAQ?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Inkludér fejlfindingslogfil";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Inkludér fejlsøgningslog";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Henter";
@@ -6020,7 +6020,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem af %@, %@, og %lu andre grupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne notater i chatten. Hvis din konto har forbundne enheder, vil notaterne blive synkroniseret";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne notater i denne chat. Hvis din konto har forbundne enheder, vil notaterne blive synkroniseret.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem af %@";
@@ -6095,7 +6095,7 @@
 "TXT_DELETE_TITLE" = "Slet";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "Til indbakke";
+"UNARCHIVE_ACTION" = "Ophæv arkivering";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Bruger er ikke i dine kontakter. Vil du blokere denne bruger?";
@@ -6131,10 +6131,10 @@
 "UNKNOWN_USER" = "Ukendt";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb er deaktiveret";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Forsvindende beskeder blev deaktiveret.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Besked med tidsudløb blev sent til %@";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Tid for forsvindende beskeder blev sat til %@";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Ukendt";
@@ -6143,7 +6143,7 @@
 "UNLINK_ACTION" = "Frakobl";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Enheden vil ikke længere kunne sende eller modtage meddelelser, hvis den ikke er forbundet";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Enheden vil ikke længere kunne sende eller modtage beskeder, hvis den ikke er forbundet.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Frakobl \"%@\"?";
@@ -6188,19 +6188,19 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Gruppen kunne ikke opdateres. Kontroller internetforbindelsen og prøv igen.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opret din PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opret din pinkode";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mere om PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mere om pinkoder";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs opbevarer krypteret information lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes når du geninstallerer. Du har ikke brug for din PIN for at åbne app'en.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pinkoder sørger for at information lagret hos Signal, er krypteret, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne app'en.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer pinkoder";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiver PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiver pinkode";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kræve iOS 11 eller nyere. Opgrader venligst i indstillingsappen >> Generelt >> Softwareopdatering";
@@ -6275,13 +6275,13 @@
 "VIDEO_CALL_LABEL" = "Video opkald";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har allerede læst denne besked.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har allerede set denne besked.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap her - så forsvinder beskeden efter at være blevet set.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tryk her for at få beskeden til at forsvinde efter den er blevet set.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Udgående læs-kun-én-gang mediefiler fjernes automatisk efter de er sendt.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Udgående vis-kun-én-gang mediefiler fjernes automatisk efter de er sendt.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Swipe for at annullere";
@@ -6383,10 +6383,10 @@
 "YOU_DELETED_THIS_MESSAGE" = "Du slettede beskeden.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb deaktiveret.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du deaktiverede forsvindende beskeder.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Du skal fuldføre opsætningen før du fortsætter.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb udløber efter %@";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du indstillede tiden for forsvindende beskeder til %@.";
