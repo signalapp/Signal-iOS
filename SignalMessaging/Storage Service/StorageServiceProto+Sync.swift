@@ -625,22 +625,14 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         // Given name can never be cleared, so ignore all info
         // about the profile if there's no given name.
         if hasGivenName && (localGivenName != givenName || localFamilyName != familyName || localAvatarUrl != avatarURL) {
-            if profileManager.hasLocalProfile() {
-                // If we have a local profile, never take any new
-                // profile data besides the key from storage service.
-                // Instead, just trigger a fetch of our profile to make
-                // sure we have the latest authoritative information.
-                profileManager.fetchLocalUsersProfile()
-            } else {
-                profileManager.setProfileGivenName(
-                    givenName,
-                    familyName: familyName,
-                    avatarUrlPath: avatarURL,
-                    for: localAddress,
-                    userProfileWriter: .storageService,
-                    transaction: transaction
-                )
-            }
+            profileManager.setProfileGivenName(
+                givenName,
+                familyName: familyName,
+                avatarUrlPath: avatarURL,
+                for: localAddress,
+                userProfileWriter: .storageService,
+                transaction: transaction
+            )
         } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName || localAvatarUrl != nil && !hasAvatarURL {
             mergeState = .needsUpdate
         }
