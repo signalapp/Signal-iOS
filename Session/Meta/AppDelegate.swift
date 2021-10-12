@@ -4,6 +4,7 @@ import SessionUIKit
 import UIKit
 import BackgroundTasks
 import SessionUtilitiesKit
+import SessionMessagingKit
 
 extension AppDelegate {
 
@@ -120,7 +121,7 @@ extension AppDelegate {
     }
     
     @available(iOS 13.0, *)
-    @objc func cancelAllPendingBGTask() {
+    @objc func cancelAllPendingBackgroundTasks() {
         BGTaskScheduler.shared.cancelAllTaskRequests()
     }
     
@@ -141,8 +142,16 @@ extension AppDelegate {
     private func handleAppRefresh(task: BGAppRefreshTask) {
         // Schedule a new refresh task.
         scheduleAppRefresh()
-        
-        
+        AppReadiness.runNowOrWhenAppDidBecomeReady{
+            BackgroundPoller.poll(completionHandler: { result in
+                if result == .failed {
+                    task.setTaskCompleted(success: false)
+                    
+                } else {
+                    task.setTaskCompleted(success: true)
+                }
+            })
+        }
      }
     
 }
