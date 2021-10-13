@@ -224,11 +224,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
     
     [self setUpCallHandling];
-    if (@available(iOS 13.0, *)) {
-        [self registerBackgroundTasks];
-    }
     
-
     return YES;
 }
 
@@ -256,10 +252,6 @@ static NSTimeInterval launchStartedAt;
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
     }];
-    
-    if (@available(iOS 13, *)) {
-        [self cancelAllPendingBackgroundTasks];
-    }
 
     // Clear all notifications whenever we become active.
     // When opening the app from a notification,
@@ -287,10 +279,6 @@ static NSTimeInterval launchStartedAt;
     [sharedUserDefaults synchronize];
 
     [DDLog flushLog];
-    
-    if (@available(iOS 13, *)) {
-        [self scheduleAppRefresh];
-    }
 }
 
 #pragma mark - Orientation

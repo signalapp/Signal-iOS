@@ -2,9 +2,6 @@ import PromiseKit
 import WebRTC
 import SessionUIKit
 import UIKit
-import BackgroundTasks
-import SessionUtilitiesKit
-import SessionMessagingKit
 
 extension AppDelegate {
 
@@ -103,54 +100,4 @@ extension AppDelegate {
             }
         }
     }
-    
-    // MARK: Background tasks
-    @available(iOS 13.0, *)
-    @objc func registerBackgroundTasks() {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.loki-project.loki-messenger.refresh", using: nil) { task in
-            self.handleAppRefresh(task: task as! BGAppRefreshTask)
-        }
-        
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.loki-project.loki-messenger.vibrate", using: nil) { task in
-            Vibration.shared.startVibration()
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 60, execute: {
-                Vibration.shared.stopVibrationIfPossible()
-                task.setTaskCompleted(success: true)
-            })
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    @objc func cancelAllPendingBackgroundTasks() {
-        BGTaskScheduler.shared.cancelAllTaskRequests()
-    }
-    
-    @available(iOS 13.0, *)
-    @objc func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: "com.loki-project.loki-messenger.refresh")
-        // Fetch no earlier than 15 minutes from now.
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
-                
-        do {
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            print("Could not schedule app refresh: \(error)")
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    private func handleAppRefresh(task: BGAppRefreshTask) {
-        // Schedule a new refresh task.
-        scheduleAppRefresh()
-        AppReadiness.runNowOrWhenAppDidBecomeReady{
-            BackgroundPoller.poll(completionHandler: { result in
-                if result == .failed {
-                    task.setTaskCompleted(success: false)
-                } else {
-                    task.setTaskCompleted(success: true)
-                }
-            })
-        }
-     }
-    
 }
