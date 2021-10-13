@@ -9,8 +9,6 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     let uuid: String
     let sdp: RTCSessionDescription
     
-    private var vibrationTimer: Timer?
-    
     // MARK: UI Components
     private lazy var profilePictureView: ProfilePictureView = {
         let result = ProfilePictureView()
@@ -26,7 +24,6 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         result.textColor = UIColor.white
         result.font = .boldSystemFont(ofSize: Values.largeFontSize)
         result.lineBreakMode = .byTruncatingTail
-        result.textAlignment = .center
         return result
     }()
     
@@ -92,7 +89,7 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         profilePictureView.publicKey = self.sessionID
         profilePictureView.update()
         displayNameLabel.text = Storage.shared.getContact(with: sessionID)?.name
-        let stackView = UIStackView(arrangedSubviews: [profilePictureView, displayNameLabel, UIView.hStretchingSpacer(), hangUpButton, answerButton])
+        let stackView = UIStackView(arrangedSubviews: [profilePictureView, displayNameLabel, hangUpButton, answerButton])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Values.largeSpacing
