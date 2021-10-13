@@ -37,6 +37,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     private lazy var remoteVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
+        result.alpha = 0
         result.contentMode = .scaleAspectFill
         return result
     }()
@@ -293,7 +294,11 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     func isRemoteVideoDidChange(isEnabled: Bool) {
-        remoteVideoView.isHidden = !isEnabled
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.25) {
+                self.remoteVideoView.alpha = isEnabled ? 1 : 0
+            }
+        }
     }
     
     // MARK: Interaction

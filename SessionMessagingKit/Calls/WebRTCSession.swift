@@ -74,7 +74,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }()
     
     // Data Channel
-    internal var dataChannel: RTCDataChannel?
+    internal var localDataChannel: RTCDataChannel?
+    internal var remoteDataChannel: RTCDataChannel?
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -99,12 +100,17 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         peerConnection.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
         // Configure audio session
         configureAudioSession()
+        
+        // Data channel
+        if let dataChannel = createDataChannel() {
+            dataChannel.delegate = self
+            self.localDataChannel = dataChannel
+        }
     }
     
     // MARK: Signaling
     public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Sending pre-offer message.")
-        createDataChannel()
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
         DispatchQueue.main.async {
@@ -267,8 +273,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("[Calls] Data channel opened.")
-        self.dataChannel = dataChannel
-        self.dataChannel?.delegate = self
+        self.remoteDataChannel = dataChannel
     }
 }
 

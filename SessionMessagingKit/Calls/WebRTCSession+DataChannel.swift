@@ -3,18 +3,17 @@ import Foundation
 
 extension WebRTCSession: RTCDataChannelDelegate {
     
-    internal func createDataChannel() {
+    internal func createDataChannel() -> RTCDataChannel? {
         let dataChannelConfiguration = RTCDataChannelConfiguration()
-        dataChannelConfiguration.isOrdered = true
-        dataChannelConfiguration.isNegotiated = true
-        dataChannelConfiguration.maxRetransmits = 30
-        dataChannelConfiguration.maxPacketLifeTime = 30000
-        dataChannel = peerConnection.dataChannel(forLabel: "DATACHANNEL", configuration: dataChannelConfiguration)
-        dataChannel?.delegate = self
+        guard let dataChannel = peerConnection.dataChannel(forLabel: "VIDEOCONTROL", configuration: dataChannelConfiguration) else {
+            print("[Calls] Couldn't create data channel.")
+            return nil
+        }
+        return dataChannel
     }
     
     public func sendJSON(_ json: JSON) {
-        if let dataChannel = dataChannel, let jsonAsData = try? JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ]) {
+        if let dataChannel = remoteDataChannel, let jsonAsData = try? JSONSerialization.data(withJSONObject: json, options: [ .fragmentsAllowed ]) {
             let dataBuffer = RTCDataBuffer(data: jsonAsData, isBinary: false)
             dataChannel.sendData(dataBuffer)
         }
@@ -22,7 +21,7 @@ extension WebRTCSession: RTCDataChannelDelegate {
     
     // MARK: Data channel delegate
     public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        print("[Calls] Data channed did change to \(dataChannel.readyState)")
+        print("[Calls] Data channel did change to \(dataChannel.readyState)")
     }
     
     public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
