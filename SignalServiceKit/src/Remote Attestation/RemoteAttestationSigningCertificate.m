@@ -384,7 +384,7 @@ NSError *RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCe
             return nil;
         }
 
-        unsigned char *entryName = ASN1_STRING_data(entryData);
+        const unsigned char *entryName = ASN1_STRING_get0_data(entryData);
         if (entryName == NULL) {
             OWSFailDebug(@"could not extract entry string.");
             return nil;

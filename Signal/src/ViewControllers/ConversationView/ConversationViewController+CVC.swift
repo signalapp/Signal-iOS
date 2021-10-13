@@ -652,7 +652,7 @@ extension ConversationViewController: CVLoadCoordinatorDelegate {
         // We use an obj-c free function so that we can handle NSException.
         self.collectionView.cvc_performBatchUpdates(batchUpdatesBlock,
                                                     completion: completion,
-                                                    failure: logFailureBlock,
+                                                    failureLogger: logFailureBlock,
                                                     animated: shouldAnimateUpdate,
                                                     scrollContinuity: scrollContinuity,
                                                     lastKnownDistanceFromBottom: updateToken.lastKnownDistanceFromBottom,

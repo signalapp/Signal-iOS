@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public extension ConversationCollectionView {
 
@@ -13,7 +14,7 @@ public extension ConversationCollectionView {
     func cvc_reloadData(animated: Bool, cvc: ConversationViewController) {
         AssertIsOnMainThread()
 
-        ObjCTry.perform({
+        SCKExceptionWrapper.perform(label: "CVC reloadData()", {
             cvc.layout.willReloadData()
             if animated {
                 super.reloadData()
@@ -24,44 +25,42 @@ public extension ConversationCollectionView {
             }
             cvc.layout.invalidateLayout()
             cvc.layout.didReloadData()
-        }, failureBlock: {
+        }, errorBlock: {
             Logger.warn("Render state: \(cvc.currentRenderStateDebugDescription)")
         })
     }
 
     func cvc_performBatchUpdates(_ batchUpdates: @escaping CVCPerformBatchUpdatesBlock,
                                  completion: @escaping CVCPerformBatchUpdatesCompletion,
-                                 failure: @escaping CVCPerformBatchUpdatesFailure,
+                                 failureLogger: @escaping CVCPerformBatchUpdatesFailure,
                                  animated: Bool,
                                  scrollContinuity: ScrollContinuity,
                                  lastKnownDistanceFromBottom: CGFloat?,
                                  cvc: ConversationViewController) {
         AssertIsOnMainThread()
 
-        let tryFailure: ObjCTryFailureBlock = {
+        let tryFailure: () -> Void = {
             Logger.warn("Render state: \(cvc.currentRenderStateDebugDescription)")
-            failure()
+            failureLogger()
         }
 
         let updateBlock = {
-            ObjCTry.perform({
+            _ = SCKExceptionWrapper.perform(label: "CVC pre-batchUpdates", {
                 let layout = cvc.layout
                 layout.willPerformBatchUpdates(scrollContinuity: scrollContinuity,
                                                lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
                 super.performBatchUpdates(batchUpdates) { (finished: Bool) in
                     AssertIsOnMainThread()
-
-                    ObjCTry.perform({
+                    SCKExceptionWrapper.perform(label: "CVC post-batchUpdates", {
                         layout.didCompleteBatchUpdates()
-
                         completion(finished)
-                    }, failureBlock: tryFailure)
+                    }, errorBlock: tryFailure)
                 }
                 layout.didPerformBatchUpdates()
-            }, failureBlock: tryFailure)
+            }, errorBlock: tryFailure)
         }
 
-        ObjCTry.perform({
+        SCKExceptionWrapper.perform(label: "CVC batchUpdates animation", {
             if animated {
                 updateBlock()
             } else {
@@ -80,23 +79,6 @@ public extension ConversationCollectionView {
                 // conversation. See `DebugUIMessages#thrashCellsInThread:`
                 UIView.animate(withDuration: 0, animations: updateBlock)
             }
-        }, failureBlock: tryFailure)
-    }
-}
-
-// MARK: -
-
-extension ObjCTry {
-    public static func perform(_ tryBlock: @escaping ObjCTryBlock,
-                               failureBlock: @escaping ObjCTryFailureBlock,
-                               file: String = #file,
-                               function: String = #function,
-                               line: Int = #line) {
-
-        let filename = (file as NSString).lastPathComponent
-        // We format the filename & line number in a format compatible
-        // with XCode's "Open Quickly..." feature.
-        let label = "[\(filename):\(line) \(function)]"
-        self.perform(tryBlock, failureBlock: failureBlock, label: label)
+        }, errorBlock: tryFailure)
     }
 }

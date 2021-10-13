@@ -708,9 +708,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                     return "pdf"
                 case .pkPass:
                     return "pkPass"
-                @unknown default:
-                    owsFailDebug("Unknown value.")
-                    return "unknown"
                 }
             }
         }

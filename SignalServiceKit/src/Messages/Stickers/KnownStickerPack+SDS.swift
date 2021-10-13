@@ -499,24 +499,20 @@ public extension KnownStickerPack {
         let uniqueIds = anyAllUniqueIds(transaction: transaction)
 
         var index: Int = 0
-        do {
-            try Batching.loop(batchSize: Batching.kDefaultBatchSize,
-                              loopBlock: { stop in
-                                  guard index < uniqueIds.count else {
-                                    stop.pointee = true
-                                    return
-                                  }
-                                  let uniqueId = uniqueIds[index]
-                                  index = index + 1
-                                  guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                                      owsFailDebug("Missing instance.")
-                                      return
-                                  }
-                                  instance.anyRemove(transaction: transaction)
-            })
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        Batching.loop(batchSize: Batching.kDefaultBatchSize,
+                      loopBlock: { stop in
+            guard index < uniqueIds.count else {
+                stop.pointee = true
+                return
+            }
+            let uniqueId = uniqueIds[index]
+            index = index + 1
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                return
+            }
+            instance.anyRemove(transaction: transaction)
+        })
 
         if shouldBeIndexedForFTS {
             FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)

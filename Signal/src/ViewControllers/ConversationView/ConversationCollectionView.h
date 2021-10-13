@@ -21,17 +21,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark -
-
-typedef void (^ObjCTryBlock)(void);
-typedef void (^ObjCTryFailureBlock)(void);
-
-#pragma mark -
-
-@interface ObjCTry : NSObject
-
-+ (void)perform:(ObjCTryBlock)tryBlock failureBlock:(ObjCTryFailureBlock)failureBlock label:(NSString *)label;
-
-@end
-
 NS_ASSUME_NONNULL_END

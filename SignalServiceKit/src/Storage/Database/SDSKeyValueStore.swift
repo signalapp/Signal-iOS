@@ -365,7 +365,7 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
-        return allKeys(transaction: transaction).map { key in
+        return allKeys(transaction: transaction).compactMap { key in
             return self.read(key, transaction: transaction)
         }
     }

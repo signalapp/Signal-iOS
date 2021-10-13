@@ -319,19 +319,6 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
 
 // MARK: -
 
-extension ConversationViewController: UIDocumentMenuDelegate {
-    public func documentMenu(_ documentMenu: UIDocumentMenuViewController,
-                             didPickDocumentPicker documentPicker: UIDocumentPickerViewController) {
-        AssertIsOnMainThread()
-
-        documentPicker.delegate = self
-        dismissKeyBoard()
-        presentFormSheet(documentPicker, animated: true)
-    }
-}
-
-// MARK: -
-
 extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
     public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval,
                                                               animationCurve: UIView.AnimationCurve) {

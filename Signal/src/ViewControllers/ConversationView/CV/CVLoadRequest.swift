@@ -97,7 +97,7 @@ struct CVLoadRequest {
                              function: String = #function,
                              line: Int = #line) {
         if CVLoader.verboseLogging {
-            var logString = "\(label)[\(requestId)]. duration: \(loadStartDateFormatted), schedule delay: \(loadScheduleDelayIntervalFormatted)"
+            let logString = "\(label)[\(requestId)]. duration: \(loadStartDateFormatted), schedule delay: \(loadScheduleDelayIntervalFormatted)"
             Logger.info(logString, file: file, function: function, line: line)
         }
     }

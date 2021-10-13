@@ -550,9 +550,6 @@ public enum CVPresentationStatus: UInt, CustomStringConvertible {
             return ".firstViewDidAppearHasBegun"
         case .firstViewDidAppearHasCompleted:
             return ".firstViewDidAppearHasCompleted"
-        @unknown default:
-            owsFailDebug("unexpected value: \(self.rawValue)")
-            return "Unknown"
         }
     }
 }

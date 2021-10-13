@@ -95,7 +95,7 @@ public protocol CVComponentDelegate {
     typealias EndCellAnimation = () -> Void
     func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation
 
-    var view: UIView { get }
+    var view: UIView! { get }
 
     var isConversationPreview: Bool { get }
 

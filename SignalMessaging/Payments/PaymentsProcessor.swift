@@ -126,8 +126,6 @@ public class PaymentsProcessor: NSObject {
                                         transaction: transaction)
         }
 
-        let intervalSinceLaunch = abs(CurrentAppContext().appLaunchTime.timeIntervalSinceNow)
-
         paymentModels.sort { (left, right) -> Bool in
             left.sortDate.compare(right.sortDate) == .orderedAscending
         }
