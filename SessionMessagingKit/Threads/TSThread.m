@@ -364,7 +364,7 @@ BOOL IsNoteToSelfEnabled(void)
 
     if (!self.shouldBeVisible) {
         self.shouldBeVisible = YES;
-        [super saveWithTransaction:transaction];
+        [self saveWithTransaction:transaction];
     } else {
         [self touchWithTransaction:transaction];
     }

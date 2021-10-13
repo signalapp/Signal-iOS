@@ -219,6 +219,9 @@ public final class MessageSender : NSObject {
                         message.serverHash = hash
                         MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
                         var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
+                        if let callMessage = message as? CallMessage, case .preOffer = callMessage.kind {
+                            shouldNotify = true
+                        }
                         /*
                         if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
                             shouldNotify = true
