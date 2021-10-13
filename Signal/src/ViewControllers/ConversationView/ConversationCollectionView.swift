@@ -45,7 +45,7 @@ public extension ConversationCollectionView {
         }
 
         let updateBlock = {
-            _ = SCKExceptionWrapper.perform(label: "CVC pre-batchUpdates", {
+            SCKExceptionWrapper.perform(label: "CVC pre-batchUpdates", {
                 let layout = cvc.layout
                 layout.willPerformBatchUpdates(scrollContinuity: scrollContinuity,
                                                lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)

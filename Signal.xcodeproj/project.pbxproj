@@ -7582,6 +7582,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -7610,6 +7611,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -7795,6 +7800,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -7824,6 +7830,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -7856,6 +7866,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -7884,6 +7895,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -7917,6 +7932,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -7945,6 +7961,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -8127,6 +8147,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -8155,6 +8176,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -8339,6 +8364,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -8367,6 +8393,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -8968,6 +8998,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -8997,6 +9028,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -9030,6 +9065,7 @@
 					"$(inherited)",
 					"$(SRCROOT)",
 				);
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_TEST_COVERAGE_FILES = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -9058,6 +9094,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)",
+				);
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-fobjc-arc-exceptions",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
