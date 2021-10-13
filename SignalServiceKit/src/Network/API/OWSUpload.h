@@ -43,6 +43,8 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 + (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
 
+- (void)appendToForm:(id<AFMultipartFormData>)formData;
+
 @end
 
 NS_ASSUME_NONNULL_END
