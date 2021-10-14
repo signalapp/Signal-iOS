@@ -318,6 +318,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths unionSet:allVoiceMessageFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
+    // TODO: Badges?
 
     // This should be redundant, but this will future-proof us against
     // ever accidentally removing the GRDB databases during

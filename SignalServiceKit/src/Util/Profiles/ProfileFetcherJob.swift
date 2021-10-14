@@ -531,7 +531,7 @@ public class ProfileFetcherJob: NSObject {
             let hasBioEmoji = bioEmoji?.count ?? 0 > 0
             let hasUsername = username?.count ?? 0 > 0
             let hasPaymentAddress = paymentAddress != nil
-            let badges = fetchedProfile.profile.badges.map { $0.0.description }.joined(separator: "; ")
+            let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 
             Logger.info("address: \(address), " +
                         "isVersionedProfile: \(isVersionedProfile), " +
@@ -543,7 +543,7 @@ public class ProfileFetcherJob: NSObject {
                         "hasBioEmoji: \(hasBioEmoji), " +
                         "hasUsername: \(hasUsername), " +
                         "hasPaymentAddress: \(hasPaymentAddress), " +
-                        "profileKey: \(profileKeyDescription)" +
+                        "profileKey: \(profileKeyDescription), " +
                         "badges: \(badges)")
         }
 

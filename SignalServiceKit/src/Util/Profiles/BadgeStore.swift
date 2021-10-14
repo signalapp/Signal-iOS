@@ -8,18 +8,22 @@ import GRDB
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
 @objc
 public class ProfileBadge: NSObject, Codable {
-    static let remoteAssetPrefix = URL(string: "https://updates2.signal.org/static/badges/")!
-
     let id: String
     let rawCategory: String
     let localizedName: String
     let localizedDescriptionFormatString: String
     let resourcePath: String
 
-    var remoteResourceUrl: URL { URL(string: resourcePath, relativeTo: Self.remoteAssetPrefix)! }
-
     let badgeVariant: BadgeVariant
     let localization: String
+
+    // Nil until a badge is checked in to the BadgeStore
+    fileprivate(set) var assets: BadgeAssets? = nil
+
+    private enum CodingKeys: String, CodingKey {
+        // Skip encoding of `assets`
+        case id, rawCategory, localizedName, localizedDescriptionFormatString, resourcePath, badgeVariant, localization
+    }
 
     init(jsonDictionary: [String: Any]) throws {
         let params = ParamParser(dictionary: jsonDictionary)
@@ -37,7 +41,37 @@ public class ProfileBadge: NSObject, Codable {
         // TODO: Badges — What about reordered languages? Maybe clear if any change?
         localization = Locale.preferredLanguages[0]
     }
+
+    static func ==(lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
+        return type(of: lhs) == type(of: rhs) &&
+            lhs.id == rhs.id &&
+            lhs.rawCategory == rhs.rawCategory &&
+            lhs.localizedName == rhs.localizedName &&
+            lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
+            lhs.resourcePath == rhs.resourcePath &&
+            lhs.badgeVariant == rhs.badgeVariant &&
+            lhs.localization == rhs.localization
+    }
 }
+
+// MARK: - ProfileBadge assets
+
+extension ProfileBadge {
+    static let remoteAssetPrefix = URL(string: "https://updates2.signal.org/static/badges/")!
+    static let localAssetPrefix = URL(fileURLWithPath: "ProfileBadges", isDirectory: true, relativeTo: OWSFileSystem.appSharedDataDirectoryURL())
+
+    var remoteAssetUrl: URL {
+        let encoded = resourcePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? resourcePath
+        return Self.remoteAssetPrefix.appendingPathComponent(encoded)
+    }
+    var localAssetDir: URL {
+        let extensionIndex = resourcePath.firstIndex(of: ".") ?? resourcePath.endIndex
+        let trimmedPath = resourcePath.prefix(upTo: extensionIndex)
+        return Self.localAssetPrefix.appendingPathComponent(String(trimmedPath), isDirectory: true)
+    }
+}
+
+// MARK: - ProfileBadge enums
 
 extension ProfileBadge {
     /// Server defined category for the badge type
@@ -83,19 +117,80 @@ extension ProfileBadge {
     }
 }
 
+// MARK: - ProfileBadge<PersistableRecord>
+
 extension ProfileBadge: FetchableRecord, PersistableRecord {
     public static let databaseTableName = "model_ProfileBadgeTable"
 }
 
-
-
+// MARK: - BadgeStore
 
 @objc
 public class BadgeStore: NSObject {
-    override init() {}
+    let lock = UnfairLock()
+    var badgeCache = LRUCache<String, ProfileBadge>(maxSize: 5)
+    // BadgeAssets have two roles: fetching assets we don't currently have and vending retrieved assets as UIImages
+    // They're a reference type, so we're fine aliasing the assets into multiple ProfileBadges
+    // We don't use an LRUCache since we don't want to clear out BadgeAssets that are mid-fetch and risk having
+    // two instances of this class trying to fetch assets at the same time.
+    var assetCache = [String: BadgeAssets]()
 
-    // TODO: Badging — Caching?
-    func createOrUpdateBadge(_ badge: ProfileBadge, transaction writeTx: SDSAnyWriteTransaction) throws {
-        try badge.save(writeTx.unwrapGrdbWrite.database)
+    // TODO: Badging — Memory warnings?
+
+    func createOrUpdateBadge(_ newBadge: ProfileBadge, transaction writeTx: SDSAnyWriteTransaction) throws {
+        try lock.withLock {
+            // First, we check to see if we already have a cached badge that's equal to the new version
+            // If so, we can just update the assets property and return
+            if let cachedValue = badgeCache[newBadge.id], cachedValue == newBadge {
+                Logger.debug("Badge already up-to-date")
+                newBadge.assets = cachedValue.assets
+                return
+            }
+
+            // Something changed, so we need to update our database copy
+            try newBadge.save(writeTx.unwrapGrdbWrite.database)
+
+            // Finally we update our cached badge and start preparing our assets
+            populateAssetsOnBadge(newBadge)
+            owsAssertDebug(newBadge.assets != nil)
+            badgeCache[newBadge.id] = newBadge
+        }
+    }
+
+    func fetchBadgeWithId(_ badgeId: String, readTx: SDSAnyReadTransaction) -> ProfileBadge? {
+        do {
+            return try lock.withLock {
+                if let cachedBadge = badgeCache[badgeId] {
+                    owsAssertDebug(cachedBadge.assets != nil)
+                    return cachedBadge
+                } else if let fetchedBadge = try ProfileBadge.filter(key: badgeId).fetchOne(readTx.unwrapGrdbRead.database) {
+                    populateAssetsOnBadge(fetchedBadge)
+                    owsAssertDebug(fetchedBadge.assets != nil)
+                    badgeCache[fetchedBadge.id] = fetchedBadge
+                    return fetchedBadge
+                } else {
+                    return nil
+                }
+            }
+        } catch {
+            owsFailDebug("Failed to fetch badge: \(error)")
+            return nil
+        }
+    }
+
+    func populateAssetsOnBadge(_ badge: ProfileBadge) {
+        lock.assertOwner()
+
+        // We try and reuse any existing BadgeAssets instances if we have one cached
+        if let cachedValue = badgeCache[badge.id], cachedValue.resourcePath == badge.resourcePath, let assets = cachedValue.assets {
+            badge.assets = assets
+        } else if let cachedAssets = assetCache[badge.resourcePath] {
+            badge.assets = cachedAssets
+        } else {
+            badge.assets = BadgeAssets(remoteSourceUrl: badge.remoteAssetUrl, localAssetDirectory: badge.localAssetDir)
+            assetCache[badge.resourcePath] = badge.assets
+        }
+        owsAssertDebug(badge.assets != nil)
+        badge.assets?.prepareAssetsIfNecessary()
     }
 }
