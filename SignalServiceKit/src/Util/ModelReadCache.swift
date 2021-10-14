@@ -139,8 +139,7 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
         self.mode = mode
         self.adapter = adapter
         self.cache = LRUCache(maxSize: adapter.cacheCountLimit,
-                              nseMaxSize: 0)
-//                              nseMaxSize: adapter.cacheCountLimitNSE)
+                              nseMaxSize: adapter.cacheCountLimitNSE)
 
         switch mode {
         case .read:

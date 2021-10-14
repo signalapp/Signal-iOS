@@ -382,14 +382,8 @@ public class OWSWebSocket: NSObject {
             }
         }
 
-        // Set User-Agent header.
-        httpHeaders.addHeader(OWSURLSession.userAgentHeaderKey,
-                              value: OWSURLSession.userAgentHeaderValueSignalIos,
-                              overwriteOnConflict: false)
-        // Set Accept-Language header.
-        httpHeaders.addHeader(OWSURLSession.acceptLanguageHeaderKey,
-                              value: OWSURLSession.acceptLanguageHeaderValue,
-                              overwriteOnConflict: false)
+        // Set User-Agent and Accept-Language headers.
+        httpHeaders.addDefaultHeaders()
 
         for (key, value) in httpHeaders.headers {
             let header = String(format: "%@:%@", key, value)

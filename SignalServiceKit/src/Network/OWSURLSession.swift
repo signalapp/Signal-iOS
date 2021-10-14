@@ -405,8 +405,10 @@ public class OWSURLSession: NSObject {
 
     // Ensure certain invariants for all requests.
     private func prepareRequest(request: URLRequest) -> URLRequest {
-        var request = OWSHttpHeaders.fillInMissingDefaultHeaders(request: request)
+
         request.httpShouldHandleCookies = httpShouldHandleCookies.get()
+
+        var request = OWSHttpHeaders.fillInMissingDefaultHeaders(request: request)
 
         if signalService.isCensorshipCircumventionActive,
            let frontingURL = self.frontingURL,

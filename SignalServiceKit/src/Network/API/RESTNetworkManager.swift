@@ -57,14 +57,8 @@ public class RESTSessionManager: NSObject {
 
         let httpHeaders = OWSHttpHeaders()
 
-        // Set User-Agent header.
-        httpHeaders.addHeader(OWSURLSession.userAgentHeaderKey,
-                              value: OWSURLSession.userAgentHeaderValueSignalIos,
-                              overwriteOnConflict: true)
-        // Set Accept-Language header.
-        httpHeaders.addHeader(OWSURLSession.acceptLanguageHeaderKey,
-                              value: OWSURLSession.acceptLanguageHeaderValue,
-                              overwriteOnConflict: false)
+        // Set User-Agent and Accept-Language headers.
+        httpHeaders.addDefaultHeaders()
 
         if signalService.isCensorshipCircumventionActive {
             httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)

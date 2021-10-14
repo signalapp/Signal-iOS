@@ -142,8 +142,6 @@ dispatch_queue_t NetworkManagerQueue(void)
     [curlComponents addObject:[NSString stringWithFormat:@"\"%@\"", originalRequest.URL.absoluteString]];
     NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
     OWSLogVerbose(@"curl for request: %@", curlCommand);
-    OWSLogFlush();
-    OWSLogFlush();
 }
 #endif
 

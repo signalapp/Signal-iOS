@@ -155,6 +155,12 @@ public class OWSHttpHeaders: NSObject {
         return components.joined(separator: ", ")
     }
 
+    @objc
+    public func addDefaultHeaders() {
+        addHeader(Self.userAgentHeaderKey, value: Self.userAgentHeaderValueSignalIos, overwriteOnConflict: false)
+        addHeader(Self.acceptLanguageHeaderKey, value: Self.acceptLanguageHeaderValue, overwriteOnConflict: false)
+    }
+
     // MARK: - Auth Headers
 
     @objc
@@ -178,8 +184,7 @@ public class OWSHttpHeaders: NSObject {
         var request = request
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
-        httpHeaders.addHeader(Self.userAgentHeaderKey, value: Self.userAgentHeaderValueSignalIos, overwriteOnConflict: false)
-        httpHeaders.addHeader(Self.acceptLanguageHeaderKey, value: Self.acceptLanguageHeaderValue, overwriteOnConflict: false)
+        httpHeaders.addDefaultHeaders()
         request.replace(httpHeaders: httpHeaders)
         return request
     }
