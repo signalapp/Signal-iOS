@@ -12,6 +12,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     var shouldAnswer = false
     var isMuted = false
     var isVideoEnabled = false
+    var shouldRestartCamera = true
     var conversationVC: ConversationVC? = nil
     
     lazy var cameraManager: CameraManager = {
@@ -181,7 +182,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         view.backgroundColor = .black
         WebRTCSession.current = webRTCSession
         setUpViewHierarchy()
-        cameraManager.prepare()
+        if shouldRestartCamera { cameraManager.prepare() }
         touch(videoCapturer)
         var contact: Contact?
         Storage.read { transaction in
@@ -192,9 +193,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             callInfoLabel.text = "Ringing..."
             Storage.write { transaction in
                 self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
-                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).done {
-                        self.minimizeButton.isHidden = false
-                    }.retainUntilComplete()
+                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
                 }.retainUntilComplete()
             }
             answerButton.isHidden = true
@@ -272,18 +271,20 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if (isVideoEnabled) { cameraManager.start() }
+        if (isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
+        shouldRestartCamera = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if (isVideoEnabled) { cameraManager.stop() }
+        if (isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
     }
     
     // MARK: Delegate
     func webRTCIsConnected() {
         DispatchQueue.main.async {
             self.callInfoLabel.text = "Connected"
+            self.minimizeButton.isHidden = false
             UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
                 self.callInfoLabel.alpha = 0
             }, completion: { _ in
@@ -339,6 +340,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
     }
     
     @objc private func minimize() {
+        self.shouldRestartCamera = false
         let miniCallView = MiniCallView(from: self)
         miniCallView.show()
         self.conversationVC?.showInputAccessoryView()

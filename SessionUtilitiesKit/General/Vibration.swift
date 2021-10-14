@@ -7,7 +7,7 @@ public final class Vibration {
     private var vibrationTimer: Timer?
     
     public func startVibration() {
-        vibrationTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+        vibrationTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { _ in
             AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
         }
     }

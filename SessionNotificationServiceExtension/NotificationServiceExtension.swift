@@ -216,14 +216,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     
     private func handleSuccessForIncomingCall(for content: UNMutableNotificationContent) {
         // TODO: poll for the real offer, play incoming call ring
-        if #available(iOSApplicationExtension 13.0, *) {
-            let request = BGAppRefreshTaskRequest(identifier: "com.loki-project.loki-messenger.refresh")
-            do {
-                try BGTaskScheduler.shared.submit(request)
-            } catch {
-                print("Could not schedule app refresh: \(error)")
-            }
-        }
         contentHandler!(content)
     }
 
