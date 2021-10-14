@@ -3,6 +3,7 @@
 //
 
 import XCTest
+import CoreServices
 @testable import SignalMessaging
 
 class SignalAttachmentTest: SignalBaseTest {
