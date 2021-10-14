@@ -393,8 +393,7 @@ public class OWSURLSession: NSObject {
 
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
-        httpHeaders.addHeader(Self.userAgentHeaderKey, value: Self.userAgentHeaderValueSignalIos, overwriteOnConflict: true)
-        httpHeaders.addHeader(Self.acceptLanguageHeaderKey, value: Self.acceptLanguageHeaderValue, overwriteOnConflict: false)
+        httpHeaders.addDefaultHeaders()
         httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)
         request.add(httpHeaders: httpHeaders)
 
@@ -418,7 +417,8 @@ public class OWSURLSession: NSObject {
             // Only requests to Signal services require CC.
             // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
             if !Self.isValidUrlForCensorshipCircumvention(urlString,
-                                                          frontingURL: frontingURL) {
+                                                          frontingURL: frontingURL,
+                                                          allowRelativeUrls: false) {
                 Logger.warn("Unfronted URL: \(urlString), frontingURL: \(frontingURL)")
             }
         }
@@ -447,14 +447,16 @@ public class OWSURLSession: NSObject {
                 let ccBaseUrl: URL = signalService.domainFrontBaseURL.appendingPathComponent(censorshipCircumventionPrefix)
                 baseUrl = ccBaseUrl
                 if !Self.isValidUrlForCensorshipCircumvention(urlString,
-                                                              frontingURL: ccBaseUrl) {
+                                                              frontingURL: ccBaseUrl,
+                                                              allowRelativeUrls: true) {
                     Logger.warn("Unfronted URL: \(urlString), ccBaseUrl: \(ccBaseUrl)")
                 }
             } else if let frontingURL = self.frontingURL {
                 // Only requests to Signal services require CC.
                 // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
                 if !Self.isValidUrlForCensorshipCircumvention(urlString,
-                                                              frontingURL: frontingURL) {
+                                                              frontingURL: frontingURL,
+                                                              allowRelativeUrls: true) {
                     Logger.warn("Unfronted URL: \(urlString), frontingURL: \(frontingURL)")
                 }
             }
@@ -475,7 +477,8 @@ public class OWSURLSession: NSObject {
     }
 
     private static func isValidUrlForCensorshipCircumvention(_ urlString: String?,
-                                                             frontingURL: URL) -> Bool {
+                                                             frontingURL: URL,
+                                                             allowRelativeUrls: Bool) -> Bool {
         owsAssertDebug(signalService.isCensorshipCircumventionActive)
 
         guard let frontingHost = frontingURL.host?.nilIfEmpty else {
@@ -498,6 +501,10 @@ public class OWSURLSession: NSObject {
             // Absolute URLs which already have the correct prefix are valid.
             return (scheme.lowercased() == "https" &&
                     host.lowercased() == frontingHost)
+        }
+        guard allowRelativeUrls else {
+            owsFailDebug("Invalid relative URL: \(urlString).")
+            return false
         }
         let hasScheme = url.scheme?.nilIfEmpty != nil
         let hasHost = url.host?.nilIfEmpty != nil
