@@ -42,8 +42,7 @@ public class DebugLogUploader: NSObject {
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
         let urlSession = OWSURLSession(baseUrl: nil,
                                        securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                                       configuration: sessionConfig,
-                                       censorshipCircumventionHost: nil)
+                                       configuration: sessionConfig)
         return urlSession
     }
 

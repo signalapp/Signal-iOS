@@ -394,7 +394,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         let urlSession = OWSURLSession(baseUrl: nil,
                                        securityPolicy: OWSURLSession.defaultSecurityPolicy,
                                        configuration: sessionConfig,
-                                       censorshipCircumventionHost: nil,
                                        extraHeaders: extraHeaders,
                                        maxResponseSize: Self.maxFetchedContentSize)
         urlSession.allowRedirects = true

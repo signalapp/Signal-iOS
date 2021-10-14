@@ -145,21 +145,6 @@ public class RESTSessionManager: NSObject {
 
         Logger.verbose("Request: \(request)")
 
-        // TODO: Download tasks?
-        // TODO: All methods
-        //   GET ✔️
-        //   POST ✔️
-        //   PUT ✔️
-        //   DELETE ✔️
-        //   Multi-part POST ✔️
-        // TODO: CC ✔️
-        // TODO: Querystring, fragment, headers, url ✔️
-        // TODO: Non-main service requests. ✔️
-        // TODO: Auth'd and non-auth requests. ✔️
-        // TODO: Cookie handling. ✔️
-        // TODO: Error handling, 4xx 5xx handling. ✔️
-        // TODO: Honor all properties of TSRequest. ✔️
-        // TODO: Ensure all REST requests have a header: -H 'Accept-Language: en;q=1' ✔️
         firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
             urlSession.uploadTaskPromise(request: request, data: requestBody)
         }.done(on: .global()) { (response: HTTPResponse) in

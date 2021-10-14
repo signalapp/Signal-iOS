@@ -70,29 +70,27 @@ fileprivate extension OWSSignalService {
     private func buildUrlSession(for signalServiceType: SignalServiceType) -> OWSURLSession {
         let signalServiceInfo = self.signalServiceInfo(for: signalServiceType)
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        let baseUrl: URL
-        let censorshipCircumventionHost: String?
-        let securityPolicy: AFSecurityPolicy
-        let extraHeaders: [String: String]
+        let urlSession: OWSURLSession
         if isCensorshipCircumventionActive {
             let censorshipConfiguration = buildCensorshipConfiguration()
             let frontingURL = censorshipConfiguration.domainFrontBaseURL
-            baseUrl = frontingURL.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
-            securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
-            censorshipCircumventionHost = signalServiceInfo.baseUrl.host
-            extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
-        } else {
-            baseUrl = signalServiceInfo.baseUrl
-            securityPolicy = OWSHTTPSecurityPolicy.shared()
-            censorshipCircumventionHost = nil
-            extraHeaders = [:]
-        }
-
-        let urlSession = OWSURLSession(baseUrl: baseUrl,
+            let baseUrl = frontingURL.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
+            let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
+            let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
+            urlSession = OWSURLSession(baseUrl: baseUrl,
+                                       frontingURL: frontingURL,
                                        securityPolicy: securityPolicy,
                                        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                                       censorshipCircumventionHost: censorshipCircumventionHost,
                                        extraHeaders: extraHeaders)
+        } else {
+            let baseUrl = signalServiceInfo.baseUrl
+            let securityPolicy = OWSHTTPSecurityPolicy.shared()
+            urlSession = OWSURLSession(baseUrl: baseUrl,
+                                       frontingURL: nil,
+                                       securityPolicy: securityPolicy,
+                                       configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+                                       extraHeaders: [:])
+        }
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
         return urlSession
     }

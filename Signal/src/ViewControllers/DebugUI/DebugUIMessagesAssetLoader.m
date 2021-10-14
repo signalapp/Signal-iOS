@@ -63,9 +63,9 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
 
     OWSURLSession *urlSession =
         [[OWSURLSession alloc] initWithBaseUrl:nil
+                                   frontingURL:nil
                                 securityPolicy:OWSURLSession.defaultSecurityPolicy
                                  configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
-                   censorshipCircumventionHost:nil
                                   extraHeaders:[NSDictionary new]];
     [urlSession dataTask:fileUrl
         method:HTTPMethodGet
