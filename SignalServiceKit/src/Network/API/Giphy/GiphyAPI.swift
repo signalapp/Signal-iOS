@@ -58,20 +58,16 @@ public class GiphyAPI: NSObject {
         }
     }
 
-    public func search(query: String,
-                       success: @escaping (([GiphyImageInfo]) -> Void),
-                       failure: @escaping ((NSError?) -> Void)) {
-
+    public func search(query: String) -> Promise<[GiphyImageInfo]> {
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             owsFailDebug("Could not URL encode query: \(query).")
-            failure(nil)
-            return
+            return Promise(error: OWSAssertionError("Could not URL encode query."))
         }
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
 
         let urlSession = buildURLSession()
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
             guard let url = OWSURLSession.joinUrl(urlString: urlString, baseUrl: self.kGiphyBaseURL) else {
                 throw OWSAssertionError("Invalid URL: \(urlString).")
             }
@@ -81,7 +77,7 @@ public class GiphyAPI: NSObject {
                 throw OWSAssertionError("Invalid URL: \(urlString).")
             }
             return urlSession.dataTaskPromise(request: request)
-        }.done(on: .global()) { (response: HTTPResponse) in
+        }.map(on: .global()) { (response: HTTPResponse) -> [GiphyImageInfo] in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
@@ -89,10 +85,7 @@ public class GiphyAPI: NSObject {
             guard let imageInfos = self.parseGiphyImages(responseJson: json) else {
                 throw OWSAssertionError("unable to parse trending images")
             }
-            success(imageInfos)
-        }.catch(on: .global()) { error in
-            owsFailDebugUnlessNetworkFailure(error)
-            failure(error as NSError)
+            return imageInfos
         }
     }
 

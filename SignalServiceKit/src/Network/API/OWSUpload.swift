@@ -369,10 +369,13 @@ public class OWSAttachmentUploadV2: NSObject {
         }
 
         return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
+            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
+
             let urlString = form.signedUploadLocation
             guard urlString.lowercased().hasPrefix("http") else {
                 throw OWSAssertionError("Invalid signedUploadLocation.")
             }
+
             var headers = form.headers
             // Remove host header.
             headers = headers.filter { (key, _) in
@@ -381,7 +384,6 @@ public class OWSAttachmentUploadV2: NSObject {
             headers["Content-Length"] = "0"
             headers["Content-Type"] = OWSMimeTypeApplicationOctetStream
 
-            let urlSession = OWSUpload.cdnUrlSession(forCdnNumber: form.cdnNumber)
             let body = "".data(using: .utf8)
             return urlSession.dataTaskPromise(urlString, method: .post, headers: headers, body: body)
         }.map(on: Self.serialQueue) { (response: HTTPResponse) in

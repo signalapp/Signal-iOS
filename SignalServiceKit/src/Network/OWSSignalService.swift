@@ -73,12 +73,18 @@ fileprivate extension OWSSignalService {
         let urlSession: OWSURLSession
         if isCensorshipCircumventionActive {
             let censorshipConfiguration = buildCensorshipConfiguration()
-            let frontingURL = censorshipConfiguration.domainFrontBaseURL
-            let baseUrl = frontingURL.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
+            let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseURL
+            let frontingPathPrefix = signalServiceInfo.censorshipCircumventionPathPrefix
+            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(frontingPathPrefix)
+            let unfrontedBaseUrl = signalServiceInfo.baseUrl
+            let frontingInfo = OWSURLSession.FrontingInfo(frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
+                                                          frontingURLWithPathPrefix: frontingURLWithPathPrefix,
+                                                          unfrontedBaseUrl: unfrontedBaseUrl)
+            let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
             let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
             urlSession = OWSURLSession(baseUrl: baseUrl,
-                                       frontingURL: frontingURL,
+                                       frontingInfo: frontingInfo,
                                        securityPolicy: securityPolicy,
                                        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
                                        extraHeaders: extraHeaders)
@@ -86,7 +92,6 @@ fileprivate extension OWSSignalService {
             let baseUrl = signalServiceInfo.baseUrl
             let securityPolicy = OWSHTTPSecurityPolicy.shared()
             urlSession = OWSURLSession(baseUrl: baseUrl,
-                                       frontingURL: nil,
                                        securityPolicy: securityPolicy,
                                        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
                                        extraHeaders: [:])
