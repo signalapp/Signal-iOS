@@ -112,7 +112,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     }
                     self.handleSuccess(for: notificationContent)
                 } catch {
-                    self.handleFailure(for: notificationContent)
+                    if let error = error as? MessageReceiver.Error, error.isRetryable {
+                        self.handleFailure(for: notificationContent)
+                    }
+                    self.completeSilenty()
                 }
             }
         }
