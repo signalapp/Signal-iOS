@@ -572,3 +572,4 @@
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"APN_Message" = "You've got a new message";
