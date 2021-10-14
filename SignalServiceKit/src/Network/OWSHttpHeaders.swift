@@ -75,8 +75,6 @@ public class OWSHttpHeaders: NSObject {
                     // We expect to overwrite the User-Agent; don't log it.
                     if key.lowercased() != "User-Agent".lowercased() {
                         Logger.verbose("Overwriting header: \(key), \(existingValue) -> \(value)")
-                        Logger.flush()
-                        Logger.flush()
                     }
                 } else if key.lowercased() == Self.acceptLanguageHeaderKey.lowercased() {
                     // Don't warn about default headers.
