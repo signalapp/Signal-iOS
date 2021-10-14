@@ -4,6 +4,7 @@
 
 import Foundation
 import Photos
+import CoreServices
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 

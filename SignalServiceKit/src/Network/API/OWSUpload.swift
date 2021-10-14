@@ -37,10 +37,6 @@ public class OWSUpload: NSObject {
 
 fileprivate extension OWSUpload {
 
-    static var cdn0SessionManager: AFHTTPSessionManager {
-        signalService.sessionManagerForCdn(cdnNumber: 0)
-    }
-
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
         signalService.urlSessionForCdn(cdnNumber: cdnNumber)
     }
@@ -119,8 +115,8 @@ public class OWSAttachmentUploadV2: NSObject {
 
             guard plaintextLength <= OWSMediaUtils.kMaxFileSizeGeneric,
                   length <= OWSMediaUtils.kMaxAttachmentUploadSizeBytes else {
-                throw OWSAssertionError("Data is too large: \(length).")
-            }
+                      throw OWSAssertionError("Data is too large: \(length).")
+                  }
 
             return (temporaryFile, length)
         }
@@ -140,8 +136,8 @@ public class OWSAttachmentUploadV2: NSObject {
 
     public func upload(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
         return (canUseV3
-            ? uploadV3(progressBlock: progressBlock)
-            : uploadV2(progressBlock: progressBlock))
+                ? uploadV3(progressBlock: progressBlock)
+                : uploadV2(progressBlock: progressBlock))
     }
 
     // Performs a request, trying to use the websocket
@@ -159,7 +155,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 shouldUseWebsocket = true
             } else {
                 shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&
-                                        !skipWebsocket)
+                                      !skipWebsocket)
             }
             if shouldUseWebsocket {
                 return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
@@ -268,19 +264,19 @@ public class OWSAttachmentUploadV2: NSObject {
         }.then(on: Self.serialQueue) { () -> Promise<Void> in
             return firstly { () -> Promise<URL> in
                 guard let form = form,
-                    let uploadV3Metadata = uploadV3Metadata else {
-                        throw OWSAssertionError("Missing form or metadata.")
-                }
+                      let uploadV3Metadata = uploadV3Metadata else {
+                          throw OWSAssertionError("Missing form or metadata.")
+                      }
                 return self.fetchResumableUploadLocationV3(form: form, uploadV3Metadata: uploadV3Metadata)
             }.map(on: Self.serialQueue) { (url: URL) in
                 locationUrl = url
             }
         }.then(on: Self.serialQueue) { () -> Promise<Void> in
             guard let form = form,
-                let uploadV3Metadata = uploadV3Metadata,
-                let locationUrl = locationUrl else {
-                    throw OWSAssertionError("Missing form or metadata.")
-            }
+                  let uploadV3Metadata = uploadV3Metadata,
+                  let locationUrl = locationUrl else {
+                      throw OWSAssertionError("Missing form or metadata.")
+                  }
             return self.performResumableUploadV3(form: form,
                                                  uploadV3Metadata: uploadV3Metadata,
                                                  locationUrl: locationUrl,
@@ -468,7 +464,7 @@ public class OWSAttachmentUploadV2: NSObject {
                 return urlSession.uploadTaskPromise(urlString,
                                                     method: .put,
                                                     headers: headers,
-                                                    dataUrl: uploadV3Metadata.temporaryFileUrl,
+                                                    fileUrl: uploadV3Metadata.temporaryFileUrl,
                                                     progress: progressBlock).asVoid()
             } else {
                 // Resuming, slice attachment data in memory.
@@ -500,7 +496,7 @@ public class OWSAttachmentUploadV2: NSObject {
                     urlSession.uploadTaskPromise(urlString,
                                                  method: .put,
                                                  headers: headers,
-                                                 dataUrl: dataSliceFileUrl,
+                                                 fileUrl: dataSliceFileUrl,
                                                  progress: progressBlock).asVoid()
                 }.ensure(on: Self.serialQueue) {
                     do {
@@ -647,11 +643,11 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             let rangeEndString = rangeHeader.suffix(rangeHeader.count - expectedPrefix.count)
             guard !rangeEndString.isEmpty,
-                let rangeEnd = Int(rangeEndString) else {
-                    owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
-                    // Return zero to restart the upload.
-                    return 0
-            }
+                  let rangeEnd = Int(rangeEndString) else {
+                      owsFailDebug("Invalid Range header: \(rangeHeader) (\(rangeEndString)).")
+                      // Return zero to restart the upload.
+                      return 0
+                  }
 
             // rangeEnd is the _index_ of the last uploaded bytes, e.g.:
             // * 0 if 1 byte has been uploaded,
@@ -676,56 +672,37 @@ public extension OWSUpload {
             return Promise(error: OWSAssertionError("App is expired."))
         }
 
-        let (promise, future) = Promise<String>.pending()
-        Self.serialQueue.async {
-            // TODO: Use OWSUrlSession instead.
-            self.cdn0SessionManager.requestSerializer.setValue(OWSURLSession.signalIosUserAgent,
-                                                               forHTTPHeaderField: OWSURLSession.kUserAgentHeader)
-            self.cdn0SessionManager.post(uploadUrlPath,
-                                         parameters: nil,
-                                         constructingBodyWith: { (formData: AFMultipartFormData) -> Void in
+        let cdn0UrlSession = signalService.urlSessionForCdn(cdnNumber: 0)
+        return firstly { () -> Promise<HTTPResponse> in
+            let dataFileUrl = OWSFileSystem.temporaryFileUrl()
+            try data.write(to: dataFileUrl)
 
-                                            // We have to build up the form manually vs. simply passing in a parameters dict
-                                            // because AWS is sensitive to the order of the form params (at least the "key"
-                                            // field must occur early on).
-                                            //
-                                            // For consistency, all fields are ordered here in a known working order.
-                                            uploadForm.append(toForm: formData)
+            let request = try cdn0UrlSession.buildRequest(uploadUrlPath, method: .post)
 
-                                            AppendMultipartFormPath(formData, "Content-Type", OWSMimeTypeApplicationOctetStream)
+            // We have to build up the form manually vs. simply passing in a parameters dict
+            // because AWS is sensitive to the order of the form params (at least the "key"
+            // field must occur early on).
+            //
+            // For consistency, all fields are ordered here in a known working order.
+            var textParts = uploadForm.asOrderedDictionary
+            textParts.append(key: "Content-Type", value: OWSMimeTypeApplicationOctetStream)
 
-                                            formData.appendPart(withForm: data, name: "file")
-            },
-                                         progress: { progress in
-                                            Logger.verbose("progress: \(progress.fractionCompleted)")
+            return cdn0UrlSession.multiPartUploadTaskPromise(request: request,
+                                                             fileUrl: dataFileUrl,
+                                                             name: "file",
+                                                             fileName: "file",
+                                                             mimeType: OWSMimeTypeApplicationOctetStream,
+                                                             textParts: textParts,
+                                                             progress: { (_, progress) in
+                Logger.verbose("progress: \(progress.fractionCompleted)")
 
-                                            if let progressBlock = progressBlock {
-                                                progressBlock(progress)
-                                            }
-            },
-                                         success: { (_, _) in
-                                            Logger.verbose("Success.")
-                                            let uploadedUrlPath = uploadForm.key
-                                            future.resolve(uploadedUrlPath)
-            }, failure: { (task, error) in
-                if let task = task {
-                    #if TESTABLE_BUILD
-                    HTTPUtils.logCurl(for: task)
-                    #endif
-                } else {
-                    owsFailDebug("Missing task.")
-                }
-
-                if let statusCode = error.httpStatusCode,
-                   statusCode == AppExpiry.appExpiredStatusCode {
-                    AppExpiry.shared.setHasAppExpiredAtCurrentVersion()
-                }
-
-                owsFailDebugUnlessNetworkFailure(error)
-                future.reject(error)
+                progressBlock?(progress)
             })
+        }.map(on: .global()) { (_: HTTPResponse) -> String in
+            Logger.verbose("Success.")
+            let uploadedUrlPath = uploadForm.key
+            return uploadedUrlPath
         }
-        return promise
     }
 }
 
@@ -794,5 +771,27 @@ private class OWSUploadFormV3: NSObject {
             throw OWSAssertionError("Invalid signedUploadLocation.")
         }
         headers = try parser.required(key: "headers")
+    }
+}
+
+// MARK: -
+
+// See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
+fileprivate extension OWSUploadFormV2 {
+    var asOrderedDictionary: OrderedDictionary<String, String> {
+        // We have to build up the form manually vs. simply passing in a paramaters dict
+        // because AWS is sensitive to the order of the form params (at least the "key"
+        // field must occur early on).
+        var result = OrderedDictionary<String, String>()
+
+        // For consistency, all fields are ordered here in a known working order.
+        result.append(key: "key", value: self.key)
+        result.append(key: "acl", value: self.acl)
+        result.append(key: "x-amz-algorithm", value: self.algorithm)
+        result.append(key: "x-amz-credential", value: self.credential)
+        result.append(key: "x-amz-date", value: self.date)
+        result.append(key: "policy", value: self.policy)
+        result.append(key: "x-amz-signature", value: self.signature)
+        return result
     }
 }

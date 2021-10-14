@@ -4,22 +4,9 @@
 
 import Foundation
 
-extension NSError {
-    // Only HTTPStatusCodeForError() or hasFatalAFStatusCode()
-    // should use this method.
-    // It only works for AFNetworking errors.
-    // Use HTTPStatusCodeForError() instead.
-    @objc
-    public func afHttpStatusCode() -> NSNumber? {
-        guard let statusCode = afFailingHTTPURLResponse?.statusCode else {
-            return nil
-        }
-        return NSNumber(value: statusCode)
-    }
-
-    @objc
-    public func hasFatalAFStatusCode() -> Bool {
-        guard let statusCode = afHttpStatusCode()?.intValue else {
+extension Error {
+    public func hasFatalStatusCode() -> Bool {
+        guard let statusCode = self.httpStatusCode else {
             return false
         }
         if statusCode == 429 {
@@ -28,20 +15,17 @@ extension NSError {
         }
         return 400 <= statusCode && statusCode <= 499
     }
+}
 
+// MARK: -
+
+extension NSError {
     @objc
-    public func afRetryAfterDate() -> Date? {
-        guard let response = afFailingHTTPURLResponse else {
+    public func httpRetryAfterDate() -> Date? {
+        guard let httpError = self as? HTTPError else {
             return nil
         }
-        return OWSHttpHeaders(response: response).retryAfterDate
-    }
-
-    public var afFailingHTTPURLResponse: HTTPURLResponse? {
-        guard domain == AFURLResponseSerializationErrorDomain else {
-            return nil
-        }
-        return userInfo[AFNetworkingOperationFailingURLResponseErrorKey] as? HTTPURLResponse
+        return httpError.responseHeaders?.retryAfterDate
     }
 
     @objc

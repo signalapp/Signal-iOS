@@ -8,6 +8,7 @@ import SignalMessaging
 import PureLayout
 import SignalServiceKit
 import Intents
+import CoreServices
 
 @objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {

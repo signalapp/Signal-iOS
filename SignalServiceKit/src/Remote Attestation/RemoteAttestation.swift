@@ -214,11 +214,7 @@ extension RemoteAttestation {
         request.customHost = host
         request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
-        // Don't bother with the default cookie store
-        // these cookies are ephemeral.
-        //
-        // NOTE: NetworkManager now separately disables default cookie handling for all requests.
-        request.httpShouldHandleCookies = false
+        // OWSURLSession disables default cookie handling for all requests.
 
         return request
     }

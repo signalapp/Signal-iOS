@@ -53,7 +53,6 @@ public struct ContactDiscoveryService: Dependencies {
                 host: host,
                 censorshipCircumventionPrefix: censorshipCircumventionPrefix)
             )
-
         }.map(on: .sharedUtility) { (response: HTTPResponse) throws -> IntersectionResponse in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid JSON")
@@ -101,13 +100,8 @@ public struct ContactDiscoveryService: Dependencies {
         request.customHost = host
         request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
-        // Don't bother with the default cookie store;
-        // these cookies are ephemeral.
-        //
-        // NOTE: NetworkManager now separately disables default cookie handling for all requests.
-        request.httpShouldHandleCookies = false
-
         // Set the cookie header.
+        // OWSURLSession disables default cookie handling for all requests.
         assert(request.allHTTPHeaderFields?.count == 0)
         request.allHTTPHeaderFields = HTTPCookie.requestHeaderFields(with: cookies)
 

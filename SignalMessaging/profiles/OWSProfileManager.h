@@ -10,7 +10,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameterPixels;
 extern const NSString *kNSNotificationKey_UserProfileWriter;
 
 @class MessageSender;
-@class NetworkManager;
 @class OWSAES256Key;
 @class OWSUserProfile;
 @class SDSAnyReadTransaction;

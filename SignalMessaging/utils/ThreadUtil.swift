@@ -332,7 +332,17 @@ extension TSThread {
             }
         }
 
-        return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+        Logger.verbose("----- +")
+        return OWSINPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+    }
+
+    class OWSINPerson: INPerson {
+        public static let idCounter = AtomicUInt(0)
+        private let id = OWSINPerson.idCounter.increment()
+
+        deinit {
+            Logger.verbose("----- - \(Self.idCounter.decrementOrZero())")
+        }
     }
 
     // This is temporary until we can find a safer way to build avatars
@@ -361,7 +371,8 @@ extension TSThread {
                                                          diameterPoints: 40,
                                                          localUserDisplayMode: .asUser,
                                                          transaction: transaction), let contactAvatarPNG = contactAvatar.pngData() {
-            image = INImage(imageData: contactAvatarPNG)
+            Logger.verbose("----- +")
+            image = OWSINImage(imageData: contactAvatarPNG)
         }
         return image
     }
@@ -374,9 +385,19 @@ extension TSThread {
                                                         localUserDisplayMode: .noteToSelf,
                                                         transaction: transaction),
         let threadAvatarPng = threadAvatar.pngData() {
-            image = INImage(imageData: threadAvatarPng)
+            Logger.verbose("----- +")
+            image = OWSINImage(imageData: threadAvatarPng)
         }
 
         return image
+    }
+
+    class OWSINImage: INImage {
+        public static let idCounter = AtomicUInt(0)
+        private let id = OWSINImage.idCounter.increment()
+
+        deinit {
+            Logger.verbose("----- - \(Self.idCounter.decrementOrZero())")
+        }
     }
 }

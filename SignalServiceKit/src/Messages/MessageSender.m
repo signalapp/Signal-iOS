@@ -6,7 +6,6 @@
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
-#import <AFNetworking/AFURLResponseSerialization.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>

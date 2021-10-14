@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreServices
 
 public class GiphyAsset: ProxiedContentAssetDescription {
     let rendition: Rendition

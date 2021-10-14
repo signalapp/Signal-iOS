@@ -383,8 +383,12 @@ public class OWSWebSocket: NSObject {
         }
 
         // Set User-Agent header.
-        httpHeaders.addHeader(OWSURLSession.kUserAgentHeader,
-                              value: OWSURLSession.signalIosUserAgent,
+        httpHeaders.addHeader(OWSURLSession.userAgentHeaderKey,
+                              value: OWSURLSession.userAgentHeaderValueSignalIos,
+                              overwriteOnConflict: false)
+        // Set Accept-Language header.
+        httpHeaders.addHeader(OWSURLSession.acceptLanguageHeaderKey,
+                              value: OWSURLSession.acceptLanguageHeaderValue,
                               overwriteOnConflict: false)
 
         for (key, value) in httpHeaders.headers {
@@ -953,8 +957,8 @@ public class OWSWebSocket: NSObject {
 
         self.lastNewWebsocketDate.set(Date())
         var request = URLRequest(url: webSocketConnectURL)
-        request.addValue(OWSURLSession.signalIosUserAgent,
-                         forHTTPHeaderField: OWSURLSession.kUserAgentHeader)
+        request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
+                         forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
         var webSocket = SSKWebSocketManager.buildSocket(request: request,
                                                         callbackQueue: OWSWebSocket.serialQueue)
         webSocket.delegate = self
@@ -975,7 +979,7 @@ public class OWSWebSocket: NSObject {
             }
 
             if !newWebSocket.hasConnected.get() {
-                owsFailDebug("Websocket failed to connect.")
+                Logger.warn("Websocket failed to connect.")
                 self.cycleSocket()
             }
         }

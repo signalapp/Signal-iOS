@@ -3,7 +3,6 @@
 //
 
 #import "TSAccountManager.h"
-#import <AFNetworking/AFURLResponseSerialization.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/AppContext.h>

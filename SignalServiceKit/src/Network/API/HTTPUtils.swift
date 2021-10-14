@@ -48,12 +48,7 @@ extension HTTPUtils {
         if let responseError = responseError {
             errorDescription += ", error: \(responseError)"
         }
-        let retryAfterDate: Date? = {
-            guard let error = responseError else {
-                return nil
-            }
-            return (error as NSError).afRetryAfterDate()
-        }()
+        let retryAfterDate: Date? = responseHeaders.retryAfterDate
         func buildServiceResponseError(description: String? = nil,
                                        recoverySuggestion: String? = nil) -> OWSHTTPError {
             .forServiceResponse(requestUrl: requestUrl,

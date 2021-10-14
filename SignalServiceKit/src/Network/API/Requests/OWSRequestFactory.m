@@ -683,12 +683,8 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     request.customHost = TSConstants.keyBackupURL;
     request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
-    // Don't bother with the default cookie store;
-    // these cookies are ephemeral.
-    //
-    // NOTE: NetworkManager now separately disables default cookie handling for all requests.
-    [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
+    // OWSURLSession disables default cookie handling for all requests.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
     [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
 
@@ -722,12 +718,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     request.customHost = TSConstants.keyBackupURL;
     request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
-    // Don't bother with the default cookie store;
-    // these cookies are ephemeral.
-    //
-    // NOTE: NetworkManager now separately disables default cookie handling for all requests.
     [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
+    // OWSURLSession disables default cookie handling for all requests.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
     [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
 

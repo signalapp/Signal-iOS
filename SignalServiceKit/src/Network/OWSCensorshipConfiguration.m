@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <AFNetworking/AFHTTPSessionManager.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
 #import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
 

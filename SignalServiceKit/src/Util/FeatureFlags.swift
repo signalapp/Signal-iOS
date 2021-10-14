@@ -154,11 +154,12 @@ public class FeatureFlags: BaseFlags {
 
     @objc
     public static var isUsingProductionService: Bool {
-        if paymentsInternalBeta {
-            return false
-        } else {
-            return true
-        }
+        return false
+//        if paymentsInternalBeta {
+//            return false
+//        } else {
+//            return true
+//        }
     }
 
     @objc

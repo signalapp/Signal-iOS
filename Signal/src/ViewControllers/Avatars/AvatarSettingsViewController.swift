@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreServices
 
 class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarContext

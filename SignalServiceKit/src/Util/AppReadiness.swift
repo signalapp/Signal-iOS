@@ -90,6 +90,7 @@ public class AppReadiness: NSObject {
             return
         }
 
+        let block = Self.wrapBlock(block: block, label: label)
         readyFlag.runNowOrWhenWillBecomeReady(block, label: label, priority: priority)
     }
 
@@ -130,7 +131,19 @@ public class AppReadiness: NSObject {
             return
         }
 
+        let block = Self.wrapBlock(block: block, label: label)
         readyFlag.runNowOrWhenDidBecomeReadySync(block, label: label, priority: priority)
+    }
+
+    private static func wrapBlock(block blockParam: @escaping BlockType, label: String) -> BlockType {
+        return {
+            let memoryUsageBefore = LocalDevice.memoryUsage
+            autoreleasepool {
+                blockParam()
+            }
+            let memoryUsageAfter = LocalDevice.memoryUsage
+            Logger.verbose("---- \(label), memoryUsage: \(memoryUsageBefore) -> \(memoryUsageAfter)")
+        }
     }
 
     // MARK: -
@@ -204,6 +217,7 @@ public class AppReadiness: NSObject {
             return
         }
 
+        let block = Self.wrapBlock(block: block, label: label)
         readyFlag.runNowOrWhenDidBecomeReadyAsync(block, label: label, priority: priority)
     }
 

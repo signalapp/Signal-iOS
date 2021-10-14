@@ -10,6 +10,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+import CoreServices
 
 @objc
 public protocol LocationPickerDelegate {

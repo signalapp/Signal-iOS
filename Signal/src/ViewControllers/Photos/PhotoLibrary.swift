@@ -4,6 +4,7 @@
 
 import Foundation
 import Photos
+import CoreServices
 
 protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)

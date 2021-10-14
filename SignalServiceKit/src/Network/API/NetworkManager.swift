@@ -145,9 +145,6 @@ public extension NetworkManager {
         guard let error = error else {
             return nil
         }
-        if let responseData = (error as NSError).userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data {
-            return responseData
-        }
         switch error {
         case let httpError as OWSHTTPError:
             if let responseData = httpError.responseBodyData {

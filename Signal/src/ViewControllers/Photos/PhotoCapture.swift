@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreServices
 
 protocol PhotoCaptureDelegate: AnyObject {
 

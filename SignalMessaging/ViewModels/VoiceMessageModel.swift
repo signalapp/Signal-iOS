@@ -4,6 +4,7 @@
 
 import Foundation
 import AVFoundation
+import CoreServices
 
 @objc
 public class VoiceMessageModel: NSObject {

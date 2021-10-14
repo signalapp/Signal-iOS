@@ -37,10 +37,6 @@ BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
 
 NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error)
 {
-    NSNumber *_Nullable afHttpStatusCode = error.afHttpStatusCode;
-    if (afHttpStatusCode.integerValue > 0) {
-        return afHttpStatusCode;
-    }
     NSNumber *_Nullable swiftStatusCode = [NetworkManager swiftHTTPStatusCodeForError:error];
     if (swiftStatusCode.integerValue > 0) {
         return swiftStatusCode;
@@ -53,7 +49,7 @@ NSDate *_Nullable HTTPRetryAfterDateForError(NSError *_Nullable error)
     NSDate *retryAfterDate = nil;
 
     // Different errors may represent a retry after in different ways
-    retryAfterDate = retryAfterDate ?: error.afRetryAfterDate;
+    retryAfterDate = retryAfterDate ?: error.httpRetryAfterDate;
     retryAfterDate = retryAfterDate ?: [NetworkManager swiftHTTPRetryAfterDateForError:error];
     return retryAfterDate;
 }
@@ -146,6 +142,8 @@ dispatch_queue_t NetworkManagerQueue(void)
     [curlComponents addObject:[NSString stringWithFormat:@"\"%@\"", originalRequest.URL.absoluteString]];
     NSString *curlCommand = [curlComponents componentsJoinedByString:@" "];
     OWSLogVerbose(@"curl for request: %@", curlCommand);
+    OWSLogFlush();
+    OWSLogFlush();
 }
 #endif
 

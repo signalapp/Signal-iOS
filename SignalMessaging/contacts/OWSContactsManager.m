@@ -77,6 +77,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (void)setup {
+    OWSLogVerbose(@"----memoryUsage before: %@", LocalDevice.memoryUsage);
     __block NSMutableArray<SignalAccount *> *signalAccounts;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         NSUInteger signalAccountCount = [SignalAccount anyCountWithTransaction:transaction];
@@ -90,6 +91,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                              }];
     }];
     [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
+    OWSLogVerbose(@"----memoryUsage after: %@", LocalDevice.memoryUsage);
 }
 
 #pragma mark - System Contact Fetching

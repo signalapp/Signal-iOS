@@ -149,7 +149,7 @@ public extension StorageService {
 
         let username: String = groupV2Params.groupPublicParamsData.hexadecimalString
         let password: String = authCredentialPresentationData.hexadecimalString
-        let auth = Auth(username: username, password: password)
-        request.addHeader("Authorization", value: try auth.authHeader())
+        request.addHeader(OWSHttpHeaders.authHeaderKey,
+                          value: try OWSHttpHeaders.authHeaderValue(username: username, password: password))
     }
 }

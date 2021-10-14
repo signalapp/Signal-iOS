@@ -137,3 +137,24 @@ extension OrderedDictionary: RandomAccessCollection {
 
 extension OrderedDictionary: Encodable where KeyType: Encodable, ValueType: Encodable {}
 extension OrderedDictionary: Decodable where KeyType: Decodable, ValueType: Decodable {}
+
+// MARK: - Sequence
+
+extension OrderedDictionary: Sequence {
+    public typealias IteratorTuple = (key: KeyType, value: ValueType)
+    public typealias Iterator = AnyIterator<IteratorTuple>
+
+    public func makeIterator() -> Iterator {
+        let keyValueMap = self.keyValueMap
+        var keyIterator = orderedKeys.makeIterator()
+        return Iterator { () -> IteratorTuple? in
+            guard let key = keyIterator.next() else {
+                return nil
+            }
+            guard let value = keyValueMap[key] else {
+                return nil
+            }
+            return (key: key, value: value)
+        }
+    }
+}
