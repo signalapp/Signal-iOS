@@ -44,21 +44,6 @@ NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error)
     return nil;
 }
 
-NSDate *_Nullable HTTPRetryAfterDateForError(NSError *_Nullable error)
-{
-    NSDate *retryAfterDate = nil;
-
-    // Different errors may represent a retry after in different ways
-    retryAfterDate = retryAfterDate ?: error.httpRetryAfterDate;
-    retryAfterDate = retryAfterDate ?: [NetworkManager swiftHTTPRetryAfterDateForError:error];
-    return retryAfterDate;
-}
-
-NSData *_Nullable HTTPResponseDataForError(NSError *_Nullable error)
-{
-    return [NetworkManager swiftHTTPResponseDataForError:error];
-}
-
 dispatch_queue_t NetworkManagerQueue(void)
 {
     static dispatch_queue_t serialQueue;

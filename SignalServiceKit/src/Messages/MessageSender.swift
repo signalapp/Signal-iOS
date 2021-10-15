@@ -244,7 +244,7 @@ public extension MessageSender {
                     return failure(MessageSenderError.prekeyRateLimit)
                 } else if httpStatusCode == 428 {
                     // SPAM TODO: Only retry messages with -hasRenderableContent
-                    let responseData = HTTPResponseDataForError(error)
+                    let responseData = error.httpResponseData
 
                     if let body = responseData,
                        let expiry = error.httpRetryAfterDate {
@@ -808,7 +808,7 @@ public extension MessageSender {
                                        wasSentByWebsocket: result.wasSentByWebsocket)
         }.catch(on: Self.completionQueue) { (error: Error) in
             let statusCode: Int = error.httpStatusCode ?? 0
-            let responseData: Data? = HTTPResponseDataForError(error)
+            let responseData: Data? = error.httpResponseData
 
             if case RequestMakerUDAuthError.udAuthFailure = error {
                 // Try again.
