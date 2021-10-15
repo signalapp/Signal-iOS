@@ -252,7 +252,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSError *error;
         id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:syncFileUrl
-                                           shouldDeleteOnDeallocation:NO
+                                           shouldDeleteOnDeallocation:YES
                                                                 error:&error];
         OWSAssertDebug(error == nil);
         [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
@@ -404,7 +404,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 // with a durable JobQueue.
                 NSError *writeError;
                 id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:syncFileUrl
-                                                   shouldDeleteOnDeallocation:false
+                                                   shouldDeleteOnDeallocation:YES
                                                                         error:&writeError];
                 if (writeError != nil) {
                     if (debounce) {
