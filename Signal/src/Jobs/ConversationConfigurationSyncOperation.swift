@@ -63,10 +63,10 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         let syncMessage = OWSSyncGroupsMessage(thread: thread)
         do {
             let attachmentDataSource: DataSource = try self.databaseStorage.read { transaction in
-                guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                    throw OWSAssertionError("could not serialize sync groups data")
+                guard let syncFileUrl = syncMessage.buildPlainTextAttachmentFile(transaction: transaction) else {
+                    throw OWSAssertionError("Could not serialize sync groups data.")
                 }
-                return try DataSourcePath.dataSourceWritingSyncMessageData(messageData)
+                return try DataSourcePath.dataSource(with: syncFileUrl, shouldDeleteOnDeallocation: false)
             }
 
             self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
