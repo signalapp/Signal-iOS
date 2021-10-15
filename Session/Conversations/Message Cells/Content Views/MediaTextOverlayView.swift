@@ -1,19 +1,22 @@
+import UIKit
 
 /// Shown over a media message if it has a message body.
 final class MediaTextOverlayView : UIView {
     private let viewItem: ConversationViewItem
     private let albumViewWidth: CGFloat
     private let delegate: MessageCellDelegate
+    private let textColor: UIColor
     var readMoreButton: UIButton?
     
     // MARK: Settings
     private static let maxHeight: CGFloat = 88;
     
     // MARK: Lifecycle
-    init(viewItem: ConversationViewItem, albumViewWidth: CGFloat, delegate: MessageCellDelegate) {
+    init(viewItem: ConversationViewItem, albumViewWidth: CGFloat, textColor: UIColor, delegate: MessageCellDelegate) {
         self.viewItem = viewItem
         self.albumViewWidth = albumViewWidth
         self.delegate = delegate
+        self.textColor = textColor
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
     }
@@ -28,29 +31,21 @@ final class MediaTextOverlayView : UIView {
     
     private func setUpViewHierarchy() {
         guard let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0 else { return }
-        // Shadow
-        let shadowView = GradientView(from: .clear, to: UIColor.black.withAlphaComponent(0.7))
-        addSubview(shadowView)
-        shadowView.pin(to: self)
-        // Line
-        let lineView = UIView()
-        lineView.backgroundColor = Colors.accent
-        lineView.set(.width, to: Values.accentLineThickness)
         // Body label
         let bodyLabel = UILabel()
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
         bodyLabel.text = given(body) { MentionUtilities.highlightMentions(in: $0, threadID: viewItem.interaction.uniqueThreadId) }
-        bodyLabel.textColor = .white
-        bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        bodyLabel.textColor = self.textColor
+        bodyLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         // Content stack view
-        let contentStackView = UIStackView(arrangedSubviews: [ lineView, bodyLabel ])
+        let contentStackView = UIStackView(arrangedSubviews: [ bodyLabel ])
         contentStackView.axis = .horizontal
         contentStackView.spacing = Values.smallSpacing
         addSubview(contentStackView)
-        let inset = Values.mediumSpacing
+        let inset: CGFloat = 12
         contentStackView.pin(.left, to: .left, of: self, withInset: inset)
-        contentStackView.pin(.top, to: .top, of: self, withInset: 3 * inset)
+        contentStackView.pin(.top, to: .top, of: self)
         contentStackView.pin(.right, to: .right, of: self, withInset: -inset)
         // Max height
         bodyLabel.heightAnchor.constraint(lessThanOrEqualToConstant: MediaTextOverlayView.maxHeight).isActive = true

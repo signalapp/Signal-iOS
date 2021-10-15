@@ -354,6 +354,11 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 showMediaPlaceholder()
             } else {
                 guard let cache = delegate?.getMediaCache() else { preconditionFailure() }
+                // Stack view
+                let stackView = UIStackView(arrangedSubviews: [])
+                stackView.axis = .vertical
+                stackView.spacing = Values.smallSpacing
+                // Album view
                 let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
                 let albumView = MediaAlbumView(mediaCache: cache, items: viewItem.mediaAlbumItems!, isOutgoing: isOutgoing, maxMessageWidth: maxMessageWidth)
                 self.albumView = albumView
@@ -361,17 +366,20 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 let size = getSize(for: viewItem)
                 albumView.set(.width, to: size.width)
                 albumView.set(.height, to: size.height)
-                albumView.pin(to: snContentView)
                 albumView.loadMedia()
                 albumView.layer.mask = bubbleViewMaskLayer
+                stackView.addArrangedSubview(albumView)
+                // Body text view
                 if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
                     let delegate = delegate { // delegate should always be set at this point
-                    let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, delegate: delegate)
+                    let overlayView = MediaTextOverlayView(viewItem: viewItem, albumViewWidth: size.width, textColor: bodyLabelTextColor, delegate: delegate)
                     self.mediaTextOverlayView = overlayView
-                    snContentView.addSubview(overlayView)
-                    overlayView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: snContentView)
+                    stackView.addArrangedSubview(overlayView)
                 }
                 unloadContent = { albumView.unloadMedia() }
+                // Constraints
+                snContentView.addSubview(stackView)
+                stackView.pin(to: snContentView)
             }
         case .audio:
             if viewItem.interaction is TSIncomingMessage,
