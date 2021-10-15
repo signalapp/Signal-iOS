@@ -365,15 +365,15 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
                 OWSSyncContactsMessage *syncContactsMessage =
                     [[OWSSyncContactsMessage alloc] initWithThread:thread signalAccounts:signalAccounts];
-                __block NSData *_Nullable messageData;
+                __block NSURL *_Nullable syncFileUrl;
                 __block NSData *_Nullable lastMessageHash;
                 [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                    messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-                    lastMessageHash =
-                    [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey transaction:transaction];
+                    syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
+                    lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
+                                                                transaction:transaction];
                 }];
 
-                if (!messageData) {
+                if (!syncFileUrl) {
                     OWSFailDebug(@"Failed to serialize contacts sync message.");
                     NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
                                              description:@"Could not sync contacts."
@@ -381,9 +381,17 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return [future rejectWithError:error];
                 }
 
-                NSData *_Nullable messageHash = [self hashForMessageData:messageData];
-                if (skipIfRedundant && messageHash != nil && lastMessageHash != nil &&
-                    [lastMessageHash isEqual:messageHash]) {
+                NSError *_Nullable hashError;
+                NSData *_Nullable messageHash = [Cryptography computeSHA256DigestOfFileAt:syncFileUrl error:&hashError];
+                if (hashError != nil || messageHash == nil) {
+                    OWSFailDebug(@"Error: %@.", hashError);
+                    NSError *error = [OWSError withError:OWSErrorCodeContactSyncFailed
+                                             description:@"Could not sync contacts."
+                                             isRetryable:NO];
+                    return [future rejectWithError:error];
+                }
+
+                if (skipIfRedundant && [NSObject isNullableObject:messageHash equalTo:lastMessageHash]) {
                     // Ignore redundant contacts sync message.
                     return [future resolveWithValue:@(1)];
                 }
@@ -395,8 +403,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 // DURABLE CLEANUP - we could replace the custom durability logic in this class
                 // with a durable JobQueue.
                 NSError *writeError;
-                id<DataSource> dataSource = [DataSourcePath dataSourceWritingSyncMessageData:messageData
-                                                                                       error:&writeError];
+                id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:syncFileUrl
+                                                   shouldDeleteOnDeallocation:false
+                                                                        error:&writeError];
                 if (writeError != nil) {
                     if (debounce) {
                         self.isRequestInFlight = NO;
@@ -456,13 +465,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         });
     });
     return promise;
-}
-
-- (nullable NSData *)hashForMessageData:(NSData *)messageData
-{
-    NSData *_Nullable result = [Cryptography computeSHA256Digest:messageData];
-    OWSAssertDebug(result != nil);
-    return result;
 }
 
 #pragma mark - Fetch Latest

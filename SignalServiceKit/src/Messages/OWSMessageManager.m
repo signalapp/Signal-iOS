@@ -1688,7 +1688,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self.syncManager syncGroupsWithTransaction:transaction completion:^{ [pendingTask complete]; }];
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
-            [self.blockingManager syncBlockList];
+            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncBlockList"];
+            [self.blockingManager syncBlockListWithCompletion:^{ [pendingTask complete]; }];
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
             [self.syncManager sendConfigurationSyncMessage];
 

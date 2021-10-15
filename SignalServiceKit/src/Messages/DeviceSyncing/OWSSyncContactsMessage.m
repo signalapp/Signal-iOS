@@ -20,12 +20,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSSyncContactsMessage ()
-
-@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
-@end
-
 @implementation OWSSyncContactsMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
@@ -72,86 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setContacts:contactsProto];
     return syncMessageBuilder;
-}
-
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
-
-    SignalServiceAddress *_Nullable localAddress = [TSAccountManager localAddressWithTransaction:transaction];
-    OWSAssertDebug(localAddress.isValid);
-    if (localAddress) {
-        BOOL hasLocalAddress = NO;
-        for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalAddress |= signalAccount.recipientAddress.isLocalAddress;
-        }
-        if (!hasLocalAddress) {
-            // OWSContactsOutputStream requires all signalAccount to have a contact.
-            Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:localAddress
-                                                                                       contact:contact
-                                                                      multipleAccountLabelText:nil];
-            [signalAccounts addObject:signalAccount];
-        }
-    }
-
-    // TODO use temp file stream to avoid loading everything into memory at once
-    // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
-    // and uploading with streams).
-    NSOutputStream *dataOutputStream = [NSOutputStream outputStreamToMemory];
-    [dataOutputStream open];
-    OWSContactsOutputStream *contactsOutputStream =
-        [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
-
-    // We use batching to place an upper bound on memory
-    // usage.
-    [Batching enumerateArray:signalAccounts
-                   batchSize:12
-                   itemBlock:^(SignalAccount *signalAccount) {
-                       OWSRecipientIdentity *_Nullable recipientIdentity =
-                           [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress
-                                                                 transaction:transaction];
-                       NSData *_Nullable profileKeyData =
-                           [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress
-                                                             transaction:transaction];
-
-                       OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
-
-                       TSContactThread *_Nullable contactThread =
-                           [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress
-                                                            transaction:transaction];
-                       ThreadAssociatedData *associatedData =
-                           [ThreadAssociatedData fetchOrDefaultForThread:contactThread
-                                                           ignoreMissing:contactThread == nil
-                                                             transaction:transaction];
-
-                       NSNumber *_Nullable isArchived;
-                       NSNumber *_Nullable inboxPosition;
-                       if (contactThread) {
-                           isArchived = [NSNumber numberWithBool:associatedData.isArchived];
-                           inboxPosition = [[AnyThreadFinder new] sortIndexObjcWithThread:contactThread
-                                                                              transaction:transaction];
-                           disappearingMessagesConfiguration =
-                               [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
-                       }
-
-                       [contactsOutputStream writeSignalAccount:signalAccount
-                                              recipientIdentity:recipientIdentity
-                                                 profileKeyData:profileKeyData
-                                                contactsManager:self.contactsManager
-                              disappearingMessagesConfiguration:disappearingMessagesConfiguration
-                                                     isArchived:isArchived
-                                                  inboxPosition:inboxPosition];
-                   }];
-
-    [dataOutputStream close];
-
-    if (contactsOutputStream.hasError) {
-        OWSFailDebug(@"Could not write contacts sync stream.");
-        return nil;
-    }
-
-    return [dataOutputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 }
 
 @end

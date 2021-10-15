@@ -722,10 +722,11 @@ public class BlockingManager: NSObject {
     }
 
     @objc
-    public func syncBlockList() {
+    public func syncBlockList(completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             let state = Self.unfairLock.withLock { self.currentState }
             Self.sendBlockListSyncMessage(state: state)
+            completion()
         }
     }
 
