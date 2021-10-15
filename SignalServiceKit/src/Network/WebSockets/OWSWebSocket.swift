@@ -382,10 +382,8 @@ public class OWSWebSocket: NSObject {
             }
         }
 
-        // Set User-Agent header.
-        httpHeaders.addHeader(OWSURLSession.kUserAgentHeader,
-                              value: OWSURLSession.signalIosUserAgent,
-                              overwriteOnConflict: false)
+        // Set User-Agent and Accept-Language headers.
+        httpHeaders.addDefaultHeaders()
 
         for (key, value) in httpHeaders.headers {
             let header = String(format: "%@:%@", key, value)
@@ -953,8 +951,8 @@ public class OWSWebSocket: NSObject {
 
         self.lastNewWebsocketDate.set(Date())
         var request = URLRequest(url: webSocketConnectURL)
-        request.addValue(OWSURLSession.signalIosUserAgent,
-                         forHTTPHeaderField: OWSURLSession.kUserAgentHeader)
+        request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
+                         forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
         var webSocket = SSKWebSocketManager.buildSocket(request: request,
                                                         callbackQueue: OWSWebSocket.serialQueue)
         webSocket.delegate = self
@@ -975,7 +973,7 @@ public class OWSWebSocket: NSObject {
             }
 
             if !newWebSocket.hasConnected.get() {
-                owsFailDebug("Websocket failed to connect.")
+                Logger.warn("Websocket failed to connect.")
                 self.cycleSocket()
             }
         }
@@ -1290,7 +1288,7 @@ private class SocketRequestInfo {
             return false
         case .incomplete(_, let failure):
             DispatchQueue.global().async {
-                let statusCode = HTTPStatusCodeForError(error) ?? 0
+                let statusCode = error.httpStatusCode ?? 0
                 Logger.warn("didFail, status: \(statusCode), error: \(error)")
 
                 let error = error as! OWSHTTPError

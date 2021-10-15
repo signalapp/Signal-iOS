@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import AFNetworking
+import SignalCoreKit
 
 public extension RESTNetworkManager {
     func makePromise(request: TSRequest) -> Promise<HTTPResponse> {
@@ -22,11 +22,10 @@ public extension RESTNetworkManager {
 
 // MARK: -
 
-// TODO: Use OWSURLSession instead.
 @objc
 public class RESTSessionManager: NSObject {
 
-    private let sessionManager: AFHTTPSessionManager
+    private let urlSession: OWSURLSession
     @objc
     public let createdDate = Date()
 
@@ -34,20 +33,18 @@ public class RESTSessionManager: NSObject {
     public override required init() {
         assertOnQueue(NetworkManagerQueue())
 
-        // TODO: Use OWSUrlSession instead.
-        self.sessionManager = Self.signalService.sessionManagerForMainSignalService()
-        self.sessionManager.completionQueue = .global()
+        self.urlSession = Self.signalService.urlSessionForMainSignalService()
     }
 
     @objc
-    public func performRequest(_ request: TSRequest,
+    public func performRequest(_ rawRequest: TSRequest,
                                canUseAuth: Bool,
                                success: @escaping RESTNetworkManagerSuccess,
                                failure: @escaping RESTNetworkManagerFailure) {
         assertOnQueue(NetworkManagerQueue())
         owsAssertDebug(!FeatureFlags.deprecateREST || signalService.isCensorshipCircumventionActive)
 
-        guard let rawRequestUrl = request.url else {
+        guard let rawRequestUrl = rawRequest.url else {
             owsFailDebug("Missing requestUrl.")
             failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: URL(string: "")!)))
             return
@@ -58,196 +55,114 @@ public class RESTSessionManager: NSObject {
             return
         }
 
-        // Use new serializers. This will clear all request headers.
-        //
-        // NOTE: that we send JSON and receive a binary Blob.
-        // NOTE: We could enable HTTPShouldUsePipelining here.
-        sessionManager.requestSerializer = {
-            if let requestBody = request.httpBody, request.value(forHTTPHeaderField: "Content-Type") == kSenderKeySendRequestBodyContentType {
-                return OWSSenderKeyBodyRequestSerializer(senderKeyBody: requestBody)
-            } else {
-                return AFJSONRequestSerializer()
-            }
-        }()
-        sessionManager.responseSerializer = AFHTTPResponseSerializer()
-
         let httpHeaders = OWSHttpHeaders()
 
-        // Apply the default headers for this session manager.
-        let defaultHeaders = sessionManager.requestSerializer.httpRequestHeaders
-        httpHeaders.addHeaderMap(defaultHeaders, overwriteOnConflict: false)
-        // Clear all default headers.
-        for headerField in defaultHeaders.keys {
-            sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
-        }
-        // Disable default cookie handling for all requests.
-        sessionManager.requestSerializer.httpShouldHandleCookies = false
-        if signalService.isCensorshipCircumventionActive {
-            httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
-        }
-
-        // Set User-Agent header.
-        httpHeaders.addHeader(OWSURLSession.kUserAgentHeader,
-                              value: OWSURLSession.signalIosUserAgent,
-                              overwriteOnConflict: true)
+        // Set User-Agent and Accept-Language headers.
+        httpHeaders.addDefaultHeaders()
 
         if signalService.isCensorshipCircumventionActive {
             httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
         }
 
         // Then apply any custom headers for the request
-        httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
+        httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 
         if canUseAuth,
-           request.shouldHaveAuthorizationHeaders {
-            owsAssertDebug(nil != request.authUsername?.nilIfEmpty)
-            owsAssertDebug(nil != request.authPassword?.nilIfEmpty)
-            sessionManager.requestSerializer.setAuthorizationHeaderFieldWithUsername(request.authUsername ?? "",
-                                                                                     password: request.authPassword ?? "")
-        }
-
-        // Most of TSNetwork requests are destined for the Signal Service.
-        // When we are domain fronting, we have to target a different host and add a path prefix.
-        // For common Signal-Service requests the host/path-prefix logic is handled by the
-        // sessionManager.
-        //
-        // However, for CDS requests, we need to:
-        //  With CC enabled, use the service fronting Hostname but a custom path-prefix
-        //  With CC disabled, use the custom directory host, and no path-prefix
-        func buildRequestURL() -> URL? {
-            if signalService.isCensorshipCircumventionActive,
-               let customCensorshipCircumventionPrefix = request.customCensorshipCircumventionPrefix?.nilIfEmpty {
-                // All fronted requests go through the same host
-                let customBaseUrl: URL = signalService.domainFrontBaseURL.appendingPathComponent(customCensorshipCircumventionPrefix)
-                guard let requestUrl = OWSURLSession.buildUrl(urlString: rawRequestUrl.absoluteString,
-                                                              baseUrl: customBaseUrl) else {
-                    owsFailDebug("Could not apply baseUrl.")
-                    return nil
-                }
-                return requestUrl
-            } else if let customHost = request.customHost?.nilIfEmpty {
-                guard let customBaseUrl = URL(string: customHost) else {
-                    owsFailDebug("Invalid customHost.")
-                    return nil
-                }
-                guard let requestUrl = OWSURLSession.buildUrl(urlString: rawRequestUrl.absoluteString,
-                                                              baseUrl: customBaseUrl) else {
-                    owsFailDebug("Could not apply baseUrl.")
-                    return nil
-                }
-                return requestUrl
-            } else {
-                // requests for the signal-service (with or without censorship circumvention)
-                return rawRequestUrl
+           rawRequest.shouldHaveAuthorizationHeaders {
+            owsAssertDebug(nil != rawRequest.authUsername?.nilIfEmpty)
+            owsAssertDebug(nil != rawRequest.authPassword?.nilIfEmpty)
+            do {
+                try httpHeaders.addAuthHeader(username: rawRequest.authUsername ?? "",
+                                              password: rawRequest.authPassword ?? "")
+            } catch {
+                owsFailDebug("Could not add auth header: \(error).")
+                failure(OWSHTTPErrorWrapper(error: .invalidAppState(requestUrl: rawRequestUrl)))
             }
         }
-        guard let requestUrl = buildRequestURL(),
-              let requestUrlString = requestUrl.absoluteString.nilIfEmpty else {
-            owsFailDebug("Missing or invalid requestUrl.")
+
+        let method: HTTPMethod
+        do {
+            method = try HTTPMethod.method(for: rawRequest.httpMethod)
+        } catch {
+            owsFailDebug("Invalid HTTP method: \(rawRequest.httpMethod)")
+            failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)))
+            return
+        }
+
+        var requestBody = Data()
+        if let httpBody = rawRequest.httpBody {
+            owsAssertDebug(rawRequest.parameters.isEmpty)
+
+            requestBody = httpBody
+        } else if !rawRequest.parameters.isEmpty {
+            let jsonData: Data?
+            do {
+                jsonData = try JSONSerialization.data(withJSONObject: rawRequest.parameters, options: [])
+            } catch {
+                owsFailDebug("Could not serialize JSON parameters: \(error).")
+                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)))
+                return
+            }
+
+            if let jsonData = jsonData {
+                requestBody = jsonData
+                // If we're going to use the json serialized parameters as our body, we should overwrite
+                // the Content-Type on the request.
+                httpHeaders.addHeader("Content-Type",
+                                      value: "application/json",
+                                      overwriteOnConflict: true)
+            }
+        }
+
+        let urlSession = self.urlSession
+        let request: URLRequest
+        do {
+            request = try urlSession.buildRequest(rawRequestUrl.absoluteString,
+                                                  method: method,
+                                                  headers: httpHeaders.headers,
+                                                  body: requestBody,
+                                                  customCensorshipCircumventionPrefix: rawRequest.customCensorshipCircumventionPrefix,
+                                                  customHost: rawRequest.customHost)
+        } catch {
+            owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
             failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: rawRequestUrl)))
             return
         }
 
-        // Honor the request's headers.
-        for (key, value) in httpHeaders.headers {
-            sessionManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
-        }
-
-        func parseResponse(task: URLSessionDataTask?, error: Error? = nil) -> HTTPURLResponse? {
-            if let response = task?.response as? HTTPURLResponse {
-                return response
-            }
-            if let error = error,
-               let response = (error as NSError).afFailingHTTPURLResponse {
-                return response
-            }
-            return nil
-        }
-        func parseResponseHeaders(task: URLSessionDataTask?) -> OWSHttpHeaders {
-            let parsedHeaders = OWSHttpHeaders()
-            guard let response = parseResponse(task: task) else {
-                return parsedHeaders
-            }
-            for (key, value) in response.allHeaderFields {
-                guard let key = key as? String,
-                      let value = value as? String else {
-                    owsFailDebug("Invalid header: \(key), \(value)")
-                    continue
-                }
-                parsedHeaders.addHeader(key, value: value, overwriteOnConflict: false)
-            }
-            return parsedHeaders
-        }
-
-        let afSuccess = { (task: URLSessionDataTask?, responseObject: Any?) in
-            guard let httpUrlResponse = parseResponse(task: task) else {
-                if DebugFlags.internalLogging,
-                   let response = task?.response {
-                    Logger.warn("Invalid response: \(response)")
-                }
-                owsFailDebug("Invalid response")
-                failure(OWSHTTPErrorWrapper(error: .invalidResponse(requestUrl: requestUrl)))
-                return
-            }
-            var responseData: Data?
-            if let responseObject = responseObject {
-                if let data = responseObject as? Data {
-                    responseData = data
-                } else {
-                    owsFailDebug("Invalid response: \(type(of: responseObject))")
-                }
-            }
-            let response = HTTPResponseImpl.build(requestUrl: requestUrl,
-                                                  httpUrlResponse: httpUrlResponse,
-                                                  bodyData: responseData)
-            success(response)
-        }
-
-        let afFailure = { (task: URLSessionDataTask?, error: Error) in
-            let responseHeaders = parseResponseHeaders(task: task)
-            // TODO: Can we extract a response body?
-            let responseData: Data? = nil
-            let responseStatus: Int
-            if let response = parseResponse(task: task) {
-                responseStatus = response.statusCode
-            } else {
-                responseStatus = 0
-            }
-            let error = HTTPUtils.preprocessMainServiceHTTPError(request: request,
-                                                                 requestUrl: requestUrl,
-                                                                 responseStatus: responseStatus,
-                                                                 responseHeaders: responseHeaders,
-                                                                 responseError: error,
-                                                                 responseData: responseData)
-            failure(OWSHTTPErrorWrapper(error: error))
-        }
-
-        switch request.httpMethod {
-        case "GET":
-            sessionManager.get(requestUrlString,
-                               parameters: request.parameters,
-                               progress: nil,
-                               success: afSuccess,
-                               failure: afFailure)
-        case "POST":
-            sessionManager.post(requestUrlString,
-                                parameters: request.parameters,
-                                progress: nil,
-                                success: afSuccess,
-                                failure: afFailure)
-        case "PUT":
-            sessionManager.put(requestUrlString,
-                               parameters: request.parameters,
-                               success: afSuccess,
-                               failure: afFailure)
-        case "DELETE":
-            sessionManager.delete(requestUrlString,
-                                  parameters: request.parameters,
-                                  success: afSuccess,
-                                  failure: afFailure)
-        default:
-            owsFailDebug("Invalid request.")
+        guard let requestUrl = request.url else {
+            owsFailDebug("Missing or invalid requestUrl: \(rawRequestUrl).")
             failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: rawRequestUrl)))
+            return
+        }
+
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
+
+        Logger.verbose("Request: \(request)")
+
+        firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
+            urlSession.uploadTaskPromise(request: request, data: requestBody)
+        }.done(on: .global()) { (response: HTTPResponse) in
+            Logger.info("Success: \(request)")
+            success(response)
+        }.ensure(on: .global()) {
+            owsAssertDebug(backgroundTask != nil)
+            backgroundTask = nil
+        }.catch(on: .global()) { error in
+            Logger.warn("Failure: \(request), error: \(error)")
+
+            if let httpError = error as? OWSHTTPError {
+                let isMainSignalServiceRequest = (rawRequest.customHost?.nilIfEmpty == nil &&
+                                                  rawRequest.customCensorshipCircumventionPrefix?.nilIfEmpty == nil)
+                if isMainSignalServiceRequest {
+                    HTTPUtils.applyHTTPError(httpError)
+                }
+
+                failure(OWSHTTPErrorWrapper(error: httpError))
+            } else {
+                owsFailDebug("Unexpected error: \(error)")
+
+                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidResponse(requestUrl: requestUrl)))
+            }
         }
     }
 }

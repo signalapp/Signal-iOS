@@ -369,34 +369,13 @@ public struct StorageService: Dependencies {
         let data: Data
     }
 
-    public struct Auth {
-        let username: String
-        let password: String
-
-        public init(username: String, password: String) {
-            self.username = username
-            self.password = password
-        }
-
-        public func authHeader() throws -> String {
-            guard let data = "\(username):\(password)".data(using: .utf8) else {
-                owsFailDebug("failed to encode auth data")
-                throw StorageError.assertion
-            }
-            return "Basic " + data.base64EncodedString()
-        }
-    }
-
     private static func storageRequest(withMethod method: HTTPMethod, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
-        return serviceClient.requestStorageAuth().map { username, password in
-            Auth(username: username, password: password)
-        }.then(on: .global()) { (auth: Auth) -> Promise<HTTPResponse> in
+        return serviceClient.requestStorageAuth().then { username, password -> Promise<HTTPResponse> in
             if method == .get { assert(body == nil) }
 
-            let headers = [
-                "Content-Type": OWSMimeTypeProtobuf,
-                "Authorization": try auth.authHeader()
-            ]
+            let httpHeaders = OWSHttpHeaders()
+            httpHeaders.addHeader("Content-Type", value: OWSMimeTypeProtobuf, overwriteOnConflict: true)
+            try httpHeaders.addAuthHeader(username: username, password: password)
 
             Logger.info("Storage request started: \(method) \(endpoint)")
 
@@ -406,7 +385,7 @@ public struct StorageService: Dependencies {
             urlSession.require2xxOr3xx = false
             return urlSession.dataTaskPromise(endpoint,
                                               method: method,
-                                              headers: headers,
+                                              headers: httpHeaders.headers,
                                               body: body)
         }.map(on: .global()) { (response: HTTPResponse) -> StorageResponse in
             let status: StorageResponse.Status

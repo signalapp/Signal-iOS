@@ -67,80 +67,35 @@ fileprivate extension OWSSignalService {
         }
     }
 
-    func buildSessionManager(for signalServiceType: SignalServiceType) -> AFHTTPSessionManager {
-        let signalServiceInfo = self.signalServiceInfo(for: signalServiceType)
-        let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        let baseUrl: URL
-        let securityPolicy: AFSecurityPolicy
-        if isCensorshipCircumventionActive {
-            let censorshipConfiguration = buildCensorshipConfiguration()
-            let frontingURL = censorshipConfiguration.domainFrontBaseURL
-            baseUrl = frontingURL.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
-            securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
-        } else {
-            baseUrl = signalServiceInfo.baseUrl
-            securityPolicy = OWSHTTPSecurityPolicy.shared()
-        }
-
-        let sessionConfiguration = OWSURLSession.defaultConfigurationWithoutCaching
-        let sessionManager = AFHTTPSessionManager(baseURL: baseUrl,
-                                                  sessionConfiguration: sessionConfiguration)
-        sessionManager.securityPolicy = securityPolicy
-
-        switch signalServiceInfo.requestSerializerType {
-        case .json:
-            sessionManager.requestSerializer = AFJSONRequestSerializer()
-        case .binary:
-            sessionManager.requestSerializer = AFHTTPRequestSerializer()
-        }
-        switch signalServiceInfo.responseSerializerType {
-        case .json:
-            sessionManager.responseSerializer = AFJSONResponseSerializer()
-        case .binary:
-            sessionManager.responseSerializer = AFHTTPResponseSerializer()
-        }
-
-        // Disable default cookie handling for all requests.
-        sessionManager.requestSerializer.httpShouldHandleCookies = false
-        if isCensorshipCircumventionActive {
-            sessionManager.requestSerializer.setValue(TSConstants.censorshipReflectorHost,
-                                                      forHTTPHeaderField: "Host")
-        }
-
-        if signalServiceType == .cdn0 {
-            // Default acceptable content headers are rejected by AWS
-            sessionManager.responseSerializer.acceptableContentTypes = nil
-        }
-
-        return sessionManager
-    }
-
     private func buildUrlSession(for signalServiceType: SignalServiceType) -> OWSURLSession {
         let signalServiceInfo = self.signalServiceInfo(for: signalServiceType)
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        let baseUrl: URL
-        let censorshipCircumventionHost: String?
-        let securityPolicy: AFSecurityPolicy
-        let extraHeaders: [String: String]
+        let urlSession: OWSURLSession
         if isCensorshipCircumventionActive {
             let censorshipConfiguration = buildCensorshipConfiguration()
-            let frontingURL = censorshipConfiguration.domainFrontBaseURL
-            baseUrl = frontingURL.appendingPathComponent(signalServiceInfo.censorshipCircumventionPathPrefix)
-            securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
-            censorshipCircumventionHost = signalServiceInfo.baseUrl.host
-            extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
-        } else {
-            baseUrl = signalServiceInfo.baseUrl
-            securityPolicy = OWSHTTPSecurityPolicy.shared()
-            censorshipCircumventionHost = nil
-            extraHeaders = [:]
-        }
-
-        let urlSession = OWSURLSession(baseUrl: baseUrl,
+            let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseURL
+            let frontingPathPrefix = signalServiceInfo.censorshipCircumventionPathPrefix
+            let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(frontingPathPrefix)
+            let unfrontedBaseUrl = signalServiceInfo.baseUrl
+            let frontingInfo = OWSURLSession.FrontingInfo(frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
+                                                          frontingURLWithPathPrefix: frontingURLWithPathPrefix,
+                                                          unfrontedBaseUrl: unfrontedBaseUrl)
+            let baseUrl = frontingURLWithPathPrefix
+            let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
+            let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
+            urlSession = OWSURLSession(baseUrl: baseUrl,
+                                       frontingInfo: frontingInfo,
                                        securityPolicy: securityPolicy,
                                        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                                       censorshipCircumventionHost: censorshipCircumventionHost,
                                        extraHeaders: extraHeaders)
+        } else {
+            let baseUrl = signalServiceInfo.baseUrl
+            let securityPolicy = OWSHTTPSecurityPolicy.shared()
+            urlSession = OWSURLSession(baseUrl: baseUrl,
+                                       securityPolicy: securityPolicy,
+                                       configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+                                       extraHeaders: [:])
+        }
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
         return urlSession
     }
@@ -150,17 +105,6 @@ fileprivate extension OWSSignalService {
 
 @objc
 public extension OWSSignalService {
-
-    // TODO: Remove in favor of OWSURLSession.
-    func sessionManagerForMainSignalService() -> AFHTTPSessionManager {
-        buildSessionManager(for: .mainSignalService)
-    }
-
-    // TODO: Remove in favor of OWSURLSession.
-    @objc(sessionManagerForCdnNumber:)
-    func sessionManagerForCdn(cdnNumber: UInt32) -> AFHTTPSessionManager {
-        buildSessionManager(for: SignalServiceType.type(forCdnNumber: cdnNumber))
-    }
 
     func urlSessionForMainSignalService() -> OWSURLSession {
         buildUrlSession(for: .mainSignalService)

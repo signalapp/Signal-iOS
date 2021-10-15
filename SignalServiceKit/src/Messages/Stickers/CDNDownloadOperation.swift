@@ -50,18 +50,18 @@ open class CDNDownloadOperation: OWSOperation {
         firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
             let headers = ["Content-Type": OWSMimeTypeApplicationOctetStream]
             let urlSession = self.cdn0urlSession
-            return urlSession.urlDownloadTaskPromise(urlPath,
-                                                     method: .get,
-                                                     headers: headers) { [weak self] (task: URLSessionTask, progress: Progress) in
-                                                        guard let self = self else {
-                                                            return
-                                                        }
-                                                        self.task = task
-                                                        self.handleDownloadProgress(task: task,
-                                                                                    progress: progress,
-                                                                                    future: future,
-                                                                                    maxDownloadSize: maxDownloadSize,
-                                                                                    hasCheckedContentLength: hasCheckedContentLength)
+            return urlSession.downloadTaskPromise(urlPath,
+                                                  method: .get,
+                                                  headers: headers) { [weak self] (task: URLSessionTask, progress: Progress) in
+                guard let self = self else {
+                    return
+                }
+                self.task = task
+                self.handleDownloadProgress(task: task,
+                                            progress: progress,
+                                            future: future,
+                                            maxDownloadSize: maxDownloadSize,
+                                            hasCheckedContentLength: hasCheckedContentLength)
             }
         }.recover(on: .global()) { (error: Error) -> Promise<OWSUrlDownloadResponse> in
             throw error

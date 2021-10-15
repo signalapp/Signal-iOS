@@ -6,7 +6,6 @@
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "PreKeyBundle+jsonDict.h"
-#import <AFNetworking/AFURLResponseSerialization.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
@@ -201,7 +200,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
-        if (IsNetworkConnectivityFailure(error)) {
+        if (error.isNetworkConnectivityFailure) {
             OWSLogWarn(@"Precondition failure: %@.", error);
         } else {
             OWSFailDebug(@"Precondition failure: %@.", error);
@@ -1413,7 +1412,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *error) {
-            NSNumber *_Nullable statusCode = HTTPStatusCodeForError(error);
+            NSNumber *_Nullable statusCode = error.httpStatusCode;
             OWSLogVerbose(@"statusCode: %@", statusCode);
             if ([MessageSender isMissingDeviceError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
@@ -1445,7 +1444,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 exception = [NSException exceptionWithName:NoSessionForTransientMessageException
                                                     reason:@"No session for transient message"
                                                   userInfo:@ { NSUnderlyingErrorKey : error }];
-            } else if (IsNetworkConnectivityFailure(error)) {
+            } else if (error.isNetworkConnectivityFailure) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
                 OWSFailDebug(@"Error: %@", error);

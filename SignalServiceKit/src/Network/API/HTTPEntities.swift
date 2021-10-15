@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // This file contains common interfaces for dealing with
 // HTTP request responses, failures and errors in a consistent
@@ -245,98 +246,9 @@ extension OWSHTTPError: HTTPError {
                 return true
             }
             if let responseError = responseError {
-                return IsNetworkConnectivityFailure(responseError)
+                return responseError.isNetworkConnectivityFailure
             }
             return false
-        }
-    }
-}
-
-// MARK: -
-
-extension OWSHttpHeaders {
-
-    // fallback retry-after delay if we fail to parse a non-empty retry-after string
-    private static var kOWSFallbackRetryAfter: TimeInterval { 60 }
-    private static var kOWSRetryAfterHeaderKey: String { "Retry-After" }
-
-    public var retryAfterDate: Date? {
-        Self.retryAfterDate(responseHeaders: headers)
-    }
-
-    fileprivate static func retryAfterDate(responseHeaders: [String: String]) -> Date? {
-        guard let retryAfterString = responseHeaders[Self.kOWSRetryAfterHeaderKey] else {
-            return nil
-        }
-        return Self.parseRetryAfterHeaderValue(retryAfterString)
-    }
-
-    static func parseRetryAfterHeaderValue(_ rawValue: String?) -> Date? {
-        guard let value = rawValue?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty else {
-            return nil
-        }
-        if let result = Date.ows_parseFromHTTPDateString(value) {
-            return result
-        }
-        if let result = Date.ows_parseFromISO8601String(value) {
-            return result
-        }
-        func parseWithScanner() -> Date? {
-            // We need to use NSScanner instead of -[NSNumber doubleValue] so we can differentiate
-            // because the NSNumber method returns 0.0 on a parse failure. NSScanner lets us detect
-            // a parse failure.
-            let scanner = Scanner(string: value)
-            var delay: TimeInterval = 0
-            guard scanner.scanDouble(&delay),
-                  scanner.isAtEnd else {
-                // Only return the delay if we've made it to the end.
-                // Helps to prevent things like: 8/11/1994 being interpreted as delay: 8.
-                return nil
-            }
-            return Date(timeIntervalSinceNow: max(0, delay))
-        }
-        if let result = parseWithScanner() {
-            return result
-        }
-        if !CurrentAppContext().isRunningTests {
-            owsFailDebug("Failed to parse retry-after string: \(String(describing: rawValue))")
-        }
-        return Date(timeIntervalSinceNow: Self.kOWSFallbackRetryAfter)
-    }
-}
-
-// MARK: -
-
-public extension Error {
-    var httpStatusCode: Int? {
-        HTTPStatusCodeForError(self)?.intValue
-    }
-
-    var httpRetryAfterDate: Date? {
-        HTTPRetryAfterDateForError(self)
-    }
-
-    var httpResponseData: Data? {
-        HTTPResponseDataForError(self)
-    }
-
-    var httpRequestUrl: URL? {
-        guard let error = self as? HTTPError else {
-            return nil
-        }
-        return error.requestUrl
-    }
-
-    var httpResponseJson: Any? {
-        guard let data = httpResponseData else {
-            return nil
-        }
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            return json
-        } catch {
-            owsFailDebug("Could not parse JSON: \(error).")
-            return nil
         }
     }
 }
@@ -387,10 +299,10 @@ public class HTTPResponseImpl: NSObject {
         let headers = OWSHttpHeaders(response: httpUrlResponse)
         let stringEncoding: String.Encoding = httpUrlResponse.parseStringEncoding() ?? .utf8
         return HTTPResponseImpl(requestUrl: requestUrl,
-                                   status: httpUrlResponse.statusCode,
-                                   headers: headers,
-                                   bodyData: bodyData,
-                                   stringEncoding: stringEncoding)
+                                status: httpUrlResponse.statusCode,
+                                headers: headers,
+                                bodyData: bodyData,
+                                stringEncoding: stringEncoding)
     }
 
     @objc
@@ -408,8 +320,8 @@ public class HTTPResponseImpl: NSObject {
     private static func parseJSON(data: Data?) -> JSONValue {
         guard let data = data,
               !data.isEmpty else {
-            return JSONValue(json: nil)
-        }
+                  return JSONValue(json: nil)
+              }
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
             return JSONValue(json: json)
@@ -435,9 +347,9 @@ extension HTTPResponseImpl: HTTPResponse {
     public var responseBodyString: String? {
         guard let data = bodyData,
               let string = String(data: data, encoding: stringEncoding) else {
-            Logger.warn("Invalid body string.")
-            return nil
-        }
+                  Logger.warn("Invalid body string.")
+                  return nil
+              }
         return string
     }
 }
@@ -454,5 +366,35 @@ extension HTTPURLResponse {
             return nil
         }
         return String.Encoding(rawValue: CFStringConvertEncodingToNSStringEncoding(encoding))
+    }
+}
+
+// MARK: -
+
+// Temporary obj-c wrapper for OWSHTTPError until
+// OWSWebSocket, etc. have been ported to Swift.
+@objc
+public class OWSHTTPErrorWrapper: NSObject {
+    public let error: OWSHTTPError
+    @objc
+    public var asNSError: NSError { error as NSError }
+
+    public init(error: OWSHTTPError) {
+        self.error = error
+    }
+
+    @objc
+    public var asConnectionFailureError: OWSHTTPErrorWrapper {
+        let newError = OWSHTTPError.forServiceResponse(requestUrl: error.requestUrl,
+                                                       responseStatus: error.responseStatusCode,
+                                                       responseHeaders: error.responseHeaders ?? OWSHttpHeaders(),
+                                                       responseError: error.responseError,
+                                                       responseData: error.responseBodyData,
+                                                       customRetryAfterDate: error.customRetryAfterDate,
+                                                       customLocalizedDescription: NSLocalizedString("ERROR_DESCRIPTION_NO_INTERNET",
+                                                                                                     comment: "Generic error used whenever Signal can't contact the server"),
+                                                       customLocalizedRecoverySuggestion: NSLocalizedString("NETWORK_ERROR_RECOVERY",
+                                                                                                            comment: ""))
+        return OWSHTTPErrorWrapper(error: newError)
     }
 }

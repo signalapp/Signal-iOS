@@ -6,7 +6,6 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import "zlib.h"
-#import <AFNetworking/AFHTTPSessionManager.h>
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/AttachmentSharing.h>
@@ -19,8 +18,6 @@
 #import <SignalServiceKit/TSContactThread.h>
 #import <sys/sysctl.h>
 
-// TODO: Eliminate AFNetworking.
-
 NS_ASSUME_NONNULL_BEGIN
 
 NSErrorDomain PastelogErrorDomain = @"PastelogErrorDomain";
@@ -29,234 +26,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     PastelogErrorInvalidNetworkResponse = 10001,
     PastelogErrorEmailFailed = 10002
 };
-
-#pragma mark -
-
-@class DebugLogUploader;
-
-typedef void (^DebugLogUploadSuccess)(DebugLogUploader *uploader, NSURL *url);
-typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error);
-
-@interface DebugLogUploader : NSObject
-
-@property (nonatomic) NSURL *fileUrl;
-@property (nonatomic) NSString *mimeType;
-@property (nonatomic, nullable) DebugLogUploadSuccess success;
-@property (nonatomic, nullable) DebugLogUploadFailure failure;
-
-@end
-
-#pragma mark -
-
-@implementation DebugLogUploader
-
-- (void)dealloc
-{
-    OWSLogVerbose(@"");
-}
-
-- (void)uploadFileWithURL:(NSURL *)fileUrl
-                 mimeType:(NSString *)mimeType
-                  success:(DebugLogUploadSuccess)success
-                  failure:(DebugLogUploadFailure)failure
-{
-    OWSAssertDebug(fileUrl);
-    OWSAssertDebug(mimeType.length > 0);
-    OWSAssertDebug(success);
-    OWSAssertDebug(failure);
-
-    self.fileUrl = fileUrl;
-    self.mimeType = mimeType;
-    self.success = success;
-    self.failure = failure;
-
-    [self getUploadParameters];
-}
-
-- (void)getUploadParameters
-{
-    __weak DebugLogUploader *weakSelf = self;
-
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil
-                                                                    sessionConfiguration:sessionConf];
-    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializer];
-    NSString *urlString = @"https://debuglogs.org/";
-    [sessionManager GET:urlString
-        parameters:nil
-        progress:nil
-        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
-            DebugLogUploader *strongSelf = weakSelf;
-            if (!strongSelf) {
-                return;
-            }
-
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                  description:@"Invalid response"
-                                                  isRetryable:NO]];
-                return;
-            }
-            NSString *uploadUrl = responseObject[@"url"];
-            if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
-                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                  description:@"Invalid response"
-                                                  isRetryable:NO]];
-                return;
-            }
-            NSDictionary *fields = responseObject[@"fields"];
-            if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
-                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                  description:@"Invalid response"
-                                                  isRetryable:NO]];
-                return;
-            }
-            for (NSString *fieldName in fields) {
-                NSString *fieldValue = fields[fieldName];
-                if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
-                    || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
-                    OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                    [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                      description:@"Invalid response"
-                                                      isRetryable:NO]];
-                    return;
-                }
-            }
-            NSString *_Nullable uploadKey = fields[@"key"];
-            if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
-                OWSLogError(@"Invalid response: %@, %@", urlString, responseObject);
-                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                  description:@"Invalid response"
-                                                  isRetryable:NO]];
-                return;
-            }
-
-            // Add a file extension to the upload's key.
-            NSString *fileExtension = strongSelf.fileUrl.lastPathComponent.pathExtension;
-            if (fileExtension.length < 1) {
-                OWSLogError(@"Invalid file url: %@, %@", urlString, responseObject);
-                [strongSelf failWithError:[OWSError withError:OWSErrorCodeDebugLogUploadFailed
-                                                  description:@"Invalid file url"
-                                                  isRetryable:NO]];
-                return;
-            }
-            uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
-            NSMutableDictionary *updatedFields = [fields mutableCopy];
-            updatedFields[@"key"] = uploadKey;
-
-            [strongSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
-        }
-        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
-            OWSLogError(@"failed: %@", urlString);
-            [weakSelf failWithError:error];
-        }];
-}
-
-- (void)uploadFileWithUploadUrl:(NSString *)uploadUrl fields:(NSDictionary *)fields uploadKey:(NSString *)uploadKey
-{
-    OWSAssertDebug(uploadUrl.length > 0);
-    OWSAssertDebug(fields);
-    OWSAssertDebug(uploadKey.length > 0);
-
-    __weak DebugLogUploader *weakSelf = self;
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:nil
-                                                                    sessionConfiguration:sessionConf];
-    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [sessionManager POST:uploadUrl
-        parameters:@{}
-        constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-            for (NSString *fieldName in fields) {
-                NSString *fieldValue = fields[fieldName];
-                [formData appendPartWithFormData:[fieldValue dataUsingEncoding:NSUTF8StringEncoding] name:fieldName];
-            }
-            [formData appendPartWithFormData:[weakSelf.mimeType dataUsingEncoding:NSUTF8StringEncoding]
-                                        name:@"content-type"];
-
-            NSError *error;
-            BOOL success = [formData appendPartWithFileURL:weakSelf.fileUrl
-                                                      name:@"file"
-                                                  fileName:weakSelf.fileUrl.lastPathComponent
-                                                  mimeType:weakSelf.mimeType
-                                                     error:&error];
-            if (!success || error) {
-                OWSLogError(@"failed: %@, error: %@", uploadUrl, error);
-            }
-        }
-        progress:nil
-        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
-            OWSLogVerbose(@"Response: %@, %@", uploadUrl, responseObject);
-
-            NSString *urlString = [NSString stringWithFormat:@"https://debuglogs.org/%@", uploadKey];
-            [self succeedWithUrl:[NSURL URLWithString:urlString]];
-        }
-        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
-            OWSLogError(@"upload: %@ failed with error: %@", uploadUrl, error);
-            [weakSelf failWithError:error];
-        }];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-
-    NSInteger statusCode = httpResponse.statusCode;
-    // We'll accept any 2xx status code.
-    NSInteger statusCodeClass = statusCode - (statusCode % 100);
-    if (statusCodeClass != 200) {
-        OWSLogError(@"statusCode: %zd, %zd", statusCode, statusCodeClass);
-        OWSLogError(@"headers: %@", httpResponse.allHeaderFields);
-        [self failWithError:[NSError errorWithDomain:PastelogErrorDomain
-                                                code:PastelogErrorInvalidNetworkResponse
-                                            userInfo:@{ NSLocalizedDescriptionKey : @"Invalid response code." }]];
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    OWSLogVerbose(@"");
-
-    [self failWithError:error];
-}
-
-- (void)failWithError:(NSError *)error
-{
-    OWSAssertDebug(error);
-
-    OWSLogError(@"%@", error);
-
-    DispatchMainThreadSafe(^{
-        // Call the completions exactly once.
-        if (self.failure) {
-            self.failure(self, error);
-        }
-        self.success = nil;
-        self.failure = nil;
-    });
-}
-
-- (void)succeedWithUrl:(NSURL *)url
-{
-    OWSAssertDebug(url);
-
-    OWSLogVerbose(@"%@", url);
-
-    DispatchMainThreadSafe(^{
-        // Call the completions exactly once.
-        if (self.success) {
-            self.success(self, url);
-        }
-        self.success = nil;
-        self.failure = nil;
-    });
-}
-
-@end
 
 #pragma mark -
 
@@ -482,7 +251,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
     __weak Pastelog *weakSelf = self;
     self.currentUploader = [DebugLogUploader new];
-    [self.currentUploader uploadFileWithURL:[NSURL fileURLWithPath:zipFilePath]
+    [self.currentUploader uploadFileWithFileUrl:[NSURL fileURLWithPath:zipFilePath]
         mimeType:OWSMimeTypeApplicationZip
         success:^(DebugLogUploader *uploader, NSURL *url) {
             if (uploader != weakSelf.currentUploader) {

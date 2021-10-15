@@ -28,65 +28,17 @@ public class ContentProxy: NSObject {
         return configuration
     }
 
-    public class func sessionManager(baseUrl: URL) -> AFHTTPSessionManager {
-        return AFHTTPSessionManager(baseURL: baseUrl,
-                                    sessionConfiguration: sessionConfiguration())
-    }
-
-    public class func jsonSessionManager(baseUrl: URL) -> AFHTTPSessionManager {
-        let jsonSessionManager = sessionManager(baseUrl: baseUrl)
-        jsonSessionManager.requestSerializer = AFJSONRequestSerializer()
-        jsonSessionManager.responseSerializer = AFJSONResponseSerializer()
-        return jsonSessionManager
-    }
-
-    static let userAgent = "Signal iOS (+https://signal.org/download)"
+    public static let userAgent = "Signal iOS (+https://signal.org/download)"
 
     public class func configureProxiedRequest(request: inout URLRequest) -> Bool {
-        request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
+        // Replace user-agent.
+        let headers = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields)
+        headers.addHeader(OWSHttpHeaders.userAgentHeaderKey, value: userAgent, overwriteOnConflict: true)
+        request.allHTTPHeaderFields = headers.headers
 
         padRequestSize(request: &request)
 
-        guard let url = request.url,
-        let scheme = url.scheme,
-            scheme.lowercased() == "https" else {
-                return false
-        }
-        return true
-    }
-
-    // This mutates the session manager state, so its the caller's obligation to avoid conflicts by:
-    //
-    // * Using a new session manager for each request.
-    // * Pooling session managers.
-    // * Using a single session manager on a single queue.
-    @objc
-    public class func configureSessionManager(sessionManager: AFHTTPSessionManager,
-                                              forUrl urlString: String) -> Bool {
-
-        guard let url = OWSURLSession.buildUrl(urlString: urlString, baseUrl: sessionManager.baseURL) else {
-            owsFailDebug("Invalid URL query: \(urlString).")
-            return false
-        }
-
-        var request = URLRequest(url: url)
-
-        guard configureProxiedRequest(request: &request) else {
-            owsFailDebug("Invalid URL query: \(urlString).")
-            return false
-        }
-
-        // Remove all headers from the request.
-        for headerField in sessionManager.requestSerializer.httpRequestHeaders.keys {
-            sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
-        }
-        // Honor the request's headers.
-        if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-            for (headerField, headerValue) in allHTTPHeaderFields {
-                sessionManager.requestSerializer.setValue(headerValue, forHTTPHeaderField: headerField)
-            }
-        }
-        return true
+        return request.url?.scheme?.lowercased() == "https"
     }
 
     public class func padRequestSize(request: inout URLRequest) {

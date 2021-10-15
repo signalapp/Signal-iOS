@@ -211,7 +211,7 @@ PODS:
   - ZKGroup/Tests (0.7.3)
 
 DEPENDENCIES:
-  - AFNetworking/NSURLSession
+  - AFNetworking/NSURLSession (from `https://github.com/signalapp/AFNetworking.git`, branch `signal/3.2.1`)
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
   - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
@@ -247,7 +247,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - AFNetworking
     - BonMot
     - CGRPCZlib
     - CNIOAtomics
@@ -281,6 +280,9 @@ SPEC REPOS:
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
+  AFNetworking:
+    :branch: signal/3.2.1
+    :git: https://github.com/signalapp/AFNetworking.git
   blurhash:
     :branch: signal-master
     :git: https://github.com/signalapp/blurhash
@@ -323,6 +325,9 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/zkgroup
 
 CHECKOUT OPTIONS:
+  AFNetworking:
+    :commit: a3f882610ef4e7319f4bef93256fe9fd67218560
+    :git: https://github.com/signalapp/AFNetworking.git
   blurhash:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
@@ -417,6 +422,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
 
-PODFILE CHECKSUM: 1b8f7289e81811a4cd2ddff328d0cd267e34c7dc
+PODFILE CHECKSUM: 53d931827b34b7b596945ba0b57ac1f91d20b16e
 
 COCOAPODS: 1.10.1

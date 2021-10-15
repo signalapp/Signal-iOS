@@ -3,7 +3,6 @@
 //
 
 #import <SignalServiceKit/OWSUpload.h>
-#import <AFNetworking/AFURLRequestSerialization.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -17,15 +16,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, NSString *dataString)
-{
-    NSData *data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
-
-    [formData appendPartWithFormData:data name:name];
-}
-
-#pragma mark -
 
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
 @implementation OWSUploadFormV2
@@ -124,22 +114,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                                       signature:formSignature
                                    attachmentId:attachmentId
                              attachmentIdString:attachmentIdString];
-}
-
-- (void)appendToForm:(id<AFMultipartFormData>)formData
-{
-    // We have to build up the form manually vs. simply passing in a paramaters dict
-    // because AWS is sensitive to the order of the form params (at least the "key"
-    // field must occur early on).
-    //
-    // For consistency, all fields are ordered here in a known working order.
-    AppendMultipartFormPath(formData, @"key", self.key);
-    AppendMultipartFormPath(formData, @"acl", self.acl);
-    AppendMultipartFormPath(formData, @"x-amz-algorithm", self.algorithm);
-    AppendMultipartFormPath(formData, @"x-amz-credential", self.credential);
-    AppendMultipartFormPath(formData, @"x-amz-date", self.date);
-    AppendMultipartFormPath(formData, @"policy", self.policy);
-    AppendMultipartFormPath(formData, @"x-amz-signature", self.signature);
 }
 
 @end

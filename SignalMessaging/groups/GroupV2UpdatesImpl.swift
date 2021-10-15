@@ -320,7 +320,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 self.reportSuccess()
                 self.future.resolve(groupThread)
             }.catch(on: .global()) { (error) in
-                if IsNetworkConnectivityFailure(error) {
+                if error.isNetworkConnectivityFailure {
                     Logger.warn("Group update failed: \(error)")
                 } else {
                     switch error {
@@ -393,7 +393,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }.recover { (error) throws -> Promise<TSGroupThread> in
                 let shouldTrySnapshot = { () -> Bool in
                     // This should not fail over in the case of networking problems.
-                    if IsNetworkConnectivityFailure(error) {
+                    if error.isNetworkConnectivityFailure {
                         Logger.warn("Error: \(error)")
                         return false
                     }
@@ -1015,7 +1015,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
 extension GroupsV2Error: IsRetryableProvider {
     public var isRetryableProvider: Bool {
-        if IsNetworkConnectivityFailure(self) {
+        if self.isNetworkConnectivityFailure {
             return true
         }
 

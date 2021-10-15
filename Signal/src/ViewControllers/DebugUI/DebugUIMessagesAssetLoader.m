@@ -3,7 +3,6 @@
 //
 
 #import "DebugUIMessagesAssetLoader.h"
-#import <AFNetworking/AFHTTPSessionManager.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -11,8 +10,6 @@
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
-
-// TODO: Eliminate AFNetworking.
 
 #ifdef DEBUG
 
@@ -64,15 +61,24 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
         return success();
     }
 
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    OWSAssertDebug(sessionManager.responseSerializer);
-    [sessionManager GET:fileUrl
-        parameters:nil
-        progress:nil
-        success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
-            if ([responseObject writeToFile:filePath atomically:YES]) {
+    OWSURLSession *urlSession =
+        [[OWSURLSession alloc] initWithBaseUrl:nil
+                                  frontingInfo:nil
+                                securityPolicy:OWSURLSession.defaultSecurityPolicy
+                                 configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
+                                  extraHeaders:[NSDictionary new]];
+    [urlSession dataTask:fileUrl
+        method:HTTPMethodGet
+        headers:nil
+        body:nil
+        success:^(id<HTTPResponse> response) {
+            NSData *_Nullable data = response.responseBodyData;
+            if (data.length < 1) {
+                OWSFailDebug(@"Error write url response [%@]: %@", fileUrl, filePath);
+                failure();
+                return;
+            }
+            if ([data writeToFile:filePath atomically:YES]) {
                 self.filePath = filePath;
                 OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:filePath]);
                 success();
@@ -81,8 +87,8 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
                 failure();
             }
         }
-        failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-            OWSFailDebug(@"Error downloading url[%@]: %@", fileUrl, requestError);
+        failure:^(NSError *error) {
+            OWSFailDebug(@"Error downloading url[%@]: %@", fileUrl, error);
             failure();
         }];
 }

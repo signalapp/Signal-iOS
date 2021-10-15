@@ -389,12 +389,11 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`
         // If this ever changes, we can switch back to our default User-Agent
         let userAgentString = "WhatsApp/2"
-        let extraHeaders: [String: String] = ["User-Agent": userAgentString]
+        let extraHeaders: [String: String] = [OWSHttpHeaders.userAgentHeaderKey: userAgentString]
 
         let urlSession = OWSURLSession(baseUrl: nil,
                                        securityPolicy: OWSURLSession.defaultSecurityPolicy,
                                        configuration: sessionConfig,
-                                       censorshipCircumventionHost: nil,
                                        extraHeaders: extraHeaders,
                                        maxResponseSize: Self.maxFetchedContentSize)
         urlSession.allowRedirects = true

@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol AFMultipartFormData;
 
-void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, NSString *dataString);
-
 @interface OWSUploadFormV2 : NSObject
 
 // These properties will be set for all uploads.
@@ -42,8 +40,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
          attachmentIdString:(nullable NSString *)attachmentIdString NS_DESIGNATED_INITIALIZER;
 
 + (nullable OWSUploadFormV2 *)parseDictionary:(nullable NSDictionary *)formResponseObject;
-
-- (void)appendToForm:(id<AFMultipartFormData>)formData;
 
 @end
 

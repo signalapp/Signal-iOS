@@ -1615,7 +1615,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                            inviteLinkPassword: inviteLinkPassword,
                                                            groupV2Params: groupV2Params)
         }.recover(on: .global()) { (error: Error) -> Promise<TSGroupThread> in
-            guard !IsNetworkConnectivityFailure(error) else {
+            guard !error.isNetworkConnectivityFailure else {
                 throw error
             }
             Logger.warn("Error: \(error)")

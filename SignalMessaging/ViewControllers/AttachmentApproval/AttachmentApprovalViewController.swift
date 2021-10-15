@@ -6,6 +6,7 @@ import Foundation
 import AVFoundation
 import MediaPlayer
 import Photos
+import CoreServices
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {

@@ -192,7 +192,7 @@ class ModernContactDiscoveryOperation: ContactDiscovering {
     /// May return the provided error unchanged.
     class func prepareExternalError(from error: Error) -> Error {
         // Network connectivity failures should never be re-wrapped
-        if IsNetworkConnectivityFailure(error) {
+        if error.isNetworkConnectivityFailure {
             return error
         }
 

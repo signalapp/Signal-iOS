@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import CoreServices
 
 class SetWallpaperViewController: OWSTableViewController2 {
     lazy var collectionView = WallpaperCollectionView(container: self,

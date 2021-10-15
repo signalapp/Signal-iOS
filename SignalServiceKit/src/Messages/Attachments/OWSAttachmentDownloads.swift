@@ -1243,14 +1243,14 @@ public extension OWSAttachmentDownloads {
                 guard let requestUrl = request.url else {
                     return Promise(error: OWSAssertionError("Request missing url."))
                 }
-                return urlSession.urlDownloadTaskPromise(requestUrl: requestUrl,
-                                                         resumeData: resumeData,
-                                                         progress: progress)
+                return urlSession.downloadTaskPromise(requestUrl: requestUrl,
+                                                      resumeData: resumeData,
+                                                      progress: progress)
             } else {
-                return urlSession.urlDownloadTaskPromise(urlPath,
-                                                         method: .get,
-                                                         headers: headers,
-                                                         progress: progress)
+                return urlSession.downloadTaskPromise(urlPath,
+                                                      method: .get,
+                                                      headers: headers,
+                                                      progress: progress)
             }
         }.map(on: Self.serialQueue) { (response: OWSUrlDownloadResponse) in
             let downloadUrl = response.downloadUrl
@@ -1265,7 +1265,7 @@ public extension OWSAttachmentDownloads {
             Logger.warn("Error: \(error)")
 
             let maxAttemptCount = 16
-            if IsNetworkConnectivityFailure(error),
+            if error.isNetworkConnectivityFailure,
                attemptIndex < maxAttemptCount {
 
                 return firstly {

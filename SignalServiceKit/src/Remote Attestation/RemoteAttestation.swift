@@ -137,7 +137,7 @@ extension RemoteAttestation {
             }
             success(auth)
         }.catch(on: .global()) { error in
-            let statusCode = HTTPStatusCodeForError(error) ?? 0
+            let statusCode = error.httpStatusCode ?? 0
             Logger.verbose("Remote attestation auth failure: \(statusCode)")
             failure(error)
         }
@@ -214,11 +214,7 @@ extension RemoteAttestation {
         request.customHost = host
         request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
-        // Don't bother with the default cookie store
-        // these cookies are ephemeral.
-        //
-        // NOTE: NetworkManager now separately disables default cookie handling for all requests.
-        request.httpShouldHandleCookies = false
+        // OWSURLSession disables default cookie handling for all requests.
 
         return request
     }

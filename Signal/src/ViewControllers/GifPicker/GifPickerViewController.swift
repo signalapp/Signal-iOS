@@ -27,6 +27,8 @@ public class GifPickerNavigationViewController: OWSNavigationController {
 
 extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
+        AssertIsOnMainThread()
+
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let attachmentApproval = AttachmentApprovalViewController(options: [],
                                                                   sendButtonImageName: "send-solid-24",
@@ -600,11 +602,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         assert(searchBar.text == nil || searchBar.text?.count == 0)
         assert(lastQuery == nil)
 
-        giphyAPI.trending().done { [weak self] imageInfos in
+        firstly {
+            giphyAPI.trending()
+        }.done(on: .main) { [weak self] imageInfos in
             guard let self = self else { return }
 
             guard self.lastQuery == nil else {
-                Logger.info("not showing trending results due to subsequent searche")
+                Logger.info("not showing trending results due to subsequent searches.")
                 return
             }
 
@@ -615,7 +619,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 owsFailDebug("trending results was unexpectedly empty")
             }
-        }.catch { error in
+        }.catch(on: .main) { error in
             // Don't both showing error UI feedback for default "trending" results.
             Logger.error("error: \(error)")
         }
@@ -632,7 +636,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
-        giphyAPI.search(query: query, success: { [weak self] imageInfos in
+        firstly {
+            giphyAPI.search(query: query)
+        }.done(on: .main) { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("search complete")
             strongSelf.imageInfos = imageInfos
@@ -641,13 +647,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 strongSelf.viewMode = .noResults
             }
-        },
-            failure: { [weak self] _ in
-                guard let strongSelf = self else { return }
-                Logger.info("search failed.")
-                // TODO: Present this error to the user.
-                strongSelf.viewMode = .error
-        })
+        }.catch(on: .main) { [weak self] error in
+            owsFailDebugUnlessNetworkFailure(error)
+
+            guard let strongSelf = self else { return }
+            Logger.info("search failed.")
+            // TODO: Present this error to the user.
+            strongSelf.viewMode = .error
+        }
     }
 
     // MARK: - GifPickerLayoutDelegate

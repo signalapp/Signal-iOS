@@ -8,61 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
-{
-    if ([error.domain isEqualToString:NSURLErrorDomain]) {
-        switch (error.code) {
-            case kCFURLErrorTimedOut:
-            case kCFURLErrorCannotConnectToHost:
-            case kCFURLErrorNetworkConnectionLost:
-            case kCFURLErrorDNSLookupFailed:
-            case kCFURLErrorNotConnectedToInternet:
-            case kCFURLErrorSecureConnectionFailed:
-            case kCFURLErrorCannotLoadFromNetwork:
-            case kCFURLErrorCannotFindHost:
-                return YES;
-            default:
-                return NO;
-        }
-    }
-    BOOL isNetworkProtocolError = ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == 100);
-    if (isNetworkProtocolError) {
-        return YES;
-    } else if ([NetworkManager isSwiftNetworkConnectivityError:error]) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error)
-{
-    NSNumber *_Nullable afHttpStatusCode = error.afHttpStatusCode;
-    if (afHttpStatusCode.integerValue > 0) {
-        return afHttpStatusCode;
-    }
-    NSNumber *_Nullable swiftStatusCode = [NetworkManager swiftHTTPStatusCodeForError:error];
-    if (swiftStatusCode.integerValue > 0) {
-        return swiftStatusCode;
-    }
-    return nil;
-}
-
-NSDate *_Nullable HTTPRetryAfterDateForError(NSError *_Nullable error)
-{
-    NSDate *retryAfterDate = nil;
-
-    // Different errors may represent a retry after in different ways
-    retryAfterDate = retryAfterDate ?: error.afRetryAfterDate;
-    retryAfterDate = retryAfterDate ?: [NetworkManager swiftHTTPRetryAfterDateForError:error];
-    return retryAfterDate;
-}
-
-NSData *_Nullable HTTPResponseDataForError(NSError *_Nullable error)
-{
-    return [NetworkManager swiftHTTPResponseDataForError:error];
-}
-
 dispatch_queue_t NetworkManagerQueue(void)
 {
     static dispatch_queue_t serialQueue;

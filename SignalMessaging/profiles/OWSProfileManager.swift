@@ -325,7 +325,7 @@ extension OWSProfileManager {
             // We retry network errors forever (with exponential backoff).
             // Other errors cause us to give up immediately.
             // Note that we only ever retry the latest profile update.
-            if IsNetworkConnectivityFailure(error) {
+            if error.isNetworkConnectivityFailure {
                 Logger.warn("Retrying after error: \(error)")
             } else {
                 owsFailDebug("Error: \(error)")
@@ -665,11 +665,11 @@ public extension OWSProfileManager {
         return firstly(on: .global()) { () throws -> Promise<OWSUrlDownloadResponse> in
             Logger.verbose("downloading profile avatar: \(profileAddress)")
             let urlSession = self.avatarUrlSession
-            return urlSession.urlDownloadTaskPromise(avatarUrlPath,
-                                                     method: .get,
-                                                     progress: { (_, progress) in
-                                                        Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
-                                                     })
+            return urlSession.downloadTaskPromise(avatarUrlPath,
+                                                  method: .get,
+                                                  progress: { (_, progress) in
+                Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
+            })
         }.map(on: .global()) { (response: OWSUrlDownloadResponse) -> Data in
             do {
                 return try Data(contentsOf: response.downloadUrl)

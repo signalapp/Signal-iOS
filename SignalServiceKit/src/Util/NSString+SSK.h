@@ -10,6 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)filterAsE164;
 
+- (NSString *)substringBeforeRange:(NSRange)range;
+
+- (NSString *)substringAfterRange:(NSRange)range;
+
 @end
 
 #pragma mark -

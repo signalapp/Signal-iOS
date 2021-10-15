@@ -145,7 +145,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
             }.catch(on: .global() ) { error in
                 Logger.warn("Failed: \(error).")
 
-                guard !IsNetworkConnectivityFailure(error) else {
+                guard !error.isNetworkConnectivityFailure else {
                     // Retry later.
                     return self.didFail(groupId: groupId, retryDelay: retryDelay)
                 }

@@ -82,7 +82,7 @@ public class ContactDiscoveryTask: NSObject {
                                      database: database)
 
         }.recover(on: workQueue) { error -> Promise<Set<SignalRecipient>> in
-            if IsNetworkConnectivityFailure(error) {
+            if error.isNetworkConnectivityFailure {
                 Logger.warn("ContactDiscoveryTask network failure: \(error)")
             } else {
                 Logger.error("ContactDiscoverTask failure: \(error)")
