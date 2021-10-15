@@ -102,10 +102,12 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
     }
 
     @objc
-    public func syncGroups(transaction: SDSAnyWriteTransaction) {
+    public func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion) {
         Logger.info("")
 
         syncGroupsHook?()
+
+        completion()
     }
 }
 

@@ -182,7 +182,9 @@ class NotificationService: UNNotificationServiceExtension {
                     // Wait until all outgoing receipt sends are complete.
                     Self.outgoingReceiptManager.pendingSendsPromise(),
                     // Wait until all outgoing messages are sent.
-                    Self.messageSender.pendingSendsPromise()
+                    Self.messageSender.pendingSendsPromise(),
+                    // Wait until all sync requests are fulfilled.
+                    OWSMessageManager.pendingTasksPromise()
                 ]
                 return Promise.when(resolved: completionPromises).asVoid()
             }

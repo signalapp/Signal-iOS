@@ -51,7 +51,24 @@ public enum SealedSenderContentHint: Int, CustomStringConvertible {
     }
 }
 
+// MARK: -
+
 extension OWSMessageManager {
+
+    private static let pendingTasks = PendingTasks(label: "messageManager")
+
+    public static func pendingTasksPromise() -> Promise<Void> {
+        // This promise blocks on all pending tasks already in flight,
+        // but will not block on new tasks enqueued after this promise
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
+        pendingTasks.pendingTasksPromise()
+    }
+
+    @objc
+    public static func buildPendingTask(label: String) -> PendingTask {
+        Self.pendingTasks.buildPendingTask(label: label)
+    }
 
     @objc
     func isValidEnvelope(_ envelope: SSKProtoEnvelope?) -> Bool {
