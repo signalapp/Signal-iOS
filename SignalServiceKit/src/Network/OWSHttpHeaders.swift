@@ -73,7 +73,7 @@ public class OWSHttpHeaders: NSObject {
                     // Don't warn about redundant changes.
                 } else if overwriteOnConflict {
                     // We expect to overwrite the User-Agent; don't log it.
-                    if key.lowercased() != "User-Agent".lowercased() {
+                    if key.lowercased() != Self.userAgentHeaderKey.lowercased() {
                         Logger.verbose("Overwriting header: \(key), \(existingValue) -> \(value)")
                     }
                 } else if key.lowercased() == Self.acceptLanguageHeaderKey.lowercased() {

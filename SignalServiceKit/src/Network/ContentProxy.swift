@@ -28,19 +28,17 @@ public class ContentProxy: NSObject {
         return configuration
     }
 
-    static let userAgent = "Signal iOS (+https://signal.org/download)"
+    public static let userAgent = "Signal iOS (+https://signal.org/download)"
 
     public class func configureProxiedRequest(request: inout URLRequest) -> Bool {
-        request.addValue(userAgent, forHTTPHeaderField: "User-Agent")
+        // Replace user-agent.
+        let headers = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields)
+        headers.addHeader(OWSHttpHeaders.userAgentHeaderKey, value: userAgent, overwriteOnConflict: true)
+        request.allHTTPHeaderFields = headers.headers
 
         padRequestSize(request: &request)
 
-        guard let url = request.url,
-        let scheme = url.scheme,
-            scheme.lowercased() == "https" else {
-                return false
-        }
-        return true
+        return request.url?.scheme?.lowercased() == "https"
     }
 
     public class func padRequestSize(request: inout URLRequest) {

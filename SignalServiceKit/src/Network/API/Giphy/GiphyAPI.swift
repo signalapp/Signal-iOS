@@ -20,9 +20,15 @@ public class GiphyAPI: NSObject {
     private let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
 
     private func buildURLSession() -> OWSURLSession {
-        OWSURLSession(baseUrl: kGiphyBaseURL,
-                      securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                      configuration: OWSURLSession.defaultConfigurationWithoutCaching)
+        let configuration = ContentProxy.sessionConfiguration()
+
+        // Don't use any caching to protect privacy of these requests.
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringCacheData
+
+        return OWSURLSession(baseUrl: kGiphyBaseURL,
+                             securityPolicy: OWSURLSession.defaultSecurityPolicy,
+                             configuration: configuration)
     }
 
     // MARK: Search
@@ -36,12 +42,7 @@ public class GiphyAPI: NSObject {
         let urlString = "/v1/gifs/trending?api_key=\(kGiphyApiKey)&limit=\(kGiphyPageSize)"
 
         return firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            guard let url = OWSURLSession.joinUrl(urlString: urlString,
-                                                  baseUrl: self.kGiphyBaseURL) else {
-                throw OWSAssertionError("Invalid URL: \(urlString).")
-            }
-            var request = URLRequest(url: url)
-            request.httpMethod = HTTPMethod.get.methodName
+            var request = try urlSession.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL: \(urlString).")
             }
@@ -64,15 +65,11 @@ public class GiphyAPI: NSObject {
             owsFailDebug("Could not URL encode query: \(query).")
             return Promise(error: OWSAssertionError("Could not URL encode query."))
         }
+        let urlSession = buildURLSession()
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
 
-        let urlSession = buildURLSession()
         return firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            guard let url = OWSURLSession.joinUrl(urlString: urlString, baseUrl: self.kGiphyBaseURL) else {
-                throw OWSAssertionError("Invalid URL: \(urlString).")
-            }
-            var request = URLRequest(url: url)
-            request.httpMethod = HTTPMethod.get.methodName
+            var request = try urlSession.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL: \(urlString).")
             }

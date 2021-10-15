@@ -17,26 +17,33 @@ extension HTTPUtils {
                                                       responseHeaders: OWSHttpHeaders,
                                                       responseError: Error?,
                                                       responseData: Data?) -> OWSHTTPError {
-        let error = HTTPUtils.buildServiceError(request: request,
-                                                requestUrl: requestUrl,
-                                                responseStatus: responseStatus,
-                                                responseHeaders: responseHeaders,
-                                                responseError: responseError,
-                                                responseData: responseData)
+        let httpError = HTTPUtils.buildServiceError(request: request,
+                                                    requestUrl: requestUrl,
+                                                    responseStatus: responseStatus,
+                                                    responseHeaders: responseHeaders,
+                                                    responseError: responseError,
+                                                    responseData: responseData)
 
-        if error.isNetworkConnectivityError {
+        applyHTTPError(httpError)
+
+#if TESTABLE_BUILD
+        HTTPUtils.logCurl(for: request as URLRequest)
+#endif
+
+        return httpError
+    }
+
+    // This DRYs up handling of main service errors so that
+    // REST and websocket errors are handled in the same way.
+    public static func applyHTTPError(_ httpError: OWSHTTPError) {
+
+        if httpError.isNetworkConnectivityError {
             Self.outageDetection.reportConnectionFailure()
         }
 
-        #if TESTABLE_BUILD
-        HTTPUtils.logCurl(for: request as URLRequest)
-        #endif
-
-        if error.responseStatusCode == AppExpiry.appExpiredStatusCode {
+        if httpError.responseStatusCode == AppExpiry.appExpiredStatusCode {
             appExpiry.setHasAppExpiredAtCurrentVersion()
         }
-
-        return error
     }
 
     private static func buildServiceError(request: TSRequest,

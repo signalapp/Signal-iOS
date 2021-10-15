@@ -151,8 +151,16 @@ public class RESTSessionManager: NSObject {
             Logger.warn("Failure: \(request), error: \(error)")
 
             if let httpError = error as? OWSHTTPError {
+                let isMainSignalServiceRequest = (rawRequest.customHost?.nilIfEmpty == nil &&
+                                                  rawRequest.customCensorshipCircumventionPrefix?.nilIfEmpty == nil)
+                if isMainSignalServiceRequest {
+                    HTTPUtils.applyHTTPError(httpError)
+                }
+
                 failure(OWSHTTPErrorWrapper(error: httpError))
             } else {
+                owsFailDebug("Unexpected error: \(error)")
+
                 failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidResponse(requestUrl: requestUrl)))
             }
         }
