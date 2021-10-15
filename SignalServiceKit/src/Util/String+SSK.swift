@@ -18,6 +18,18 @@ public extension String {
         return String(prefix(index))
     }
 
+    func substring(withRange range: NSRange) -> String {
+        (self as NSString).substring(with: range)
+    }
+
+    func substring(beforeRange range: NSRange) -> String {
+        (self as NSString).substring(before: range)
+    }
+
+    func substring(afterRange range: NSRange) -> String {
+        (self as NSString).substring(after: range)
+    }
+
     enum StringError: Error {
         case invalidCharacterShift
     }

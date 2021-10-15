@@ -51,6 +51,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithCharacters:outputChars length:outputLength];
 }
 
+- (NSString *)substringBeforeRange:(NSRange)range
+{
+    return [self substringToIndex:range.location];
+}
+
+- (NSString *)substringAfterRange:(NSRange)range
+{
+    return [self substringFromIndex:range.location + range.length];
+}
+
 @end
 
 #pragma mark -
