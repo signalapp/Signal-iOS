@@ -35,7 +35,7 @@ extension OWSSyncContactsMessage {
 
         var signalAccounts = self.signalAccounts
 
-        let hasLocalAddress = !signalAccounts.compactMap { $0.recipientAddress.isLocalAddress }.isEmpty
+        let hasLocalAddress = signalAccounts.anySatisfy { $0.recipientAddress.isLocalAddress }
         if !hasLocalAddress {
             // OWSContactsOutputStream requires all signalAccount to have a contact.
             let localContact = Contact(systemContact: CNContact())
