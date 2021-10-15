@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSyncContactsMessage : OWSOutgoingSyncMessage
 
+@property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
+
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
@@ -20,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
                 signalAccounts:(NSArray<SignalAccount *> *)signalAccounts NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

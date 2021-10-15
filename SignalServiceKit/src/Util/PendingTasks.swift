@@ -49,7 +49,7 @@ public class PendingTasks: NSObject {
         let wasRemoved = nil != pendingTasks.removeValue(forKey: pendingTask.id)
         owsAssertDebug(wasRemoved)
         if DebugFlags.internalLogging {
-            Logger.info("---- Completed: \(pendingTask.label)")
+            Logger.info("---- Completed: \(self.label).\(pendingTask.label)")
         }
         pendingTask.future.resolve(())
     }

@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
 #import <SignalCoreKit/Randomness.h>
+#import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -101,19 +102,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendContactsSyncMessage
 {
-    [self.syncManager syncAllContacts];
+    [self.syncManager syncAllContacts].catchInBackground(^(NSError *error) { OWSLogInfo(@"Error: %@", error); });
 }
 
 + (void)sendGroupSyncMessage
 {
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.syncManager syncGroupsWithTransaction:transaction];
+        [self.syncManager syncGroupsWithTransaction:transaction completion:^ {}];
     });
 }
 
 + (void)sendBlockListSyncMessage
 {
-    [self.blockingManager syncBlockList];
+    [self.blockingManager syncBlockListWithCompletion:^ {}];
 }
 
 + (void)sendConfigurationSyncMessage

@@ -17,8 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END
