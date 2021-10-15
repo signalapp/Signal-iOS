@@ -218,6 +218,8 @@ public extension OWSSyncManager {
     }
 }
 
+// MARK: -
+
 private extension Notification {
     var newThreads: [(threadId: String, sortOrder: UInt32)] {
         switch self.object {

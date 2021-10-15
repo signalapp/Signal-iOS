@@ -29,6 +29,7 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSGroupCallMessage.h>
+#import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>
@@ -48,6 +49,7 @@
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>
+#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/OWSSyncMessageRequestResponseMessage.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>

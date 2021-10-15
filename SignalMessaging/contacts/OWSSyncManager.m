@@ -231,7 +231,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 #pragma mark - Groups Sync
 
-- (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction completion:(void (^)(void))completion
 {
     if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
         OWSLogInfo(@"Skipping group sync message.");
@@ -244,14 +244,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
     OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread];
-    NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-    if (!syncData) {
+    NSURL *_Nullable syncFileUrl = [syncGroupsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
+    if (!syncFileUrl) {
         OWSFailDebug(@"Failed to serialize groups sync message.");
         return;
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSError *error;
-        id<DataSource> dataSource = [DataSourcePath dataSourceWritingSyncMessageData:syncData error:&error];
+        id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:syncFileUrl
+                                           shouldDeleteOnDeallocation:NO
+                                                                error:&error];
         OWSAssertDebug(error == nil);
         [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
                                          dataSource:dataSource
@@ -260,6 +262,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                             caption:nil
                                      albumMessageId:nil
                               isTemporaryAttachment:YES];
+        completion();
     });
 }
 

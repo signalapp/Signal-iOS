@@ -1676,13 +1676,16 @@ NS_ASSUME_NONNULL_BEGIN
             //
             // In rare cases this means we won't respond to the sync request, but that's
             // acceptable.
+            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncAllContacts"];
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self.syncManager syncAllContacts].catchInBackground(^(NSError *error) {
-                    OWSLogError(@"Error: %@", error);
-                });
+                [self.syncManager syncAllContacts]
+                    .catchInBackground(^(NSError *error) { OWSLogError(@"Error: %@", error); })
+                    .ensureOn(
+                        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ [pendingTask complete]; });
             });
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
-            [self.syncManager syncGroupsWithTransaction:transaction];
+            PendingTask *pendingTask = [OWSMessageManager buildPendingTaskWithLabel:@"syncGroups"];
+            [self.syncManager syncGroupsWithTransaction:transaction completion:^{ [pendingTask complete]; }];
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];

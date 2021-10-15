@@ -7,14 +7,18 @@ import Foundation
 @objc
 public protocol SyncManagerProtocol: SyncManagerProtocolObjc, SyncManagerProtocolSwift {}
 
+// MARK: -
+
 @objc
 public protocol SyncManagerProtocolObjc {
     func sendConfigurationSyncMessage()
 
+    typealias Completion = () -> Void
+
     func syncLocalContact() -> AnyPromise
     func syncAllContacts() -> AnyPromise
     func syncContacts(forSignalAccounts signalAccounts: [SignalAccount]) -> AnyPromise
-    func syncGroups(transaction: SDSAnyWriteTransaction)
+    func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion)
 
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)
     func processIncomingContactsSyncMessage(_ syncMessage: SSKProtoSyncMessageContacts, transaction: SDSAnyWriteTransaction)
@@ -24,6 +28,8 @@ public protocol SyncManagerProtocolObjc {
     func sendFetchLatestProfileSyncMessage()
     func sendFetchLatestStorageManifestSyncMessage()
 }
+
+// MARK: -
 
 @objc
 public protocol SyncManagerProtocolSwift {
