@@ -70,7 +70,6 @@ pod 'AFNetworking/NSURLSession', inhibit_warnings: true
 pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
 pod 'lottie-ios', :inhibit_warnings => true
-pod 'BonMot', inhibit_warnings: true
 
 pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
 pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
@@ -81,6 +80,7 @@ target 'Signal' do
   # Pods only available inside the main Signal app
   pod 'SSZipArchive', :inhibit_warnings => true
   pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
+  pod 'BonMot', inhibit_warnings: true
 
   target 'SignalTests' do
     inherit! :search_paths
