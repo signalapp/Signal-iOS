@@ -4,12 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsNetworkConnectivityFailure(NSError *_Nullable error);
-
 dispatch_queue_t NetworkManagerQueue(void);
 
 #define OWSFailDebugUnlessNetworkFailure(error)                                                                        \
-    if (IsNetworkConnectivityFailure(error)) {                                                                         \
+    if (error.isNetworkConnectivityFailure) {                                                                          \
         OWSLogWarn(@"Error: %@", error);                                                                               \
     } else {                                                                                                           \
         OWSFailDebug(@"Error: %@", error);                                                                             \

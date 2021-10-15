@@ -121,7 +121,7 @@ public class BulkUUIDLookup: NSObject {
             self.isUpdateInFlight = false
 
             let outcome: UpdateOutcome
-            if IsNetworkConnectivityFailure(error) {
+            if error.isNetworkConnectivityFailure {
                 Logger.warn("Error: \(error)")
                 outcome = UpdateOutcome(.networkFailure)
 

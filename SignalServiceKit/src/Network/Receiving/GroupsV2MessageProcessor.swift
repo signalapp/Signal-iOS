@@ -878,7 +878,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     }
 
     private func isRetryableError(_ error: Error) -> Bool {
-        if IsNetworkConnectivityFailure(error) {
+        if error.isNetworkConnectivityFailure {
             return true
         }
         if let statusCode = error.httpStatusCode {

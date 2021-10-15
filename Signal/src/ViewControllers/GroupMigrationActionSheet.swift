@@ -622,7 +622,7 @@ private extension GroupMigrationActionSheet {
         let title = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE",
                                       comment: "Title for error alert indicating the group update failed.")
         let message: String
-        if IsNetworkConnectivityFailure(error) {
+        if error.isNetworkConnectivityFailure {
             message = NSLocalizedString("GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK",
                                           comment: "Message for error alert indicating the group update failed due to network connectivity.")
         } else {

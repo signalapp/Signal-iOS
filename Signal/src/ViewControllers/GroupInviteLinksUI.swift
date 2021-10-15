@@ -388,7 +388,7 @@ class GroupInviteLinksActionSheet: ActionSheetController {
                     if case GroupsV2Error.expiredGroupInviteLink = error {
                         message = NSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
                                                     comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.")
-                    } else if IsNetworkConnectivityFailure(error) {
+                    } else if error.isNetworkConnectivityFailure {
                         message = NSLocalizedString("GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
                                                     comment: "Error message the attempt to request to join the group failed due to network connectivity.")
                     } else {

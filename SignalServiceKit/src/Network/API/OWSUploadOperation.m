@@ -144,7 +144,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
             if (error.httpStatusCode.intValue == 413) {
                 OWSFailDebug(@"Request entity too large: %@.", @(attachmentStream.byteCount));
                 [self reportError:[OWSUnretryableMessageSenderError asNSError]];
-            } else if (IsNetworkConnectivityFailure(error)) {
+            } else if (error.isNetworkConnectivityFailure) {
                 [self reportError:error];
             } else {
                 OWSFailDebug(@"Unexpected error: %@", error);

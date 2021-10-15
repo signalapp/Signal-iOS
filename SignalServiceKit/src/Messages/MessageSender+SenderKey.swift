@@ -518,7 +518,7 @@ extension MessageSender {
                 }
             }
 
-            if IsNetworkConnectivityFailure(error) {
+            if error.isNetworkConnectivityFailure {
                 return try retryIfPossible()
             } else if let httpError = error as? OWSHTTPError {
                 let statusCode = httpError.httpStatusCode ?? 0

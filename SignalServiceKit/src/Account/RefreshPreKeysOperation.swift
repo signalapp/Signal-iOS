@@ -70,7 +70,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     override public func didFail(error: Error) {
-        guard !IsNetworkConnectivityFailure(error) else {
+        guard !error.isNetworkConnectivityFailure else {
             Logger.debug("don't report PK rotation failure w/ network error")
             return
         }

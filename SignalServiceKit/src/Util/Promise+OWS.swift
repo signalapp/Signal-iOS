@@ -17,7 +17,7 @@ public class Promises {
             future.resolve(value)
         }.catch(on: .global()) { (error: Error) -> Void in
             guard remainingRetries > 0,
-                IsNetworkConnectivityFailure(error) else {
+                error.isNetworkConnectivityFailure else {
                     future.reject(error)
                     return
             }

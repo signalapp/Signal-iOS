@@ -2481,7 +2481,7 @@ public class GroupManager: NSObject {
     // MARK: - Network Errors
 
     static func isNetworkFailureOrTimeout(_ error: Error) -> Bool {
-        if IsNetworkConnectivityFailure(error) {
+        if error.isNetworkConnectivityFailure {
             return true
         }
 

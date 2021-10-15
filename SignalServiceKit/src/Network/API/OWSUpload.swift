@@ -402,7 +402,7 @@ public class OWSAttachmentUploadV2: NSObject {
             }
             return locationUrl
         }.recover(on: Self.serialQueue) { (error: Error) -> Promise<URL> in
-            guard IsNetworkConnectivityFailure(error) else {
+            guard error.isNetworkConnectivityFailure else {
                 throw error
             }
             let maxRetryCount: Int = 3
@@ -510,7 +510,7 @@ public class OWSAttachmentUploadV2: NSObject {
             }
         }.recover(on: Self.serialQueue) { (error: Error) -> Promise<Void> in
 
-            guard IsNetworkConnectivityFailure(error) else {
+            guard error.isNetworkConnectivityFailure else {
                 throw error
             }
             guard uploadV3Metadata.canRetry else {
@@ -583,7 +583,7 @@ public class OWSAttachmentUploadV2: NSObject {
             var canRetry = false
             if case OWSUploadError.missingRangeHeader = error {
                 canRetry = true
-            } else if IsNetworkConnectivityFailure(error) {
+            } else if error.isNetworkConnectivityFailure {
                 canRetry = true
             }
             guard canRetry else {

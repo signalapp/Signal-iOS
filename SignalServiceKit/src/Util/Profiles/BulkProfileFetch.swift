@@ -225,7 +225,7 @@ public class BulkProfileFetch: NSObject {
                     }
                     self.lastOutcomeMap[uuid] = UpdateOutcome(.invalid)
                 default:
-                    if IsNetworkConnectivityFailure(error) {
+                    if error.isNetworkConnectivityFailure {
                         Logger.warn("Error: \(error)")
                         self.lastOutcomeMap[uuid] = UpdateOutcome(.networkFailure)
                     } else if error.httpStatusCode == 413 {

@@ -8,11 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
-{
-    return error.isNetworkConnectivityFailure;
-}
-
 dispatch_queue_t NetworkManagerQueue(void)
 {
     static dispatch_queue_t serialQueue;

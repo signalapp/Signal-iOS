@@ -65,7 +65,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
             guard let self = self else {
                 return
             }
-            if error.hasFatalStatusCode() {
+            if error.hasFatalHttpStatusCode() {
                 StickerManager.markStickerPackAsMissing(stickerPackInfo: self.stickerPackInfo)
             }
             return self.reportError(withUndefinedRetry: error)

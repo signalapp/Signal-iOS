@@ -313,7 +313,7 @@ public class OWSURLSession: NSObject {
             }
 
             if let error = task.error {
-                if IsNetworkConnectivityFailure(error) {
+                if error.isNetworkConnectivityFailure {
                     Logger.warn("Request failed: \(error)")
                 } else {
 #if TESTABLE_BUILD

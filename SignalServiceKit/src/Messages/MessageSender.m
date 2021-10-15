@@ -200,7 +200,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 {
     __block NSError *_Nullable error = [super checkForPreconditionError];
     if (error) {
-        if (IsNetworkConnectivityFailure(error)) {
+        if (error.isNetworkConnectivityFailure) {
             OWSLogWarn(@"Precondition failure: %@.", error);
         } else {
             OWSFailDebug(@"Precondition failure: %@.", error);
@@ -1444,7 +1444,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 exception = [NSException exceptionWithName:NoSessionForTransientMessageException
                                                     reason:@"No session for transient message"
                                                   userInfo:@ { NSUnderlyingErrorKey : error }];
-            } else if (IsNetworkConnectivityFailure(error)) {
+            } else if (error.isNetworkConnectivityFailure) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
                 OWSFailDebug(@"Error: %@", error);

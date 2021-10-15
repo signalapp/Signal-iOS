@@ -188,7 +188,7 @@ public extension GroupsV2Impl {
                     markAsComplete()
                     future.resolve(.success)
                 }.catch { error in
-                    if IsNetworkConnectivityFailure(error) {
+                    if error.isNetworkConnectivityFailure {
                         Logger.warn("Error: \(error)")
                         return future.resolve(.retryableFailure)
                     } else {
