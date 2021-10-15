@@ -1288,7 +1288,7 @@ private class SocketRequestInfo {
             return false
         case .incomplete(_, let failure):
             DispatchQueue.global().async {
-                let statusCode = HTTPStatusCodeForError(error) ?? 0
+                let statusCode = error.httpStatusCode ?? 0
                 Logger.warn("didFail, status: \(statusCode), error: \(error)")
 
                 let error = error as! OWSHTTPError

@@ -1412,7 +1412,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
             dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *error) {
-            NSNumber *_Nullable statusCode = HTTPStatusCodeForError(error);
+            NSNumber *_Nullable statusCode = error.httpStatusCode;
             OWSLogVerbose(@"statusCode: %@", statusCode);
             if ([MessageSender isMissingDeviceError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.

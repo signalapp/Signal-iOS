@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalCoreKit
+import CFNetwork
 
 // This file contains common interfaces for dealing with
 // HTTP request responses, failures and errors in a consistent
@@ -308,16 +310,16 @@ extension OWSHttpHeaders {
 // MARK: -
 
 public extension Error {
-    var httpStatusCode: Int? {
-        HTTPStatusCodeForError(self)?.intValue
-    }
-
     var httpRetryAfterDate: Date? {
         HTTPUtils.httpRetryAfterDate(forError: self)
     }
 
     var httpResponseData: Data? {
         HTTPUtils.httpResponseData(forError: self)
+    }
+
+    var httpStatusCode: Int? {
+        HTTPUtils.httpStatusCode(forError: self)
     }
 
     var httpRequestUrl: URL? {
@@ -339,17 +341,29 @@ public extension Error {
             return nil
         }
     }
+
+    var isNetworkConnectivityFailure: Bool {
+        HTTPUtils.isNetworkConnectivityFailure(forError: self)
+    }
 }
 
 // MARK: -
 
 public extension NSError {
-    var httpRetryAfterDate: Date? {
-        HTTPUtils.httpRetryAfterDate(forError: self)
+    @objc
+    @available(swift, obsoleted: 1.0)
+    var httpStatusCode: NSNumber? {
+        guard let statusCode = HTTPUtils.httpStatusCode(forError: self) else {
+            return nil
+        }
+        owsAssertDebug(statusCode > 0)
+        return NSNumber(value: statusCode)
     }
 
-    var httpResponseData: Data? {
-        HTTPUtils.httpResponseData(forError: self)
+    @objc
+    @available(swift, obsoleted: 1.0)
+    var isNetworkConnectivityFailure: Bool {
+        HTTPUtils.isNetworkConnectivityFailure(forError: self)
     }
 }
 
@@ -360,49 +374,75 @@ public extension NSError {
 // only be called from the convenience accessors on Error and
 // NSError above.
 fileprivate extension HTTPUtils {
-    static func httpRetryAfterDate(forError error: Error?) -> Date? {
-        if let httpError = error as? OWSHTTPError {
-            if let retryAfterDate = httpError.customRetryAfterDate {
-                return retryAfterDate
-            }
-            if let retryAfterDate = httpError.responseHeaders?.retryAfterDate {
-                return retryAfterDate
-            }
-            if let responseError = httpError.responseError {
-                return httpRetryAfterDate(forError: responseError)
-            }
+    static func httpRetryAfterDate(forError error: Error) -> Date? {
+        guard let httpError = error as? OWSHTTPError else {
+            return nil
+        }
+        if let retryAfterDate = httpError.customRetryAfterDate {
+            return retryAfterDate
+        }
+        if let retryAfterDate = httpError.responseHeaders?.retryAfterDate {
+            return retryAfterDate
+        }
+        if let responseError = httpError.responseError {
+            return httpRetryAfterDate(forError: responseError)
         }
         return nil
     }
 
-    static func httpResponseData(forError error: Error?) -> Data? {
-        guard let error = error else {
+    static func httpResponseData(forError error: Error) -> Data? {
+        guard let httpError = error as? OWSHTTPError else {
             return nil
         }
-        switch error {
-        case let httpError as OWSHTTPError:
-            if let responseData = httpError.responseBodyData {
-                return responseData
-            }
-            if let responseError = httpError.responseError {
-                return httpResponseData(forError: responseError)
-            }
-            return nil
-        default:
-            return nil
+        if let responseData = httpError.responseBodyData {
+            return responseData
         }
+        if let responseError = httpError.responseError {
+            return httpResponseData(forError: responseError)
+        }
+        return nil
     }
-}
 
-// MARK: -
+    static func httpStatusCode(forError error: Error) -> Int? {
+        guard let httpError = error as? OWSHTTPError else {
+            return nil
+        }
+        let statusCode = httpError.responseStatusCode
+        guard statusCode > 0 else {
+            return nil
+        }
+        return statusCode
+    }
 
-@objc
-public extension NetworkManager {
-    // NOTE: This function should only be called from IsNetworkConnectivityFailure().
-    static func isSwiftNetworkConnectivityError(_ error: Error?) -> Bool {
+    static func isNetworkConnectivityFailure(forError error: Error?) -> Bool {
         guard let error = error else {
             return false
         }
+
+        if (error as NSError).domain == NSURLErrorDomain {
+            guard let cvNetworkError = CFNetworkErrors(rawValue: Int32((error as NSError).code)) else {
+                return false
+            }
+            switch cvNetworkError {
+            case .cfurlErrorTimedOut,
+             .cfurlErrorCannotConnectToHost,
+             .cfurlErrorNetworkConnectionLost,
+             .cfurlErrorDNSLookupFailed,
+             .cfurlErrorNotConnectedToInternet,
+             .cfurlErrorSecureConnectionFailed,
+             .cfurlErrorCannotLoadFromNetwork,
+             .cfurlErrorCannotFindHost:
+                return true
+            default:
+                return false
+            }
+        }
+
+        let isNetworkProtocolError = (error as NSError).domain == NSPOSIXErrorDomain && (error as NSError).code == 100
+        if isNetworkProtocolError {
+            return true
+        }
+
         switch error {
         case let httpError as OWSHTTPError:
             return httpError.isNetworkConnectivityError
@@ -415,18 +455,6 @@ public extension NetworkManager {
         default:
             return false
         }
-    }
-
-    // NOTE: This function should only be called from HTTPStatusCodeForError().
-    static func swiftHTTPStatusCodeForError(_ error: Error?) -> NSNumber? {
-        if let httpError = error as? OWSHTTPError {
-            let statusCode = httpError.responseStatusCode
-            guard statusCode > 0 else {
-                return nil
-            }
-            return NSNumber(value: statusCode)
-        }
-        return nil
     }
 }
 

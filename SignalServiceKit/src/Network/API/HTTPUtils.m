@@ -10,38 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsNetworkConnectivityFailure(NSError *_Nullable error)
 {
-    if ([error.domain isEqualToString:NSURLErrorDomain]) {
-        switch (error.code) {
-            case kCFURLErrorTimedOut:
-            case kCFURLErrorCannotConnectToHost:
-            case kCFURLErrorNetworkConnectionLost:
-            case kCFURLErrorDNSLookupFailed:
-            case kCFURLErrorNotConnectedToInternet:
-            case kCFURLErrorSecureConnectionFailed:
-            case kCFURLErrorCannotLoadFromNetwork:
-            case kCFURLErrorCannotFindHost:
-                return YES;
-            default:
-                return NO;
-        }
-    }
-    BOOL isNetworkProtocolError = ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == 100);
-    if (isNetworkProtocolError) {
-        return YES;
-    } else if ([NetworkManager isSwiftNetworkConnectivityError:error]) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
-NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error)
-{
-    NSNumber *_Nullable swiftStatusCode = [NetworkManager swiftHTTPStatusCodeForError:error];
-    if (swiftStatusCode.integerValue > 0) {
-        return swiftStatusCode;
-    }
-    return nil;
+    return error.isNetworkConnectivityFailure;
 }
 
 dispatch_queue_t NetworkManagerQueue(void)

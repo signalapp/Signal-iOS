@@ -68,7 +68,7 @@ extension NSError {
         //
         // If there are any 4xx errors that we want to retry, we should catch them
         // and throw a custom Error that implements IsRetryableProvider.
-        if let statusCode = (self as Error).httpStatusCode,
+        if let statusCode = self.httpStatusCode,
            statusCode >= 400,
            statusCode <= 499 {
             Logger.info("Not retrying error: \(statusCode), \(String(describing: (self as Error).httpRequestUrl))")

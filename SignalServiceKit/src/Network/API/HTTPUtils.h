@@ -5,7 +5,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 BOOL IsNetworkConnectivityFailure(NSError *_Nullable error);
-NSNumber *_Nullable HTTPStatusCodeForError(NSError *_Nullable error);
 
 dispatch_queue_t NetworkManagerQueue(void);
 
