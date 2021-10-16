@@ -7,6 +7,7 @@
 #import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

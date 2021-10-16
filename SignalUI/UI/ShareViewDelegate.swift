@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalMessaging
+
 // All Observer methods will be invoked from the main thread.
 @objc
 public protocol ShareViewDelegate: AnyObject {

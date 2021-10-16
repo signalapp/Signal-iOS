@@ -97,6 +97,7 @@ end
 target 'SignalShareExtension'
 target 'SignalMessaging'
 target 'NotificationServiceExtension'
+target 'SignalUI'
 
 post_install do |installer|
   enable_strip(installer)
