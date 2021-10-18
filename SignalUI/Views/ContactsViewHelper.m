@@ -8,12 +8,12 @@
 #import <ContactsUI/ContactsUI.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

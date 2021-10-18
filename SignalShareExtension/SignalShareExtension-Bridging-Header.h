@@ -16,7 +16,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSPreferences.h>
-#import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -25,3 +24,4 @@
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>

@@ -5,7 +5,7 @@
 #import "FingerprintViewScanController.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import "UIViewController+Permissions.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>

@@ -7,7 +7,7 @@
 #import "PhoneNumberUtil.h"
 #import "Theme.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalUI/SignalUI-Swift.h>
 

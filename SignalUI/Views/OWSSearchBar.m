@@ -4,8 +4,8 @@
 
 #import "OWSSearchBar.h"
 #import "Theme.h"
-#import "UIView+OWS.h"
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import "UIView+SignalUI.h"
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

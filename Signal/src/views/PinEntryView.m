@@ -4,9 +4,9 @@
 
 #import "PinEntryView.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/ViewControllerUtils.h>
 #import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

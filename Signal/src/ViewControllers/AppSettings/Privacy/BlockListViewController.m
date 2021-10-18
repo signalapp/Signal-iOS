@@ -8,7 +8,7 @@
 #import "PhoneNumber.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>

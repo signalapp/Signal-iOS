@@ -4,7 +4,7 @@
 
 #import "ConversationScrollButton.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 

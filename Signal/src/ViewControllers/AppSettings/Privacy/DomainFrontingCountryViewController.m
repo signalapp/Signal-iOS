@@ -6,7 +6,7 @@
 #import "OWSCountryMetadata.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/OWSSignalService.h>

@@ -6,7 +6,7 @@
 #import "ContactsViewHelper.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <MessageUI/MessageUI.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>

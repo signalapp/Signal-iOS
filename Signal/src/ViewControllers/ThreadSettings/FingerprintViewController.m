@@ -7,7 +7,7 @@
 #import "OWSBezierPathView.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>

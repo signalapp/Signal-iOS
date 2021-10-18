@@ -35,9 +35,7 @@
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
 		3402A9DA271D953B0084CBAE /* UIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9D9271D953A0084CBAE /* UIEnvironment.swift */; };
 		3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */; };
-		3402A9E2271D96570084CBAE /* UIView+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9DF271D96570084CBAE /* UIView+OWS.h */; };
 		3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
-		3402A9E4271D96570084CBAE /* UIView+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E1271D96570084CBAE /* UIView+OWS.m */; };
 		3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */; };
 		3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9E6271D97090084CBAE /* UIView+SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E7271D97090084CBAE /* UIView+SignalUI.m */; };
@@ -1148,9 +1146,7 @@
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
 		3402A9D9271D953A0084CBAE /* UIEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIEnvironment.swift; sourceTree = "<group>"; };
 		3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalUI.swift"; sourceTree = "<group>"; };
-		3402A9DF271D96570084CBAE /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+OWS.h"; sourceTree = "<group>"; };
 		3402A9E0271D96570084CBAE /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
-		3402A9E1271D96570084CBAE /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+OWS.m"; sourceTree = "<group>"; };
 		3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+SignalUI.swift"; sourceTree = "<group>"; };
 		3402A9E6271D97090084CBAE /* UIView+SignalUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SignalUI.h"; sourceTree = "<group>"; };
 		3402A9E7271D97090084CBAE /* UIView+SignalUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SignalUI.m"; sourceTree = "<group>"; };
@@ -2654,8 +2650,6 @@
 			children = (
 				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
-				3402A9DF271D96570084CBAE /* UIView+OWS.h */,
-				3402A9E1271D96570084CBAE /* UIView+OWS.m */,
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 			);
 			path = categories;
@@ -4476,7 +4470,6 @@
 				34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
-				3402A9E2271D96570084CBAE /* UIView+OWS.h in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
 				346129391FD1B47300532771 /* OWSPreferences.h in Headers */,
@@ -5803,7 +5796,6 @@
 				3474C56E26111605006723D2 /* PaymentsReconciliation.swift in Sources */,
 				349ED992221EE80D008045B0 /* AppPreferences.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
-				3402A9E4271D96570084CBAE /* UIView+OWS.m in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */,
 				347191F923F457BD003A3106 /* GroupsV2AvatarDownloadOperation.swift in Sources */,

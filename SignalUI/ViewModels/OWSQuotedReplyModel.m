@@ -3,9 +3,9 @@
 //
 
 #import "OWSQuotedReplyModel.h"
-#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
@@ -14,6 +14,7 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
