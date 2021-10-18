@@ -4,7 +4,7 @@
 
 import Foundation
 @testable import Signal
-@testable import SignalMessaging
+@testable import SignalUI
 import BonMot
 
 class CVTextTest: SignalBaseTest {

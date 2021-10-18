@@ -4,11 +4,12 @@
 
 #import "MockEnvironment.h"
 #import "OWSOrphanDataCleaner.h"
-#import "OWSWindowManager.h"
-#import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUI/ContactsViewHelper.h>
+#import <SignalUI/OWSWindowManager.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,33 +25,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     // TODO: We should probably mock this out.
-    OWSAudioSession *audioSession = [OWSAudioSession new];
     OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
     OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
     LaunchJobs *launchJobs = [LaunchJobs new];
     OWSPreferences *preferences = [OWSPreferences new];
     OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-    OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-    ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
     BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
     OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
-    ChatColors *chatColors = [ChatColors new];
     AvatarBuilder *avatarBuilder = [AvatarBuilder new];
 
-    self = [super initWithAudioSession:audioSession
-           incomingContactSyncJobQueue:incomingContactSyncJobQueue
-             incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
-                            launchJobs:launchJobs
-                           preferences:preferences
-            proximityMonitoringManager:proximityMonitoringManager
-                                sounds:sounds
-                         windowManager:windowManager
-                    contactsViewHelper:contactsViewHelper
-         broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
-                     orphanDataCleaner:orphanDataCleaner
-                            chatColors:chatColors
-                         avatarBuilder:avatarBuilder];
+    self = [super initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
+                            incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                           launchJobs:launchJobs
+                                          preferences:preferences
+                           proximityMonitoringManager:proximityMonitoringManager
+                                               sounds:sounds
+                        broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
+                                    orphanDataCleaner:orphanDataCleaner
+                                        avatarBuilder:avatarBuilder];
 
     OWSAssertDebug(self);
     return self;
