@@ -9,55 +9,55 @@ import Foundation
 @objc
 public extension NSObject {
 //    final var audioSession: OWSAudioSession {
-//        Environment.shared.audioSessionRef
+//        UIEnvironment.shared.audioSessionRef
 //    }
 //
 //    static var audioSession: OWSAudioSession {
-//        Environment.shared.audioSessionRef
+//        UIEnvironment.shared.audioSessionRef
 //    }
-//
-//    final var contactsViewHelper: ContactsViewHelper {
-//        Environment.shared.contactsViewHelperRef
-//    }
-//
-//    static var contactsViewHelper: ContactsViewHelper {
-//        Environment.shared.contactsViewHelperRef
-//    }
-//
-//    final var fullTextSearcher: FullTextSearcher { .shared }
-//
-//    static var fullTextSearcher: FullTextSearcher { .shared }
-//
+
+    final var contactsViewHelper: ContactsViewHelper {
+        UIEnvironment.shared.contactsViewHelperRef
+    }
+
+    static var contactsViewHelper: ContactsViewHelper {
+        UIEnvironment.shared.contactsViewHelperRef
+    }
+
+    final var fullTextSearcher: FullTextSearcher { .shared }
+
+    static var fullTextSearcher: FullTextSearcher { .shared }
+
 //    final var launchJobs: LaunchJobs {
-//        Environment.shared.launchJobsRef
+//        UIEnvironment.shared.launchJobsRef
 //    }
 //
 //    static var launchJobs: LaunchJobs {
-//        Environment.shared.launchJobsRef
+//        UIEnvironment.shared.launchJobsRef
 //    }
 //
 //    final var preferences: OWSPreferences {
-//        Environment.shared.preferencesRef
+//        UIEnvironment.shared.preferencesRef
 //    }
 //
 //    static var preferences: OWSPreferences {
-//        Environment.shared.preferencesRef
+//        UIEnvironment.shared.preferencesRef
 //    }
 //
 //    final var windowManager: OWSWindowManager {
-//        Environment.shared.windowManagerRef
+//        UIEnvironment.shared.windowManagerRef
 //    }
 //
 //    static var windowManager: OWSWindowManager {
-//        Environment.shared.windowManagerRef
+//        UIEnvironment.shared.windowManagerRef
 //    }
-//
+
 //    final var proximityMonitoringManager: OWSProximityMonitoringManager {
-//        Environment.shared.proximityMonitoringManagerRef
+//        UIEnvironment.shared.proximityMonitoringManagerRef
 //    }
 //
 //    static var proximityMonitoringManager: OWSProximityMonitoringManager {
-//        Environment.shared.proximityMonitoringManagerRef
+//        UIEnvironment.shared.proximityMonitoringManagerRef
 //    }
 //
 //    final var profileManagerImpl: OWSProfileManager {
@@ -101,43 +101,43 @@ public extension NSObject {
 //    }
 //
 //    final var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-//        Environment.shared.broadcastMediaMessageJobQueueRef
+//        UIEnvironment.shared.broadcastMediaMessageJobQueueRef
 //    }
 //
 //    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-//        Environment.shared.broadcastMediaMessageJobQueueRef
+//        UIEnvironment.shared.broadcastMediaMessageJobQueueRef
 //    }
 //
 //    final var sounds: OWSSounds {
-//        Environment.shared.soundsRef
+//        UIEnvironment.shared.soundsRef
 //    }
 //
 //    static var sounds: OWSSounds {
-//        Environment.shared.soundsRef
+//        UIEnvironment.shared.soundsRef
 //    }
 //
 //    final var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-//        Environment.shared.incomingContactSyncJobQueueRef
+//        UIEnvironment.shared.incomingContactSyncJobQueueRef
 //    }
 //
 //    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-//        Environment.shared.incomingContactSyncJobQueueRef
+//        UIEnvironment.shared.incomingContactSyncJobQueueRef
 //    }
 //
 //    final var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-//        Environment.shared.incomingGroupSyncJobQueueRef
+//        UIEnvironment.shared.incomingGroupSyncJobQueueRef
 //    }
 //
 //    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-//        Environment.shared.incomingGroupSyncJobQueueRef
+//        UIEnvironment.shared.incomingGroupSyncJobQueueRef
 //    }
 //
 //    final var orphanDataCleaner: OWSOrphanDataCleaner {
-//        Environment.shared.orphanDataCleanerRef
+//        UIEnvironment.shared.orphanDataCleanerRef
 //    }
 //
 //    static var orphanDataCleaner: OWSOrphanDataCleaner {
-//        Environment.shared.orphanDataCleanerRef
+//        UIEnvironment.shared.orphanDataCleanerRef
 //    }
 //
 //    final var paymentsImpl: PaymentsImpl {
@@ -147,21 +147,21 @@ public extension NSObject {
 //    static var paymentsImpl: PaymentsImpl {
 //        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
 //    }
-//
-//    var chatColors: ChatColors {
-//        Environment.shared.chatColorsRef
-//    }
-//
-//    static var chatColors: ChatColors {
-//        Environment.shared.chatColorsRef
-//    }
-//
+
+    var chatColors: ChatColors {
+        UIEnvironment.shared.chatColorsRef
+    }
+
+    static var chatColors: ChatColors {
+        UIEnvironment.shared.chatColorsRef
+    }
+
 //    var avatarBuilder: AvatarBuilder {
-//        Environment.shared.avatarBuilderRef
+//        UIEnvironment.shared.avatarBuilderRef
 //    }
 //
 //    static var avatarBuilder: AvatarBuilder {
-//        Environment.shared.avatarBuilderRef
+//        UIEnvironment.shared.avatarBuilderRef
 //    }
 }
 
@@ -169,55 +169,55 @@ public extension NSObject {
 
 public extension Dependencies {
 //    var audioSession: OWSAudioSession {
-//        Environment.shared.audioSessionRef
+//        UIEnvironment.shared.audioSessionRef
 //    }
 //
 //    static var audioSession: OWSAudioSession {
-//        Environment.shared.audioSessionRef
+//        UIEnvironment.shared.audioSessionRef
 //    }
-//
-//    var contactsViewHelper: ContactsViewHelper {
-//        Environment.shared.contactsViewHelperRef
-//    }
-//
-//    static var contactsViewHelper: ContactsViewHelper {
-//        Environment.shared.contactsViewHelperRef
-//    }
-//
-//    var fullTextSearcher: FullTextSearcher { .shared }
-//
-//    static var fullTextSearcher: FullTextSearcher { .shared }
-//
+
+    var contactsViewHelper: ContactsViewHelper {
+        UIEnvironment.shared.contactsViewHelperRef
+    }
+
+    static var contactsViewHelper: ContactsViewHelper {
+        UIEnvironment.shared.contactsViewHelperRef
+    }
+
+    var fullTextSearcher: FullTextSearcher { .shared }
+
+    static var fullTextSearcher: FullTextSearcher { .shared }
+
 //    var launchJobs: LaunchJobs {
-//        Environment.shared.launchJobsRef
+//        UIEnvironment.shared.launchJobsRef
 //    }
 //
 //    static var launchJobs: LaunchJobs {
-//        Environment.shared.launchJobsRef
+//        UIEnvironment.shared.launchJobsRef
 //    }
 //
 //    var preferences: OWSPreferences {
-//        Environment.shared.preferencesRef
+//        UIEnvironment.shared.preferencesRef
 //    }
 //
 //    static var preferences: OWSPreferences {
-//        Environment.shared.preferencesRef
+//        UIEnvironment.shared.preferencesRef
 //    }
 //
 //    var windowManager: OWSWindowManager {
-//        Environment.shared.windowManagerRef
+//        UIEnvironment.shared.windowManagerRef
 //    }
 //
 //    static var windowManager: OWSWindowManager {
-//        Environment.shared.windowManagerRef
+//        UIEnvironment.shared.windowManagerRef
 //    }
-//
+
 //    var proximityMonitoringManager: OWSProximityMonitoringManager {
-//        Environment.shared.proximityMonitoringManagerRef
+//        UIEnvironment.shared.proximityMonitoringManagerRef
 //    }
 //
 //    static var proximityMonitoringManager: OWSProximityMonitoringManager {
-//        Environment.shared.proximityMonitoringManagerRef
+//        UIEnvironment.shared.proximityMonitoringManagerRef
 //    }
 //
 //    var profileManagerImpl: OWSProfileManager {
@@ -261,43 +261,43 @@ public extension Dependencies {
 //    }
 //
 //    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-//        Environment.shared.broadcastMediaMessageJobQueueRef
+//        UIEnvironment.shared.broadcastMediaMessageJobQueueRef
 //    }
 //
 //    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-//        Environment.shared.broadcastMediaMessageJobQueueRef
+//        UIEnvironment.shared.broadcastMediaMessageJobQueueRef
 //    }
 //
 //    var sounds: OWSSounds {
-//        Environment.shared.soundsRef
+//        UIEnvironment.shared.soundsRef
 //    }
 //
 //    static var sounds: OWSSounds {
-//        Environment.shared.soundsRef
+//        UIEnvironment.shared.soundsRef
 //    }
 //
 //    var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-//        Environment.shared.incomingContactSyncJobQueueRef
+//        UIEnvironment.shared.incomingContactSyncJobQueueRef
 //    }
 //
 //    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-//        Environment.shared.incomingContactSyncJobQueueRef
+//        UIEnvironment.shared.incomingContactSyncJobQueueRef
 //    }
 //
 //    var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-//        Environment.shared.incomingGroupSyncJobQueueRef
+//        UIEnvironment.shared.incomingGroupSyncJobQueueRef
 //    }
 //
 //    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-//        Environment.shared.incomingGroupSyncJobQueueRef
+//        UIEnvironment.shared.incomingGroupSyncJobQueueRef
 //    }
 //
 //    var orphanDataCleaner: OWSOrphanDataCleaner {
-//        Environment.shared.orphanDataCleanerRef
+//        UIEnvironment.shared.orphanDataCleanerRef
 //    }
 //
 //    static var orphanDataCleaner: OWSOrphanDataCleaner {
-//        Environment.shared.orphanDataCleanerRef
+//        UIEnvironment.shared.orphanDataCleanerRef
 //    }
 //
 //    var paymentsImpl: PaymentsImpl {
@@ -307,21 +307,21 @@ public extension Dependencies {
 //    static var paymentsImpl: PaymentsImpl {
 //        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
 //    }
-//
-//    var chatColors: ChatColors {
-//        Environment.shared.chatColorsRef
-//    }
-//
-//    static var chatColors: ChatColors {
-//        Environment.shared.chatColorsRef
-//    }
-//
+
+    var chatColors: ChatColors {
+        UIEnvironment.shared.chatColorsRef
+    }
+
+    static var chatColors: ChatColors {
+        UIEnvironment.shared.chatColorsRef
+    }
+
 //    var avatarBuilder: AvatarBuilder {
-//        Environment.shared.avatarBuilderRef
+//        UIEnvironment.shared.avatarBuilderRef
 //    }
 //
 //    static var avatarBuilder: AvatarBuilder {
-//        Environment.shared.avatarBuilderRef
+//        UIEnvironment.shared.avatarBuilderRef
 //    }
 }
 
@@ -349,7 +349,7 @@ public extension Dependencies {
 // @objc
 // public extension OWSSounds {
 //    static var shared: OWSSounds {
-//        Environment.shared.soundsRef
+//        UIEnvironment.shared.soundsRef
 //    }
 // }
 //
@@ -358,7 +358,7 @@ public extension Dependencies {
 // @objc
 // public extension OWSWindowManager {
 //    static var shared: OWSWindowManager {
-//        Environment.shared.windowManagerRef
+//        UIEnvironment.shared.windowManagerRef
 //    }
 // }
 //

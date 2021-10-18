@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *NSStringForUIGestureRecognizerState(UIGestureRecognizerState state);
-
 // This custom GR can be used to detect touches when they
 // begin in a view.  In order to honor touch dispatch, this
 // GR will ignore touches that:

@@ -55,8 +55,10 @@
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };
 
-    [UITextView appearanceWhenContainedInInstancesOfClasses:@[[OWSNavigationController class]]].tintColor = Theme.cursorColor;
-    [UITextField appearanceWhenContainedInInstancesOfClasses:@[[OWSNavigationController class]]].tintColor = Theme.cursorColor;
+    [UITextView appearanceWhenContainedInInstancesOfClasses:@[ [OWSNavigationController class] ]].tintColor
+        = Theme.cursorColor;
+    [UITextField appearanceWhenContainedInInstancesOfClasses:@[ [OWSNavigationController class] ]].tintColor
+        = Theme.cursorColor;
 }
 
 @end

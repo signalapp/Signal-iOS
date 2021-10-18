@@ -16,18 +16,6 @@ public extension NSObject {
         Environment.shared.audioSessionRef
     }
 
-    final var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    static var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    final var fullTextSearcher: FullTextSearcher { .shared }
-
-    static var fullTextSearcher: FullTextSearcher { .shared }
-
     final var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }
@@ -148,14 +136,6 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 
-    var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
-    static var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -175,18 +155,6 @@ public extension Dependencies {
     static var audioSession: OWSAudioSession {
         Environment.shared.audioSessionRef
     }
-
-    var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    static var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    var fullTextSearcher: FullTextSearcher { .shared }
-
-    static var fullTextSearcher: FullTextSearcher { .shared }
 
     var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
@@ -306,14 +274,6 @@ public extension Dependencies {
 
     static var paymentsImpl: PaymentsImpl {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
-    }
-
-    var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
-    static var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
     }
 
     var avatarBuilder: AvatarBuilder {

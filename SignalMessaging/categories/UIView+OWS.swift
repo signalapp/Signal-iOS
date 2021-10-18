@@ -1236,6 +1236,21 @@ public extension CGFloat {
 extension UIGestureRecognizer {
     @objc
     public var stateString: String {
-        return NSStringForUIGestureRecognizerState(state)
+        switch state {
+        case .possible:
+            return "UIGestureRecognizerStatePossible"
+        case .began:
+            return "UIGestureRecognizerStateBegan"
+        case .changed:
+            return "UIGestureRecognizerStateChanged"
+        case .ended:
+            return "UIGestureRecognizerStateEnded"
+        case .cancelled:
+            return "UIGestureRecognizerStateCancelled"
+        case .failed:
+            return "UIGestureRecognizerStateFailed"
+        default:
+            return "Unknown"
+        }
     }
 }
