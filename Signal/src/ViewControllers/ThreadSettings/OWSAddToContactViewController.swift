@@ -91,7 +91,7 @@ public class OWSAddToContactViewController: OWSViewController {
 extension OWSAddToContactViewController: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        presentContactViewController(forContact: contactsManagerImpl.allContacts[indexPath.row])
+        presentContactViewController(forContact: contacts[indexPath.row])
     }
 }
 

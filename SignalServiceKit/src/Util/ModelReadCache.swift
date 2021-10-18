@@ -135,11 +135,13 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
         }
     }
 
+    private let disableCachesInNSE = true
+
     init(mode: Mode, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
         self.adapter = adapter
         self.cache = LRUCache(maxSize: adapter.cacheCountLimit,
-                              nseMaxSize: adapter.cacheCountLimitNSE)
+                              nseMaxSize: disableCachesInNSE ? 0 : adapter.cacheCountLimitNSE)
 
         switch mode {
         case .read:
