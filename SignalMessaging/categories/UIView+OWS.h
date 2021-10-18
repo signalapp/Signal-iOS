@@ -143,11 +143,11 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //// Returns YES if contentInsetAdjustmentBehavior is disabled.
 //- (BOOL)applyScrollViewInsetsFix;
-//
-//@end
-//
-//#pragma mark -
-//
+
+@end
+
+#pragma mark -
+
 //@interface UIStackView (OWS)
 //
 //- (void)addHairlineWithColor:(UIColor *)color;

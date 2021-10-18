@@ -54,9 +54,7 @@
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSounds.h>
-#import <SignalMessaging/OWSViewController.h>
 #import <SignalMessaging/ThreadUtil.h>
-#import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -104,6 +102,8 @@
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
+#import <SignalUI/OWSViewController.h>
+#import <SignalUI/UIFont+OWS.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

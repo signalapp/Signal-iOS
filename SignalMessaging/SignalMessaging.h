@@ -48,7 +48,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/ThreadUtil.h>
 
 //#import <SignalMessaging/ThreadViewHelper.h>
-//#import <SignalMessaging/UIFont+OWS.h>
+//#import <SignalUI/UIFont+OWS.h>
 //#import <SignalMessaging/UIUtil.h>
 //#import <SignalMessaging/UIView+OWS.h>
 //#import <SignalMessaging/UIViewController+OWS.h>

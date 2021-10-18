@@ -31,7 +31,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 
 //#import <SignalUI/OWSOrphanDataCleaner.h>
 //#import <SignalUI/OWSPreferences.h>
-#import <SignalUI/OWSProfileManager.h>
+//#import <SignalUI/OWSProfileManager.h>
 #import <SignalUI/OWSQuotedReplyModel.h>
 #import <SignalUI/OWSSearchBar.h>
 
@@ -40,7 +40,8 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/OWSTextField.h>
 #import <SignalUI/OWSTextView.h>
-#import <SignalUI/OWSWindowManager.h>
+
+//#import <SignalUI/OWSWindowManager.h>
 #import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/Theme.h>
 
@@ -48,7 +49,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/ThreadViewHelper.h>
 #import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIUtil.h>
-#import <SignalUI/UIView+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 #import <SignalUI/UIViewController+OWS.h>
 #import <SignalUI/UIViewController+Permissions.h>
 

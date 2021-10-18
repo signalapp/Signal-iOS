@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "PinEntryView.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/ViewControllerUtils.h>
+#import <SignalUI/UIFont+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

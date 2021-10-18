@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO: Move to ThreadUtil.
 extension OutgoingMessagePreparer {
     @objc
     public convenience init(messageBody: MessageBody?,
