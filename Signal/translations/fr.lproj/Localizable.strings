@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Compris";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Un message, un autocollant, une réaction ou un accusé de lecture de %@ n’a pas pu vous être remis dans cette conversation.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problème de remise";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Un message, un autocollant, une réaction, un accusé de lecture ou un contenu multimédia de %@ n’a pas pu vous être remis. Cette personne pourrait avoir tenté de vous l’envoyer directement ou dans un groupe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Abandonner";
@@ -1451,7 +1451,7 @@
 "DISMISS_BUTTON_TEXT" = "Fermer";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Fermer le menu contextuel";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";

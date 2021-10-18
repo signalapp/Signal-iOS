@@ -20,7 +20,7 @@
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Tengiliður fyrir %@";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Gögn";
+"ACCESSIBILITY_LABEL_MEDIA" = "Margmiðlunarefni";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Þú";
@@ -230,7 +230,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Hraðvirkt, minna gagnamagn";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Gæði myndefnis";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Gæði margmiðlunarefnis";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Skilaboð til %@";
@@ -272,7 +272,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Viðhengi er tómt.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Veldu myndefni til að senda";
+"ATTACHMENT_HINT" = "Veldu margmiðlunarefni til að senda";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Myndavél";
@@ -1766,13 +1766,13 @@
 "FORWARD_MESSAGE_TITLE" = "Áframsenda til";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Þú ert ekki með neitt myndefni í þessu spjalli.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Þú ert ekki með neitt margmiðlunarefni í þessu spjalli.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Sæki nýrra myndefni…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Sæki nýrra margmiðlunarefni…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Sæki eldra myndefni…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Sæki eldra margmiðlunarefni…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Viðhengi";
@@ -2630,7 +2630,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Þegar allir meðlimir sem fyrir eru í hópnum nota útgáfu af Signal sem styður nýju gerðina af hópum, verður þessi hópur uppfærður.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Allur ferill skilaboða og myndefnis mun verða geymdur frá því fyrir uppfærsluna.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Allur ferill skilaboða og margmiðlunarefnis mun verða geymdur frá því fyrir uppfærsluna.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Ekki er hægt að búa til þennan hóp þar sem 1 meðlimur er að nota gamla útgáfu af Signal. Þú getur búið til hóp af nýju gerðinni með viðkomandi eftir að hann hefur uppfært Signal, eða að fjarlægja hann áður en hópurinn er útbúinn.";
@@ -2690,7 +2690,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Hvað er þessi nýja gerð hópa?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Allur ferill skilaboða og myndefnis hefur verið geymdur frá því fyrir uppfærsluna.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Allur ferill skilaboða og margmiðlunarefnis hefur verið geymdur frá því fyrir uppfærsluna.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nýja gerðin af hópum er með eiginleika á borð við @mentions og hópstjóra, og mun styðja fleiri eiginleika í framtíðinni.";
@@ -2717,7 +2717,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ekki var hægt að bæta þessum meðlimum í nýju gerðina af hóp þegar hópurinn var uppfærður:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Allur ferill skilaboða og myndefnis hefur verið geymdur frá því fyrir uppfærsluna.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Allur ferill skilaboða og margmiðlunarefnis hefur verið geymdur frá því fyrir uppfærsluna.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Þessir meðlimur var fjarlægður úr hópnum og mun ekki geta gengið í hann aftur fyrr en hann hefur uppfært hjá sér:";
@@ -2930,7 +2930,7 @@
 "JOIN_CALL_PILL_BUTTON" = "Samsetning";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Fara í 'Allt myndefni'";
+"KEY_COMMAND_ALL_MEDIA" = "Fara í 'Allt margmiðlunarefni'";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Setja spjall í geymslu";
@@ -3062,7 +3062,7 @@
 "MANY_GROUPS_IN_COMMON" = "%@ hópar sameiginlegir";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Allt myndefni";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Allt margmiðlunarefni";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Eyða %d skilaboðum";
@@ -3155,7 +3155,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Velja mörg";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Deila myndefni";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Deila margmiðlunarefni";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Boð í hóp";
@@ -4055,7 +4055,7 @@
 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Skoða-einu-sinni margmiðlunarefni";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Margmiðlun";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Margmiðlunarefni";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Skoða-einu-sinni ljósmynd";
@@ -4505,7 +4505,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Brást við með %@ við myndskeiðinu þínu";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Brást við með %@ við skoða-einu-sinni myndefni frá þér";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Brást við með %@ við skoða-einu-sinni margmiðlunarefni frá þér";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Brást við með %@ við talskilaboðunum þínum";
@@ -4979,7 +4979,7 @@
 "SEND_INVITE_SUCCESS" = "Þú bauðst vini þínum að nota Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Henda myndefni";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Henda margmiðlunarefni";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Snúa aftur í myndavél";
@@ -5117,7 +5117,7 @@
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Köll: ";
 
 /* Footer for the 'media auto-download' section in the data settings. */
-"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Talskilaboð, skoða-einu-sinni myndefni og límmerki (undir 100kb) er alltaf sótt sjálfkrafa.";
+"SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_FOOTER" = "Talskilaboð, skoða-einu-sinni margmiðlunarefni og límmerki (undir 100kb) er alltaf sótt sjálfkrafa.";
 
 /* Header for the 'media auto-download' section in the data settings. */
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_HEADER" = "Sækja sjálfvirkt";
@@ -5126,13 +5126,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Frumstilla stillingar á sjálfvirku niðurhali";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Gæði sends myndefnis";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Gæði sends margmiðlunarefnis";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Veldu í hvaða gæðum þú sendir ljósmyndir og myndskeið.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent myndefni";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent margmiðlunarefni";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Gagnanotkun";
@@ -5747,7 +5747,7 @@
 "SETTINGS_SECURITY_TITLE" = "Öryggi forrits";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending hágæða-myndefnis mun nota meira gagnamagn.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending hágæða-margmiðlunarefnis mun nota meira gagnamagn.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Ljósmyndir og myndskeið";

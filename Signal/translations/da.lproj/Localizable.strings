@@ -683,7 +683,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "Vil du slette alle data?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dette nulstiller applikationen og sletter alle dine beskeder fra enheden. Du kan altid linke til din enhed igen, men de slettede beskeder vil ikke blive gendannet. App'en vil lukke efter processen er fuldført.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Dette nulstiller applikationen og sletter alle dine beskeder fra enheden. Du kan altid linke til din enhed igen, men de slettede beskeder vil ikke blive gendannet. Appen vil lukke efter processen er fuldført.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Vil du slette alle data?";
@@ -716,7 +716,7 @@
 "CONTACT_EDIT_NAME_BUTTON" = "Redigér";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Email";
+"CONTACT_EMAIL" = "E-mail";
 
 /* Label for the 'city' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_CITY" = "By";
@@ -1226,7 +1226,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopier link";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-mail support";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send til dig selv";
@@ -1502,7 +1502,7 @@
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Hvorfor donere?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan aktivere adgang i iOS Indstillinger-app'en";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan aktivere adgang i iOS Indstillinger-appen";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal kræver adgang til kontakter for at rediger kontakt oplysninger";
@@ -1790,7 +1790,7 @@
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Invitér venner";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "Opret ny gruppe";
+"GET_STARTED_CARD_NEW_GROUP" = "Ny gruppe";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Kunne ikke hente den ønskede GIF. Tjek venligst at du er på nettet";
@@ -2630,7 +2630,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Når alle nuværende gruppemedlemmer bruger en version af Signal, der er i stand til at deltage i en Ny gruppe, opgraderes gruppen";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Besked historikken og medier vil blive gemt, som før opgraderingen";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Al beskedhistorik og mediefiler vil blive gemt, som fra før opgraderingen.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
 "GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Gruppen kan ikke oprettes, fordi 1 medlem anvender en ældre version af Signal. Du kan oprette en ny stilgruppe med dem, når de har opdateret Signal, eller fjern dem før du opretter gruppen.";
@@ -2690,7 +2690,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Hvad er Nye grupper?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Al beskedhistorik og medier er blevet bevaret fra før opgraderingen";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Al beskedhistorik og mediefiler er blevet bevaret fra før opgraderingen.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nye grupper har funktioner som @omtaler og gruppeadministratorer og vil understøtte flere funktioner i fremtiden";
@@ -2717,7 +2717,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Disse medlemmer kunne ikke automatisk tilføjes den nye gruppe, da den blev opgraderet:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Al beskedhistorik og medier er blevet bevaret fra før opgraderingen";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Al beskedhistorik og mediefiler er blevet bevaret fra før opgraderingen.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Dette medlem blev fjernet fra gruppen og kan ikke slutte sig til gruppen igen, før de opgraderer:";
@@ -2888,7 +2888,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Ingen chats endnu.\nKom i gang - send en besked til en ven.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ ringede til mig";
+"INCOMING_CALL_FORMAT" = "%@ ringede til dig";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller modtage synkroniserede beskeder fra din telefon eller iPad. \nAf hensyn til din sikkerhed overføres chathistorik ikke til nye sammenkædede enheder";
@@ -2909,7 +2909,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ugyldig lydfil.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Du kan aktivere kontaktadgang i Indstillinger-app'en for at invitere dine venner til at deltage i Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Du kan aktivere kontaktadgang i Indstillinger-appen for at invitere dine venner til at deltage i Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Tillad kontakt adgang";
@@ -2930,7 +2930,7 @@
 "JOIN_CALL_PILL_BUTTON" = "Deltag";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Gå til alle medier";
+"KEY_COMMAND_ALL_MEDIA" = "Gå til alle mediefiler";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "Arkivér chats";
@@ -3017,13 +3017,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Tilknytning af ny enhed fejlede";
 
 /* Body for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BODY" = "Eksempelvisning af links genereres nu for alle websteder";
+"LINKPREVIEWS_MEGAPHONE_BODY" = "Forhåndsvisning af links genereres nu for alle websteder";
 
 /* Disable button for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Déaktiver";
 
 /* Title for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_TITLE" = "Eksempelvisning af vilkårligt link";
+"LINKPREVIEWS_MEGAPHONE_TITLE" = "Forhåndsvisning af vilkårligt link";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "For at kunne overflytte din Signal konto, skal du tilgå et lokalt netværk på begge enheder";
@@ -3371,7 +3371,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Sprunget over";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Indikator for beskedfejl";
+"MESSAGE_STATUS_SEND_FAILED" = "Afsendelse mislykkedes";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sender...";
@@ -3686,7 +3686,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Dit telefonnummer";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ugyldigt telefonnummer. Indtast et gyldigt telefonnummer til at registrere.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ugyldigt telefonnummer. Indtast et gyldigt telefonnummer for at registrere.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har ikke flere pinkode-gæt, men du kan stadig tilgå din Signal-konto ved at oprette en ny pinkode. For at sikre din sikkerhed og dit privatliv, vil din konto blive gendannet uden gemte profiloplysninger eller indstillinger.";
@@ -4190,7 +4190,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Oprettelse af pinkode mislykkedes";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Pinkoder sørger for at kryptere information lagret hos Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne app'en.";
+"PIN_CREATION_EXPLANATION" = "Pinkoder sørger for at kryptere information lagret hos Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne appen.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Lær mere om pinkoder";
@@ -4298,7 +4298,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "Pinkode déaktiveret.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medier";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medie";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Du har ikke markeret %@ som verificeret";
@@ -4379,10 +4379,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Om (%@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ændrede deres profilnavn fra %@ til %@";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ ændrede sit profilnavn fra %@ til %@";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ændrede deres profilnavn til %@";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ ændrede sit profilnavn til %@";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Dit navn";
@@ -5192,10 +5192,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Vilkår og privatlivspolitik";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generer eksempelvisning af links";
+"SETTINGS_LINK_PREVIEWS" = "Generer forhåndsvisning af links";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hent eksempelvisninger af links direkte fra websteder til beskeder, som du sender";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Hent forhåndsvisninger af links direkte fra websteder til beskeder, som du sender";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Aldrig";
@@ -5804,13 +5804,13 @@
 "SHARE_EXTENSION_LOADING" = "Henter...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Start Signal app'en for at registrere.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Start Signal-appen for at registrere.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Ikke registreret";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Start Signal app'en for at opdatere eller registrere.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Start Signal-appen for at opdatere eller registrere.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ikke klar";
@@ -5987,7 +5987,7 @@
 "SUPPORT_EMOJI_PROMPT" = "Hvordan har du det? (valgfrit)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Har du læst i vores FAQ?";
+"SUPPORT_FAQ_PROMPT" = "Har du læst vores svar på ofte stillede spørgsmål?";
 
 /* Label describing support switch to attach debug logs */
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Inkludér fejlsøgningslog";
@@ -6194,7 +6194,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Lær mere om pinkoder";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pinkoder sørger for at information lagret hos Signal, er krypteret, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne app'en.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pinkoder sørger for at information lagret hos Signal, er krypteret, så kun du kan få adgang til den. Din profil, indstillinger og kontaktpersoner gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne appen.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer pinkoder";
@@ -6314,7 +6314,7 @@
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Opsæt baggrund til %@.";
 
 /* Title for the wallpaper preview view. */
-"WALLPAPER_PREVIEW_TITLE" = "Eksempel";
+"WALLPAPER_PREVIEW_TITLE" = "Forhåndsvisning";
 
 /* Clear chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Fjern chatfarve";

@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "No se ha podido entregar un mensaje, sticker, adjunto, reacción o notificación de lectura de %@ en este chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, adjunto, reacción o notificación de lectura de %@ en este chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Fallo en la entrega";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido entregar un mensaje, sticker, adjunto, reacción o notificación de lectura de %@. Lo ha enviado en un chat o en un grupo común.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "No se ha podido recibir un mensaje, sticker, adjunto, reacción o notificación de lectura de %@. Lo ha enviado en un chat o en un grupo común.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
@@ -149,7 +149,7 @@
 "APN_Message" = "Puedes tener nuevos mensajes";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal no puede iniciarse. Manda un registro de depuración a support@signal.org para que nos podamos ocupar del problema.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal no puede iniciarse. Envía un registro de depuración a support@signal.org para que nos podamos ocupar del problema.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fallo";
@@ -1652,7 +1652,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar adjunto.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "No se pudo entregar un mensaje de %@";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "No se pudo recibir un mensaje de %@";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "No se pudo entregar un mensaje";
@@ -2837,7 +2837,7 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "Toca sobre una parte de la foto para difuminar más caras o zonas";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ objetos.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ elementos.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Modificar fotos";
@@ -3074,7 +3074,7 @@
 "MEDIA_GALLERY_ITEM_IMAGE_COUNT_FORMAT" = "%@ fotos";
 
 /* Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}. */
-"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ adjuntos";
+"MEDIA_GALLERY_ITEM_MIXED_COUNT_FORMAT" = "%@ elementos";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
