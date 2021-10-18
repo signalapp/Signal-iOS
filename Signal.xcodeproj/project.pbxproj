@@ -1098,9 +1098,9 @@
 		34035D792367747300F5215A /* VideoEditorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
 		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
 		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
+		34067EAA2710D61A000407C3 /* Pastelog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pastelog.swift; sourceTree = "<group>"; };
 		34067EAF271621CD000407C3 /* ps */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ps; path = translations/ps.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		34067EB0271621CD000407C3 /* ps */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ps; path = translations/ps.lproj/Localizable.strings; sourceTree = "<group>"; };
-		34067EAA2710D61A000407C3 /* Pastelog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pastelog.swift; sourceTree = "<group>"; };
 		3406D31D25DBF70400885B14 /* RefreshEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefreshEvent.swift; sourceTree = "<group>"; };
 		3406D32125DD40F000885B14 /* PaymentsTransferOutViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsTransferOutViewController.swift; sourceTree = "<group>"; };
 		3406D32325DD4A8F00885B14 /* PaymentsQRScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsQRScanViewController.swift; sourceTree = "<group>"; };
@@ -4874,7 +4874,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
 				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
@@ -4918,6 +4917,7 @@
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
+				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
@@ -4926,7 +4926,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
@@ -4970,6 +4969,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
@@ -5006,7 +5006,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
 				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
@@ -5055,7 +5054,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
@@ -5154,7 +5152,6 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/BonMot/BonMot.framework",
 				"${BUILT_PRODUCTS_DIR}/CGRPCZlib/CGRPCZlib.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOAtomics/CNIOAtomics.framework",
 				"${BUILT_PRODUCTS_DIR}/CNIOBoringSSL/CNIOBoringSSL.framework",
@@ -5203,7 +5200,6 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BonMot.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CGRPCZlib.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOAtomics.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CNIOBoringSSL.framework",
