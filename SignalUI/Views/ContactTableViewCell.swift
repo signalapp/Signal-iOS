@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 open class ContactTableViewCell: UITableViewCell {

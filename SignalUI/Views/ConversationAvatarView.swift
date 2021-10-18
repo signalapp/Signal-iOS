@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalMessaging
 
 /// Avatar View which updates itself as necessary when the profile, contact, or group picture changes.
 @objc

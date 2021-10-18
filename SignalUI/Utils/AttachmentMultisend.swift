@@ -43,7 +43,7 @@ public class AttachmentMultisend: Dependencies {
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
                                                                                                     transaction: transaction)
 
-                    let message = try! ThreadUtil.createUnsentMessage(with: approvalMessageBody,
+                    let message = try! ThreadUtil.createUnsentMessage(body: approvalMessageBody,
                                                                       mediaAttachments: attachments,
                                                                       thread: thread,
                                                                       quotedReplyModel: nil,
@@ -117,7 +117,7 @@ public class AttachmentMultisend: Dependencies {
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: thread,
                                                                                                     transaction: transaction)
 
-                    let message = try! ThreadUtil.createUnsentMessage(with: approvalMessageBody,
+                    let message = try! ThreadUtil.createUnsentMessage(body: approvalMessageBody,
                                                                       mediaAttachments: attachments,
                                                                       thread: thread,
                                                                       quotedReplyModel: nil,

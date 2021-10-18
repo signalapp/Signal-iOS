@@ -7,6 +7,7 @@ import AVFoundation
 import MediaPlayer
 import Photos
 import CoreServices
+import SignalMessaging
 
 @objc
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {

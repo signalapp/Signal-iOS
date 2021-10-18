@@ -528,8 +528,8 @@ extension MentionTextView {
         UIPasteboard.general.addItems([["public.utf8-plain-text": plaintextData]])
     }
 
-    public static var pasteboardType { SignalAttachment.mentionPasteboardType }
-    
+    public static var pasteboardType: String { SignalAttachment.mentionPasteboardType }
+
     open override func copy(_ sender: Any?) {
         Self.copyAttributedStringToPasteboard(attributedText.attributedSubstring(from: selectedRange))
     }

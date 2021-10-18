@@ -98,7 +98,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 @implementation OWSWindowManager
 
-- (instancetype)initDefault
+- (instancetype)init
 {
     self = [super init];
 

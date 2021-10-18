@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public extension ThreadUtil {
@@ -97,7 +98,7 @@ public extension ThreadUtil {
                                    thread: TSThread,
                                    quotedReplyModel: OWSQuotedReplyModel?,
                                    linkPreviewDraft: OWSLinkPreviewDraft?,
-                                   transaction: SDSAnyReadTransaction) throws -> TSOutgoingMessage {
+                                   transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
 
         let preparer = OutgoingMessagePreparer(messageBody: messageBody,
                                                mediaAttachments: mediaAttachments,
@@ -105,6 +106,6 @@ public extension ThreadUtil {
                                                quotedReplyModel: quotedReplyModel,
                                                transaction: transaction)
         preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
-        return preparer.prepareMessage(transaction: transaction)
+        return try preparer.prepareMessage(transaction: transaction)
     }
 }

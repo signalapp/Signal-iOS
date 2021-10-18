@@ -5,7 +5,7 @@
 #import "ScreenLockViewController.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {

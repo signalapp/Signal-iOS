@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // Outgoing message approval can be a multi-step process.
 @objc

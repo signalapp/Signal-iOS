@@ -8,7 +8,7 @@ import SignalServiceKit
 import AVFoundation
 import YYImage
 
-enum SignalAttachmentError: Error {
+public enum SignalAttachmentError: Error {
     case missingData
     case fileSizeTooLarge
     case invalidData
@@ -20,7 +20,9 @@ enum SignalAttachmentError: Error {
     case couldNotResizeImage
 }
 
-extension String {
+// MARK: -
+
+public extension String {
     var filenameWithoutExtension: String {
         return (self as NSString).deletingPathExtension
     }
@@ -37,6 +39,8 @@ extension String {
         return result
     }
 }
+
+// MARK: -
 
 extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
     public var errorDescription: String? {
@@ -66,6 +70,8 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
         }
     }
 }
+
+// MARK: -
 
 // Represents a possible attachment to upload.
 // The attachment may be invalid.
@@ -140,7 +146,7 @@ public class SignalAttachment: NSObject {
     @objc
     public let dataUTI: String
 
-    var error: SignalAttachmentError? {
+    public var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()
 

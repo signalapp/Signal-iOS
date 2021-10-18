@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public protocol ConversationPickerDelegate: AnyObject {
     func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController)

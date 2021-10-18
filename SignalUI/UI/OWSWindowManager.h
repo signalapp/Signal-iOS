@@ -22,10 +22,6 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 @interface OWSWindowManager : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
-
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 
 @property (nonatomic, readonly) UIWindow *rootWindow;

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public enum MessageRecipient: Equatable {
     case contact(_ address: SignalServiceAddress)

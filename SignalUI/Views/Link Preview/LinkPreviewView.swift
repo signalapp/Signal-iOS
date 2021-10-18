@@ -3,6 +3,7 @@
 //
 
 import YYImage
+import SignalMessaging
 
 @objc
 public protocol LinkPreviewViewDraftDelegate {

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class ThreadViewModel: NSObject {
@@ -152,7 +153,7 @@ public class HomeViewInfo: Dependencies {
             return draftMessageBody.plaintextBody(transaction: transaction.unwrapGrdbRead)
         }
         func hasVoiceMemoDraft() -> Bool {
-            VoiceMessageModel.hasDraft(for: thread, transaction: transaction)
+            VoiceMessageModels.hasDraft(for: thread, transaction: transaction)
         }
         func loadLastMessageText() -> String? {
             guard let previewable = lastMessageForInbox as? OWSPreviewText else {

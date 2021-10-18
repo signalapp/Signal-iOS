@@ -7,8 +7,8 @@
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 #import <SignalCoreKit/iOSVersions.h>
-#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

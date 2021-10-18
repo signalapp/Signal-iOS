@@ -57,7 +57,7 @@ public class VoiceMessageModel: NSObject {
 
     @objc
     public func clearDraft(transaction: SDSAnyWriteTransaction) {
-        VoiceMessageModels.clearDraft(threadUniqueId: threadUniqueId, transaction: transaction)
+        VoiceMessageModels.clearDraft(for: threadUniqueId, transaction: transaction)
     }
 
     // MARK: -

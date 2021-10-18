@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalMessaging
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {

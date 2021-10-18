@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // ManualLayoutView uses a CATransformLayer by default.
 // CATransformLayer does not render.
