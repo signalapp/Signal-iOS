@@ -7,6 +7,39 @@ import Foundation
 @objc
 public extension ThreadUtil {
 
+    // MARK: - Durable Message Enqueue
+
+    @discardableResult
+    class func enqueueMessage(body messageBody: MessageBody?,
+                              thread: TSThread,
+                              quotedReplyModel: OWSQuotedReplyModel?,
+                              linkPreviewDraft: OWSLinkPreviewDraft?,
+                              transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
+        enqueueMessage(body: messageBody,
+                       mediaAttachments: [],
+                       thread: thread,
+                       quotedReplyModel: quotedReplyModel,
+                       linkPreviewDraft: linkPreviewDraft,
+                       persistenceCompletionHandler: nil,
+                       transaction: transaction)
+    }
+
+    @discardableResult
+    class func enqueueMessage(body messageBody: MessageBody?,
+                              mediaAttachments: [SignalAttachment],
+                              thread: TSThread,
+                              quotedReplyModel: OWSQuotedReplyModel?,
+                              linkPreviewDraft: OWSLinkPreviewDraft?,
+                              transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
+        enqueueMessage(body: messageBody,
+                       mediaAttachments: mediaAttachments,
+                       thread: thread,
+                       quotedReplyModel: quotedReplyModel,
+                       linkPreviewDraft: linkPreviewDraft,
+                       persistenceCompletionHandler: nil,
+                       transaction: transaction)
+    }
+
     @discardableResult
     class func enqueueMessage(body messageBody: MessageBody?,
                               mediaAttachments: [SignalAttachment],
@@ -57,5 +90,21 @@ public extension ThreadUtil {
             thread.donateSendMessageIntent(transaction: readTransaction)
         }
         return message
+    }
+
+    class func createUnsentMessage(body messageBody: MessageBody?,
+                                   mediaAttachments: [SignalAttachment],
+                                   thread: TSThread,
+                                   quotedReplyModel: OWSQuotedReplyModel?,
+                                   linkPreviewDraft: OWSLinkPreviewDraft?,
+                                   transaction: SDSAnyReadTransaction) throws -> TSOutgoingMessage {
+
+        let preparer = OutgoingMessagePreparer(messageBody: messageBody,
+                                               mediaAttachments: mediaAttachments,
+                                               thread: thread,
+                                               quotedReplyModel: quotedReplyModel,
+                                               transaction: transaction)
+        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+        return preparer.prepareMessage(transaction: transaction)
     }
 }

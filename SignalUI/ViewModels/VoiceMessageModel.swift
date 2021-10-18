@@ -5,70 +5,17 @@
 import Foundation
 import AVFoundation
 import CoreServices
+import SignalMessaging
 
 @objc
 public class VoiceMessageModel: NSObject {
     public let threadUniqueId: String
 
-    @objc
-    public static let draftVoiceMessageDirectory = URL(
-        fileURLWithPath: "draft-voice-messages",
-        isDirectory: true,
-        relativeTo: URL(
-            fileURLWithPath: CurrentAppContext().appSharedDataDirectoryPath(),
-            isDirectory: true
-        )
-    )
+    private static var draftVoiceMessageDirectory: URL { VoiceMessageModels.draftVoiceMessageDirectory }
 
     @objc
     public init(thread: TSThread) {
         self.threadUniqueId = thread.uniqueId
-    }
-
-    // MARK: -
-
-    private static var keyValueStore: SDSKeyValueStore { .init(collection: "DraftVoiceMessage") }
-
-    @objc(hasDraftForThread:transaction:)
-    public static func hasDraft(for thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        hasDraft(for: thread.uniqueId, transaction: transaction)
-    }
-    @objc(hasDraftForThreadUniqueId:transaction:)
-    public static func hasDraft(for threadUniqueId: String, transaction: SDSAnyReadTransaction) -> Bool {
-        keyValueStore.getBool(threadUniqueId, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func allDraftFilePaths(transaction: SDSAnyReadTransaction) -> Set<String> {
-        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { threadUniqueId in
-            try? OWSFileSystem.recursiveFilesInDirectory(directory(for: threadUniqueId).path)
-        }.reduce([], +))
-    }
-
-    @objc(clearDraftForThread:transaction:)
-    public static func clearDraft(for thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        clearDraft(for: thread.uniqueId, transaction: transaction)
-    }
-    @objc(clearDraftForThreadUniqueId:transaction:)
-    public static func clearDraft(for threadUniqueId: String, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction)
-        transaction.addAsyncCompletionOffMain {
-            do {
-                try OWSFileSystem.deleteFileIfExists(url: Self.directory(for: threadUniqueId))
-            } catch {
-                owsFailDebug("Failed to delete voice memo draft")
-            }
-        }
-    }
-
-    @objc
-    public func saveDraft(transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.setBool(true, key: threadUniqueId, transaction: transaction)
-    }
-
-    @objc
-    public func clearDraft(transaction: SDSAnyWriteTransaction) {
-        Self.clearDraft(for: threadUniqueId, transaction: transaction)
     }
 
     // MARK: -
@@ -103,13 +50,17 @@ public class VoiceMessageModel: NSObject {
 
     // MARK: -
 
-    private static func directory(for threadUniqueId: String) -> URL {
-        return URL(
-            fileURLWithPath: threadUniqueId.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!,
-            isDirectory: true,
-            relativeTo: Self.draftVoiceMessageDirectory
-        )
+    @objc
+    public func saveDraft(transaction: SDSAnyWriteTransaction) {
+        VoiceMessageModels.saveDraft(threadUniqueId: threadUniqueId, transaction: transaction)
     }
+
+    @objc
+    public func clearDraft(transaction: SDSAnyWriteTransaction) {
+        VoiceMessageModels.clearDraft(threadUniqueId: threadUniqueId, transaction: transaction)
+    }
+
+    // MARK: -
 
     private var directory: URL {
         let directory = Self.directory(for: threadUniqueId)

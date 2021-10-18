@@ -27,27 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)enqueueMessageWithBody:(MessageBody *)messageBody
-                                       thread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(SDSAnyReadTransaction *)transaction;
-
-+ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
-                             mediaAttachments:(NSArray<SignalAttachment *> *)attachments
-                                       thread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(SDSAnyReadTransaction *)transaction;
-
-+ (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
-                                           mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
-                                                     thread:(TSThread *)thread
-                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                           linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                                transaction:(SDSAnyWriteTransaction *)transaction
-                                                      error:(NSError **)error;
-
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread;
 
 + (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerMetadata *)stickerMetadata

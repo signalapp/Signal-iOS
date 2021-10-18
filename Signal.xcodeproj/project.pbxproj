@@ -180,6 +180,7 @@
 		3402AAB5271D9E180084CBAE /* ImageEditorTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95555271B510400B05242 /* ImageEditorTextViewController.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
 		3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A9552E271B510400B05242 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3402AABF271DA2720084CBAE /* VoiceMessageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */; };
 		3405C0662541C3E7008B24EF /* GroupMigrationActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */; };
 		3405C06E25435048008B24EF /* ConversationViewController+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */; };
 		34067EAB2710D61A000407C3 /* Pastelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34067EAA2710D61A000407C3 /* Pastelog.swift */; };
@@ -1156,6 +1157,7 @@
 		3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
 		3402A9FA271D9C9D0084CBAE /* OutboundMessage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OutboundMessage+OWS.swift"; sourceTree = "<group>"; };
 		3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadUtil+SignalUI.swift"; sourceTree = "<group>"; };
+		3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceMessageModels.swift; sourceTree = "<group>"; };
 		3405C0652541C3E6008B24EF /* GroupMigrationActionSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupMigrationActionSheet.swift; sourceTree = "<group>"; };
 		3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Banners.swift"; sourceTree = "<group>"; };
 		34067EAA2710D61A000407C3 /* Pastelog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pastelog.swift; sourceTree = "<group>"; };
@@ -2638,6 +2640,7 @@
 				346129BD1FD2068600532771 /* ThreadUtil.h */,
 				346129BE1FD2068600532771 /* ThreadUtil.m */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
+				3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -5744,6 +5747,7 @@
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
+				3402AABF271DA2720084CBAE /* VoiceMessageModels.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				3474C57326111605006723D2 /* PaymentsImpl.swift in Sources */,

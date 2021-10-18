@@ -304,7 +304,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSString *voiceMessageDirPath = VoiceMessageModel.draftVoiceMessageDirectory.path;
+    NSString *voiceMessageDirPath = VoiceMessageModels.draftVoiceMessageDirectory.path;
     NSSet<NSString *> *_Nullable allVoiceMessageFilePaths = [self filePathsInDirectorySafe:voiceMessageDirPath];
     if (!allVoiceMessageFilePaths || !self.isMainAppAndActive) {
         return nil;
@@ -355,7 +355,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     __block NSSet<NSString *> *voiceMessageDraftFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        voiceMessageDraftFilePaths = [VoiceMessageModel allDraftFilePathsWithTransaction:transaction];
+        voiceMessageDraftFilePaths = [VoiceMessageModels allDraftFilePathsWithTransaction:transaction];
     }];
 
     __block NSSet<NSString *> *profileAvatarFilePaths;
