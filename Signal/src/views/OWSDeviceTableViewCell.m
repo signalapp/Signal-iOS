@@ -6,6 +6,7 @@
 #import "DateUtil.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/OWSTableViewController.h>
+#import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/Theme.h>
 #import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
