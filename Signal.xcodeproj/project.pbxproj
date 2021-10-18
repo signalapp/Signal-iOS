@@ -98,7 +98,6 @@
 		3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A7271B510500B05242 /* ThreadViewModel.swift */; };
 		3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA67271D9DEC0084CBAE /* VoiceMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A1271B510500B05242 /* VoiceMessageModel.swift */; };
-		3402AA68271D9DEC0084CBAE /* OutboundMessage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9FA271D9C9D0084CBAE /* OutboundMessage+OWS.swift */; };
 		3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */; };
 		3402AA6A271D9DFC0084CBAE /* Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A9271B510500B05242 /* Wallpaper.swift */; };
 		3402AA6B271D9DFC0084CBAE /* Wallpaper+Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AA271B510500B05242 /* Wallpaper+Constants.swift */; };
@@ -1155,7 +1154,6 @@
 		3402A9F3271D9A060084CBAE /* UIUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIUtil.m; sourceTree = "<group>"; };
 		3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedReplyModel.h; sourceTree = "<group>"; };
 		3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
-		3402A9FA271D9C9D0084CBAE /* OutboundMessage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OutboundMessage+OWS.swift"; sourceTree = "<group>"; };
 		3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ThreadUtil+SignalUI.swift"; sourceTree = "<group>"; };
 		3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoiceMessageModels.swift; sourceTree = "<group>"; };
 		3402AAC0271DA60F0084CBAE /* OWSAudioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioPlayer.h; sourceTree = "<group>"; };
@@ -3248,7 +3246,6 @@
 			children = (
 				34A955A5271B510500B05242 /* ContactShareViewModel.swift */,
 				34A955A4271B510500B05242 /* CVItemViewModel.h */,
-				3402A9FA271D9C9D0084CBAE /* OutboundMessage+OWS.swift */,
 				3402A9F6271D9C700084CBAE /* OWSQuotedReplyModel.h */,
 				3402A9F7271D9C700084CBAE /* OWSQuotedReplyModel.m */,
 				3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */,
@@ -5657,7 +5654,6 @@
 				3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */,
 				3402AA4F271D9DCD0084CBAE /* SpamCaptchaViewController.swift in Sources */,
 				3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */,
-				3402AA68271D9DEC0084CBAE /* OutboundMessage+OWS.swift in Sources */,
 				3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */,
 				3402AAAA271D9E180084CBAE /* InputAccessoryViewPlaceholder.swift in Sources */,
 				34A954DC271B4F3E00B05242 /* Theme+OWS.swift in Sources */,
