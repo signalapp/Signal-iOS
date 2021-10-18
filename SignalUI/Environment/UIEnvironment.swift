@@ -35,6 +35,9 @@ public class UIEnvironment: NSObject {
     @objc
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
+    @objc
+    public var chatColorsRef: ChatColors = ChatColors()
+
     private override init() {
         super.init()
 

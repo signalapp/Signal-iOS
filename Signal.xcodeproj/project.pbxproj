@@ -235,6 +235,7 @@
 		342FFE59271DAA25000AC89F /* OWSAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE58271DAA25000AC89F /* OWSAudioSession.swift */; };
 		342FFE5C271DAB60000AC89F /* OWSWindowManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 342FFE5A271DAB5F000AC89F /* OWSWindowManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		342FFE5D271DAB60000AC89F /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE5B271DAB5F000AC89F /* OWSWindowManager.m */; };
+		342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
 		3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */; };
@@ -1227,6 +1228,7 @@
 		342FFE58271DAA25000AC89F /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAudioSession.swift; sourceTree = "<group>"; };
 		342FFE5A271DAB5F000AC89F /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWindowManager.h; sourceTree = "<group>"; };
 		342FFE5B271DAB5F000AC89F /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWindowManager.m; sourceTree = "<group>"; };
+		342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+SignalUI.swift"; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
 		3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessageViewController.swift; sourceTree = "<group>"; };
@@ -3014,6 +3016,7 @@
 		34A95502271B510400B05242 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */,
 				3402A9EB271D98440084CBAE /* AttachmentMultisend.swift */,
 				34A955B1271B53F600B05242 /* BlockListUIUtils.h */,
 				34A955B0271B53F600B05242 /* BlockListUIUtils.m */,
@@ -5586,6 +5589,7 @@
 				3402AA41271D9DCD0084CBAE /* ReturnToCallViewController.swift in Sources */,
 				34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */,
 				3402AA36271D9DCD0084CBAE /* AttachmentCaptionToolbar.swift in Sources */,
+				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA31271D9DCD0084CBAE /* TextApprovalViewController.swift in Sources */,
 				3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */,
 				3402AAC3271DA6100084CBAE /* OWSAudioPlayer.m in Sources */,

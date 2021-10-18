@@ -6,7 +6,6 @@
 
 @class AvatarBuilder;
 @class BroadcastMediaMessageJobQueue;
-@class ChatColors;
 @class LaunchJobs;
 @class OWSIncomingContactSyncJobQueue;
 @class OWSIncomingGroupSyncJobQueue;
@@ -37,7 +36,6 @@
                                              sounds:(OWSSounds *)sounds
                       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                                         chatColors:(ChatColors *)chatColors
                                       avatarBuilder:(AvatarBuilder *)avatarBuilder;
 
 @property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueueRef;
@@ -48,7 +46,6 @@
 @property (nonatomic, readonly) OWSSounds *soundsRef;
 @property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
-@property (nonatomic, readonly) ChatColors *chatColorsRef;
 @property (nonatomic, readonly) AvatarBuilder *avatarBuilderRef;
 
 @property (class, nonatomic) Environment *shared;

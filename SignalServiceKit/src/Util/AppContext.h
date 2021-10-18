@@ -112,9 +112,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 - (void)openSystemSettings;
 
-// Returns nil if isMainApp is NO
-- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion;
-
 // Should be a NOOP if isMainApp is NO.
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value;
 

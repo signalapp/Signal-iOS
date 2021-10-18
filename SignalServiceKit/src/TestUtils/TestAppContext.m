@@ -136,11 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
 }
 
-- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
-{
-    return nil;
-}
-
 - (BOOL)isRunningTests
 {
     return YES;

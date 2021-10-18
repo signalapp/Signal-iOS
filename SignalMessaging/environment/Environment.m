@@ -17,7 +17,6 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) LaunchJobs *launchJobsRef;
 @property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
-@property (nonatomic) ChatColors *chatColorsRef;
 @property (nonatomic) AvatarBuilder *avatarBuilderRef;
 
 @end
@@ -58,7 +57,6 @@ static Environment *sharedEnvironment = nil;
                                              sounds:(OWSSounds *)sounds
                       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                                         chatColors:(ChatColors *)chatColors
                                       avatarBuilder:(AvatarBuilder *)avatarBuilder
 {
     self = [super init];
@@ -74,7 +72,6 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(sounds);
     OWSAssertDebug(broadcastMediaMessageJobQueue);
     OWSAssertDebug(orphanDataCleaner);
-    OWSAssertDebug(chatColors);
     OWSAssertDebug(avatarBuilder);
 
     _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
@@ -85,7 +82,6 @@ static Environment *sharedEnvironment = nil;
     _soundsRef = sounds;
     _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
     _orphanDataCleanerRef = orphanDataCleaner;
-    _chatColorsRef = chatColors;
     _avatarBuilderRef = avatarBuilder;
 
     OWSSingletonAssert();

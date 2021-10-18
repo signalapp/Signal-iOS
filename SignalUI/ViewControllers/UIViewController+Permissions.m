@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                   message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")];
 
         ActionSheetAction *_Nullable openSettingsAction =
-            [CurrentAppContext() openSystemSettingsActionWithCompletion:^{ callback(NO); }];
+            [AppContextUtils openSystemSettingsActionWithCompletion:^{ callback(NO); }];
         if (openSettingsAction != nil) {
             [alert addAction:openSettingsAction];
         }
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   @"Alert body when user has previously denied media library access")];
 
             ActionSheetAction *_Nullable openSettingsAction =
-                [CurrentAppContext() openSystemSettingsActionWithCompletion:^() { completionCallback(NO); }];
+                [AppContextUtils openSystemSettingsActionWithCompletion:^() { completionCallback(NO); }];
             if (openSettingsAction) {
                 [alert addAction:openSettingsAction];
             }
@@ -168,8 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
                   message:NSLocalizedString(@"CALL_AUDIO_PERMISSION_MESSAGE",
                               @"Alert message when calling and permissions for microphone are missing")];
 
-        ActionSheetAction *_Nullable openSettingsAction =
-            [CurrentAppContext() openSystemSettingsActionWithCompletion:nil];
+        ActionSheetAction *_Nullable openSettingsAction = [AppContextUtils openSystemSettingsActionWithCompletion:nil];
         if (openSettingsAction) {
             [alert addAction:openSettingsAction];
         }

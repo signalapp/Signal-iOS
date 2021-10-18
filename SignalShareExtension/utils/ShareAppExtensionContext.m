@@ -234,11 +234,6 @@ NS_ASSUME_NONNULL_BEGIN
     return;
 }
 
-- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
-{
-    return nil;
-}
-
 - (BOOL)isRunningTests
 {
     // We don't need to distinguish this in the SAE.

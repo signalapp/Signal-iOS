@@ -428,7 +428,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          handler:nil]];
 
     ActionSheetAction *_Nullable openSystemSettingsAction =
-        [CurrentAppContext() openSystemSettingsActionWithCompletion:nil];
+        [AppContextUtils openSystemSettingsActionWithCompletion:nil];
     if (openSystemSettingsAction) {
         [alert addAction:openSystemSettingsAction];
     }
