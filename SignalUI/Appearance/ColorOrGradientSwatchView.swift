@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // Compare with CVColorOrGradientView:
 //

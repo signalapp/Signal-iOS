@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import SafariServices
+import SignalMessaging
 
 public class GroupViewUtils {
 

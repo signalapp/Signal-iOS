@@ -5,6 +5,7 @@
 import UIKit
 import AVFoundation
 import Photos
+import SignalMessaging
 
 @objc
 public protocol VideoEditorViewDelegate: AnyObject {

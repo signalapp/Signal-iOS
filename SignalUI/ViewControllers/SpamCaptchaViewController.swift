@@ -4,6 +4,7 @@
 
 import UIKit
 import WebKit
+import SignalMessaging
 
 public protocol CaptchaViewDelegate: NSObjectProtocol {
     func captchaView(_: CaptchaView, didCompleteCaptchaWithToken: String)

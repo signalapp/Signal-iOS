@@ -353,7 +353,7 @@ public extension Dependencies {
 //    }
 // }
 
- MARK: -
+ // MARK: -
 
  @objc
  public extension OWSWindowManager {
@@ -362,7 +362,7 @@ public extension Dependencies {
     }
  }
 
- MARK: -
+ // MARK: -
 
 // @objc
 // public extension OWSSyncManager {

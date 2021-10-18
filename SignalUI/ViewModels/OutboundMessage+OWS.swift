@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // TODO: Move to ThreadUtil.
 extension OutgoingMessagePreparer {

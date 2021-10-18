@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {

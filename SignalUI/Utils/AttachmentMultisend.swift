@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class AttachmentMultisend: Dependencies {
 

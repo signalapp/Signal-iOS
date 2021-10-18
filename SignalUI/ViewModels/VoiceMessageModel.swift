@@ -63,7 +63,7 @@ public class VoiceMessageModel: NSObject {
     // MARK: -
 
     private var directory: URL {
-        let directory = Self.directory(for: threadUniqueId)
+        let directory = VoiceMessageModels.directory(for: threadUniqueId)
         OWSFileSystem.ensureDirectoryExists(directory.path)
         return directory
     }

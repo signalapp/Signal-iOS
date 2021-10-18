@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class MentionPicker: UIView {
     private let tableView = UITableView()

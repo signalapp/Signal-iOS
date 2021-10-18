@@ -4,7 +4,6 @@
 
 #import "AppSetup.h"
 #import "Environment.h"
-#import "Theme.h"
 #import "VersionMigrations.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

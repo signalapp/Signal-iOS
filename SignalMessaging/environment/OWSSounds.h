@@ -68,6 +68,8 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
 + (nullable NSString *)filenameForSound:(OWSSound)sound quiet:(BOOL)quiet;
 
++ (nullable NSURL *)soundURLForSound:(OWSSound)sound quiet:(BOOL)quiet;
+
 + (void)importSoundsAtURLs:(NSArray<NSURL *> *)urls;
 + (NSString *)soundsDirectory;
 

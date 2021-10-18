@@ -236,6 +236,8 @@
 		342FFE5C271DAB60000AC89F /* OWSWindowManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 342FFE5A271DAB5F000AC89F /* OWSWindowManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		342FFE5D271DAB60000AC89F /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE5B271DAB5F000AC89F /* OWSWindowManager.m */; };
 		342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */; };
+		342FFE65271DB66E000AC89F /* OWSProfileManager+SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		342FFE66271DB66E000AC89F /* OWSProfileManager+SignalUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
 		3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */; };
@@ -1229,6 +1231,8 @@
 		342FFE5A271DAB5F000AC89F /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWindowManager.h; sourceTree = "<group>"; };
 		342FFE5B271DAB5F000AC89F /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWindowManager.m; sourceTree = "<group>"; };
 		342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+SignalUI.swift"; sourceTree = "<group>"; };
+		342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSProfileManager+SignalUI.h"; sourceTree = "<group>"; };
+		342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OWSProfileManager+SignalUI.m"; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
 		3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessageViewController.swift; sourceTree = "<group>"; };
@@ -3030,6 +3034,8 @@
 				3402AAC0271DA60F0084CBAE /* OWSAudioPlayer.h */,
 				3402AAC1271DA6100084CBAE /* OWSAudioPlayer.m */,
 				342FFE58271DAA25000AC89F /* OWSAudioSession.swift */,
+				342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */,
+				342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */,
 				342FFE56271DA8C9000AC89F /* OWSSounds+SignalUI.swift */,
 			);
 			path = Utils;
@@ -4438,6 +4444,7 @@
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA64271D9DEC0084CBAE /* CVItemViewModel.h in Headers */,
 				3402AA50271D9DCD0084CBAE /* OWSViewController.h in Headers */,
+				342FFE65271DB66E000AC89F /* OWSProfileManager+SignalUI.h in Headers */,
 				3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationController.h in Headers */,
 				3402AA8B271D9E180084CBAE /* OWSTextView.h in Headers */,
@@ -5623,6 +5630,7 @@
 				34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */,
 				3402AA58271D9DCD0084CBAE /* OWSNavigationController.m in Sources */,
 				3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
+				342FFE66271DB66E000AC89F /* OWSProfileManager+SignalUI.m in Sources */,
 				3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */,
 				3402AA38271D9DCD0084CBAE /* CountryCodeViewController.m in Sources */,
 				3402AA74271D9E180084CBAE /* OWSBubbleShapeView.swift in Sources */,

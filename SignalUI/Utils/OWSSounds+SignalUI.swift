@@ -8,6 +8,9 @@ import SignalMessaging
 extension OWSSounds {
 
     private static func shouldAudioPlayerLoop(forSound sound: OWSSound) -> Bool {
+        guard let sound = OWSStandardSound(rawValue: sound) else {
+            return false
+        }
         switch sound {
         case .callConnecting, .callOutboundRinging, .defaultiOSIncomingRingtone:
             return true
