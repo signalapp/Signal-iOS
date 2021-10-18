@@ -69,12 +69,16 @@ pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_war
 # third party pods
 ####
 
-pod 'PureLayout', :inhibit_warnings => true
 pod 'Reachability', :inhibit_warnings => true
-pod 'lottie-ios', :inhibit_warnings => true
 
 pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
 pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
+
+def ui_pods
+  pod 'BonMot', inhibit_warnings: true
+  pod 'PureLayout', :inhibit_warnings => true
+  pod 'lottie-ios', :inhibit_warnings => true
+end
 
 target 'Signal' do
   project 'Signal.xcodeproj', 'Debug' => :debug, 'Release' => :release
@@ -82,7 +86,7 @@ target 'Signal' do
   # Pods only available inside the main Signal app
   pod 'SSZipArchive', :inhibit_warnings => true
   pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
-  pod 'BonMot', inhibit_warnings: true
+  ui_pods
 
   target 'SignalTests' do
     inherit! :search_paths
@@ -93,11 +97,19 @@ target 'Signal' do
   end
 end
 
-# These extensions inherit all of the pods
-target 'SignalShareExtension'
+# These extensions inherit all of the common pods
+
 target 'SignalMessaging'
+
+target 'SignalShareExtension' do 
+  ui_pods
+end
+
+target 'SignalUI' do 
+  ui_pods
+end
+
 target 'NotificationServiceExtension'
-target 'SignalUI'
 
 post_install do |installer|
   enable_strip(installer)
