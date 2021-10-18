@@ -22,8 +22,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 //#import <SignalUI/DebugLogger.h>
 //#import <SignalUI/Environment.h>
 #import <SignalUI/OWSAnyTouchGestureRecognizer.h>
-
-//#import <SignalUI/OWSAudioPlayer.h>
+#import <SignalUI/OWSAudioPlayer.h>
 #import <SignalUI/OWSBubbleView.h>
 
 //#import <SignalUI/OWSContactsManager.h>

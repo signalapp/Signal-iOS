@@ -8,14 +8,6 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    static var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
     final var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }
@@ -148,14 +140,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    static var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
     var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }

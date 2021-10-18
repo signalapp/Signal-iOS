@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSAudioPlayer.h"
 #import <AudioToolbox/AudioServices.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -83,11 +82,6 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet;
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread;
-
-#pragma mark - AudioPlayer
-
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
-                                   audioBehavior:(OWSAudioBehavior)audioBehavior;
 
 @end
 

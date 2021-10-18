@@ -11,7 +11,6 @@ static Environment *sharedEnvironment = nil;
 
 @interface Environment ()
 
-@property (nonatomic) OWSAudioSession *audioSessionRef;
 @property (nonatomic) OWSPreferences *preferencesRef;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic) OWSSounds *soundsRef;
@@ -53,26 +52,24 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = nil;
 }
 
-- (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession
-         incomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
-           incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
-                          launchJobs:(LaunchJobs *)launchJobs
-                         preferences:(OWSPreferences *)preferences
-          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                              sounds:(OWSSounds *)sounds
-                       windowManager:(OWSWindowManager *)windowManager
-                  contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
-       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
-                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                          chatColors:(ChatColors *)chatColors
-                       avatarBuilder:(AvatarBuilder *)avatarBuilder
+- (instancetype)initWithIncomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
+                          incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
+                                         launchJobs:(LaunchJobs *)launchJobs
+                                        preferences:(OWSPreferences *)preferences
+                         proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                                             sounds:(OWSSounds *)sounds
+                                      windowManager:(OWSWindowManager *)windowManager
+                                 contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
+                      broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
+                                  orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                                         chatColors:(ChatColors *)chatColors
+                                      avatarBuilder:(AvatarBuilder *)avatarBuilder
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(audioSession);
     OWSAssertDebug(incomingGroupSyncJobQueue);
     OWSAssertDebug(incomingContactSyncJobQueue);
     OWSAssertDebug(launchJobs);
@@ -86,7 +83,6 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(chatColors);
     OWSAssertDebug(avatarBuilder);
 
-    _audioSessionRef = audioSession;
     _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
     _incomingGroupSyncJobQueueRef = incomingGroupSyncJobQueue;
     _launchJobsRef = launchJobs;

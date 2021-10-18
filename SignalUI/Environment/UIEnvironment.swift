@@ -26,6 +26,8 @@ public class UIEnvironment: NSObject {
         }
     }
 
+    @objc
+    public var audioSessionRef: OWSAudioSession = OWSAudioSession()
 //    @objc
 //    public var callMessageHandlerRef: WebRTCCallMessageHandler
 //

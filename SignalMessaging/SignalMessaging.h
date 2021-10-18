@@ -23,7 +23,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/Environment.h>
 
 //#import <SignalMessaging/OWSAnyTouchGestureRecognizer.h>
-#import <SignalMessaging/OWSAudioPlayer.h>
+//#import <SignalMessaging/OWSAudioPlayer.h>
 
 //#import <SignalMessaging/OWSBubbleView.h>
 #import <SignalMessaging/OWSContactsManager.h>

@@ -8,13 +8,13 @@ import Foundation
 
 @objc
 public extension NSObject {
-//    final var audioSession: OWSAudioSession {
-//        UIEnvironment.shared.audioSessionRef
-//    }
-//
-//    static var audioSession: OWSAudioSession {
-//        UIEnvironment.shared.audioSessionRef
-//    }
+    final var audioSession: OWSAudioSession {
+        UIEnvironment.shared.audioSessionRef
+    }
+
+    static var audioSession: OWSAudioSession {
+        UIEnvironment.shared.audioSessionRef
+    }
 
     final var contactsViewHelper: ContactsViewHelper {
         UIEnvironment.shared.contactsViewHelperRef
@@ -168,13 +168,13 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-//    var audioSession: OWSAudioSession {
-//        UIEnvironment.shared.audioSessionRef
-//    }
-//
-//    static var audioSession: OWSAudioSession {
-//        UIEnvironment.shared.audioSessionRef
-//    }
+    var audioSession: OWSAudioSession {
+        UIEnvironment.shared.audioSessionRef
+    }
+
+    static var audioSession: OWSAudioSession {
+        UIEnvironment.shared.audioSessionRef
+    }
 
     var contactsViewHelper: ContactsViewHelper {
         UIEnvironment.shared.contactsViewHelperRef

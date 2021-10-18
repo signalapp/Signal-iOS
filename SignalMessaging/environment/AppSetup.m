@@ -94,7 +94,6 @@ NS_ASSUME_NONNULL_BEGIN
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
         SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
 
-        OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
         OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
         LaunchJobs *launchJobs = [LaunchJobs new];
@@ -120,19 +119,18 @@ NS_ASSUME_NONNULL_BEGIN
         ChatColors *chatColors = [ChatColors new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
 
-        [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
-                                             incomingContactSyncJobQueue:incomingContactSyncJobQueue
-                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
-                                                              launchJobs:launchJobs
-                                                             preferences:preferences
-                                              proximityMonitoringManager:proximityMonitoringManager
-                                                                  sounds:sounds
-                                                           windowManager:windowManager
-                                                      contactsViewHelper:contactsViewHelper
-                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
-                                                       orphanDataCleaner:orphanDataCleaner
-                                                              chatColors:chatColors
-                                                           avatarBuilder:avatarBuilder]];
+        [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
+                                                              incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                                                             launchJobs:launchJobs
+                                                                            preferences:preferences
+                                                             proximityMonitoringManager:proximityMonitoringManager
+                                                                                 sounds:sounds
+                                                                          windowManager:windowManager
+                                                                     contactsViewHelper:contactsViewHelper
+                                                          broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
+                                                                      orphanDataCleaner:orphanDataCleaner
+                                                                             chatColors:chatColors
+                                                                          avatarBuilder:avatarBuilder]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager

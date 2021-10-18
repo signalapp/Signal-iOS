@@ -25,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAudioPlayer
 
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
-                   audioBehavior:(OWSAudioBehavior)audioBehavior
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior
 {
     self = [super init];
     if (!self) {
@@ -38,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
     _mediaUrl = mediaUrl;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
-    _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription behavior:audioBehavior];
+    _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription
+                                                               behavior:audioBehavior];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidEnterBackground:)
@@ -120,13 +120,13 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     [commandCenter.changePlaybackPositionCommand setEnabled:YES];
-    [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-                                                                                                    MPRemoteCommandEvent *event) {
-        OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
-        MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
-        [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
-        return MPRemoteCommandHandlerStatusSuccess;
-    }];
+    [commandCenter.changePlaybackPositionCommand
+        addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+            OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
+            MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
+            [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
+            return MPRemoteCommandHandlerStatusSuccess;
+        }];
 
     [self updateNowPlayingInfo];
 }
