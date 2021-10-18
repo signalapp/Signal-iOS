@@ -578,6 +578,8 @@ public class SignalAttachment: NSObject {
         return UIPasteboard.general.numberOfItems > 0
     }
 
+    public static let mentionPasteboardType = "private.archived-mention-text"
+
     @objc
     public class func pasteboardHasText() -> Bool {
         if UIPasteboard.general.numberOfItems < 1 {
@@ -594,7 +596,7 @@ public class SignalAttachment: NSObject {
 
         // The mention text view has a special pasteboard type, if we see it
         // we know that the pasteboard contains text.
-        guard !pasteboardUTISet.contains(MentionTextView.pasteboardType) else {
+        guard !pasteboardUTISet.contains(mentionPasteboardType) else {
             return true
         }
 

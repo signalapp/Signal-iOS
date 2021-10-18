@@ -214,6 +214,8 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
+            // Create UIEnvironment.
+            [UIEnvironment.shared setup];
             // Create AppEnvironment.
             [AppEnvironment.shared setup];
             [SignalApp.shared setup];
