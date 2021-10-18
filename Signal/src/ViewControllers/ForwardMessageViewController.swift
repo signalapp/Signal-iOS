@@ -388,7 +388,7 @@ extension ForwardMessageViewController {
 
     fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: body,
+            ThreadUtil.enqueueMessage(body: body,
                                       thread: thread,
                                       quotedReplyModel: nil,
                                       linkPreviewDraft: linkPreviewDraft,
@@ -404,7 +404,7 @@ extension ForwardMessageViewController {
 
     fileprivate func send(body: MessageBody?, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: body,
+            ThreadUtil.enqueueMessage(body: body,
                                       mediaAttachments: [attachment],
                                       thread: thread,
                                       quotedReplyModel: nil,

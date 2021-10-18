@@ -5,8 +5,8 @@
 #import "OWSScreenLockUI.h"
 #import "OWSWindowManager.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/ScreenLockViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
