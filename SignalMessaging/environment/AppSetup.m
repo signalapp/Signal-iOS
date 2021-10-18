@@ -99,7 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
         LaunchJobs *launchJobs = [LaunchJobs new];
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-        OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
         BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
@@ -108,7 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
         EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
-        ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
         AppExpiry *appExpiry = [AppExpiry new];
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
@@ -125,8 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             preferences:preferences
                                                              proximityMonitoringManager:proximityMonitoringManager
                                                                                  sounds:sounds
-                                                                          windowManager:windowManager
-                                                                     contactsViewHelper:contactsViewHelper
                                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
                                                                       orphanDataCleaner:orphanDataCleaner
                                                                              chatColors:chatColors

@@ -39,8 +39,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/OWSTextField.h>
 #import <SignalUI/OWSTextView.h>
-
-//#import <SignalUI/OWSWindowManager.h>
+#import <SignalUI/OWSWindowManager.h>
 #import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/Theme.h>
 

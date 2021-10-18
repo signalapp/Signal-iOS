@@ -14,9 +14,7 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) OWSPreferences *preferencesRef;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic) OWSSounds *soundsRef;
-@property (nonatomic) OWSWindowManager *windowManagerRef;
 @property (nonatomic) LaunchJobs *launchJobsRef;
-@property (nonatomic) ContactsViewHelper *contactsViewHelperRef;
 @property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic) ChatColors *chatColorsRef;
@@ -58,8 +56,6 @@ static Environment *sharedEnvironment = nil;
                                         preferences:(OWSPreferences *)preferences
                          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                                              sounds:(OWSSounds *)sounds
-                                      windowManager:(OWSWindowManager *)windowManager
-                                 contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
                       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
                                          chatColors:(ChatColors *)chatColors
@@ -76,8 +72,6 @@ static Environment *sharedEnvironment = nil;
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
-    OWSAssertDebug(windowManager);
-    OWSAssertDebug(contactsViewHelper);
     OWSAssertDebug(broadcastMediaMessageJobQueue);
     OWSAssertDebug(orphanDataCleaner);
     OWSAssertDebug(chatColors);
@@ -89,8 +83,6 @@ static Environment *sharedEnvironment = nil;
     _preferencesRef = preferences;
     _proximityMonitoringManagerRef = proximityMonitoringManager;
     _soundsRef = sounds;
-    _windowManagerRef = windowManager;
-    _contactsViewHelperRef = contactsViewHelper;
     _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
     _orphanDataCleanerRef = orphanDataCleaner;
     _chatColorsRef = chatColors;

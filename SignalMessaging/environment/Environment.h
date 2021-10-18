@@ -7,14 +7,12 @@
 @class AvatarBuilder;
 @class BroadcastMediaMessageJobQueue;
 @class ChatColors;
-@class ContactsViewHelper;
 @class LaunchJobs;
 @class OWSIncomingContactSyncJobQueue;
 @class OWSIncomingGroupSyncJobQueue;
 @class OWSOrphanDataCleaner;
 @class OWSPreferences;
 @class OWSSounds;
-@class OWSWindowManager;
 
 @protocol OWSProximityMonitoringManager;
 
@@ -37,8 +35,6 @@
                                         preferences:(OWSPreferences *)preferences
                          proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
                                              sounds:(OWSSounds *)sounds
-                                      windowManager:(OWSWindowManager *)windowManager
-                                 contactsViewHelper:(ContactsViewHelper *)contactsViewHelper
                       broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
                                   orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
                                          chatColors:(ChatColors *)chatColors
@@ -50,8 +46,6 @@
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic, readonly) OWSPreferences *preferencesRef;
 @property (nonatomic, readonly) OWSSounds *soundsRef;
-@property (nonatomic, readonly) OWSWindowManager *windowManagerRef;
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelperRef;
 @property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic, readonly) ChatColors *chatColorsRef;

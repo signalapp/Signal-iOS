@@ -24,14 +24,6 @@ public extension NSObject {
         Environment.shared.preferencesRef
     }
 
-    final var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
-    }
-
     final var proximityMonitoringManager: OWSProximityMonitoringManager {
         Environment.shared.proximityMonitoringManagerRef
     }
@@ -154,14 +146,6 @@ public extension Dependencies {
 
     static var preferences: OWSPreferences {
         Environment.shared.preferencesRef
-    }
-
-    var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
     }
 
     var proximityMonitoringManager: OWSProximityMonitoringManager {
@@ -294,15 +278,6 @@ public extension OWSProfileManager {
 public extension OWSSounds {
     static var shared: OWSSounds {
         Environment.shared.soundsRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSWindowManager {
-    static var shared: OWSWindowManager {
-        Environment.shared.windowManagerRef
     }
 }
 

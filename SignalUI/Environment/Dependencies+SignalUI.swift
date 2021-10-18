@@ -43,14 +43,14 @@ public extension NSObject {
 //    static var preferences: OWSPreferences {
 //        UIEnvironment.shared.preferencesRef
 //    }
-//
-//    final var windowManager: OWSWindowManager {
-//        UIEnvironment.shared.windowManagerRef
-//    }
-//
-//    static var windowManager: OWSWindowManager {
-//        UIEnvironment.shared.windowManagerRef
-//    }
+
+    final var windowManager: OWSWindowManager {
+        UIEnvironment.shared.windowManagerRef
+    }
+
+    static var windowManager: OWSWindowManager {
+        UIEnvironment.shared.windowManagerRef
+    }
 
 //    final var proximityMonitoringManager: OWSProximityMonitoringManager {
 //        UIEnvironment.shared.proximityMonitoringManagerRef
@@ -203,14 +203,14 @@ public extension Dependencies {
 //    static var preferences: OWSPreferences {
 //        UIEnvironment.shared.preferencesRef
 //    }
-//
-//    var windowManager: OWSWindowManager {
-//        UIEnvironment.shared.windowManagerRef
-//    }
-//
-//    static var windowManager: OWSWindowManager {
-//        UIEnvironment.shared.windowManagerRef
-//    }
+
+    var windowManager: OWSWindowManager {
+        UIEnvironment.shared.windowManagerRef
+    }
+
+    static var windowManager: OWSWindowManager {
+        UIEnvironment.shared.windowManagerRef
+    }
 
 //    var proximityMonitoringManager: OWSProximityMonitoringManager {
 //        UIEnvironment.shared.proximityMonitoringManagerRef
@@ -352,18 +352,18 @@ public extension Dependencies {
 //        UIEnvironment.shared.soundsRef
 //    }
 // }
-//
-// MARK: -
-//
-// @objc
-// public extension OWSWindowManager {
-//    static var shared: OWSWindowManager {
-//        UIEnvironment.shared.windowManagerRef
-//    }
-// }
-//
-// MARK: -
-//
+
+ MARK: -
+
+ @objc
+ public extension OWSWindowManager {
+    static var shared: OWSWindowManager {
+        UIEnvironment.shared.windowManagerRef
+    }
+ }
+
+ MARK: -
+
 // @objc
 // public extension OWSSyncManager {
 //    static var shared: SyncManagerProtocol {
