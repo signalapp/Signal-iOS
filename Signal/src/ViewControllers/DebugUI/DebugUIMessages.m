@@ -12,7 +12,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -24,6 +23,7 @@
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

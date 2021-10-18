@@ -10,13 +10,13 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

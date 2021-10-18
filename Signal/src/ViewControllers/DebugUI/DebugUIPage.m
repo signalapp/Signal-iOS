@@ -4,7 +4,7 @@
 
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
-#import <SignalMessaging/OWSTableViewController.h>
+#import <SignalUI/OWSTableViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

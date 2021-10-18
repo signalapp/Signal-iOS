@@ -38,13 +38,13 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSSyncManager.h>
 
-//#import <SignalMessaging/OWSTableViewController.h>
+//#import <SignalUI/OWSTableViewController.h>
 //#import <SignalMessaging/OWSTextField.h>
 //#import <SignalMessaging/OWSTextView.h>
 //#import <SignalMessaging/OWSWindowManager.h>
 
 //#import <SignalMessaging/ScreenLockViewController.h>
-//#import <SignalMessaging/Theme.h>
+//#import <SignalUI/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>
 
 //#import <SignalMessaging/ThreadViewHelper.h>

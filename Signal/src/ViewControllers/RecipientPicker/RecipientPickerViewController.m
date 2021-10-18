@@ -10,7 +10,6 @@
 #import <MessageUI/MessageUI.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/AppVersion.h>
@@ -18,6 +17,7 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalUI/OWSTableViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

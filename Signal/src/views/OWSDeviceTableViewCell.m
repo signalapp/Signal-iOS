@@ -4,9 +4,9 @@
 
 #import "OWSDeviceTableViewCell.h"
 #import "DateUtil.h"
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/Theme.h>
+#import <SignalUI/OWSTableViewController.h>
+#import <SignalUI/Theme.h>
 #import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 

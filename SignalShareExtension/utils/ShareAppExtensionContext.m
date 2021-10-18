@@ -4,9 +4,9 @@
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/DebugLogger.h>
-#import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSConstants.h>
+#import <SignalUI/UIViewController+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

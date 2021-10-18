@@ -6,7 +6,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+SignalUI.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/Theme.h>
+#import <SignalUI/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

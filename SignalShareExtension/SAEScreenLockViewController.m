@@ -4,10 +4,10 @@
 
 #import "SAEScreenLockViewController.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/Theme.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalUI/SignalUI-Swift.h>
+#import <SignalUI/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
