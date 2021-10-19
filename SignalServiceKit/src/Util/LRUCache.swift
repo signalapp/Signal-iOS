@@ -73,7 +73,14 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public init(maxSize: Int,
                 nseMaxSize: Int = 0,
                 shouldEvacuateInBackground: Bool = false) {
-        self.maxSize = CurrentAppContext().isNSE ? nseMaxSize : maxSize
+        self.maxSize = {
+            if CurrentAppContext().isNSE {
+                let disableCacheInNSE = true
+                return disableCacheInNSE ? 0 : nseMaxSize
+            } else {
+                return maxSize
+            }
+        }()
         self.cache.countLimit = maxSize
 
         if CurrentAppContext().isMainApp,
