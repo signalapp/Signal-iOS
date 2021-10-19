@@ -1,6 +1,3 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "나중에";
-
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal에 대하여";
 
@@ -121,9 +118,6 @@
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "파기";
-
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "저장하지 않음";
 
@@ -198,45 +192,6 @@
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "보관";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "캡션 글자 제한 초과";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "캡션 추가…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "캡션";
-
-/* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "첨부 파일 내보내기에 실패했습니다.";
-
-/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "저장 실패";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "파일 유형: %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "용량: %@";
-
-/* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "저장됨";
-
-/* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "데이터를 더 쓰며 느리게";
-
-/* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "데이터를 덜 쓰며 빠르게";
-
-/* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "미디어 품질";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "받는 사람: %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "보내기";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "첨부 파일";
@@ -331,9 +286,6 @@
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "음성 메시지";
 
-/* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "음성 메시지";
-
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "음성 통화";
 
@@ -376,17 +328,8 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "배너 닫기";
 
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "이 그룹에게서 메시지 또는 새 소식을 받을 수 없게 됩니다.";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "차단";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" 그룹을 차단하고 나가시겠습니까?";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ 님을 차단하시겠습니까?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "차단한 그룹";
@@ -406,14 +349,8 @@
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "메시지와 전화를 주고받을 수 있게 됩니다.";
 
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "그룹에 있는 멤버가 나를 다시 그룹에 추가할 수 있게 됩니다.";
-
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "그룹 멤버가 나를 다시 그룹에 추가할 수 있게 됩니다.";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "이 그룹을 차단을 해제하겠습니까?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ 대화의 차단을 해제하시겠습니까?";
@@ -421,32 +358,8 @@
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "차단";
 
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ 대화를 차단했습니다.";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "사용자 차단함";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "그룹 차단함";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "본인은 차단할 수 없습니다.";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "오류";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ 대화의 차단을 해제했습니다.";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "이제 그룹에 있는 멤버가 나를 다시 그룹에 추가할 수 있습니다.";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단한 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "새 기능: 얼굴 또는 그린 곳을 가릴 수 있습니다.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "추가";
@@ -510,12 +423,6 @@
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = " 부재중 음성 통화";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal에서 전화 또는 음성 메시지를 녹음하려면 iOS 설정 앱에서 마이크 접근 권한을 허용해야 합니다.";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "마이크 접근 권한 필요";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 발신자의 안전 번호가 변경되어 부재중 전화로 처리됨";
@@ -712,50 +619,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "등록되지 않은 전화번호";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "수정";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "이메일";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "도시";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "국가";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "이웃";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "우편사서함";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "우편번호";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "지역";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "도로";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "성";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "이름";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "가운데 이름";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "접두사";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "접미사";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "조직";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "대화에서 연락처 이름과 사진을 보려면:";
@@ -792,18 +657,6 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "연락처 선택";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "연락처 공유";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "이름 수정";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "잘못된 연락처입니다.";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "연락처 입력란이 선택되지 않았습니다.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "지원에 문의";
@@ -903,24 +756,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제하시겠습니까?";
-
-/* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "관리자만 그룹에 메시지를 전송할 수 있습니다.";
-
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "대화는 %@개 이상 선택할 수 없습니다.";
-
-/* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "그룹";
-
-/* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "최근 대화";
-
-/* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "대화 상대";
-
-/* navbar header */
-"CONVERSATION_PICKER_TITLE" = "수신자 선택";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "검색 결과 없음";
@@ -1126,9 +961,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "연락처 세부 정보";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "프로필 공유";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "연락처에 추가";
 
@@ -1152,9 +984,6 @@
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "세션을 초기화하면 %@ 님의 메시지를 다시 받을 수 있게 되나, 이미 손상된 메시지는 복구할 수 없습니다.";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "국가 코드 선택";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "이동 및 크기 변경";
@@ -1426,14 +1255,8 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "활성화하면 채팅에서 주고받은 새 메시지를 본 후에 사라집니다.";
 
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "현재 메시지가 %@ 후 사라지도록 설정됨";
-
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "시간";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "사라지는 메시지 설정";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "분";
@@ -1501,17 +1324,8 @@
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "왜 기부해야 합니까?";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS 설정 앱에서 접근 권한을 허용할 수 있습니다.";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal이 연락처 정보를 수정하려면 연락처 접근 권한이 필요함";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "그룹 편집";
-
-/* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "이 사용자가 Signal을 업그레이드하기 전에는 그룹에 추가할 수 없습니다.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "최대 그룹 규모인 멤버 %@명에 도달했습니다.";
@@ -1599,9 +1413,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "동영상을 저장할 수 없습니다.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "메시지를 보낼 수 없습니다.";
@@ -2149,9 +1960,6 @@
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "그룹에 참가할 수 없음";
 
-/* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "그룹";
-
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "참가";
 
@@ -2310,15 +2118,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "관리자";
-
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "멤버 없음";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "멤버 1명";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "멤버 %@명";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "멤버 %@명";
@@ -2584,9 +2383,6 @@
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "사용자가 이미 그룹에 있습니다.";
 
-/* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "초대를 수락할 수 없습니다.";
-
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "그룹 차단";
 
@@ -2827,15 +2623,6 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "아무 곳이나 그려서 가릴 수 있습니다";
-
-/* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "얼굴 가리기";
-
-/* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "다른 사람의 얼굴이나 영역을 그려서 가릴 수 있습니다";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "항목 %@개를 초과하여 공유할 수 없습니다.";
 
@@ -2904,9 +2691,6 @@
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "음성 메시지";
-
-/* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "잘못된 음성 파일입니다.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS 설정 앱에서 연락처 권한을 허용하면 Signal에 친구를 초대할 수 있습니다.";
@@ -2980,9 +2764,6 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "그룹 나가기";
 
-/* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "그룹 나가기 도중 오류가 발생했습니다.";
-
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "QR 코드가 올바르지 않습니다. 스캔하고자 하는 기기에 있는 QR 코드를 읽었는지 다시 한 번 확인하세요.";
 
@@ -3006,9 +2787,6 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "새 기기 연결";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "링크 미리보기";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "연결된 기기";
@@ -3385,9 +3163,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "조회함";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "새 메시지";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ 님은 더 이상 검증된 사용자가 아닙니다. 탭하여 설정을 엽니다.";
 
@@ -3409,26 +3184,11 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "부재중 전화";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "iOS 설정 앱에서 카메라 접근을 허용하여 Signal 영상 통화를 할 수 있습니다.";
-
-/* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal에서 카메라 접근 권한이 필요합니다.";
-
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "iOS 설정 앱에서 권한을 활성화할 수 있습니다. ";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal에서 해당 기능을 사용하려면 위치 접근 권한을 허용하세요.";
-
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "iOS 설정 앱에서 권한을 활성화할 수 있습니다. ";
-
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal에서 해당 기능을 사용하려면 사진 접근 권한을 허용하세요.";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "없음";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "더 이상 기기를 연결할 수 없습니다.";
@@ -3499,20 +3259,8 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "멤버 선택";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "변경사항을 파기하시겠습니까?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "저장하지 않은 변경사항";
-
 /* No comment provided by engineer. */
 "new_message" = "새 메시지";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "검색";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "사용자 찾기";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "전화번호로 연락처 찾기";
@@ -3528,12 +3276,6 @@
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Signal에 오신 것을 환영합니다";
-
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "새 메시지 보내기:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "사용자를 찾을 수 없습니다. SMS로 초대하시겠습니까?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "개인 메모";
@@ -3769,29 +3511,11 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "%@ 님에게 전화함";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "요청 거부";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@의 %1$@";
 
-/* Indicator for unknown currency. */
-"PAYMENTS_CURRENCY_UNKNOWN" = "?";
-
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ 님이 거절했다는 알림을 받게 됩니다.";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "이 요청을 거부하시겠습니까?";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "코인 정리 수수료";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "요청을 취소할 수 없습니다.";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "요청을 거부할 수 없습니다.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "실패";
@@ -4084,9 +3808,6 @@
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal을 이용하는 모두가 내 휴대전화 번호를 통해 나를 찾아볼 수 없습니다. 내 휴대전화 번호를 연락처로 가지고 있는 사람 또한 연락처에서 나를 볼 수 없으며, 다른 사람들 또한 휴대전화 번호 검색을 통하여 나를 찾을 수 없습니다.";
 
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "예시: %@";
-
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "내 연락처";
 
@@ -4296,9 +4017,6 @@
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN이 꺼졌습니다.";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "미디어 재생";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ 님을 검증하지 않았다 표시했습니다.";
@@ -4570,12 +4288,6 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "푸시 알림 재등록에 실패했습니다.";
 
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "국가 코드";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "번호 입력";
-
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "등록 오류";
 
@@ -4590,9 +4302,6 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "지원되지 않는 전화번호 형식입니다. 지원 팀에 문의하세요.";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "전화번호";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "메시지를 보내기 전에 등록해야 합니다.";
@@ -4734,9 +4443,6 @@
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "인증 실패";
-
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal 잠금 해제";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "홍길순";
@@ -5860,27 +5566,6 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "없음";
 
-/* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "확인이 완료되었습니다.";
-
-/* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "확인을 건너뛰도록 선택하면 다른 사용자이 보낸 메시지를 놓칠 수 있고 메시지가 전송되지 않을 수 있습니다.";
-
-/* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "확인하지 않고 계속하시겠습니까?";
-
-/* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Signal에서 스팸을 방지하려면 확인을 완료하세요.\n\n확인 후 메시지를 계속 전송할 수 있습니다. 일시 중지된 메시지는 자동으로 전송됩니다.";
-
-/* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "메시지를 계속하려면 확인";
-
-/* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "확인 건너뛰기";
-
-/* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "확인 완료";
-
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "기존 그룹은 향후 몇 주 내에 이러한 기능을 자동으로 받게 됩니다.";
 
@@ -6181,12 +5866,6 @@
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "연락처 업데이트";
 
-/* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "그룹을 업데이트할 수 없습니다.";
-
-/* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "그룹을 업데이트할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.";
-
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "내 PIN 만들기";
 
@@ -6201,12 +5880,6 @@
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN 끄기";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "향후 Signal은 iOS 11 혹은 이상 버전에서만 작동합니다. 설정 앱 >> 일반 >> 소프트웨어 업데이트에서 업그레이드할 수 있습니다.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS 업그레이드";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal 사용자 이름은 선택 사항입니다. 사용자 이름을 만든다면 다른 Signal 사용자들이 사용자 이름으로 나를 찾을 수 있으며, 전화번호를 몰라도 연락할 수 있습니다.";
@@ -6277,17 +5950,11 @@
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "이미 이 메시지는 확인했습니다.";
 
-/* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "여기를 탭하여 메시지를 본 후 사라지게 하세요.";
-
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "한 번만 볼 수 있는 미디어 파일은 보낸 후 자동으로 제거됩니다.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "쓸어넘겨 취소";
-
-/* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "음성 메시지";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "길게 누르면 녹음됩니다.";

@@ -1,6 +1,3 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ná bac leis anois";
-
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "About Signal";
 
@@ -121,9 +118,6 @@
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Cuileáil";
-
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ná Sábháil";
 
@@ -198,45 +192,6 @@
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Cartlannú";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Ní féidir níos mó téacs a chur leis an lipéad.";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Cuir lipéad leis...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Lipéad";
-
-/* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Níorbh fhéidir an ceangaltán a easpórtáil.";
-
-/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Theip ar Shábháil";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Cineál an chomhaid: %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Méid: %@";
-
-/* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Sábháilte";
-
-/* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
-
-/* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
-
-/* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Teachtaireacht chuig %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Seol";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Ceangaltán";
@@ -331,9 +286,6 @@
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Teachtaireacht Ghutha";
 
-/* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Teachtaireacht Fuaime";
-
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "Glao Fuaime";
 
@@ -376,17 +328,8 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
 
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ní bhfaighidh tú teachtaireachtaí ón ghrúpa seo a thuilleadh.";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Cuir bac air";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "An bhfuil fonn ort bac a chur ar “%@” agus an grúpa a fhágáil?";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "An bhfuil fonn ort bac a chur ar %@?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Grúpaí Bactha";
@@ -406,14 +349,8 @@
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Beidh sibh in ann teachtaireachtaí a sheoladh dá chéile agus glaonna a chur ar a chéile.";
 
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Beidh na baill atá ann ábalta tusa a chur leis an ngrúpa arís.";
-
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Beidh baill den ghrúpa in ann tusa a chur leis an ngrúpa seo arís.";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "An bhfuil fonn ort an bac a bhaint den ghrúpa seo?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "An bhfuil fonn ort an bac a bhaint de %@?";
@@ -421,32 +358,8 @@
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Cuir bac air";
 
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "Cuireadh bac ar %@.";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Cuireadh bac ar úsáideoir";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Cuireadh bac ar ghrúpa";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Ní féidir leat bac a chur ort féin.";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Earráid";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Baineadh an bac de %@.";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Tá na baill atá ann anois ábalta tusa a chur leis an ngrúpa arís.";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Ní bheidh úsáideoirí bactha in ann glaonna a chur ort ná teachtaireachtaí a sheoladh chugat.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nua: Aghaidheanna a dhoiléiriú nó tarraingt áit ar bith le doiléiriú.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Cuir leis";
@@ -510,12 +423,6 @@
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Glao fuaime caillte";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Is féidir leat cead a thabhairt don aip an micreafón a úsáid sna Socruithe iOS, sa chaoi go mbeidh tú in ann glaonna a chur agus teachtaireachtaí a thaifeadadh in Signal.";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Rochtain ar an Micreafón ag Teastáil";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Glao caillte toisc gur athraíodh uimhir shábháilteachta an ghlaoiteora.";
@@ -712,50 +619,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Uimhir Neamhchláraithe";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Eagar";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Seoladh r-phoist";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Cathair";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Tír";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Ceantar";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "Bosca Poist";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Cód Poist";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Réigiún";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Sráid";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Sloinne";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Ainm";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Ainm Láir";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Réimír";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Iarmhír";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Eagraíocht";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your chats:";
@@ -792,18 +657,6 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "Roghnaigh Teagmhálaí";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Comhroinn an Teagmhálaí seo";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Ainm a Chur in Eagar";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Teagmhálaí Neamhbhailí";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Níl aon réimse roghnaithe.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Déan Teagmháil le Foireann Tacaíochta Signal";
@@ -903,24 +756,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
-
-/* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
-
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ chats.";
-
-/* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "Grúpaí";
-
-/* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Na Comhráite Is Déanaí";
-
-/* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Daoine";
-
-/* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Roghnaigh Faighteoirí";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Gan torthaí";
@@ -1126,9 +961,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Contact Details";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Comhroinn mo Phróifíl";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Cuir leis na teagmhálaithe";
 
@@ -1152,9 +984,6 @@
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Má athshocraíonn tú do sheisiún, beidh tú in ann teachtaireachtaí a fháil ó %@ amach anseo, ach ní bheidh tú in ann seanteachtaireachtaí truaillithe a fháil ar ais.";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Roghnaigh Cód Tíre";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Bearradh ⁊ Méid";
@@ -1426,14 +1255,8 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "When enabled, new messages sent and received in this chat will disappear after they have been seen.";
 
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Faoi láthair, imíonn teachtaireachtaí as radharc tar éis %@";
-
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "uair an chloig";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Socruithe na dteachtaireachtaí gearrshaolacha";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "nóiméid";
@@ -1501,17 +1324,8 @@
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Is féidir leat cead a thabhairt do Signal sna Socruithe iOS.";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Teastaíonn rochtain ar do chuid teagmhálaithe ó Signal chun iad a chur in eagar";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Cuir an Grúpa in Eagar";
-
-/* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ní féidir an t-úsáideoir seo a chur leis an ngrúpa go dtí go nuashonróidh sé/sí Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maximum group size of %@ members reached.";
@@ -1599,9 +1413,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Níorbh fhéidir an físeán a shábháil.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Níorbh fhéidir an teachtaireacht a sheoladh.";
@@ -2149,9 +1960,6 @@
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "Can’t join group";
 
-/* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Group";
-
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Téigh le";
 
@@ -2310,15 +2118,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Riarthóir";
-
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "Níl aon bhall ann";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 bhall";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ ball";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ Ball";
@@ -2584,9 +2383,6 @@
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Tá an t-úsáideoir sa ghrúpa cheana.";
 
-/* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Níorbh fhéidir glacadh leis an gcuireadh.";
-
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "Cuir bac ar an ngrúpa seo";
 
@@ -2827,15 +2623,6 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Tarraing áit ar bith lena dhoiléiriú";
-
-/* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Doiléirigh aghaidheanna";
-
-/* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Tarraing chun aghaidheanna nó áiteanna eile a dhoiléiriú";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ní féidir leat níos mó ná %@ comhad a chomhroinnt.";
 
@@ -2904,9 +2691,6 @@
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Teachtaireacht Ghutha";
-
-/* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Comhad fuaime neamhbhailí.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Is féidir leat rochtain ar do chuid teagmhálaithe a thabhairt do Signal sna Socruithe iOS chun cuireadh a thabhairt do chairde Signal a úsáid.";
@@ -2980,9 +2764,6 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Fág an Grúpa";
 
-/* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "Tharla earráid agus an grúpa á fhágáil.";
-
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Níl an cód QR seo bailí. Deimhnigh gur scan tú an cód QR ar an ngléas a bhfuil tú ag iarraidh nascadh leis.";
 
@@ -3006,9 +2787,6 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Nasc Gléas Nua";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Réamhamharc ar Nasc";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Gléasanna Nasctha";
@@ -3385,9 +3163,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Feicthe";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Teachtaireacht Nua";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Níl %@ marcáilte deimhnithe a thuilleadh. Tapáil chun roghanna a fheiceáil.";
 
@@ -3409,26 +3184,11 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Glao caillte";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Is féidir leat rochtain ar an gceamara a thabhairt don aip sna Socruithe iOS chun físghlaonna a chur in Signal.";
-
-/* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Teastaíonn rochtain ar do cheamara ó Signal.";
-
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Is féidir leat cead a thabhairt don aip sna Socruithe iOS.";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Ní mór duit an áit ina bhfuil tú a nochtadh do Signal chun an ghné seo a úsáid.";
-
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Is féidir leat cead a thabhairt don aip sna Socruithe iOS.";
-
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Teastaíonn rochtain ar do chuid grianghraf ó Signal chun é seo a dhéanamh.";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "Gan Fuaim";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Ní féidir leat níos mó gléasanna a nascadh.";
@@ -3499,20 +3259,8 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Baill a Roghnú";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "An bhfuil fonn ort fágáil gan na hathruithe seo a shábháil?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Athruithe Gan Sábháil";
-
 /* No comment provided by engineer. */
 "new_message" = "Teachtaireacht Nua";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Cuardaigh";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Aimsigh Úsáideoir";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Aimsigh Teagmhálaí de réir Uimhreach Gutháin";
@@ -3528,12 +3276,6 @@
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Fáilte go Signal";
-
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Teachtaireacht nua chuig:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Níor aimsíodh an t-úsáideoir. An bhfuil fonn ort cuireadh a thabhairt trí SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Nóta Pearsanta";
@@ -3769,29 +3511,11 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Chuir tú glao ar %@";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
 
-/* Indicator for unknown currency. */
-"PAYMENTS_CURRENCY_UNKNOWN" = "?";
-
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Teipthe";
@@ -4084,9 +3808,6 @@
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nobody on Signal will be able to find you with your phone number. You won’t be visible as contact for people who have your phone number in their contacts and others won’t be able to find you with your phone number in search.";
 
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Sampla: %@";
-
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
 
@@ -4296,9 +4017,6 @@
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "Díchumasaíodh an UAP.";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Seinn an Comhad Meáin";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Níor mharcáil tú %@ deimhnithe fós.";
@@ -4570,12 +4288,6 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Theip ort athchlárú le brúfhógraí.";
 
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Cód Tíre";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Cuir an Uimhir Isteach";
-
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Earráid Chlárúcháin";
 
@@ -4590,9 +4302,6 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Tá an uimhir ghutháin seo i bhformáid nach dtacaímid léi. Déan teagmháil leis an bhfoireann tacaíochta.";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "Uimhir Ghutháin";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "Caithfidh tú clárú sular féidir leat teachtaireacht a sheoladh.";
@@ -4734,9 +4443,6 @@
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Theip ar Fhíordheimhniú";
-
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Díghlasáil Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Órla Ní Annracháin";
@@ -5860,27 +5566,6 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Gan Fuaim";
 
-/* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
-
-/* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
-
-/* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
-
-/* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";
-
-/* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verify to Continue Messaging";
-
-/* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Skip Verification";
-
-/* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Complete verification";
-
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Existing groups will automatically get these features in the coming weeks.";
 
@@ -6181,12 +5866,6 @@
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Nuashonraigh an Teagmhálaí";
 
-/* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Níorbh fhéidir an grúpa a nuashonrú.";
-
-/* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Níorbh fhéidir an grúpa a nuashonrú. Deimhnigh go bhfuil tú ceangailte leis an Idirlíon agus bain triail eile as.";
-
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Cruthaigh d'UAP";
 
@@ -6201,12 +5880,6 @@
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Díchumasaigh an UAP";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Beidh iOS 11 nó leagan níos déanaí ag teastáil go luath chun Signal a úsáid. Ba chóir duit nuashonrú a dhéanamh i Socruithe iOS >> General >> Software Update.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Nuashonraigh iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Is féidir leat ainm úsáideora Signal a chruthú más mian leat. Má chruthaíonn tú ainm úsáideora, beidh daoine eile ar Signal in ann thú a aimsiú tríd an ainm seo agus dul i dteagmháil leat gan d'uimhir ghutháin a bheith ar eolas acu.";
@@ -6277,17 +5950,11 @@
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Bhreathnaigh tú ar an teachtaireacht seo cheana.";
 
-/* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tapáil anseo agus scriosfar an teachtaireacht seo tar éis don fhaighteoir breathnú uirthi.";
-
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Scriostar comhaid mheán aonuaire go huathoibríoch tar éis duit iad a sheoladh.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Sleamhnaigh chun é a chur ar ceal";
-
-/* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Teachtaireacht Ghutha";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

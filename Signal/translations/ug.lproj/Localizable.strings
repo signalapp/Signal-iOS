@@ -1,6 +1,3 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ھازىر ئەمەس";
-
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "‫Signal ھەققىدە";
 
@@ -121,9 +118,6 @@
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "سىزگە %@ ئەۋەتكەن ئۇچۇر، چاپلاق، ئىنكاس، ئوقۇلدى خېتى ياكى ۋاسىتىنى يەتكۈزىلەلمىدى. ئۇلار بەلكىم سىزگە ئۇلارنى بىۋاسىتە ياكى گۇرۇپپىدا يوللاشنى سىنىغان بولۇشى مۇمكىن.";
 
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "تاشلىۋەت";
-
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "ساقلىما";
 
@@ -198,45 +192,6 @@
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "ئارخىپ";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "بايان چەككە يەتتى.";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "بايان قوش…";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "بايان";
-
-/* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "قوشۇمچىنى چىقىرالمىدى.";
-
-/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "ساقلىيالمىدى";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ھۆججەت تىپى: %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "چوڭلۇقى: %@";
-
-/* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "ساقلاندى";
-
-/* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "ئاستىراق، سانلىق مەلۇماتنى كۆپ ئىشلىتىدۇ";
-
-/* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "تېزرەك، سانلىق مەلۇماتنى ئاز ئىشلىتىدۇ";
-
-/* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ۋاسىتە سۈپىتى";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "يوللانغۇچى %@";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ئەۋەت";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "قوشۇمچە";
@@ -331,9 +286,6 @@
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ئاۋازلىق ئۇچۇر";
 
-/* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ئۈن ئۇچۇر";
-
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "ئۈن چاقىرىش";
 
@@ -376,17 +328,8 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "لوزۇنكىنى ياپ";
 
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ئەمدى بۇ گۇرۇپپىنىڭ ئۇچۇرى ۋە يېڭىلىنىشىنى تاپشۇرۇۋالمايسىز.";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "چەكلەش";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "بۇ «%@» گۇرۇپپىنى چەكلەپ ۋە چېكىنەمدۇ؟";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ نى چەكلەمدۇ؟";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "چەكلەنگەن گۇرۇپپىلار";
@@ -406,14 +349,8 @@
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "ئۆز ئارا ئۇچۇرلىشىپ ۋە چاقىرىشالايسىلەر.";
 
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "مەۋجۇت ئەزالار سىزنى گۇرۇپپىغا قايتا قوشالايدۇ.";
-
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "گۇرۇپپا ئەزالىرى سىزنى بۇ گۇرۇپپىغا قايتا قوشالايدۇ.";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "بۇ گۇرۇپپىنى چەكلىمەمدۇ؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ نى چەكلىمەمدۇ؟";
@@ -421,32 +358,8 @@
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "چەكلەش";
 
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ چەكلەندى.";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ئىشلەتكۈچى چەكلەندى";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "گۇرۇپپا چەكلەندى";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ئۆزىڭىزنى چەكلىيەلمەيسىز.";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "خاتالىق";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ چەكلەنمىدى.";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "مەۋجۇت ئەزالار ھازىر سىزنى گۇرۇپپىغا قايتا قوشالايدۇ.";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "توسۇۋېتىلگەن ئىشلەتكۈچىلەر سىزگە تېلېفون قىلالمايدۇ ياكى ئۇچۇر ئەۋەتەلمەيدۇ.";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "يېڭى: چىراي ياكى خالىغان جاي سىزىلسا تۇتۇقلىشىدۇ.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "قوشۇش";
@@ -510,12 +423,6 @@
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 جاۋابسىز ئۈن چاقىرىلىش";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "سىز iOS نىڭ تەڭشەكلەردىن مىكروفون ھوقۇقىنى قوزغىتىپ، Signal نىڭ چاقىرىش ۋە ئۈن ئۇچۇرى خاتىرىلىشىگە يول قويالايسىز.";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "مىكروفون زىيارەت ھوقۇقى زۆرۈر";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ جاۋابسىز چاقىرىش چۈنكى چاقىرغۇچىنىڭ بىخەتەرلىك نومۇرى ئۆزگەرگەن.";
@@ -712,50 +619,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "خەتلەتمىگەن نومۇر";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "تەھرىر";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "ئېلخەت";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "شەھەر";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "دۆلەت";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "قوشنا";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "پوچتا ساندۇقى";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "پوچتا نومۇرى";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "رايون";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "كوچا";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "تەگئات";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "ئات";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "ئوتتۇرانچى ئات";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "ئاتاق";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "قوشۇمچە نام";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "تەشكىل";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "سۆھبەتتە ئالاقەداش ئاتى ۋە سۈرەتنى كۆرسىتىدۇ:";
@@ -792,18 +657,6 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "ئالاقەداش تاللا";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "ئالاقەداش ھەمبەھىر";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "ئات تەھرىر";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "ئىناۋەتسىز ئالاقەداش.";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "ھېچقانداق ئالاقەداش بۆلىكى تاللانمىدى.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "قوللىغۇچىلار  بىلەن ئالاقىلىشىڭ";
@@ -903,24 +756,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "سۆھبەتنى ئۆچۈرەمسىز؟";
-
-/* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "گۇرۇپپىغا پەقەت باشقۇرغۇچىلارلا ئۇچۇر يوللىيالايدۇ.";
-
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "سىز %@ دىن كۆپ سۆھبەتنى تاللىيالمايسىز. ";
-
-/* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "گۇرۇپپا";
-
-/* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "يېقىنقى سۆھبەتلەر";
-
-/* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "ئالاقەداش";
-
-/* navbar header */
-"CONVERSATION_PICKER_TITLE" = "تاپشۇرۇۋالغۇچىنى تاللاڭ";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "ماس نەتىجە يوق";
@@ -1126,9 +961,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ئالاقەداش تەپسىلاتى";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "سەپلىمە ھۆججەت ھەمبەھىر";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "ئالاقەداشلارغا قوش";
 
@@ -1152,9 +984,6 @@
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "بۇ سۆزلەشكۈنى ئەسلىگە قايتۇرغاندىن كېيىن %@ نىڭ ئۇچۇرىنى تاپشۇرۇۋالالايدۇ، ئەمما بۇزۇلغان ئۇچۇرلارنى ئەسلىگە كەلتۈرەلمەيدۇ.";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "دۆلەت كودى تاللاڭ";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "يۆتكەش ۋە چوڭلۇقى";
@@ -1426,14 +1255,8 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "قوزغىتىلغاندا، بۇ سۆھبەتتە ئەۋەتىلگەن ۋە تاپشۇرۇۋالغان يېڭى ئۇچۇرلار كۆرۈنگەندىن كېيىن غايىب بولىدۇ.";
 
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "نۆۋەتتىكى ئۇچۇرلار %@ دىن كېيىن غايىب بولىدۇ.";
-
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "سائەت";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "غايىب ئۇچۇرلار تەڭشىكى";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "مىنۇت";
@@ -1501,17 +1324,8 @@
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "نېمىشقا ئىئانە قىلىمىز؟";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "سىز iOS تەڭشەكلىرىدىن ئەپ زىيارەت ھوقۇقىنى قوزغىتالايسىز.";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "‫Signal ئالاقىداش ئۇچۇرلىرىنى تەھرىرلەشكە «ئالاقىداش» زىيارەت ھوقۇقى تەلەپ قىلىدۇ";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "گۇرۇپپا تەھرىرلەڭ";
-
-/* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "بۇ ئىشلەتكۈچى Signal نى يۇقىرىلاتمىغىچە بۇ گۇرۇپپىغا قوشقىلى بولمايدۇ.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "گۇرۇپپىنىڭ ئادەم سانى ئەزا چېكى %@ گە يەتتى.";
@@ -1599,9 +1413,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "ئۇچۇرلارنى ئۇلاپ يوللىيالمايدۇ.";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "سىننى ساقلىيالمىدى.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ئۇچۇر ئەۋەتەلمىدى.";
@@ -2149,9 +1960,6 @@
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "گۇرۇپپىغا قوشۇلالمايدۇ";
 
-/* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "گۇرۇپپا";
-
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "قوشۇل";
 
@@ -2310,15 +2118,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "باشقۇرغۇچى";
-
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "ئەزا يوق";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 ئەزا";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ ئەزا";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ ئەزا";
@@ -2584,9 +2383,6 @@
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "ئىشلەتكۈچى ئاللىبۇرۇن گۇرۇپپىدا بار.";
 
-/* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "تەكلىپنى قوبۇل قىلغىلى بولمىدى.";
-
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "گۇرۇپپا چەكلە";
 
@@ -2827,15 +2623,6 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "خالىغان جاي سىزىلسا تۇتۇقلىشىدۇ";
-
-/* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "چىراي تۇتۇق";
-
-/* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "چىراي ياكى دائىرە سىزىلسا تۇتۇقلىشىدۇ";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "سىز %@ دىن كۆپ تۈرنى ھەمبەھىرلىيەلمەيسىز.";
 
@@ -2904,9 +2691,6 @@
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ئاۋازلىق ئۇچۇر";
-
-/* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ئىناۋەتسىز ئۈن ھۆججىتى.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "‫iOS تەڭشەكلەردىن ئالاقەداش زىيارەت ھوقۇقىنى ئاچقاندىن كېيىن، دوستلىرىڭىزنى Signal ئىشلىتىشكە تەكلىپ قىلالايسىز.";
@@ -2980,9 +2764,6 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "گۇرۇپپىدىن ئايرىلىڭ";
 
-/* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "گۇرۇپپىدىن ئايرىلىۋاتقاندا بىر خاتالىق كۆرۈلدى.";
-
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "بۇ QR كودى ئىناۋەتلىك ئەمەس. باغلىماقچى بولغان ئۈسكۈنىدە كۆرسىتىلگەن QR كودىنى سايىلىگەنلىكىڭىزنى جەزملەشتۈرۈڭ.";
 
@@ -3006,9 +2787,6 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "يېڭى ئۈسكۈنىگە باغلان";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "ئۇلانما ئالدىن كۆرۈش";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "باغلانغان ئۈسكۈنىلەر";
@@ -3385,9 +3163,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "كۆرگەن";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "يېڭى ئۇچۇر";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ غا ئەمدى «دەلىللەندى» دەپ بەلگە سېلىمىدى. تاللانمىلار ئۈچۈن چىكىڭ.";
 
@@ -3409,26 +3184,11 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "سۆزلەشمىگەن چاقىرىش";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "‫iOS تەڭشەكلەردىن كامېرا ھوقۇقىنى قوزغاتقاندىن كېيىن Signal دا سىنلىق چاقىرالايسىز.";
-
-/* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "‫Signal كامېرانى زىيارەت قىلالىشى كېرەك.";
-
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "سىز iOS تەڭشەكلىرىدىن ئەپ زىيارەت ھوقۇقىنى قوزغىتالايسىز.";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "بۇ ئىقتىدارنى ئىشلىتىش ئۈچۈن Signal ئورۇن ئۇچۇرىڭىزنى زىيارەت قىلىشقا ئېھتىياجلىق.";
-
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "سىز iOS تەڭشەكلىرىدىن ئەپ زىيارەت ھوقۇقىنى قوزغىتالايسىز.";
-
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "بۇ ئىقتىدارنى ئىشلىتىش ئۈچۈن Signal سۈرەت زىيارەت قىلىش ھوقۇقىغا ئېھتىياجلىق.";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "ھېچنېمە";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "تېخىمۇ كۆپ ئۈسكۈنە بىلەن باغلىيالمايسىز.";
@@ -3499,20 +3259,8 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "ئەزالارنى تاللاڭ";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "بۇ ئۆزگەرتىشلەرنى  تاشلىۋېتەمسىز؟";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "ساقلانمىغان ئۆزگەرتىشلەر";
-
 /* No comment provided by engineer. */
 "new_message" = "يېڭى ئۇچۇر";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ئاقتۇرۇش";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ئىشلەتكۈچى ئىزدەڭ";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "تېلېفون نومۇرى بىلەن ئالاقىداشلارنى تېپىڭ";
@@ -3528,12 +3276,6 @@
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "‫Signal غا خۇش كەلدىڭىز";
-
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "تۆۋەندىكىگە يېڭى ئۇچۇر:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "ئىشلەتكۈچى تېپىلدى. قىسقا ئۇچۇر ئارقىلىق تەكلىپ قىلامسىز؟";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "ئۆزەمگە خاتىرە";
@@ -3769,29 +3511,11 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "‏%@ نى چاقىردىڭىز";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "رەت قىلىش ئىلتىماسى";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "‫%1$@ %2$@ دە";
 
-/* Indicator for unknown currency. */
-"PAYMENTS_CURRENCY_UNKNOWN" = "؟";
-
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ رەت قىلغانلىقىڭىز ئۇقتۇرۇلىدۇ.";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "بۇ ئىلتىماسنى رەت قىلامسىز؟";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "تەڭگە تازىلاش ھەققى";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "ئىلتىماستىن ۋاز كەچكىلى بولمايدۇ.";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "ئىلتىماسنى رەت قىلغىلى بولمايدۇ.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "مەغلۇب بولدى";
@@ -4084,9 +3808,6 @@
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "‫Signal دا ھېچكىم تېلېفون نومۇرىڭىز بىلەن سىزنى تاپالمايدۇ. ئالاقىداشلىرىدا تېلېفون نومۇرىڭىز بار كىشىلەرنىڭ Signal ئالاقىدىشىدا كۆرۈنمەيسىز ۋە باشقىلار تېلېفون نومۇرىڭىز بىلەن سىزنى ئىزدەشتىن ئىزدەپ تاپالمايدۇ.";
 
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "مېسال:%@";
-
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "ئالاقىداشلىرىم";
 
@@ -4296,9 +4017,6 @@
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "PIN چەكلەندى.";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "ۋاسىتە قوي";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@غا دەلىللەندى بەلگىسى قويمىدىڭىز.";
@@ -4570,12 +4288,6 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "تەۋسىيە ئۇقتۇرۇشنى قايتا تىزىملىتالمىدى.";
 
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "دۆلەت كودى";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "تېلېفون نومۇرى كىرگۈزۈڭ";
-
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "تىزىملىتىش خاتالىقى";
 
@@ -4590,9 +4302,6 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "بۇ تېلېفون نومۇر پىچىمىنى قوللىمايدۇ، قوللاش مۇلازىمىتى بىلەن ئالاقە قىلىڭ.";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "تېلېفون نومۇرى";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "ئۇچۇر يوللاشتىن ئىلگىرى تىزىملىتىشىڭىز كېرەك.";
@@ -4734,9 +4443,6 @@
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "دەلىللىيەلمىدى";
-
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "‫Signal قۇلۇپىنى ئاچ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "تىنا ئۇكۇكۇ";
@@ -5860,27 +5566,6 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ھېچنىمە";
 
-/* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "دەلىللەش تامام.";
-
-/* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ئەگەر دەلىللەشتىن ئاتلاشنى تاللىسىڭىز، باشقىلار سىزگە يوللىغان ئۇچۇرنى تاپشۇرۇۋالالمايسىز ۋە ئۇچۇرىڭىزنى يوللىغىلى بولماسلىقى مۇمكىن.";
-
-/* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "دەلىللىمەي داۋاملاشتۇرامدۇ؟";
-
-/* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Signal دا ئەخلەت ئۇچۇرلاردىن ساقلىنىشقا ياردەم قىلىش ئۈچۈن، دەلىللەشنى تاماملاڭ.\n\nدەلىللىگەندىن كېيىن، ئۇچۇر يوللاشنى داۋاملاشتۇرالايسىز. ۋاقىتلىق توختىتىلغان ئۇچۇرلار ئۆزلۈكىدىن يوللىنىدۇ.";
-
-/* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "ئۇچۇرلىشىشنى داۋاملاشتۇرۇش ئۈچۈن دەلىللەش زۆرۈر";
-
-/* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "دەلىللەشتىن ئاتلا";
-
-/* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "دەلىللەش تامام";
-
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "مەۋجۇت گۇرۇپپىلار كېيىنكى ھەپتە بۇ ئىقتىدارلارغا ئاپتوماتىك ئېرىشىدۇ.";
 
@@ -6181,12 +5866,6 @@
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "ئالاقىداشنى يېڭىلا";
 
-/* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "گۇرۇپپىنى يۇقىرىلاتقىلى بولمىدى.";
-
-/* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گۇرۇپپىنى يۇقىرىلاتقىلى بولمىدى. ئىنتېرنېت ئۇلىنىشڭىزنى تەكشۈرۈپ قايتا سىناڭ.";
-
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "يېڭى PIN قۇر";
 
@@ -6201,12 +5880,6 @@
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "PIN چەكلە";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "‫iOS پات ئارىدا iOS 11 ياكى ئۇنىڭدىن يۇقىرى نەشرىنى تەلەپ قىلىدۇ. تەڭشەك >> ئادەتتىكى >> يۇمشاق دېتال يېڭىلاشدىن يۇقىرىلىتىڭ.";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "iOS نى يۇقىرىلىتىڭ";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "ئىشلەتكۈچى ئىسمى Signal دىكى تاللانما ئىقتىدار. ئەگەر ئىشلەتكۈچى ئىسمى قۇرۇشنى تاللىسىڭىز، باشقا Signal ئىشلەتكۈچىلىرى مۇشۇ ئىسىم بىلەن سىزنى ئىزدەپ ئالاقە قىلالايدۇ ھەمدە تېلېفون نومۇرىڭىزنى بىلىش ھاجەتسىز.";
@@ -6277,17 +5950,11 @@
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "بۇ ئۇچۇرنى كۆرۈپ بولدىڭىز.";
 
-/* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "بۇ جاي چېكىلسە ئوقۇلغاندىن كېيىن غايىپ بولىدىغان ئۇچۇر قۇرۇلىدۇ.";
-
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "بىر قېتىملا كۆرۈنىدىغان ۋاسىتە ھۆججەتلىرى ئەۋەتىلگەندىن كېيىن ئاپتوماتىك ئۆچۈرۈلىدۇ.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "بىكار قىلىش ئۈچۈن سىيرىڭ";
-
-/* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ئاۋازلىق ئۇچۇر";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "خاتىرىلەش ئۈچۈن چېكىپ بېسىپ تۇرۇڭ.";

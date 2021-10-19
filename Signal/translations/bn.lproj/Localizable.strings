@@ -1,6 +1,3 @@
-/* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "এখন নয়";
-
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal সম্পর্কে";
 
@@ -121,9 +118,6 @@
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
-/* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "বাতিল";
-
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "সংরক্ষণ করবেন না";
 
@@ -198,45 +192,6 @@
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "আর্কাইভ";
-
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ক্যাপশন সীমা পৌঁছেছে।";
-
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ক্যাপশন যোগ করুন...";
-
-/* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ক্যাপশন";
-
-/* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "সংযুক্তি রপ্তানি ব্যর্থ|";
-
-/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "সংরক্ষণ করতে ব্যর্থ হয়েছে";
-
-/* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ফাইলের ধরন: %@";
-
-/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "আকার: %@";
-
-/* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "সংরক্ষিত";
-
-/* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "আরও ধীরগতি, আরও ডেটা";
-
-/* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "আরও দ্রুত, কম ডেটা";
-
-/* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "মিডিয়ার মান";
-
-/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@-কে মেসেজ পাঠান";
-
-/* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "পাঠান";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "সংযুক্তি";
@@ -331,9 +286,6 @@
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ভয়েস বার্তা";
 
-/* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "অডিও বার্তা";
-
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "অডিও কল";
 
@@ -376,17 +328,8 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ব্যানার বন্ধ করুন";
 
-/* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "আপনি আর এই গ্রুপ থেকে বার্তা বা আপডেট পাবেন না।";
-
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "অবরূদ্ধ";
-
-/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" গ্রুপটিকে অবরুদ্ধ করবেন এবং ছেড়ে যাবেন?";
-
-/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ অবরূদ্ধ করবেন?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "অবরুদ্ধ গ্রুপসমূহ";
@@ -406,14 +349,8 @@
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "আপনারা একে অপরকে মেসেজ পাঠাতে এবং কল করতে পারবেন।";
 
-/* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "বিদ্যমান সদস্যরা আপনাকে আবার গ্রুপে যোগ করতে সক্ষম হবে।";
-
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "গ্রুপের সদস্যরা আপনাকে আবার এই গ্রুপে যোগ করতে পারবেন।";
-
-/* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "এই গ্রুপটি অবরোধ মুক্ত করবেন?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ কে অবমুক্ত করবেন?";
@@ -421,32 +358,8 @@
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "অবরূদ্ধ";
 
-/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ কে অবরূদ্ধ করা হয়েছে";
-
-/* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ব্যবহারকারী অবরুদ্ধ হয়েছে";
-
-/* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "গ্রুপ অবরূদ্ধ হয়েছে";
-
-/* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "আপনি নিজেকে অবরূদ্ধ করতে পারবেন না।";
-
-/* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ত্রুটি";
-
-/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ অবমুক্ত হয়েছেন";
-
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "বিদ্যমান সদস্যরা আপনাকে আবার গ্রুপে যোগ করতে পারেন।";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "অবরুদ্ধ ব্যবহারকারীরা আপনাকে কল করতে বা আপনাকে বার্তা প্রেরণ করতে পারবেন না।";
-
-/* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "নতুন: ফেসগুলি ঝাপসা করুন অথবা যেকোনও জায়গায় ঝাপসা করতে আঁকুন।";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "যোগ করুন";
@@ -510,12 +423,6 @@
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 অডিও কল মিস হয়েছে";
-
-/* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal থেকে কল সমূহ করতে এবং ভয়েস বার্তাগুলি রেকর্ড করতে আপনি iOS সেটিংস অ্যাপে মাইক্রোফোন অ্যাক্সেস সক্ষম করতে পারেন।";
-
-/* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "মাইক্রোফোন অ্যাক্সেস প্রয়োজন";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ মিস করা কল, কারণ কলারের নিরাপত্তা নাম্বার পরিবর্তিত হয়েছে।";
@@ -712,50 +619,8 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "অনিবন্ধিত নাম্বার";
 
-/* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "সম্পাদনা";
-
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "ইমেইল";
-
-/* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "শহর";
-
-/* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "দেশ";
-
-/* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "আশেপাশে";
-
-/* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "পোস্ট বক্স";
-
-/* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "পোস্টাল কোড";
-
-/* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "অঞ্চল";
-
-/* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "রাস্তা";
-
-/* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "পারিবারিক নাম";
-
-/* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "প্রদত্ত নাম";
-
-/* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "মধ্য নাম";
-
-/* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "উপসর্গ";
-
-/* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "প্রত্যয়";
-
-/* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "প্রতিষ্ঠান";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "আপনার চ্যাটগুলিতে থাকা কন্ট্যাক্টের নাম ও ফটোগুলি দেখতে:";
@@ -792,18 +657,6 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "পরিচিতি নির্বাচন করুন";
-
-/* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "পরিচিতি শেয়ার করুন";
-
-/* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "নাম সম্পাদনা করুন";
-
-/* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "ভুল কন্ট্যাক্ট।";
-
-/* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "কোন পরিচিতি ক্ষেত্র নির্বাচিত হয়নি।";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "সহায়তায় যোগাযোগ করুন";
@@ -903,24 +756,6 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "চ্যাট মুছবেন?";
-
-/* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "কেবলমাত্র অ্যাডমিনরা এই গ্রুপে মেসেজ পাঠাতে পারবেন।";
-
-/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "আপনি %@টির বেশি চ্যাট নির্বাচন করতে পারবেন না।";
-
-/* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "গ্রুপ সমূহ";
-
-/* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "সাম্প্রতিক চ্যাট";
-
-/* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "জনগণ";
-
-/* navbar header */
-"CONVERSATION_PICKER_TITLE" = "প্রাপক চয়ন করুন";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "মিল নেই";
@@ -1126,9 +961,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "কন্ট্যাক্টের বিস্তারিত";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "প্রোফাইল শেয়ার করুন";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "পরিচিতি যুক্ত করুন";
 
@@ -1152,9 +984,6 @@
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "আপনার সেশনটি পুনরায় সেট করা হলে আপনাকে %@ থেকে ভবিষ্যতের বার্তাগুলি গ্রহণের অনুমতি দেবে, তবে এটি ইতিমধ্যে দূষিত বার্তাগুলি পুনরুদ্ধার করবে না।";
-
-/* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "দেশ কোড নির্বাচন করুন";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "সরান এবং স্কেল করুন";
@@ -1426,14 +1255,8 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "সক্রিয় থাকা অবস্থায়, এই চ্যাট থেকে পাঠানো ও এখানে আসা নতুন মেসেজ দেখার পর অদৃশ্য হয়ে যাবে।";
 
-/* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "বর্তমানে %@ এর পরে বার্তাগুলি অদৃশ্য হয়ে যায়";
-
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "ঘন্টা";
-
-/* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "অদৃশ্য বার্তাগুলির সেটিংস";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "মিনিট";
@@ -1501,17 +1324,8 @@
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "কেন দান করবেন?";
 
-/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "আপনি iOS সেটিংস অ্যাপ থেকে অ্যাক্সেস সক্ষম করতে পারবেন।";
-
-/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "পরিচিতির তথ্য সম্পাদনা করতে Signal  এর পরিচিতি অ্যাক্সেস প্রয়োজন";
-
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "গ্রুপ সম্পাদনা করুন";
-
-/* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "এই ইউজারটিকে Signal আপগ্রেড না করা পর্যন্ত এই গ্রুপে যোগ করা যাবে না।";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "গ্রুপের সর্বোচ্চ আকার %@ সদস্যে পৌঁছেছে।";
@@ -1599,9 +1413,6 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
-
-/* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "ভিডিও সংরক্ষণ করা যায়নি|";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "বার্তা প্রেরণে ব্যর্থ।";
@@ -2149,9 +1960,6 @@
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
 
-/* Indicator for group conversations in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "গ্রুপ";
-
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "যোগদান করুন";
 
@@ -2310,15 +2118,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "অ্যাডমিন";
-
-/* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "কোনও সদস্য নেই";
-
-/* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 জন সদস্য";
-
-/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ জন সদস্য";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ জন সদস্য";
@@ -2584,9 +2383,6 @@
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "ইউজার ইতিমধ্যেই গ্রুপে আছেন।";
 
-/* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "আমন্ত্রণ স্বীকার করা যায়নি।";
-
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "গ্রুপ ব্লক করুন";
 
@@ -2827,15 +2623,6 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "যেকোনও জায়গা অস্পষ্ট করতে আঁকুন";
-
-/* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "ফেস অস্পষ্ট করুন";
-
-/* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "অতিরিক্ত ফেস বা জায়গা অস্পষ্ট করতে আঁকুন";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "আপনি %@ টির বেশি আইটেম শেয়ার করতে পারবেন না।";
 
@@ -2904,9 +2691,6 @@
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "ভয়েস বার্তা";
-
-/* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "অবৈধ অডিও ফাইল।";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Signal এ যোগদানের জন্য আপনার বন্ধুদের আমন্ত্রণ জানাতে আপনি iOS সেটিংস অ্যাপ থেকে  পরিচিতি অ্যাক্সেস সক্ষম করতে পারেন।";
@@ -2980,9 +2764,6 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "গ্রুপ ত্যাগ করুন";
 
-/* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "গ্রুপ ছাড়ার সময় একটি ত্রুটি ঘটেছে।";
-
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "এই কিউআর কোডটি বৈধ নয়। আপনি যে ডিভাইস লিঙ্কটি করতে চান তাতে প্রদর্শিত QR কোডটি আপনি স্ক্যান করছেন তা দয়া করে নিশ্চিত হন।";
 
@@ -3006,9 +2787,6 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "নতুন ডিভাইস যুক্ত করুন";
-
-/* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "লিঙ্ক পূর্বরূপ";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "সংযুক্ত ডিভাইসগুলি";
@@ -3385,9 +3163,6 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "দেখা হয়েছে";
 
-/* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "নতুন বার্তা";
-
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ আর যাচাইকৃত হিসাবে চিহ্নিত নয়। বিকল্পগুলির জন্য আলতো চাপুন।";
 
@@ -3409,26 +3184,11 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "ব্যর্থ কল";
 
-/* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal থেকে ভিডিও কল সমূহ করতে আপনি iOS সেটিংস অ্যাপ থেকে ক্যামেরা অ্যাক্সেস সক্ষম করতে পারেন। ";
-
-/* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal এর আপনার ক্যামেরা অ্যাক্সেস করা প্রয়োজন।";
-
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "আপনি iOS সেটিংস অ্যাপ থেকে এই অনুমতিটি সক্ষম করতে পারবেন।";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "এই বৈশিষ্ট্যটির জন্য Signal এর আপনার অবস্থান অ্যাক্সেস প্রয়োজন।";
-
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "আপনি iOS সেটিংস অ্যাপ থেকে এই অনুমতিটি সক্ষম করতে পারবেন।";
-
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "এই বৈশিষ্ট্যটির জন্য Signal এর আপনার ছবির অ্যাক্সেস প্রয়োজন।";
-
-/* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "কিছুই না";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "আপনি আর কোনও ডিভাইস লিঙ্ক করতে পারবেন না।";
@@ -3499,20 +3259,8 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "সদস্যকে বেছে নিন";
 
-/* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "আপনি কি এই পরিবর্তনগুলি বাতিল করতে চান?";
-
-/* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "অসংরক্ষিত পরিবর্তনসমূহ";
-
 /* No comment provided by engineer. */
 "new_message" = "নতুন বার্তা";
-
-/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "অনুসন্ধান";
-
-/* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ব্যবহারকারী খুঁজুন";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ফোন নাম্বার দ্বারা পরিচিতি খুঁজুন";
@@ -3528,12 +3276,6 @@
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Signal এ স্বাগতম!";
-
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "নতুন বার্তা:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "কোন ব্যবহারকারী পাওয়া যায় নি। এসএমএসের মাধ্যমে আমন্ত্রণ করবেন?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "নিজের জন্য বার্তা";
@@ -3769,29 +3511,11 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "আপনি %@-কে কল করেছেন";
 
-/* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "অনুরোধ প্রত্যাখ্যান করুন";
-
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%2$@-এ %1$@";
 
-/* Indicator for unknown currency. */
-"PAYMENTS_CURRENCY_UNKNOWN" = "?";
-
-/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "আপনি যে প্রত্যাখ্যান করেছেন সেটি %@-কে জানানো হবে।";
-
-/* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "এই অনুরোধটি প্রত্যাখ্যান করবেন?";
-
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "কয়েন ক্লিনআপ ফি";
-
-/* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "অনুরোধ বাতিল করা যাবে না।";
-
-/* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "অনুরোধ প্রত্যাখ্যান করা যায়নি।";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "ব্যর্থ হয়েছে";
@@ -4084,9 +3808,6 @@
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal-এর কেউ আপনার ফোন নম্বর দিয়ে আপনাকে খুঁজে পাবেন না। যেসব লোকজনের কাছে আপনার ফোন নম্বর আছে তারা আপনাকে কন্ট্যাক্ট হিসেবে দেখবেন না এবং অন্যরা সার্চে আপনার ফোন নম্বর দিয়ে আপনাকে খুঁজে পাবেন না।";
 
-/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "উদাহরণ: %@";
-
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "আমার কন্ট্যাক্ট";
 
@@ -4296,9 +4017,6 @@
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "পিন নিষ্ক্রিয় করা হয়েছে।";
-
-/* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "মিডিয়া চালান";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "আপনি %@ কে যাচাইকৃত হিসেবে চিহ্নিত করেছেন";
@@ -4570,12 +4288,6 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "পুশ বিজ্ঞপ্তিগুলির জন্য পুনরায় নিবন্ধন করতে ব্যর্থ।";
 
-/* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "দেশ কোড";
-
-/* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "নাম্বার লিখুন";
-
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "নিবন্ধন ত্রুটি";
 
@@ -4590,9 +4302,6 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "এই ফোন নাম্বার ফর্ম্যাটটি সমর্থিত নয়, দয়া করে সহায়তার সাথে যোগাযোগ করুন।";
-
-/* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "ফোন নাম্বার";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "একটি বার্তা প্রেরণের আগে আপনাকে নিবন্ধন করতে হবে।";
@@ -4734,9 +4443,6 @@
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "প্রমাণীকরণ ব্যর্থ।";
-
-/* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal লক্ খুলুন";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "টিনা মুনিম";
@@ -5860,27 +5566,6 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "কিছুই না";
 
-/* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "যাচাইকরণ সম্পন্ন।";
-
-/* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "আপনি যাচাইকরণ এড়িয়ে গেলে, আপনি অন্য ব্যক্তিদের কাছ থেকে আসা মেসেজ নাও দেখতে পারেন এবং আপনার মেসেজগুলিও পাঠানো নাও যেতে পারে।";
-
-/* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "যাচাই না করেই চালিয়ে যাবেন?";
-
-/* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Signal-এ স্প্যাম প্রতিরোধে সহায়তা করতে, অনুগ্রহ করে যাচাইকরণ সম্পন্ন করুন।\n\nযাচাই করার পর, আপনি মেসেজ পাঠানো অব্যাহত রাখতে পারবেন। স্থগিত করা যেকোনো মেসেজ স্বয়ংক্রিয়ভাবে পাঠানো হবে।";
-
-/* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "মেসেজ পাঠানো চালিয়ে যেতে ভেরিফাই করুন";
-
-/* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "যাচাইকরণ এড়িয়ে যান";
-
-/* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "যাচাইকরণ সম্পন্ন করুন";
-
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "বিদ্যমান গ্রুপগুলি আগামী সপ্তাহের মধ্যে স্বয়ংক্রিয়ভাবে এই ফিচারগুলি পাবে।";
 
@@ -6181,12 +5866,6 @@
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "কন্ট্যাক্ট আপডেট করুন";
 
-/* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "গ্রুপ আপডেট করা যায়নি।";
-
-/* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "গ্রুপ আপডেট করা যায়নি। আপনার ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
-
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "আপনার পিন তৈরি করুন";
 
@@ -6201,12 +5880,6 @@
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "পিন নিষ্ক্রিয় করুন";
-
-/* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal-এর শীঘ্রই iOS 11 বা তার পরের সংস্করণের প্রয়োজন হবে। অনুগ্রহ করে সেটিংস অ্যাপ >> সাধারণ >> সফ্টওয়্যার আপডেট-এ আপগ্রেড করুন।";
-
-/* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "আইওএস আপগ্রেড করুন";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal ব্যবহারকারীর নাম ঐচ্ছিক। আপনি যদি একটি ব্যবহারকারীর নাম তৈরি করবেন বলে চয়ন করেন তবে অন্যান্য সিগন্যাল ব্যবহারকারীরা আপনাকে এই ব্যবহারকারী নাম দ্বারা সন্ধান করতে এবং আপনার ফোন নাম্বার না জেনে আপনার সাথে পরিচিতি করতে পারবেন।";
@@ -6277,17 +5950,11 @@
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "আপনি ইতিমধ্যেই এই মেসেজটি দেখেছেন।";
 
-/* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "এই বার্তাটি দেখার পরে অদৃশ্য হয়ে যাওয়ার জন্য এখানে আলতো চাপুন।";
-
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "আউটগোয়িং একবার দেখার যোগ্য মিডিয়া ফাইলগুলি পাঠানোর পরে সেগুলি স্বয়ংক্রিয়ভাবে সরানো হবে।";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "বাতিল করতে স্লাইড করুন";
-
-/* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ভয়েস বার্তা";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "রেকর্ড করতে টিপে ধরে রাখুন।";
