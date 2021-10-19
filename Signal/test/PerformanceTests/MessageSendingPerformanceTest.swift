@@ -152,7 +152,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             self.read { transaction in
                 let messageBody = MessageBody(text: CommonGenerator.paragraph,
                                               ranges: MessageBodyRanges.empty)
-                ThreadUtil.enqueueMessage(with: messageBody,
+                ThreadUtil.enqueueMessage(body: messageBody,
                                           thread: thread,
                                           quotedReplyModel: nil,
                                           linkPreviewDraft: nil,

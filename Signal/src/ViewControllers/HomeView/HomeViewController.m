@@ -17,13 +17,13 @@
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/Theme.h>
-#import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SignalUI/Theme.h>
+#import <SignalUI/UIUtil.h>
 #import <StoreKit/StoreKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

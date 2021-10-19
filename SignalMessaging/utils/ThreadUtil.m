@@ -3,7 +3,6 @@
 //
 
 #import "ThreadUtil.h"
-#import "OWSQuotedReplyModel.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -25,58 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ThreadUtil
 
 #pragma mark - Durable Message Enqueue
-
-+ (TSOutgoingMessage *)enqueueMessageWithBody:(MessageBody *)messageBody
-                                       thread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [self enqueueMessageWithBody:messageBody
-                       mediaAttachments:@[]
-                                 thread:thread
-                       quotedReplyModel:quotedReplyModel
-                       linkPreviewDraft:linkPreviewDraft
-                            transaction:transaction];
-}
-
-+ (TSOutgoingMessage *)enqueueMessageWithBody:(nullable MessageBody *)messageBody
-                             mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
-                                       thread:(TSThread *)thread
-                             quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                             linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [[self class] enqueueMessageWithBody:messageBody
-                               mediaAttachments:mediaAttachments
-                                         thread:thread
-                               quotedReplyModel:quotedReplyModel
-                               linkPreviewDraft:linkPreviewDraft
-                   persistenceCompletionHandler:nil
-                                    transaction:transaction];
-}
-
-+ (nullable TSOutgoingMessage *)createUnsentMessageWithBody:(nullable MessageBody *)messageBody
-                                           mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
-                                                     thread:(TSThread *)thread
-                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                           linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                                transaction:(SDSAnyWriteTransaction *)transaction
-                                                      error:(NSError **)error
-{
-    OWSAssertDebug(thread);
-
-    OutgoingMessagePreparer *outgoingMessagePreparer =
-        [[OutgoingMessagePreparer alloc] initWithMessageBody:messageBody
-                                            mediaAttachments:mediaAttachments
-                                                      thread:thread
-                                            quotedReplyModel:quotedReplyModel
-                                                 transaction:transaction];
-
-    [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:transaction];
-
-    return [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:error];
-}
 
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread
 {

@@ -4,7 +4,6 @@
 
 #import "OWSSounds.h"
 #import "Environment.h"
-#import "OWSAudioPlayer.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -599,27 +598,6 @@ const NSUInteger OWSCustomSoundShift = 16;
     NSString *directory = [[OWSFileSystem appSharedDataDirectoryPath] stringByAppendingPathComponent:@"Library/Sounds"];
     [OWSFileSystem ensureDirectoryExists:directory];
     return directory;
-}
-
-#pragma mark - AudioPlayer
-
-+ (BOOL)shouldAudioPlayerLoopForSound:(OWSSound)sound
-{
-    return (sound == OWSStandardSound_CallConnecting || sound == OWSStandardSound_CallOutboundRinging
-        || sound == OWSStandardSound_DefaultiOSIncomingRingtone);
-}
-
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound audioBehavior:(OWSAudioBehavior)audioBehavior
-{
-    NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
-    if (!soundURL) {
-        return nil;
-    }
-    OWSAudioPlayer *player = [[OWSAudioPlayer alloc] initWithMediaUrl:soundURL audioBehavior:audioBehavior];
-    if ([self shouldAudioPlayerLoopForSound:sound]) {
-        player.isLooping = YES;
-    }
-    return player;
 }
 
 @end

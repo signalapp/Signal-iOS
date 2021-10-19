@@ -9,7 +9,7 @@
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "UIUtil.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>

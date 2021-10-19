@@ -6,8 +6,8 @@
 #import "OWSOrphanDataCleaner.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/TSInteraction.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

@@ -388,7 +388,7 @@ extension SendMessageFlow {
 
     func send(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: messageBody,
+            ThreadUtil.enqueueMessage(body: messageBody,
                                       thread: thread,
                                       quotedReplyModel: nil,
                                       linkPreviewDraft: linkPreviewDraft,
@@ -402,7 +402,7 @@ extension SendMessageFlow {
 
     func send(messageBody: MessageBody?, attachment: SignalAttachment, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(with: messageBody,
+            ThreadUtil.enqueueMessage(body: messageBody,
                                       mediaAttachments: [attachment],
                                       thread: thread,
                                       quotedReplyModel: nil,

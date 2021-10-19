@@ -113,6 +113,6 @@ extension ConversationViewController {
     }
 
     func clearVoiceMessageDraft() {
-        databaseStorage.asyncWrite { [thread] in VoiceMessageModel.clearDraft(for: thread, transaction: $0) }
+        databaseStorage.asyncWrite { [thread] in VoiceMessageModels.clearDraft(for: thread, transaction: $0) }
     }
 }

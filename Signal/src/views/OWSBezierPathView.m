@@ -3,7 +3,7 @@
 //
 
 #import "OWSBezierPathView.h"
-#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

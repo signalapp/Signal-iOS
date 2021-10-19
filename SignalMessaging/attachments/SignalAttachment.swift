@@ -8,7 +8,7 @@ import SignalServiceKit
 import AVFoundation
 import YYImage
 
-enum SignalAttachmentError: Error {
+public enum SignalAttachmentError: Error {
     case missingData
     case fileSizeTooLarge
     case invalidData
@@ -20,7 +20,9 @@ enum SignalAttachmentError: Error {
     case couldNotResizeImage
 }
 
-extension String {
+// MARK: -
+
+public extension String {
     var filenameWithoutExtension: String {
         return (self as NSString).deletingPathExtension
     }
@@ -37,6 +39,8 @@ extension String {
         return result
     }
 }
+
+// MARK: -
 
 extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
     public var errorDescription: String? {
@@ -66,6 +70,8 @@ extension SignalAttachmentError: LocalizedError, UserErrorDescriptionProvider {
         }
     }
 }
+
+// MARK: -
 
 // Represents a possible attachment to upload.
 // The attachment may be invalid.
@@ -140,7 +146,7 @@ public class SignalAttachment: NSObject {
     @objc
     public let dataUTI: String
 
-    var error: SignalAttachmentError? {
+    public var error: SignalAttachmentError? {
         didSet {
             AssertIsOnMainThread()
 
@@ -578,6 +584,8 @@ public class SignalAttachment: NSObject {
         return UIPasteboard.general.numberOfItems > 0
     }
 
+    public static let mentionPasteboardType = "private.archived-mention-text"
+
     @objc
     public class func pasteboardHasText() -> Bool {
         if UIPasteboard.general.numberOfItems < 1 {
@@ -594,7 +602,7 @@ public class SignalAttachment: NSObject {
 
         // The mention text view has a special pasteboard type, if we see it
         // we know that the pasteboard contains text.
-        guard !pasteboardUTISet.contains(MentionTextView.pasteboardType) else {
+        guard !pasteboardUTISet.contains(mentionPasteboardType) else {
             return true
         }
 

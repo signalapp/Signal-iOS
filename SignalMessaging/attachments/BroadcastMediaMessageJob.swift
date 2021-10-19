@@ -117,9 +117,11 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
     }
 }
 
+// MARK: -
+
 public enum BroadcastMediaUploader: Dependencies {
 
-    static func upload(attachmentIdMap: [String: [String]]) throws -> [TSOutgoingMessage] {
+    public static func upload(attachmentIdMap: [String: [String]]) throws -> [TSOutgoingMessage] {
         let observer = NotificationCenter.default.addObserver(
             forName: .attachmentUploadProgress,
             object: nil,

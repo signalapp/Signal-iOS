@@ -144,12 +144,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-#pragma mark - User Interface
-
-- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
-                        fromViewController:(UIViewController *)fromViewController
-                                   success:(void (^)(void))successHandler;
-
 #pragma mark -
 
 // This method is only exposed for usage by the Swift extensions.

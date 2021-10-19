@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import Signal
-@testable import SignalMessaging
+@testable import SignalUI
 
 extension ImageEditorModel {
     func itemIds() -> [String] {

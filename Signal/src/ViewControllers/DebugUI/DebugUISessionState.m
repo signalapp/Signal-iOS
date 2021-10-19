@@ -4,10 +4,10 @@
 
 #import "DebugUISessionState.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

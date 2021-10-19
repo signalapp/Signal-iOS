@@ -4,7 +4,7 @@
 
 #import "RemoteVideoView.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
+#import "UIView+SignalUI.h"
 #import <MetalKit/MetalKit.h>
 #import <PureLayout/PureLayout.h>
 #import <SignalCoreKit/Threading.h>

@@ -272,19 +272,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     [UIApplication.sharedApplication openSystemSettings];
 }
 
-- (nullable ActionSheetAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
-{
-    return [[ActionSheetAction alloc] initWithTitle:CommonStrings.openSettingsButton
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"system_settings")
-                                              style:ActionSheetActionStyleDefault
-                                            handler:^(ActionSheetAction *_Nonnull action) {
-                                                [UIApplication.sharedApplication openSystemSettings];
-                                                if (completion != nil) {
-                                                    completion();
-                                                }
-                                            }];
-}
-
 - (BOOL)isRunningTests
 {
     return getenv("runningTests_dontStartApp");

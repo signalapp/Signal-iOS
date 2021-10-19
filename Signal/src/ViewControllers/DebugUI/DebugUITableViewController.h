@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIPage.h"
-#import <SignalMessaging/OWSTableViewController.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

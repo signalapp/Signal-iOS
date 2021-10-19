@@ -4,7 +4,6 @@
 
 #import "AppSetup.h"
 #import "Environment.h"
-#import "Theme.h"
 #import "VersionMigrations.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -94,13 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
         SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
 
-        OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
         OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
         LaunchJobs *launchJobs = [LaunchJobs new];
         OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-        OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
         BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
@@ -109,7 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
         EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
-        ContactsViewHelper *contactsViewHelper = [ContactsViewHelper new];
         AppExpiry *appExpiry = [AppExpiry new];
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
@@ -117,22 +113,17 @@ NS_ASSUME_NONNULL_BEGIN
         id<Payments> payments = [PaymentsImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
-        ChatColors *chatColors = [ChatColors new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
 
-        [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
-                                             incomingContactSyncJobQueue:incomingContactSyncJobQueue
-                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
-                                                              launchJobs:launchJobs
-                                                             preferences:preferences
-                                              proximityMonitoringManager:proximityMonitoringManager
-                                                                  sounds:sounds
-                                                           windowManager:windowManager
-                                                      contactsViewHelper:contactsViewHelper
-                                           broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
-                                                       orphanDataCleaner:orphanDataCleaner
-                                                              chatColors:chatColors
-                                                           avatarBuilder:avatarBuilder]];
+        [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
+                                                              incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                                                             launchJobs:launchJobs
+                                                                            preferences:preferences
+                                                             proximityMonitoringManager:proximityMonitoringManager
+                                                                                 sounds:sounds
+                                                          broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
+                                                                      orphanDataCleaner:orphanDataCleaner
+                                                                          avatarBuilder:avatarBuilder]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager

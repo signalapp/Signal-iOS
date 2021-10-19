@@ -6,10 +6,10 @@
 #import "OWSCountryMetadata.h"
 #import "Signal-Swift.h"
 #import "UIFont+OWS.h"
-#import "UIView+OWS.h"
-#import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/Theme.h>
+#import "UIView+SignalUI.h"
 #import <SignalServiceKit/OWSSignalService.h>
+#import <SignalUI/OWSTableViewController.h>
+#import <SignalUI/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -8,26 +8,6 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    static var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    final var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    static var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    final var fullTextSearcher: FullTextSearcher { .shared }
-
-    static var fullTextSearcher: FullTextSearcher { .shared }
-
     final var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }
@@ -42,14 +22,6 @@ public extension NSObject {
 
     static var preferences: OWSPreferences {
         Environment.shared.preferencesRef
-    }
-
-    final var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
     }
 
     final var proximityMonitoringManager: OWSProximityMonitoringManager {
@@ -148,14 +120,6 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 
-    var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
-    static var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -168,26 +132,6 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    static var audioSession: OWSAudioSession {
-        Environment.shared.audioSessionRef
-    }
-
-    var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    static var contactsViewHelper: ContactsViewHelper {
-        Environment.shared.contactsViewHelperRef
-    }
-
-    var fullTextSearcher: FullTextSearcher { .shared }
-
-    static var fullTextSearcher: FullTextSearcher { .shared }
-
     var launchJobs: LaunchJobs {
         Environment.shared.launchJobsRef
     }
@@ -202,14 +146,6 @@ public extension Dependencies {
 
     static var preferences: OWSPreferences {
         Environment.shared.preferencesRef
-    }
-
-    var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        Environment.shared.windowManagerRef
     }
 
     var proximityMonitoringManager: OWSProximityMonitoringManager {
@@ -308,14 +244,6 @@ public extension Dependencies {
         SSKEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 
-    var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
-    static var chatColors: ChatColors {
-        Environment.shared.chatColorsRef
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -350,15 +278,6 @@ public extension OWSProfileManager {
 public extension OWSSounds {
     static var shared: OWSSounds {
         Environment.shared.soundsRef
-    }
-}
-
-// MARK: -
-
-@objc
-public extension OWSWindowManager {
-    static var shared: OWSWindowManager {
-        Environment.shared.windowManagerRef
     }
 }
 

@@ -19,7 +19,6 @@
 #import <SignalMessaging/AppSetup.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
@@ -38,6 +37,7 @@
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
+#import <SignalUI/OWSNavigationController.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 
@@ -214,6 +214,8 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
+            // Create SUIEnvironment.
+            [SUIEnvironment.shared setup];
             // Create AppEnvironment.
             [AppEnvironment.shared setup];
             [SignalApp.shared setup];

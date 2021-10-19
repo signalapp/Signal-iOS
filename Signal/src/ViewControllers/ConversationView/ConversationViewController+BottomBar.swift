@@ -168,7 +168,7 @@ public extension ConversationViewController {
         } else {
             Self.databaseStorage.read { transaction in
                 messageDraft = self.thread.currentDraft(transaction: transaction)
-                if VoiceMessageModel.hasDraft(for: self.thread, transaction: transaction) {
+                if VoiceMessageModels.hasDraft(for: self.thread, transaction: transaction) {
                     voiceMemoDraft = VoiceMessageModel(thread: self.thread)
                 }
             }

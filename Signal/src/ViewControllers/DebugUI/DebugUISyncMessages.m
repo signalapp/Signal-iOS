@@ -9,7 +9,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSTableViewController.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
@@ -17,6 +16,7 @@
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSThread.h>
+#import <SignalUI/OWSTableViewController.h>
 
 #ifdef DEBUG
 

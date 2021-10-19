@@ -8,7 +8,6 @@
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
@@ -16,6 +15,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
+#import <SignalUI/AttachmentSharing.h>
 #import <sys/sysctl.h>
 
 NS_ASSUME_NONNULL_BEGIN

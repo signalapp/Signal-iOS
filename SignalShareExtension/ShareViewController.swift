@@ -9,6 +9,7 @@ import PureLayout
 import SignalServiceKit
 import Intents
 import CoreServices
+import SignalUI
 
 @objc
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
@@ -61,6 +62,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+            // Create SUIEnvironment.
+            SUIEnvironment.shared.setup()
             SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()
             SSKEnvironment.shared.notificationsManagerRef = NoopNotificationsManager()
         },

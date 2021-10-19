@@ -2,7 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-// MARK: -
+import UIKit
+import Foundation
+import SignalUI
 
 @objc
 class SharingThreadPickerViewController: ConversationPickerViewController {
