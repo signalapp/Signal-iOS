@@ -3,7 +3,7 @@
 //
 
 #import "PinEntryView.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIView+SignalUI.h>
 #import <SignalUI/ViewControllerUtils.h>

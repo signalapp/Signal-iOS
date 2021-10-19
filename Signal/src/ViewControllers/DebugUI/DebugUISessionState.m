@@ -3,7 +3,7 @@
 //
 
 #import "DebugUISessionState.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>

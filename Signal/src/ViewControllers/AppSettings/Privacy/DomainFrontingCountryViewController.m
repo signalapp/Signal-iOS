@@ -3,7 +3,7 @@
 //
 
 #import "DomainFrontingCountryViewController.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalUI/OWSTableViewController.h>

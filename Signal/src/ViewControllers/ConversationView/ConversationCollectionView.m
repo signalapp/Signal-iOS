@@ -3,7 +3,7 @@
 //
 
 #import "ConversationCollectionView.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

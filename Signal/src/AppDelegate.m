@@ -8,9 +8,9 @@
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
+#import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <Intents/Intents.h>
-#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>

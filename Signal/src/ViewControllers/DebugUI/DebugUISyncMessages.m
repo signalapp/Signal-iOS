@@ -4,7 +4,7 @@
 
 #import "DebugUISyncMessages.h"
 #import "DebugUIContacts.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalCoreKit/Randomness.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>

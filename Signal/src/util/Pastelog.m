@@ -3,9 +3,9 @@
 //
 
 #import "Pastelog.h"
+#import "Signal-Swift.h"
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
-#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>

@@ -5,7 +5,7 @@
 #import "FingerprintViewController.h"
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>

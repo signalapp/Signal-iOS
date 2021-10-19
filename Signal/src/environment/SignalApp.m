@@ -5,7 +5,7 @@
 #import "SignalApp.h"
 #import "AppDelegate.h"
 #import "ConversationViewController.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>

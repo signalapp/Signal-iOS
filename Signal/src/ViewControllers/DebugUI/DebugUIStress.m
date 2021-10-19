@@ -3,8 +3,8 @@
 //
 
 #import "DebugUIStress.h"
+#import "Signal-Swift.h"
 #import "SignalApp.h"
-#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Randomness.h>

@@ -251,7 +251,7 @@
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
 		34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4D1FD0A7A300BC14EF /* DebugLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B4E1FD0A7A300BC14EF /* DebugLogger.m */; };
-		34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */; };
+		34480B571FD0A7A400BC14EF /* OWSScrubbingLogFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */; };
 		34480B5B1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */; };
 		3448E15C22133274004B052E /* OnboardingPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E15B22133274004B052E /* OnboardingPermissionsViewController.swift */; };
