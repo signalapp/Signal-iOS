@@ -135,6 +135,10 @@ class Target:
         self.name = name
         self.path = path
         self.is_test_target = is_test_target
+    
+    def isAppOrAppExtension(self):
+        appOrAppExtensionTargets = [ 'Signal', 'SignalShareExtension','NotificationServiceExtension' ]
+        return self.name in appOrAppExtensionTargets
 
 
 class Header:
@@ -258,16 +262,17 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
         
         swiftHeader = headerSet.find_swift_header(include.body)
         if swiftHeader is not None:
-            # NOTE: -Swift.h headers in development pods must always use long-form imports.
-            if target.name != 'Signal':
-                newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
-            elif swiftHeader.targetName == target.name:
-                newline = '#import "%s"' % ( swiftHeader.filename, )
+            # NOTE: Apps and app extensions import the -Swift.h header for their
+            #       own target using short form improts.
+            #       Otherwise we should always use long-form importsfor  -Swift.h headers.
+            if swiftHeader.targetName == target.name:
+                if target.isAppOrAppExtension():
+                    newline = '#import "%s"' % ( swiftHeader.filename, )
+                else:
+                    newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
             else:
                 newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
             new_lines.append(newline)
-            # newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
-            # new_lines.append(newline)
             continue
         
         header = headerSet.find_header(include.body)
@@ -331,6 +336,7 @@ if __name__ == "__main__":
         Target('SignalShareExtension', 'SignalShareExtension'),
         Target('SignalUI', 'SignalUI'),
         Target('SignalUI', 'SignalUITests', is_test_target=True),
+        Target('NotificationServiceExtension', 'NotificationServiceExtension'),
     ]
     
     headers = find_headers(targets)    
