@@ -547,7 +547,7 @@
 "vc_conversation_settings_invite_button_title" = "Ajouter des membres";
 "vc_settings_faq_button_title" = "FAQ";
 "vc_settings_survey_button_title" = "Feedback / Survey";
-"vc_settings_support_button_title" = "Support";
+"vc_settings_support_button_title" = "Debug Log";
 "modal_send_seed_title" = "Warning";
 "modal_send_seed_explanation" = "This is your recovery phrase. If you send it to someone they'll have full access to your account.";
 "modal_send_seed_send_button_title" = "Send";
@@ -574,3 +574,7 @@
 "OPEN_SETTINGS_BUTTON" = "Settings";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
+"APN_Message" = "You've got a new message";
+"system_mode_theme" = "System";
+"dark_mode_theme" = "Dark";
+"light_mode_theme" = "Light";

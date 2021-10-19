@@ -184,7 +184,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let previewType = preferences.notificationPreviewType(with: transaction)
         switch previewType {
         case .noNameNoPreview:
-            notificationTitle = nil
+            notificationTitle = "Session"
         case .nameNoPreview, .namePreview:
             switch thread {
             case is TSContactThread:

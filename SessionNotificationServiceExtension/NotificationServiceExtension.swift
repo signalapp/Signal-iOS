@@ -78,6 +78,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                             }
                             semaphore.wait()
                         }
+                        notificationContent.sound = OWSSounds.notificationSound(for: thread).notificationSound(isQuiet: false)
                     case let unsendRequest as UnsendRequest:
                         MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
                         return self.completeSilenty()
@@ -112,10 +113,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         notificationContent.body = snippet
                     case .nameNoPreview:
                         notificationContent.title = senderDisplayName
-                        notificationContent.body = "You've got a new message"
+                        notificationContent.body = NotificationStrings.incomingMessageBody
                     case .noNameNoPreview:
                         notificationContent.title = "Session"
-                        notificationContent.body = "You've got a new message"
+                        notificationContent.body = NotificationStrings.incomingMessageBody
                     default: break
                     }
                     self.handleSuccess(for: notificationContent)

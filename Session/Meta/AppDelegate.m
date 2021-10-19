@@ -194,8 +194,8 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    LKAppMode appMode = [self getAppModeOrSystemDefault];
-    [self setCurrentAppMode:appMode];
+    LKAppMode appMode = [self getCurrentAppMode];
+    [self adaptAppMode:appMode];
 
     if (@available(iOS 11, *)) {
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
@@ -247,7 +247,7 @@ static NSTimeInterval launchStartedAt;
     [self ensureRootViewController];
 
     LKAppMode appMode = [self getCurrentAppMode];
-    [self setCurrentAppMode:appMode];
+    [self adaptAppMode:appMode];
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self handleActivation];
@@ -710,16 +710,10 @@ static NSTimeInterval launchStartedAt;
 
 # pragma mark - App Mode
 
-- (LKAppMode)getCurrentAppMode
-{
-    return [NSUserDefaults.standardUserDefaults integerForKey:@"appMode"];
-}
-
-- (void)setCurrentAppMode:(LKAppMode)appMode
+- (void)adaptAppMode:(LKAppMode)appMode
 {
     UIWindow *window = UIApplication.sharedApplication.keyWindow;
     if (window == nil) { return; }
-    [NSUserDefaults.standardUserDefaults setInteger:appMode forKey:@"appMode"];
     switch (appMode) {
         case LKAppModeLight: {
             if (@available(iOS 13.0, *)) {
@@ -736,7 +730,32 @@ static NSTimeInterval launchStartedAt;
             break;
         }
     }
+    if (LKAppModeUtilities.isSystemDefault) {
+        if (@available(iOS 13.0, *)) {
+            window.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+        }
+    }
     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.appModeChanged object:nil];
+}
+
+- (LKAppMode)getCurrentAppMode
+{
+    LKAppMode appMode = [self getAppModeOrSystemDefault];
+    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    return appMode;
+}
+
+- (void)setCurrentAppMode:(LKAppMode)appMode
+{
+    [NSUserDefaults.standardUserDefaults setInteger:appMode forKey:@"appMode"];
+    [self adaptAppMode:appMode];
+}
+
+- (void)setAppModeToSystemDefault
+{
+    [NSUserDefaults.standardUserDefaults removeObjectForKey:@"appMode"];
+    LKAppMode appMode = [self getCurrentAppMode];
+    [self adaptAppMode:appMode];
 }
 
 # pragma mark - Other

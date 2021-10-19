@@ -25,6 +25,10 @@ public final class AppModeManager : NSObject {
     public func setCurrentAppMode(to appMode: AppMode) {
         delegate.setCurrentAppMode(to: appMode)
     }
+    
+    public func setAppModeToSystemDefault() {
+        delegate.setAppModeToSystemDefault()
+    }
 }
 
 @objc(LKAppModeManagerDelegate)
@@ -33,11 +37,16 @@ public protocol AppModeManagerDelegate {
     func getCurrentAppMode() -> AppMode
     @objc(setCurrentAppMode:)
     func setCurrentAppMode(to appMode: AppMode)
+    func setAppModeToSystemDefault()
 }
 
 @objc(LKAppMode)
 public enum AppMode : Int {
     case light, dark
+}
+
+public var isSystemDefault: Bool {
+    return !UserDefaults.standard.dictionaryRepresentation().keys.contains("appMode")
 }
 
 public var isLightMode: Bool {
@@ -49,6 +58,10 @@ public var isDarkMode: Bool {
 }
 
 @objc public final class LKAppModeUtilities : NSObject {
+    
+    @objc public static var isSystemDefault: Bool {
+        return !UserDefaults.standard.dictionaryRepresentation().keys.contains("appMode")
+    }
 
     @objc public static var isLightMode: Bool {
         return AppModeManager.shared.currentAppMode == .light
