@@ -9,19 +9,19 @@ import Foundation
 @objc
 public extension NSObject {
     final var audioSession: OWSAudioSession {
-        UIEnvironment.shared.audioSessionRef
+        SUIEnvironment.shared.audioSessionRef
     }
 
     static var audioSession: OWSAudioSession {
-        UIEnvironment.shared.audioSessionRef
+        SUIEnvironment.shared.audioSessionRef
     }
 
     final var contactsViewHelper: ContactsViewHelper {
-        UIEnvironment.shared.contactsViewHelperRef
+        SUIEnvironment.shared.contactsViewHelperRef
     }
 
     static var contactsViewHelper: ContactsViewHelper {
-        UIEnvironment.shared.contactsViewHelperRef
+        SUIEnvironment.shared.contactsViewHelperRef
     }
 
     final var fullTextSearcher: FullTextSearcher { .shared }
@@ -29,19 +29,19 @@ public extension NSObject {
     static var fullTextSearcher: FullTextSearcher { .shared }
 
     final var windowManager: OWSWindowManager {
-        UIEnvironment.shared.windowManagerRef
+        SUIEnvironment.shared.windowManagerRef
     }
 
     static var windowManager: OWSWindowManager {
-        UIEnvironment.shared.windowManagerRef
+        SUIEnvironment.shared.windowManagerRef
     }
 
     var chatColors: ChatColors {
-        UIEnvironment.shared.chatColorsRef
+        SUIEnvironment.shared.chatColorsRef
     }
 
     static var chatColors: ChatColors {
-        UIEnvironment.shared.chatColorsRef
+        SUIEnvironment.shared.chatColorsRef
     }
 }
 
@@ -49,19 +49,19 @@ public extension NSObject {
 
 public extension Dependencies {
     var audioSession: OWSAudioSession {
-        UIEnvironment.shared.audioSessionRef
+        SUIEnvironment.shared.audioSessionRef
     }
 
     static var audioSession: OWSAudioSession {
-        UIEnvironment.shared.audioSessionRef
+        SUIEnvironment.shared.audioSessionRef
     }
 
     var contactsViewHelper: ContactsViewHelper {
-        UIEnvironment.shared.contactsViewHelperRef
+        SUIEnvironment.shared.contactsViewHelperRef
     }
 
     static var contactsViewHelper: ContactsViewHelper {
-        UIEnvironment.shared.contactsViewHelperRef
+        SUIEnvironment.shared.contactsViewHelperRef
     }
 
     var fullTextSearcher: FullTextSearcher { .shared }
@@ -69,19 +69,19 @@ public extension Dependencies {
     static var fullTextSearcher: FullTextSearcher { .shared }
 
     var windowManager: OWSWindowManager {
-        UIEnvironment.shared.windowManagerRef
+        SUIEnvironment.shared.windowManagerRef
     }
 
     static var windowManager: OWSWindowManager {
-        UIEnvironment.shared.windowManagerRef
+        SUIEnvironment.shared.windowManagerRef
     }
 
     var chatColors: ChatColors {
-        UIEnvironment.shared.chatColorsRef
+        SUIEnvironment.shared.chatColorsRef
     }
 
     static var chatColors: ChatColors {
-        UIEnvironment.shared.chatColorsRef
+        SUIEnvironment.shared.chatColorsRef
     }
 }
 
@@ -100,6 +100,6 @@ public extension Dependencies {
  @objc
  public extension OWSWindowManager {
     static var shared: OWSWindowManager {
-        UIEnvironment.shared.windowManagerRef
+        SUIEnvironment.shared.windowManagerRef
     }
  }

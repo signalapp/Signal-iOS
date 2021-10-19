@@ -7,12 +7,12 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc
-public class UIEnvironment: NSObject {
+public class SUIEnvironment: NSObject {
 
-    private static var _shared: UIEnvironment = UIEnvironment()
+    private static var _shared: SUIEnvironment = SUIEnvironment()
 
     @objc
-    public class var shared: UIEnvironment {
+    public class var shared: SUIEnvironment {
         get {
             return _shared
         }
