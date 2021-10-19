@@ -4,11 +4,11 @@
 
 #import "MockEnvironment.h"
 #import "OWSOrphanDataCleaner.h"
+#import "OWSWindowManager.h"
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/ContactsViewHelper.h>
-#import <SignalUI/OWSWindowManager.h>
 #import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

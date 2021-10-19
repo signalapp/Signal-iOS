@@ -30,9 +30,6 @@ public class SUIEnvironment: NSObject {
     public var audioSessionRef: OWSAudioSession = OWSAudioSession()
 
     @objc
-    public var windowManagerRef: OWSWindowManager = OWSWindowManager()
-
-    @objc
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()
 
     @objc

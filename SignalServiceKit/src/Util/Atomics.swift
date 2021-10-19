@@ -459,8 +459,11 @@ public class AtomicSet<T: Hashable> {
         lock.perform { self.values.contains(value) }
     }
 
-    public func remove(_ value: T) {
-        _ = lock.perform { self.values.remove(value) }
+    @discardableResult
+    public func remove(_ value: T) -> Bool {
+        lock.perform { () -> Bool in
+            self.values.remove(value) != nil
+        }
     }
 
     public var isEmpty: Bool {
@@ -469,6 +472,10 @@ public class AtomicSet<T: Hashable> {
 
     public var count: Int {
         lock.perform { values.count }
+    }
+
+    public var allValues: Set<T> {
+        lock.perform { values }
     }
 
     @discardableResult

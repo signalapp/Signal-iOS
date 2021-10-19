@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <AVFoundation/AVFoundation.h>
@@ -15,7 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // It's still available via ObjC, so we have an objc-category method which we can call from Swift
 // which just calls the original `AVAudioSession#setCategory:categorywithOptions:error` method.
-- (BOOL)ows_setCategory:(AVAudioSessionCategory)category withOptions:(AVAudioSessionCategoryOptions)options error:(NSError **)outError API_AVAILABLE(ios(6.0), watchos(2.0), tvos(9.0)) API_UNAVAILABLE(macos);
+- (BOOL)ows_setCategory:(AVAudioSessionCategory)category
+            withOptions:(AVAudioSessionCategoryOptions)options
+                  error:(NSError **)outError API_AVAILABLE(ios(6.0), watchos(2.0), tvos(9.0))API_UNAVAILABLE(macos);
 
 @end
 

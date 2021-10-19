@@ -56,6 +56,9 @@ public class AppEnvironment: NSObject {
     @objc
     let cvAudioPlayerRef = CVAudioPlayer()
 
+    @objc
+    public var windowManagerRef: OWSWindowManager = OWSWindowManager()
+
     private override init() {
         self.callMessageHandlerRef = WebRTCCallMessageHandler()
         self.callServiceRef = CallService()
