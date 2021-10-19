@@ -4,7 +4,7 @@
 
 #import "OWSLinkDeviceViewController.h"
 #import "OWSDeviceProvisioningURLParser.h"
-#import "Signal-Swift.h"
+#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/OWSDevice.h>

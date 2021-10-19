@@ -3,10 +3,10 @@
 //
 
 #import "OWSGroupCallMessage.h"
+#import "FunctionalUtil.h"
+#import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,14 +3,14 @@
 //
 
 #import "OWSDevice.h"
+#import "AppReadiness.h"
+#import "OWSError.h"
+#import "OWSIdentityManager.h"
+#import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import <Mantle/MTLValueTransformer.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

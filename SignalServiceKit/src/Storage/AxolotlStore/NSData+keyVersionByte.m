@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "AxolotlExceptions.h"
 #import "NSData+keyVersionByte.h"
 #import <SignalCoreKit/SCKExceptionWrapper.h>
-#import <SignalServiceKit/AxolotlExceptions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

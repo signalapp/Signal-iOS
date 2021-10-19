@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIView+SignalUI.h"
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/OWSMath.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

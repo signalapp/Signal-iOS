@@ -4,9 +4,9 @@
 
 #import "DebugUIContacts.h"
 #import "DebugContactsUtils.h"
-#import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <Contacts/Contacts.h>
+#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalUI/OWSTableViewController.h>

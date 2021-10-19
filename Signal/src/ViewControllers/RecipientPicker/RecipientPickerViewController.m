@@ -3,11 +3,9 @@
 //
 
 #import "RecipientPickerViewController.h"
-#import "ContactsViewHelper.h"
-#import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "UIView+SignalUI.h"
 #import <MessageUI/MessageUI.h>
+#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -16,8 +14,10 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/UIUtil.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

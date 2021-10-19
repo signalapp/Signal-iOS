@@ -3,14 +3,14 @@
 //
 
 #import "OWSOutgoingReceiptManager.h"
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/MessageSender.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSReceiptsForSenderMessage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
+#import "AppReadiness.h"
+#import "MessageSender.h"
+#import "OWSError.h"
+#import "OWSReceiptsForSenderMessage.h"
+#import "SSKEnvironment.h"
+#import "TSContactThread.h"
+#import "TSYapDatabaseObject.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

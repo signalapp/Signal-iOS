@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/DarwinNotificationCenter.h>
+#import "DarwinNotificationCenter.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <notify.h>
 

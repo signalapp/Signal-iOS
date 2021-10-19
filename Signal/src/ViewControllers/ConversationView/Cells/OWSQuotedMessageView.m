@@ -3,8 +3,8 @@
 //
 
 #import "OWSQuotedMessageView.h"
-#import "Environment.h"
-#import "Signal-Swift.h"
+#import <Signal/Signal-Swift.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

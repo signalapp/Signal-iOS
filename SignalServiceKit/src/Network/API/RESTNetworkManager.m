@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/RESTNetworkManager.h>
-#import <SignalServiceKit/OWSQueues.h>
+#import "RESTNetworkManager.h"
+#import "OWSQueues.h"
+#import "TSRequest.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSRequest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

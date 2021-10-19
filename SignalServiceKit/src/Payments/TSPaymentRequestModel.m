@@ -3,9 +3,9 @@
 //
 
 #import "TSPaymentRequestModel.h"
+#import "TSPaymentModels.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSPaymentModels.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

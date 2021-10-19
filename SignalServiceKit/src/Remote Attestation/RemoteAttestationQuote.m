@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/RemoteAttestationQuote.h>
-#import <SignalServiceKit/ByteParser.h>
-#import <SignalServiceKit/OWSError.h>
+#import "RemoteAttestationQuote.h"
+#import "ByteParser.h"
+#import "OWSError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

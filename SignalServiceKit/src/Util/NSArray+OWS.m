@@ -3,7 +3,7 @@
 //
 
 #import "NSArray+OWS.h"
-#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

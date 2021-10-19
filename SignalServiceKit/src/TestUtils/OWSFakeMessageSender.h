@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/MessageSender.h>
+#import "MessageSender.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

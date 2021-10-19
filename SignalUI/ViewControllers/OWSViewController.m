@@ -3,9 +3,9 @@
 //
 
 #import "OWSViewController.h"
+#import "Theme.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

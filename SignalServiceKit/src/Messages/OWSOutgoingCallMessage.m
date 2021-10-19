@@ -3,11 +3,11 @@
 //
 
 #import "OWSOutgoingCallMessage.h"
+#import "ProtoUtils.h"
+#import "SignalRecipient.h"
+#import "TSContactThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/ProtoUtils.h>
-#import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

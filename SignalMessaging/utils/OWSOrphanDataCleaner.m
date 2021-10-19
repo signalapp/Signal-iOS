@@ -4,8 +4,8 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
+#import "OWSProfileManager.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AppVersion.h>

@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSAnalytics.h"
 #import "SSKBaseTestObjC.h"
 #import <SignalCoreKit/NSData+OWS.h>
-#import <SignalServiceKit/OWSAnalytics.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

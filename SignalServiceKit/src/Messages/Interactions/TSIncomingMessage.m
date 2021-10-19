@@ -3,14 +3,14 @@
 //
 
 #import "TSIncomingMessage.h"
+#import "OWSDisappearingMessagesConfiguration.h"
+#import "OWSDisappearingMessagesJob.h"
+#import "OWSReceiptManager.h"
+#import "TSAttachmentPointer.h"
+#import "TSContactThread.h"
+#import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

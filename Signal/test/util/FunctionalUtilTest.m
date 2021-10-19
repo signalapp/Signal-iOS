@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "FunctionalUtil.h"
 #import "SignalBaseTest.h"
 #import "TestUtil.h"
+#import <SignalServiceKit/FunctionalUtil.h>
 
 @interface FunctionalUtilTest : SignalBaseTest
 

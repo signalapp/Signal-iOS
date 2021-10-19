@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSMessage.h>
-#import <SignalServiceKit/TSPaymentModels.h>
+#import "TSMessage.h"
+#import "TSPaymentModels.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

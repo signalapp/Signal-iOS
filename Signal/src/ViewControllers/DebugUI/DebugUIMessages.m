@@ -7,8 +7,8 @@
 #import "DebugUIContacts.h"
 #import "DebugUIMessagesAction.h"
 #import "DebugUIMessagesAssetLoader.h"
-#import "Signal-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>

@@ -3,11 +3,11 @@
 //
 
 #import "OWSOutgoingNullMessage.h"
+#import "OWSVerificationStateSyncMessage.h"
+#import "TSContactThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSVerificationStateSyncMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

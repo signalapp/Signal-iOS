@@ -3,7 +3,7 @@
 //
 
 #import "SignalBaseTest.h"
-#import "Environment.h"
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

@@ -2,12 +2,12 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIUtil.h"
 #import "UIViewController+Permissions.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalUI/SignalUI-Swift.h>
-#import <SignalUI/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

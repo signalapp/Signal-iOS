@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSInfoMessage.h>
+#import "TSInfoMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

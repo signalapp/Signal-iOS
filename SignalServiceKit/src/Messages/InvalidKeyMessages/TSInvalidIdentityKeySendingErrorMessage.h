@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
+#import "TSInvalidIdentityKeyErrorMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

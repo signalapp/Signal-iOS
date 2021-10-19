@@ -4,11 +4,11 @@
 
 #import "CountryCodeViewController.h"
 #import "OWSSearchBar.h"
-#import "PhoneNumberUtil.h"
 #import "Theme.h"
 #import "UIFont+OWS.h"
 #import "UIView+SignalUI.h"
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

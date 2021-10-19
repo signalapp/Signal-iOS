@@ -2,16 +2,16 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSPreKeyManager.h>
+#import "TSPreKeyManager.h"
+#import "AppContext.h"
+#import "HTTPUtils.h"
+#import "OWSIdentityManager.h"
+#import "SSKEnvironment.h"
+#import "SSKPreKeyStore.h"
+#import "SSKSignedPreKeyStore.h"
+#import "SignedPrekeyRecord.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/HTTPUtils.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/SSKPreKeyStore.h>
-#import <SignalServiceKit/SSKSignedPreKeyStore.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/SignedPreKeyRecord.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

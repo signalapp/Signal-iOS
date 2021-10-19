@@ -7,7 +7,6 @@
 #import "OWSContactsManager.h"
 #import "OWSPreferences.h"
 #import "OWSProfileManager.h"
-#import "OWSReceiptManager.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
@@ -17,6 +16,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSError.h>
+#import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
 #import <SignalServiceKit/OWSSyncFetchLatestMessage.h>

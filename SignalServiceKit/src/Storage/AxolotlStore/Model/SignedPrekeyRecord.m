@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/SignedPrekeyRecord.h>
+#import "SignedPrekeyRecord.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

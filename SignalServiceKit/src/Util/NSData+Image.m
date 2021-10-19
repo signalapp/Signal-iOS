@@ -2,12 +2,12 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSFileSystem.h"
 #import "webp/decode.h"
 #import "webp/demux.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YYImage/YYImage.h>
 

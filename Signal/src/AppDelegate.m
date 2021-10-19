@@ -3,22 +3,21 @@
 //
 
 #import "AppDelegate.h"
-#import "DebugLogger.h"
 #import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "OWSDeviceProvisioningURLParser.h"
-#import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
-#import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "ViewControllerUtils.h"
 #import <Intents/Intents.h>
+#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
+#import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
@@ -38,6 +37,7 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalUI/OWSNavigationController.h>
+#import <SignalUI/ViewControllerUtils.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>
 

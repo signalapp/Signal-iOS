@@ -3,18 +3,18 @@
 //
 
 #import "MediaDetailViewController.h"
-#import "AttachmentSharing.h"
 #import "ConversationViewController.h"
-#import "Signal-Swift.h"
-#import "TSAttachmentStream.h"
-#import "TSInteraction.h"
-#import "UIUtil.h"
-#import "UIView+SignalUI.h"
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <Signal/Signal-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSData+Image.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSInteraction.h>
+#import <SignalUI/AttachmentSharing.h>
+#import <SignalUI/UIUtil.h>
+#import <SignalUI/UIView+SignalUI.h>
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN

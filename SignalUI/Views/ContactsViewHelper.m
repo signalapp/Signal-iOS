@@ -3,10 +3,10 @@
 //
 
 #import "ContactsViewHelper.h"
-#import "Environment.h"
 #import "UIUtil.h"
 #import <ContactsUI/ContactsUI.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>

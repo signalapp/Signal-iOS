@@ -8,8 +8,8 @@
 @class LegacyChainKey;
 @class LegacyReceivingChain;
 
-#import <SignalServiceKit/LegacyMessageKeys.h>
-#import <SignalServiceKit/LegacyRootKey.h>
+#import "LegacyMessageKeys.h"
+#import "LegacyRootKey.h"
 
 /**
  *  Pending PreKeys

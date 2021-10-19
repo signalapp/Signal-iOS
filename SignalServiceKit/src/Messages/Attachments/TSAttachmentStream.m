@@ -3,15 +3,15 @@
 //
 
 #import "TSAttachmentStream.h"
+#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
+#import "OWSFileSystem.h"
+#import "TSAttachmentPointer.h"
+#import "UIImage+OWS.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/UIImage+OWS.h>
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN

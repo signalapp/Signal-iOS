@@ -3,13 +3,13 @@
 //
 
 #import "OWSWindowManager.h"
-#import "Environment.h"
-#import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
+#import <Signal/Signal-Swift.h>
+#import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalUI/SignalUI-Swift.h>
+#import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

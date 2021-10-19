@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ProfileManagerProtocol.h>
+#import "SSKEnvironment.h"
+#import "AppContext.h"
+#import "ProfileManagerProtocol.h"
+#import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

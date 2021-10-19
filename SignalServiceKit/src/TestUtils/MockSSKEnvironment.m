@@ -2,23 +2,23 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/MockSSKEnvironment.h>
-#import <SignalServiceKit/OWS2FAManager.h>
-#import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSFakeCallMessageHandler.h>
-#import <SignalServiceKit/OWSFakeMessageSender.h>
-#import <SignalServiceKit/OWSFakeProfileManager.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSOutgoingReceiptManager.h>
-#import <SignalServiceKit/OWSReceiptManager.h>
-#import <SignalServiceKit/ProfileManagerProtocol.h>
-#import <SignalServiceKit/SSKPreKeyStore.h>
-#import <SignalServiceKit/SSKSignedPreKeyStore.h>
+#import "MockSSKEnvironment.h"
+#import "OWS2FAManager.h"
+#import "OWSBackgroundTask.h"
+#import "OWSDisappearingMessagesJob.h"
+#import "OWSFakeCallMessageHandler.h"
+#import "OWSFakeMessageSender.h"
+#import "OWSFakeProfileManager.h"
+#import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
+#import "OWSOutgoingReceiptManager.h"
+#import "OWSReceiptManager.h"
+#import "ProfileManagerProtocol.h"
+#import "SSKPreKeyStore.h"
+#import "SSKSignedPreKeyStore.h"
+#import "StorageCoordinator.h"
+#import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/StorageCoordinator.h>
-#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
