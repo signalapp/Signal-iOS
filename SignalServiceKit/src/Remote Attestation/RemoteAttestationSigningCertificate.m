@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/RemoteAttestationSigningCertificate.h>
+#import "RemoteAttestationSigningCertificate.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

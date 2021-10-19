@@ -3,7 +3,7 @@
 //
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
-#import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
+#import "OWSLinkedDeviceReadReceipt.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

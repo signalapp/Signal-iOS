@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "Environment.h"
+#import <SignalMessaging/Environment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

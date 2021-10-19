@@ -3,7 +3,7 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import <SignalServiceKit/SSKEnvironment.h>
+#import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

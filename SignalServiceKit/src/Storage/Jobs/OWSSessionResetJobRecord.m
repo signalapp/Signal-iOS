@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSSessionResetJobRecord.h>
-#import <SignalServiceKit/TSContactThread.h>
+#import "OWSSessionResetJobRecord.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

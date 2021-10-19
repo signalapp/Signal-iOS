@@ -3,11 +3,11 @@
 //
 
 #import "OWS2FAManager.h"
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/HTTPUtils.h>
-#import <SignalServiceKit/SSKEnvironment.h>
+#import "AppReadiness.h"
+#import "HTTPUtils.h"
+#import "SSKEnvironment.h"
+#import "TSAccountManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

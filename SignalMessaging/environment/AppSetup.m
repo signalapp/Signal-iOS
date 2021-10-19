@@ -4,8 +4,8 @@
 
 #import "AppSetup.h"
 #import "Environment.h"
+#import "OWSProfileManager.h"
 #import "VersionMigrations.h"
-#import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/OWS2FAManager.h>

@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSThread.h>
+#import "TSGroupModel.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
+#import "OWSIncomingContactSyncJobRecord.h"
 
 @implementation OWSIncomingContactSyncJobRecord
 

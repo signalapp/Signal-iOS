@@ -3,7 +3,7 @@
 //
 
 #import "OWSDeviceTableViewCell.h"
-#import "DateUtil.h"
+#import <SignalMessaging/DateUtil.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/SignalUI-Swift.h>

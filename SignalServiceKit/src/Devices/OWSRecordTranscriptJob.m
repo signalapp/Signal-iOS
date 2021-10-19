@@ -3,20 +3,20 @@
 //
 
 #import "OWSRecordTranscriptJob.h"
-#import <SignalServiceKit/FunctionalUtil.h>
-#import <SignalServiceKit/HTTPUtils.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSIncomingSentMessageTranscript.h>
-#import <SignalServiceKit/OWSReceiptManager.h>
-#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
+#import "FunctionalUtil.h"
+#import "HTTPUtils.h"
+#import "OWSDisappearingMessagesJob.h"
+#import "OWSIncomingSentMessageTranscript.h"
+#import "OWSReceiptManager.h"
+#import "OWSUnknownProtocolVersionMessage.h"
+#import "SSKEnvironment.h"
+#import "TSAttachmentPointer.h"
+#import "TSGroupThread.h"
+#import "TSInfoMessage.h"
+#import "TSOutgoingMessage.h"
+#import "TSQuotedMessage.h"
+#import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAttachmentPointer.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSInfoMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
-#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

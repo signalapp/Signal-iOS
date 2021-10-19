@@ -3,11 +3,11 @@
 //
 
 #import "ConversationScrollButton.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/Theme.h>
+#import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

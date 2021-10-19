@@ -3,10 +3,10 @@
 //
 
 #import "OWSFileSystem.h"
+#import "OWSError.h"
+#import "TSConstants.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

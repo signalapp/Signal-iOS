@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
+#import "SDSDatabaseStorage+Objc.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 #pragma clang diagnostic push

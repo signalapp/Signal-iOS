@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import "TSOutgoingMessage.h"
 
 @class TSGroupThread;
 

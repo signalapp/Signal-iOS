@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "PhoneNumber.h"
 #import "SSKBaseTestObjC.h"
-#import <SignalServiceKit/PhoneNumber.h>
 
 @interface PhoneNumberTest : SSKBaseTestObjC
 

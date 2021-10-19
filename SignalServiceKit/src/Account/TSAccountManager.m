@@ -3,18 +3,18 @@
 //
 
 #import "TSAccountManager.h"
+#import "AppContext.h"
+#import "AppReadiness.h"
+#import "HTTPUtils.h"
+#import "OWSError.h"
+#import "OWSRequestFactory.h"
+#import "ProfileManagerProtocol.h"
+#import "RemoteAttestation.h"
+#import "SSKEnvironment.h"
+#import "TSPreKeyManager.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/HTTPUtils.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
-#import <SignalServiceKit/ProfileManagerProtocol.h>
-#import <SignalServiceKit/RemoteAttestation.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSPreKeyManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

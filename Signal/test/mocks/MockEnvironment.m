@@ -3,8 +3,8 @@
 //
 
 #import "MockEnvironment.h"
-#import "OWSOrphanDataCleaner.h"
 #import "OWSWindowManager.h"
+#import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

@@ -3,13 +3,13 @@
 //
 
 #import "DomainFrontingCountryViewController.h"
-#import "OWSCountryMetadata.h"
-#import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
+#import <Signal/Signal-Swift.h>
+#import <SignalServiceKit/OWSCountryMetadata.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/Theme.h>
+#import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

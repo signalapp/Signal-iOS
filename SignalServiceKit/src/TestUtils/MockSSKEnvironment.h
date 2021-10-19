@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/SSKEnvironment.h>
+#import "SSKEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

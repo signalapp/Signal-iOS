@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSCensorshipConfiguration.h>
-#import <SignalServiceKit/OWSCountryMetadata.h>
+#import "OWSCountryMetadata.h"
+#import "OWSCensorshipConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

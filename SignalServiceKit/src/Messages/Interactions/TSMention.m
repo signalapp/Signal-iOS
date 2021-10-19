@@ -3,7 +3,7 @@
 //
 
 #import "TSMention.h"
-#import "SignalServiceKit/SignalServiceKit-Swift.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @implementation TSMention
 

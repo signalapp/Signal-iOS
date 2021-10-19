@@ -3,9 +3,9 @@
 //
 
 #import "OWSAudioPlayer.h"
-#import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalUI/SignalUI-Swift.h>
 
 @import MediaPlayer;

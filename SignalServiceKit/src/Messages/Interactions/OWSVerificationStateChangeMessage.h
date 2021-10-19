@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSRecipientIdentity.h>
-#import <SignalServiceKit/TSInfoMessage.h>
+#import "OWSRecipientIdentity.h"
+#import "TSInfoMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

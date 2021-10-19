@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOrphanDataCleaner.h"
 #import "SignalBaseTest.h"
+#import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
