@@ -93,24 +93,29 @@ public final class CallService: NSObject {
     /// which will let us know which one, if any, should become the "current call". But in the
     /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
     /// placing an outgoing call.
-    private let _calls = AtomicValue<Set<SignalCall>>(Set())
+    private let _calls = AtomicSet<SignalCall>()
     private var calls: Set<SignalCall> {
         get {
-            _calls.get()
+            _calls.allValues
         }
     }
 
     private func addCall(_ call: SignalCall) {
-        var calls = _calls.get()
-        calls.insert(call)
-        _calls.set(calls)
+        _calls.insert(call)
+        postActiveCallsDidChange()
     }
 
     private func removeCall(_ call: SignalCall) -> Bool {
-        var calls = _calls.get()
-        let result = calls.remove(call)
-        _calls.set(calls)
-        return result != nil
+        let didRemove = _calls.remove(call)
+        postActiveCallsDidChange()
+        return didRemove
+    }
+
+    @objc
+    public static let activeCallsDidChange = Notification.Name("activeCallsDidChange")
+
+    private func postActiveCallsDidChange() {
+        NotificationCenter.default.postNotificationNameAsync(Self.activeCallsDidChange, object: nil)
     }
 
     public override init() {
@@ -641,6 +646,7 @@ public final class CallService: NSObject {
     }
 
     // MARK: - Bandwidth
+
     static let callServicePreferencesDidChange = Notification.Name("CallServicePreferencesDidChange")
     private static let keyValueStore = SDSKeyValueStore(collection: "CallService")
     private static let highBandwidthPreferenceKey = "HighBandwidthPreferenceKey"

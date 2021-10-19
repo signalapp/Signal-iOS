@@ -199,7 +199,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Lifecycle
 
     public override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared.hasCall else {
+        guard !CurrentAppContext().hasActiveCall else {
             return false
         }
 

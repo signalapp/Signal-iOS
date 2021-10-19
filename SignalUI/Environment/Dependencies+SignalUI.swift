@@ -28,14 +28,6 @@ public extension NSObject {
 
     static var fullTextSearcher: FullTextSearcher { .shared }
 
-    final var windowManager: OWSWindowManager {
-        SUIEnvironment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        SUIEnvironment.shared.windowManagerRef
-    }
-
     var chatColors: ChatColors {
         SUIEnvironment.shared.chatColorsRef
     }
@@ -68,14 +60,6 @@ public extension Dependencies {
 
     static var fullTextSearcher: FullTextSearcher { .shared }
 
-    var windowManager: OWSWindowManager {
-        SUIEnvironment.shared.windowManagerRef
-    }
-
-    static var windowManager: OWSWindowManager {
-        SUIEnvironment.shared.windowManagerRef
-    }
-
     var chatColors: ChatColors {
         SUIEnvironment.shared.chatColorsRef
     }
@@ -94,12 +78,3 @@ public extension NSObject {
 
 public extension Dependencies {
 }
-
- // MARK: -
-
- @objc
- public extension OWSWindowManager {
-    static var shared: OWSWindowManager {
-        SUIEnvironment.shared.windowManagerRef
-    }
- }
