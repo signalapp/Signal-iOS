@@ -104,15 +104,18 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         notificationContent.body = snippet
                     case .nameNoPreview:
                         notificationContent.title = senderDisplayName
-                        notificationContent.body = "You've got a new message"
+                        notificationContent.body = NotificationStrings.incomingMessageBody
                     case .noNameNoPreview:
                         notificationContent.title = "Session"
-                        notificationContent.body = "You've got a new message"
+                        notificationContent.body = NotificationStrings.incomingMessageBody
                     default: break
                     }
                     self.handleSuccess(for: notificationContent)
                 } catch {
-                    self.handleFailure(for: notificationContent)
+                    if let error = error as? MessageReceiver.Error, error.isRetryable {
+                        self.handleFailure(for: notificationContent)
+                    }
+                    self.completeSilenty()
                 }
             }
         }

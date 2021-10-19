@@ -173,6 +173,10 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         return // Not applicable to share extensions
     }
     
+    public func setAppModeToSystemDefault() {
+        return // Not applicable to share extensions
+    }
+    
     // MARK: Updating
     private func showLockScreenOrMainContent() {
         if OWSScreenLock.shared.isScreenLockEnabled() {

@@ -5,7 +5,7 @@
 // • Remaining search glitchiness
 
 final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
-    let isUnsendRequestsEnabled = false // Set to true once unsend requests are done on all platforms
+    let isUnsendRequestsEnabled = true // Set to true once unsend requests are done on all platforms
     let thread: TSThread
     let focusedMessageID: String? // This isn't actually used ATM
     var unreadViewItems: [ConversationViewItem] = []
