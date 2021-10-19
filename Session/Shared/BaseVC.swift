@@ -26,6 +26,16 @@ class BaseVC : UIViewController {
         setNeedsStatusBarAppearanceUpdate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
+    
+    internal func ensureWindowBackground() {
+        let appMode = AppModeManager.shared.currentAppMode
+        switch appMode {
+        case .light:
+            UIApplication.shared.delegate?.window??.backgroundColor = .white
+        case .dark:
+            UIApplication.shared.delegate?.window??.backgroundColor = .black
+        }
+    }
 
     internal func setUpGradientBackground() {
         hasGradient = true
@@ -80,12 +90,13 @@ class BaseVC : UIViewController {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        // TODO: Post an appModeChanged notification?
+        NotificationCenter.default.post(name: .appModeChanged, object: nil)
     }
 
     @objc internal func handleAppModeChangedNotification(_ notification: Notification) {
         if hasGradient {
             setUpGradientBackground() // Re-do the gradient
         }
+        ensureWindowBackground()
     }
 }
