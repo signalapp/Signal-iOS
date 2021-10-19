@@ -237,10 +237,8 @@
 		342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */; };
 		342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */; };
 		342FFE78271EF581000AC89F /* AVAudioSession+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */; };
-		342FFE79271EF581000AC89F /* CNContactViewController+OWS.m.sdsjson in Resources */ = {isa = PBXBuildFile; fileRef = 342FFE72271EF580000AC89F /* CNContactViewController+OWS.m.sdsjson */; };
 		342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE73271EF580000AC89F /* UIResponder+OWS.swift */; };
 		342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */; };
-		342FFE7C271EF581000AC89F /* AVAudioSession+OWS.m.sdsjson in Resources */ = {isa = PBXBuildFile; fileRef = 342FFE75271EF580000AC89F /* AVAudioSession+OWS.m.sdsjson */; };
 		342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
@@ -4940,7 +4938,6 @@
 				88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
-				342FFE79271EF581000AC89F /* CNContactViewController+OWS.m.sdsjson in Resources */,
 				A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */,
 				34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */,
 				880C0FF7233D3F7C00386FB8 /* playPauseButton.json in Resources */,
@@ -5017,7 +5014,6 @@
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
-				342FFE7C271EF581000AC89F /* AVAudioSession+OWS.m.sdsjson in Resources */,
 				34E93F982668257400CE6FA5 /* color-bubble-64.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
