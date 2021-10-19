@@ -1232,10 +1232,8 @@
 		342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
 		342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
 		342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "AVAudioSession+OWS.m"; sourceTree = "<group>"; };
-		342FFE72271EF580000AC89F /* CNContactViewController+OWS.m.sdsjson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "CNContactViewController+OWS.m.sdsjson"; sourceTree = "<group>"; };
 		342FFE73271EF580000AC89F /* UIResponder+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
 		342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
-		342FFE75271EF580000AC89F /* AVAudioSession+OWS.m.sdsjson */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "AVAudioSession+OWS.m.sdsjson"; sourceTree = "<group>"; };
 		342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
@@ -2575,10 +2573,8 @@
 				342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */,
 				342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */,
 				342FFE71271EF580000AC89F /* AVAudioSession+OWS.m */,
-				342FFE72271EF580000AC89F /* CNContactViewController+OWS.m.sdsjson */,
 				342FFE73271EF580000AC89F /* UIResponder+OWS.swift */,
 				342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */,
-				342FFE75271EF580000AC89F /* AVAudioSession+OWS.m.sdsjson */,
 			);
 			name = Categories;
 			path = ViewControllers/Categories;
