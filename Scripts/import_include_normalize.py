@@ -258,9 +258,16 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
         
         swiftHeader = headerSet.find_swift_header(include.body)
         if swiftHeader is not None:
-            # NOTE: -Swift.h headers must always use long-form imports.
-            newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
+            # NOTE: -Swift.h headers in development pods must always use long-form imports.
+            if target.name != 'Signal':
+                newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
+            elif swiftHeader.targetName == target.name:
+                newline = '#import "%s"' % ( swiftHeader.filename, )
+            else:
+                newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
             new_lines.append(newline)
+            # newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
+            # new_lines.append(newline)
             continue
         
         header = headerSet.find_header(include.body)

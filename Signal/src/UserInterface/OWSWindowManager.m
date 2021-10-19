@@ -3,7 +3,7 @@
 //
 
 #import "OWSWindowManager.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

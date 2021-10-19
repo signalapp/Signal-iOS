@@ -5,8 +5,8 @@
 #import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "RegistrationUtils.h"
+#import "Signal-Swift.h"
 #import "SignalApp.h"
-#import <Signal/Signal-Swift.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/Threading.h>

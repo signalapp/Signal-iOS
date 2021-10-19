@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIDiskUsage.h"
-#import <Signal/Signal-Swift.h>
+#import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSOrphanDataCleaner.h>
 #import <SignalServiceKit/TSInteraction.h>

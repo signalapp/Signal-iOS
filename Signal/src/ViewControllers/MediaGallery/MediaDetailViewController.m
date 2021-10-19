@@ -4,10 +4,10 @@
 
 #import "MediaDetailViewController.h"
 #import "ConversationViewController.h"
+#import "Signal-Swift.h"
 #import <AVKit/AVKit.h>
 #import <MediaPlayer/MPMoviePlayerViewController.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import <Signal/Signal-Swift.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
