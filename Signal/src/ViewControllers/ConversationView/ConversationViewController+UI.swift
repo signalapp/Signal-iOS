@@ -149,7 +149,7 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualAudioCall)
                     )
-                    audioCallButton.isEnabled = !Self.windowManager.hasCall
+                    audioCallButton.isEnabled = !CurrentAppContext().hasActiveCall
                     audioCallButton.accessibilityLabel = NSLocalizedString("AUDIO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing an audio call")
                     barButtons.append(audioCallButton)
@@ -160,7 +160,7 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualVideoCall)
                     )
-                    videoCallButton.isEnabled = !Self.windowManager.hasCall
+                    videoCallButton.isEnabled = !CurrentAppContext().hasActiveCall
                     videoCallButton.accessibilityLabel = NSLocalizedString("VIDEO_CALL_LABEL",
                                                                            comment: "Accessibility label for placing a video call")
                     barButtons.append(videoCallButton)

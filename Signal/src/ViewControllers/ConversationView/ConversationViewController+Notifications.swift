@@ -13,8 +13,8 @@ extension ConversationViewController {
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(windowManagerCallDidChange),
-                                               name: .OWSWindowManagerCallDidChange,
+                                               selector: #selector(activeCallsDidChange),
+                                               name: CallService.activeCallsDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(identityStateDidChange),
@@ -107,7 +107,7 @@ extension ConversationViewController {
     }
 
     @objc
-    private func windowManagerCallDidChange(_ notification: NSNotification) {
+    private func activeCallsDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         updateBarButtonItems()

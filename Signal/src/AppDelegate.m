@@ -1060,7 +1060,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
 - (BOOL)hasCall
 {
-    return self.windowManager.hasCall;
+    return CurrentAppContext().hasActiveCall;
 }
 
 #pragma mark Push Notifications Delegate Methods

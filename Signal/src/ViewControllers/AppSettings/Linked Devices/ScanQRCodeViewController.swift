@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import Vision
+import SignalServiceKit
 
 @objc
 public enum QRCodeScanOutcome: UInt {
@@ -97,7 +98,7 @@ class QRCodeScanViewController: OWSViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared.hasCall else {
+        guard !CurrentAppContext().hasActiveCall else {
             return false
         }
 

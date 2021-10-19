@@ -14,6 +14,8 @@ public protocol CallViewControllerWindowReference: AnyObject {
     func returnFromPip(pipWindow: UIWindow)
 }
 
+// MARK: -
+
 @objc
 public class ReturnToCallViewController: UIViewController {
 

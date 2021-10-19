@@ -291,7 +291,7 @@ public class StickerPackViewController: OWSViewController {
 
         if !CurrentAppContext().isMainApp {
             self.additionalSafeAreaInsets = .zero
-        } else if OWSWindowManager.shared.hasCall {
+        } else if CurrentAppContext().hasActiveCall {
             self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
         } else {
             self.additionalSafeAreaInsets = .zero

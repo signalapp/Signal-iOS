@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     // as WebRTC can ask at some strange times. However, if we're currently in a call
     // it's important we allow you to request audio permission regardless of app state.
     if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground
-        && !OWSWindowManager.shared.hasCall) {
+        && !CurrentAppContext().hasActiveCall) {
         OWSLogError(@"Skipping microphone permissions request when app is in background.");
         callback(NO);
         return;

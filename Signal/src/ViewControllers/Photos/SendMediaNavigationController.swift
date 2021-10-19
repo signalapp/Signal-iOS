@@ -63,7 +63,7 @@ class SendMediaNavigationController: OWSNavigationController {
     // MARK: - Overrides
 
     override var prefersStatusBarHidden: Bool {
-        guard !OWSWindowManager.shared.hasCall else {
+        guard !CurrentAppContext().hasActiveCall else {
             return false
         }
 

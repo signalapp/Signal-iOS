@@ -4,8 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSWindowManagerCallDidChangeNotification;
-
 extern NSString *const IsScreenBlockActiveDidChangeNotification;
 
 // This VC can become first responder
