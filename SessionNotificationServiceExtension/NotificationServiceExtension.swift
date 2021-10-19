@@ -77,6 +77,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                             }
                             semaphore.wait()
                         }
+                        notificationContent.sound = OWSSounds.notificationSound(for: thread).notificationSound(isQuiet: false)
                     case let unsendRequest as UnsendRequest:
                         MessageReceiver.handleUnsendRequest(unsendRequest, using: transaction)
                         return self.completeSilenty()
