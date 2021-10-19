@@ -466,24 +466,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
             return
         }
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 1: \(LocalDevice.memoryUsage).")
-        }
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(transaction: transaction)
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 2: \(LocalDevice.memoryUsage).")
-        }
-
         let senderName = contactsManager.displayName(for: incomingMessage.authorAddress, transaction: transaction)
-
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 3: \(LocalDevice.memoryUsage).")
-        }
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -527,10 +516,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
         }
 
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 4: \(LocalDevice.memoryUsage).")
-        }
-
         let category: AppNotificationCategory
         if didIdentityChange {
             category = .incomingMessageFromNoLongerVerifiedIdentity
@@ -546,10 +531,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
         ]
 
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 5: \(LocalDevice.memoryUsage).")
-        }
-
         var interaction: INInteraction?
         if FeatureFlags.communicationStyleNotifications,
             previewType != .noNameNoPreview,
@@ -557,10 +538,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
-        }
-
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 6: \(LocalDevice.memoryUsage).")
         }
 
         notifyAsync { completion in
@@ -573,10 +550,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 interaction: interaction,
                                 sound: sound,
                                 completion: completion)
-        }
-
-        if DebugFlags.internalLogging || CurrentAppContext().isNSE {
-            Logger.info("Notifying 7: \(LocalDevice.memoryUsage).")
         }
     }
 

@@ -522,7 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"1 timestamp: %llu, serviceTimestamp: %llu, %@",
+        OWSLogInfo(@"timestamp: %llu, serviceTimestamp: %llu, %@",
             envelope.timestamp,
             envelope.serverTimestamp,
             [OWSMessageManager descriptionForDataMessageContents:dataMessage]);
@@ -559,10 +559,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"2 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
-    }
-
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
@@ -579,10 +575,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"3 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
-    }
-
     // Pre-process the data message.  For v1 and v2 group messages this involves
     // checking group state, possibly creating the group thread, possibly
     // responding to group info requests, etc.
@@ -593,10 +585,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *_Nullable thread = [self preprocessDataMessage:dataMessage envelope:envelope transaction:transaction];
     if (thread == nil) {
         return;
-    }
-
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"4 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 
     TSIncomingMessage *_Nullable message = nil;
@@ -625,18 +613,11 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"5 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
-    }
-
     // Send delivery receipts for "valid data" messages received via UD.
     if (wasReceivedByUD) {
         [self.outgoingReceiptManager enqueueDeliveryReceiptForEnvelope:envelope
                                                        messageUniqueId:message.uniqueId
                                                            transaction:transaction];
-    }
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"6 timestamp: %llu, serviceTimestamp: %llu, ", envelope.timestamp, envelope.serverTimestamp);
     }
 }
 
@@ -2117,10 +2098,6 @@ NS_ASSUME_NONNULL_BEGIN
     // The sender may have resent the message. If so, we should swap it in place of the placeholder
     [message insertOrReplacePlaceholderFrom:authorAddress transaction:transaction];
 
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 1: %@", messageDescription);
-    }
-
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:message];
 
@@ -2137,15 +2114,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(message.hasRenderableContent);
 
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 2: %@", messageDescription);
-    }
-
     [self.earlyMessageManager applyPendingMessagesFor:message transaction:transaction];
-
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 3: %@", messageDescription);
-    }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
@@ -2160,21 +2129,9 @@ NS_ASSUME_NONNULL_BEGIN
                            transaction:transaction];
     }
 
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 4: %@", messageDescription);
-    }
-
     [self.attachmentDownloads enqueueDownloadOfAttachmentsForNewMessage:message transaction:transaction];
 
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 5: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
-    }
-
     [self.notificationsManager notifyUserForIncomingMessage:message thread:thread transaction:transaction];
-
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 6: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
-    }
 
     if (CurrentAppContext().isMainApp) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2182,10 +2139,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  address:envelope.sourceAddress
                                                                 deviceId:envelope.sourceDevice];
         });
-    }
-
-    if (SSKDebugFlags.internalLogging || CurrentAppContext().isNSE) {
-        OWSLogInfo(@"Inserted 7: %@, memoryUsage: %@", messageDescription, LocalDevice.memoryUsage);
     }
 
     return message;

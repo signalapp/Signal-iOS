@@ -177,7 +177,8 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
     private func readValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ValueType? {
         if let value = adapter.read(key: cacheKey.key, transaction: transaction) {
             #if TESTABLE_BUILD
-            if !isExcluded(cacheKey: cacheKey, transaction: transaction),
+            if !CurrentAppContext().isNSE,
+               !isExcluded(cacheKey: cacheKey, transaction: transaction),
                 canUseCache(cacheKey: cacheKey, transaction: transaction) {
                 // NOTE: We don't need to update the cache; the SDS
                 // model extensions will populate the cache for us.
@@ -368,7 +369,8 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
             return true
         }
         #if TESTABLE_BUILD
-        if !DebugFlags.reduceLogChatter {
+        if !DebugFlags.reduceLogChatter,
+           !CurrentAppContext().isNSE {
             Logger.warn("Skipping cache for: \(address), \(cacheName)")
         }
         #endif
