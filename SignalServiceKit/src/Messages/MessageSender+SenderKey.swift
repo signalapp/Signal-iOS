@@ -370,19 +370,19 @@ extension MessageSender {
             // to *also* fail the original message send.
             firstly { () -> Promise<Void> in
                 MessageSender.ensureSessions(forMessageSends: skdmSends, ignoreErrors: true)
-            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<SignalServiceAddress, Error>]> in
+            }.then(on: self.senderKeyQueue) { _ -> Guarantee<[Result<OWSMessageSend, Error>]> in
                 // For each SKDM request we kick off a sendMessage promise.
-                // - If it succeeds, great! Record a successful delivery
-                // - Otherwise, invoke the sendErrorBlock
+                // - If it succeeds, great! Propogate along the successful OWSMessageSend
+                // - Otherwise, invoke the sendErrorBlock and rethrow so it gets packaged into the Guarantee
                 // We use when(resolved:) because we want the promise to wait for
                 // all sub-promises to finish, even if some failed.
                 Guarantee.when(resolved: skdmSends.map { messageSend in
                     return firstly { () -> AnyPromise in
                         self.sendMessage(toRecipient: messageSend)
                         return messageSend.asAnyPromise
-                    }.map(on: self.senderKeyQueue) { _ -> SignalServiceAddress in
-                        messageSend.address
-                    }.recover(on: self.senderKeyQueue) { error -> Promise<SignalServiceAddress> in
+                    }.map(on: self.senderKeyQueue) { _ -> OWSMessageSend in
+                        messageSend
+                    }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
                         let wrappedError = SenderKeyError.recipientSKDMFailed(error)
@@ -392,22 +392,32 @@ extension MessageSender {
                 })
             }
         }.map(on: self.senderKeyQueue) { resultArray -> [SignalServiceAddress] in
-            // We only want to pass along recipients capable of receiving a senderKey message
-            let successfulSends: [SignalServiceAddress] = resultArray.compactMap { result in
+            // This is a hot path, so we do a bit of a dance here to prepare all of the successful send
+            // info before opening the write transaction. We need the recipient address and the SKDM
+            // timestamp.
+            let successfulSendInfo: [(recipient: SignalServiceAddress, timestamp: UInt64)]
+
+            successfulSendInfo = resultArray.compactMap { result in
                 switch result {
-                case let .success(address): return address
-                case .failure: return nil
+                case let .success(messageSend):
+                    return (recipient: messageSend.address, timestamp: messageSend.message.timestamp)
+                case .failure:
+                    return nil
                 }
             }
-            if successfulSends.count > 0 {
+
+            if successfulSendInfo.count > 0 {
                 try self.databaseStorage.write { writeTx in
-                    try successfulSends.forEach {
-                        try self.senderKeyStore.recordSenderKeySent(for: thread, to: $0, writeTx: writeTx)
+                    try successfulSendInfo.forEach {
+                        try self.senderKeyStore.recordSenderKeySent(for: thread,
+                                                                    to: $0.recipient,
+                                                                    timestamp: $0.timestamp,
+                                                                    writeTx: writeTx)
                     }
                 }
             }
             // We want to return all recipients that are now ready for sender key
-            return Array(recipientsNotNeedingSKDM) + successfulSends
+            return Array(recipientsNotNeedingSKDM) + successfulSendInfo.map { $0.recipient }
 
         }.recover(on: senderKeyQueue) { error in
             // If we hit *any* error that we haven't handled, we should fail the send
