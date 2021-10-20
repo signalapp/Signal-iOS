@@ -9,10 +9,11 @@ cd $REPO_ROOT
 SSK_DIR="./SignalServiceKit/src"
 SAE_DIR="./SignalShareExtension"
 SM_DIR="./SignalMessaging"
+SUI_DIR="./SignalUI"
 SCK_DIR="./Pods/SignalCoreKit"
 NSE_DIR="./NotificationServiceExtension"
 
-TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR} ${NSE_DIR}"
+TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR} ${NSE_DIR} ${SUI_DIR}"
 TMP="$(mktemp -d)"
 STRINGFILE="Signal/translations/en.lproj/Localizable.strings"
 
