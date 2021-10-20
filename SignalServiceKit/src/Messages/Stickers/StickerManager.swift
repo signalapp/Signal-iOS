@@ -84,6 +84,11 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            guard CurrentAppContext().isMainApp,
+                  !CurrentAppContext().isRunningTests else {
+                      return
+                  }
+
             StickerManager.cleanupOrphans()
 
             if TSAccountManager.shared.isRegisteredAndReady {

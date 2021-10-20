@@ -144,7 +144,8 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
 
     public func updateConversationRatesIfStale() {
         let shouldUpdate: Bool = {
-            guard !CurrentAppContext().isRunningTests else {
+            guard CurrentAppContext().isMainApp,
+                  !CurrentAppContext().isRunningTests else {
                 return false
             }
             guard Self.payments.arePaymentsEnabled else {

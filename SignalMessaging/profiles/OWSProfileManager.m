@@ -114,6 +114,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     });
 
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+        if (CurrentAppContext().isNSE) {
+            return;
+        }
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
             [OWSProfileManager updateProfileOnServiceIfNecessary];

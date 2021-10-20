@@ -732,7 +732,9 @@ public class BlockingManager: NSObject {
 
     // This method should only be called off the main thread.
     private static func syncBlockListIfNecessary(state: State) {
-
+        if CurrentAppContext().isNSE {
+            return
+        }
         // If we haven't yet successfully synced the current "block list" changes,
         // try again to sync now.
         let syncedState = databaseStorage.read { transaction in

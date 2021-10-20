@@ -415,6 +415,8 @@ public class EarlyMessageManager: NSObject {
     }
 
     private func cleanupStaleMessages() {
+        guard CurrentAppContext().isMainApp, !CurrentAppContext().isRunningTests else { return }
+
         databaseStorage.asyncWrite { transction in
             let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - kWeekInMs
 

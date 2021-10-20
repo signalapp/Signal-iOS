@@ -480,6 +480,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             sortedArrayUsingComparator:[Contact comparatorSortingNamesByFirstThenLast:self.shouldSortByGivenName]];
 
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (SSKDebugFlags.internalLogging) {
+                OWSLogInfo(@"sortedContacts: %lu, allContactsMap: %lu",
+                    (unsigned long)sortedContacts.count,
+                    (unsigned long)allContactsMap.count);
+            }
             self.allContacts = sortedContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
