@@ -131,10 +131,9 @@ def parse_include(line):
 
 
 class Target:
-    def __init__(self, name, path, is_test_target=False):
+    def __init__(self, name, path):
         self.name = name
         self.path = path
-        self.is_test_target = is_test_target
     
     def isAppOrAppExtension(self):
         appOrAppExtensionTargets = [ 'Signal', 'SignalShareExtension','NotificationServiceExtension' ]
@@ -266,8 +265,8 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
         swiftHeader = headerSet.find_swift_header(include.body)
         if swiftHeader is not None:
             # NOTE: Apps and app extensions import the -Swift.h header for their
-            #       own target using short form improts.
-            #       Otherwise we should always use long-form importsfor  -Swift.h headers.
+            #       own target using short form imports.
+            #       Otherwise we should always use long-form imports for  -Swift.h headers.
             if swiftHeader.targetName == target.name:
                 if target.isAppOrAppExtension():
                     newline = '#import "%s"' % ( swiftHeader.filename, )
@@ -289,7 +288,9 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
             sys.exit(1)
 
         if header.targetName == target.name:
-            if is_header_file and not target.isAppOrAppExtension():
+            # if a _header_ in a _framework_ imports a header _from the same target_, use a long-form import.
+            is_framework_target = not target.isAppOrAppExtension()
+            if is_header_file and is_framework_target:
                 newline = "#import <%s/%s>" % ( header.targetName, header.filename, )
             else:
                 newline = '#import "%s"' % ( header.filename, )
@@ -335,13 +336,13 @@ if __name__ == "__main__":
 
     targets = [ 
         Target('Signal', 'Signal/src'),
-        Target('Signal', 'Signal/test', is_test_target=True),
+        Target('Signal', 'Signal/test'),
         Target('SignalMessaging', 'SignalMessaging'),
         Target('SignalServiceKit', 'SignalServiceKit/src'),
-        Target('SignalServiceKit', 'SignalServiceKit/tests', is_test_target=True),
+        Target('SignalServiceKit', 'SignalServiceKit/tests'),
         Target('SignalShareExtension', 'SignalShareExtension'),
         Target('SignalUI', 'SignalUI'),
-        Target('SignalUI', 'SignalUITests', is_test_target=True),
+        Target('SignalUI', 'SignalUITests'),
         Target('NotificationServiceExtension', 'NotificationServiceExtension'),
     ]
     
