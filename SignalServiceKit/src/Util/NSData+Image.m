@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
 #import "webp/decode.h"
 #import "webp/demux.h"

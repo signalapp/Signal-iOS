@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "AppContext.h"
 #import "NSUserDefaults+OWS.h"
+#import "AppContext.h"
 #import "TSConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN

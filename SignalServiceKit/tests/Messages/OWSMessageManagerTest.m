@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
 #import "HTTPUtils.h"
 #import "MessageSender.h"
@@ -10,6 +9,7 @@
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"

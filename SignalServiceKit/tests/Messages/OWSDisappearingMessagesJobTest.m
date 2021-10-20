@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDisappearingMessagesJob.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"

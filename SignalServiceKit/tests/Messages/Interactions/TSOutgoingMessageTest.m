@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSOutgoingMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
+#import "TSOutgoingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

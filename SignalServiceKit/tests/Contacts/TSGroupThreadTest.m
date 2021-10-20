@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSGroupThread.h"
 #import "SSKBaseTestObjC.h"
+#import "TSGroupThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
