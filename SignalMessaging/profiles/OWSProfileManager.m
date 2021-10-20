@@ -54,6 +54,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                          bioEmoji:(nullable NSString *)bioEmoji
                          username:(nullable NSString *)username
                        avatarData:(nullable NSData *)avatarData
+                 profileBadgeInfo:(NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
 {
 
     self = [super init];
@@ -68,6 +69,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     _bioEmoji = bioEmoji;
     _username = username;
     _avatarData = avatarData;
+    _profileBadgeInfo = [badgeArray copy];
 
     return self;
 }
@@ -361,7 +363,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                      bio:userProfile.bio
                                                 bioEmoji:userProfile.bioEmoji
                                                 username:userProfile.username
-                                              avatarData:avatarData];
+                                              avatarData:avatarData
+                                        profileBadgeInfo:userProfile.profileBadgeInfo];
 }
 
 - (void)updateLocalUsername:(nullable NSString *)username

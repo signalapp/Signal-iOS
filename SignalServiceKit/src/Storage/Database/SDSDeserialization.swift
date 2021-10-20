@@ -66,7 +66,8 @@ public class SDSDeserialization {
         guard let encoded = encoded else {
             return nil
         }
-        return try unarchive(encoded, name: name)
+        let result: T = try unarchive(encoded, name: name)
+        return result
     }
 
     public class func unarchive<T: SDSSwiftSerializable>(_ encoded: Data?, name: String) throws -> T {

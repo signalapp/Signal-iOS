@@ -18,7 +18,8 @@ public class ProfileBadge: NSObject, Codable {
     let localization: String
 
     // Nil until a badge is checked in to the BadgeStore
-    fileprivate(set) var assets: BadgeAssets? = nil
+    @objc
+    public fileprivate(set) var assets: BadgeAssets? = nil
 
     private enum CodingKeys: String, CodingKey {
         // Skip encoding of `assets`
@@ -34,7 +35,10 @@ public class ProfileBadge: NSObject, Codable {
         localizedDescriptionFormatString = try params.required(key: "description")
 
         let preferredVariant = BadgeVariant.devicePreferred
-        resourcePath = try params.required(key: preferredVariant.rawValue)
+        let spriteArray: [String] = try params.required(key: "sprites6")
+        guard spriteArray.count == 6 else { throw OWSAssertionError("Invalid number of sprites") }
+
+        resourcePath = spriteArray[preferredVariant.sprite6Index]
         badgeVariant = preferredVariant
 
         // TODO: Badges — Check with server to see if they'll return a Content-language
@@ -93,6 +97,14 @@ extension ProfileBadge {
             case .mdpi: return 1.0
             case .xhdpi: return 2.0
             case .xxhdpi: return 3.0
+            }
+        }
+
+        var sprite6Index: Int {
+            switch self {
+            case .mdpi: return 1
+            case .xhdpi: return 3
+            case .xxhdpi: return 4
             }
         }
 

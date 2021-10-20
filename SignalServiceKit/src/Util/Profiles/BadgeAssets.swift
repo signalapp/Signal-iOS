@@ -6,7 +6,19 @@ import Foundation
 import ImageIO
 import CoreServices
 
-class BadgeAssets: Dependencies {
+@objc
+public protocol BadgeProvider {
+    @objc var light16: UIImage? { get }
+    @objc var light24: UIImage? { get }
+    @objc var light36: UIImage? { get }
+    @objc var dark16: UIImage? { get }
+    @objc var dark24: UIImage? { get }
+    @objc var dark36: UIImage? { get }
+    @objc var universal160: UIImage? { get }
+}
+
+@objc
+public class BadgeAssets: NSObject {
     private let remoteSourceUrl: URL
     private let localAssetDirectory: URL
 
@@ -53,16 +65,6 @@ class BadgeAssets: Dependencies {
     private func fileUrlForVariant(_ variant: Variant) -> URL {
         localAssetDirectory.appendingPathComponent(variant.rawValue)
     }
-
-    // MARK: - Sprite retrieval
-
-    var light16: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.light16).path) }
-    var light24: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.light24).path) }
-    var light36: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.light36).path) }
-    var dark16: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.dark16).path) }
-    var dark24: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.dark24).path) }
-    var dark36: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.dark36).path) }
-    var universal160: UIImage? { UIImage(contentsOfFile: fileUrlForVariant(.universal160).path) }
 
     // MARK: - Sprite fetching
 
@@ -148,6 +150,41 @@ class BadgeAssets: Dependencies {
             CGImageDestinationAddImage(imageDestination, spriteImage, nil)
             CGImageDestinationFinalize(imageDestination)
         }
+    }
+}
+// MARK: - Sprite retrieval
+extension BadgeAssets: BadgeProvider {
+
+    // TODO: Badges — Lazy initialization? Double check backing memory is all purgable
+    @objc public var light16: UIImage? { imageForVariant(.light16) }
+    @objc public var light24: UIImage? { imageForVariant(.light24) }
+    @objc public var light36: UIImage? { imageForVariant(.light36) }
+    @objc public var dark16: UIImage? { imageForVariant(.dark16) }
+    @objc public var dark24: UIImage? { imageForVariant(.dark24) }
+    @objc public var dark36: UIImage? { imageForVariant(.dark36) }
+    @objc public var universal160: UIImage? { imageForVariant(.universal160) }
+
+    private func imageForVariant(_ variant: Variant) -> UIImage? {
+        let fileUrl = fileUrlForVariant(variant)
+        guard let imageSource = CGImageSourceCreateWithURL(fileUrl as CFURL, nil) else { return nil }
+
+        let imageOptions = [kCGImageSourceShouldCache: kCFBooleanFalse] as CFDictionary
+        guard let rawImage = CGImageSourceCreateImageAtIndex(imageSource, 0,  imageOptions) else {
+            owsFailDebug("Couldn't load image")
+            return nil
+        }
+
+        let imageScale: CGFloat
+        switch CGSize(width: rawImage.width, height: rawImage.height) {
+        case CGSizeScale(variant.pointSize, 1.0): imageScale = 1.0
+        case CGSizeScale(variant.pointSize, 2.0): imageScale = 2.0
+        case CGSizeScale(variant.pointSize, 3.0): imageScale = 3.0
+        default:
+            owsFailDebug("Bad scale")
+            return nil
+        }
+
+        return UIImage(cgImage: rawImage, scale: imageScale, orientation: .up)
     }
 }
 

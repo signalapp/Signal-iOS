@@ -31,6 +31,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly, nullable) NSString *username;
 
 @property (nonatomic, readonly, nullable) NSData *avatarData;
+@property (nonatomic, readonly) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 
 @end
 

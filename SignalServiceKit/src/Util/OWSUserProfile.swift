@@ -25,6 +25,20 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
         self.isVisible = isVisible
     }
 
+    private enum CodingKeys: String, CodingKey {
+        // Skip encoding of the actual badge content
+        case badgeId, expiration, isVisible
+    }
+
+    @objc
+    public lazy var badge: ProfileBadge? = {
+        databaseStorage.read { readTx in
+            let badge = profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: readTx)
+            owsAssertDebug(badge != nil)
+            return badge
+        }
+    }()
+
     override public var description: String {
         var description = "Badge: \(badgeId)"
         if let expiration = expiration {

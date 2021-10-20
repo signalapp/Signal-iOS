@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalMessaging
+import UIKit
 
 @objc
 class ProfileSettingsViewController: OWSTableViewController2 {
@@ -17,6 +19,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var username: String?
     private var bio: String?
     private var bioEmoji: String?
+    private var primaryBadge: ProfileBadge?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +37,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         username = snapshot.username
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
+        primaryBadge = snapshot.profileBadgeInfo.first?.badge
 
         updateTableContents()
     }
@@ -49,16 +53,18 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        let avatarSection = OWSTableSection()
-        avatarSection.hasBackground = false
-        avatarSection.add(.init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
-            return self.avatarCell()
-        },
-            actionBlock: { [weak self] in
+        let avatarSection = OWSTableSection(header: nil, items: [
+            OWSTableItem(customCellBlock: { [weak self] in
+                self?.avatarCell() ?? UITableViewCell()
+            }, actionBlock: nil),
+
+            OWSTableItem(customCellBlock: { [weak self] in
+                self?.changeAvatarCell() ?? UITableViewCell()
+            }, actionBlock: { [weak self] in
                 self?.presentAvatarSettingsView()
-            }
-        ))
+            })
+        ])
+        avatarSection.hasBackground = false
         contents.addSection(avatarSection)
 
         let mainSection = OWSTableSection()
@@ -237,60 +243,39 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let avatarDiameter: UInt = 88
-        let avatarImageView = AvatarImageView()
-        avatarImageView.contentMode = .scaleAspectFit
+        let sizeClass = AvatarImageView2.SizeClass.xlarge
+        let badgedAvatarView = AvatarImageView2(sizeClass: sizeClass)
+        badgedAvatarView.pinBoundsToSizeClass = true
+        badgedAvatarView.badgeProvider = primaryBadge?.assets
+
         if let avatarData = avatarData {
-            avatarImageView.image = UIImage(data: avatarData)
+            badgedAvatarView.avatarImage = UIImage(data: avatarData)
         } else {
-            avatarImageView.image = databaseStorage.read { transaction in
-                avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: avatarDiameter, transaction: transaction)
+            badgedAvatarView.avatarImage = databaseStorage.read { transaction in
+                avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: UInt(sizeClass.size.largerAxis), transaction: transaction)
             }
         }
-        avatarImageView.clipsToBounds = true
-        avatarImageView.layer.cornerRadius = CGFloat(avatarDiameter) / 2
-        avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(avatarDiameter)))
 
-        cell.contentView.addSubview(avatarImageView)
-        avatarImageView.autoPinHeightToSuperviewMargins()
-        avatarImageView.autoHCenterInSuperview()
+        cell.contentView.addSubview(badgedAvatarView)
+        badgedAvatarView.autoPinHeightToSuperviewMargins()
+        badgedAvatarView.autoHCenterInSuperview()
+        return cell
+    }
 
-        let cameraImageContainer = UIView()
-        cameraImageContainer.autoSetDimensions(to: CGSize.square(32))
-        cameraImageContainer.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray15 : UIColor(rgbHex: 0xf8f9f9)
-        cameraImageContainer.layer.cornerRadius = 16
+    private func changeAvatarCell() -> UITableViewCell {
+        let cell = OWSTableItem.newCell()
+        cell.selectionStyle = .none
 
-        cameraImageContainer.layer.shadowColor = UIColor.black.cgColor
-        cameraImageContainer.layer.shadowOpacity = 0.2
-        cameraImageContainer.layer.shadowRadius = 4
-        cameraImageContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
-        cameraImageContainer.layer.shadowPath = UIBezierPath(
-            ovalIn: CGRect(origin: .zero, size: .square(32))
-        ).cgPath
+        let changeLabel = UILabel()
+        changeLabel.font = .ows_dynamicTypeBody2.ows_semibold
+        changeLabel.textAlignment = .center
+        changeLabel.text = "Change Photo" // localize
 
-        cell.contentView.addSubview(cameraImageContainer)
-        cameraImageContainer.autoPinTrailing(toEdgeOf: avatarImageView)
-        cameraImageContainer.autoPinEdge(.bottom, to: .bottom, of: avatarImageView)
+        // TODO: Badges — Dark theme?
+        changeLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray95
 
-        let secondaryShadowView = UIView()
-        secondaryShadowView.layer.shadowColor = UIColor.black.cgColor
-        secondaryShadowView.layer.shadowOpacity = 0.12
-        secondaryShadowView.layer.shadowRadius = 16
-        secondaryShadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        secondaryShadowView.layer.shadowPath = UIBezierPath(
-            ovalIn: CGRect(origin: .zero, size: .square(32))
-        ).cgPath
-
-        cameraImageContainer.addSubview(secondaryShadowView)
-        secondaryShadowView.autoPinEdgesToSuperviewEdges()
-
-        let cameraImageView = UIImageView.withTemplateImageName("camera-outline-32", tintColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_black)
-        cameraImageView.autoSetDimensions(to: CGSize.square(20))
-        cameraImageView.contentMode = .scaleAspectFit
-
-        cameraImageContainer.addSubview(cameraImageView)
-        cameraImageView.autoCenterInSuperview()
-
+        cell.contentView.addSubview(changeLabel)
+        changeLabel.autoPinEdgesToSuperviewMargins()
         return cell
     }
 
