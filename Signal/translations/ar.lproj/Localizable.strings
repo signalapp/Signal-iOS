@@ -1,3 +1,6 @@
+/* Button text to dismiss missing contacts permission alert */
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ليس الآن";
+
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "حول Signal";
 
@@ -118,6 +121,9 @@
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
 
+/* The label for the 'discard' button in alerts and action sheets. */
+"ALERT_DISCARD_BUTTON" = "تجاهل";
+
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "عدم الحفظ";
 
@@ -192,6 +198,45 @@
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "أرشفة";
+
+/* One-line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "لقد بلغت الحد الأقصى للتعليق.";
+
+/* placeholder text for an empty captioning field */
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "إضافة تعليق..";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "تسمية توضيحية";
+
+/* Error that outgoing attachments could not be exported. */
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "فشل تصدير المُرفق.";
+
+/* alert text when Signal was unable to save a copy of the attachment to the system photo library */
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "فشل الحفظ.";
+
+/* Format string for file extension label in call interstitial view */
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "صنف الملف : %@";
+
+/* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "الحجم : %@";
+
+/* toast alert shown after user taps the 'save' button */
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "تم الحفظ";
+
+/* Subtitle for the 'high' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "أبطأ، بيانات أكثر";
+
+/* Subtitle for the 'standard' option for media quality. */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "أسرع، بيانات أقل";
+
+/* Title for the attachment approval media quality sheet */
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "جودة الوسائط";
+
+/* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "إرسال إلى %@";
+
+/* Label for 'send' button in the 'attachment approval' dialog. */
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "إرسال";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "المُرفقات";
@@ -286,6 +331,9 @@
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "رِسالة صوتيَّة";
 
+/* A string indicating that an audio message is playing. */
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رِسالة سَمعيَّة";
+
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "مكالمة صوتية";
 
@@ -328,8 +376,17 @@
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق اللافتة";
 
+/* An explanation of the consequences of blocking a group. */
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "لن تصلك الرسائل أو التحديثات من هذه المجموعة بعد الآن.";
+
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "حَظر";
+
+/* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "حَظر ومُغادرة المجموعة \"%@\"؟";
+
+/* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "حَظر %@؟";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "المجموعات المحظورة";
@@ -349,8 +406,14 @@
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "سَوفَ يُصبِحُ بِإمكانِكُما التَّراسُل والتواصُل فيما بَينَكُما.";
 
+/* Action sheet body when confirming you want to unblock a group */
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "سيتمكن من إضافتك الأعضاء الموجودون للمجموعة مرة أُخرى.";
+
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "سيتمكن أعضاء المجموعة من إضافتك للمجموعة مرة أُخرى.";
+
+/* Action sheet title when confirming you want to unblock a group. */
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "إلغاء حظر المجموعة؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "رفع حظر عن %@؟";
@@ -358,8 +421,32 @@
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "حظر";
 
+/* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "تم حظر %@";
+
+/* The title of the 'user blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المُستخدم محظور";
+
+/* The title of the 'group blocked' alert. */
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "مجموعة محظورة";
+
+/* The message of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "لا يمكنك حظر نفسك.";
+
+/* The title of the 'You can't block yourself' alert. */
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "خطأ";
+
+/* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "تم رفع الحظر عن %@";
+
+/* Alert body after unblocking a group. */
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء الموجودون يمكنهم إضافتك للمجموعة مرة أُخرى.";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو إرسال رسالة إليك.";
+
+/* Tooltip highlighting the blur image editing tool. */
+"BLUR_TOOLTIP" = "جديد : اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "إضافة";
@@ -423,6 +510,12 @@
 
 /* notification body */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مكالمة صوتية فائتة";
+
+/* Alert message when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal. ";
+
+/* Alert title when calling and permissions for microphone are missing */
+"CALL_AUDIO_PERMISSION_TITLE" = "إذن استخدام الميكروفون ضروري";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ مُكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر. ";
@@ -619,8 +712,50 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "رقم غير مُسجّل";
 
+/* Label for the 'edit name' button in the contact share approval view. */
+"CONTACT_EDIT_NAME_BUTTON" = "تحرير";
+
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "البريد الإلكتروني";
+
+/* Label for the 'city' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_CITY" = "المدينة";
+
+/* Label for the 'country' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "الدولة";
+
+/* Label for the 'neighborhood' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "الحي";
+
+/* Label for the 'pobox' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POBOX" = "صندوق البريد";
+
+/* Label for the 'postcode' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "الرمز البريدي";
+
+/* Label for the 'region' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_REGION" = "الإقليم";
+
+/* Label for the 'street' field of a contact's address. */
+"CONTACT_FIELD_ADDRESS_STREET" = "الشارع";
+
+/* Label for the 'family name' field of a contact. */
+"CONTACT_FIELD_FAMILY_NAME" = "اسم العائلة";
+
+/* Label for the 'given name' field of a contact. */
+"CONTACT_FIELD_GIVEN_NAME" = "الاسم الشخصي";
+
+/* Label for the 'middle name' field of a contact. */
+"CONTACT_FIELD_MIDDLE_NAME" = "الاسم الأوسط";
+
+/* Label for the 'name prefix' field of a contact. */
+"CONTACT_FIELD_NAME_PREFIX" = "بادئة الاسم";
+
+/* Label for the 'name suffix' field of a contact. */
+"CONTACT_FIELD_NAME_SUFFIX" = "ملحق الاسم";
+
+/* Label for the 'organization' field of a contact. */
+"CONTACT_FIELD_ORGANIZATION" = "المُنظمة";
 
 /* Body for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "لِرُؤية اَسماء وَصُّور جِهات الاِتِّصال في مُحادثاتك:";
@@ -657,6 +792,18 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "حدِّد جهة الاتصال";
+
+/* Title for the 'Approve contact share' view. */
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "مشاركة جهة الاتصال";
+
+/* Title for the 'edit contact share name' view. */
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "تحرير الاسم";
+
+/* Error indicating that an invalid contact cannot be shared. */
+"CONTACT_SHARE_INVALID_CONTACT" = "جهة اتصال غير صحيحة";
+
+/* Error indicating that at least one contact field must be selected before sharing a contact. */
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "لم يتم تحديد أي حقول من جهة الاتصال.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "الاتصال بالدعم";
@@ -756,6 +903,24 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
+
+/* Message indicating that only administrators can send message to an announcement-only group. */
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "يمكن فقط للمشرفين إرسال الرسائل في هذه المجموعة.";
+
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "لا يمكنك تحديد أكثر من %@ محادثة.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "المجموعات";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "المحادثات الحديثة";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الأشخاص";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "اختر المستلمين";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "لا يوجد توافُق";
@@ -961,6 +1126,9 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "بيانات جهة الاتصال";
 
+/* Button to confirm that user wants to share their profile with a user or group. */
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "مُشارَكة المَلفّ الشَّخصي";
+
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "أضف إلى جهات الاتصال";
 
@@ -984,6 +1152,9 @@
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
+
+/* No comment provided by engineer. */
+"COUNTRYCODE_SELECT_TITLE" = "اختر رمز الدولة";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "حرِك وحَجِّم";
@@ -1255,8 +1426,14 @@
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "عِند التَّفعيل، إنَّ الرسائِل الجديدَة المُرسلَة أو المُستلَمة فِي هَذِهِ المُحادثَة سَوف تَختَفي بَعدَ رؤيَتِها.";
 
+/* Accessibility hint that contains current timeout information */
+"DISAPPEARING_MESSAGES_HINT" = "حالياً الرسائل تختفي بعد %@";
+
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "ساعات";
+
+/* Accessibility label for disappearing messages */
+"DISAPPEARING_MESSAGES_LABEL" = "إعدادات الرسائل المُختفية";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "دقائق";
@@ -1324,8 +1501,17 @@
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "لِماذا أتبرع؟";
 
+/* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "يُمكِنُك تمكين الوصول من خِلال تطبيق إعدادات iOS.";
+
+/* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "يحتاج Signal الصلاحية بالوصول إلى جهات الاتصال من اجل تعديل البيانات الخاصة بجهة الإتصال.";
+
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "تعديل المجموعة";
+
+/* Error message indicating the a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحديث Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "وصلت المجموعة إلى عدد %@ عضو، والذي يُعد الحد الأقصى.";
@@ -1413,6 +1599,9 @@
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "لقد تعذرت إعادة توجيه الرسائل.";
+
+/* Error indicating that 'save video' failed. */
+"ERROR_COULD_NOT_SAVE_VIDEO" = "يتعذّر حفظ الفيديو. ";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "فشل إرسال الرسالة.";
@@ -1960,6 +2149,9 @@
 /* Title indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_TITLE" = "يتعذّر الانضمام للمجموعة";
 
+/* Indicator for group conversations in the 'group invite link' action sheet. */
+"GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "المجموعة";
+
 /* Label for the 'join' button in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "انضم";
 
@@ -2118,6 +2310,15 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "مُشرِف";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "لا يوجد أعضاء";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "عضو واحد";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "عدد %@ عضو";
 
 /* Format string for the group member count indicator. Embeds {{ the number of members in the group }}. */
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "عدد %@ عضو";
@@ -2383,6 +2584,9 @@
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "المُستخدم مُتواجد في المجموعة بالفعل.";
 
+/* Error indicating that an error occurred while accepting an invite. */
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "يتعذّر قبول الدعوة.";
+
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "حَظر المجموعة";
 
@@ -2623,6 +2827,15 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* The image editor hint that you can draw blur */
+"IMAGE_EDITOR_BLUR_HINT" = "ارسم في أي مكان للتضبيب";
+
+/* The image editor setting to blur faces */
+"IMAGE_EDITOR_BLUR_SETTING" = "ضبّب الوجوه";
+
+/* A toast indicating that you can blur more faces after detection */
+"IMAGE_EDITOR_BLUR_TOAST" = "ارسم لتضبيب المزيد من الأوجه أو المساحات";
+
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يُمكنك مُشاركة أكثر من %@ عنصر.";
 
@@ -2691,6 +2904,9 @@
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "رِسالة صوتيَّة";
+
+/* Message for the alert indicating that an audio file is invalid. */
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يُمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
@@ -2764,6 +2980,9 @@
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "مُغادرة المجموعة";
 
+/* Error indicating that a group could not be left. */
+"LEAVE_GROUP_FAILED" = "حدث خطأ أثناء مُغادرة المجموعة.";
+
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "إن رمز الاستجابة السريعة غير صالح. يُرجى التأكد من مسحك لرمز الاستجابة السريعة الظاهر على الجهازك الذي تُريد ربطه.";
 
@@ -2787,6 +3006,9 @@
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "ربط جهاز جديد";
+
+/* Label for link previews with an unknown host. */
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "مُعاينة الرابط";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "اﻷجهزة المُرتبطة";
@@ -3163,6 +3385,9 @@
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
 
+/* placeholder text for the editable message field */
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "رِسالة جديدة";
+
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %@ لم يعُد مُعلَّم كمُتحقَّق مِنه. انقر للحُصول على الخيارات.";
 
@@ -3184,11 +3409,26 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "مُكالمة فائتة";
 
+/* Alert body */
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "يُمكنك إتاحة الوصول إلى الكاميرا من خلال تطبيق إعدادات iOS للقيام بمكالمة فيديو في Signal.";
+
+/* Alert title */
+"MISSING_CAMERA_PERMISSION_TITLE" = "يحتاج Signal الوصول إلى الكاميرا الخاصة بك";
+
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى موقعك لهذه الميزة.";
+
+/* Alert body when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "يُمكنك إتاحة هذا الإذن في تطبيق إعدادات iOS.";
+
+/* Alert title when user has previously denied media library access */
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى الصوة الخاصة بك لهذه الميزة.";
+
+/* Generic indicator that no value is available for display */
+"MISSING_VALUE" = "لا شيء ";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط أي أجهزة أُخرى إضافية.";
@@ -3259,8 +3499,20 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "حدِّد أعضاء";
 
+/* The alert message if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "هل تريد تجاهل هذه التغييرات؟";
+
+/* The alert title if user tries to exit the new group view without saving changes. */
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "تغييرات غير المحفوظة";
+
 /* No comment provided by engineer. */
 "new_message" = "رِسالة جديدة";
+
+/* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "البحث";
+
+/* Title for the 'new non-contact conversation' view. */
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "البحث عن مُستخدم";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "إيجاد جهات الاتصال بواسطة رقم الهاتف";
@@ -3276,6 +3528,12 @@
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "مرحبًا بِكَ فِي Signal";
+
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "رسالة جديدة إلى:";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "لم يتم العثور على المُستخدم. دعوته عبر SMS؟";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
@@ -3511,11 +3769,29 @@
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "أنتَ قد اتصلت بـ %@";
 
+/* Button used to decline a payment request. */
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "رفض الطلب";
+
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ بسعر %2$@";
 
+/* Indicator for unknown currency. */
+"PAYMENTS_CURRENCY_UNKNOWN" = "؟";
+
+/* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "سيتم إشعار %@ أنك رفضت الطلب.";
+
+/* Title for the 'decline a payment request' alert. */
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "رفض هذا الطلب ؟";
+
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "رسوم تنظيف العملة";
+
+/* Error indicating that a payment request could not be cancelled. */
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "تعذر إلغاء الطلب.";
+
+/* Error indicating that a payment request could not be declined. */
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "تعذر رفض الطلب.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "فشل";
@@ -3808,6 +4084,9 @@
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكن أي شخص على Signal من العثور عليك بواسطة رقم الهاتف الخاص بك. لن تكون مرئيًا كجهة اتصال للأشخاص الذين لديهم رقم هاتفك في جهات الاتصال الخاصة بهم ولن يتمكن الآخرون من العثور عليك باستخدام رقم الهاتف الخاص بك في البحث.";
 
+/* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %@";
+
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "جِهات اتصالي";
 
@@ -4017,6 +4296,9 @@
 
 /* Toast indicating that a PIN has been disabled. */
 "PINS_MEGAPHONE_TOAST_DISABLED" = "تمَّ تعطيل الـPIN";
+
+/* Accessibility label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "تشغيل الوسط";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "لم تضع علامة تحقق لـ %@";
@@ -4288,6 +4570,12 @@
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "فشلت إعادة الاشتراك في الإشعارات اللحظية.";
 
+/* Label for the country code field */
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "رمز البلد";
+
+/* Placeholder text for the phone number textfield */
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "أدخِل الرقم";
+
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "خطأ في التسجيل";
 
@@ -4302,6 +4590,9 @@
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "تنسيق رقم هذا الهاتف غير مدعوم، يُرجى التواصُل مع الدَّعم.";
+
+/* Label for the phone number textfield */
+"REGISTRATION_PHONENUMBER_BUTTON" = "رقم الهاتف";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "تحتاج إلى التسجيل قبل أن تتمكن من إرسال رسالة.";
@@ -4443,6 +4734,9 @@
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "فشلت المُصادَقة.";
+
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "فَكّ قُفل Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "مَريَم";
@@ -5566,6 +5860,27 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "لا شيء ";
 
+/* Text for toast presented after spam verification has been completed */
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "لَقَد اِكتَمَلَ التَّحَقُّق.";
+
+/* Message for confirmation dialog confirming to ignore verification. */
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "إذا اخترت تجاهل التحقق، فقد تفوتك رسائل من أشخاص آخرين وقد يفشل إرسال رسائلك.";
+
+/* Title for confirmation dialog confirming to ignore verification. */
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "هَل تُريد المُتابعة دُونَ تَحقُّق؟";
+
+/* Body for action sheet explaining captcha requirement. */
+"SPAM_CAPTCHA_SHEET_BODY" = "للمساعدة على الوقاية من البريد العشوائي في Signal، يُرجى إتمام عملية التحقق.\n\nبعد التأكد من ذلك، يمكنك الاستمرار في التراسُل. إن أي رسالة متوقفة مؤقتا سوف تُرسَل تلقائيا.";
+
+/* Title for action sheet explaining captcha requirement. */
+"SPAM_CAPTCHA_SHEET_TITLE" = "تَحقَّق لِلاِستِمرار فِي المُراسَلَة";
+
+/* Action to skip verification */
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "تخطي التَحَقُق";
+
+/* Title for the captcha view controller */
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "إتمام التَحَقُق";
+
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "المجموعات الحالية ستحصل على هذه الميزات تلقائيًا في الأسابيع القادمة.";
 
@@ -5866,6 +6181,12 @@
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "تحديث جهة الاتصال";
 
+/* Error indicating that a group could not be updated. */
+"UPDATE_GROUP_FAILED" = "لا يُمكن تحديث المجموعة.";
+
+/* Error indicating that a group could not be updated due to network connectivity problems. */
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لا يُمكن تحديث المجموعة. تحقق من اتصالك بالإنترنت ثمَّ حاول مرة أُخرى.";
+
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الـPIN الخاص بك";
 
@@ -5880,6 +6201,12 @@
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "تعطيل الـPIN";
+
+/* Message for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_MESSAGE" = "قريبًا سيطلب تطبيق Signal نظام iOS 11 أو أحدث. يُرجى الترقية من تطبيق الإعدادات >> عام >> تحديث البرامج.";
+
+/* Title for the alert indicating that user should upgrade iOS. */
+"UPGRADE_IOS_ALERT_TITLE" = "ترقية iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "اسماء المُستخدمين على Signal اختيارية. إذا اخترت إنشاء اسم مُستخدم، سيتمكن مُستخدمو Signal الآخرون من العُثور عليك بواسطة اسم المُستخدم هذا والاتصال بك دون معرفة رقم الهاتف الخاص بك.";
@@ -5950,11 +6277,17 @@
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "أنتَ بالفعل قد شاهدتَ هذه الرسالة.";
 
+/* Tooltip highlighting the view once messages button. */
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هُنا لإخفاء هذه الرسالة بعد أن تمَّ عرضها.";
+
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "تتمُّ إزالة ملفات وسائط-العرض-لمرة-واحدة الصادرة تلقائيًا بعد أن يتمَّ إرسالُها.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مرِّر للإلغاء";
+
+/* Filename for voice messages. */
+"VOICE_MESSAGE_FILE_NAME" = "رسالة صوتية";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "إضغَط مَعَ الاِستِمرار فِي الضَّغط لِلتَسجِيل.";
