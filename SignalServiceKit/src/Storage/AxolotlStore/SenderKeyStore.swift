@@ -573,15 +573,12 @@ extension KeyMetadata: Codable {
         // Hopefully this doesn't need to change in the future. We now have a place to hang information
         // about the recipient (KeyRecipient) and the context of the sent SKDM (SKDMSendInfo)
         if let sendInfo = try container.decodeIfPresent([SignalServiceAddress: SKDMSendInfo].self, forKey: .sentKeyInfo) {
-            Logger.info("michlin unwrapping v3: \(sendInfo)")
             sentKeyInfo = sendInfo
         } else if let keyRecipients = try legacyValues.decodeIfPresent([SignalServiceAddress: KeyRecipient].self, forKey: .keyRecipients) {
-            Logger.info("michlin performing migration from v2 to v3: \(keyRecipients)")
             sentKeyInfo = keyRecipients.mapValues { SKDMSendInfo(skdmTimestamp: 0, keyRecipient: $0) }
         } else {
             // There's no way to migrate from our V1 storage. That's okay, we can just reset the dictionary. The only
             // consequence here is we'll resend an SKDM that our recipients already have. No big deal.
-            owsFailDebug("")
             sentKeyInfo = [:]
         }
     }
