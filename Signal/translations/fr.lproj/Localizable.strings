@@ -3503,7 +3503,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Voulez-vous abandonner ces changements ?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Changements non enregistrés";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Les changements n’ont pas été enregistrés";
 
 /* No comment provided by engineer. */
 "new_message" = "Nouveau message";
@@ -5879,7 +5879,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Passer la vérification";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Procéder à la vérification";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Procéder à la confirmation";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Ces fonctions seront proposées pour les groupes existants au cours des prochaines semaines.";

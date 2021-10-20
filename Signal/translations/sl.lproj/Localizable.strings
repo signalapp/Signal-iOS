@@ -5861,13 +5861,13 @@
 "SOUNDS_NONE" = "Brez";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verifikacija je zaključena.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Preverjanje je zaključeno.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Če boste preskočili verifikacijo, se lahko zgodi, da bodo nekatera vaša sporočila drugim ali sporočila drugih vam izgubljena.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Če boste preskočili preverjanje, se lahko zgodi, da nekatera vaša sporočila drugim ali sporočila drugih vam ne bodo mogla biti poslana.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Želite nadaljevati brez verifikacije?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Želite nadaljevati brez preverjanja?";
 
 /* Body for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_BODY" = "To help prevent spam on Signal, please complete verification.\n\nAfter verifying, you can continue messaging. Any paused messages will automatically be sent.";

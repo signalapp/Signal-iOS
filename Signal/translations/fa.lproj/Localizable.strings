@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "بستن بنر";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "شما دیگر از این گروه پیام و یا بروز رسانی دریافت نخواهید کرد.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "شما دیگر از این گروه پیام یا به‌روزرسانی دریافت نخواهید کرد.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "مسدودسازی";
@@ -911,10 +911,10 @@
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "نمی‌توانید بیش از %@ گفتگو را انتخاب کنید.";
 
 /* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "گروه ها";
+"CONVERSATION_PICKER_SECTION_GROUPS" = "گروه‌ها‌";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "آخرین چت ها";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "آخرین گفتگوها";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "مردم";
@@ -5879,7 +5879,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "رد کردن مرحلهٔ وارسی";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "تأیید را کامل کنید";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "وارسی را کامل کنید";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "گروه‌های فعلی به طور خودکار این قابلیت‌ها را طی هفته‌های آینده دریافت خواهند کرد.";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "شما قبلاً این پیام را دیده‌اید.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "برای ناپدید شدن پیام پس از مشاهده اینجا ضربه بزنید.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "اینجا ضربه بزنید تا این پیام پس از مشاهده شدن ناپدید شود.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "فایل‌های رسانه‌های یکبار مصرف پس از ارسال به صورت خودکار حذف خواهند شد.";

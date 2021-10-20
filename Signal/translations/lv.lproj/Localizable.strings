@@ -434,7 +434,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nav iespējams bloķēt sevi.";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Kļūda";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Kļūme";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ ir atbloķēta.";
@@ -2828,13 +2828,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Velciet, lai aizkrāsotu";
+"IMAGE_EDITOR_BLUR_HINT" = "Velciet, lai aizmiglotu";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Aizkrāsot sejas";
+"IMAGE_EDITOR_BLUR_SETTING" = "Aizmiglot sejas";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Velciet, lai aizkrāsotu vairākas vietas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Velciet, lai aizmiglotu vairākas vietas";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nav iespējams kopīgot vairāk nekā %@ attēlu.";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autentifikācija neizdevās";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Atbloķēt Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Atbloķēt Signālu";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Ieva Bērniņa";

@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "中间名";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "称谓（姓名前）";
+"CONTACT_FIELD_NAME_PREFIX" = "前缀";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "称谓（姓名后）";
+"CONTACT_FIELD_NAME_SUFFIX" = "后缀";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "机构";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "你已经看过这条消息了。";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "消息在查看之后立即消息，请点击此处。";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "查看之后消息即可消失，请点击此处。";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "发送出去的阅后即焚媒体文件会在发送后自动移除。";

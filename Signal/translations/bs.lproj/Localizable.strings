@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Dodaj naziv…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Unesite opis…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Pošalji";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Šalji";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Prilog";

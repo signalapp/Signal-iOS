@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "બેનર બંધ કરો";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "તમે હવે આ ગ્રુપ માંથી મેસેજ અથવા અપડેટ્સ પ્રાપ્ત કરશો નહીં.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "તમે હવે આ ગ્રુપમાંથી મેસેજ અથવા અપડેટ્સ પ્રાપ્ત કરશો નહીં.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "અવરોધિત કરો";
@@ -2315,7 +2315,7 @@
 "GROUP_MEMBER_COUNT_LABEL_0" = "કોઈ સભ્યો નથી";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 સભ્ય";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 મેમ્બર";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ સભ્યો";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "ચકાસણી સંપૂર્ણ થયું.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "જો તમે ચકાસણી છોડવાનું પસંદ કરો છો, તો તમે અન્ય લોકોના સંદેશા ચૂકી શકો છો અને તમારા સંદેશા મોકલવામાં નિષ્ફળ થઈ શકે છે.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "જો તમે સ્કિપ વેરિફિકેશન પસંદ કરો છો, તો તમે અન્ય લોકોના મેસેજ ચૂકી શકો છો અને તમારા મેસેજ મોકલવામાં નિષ્ફળ થઈ શકે છે.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ચકાસણી કર્યા વિના ચાલુ રાખવું છે?";

@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Elkarri deitzeko eta mezuak bidaltzeko gai izango zarete.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Partaideak direnak gai izango dira zu taldean berriro sartzeko.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Taldeko kideak direnak gai izango dira zu taldean berriro sartzeko.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Taldearen partaideak gai izango dira zu talde honetan berriro sartzeko.";
@@ -794,7 +794,7 @@
 "CONTACT_PICKER_TITLE" = "Kontaktua aukeratu";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Kontaktua elkarbanatu";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partekatu Kontaktua";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Izena editatu";
@@ -3386,7 +3386,7 @@
 "MESSAGE_STATUS_VIEWED" = "Ikusita";
 
 /* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mezu Berria";
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mezu berria";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ jada ez dago egiaztatu gisa markatuta. Ukitu aukerak ikusteko.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Korritu alde batera ezeztatzeko";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Ahots Mezua";
+"VOICE_MESSAGE_FILE_NAME" = "Ahots-mezua";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

@@ -914,7 +914,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Ryhmät";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Äskeiset keskustelut";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Viimeisimmät keskustelut";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Henkilöt";
@@ -3509,7 +3509,7 @@
 "new_message" = "Kirjoita viesti";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Hae";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Haku";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Etsi käyttäjää";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Tunnistautuminen epäonnistui";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Avaa lukitus";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Avaa Signalin lukitus";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tiina Utsjoki";

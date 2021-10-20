@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Съобщение до %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Изпрати";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Изпращане";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Прикачен файл";
@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Презиме";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Префикс";
+"CONTACT_FIELD_NAME_PREFIX" = "Титла";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Наставка";
+"CONTACT_FIELD_NAME_SUFFIX" = "Окончание";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Организация";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Плъзнете за отказ";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Гласово Съобщение";
+"VOICE_MESSAGE_FILE_NAME" = "Гласово съобщение";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

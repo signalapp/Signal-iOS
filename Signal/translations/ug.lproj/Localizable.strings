@@ -3509,7 +3509,7 @@
 "new_message" = "يېڭى ئۇچۇر";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ئاقتۇرۇش";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ئىزدە";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ئىشلەتكۈچى ئىزدەڭ";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "بۇ ئۇچۇرنى كۆرۈپ بولدىڭىز.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "بۇ جاي چېكىلسە ئوقۇلغاندىن كېيىن غايىپ بولىدىغان ئۇچۇر قۇرۇلىدۇ.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "بۇ جاي چېكىلسە ئوقۇلغاندىن كېيىن غايىب بولىدىغان ئۇچۇر قۇرۇلىدۇ.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "بىر قېتىملا كۆرۈنىدىغان ۋاسىتە ھۆججەتلىرى ئەۋەتىلگەندىن كېيىن ئاپتوماتىك ئۆچۈرۈلىدۇ.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "بىكار قىلىش ئۈچۈن سىيرىڭ";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ئاۋازلىق ئۇچۇر";
+"VOICE_MESSAGE_FILE_NAME" = "ئۈن ئۇچۇر";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "خاتىرىلەش ئۈچۈن چېكىپ بېسىپ تۇرۇڭ.";

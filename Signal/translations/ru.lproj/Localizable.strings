@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Сообщение для %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отпр.";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отправить";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";

@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "لقد بلغت الحد الأقصى للتعليق.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "إضافة تعليق..";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "إضافة تعليق...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "تسمية توضيحية";
@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "إرسال إلى %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "إرسال";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "أرسلْ";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "المُرفقات";
@@ -914,7 +914,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "المجموعات";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "المحادثات الحديثة";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "المُحادثات الأخيرة";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "الأشخاص";
@@ -1511,7 +1511,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "تعديل المجموعة";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحديث Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "وصلت المجموعة إلى عدد %@ عضو، والذي يُعد الحد الأقصى.";
@@ -3503,7 +3503,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "هل تريد تجاهل هذه التغييرات؟";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "تغييرات غير المحفوظة";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "التَغيُّرات غَير مَحفُوظَة";
 
 /* No comment provided by engineer. */
 "new_message" = "رِسالة جديدة";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "لَقَد اِكتَمَلَ التَّحَقُّق.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "إذا اخترت تجاهل التحقق، فقد تفوتك رسائل من أشخاص آخرين وقد يفشل إرسال رسائلك.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "إذا اخترت تخطي التحقق، فقد تفوتك رسائل من أشخاص آخرين وقد يفشل إرسال رسائلك.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "هَل تُريد المُتابعة دُونَ تَحقُّق؟";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "أنتَ بالفعل قد شاهدتَ هذه الرسالة.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "انقر هُنا لإخفاء هذه الرسالة بعد أن تمَّ عرضها.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "المس هنا لجعل هذه الرسالة تختفي بعد أن تتم مشاهدتها.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "تتمُّ إزالة ملفات وسائط-العرض-لمرة-واحدة الصادرة تلقائيًا بعد أن يتمَّ إرسالُها.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "مرِّر للإلغاء";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "رسالة صوتية";
+"VOICE_MESSAGE_FILE_NAME" = "رِسالة صوتيَّة";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "إضغَط مَعَ الاِستِمرار فِي الضَّغط لِلتَسجِيل.";

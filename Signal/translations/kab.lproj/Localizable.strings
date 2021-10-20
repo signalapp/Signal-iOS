@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Tukksa n wuṭṭun seg ujerred";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "ẓreg";
+"CONTACT_EDIT_NAME_BUTTON" = "Ẓreg";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Imayl";
@@ -2828,7 +2828,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Tamuli";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Suneɣ ainda m.k-yehwa akken ad tesdreɣleḍ tawlaft";
+"IMAGE_EDITOR_BLUR_HINT" = "Sunneɣ ainda m.k-yehwa akken ad tesdreɣleḍ tawlaft";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Udmawen yerwin";

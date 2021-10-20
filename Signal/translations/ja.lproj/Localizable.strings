@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "バナーを閉じる";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "このグループからメッセージや通知を受け取ることはなくなります。";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "今後このグループからはメッセージや更新を受信しません。";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ブロックする";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "このメッセージは閲覧済みです。";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "ここをタップして、このメッセージを閲覧後に消去します。";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ここをタップして、このメッセージが閲覧後に消えるようにします。";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "使い捨てメディアファイルは、送信後に自動で削除されます。";

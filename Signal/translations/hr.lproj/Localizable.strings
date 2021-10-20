@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Moći će te razmjenjivati poruke i pozive.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Postojeći članovi moći će vas ponovno dodati u grupu.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Postojeći članovi grupe će vas moći ponovno dodati u grupu.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Članovi grupe će vas moći ponovno dodati u ovu grupu.";

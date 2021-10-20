@@ -794,7 +794,7 @@
 "CONTACT_PICKER_TITLE" = "Sarudza kontakt";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Gova kontakt";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Gova contact";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Shandura zita";

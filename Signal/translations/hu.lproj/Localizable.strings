@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Most nem";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Később";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Az alkalmazásról";
@@ -332,7 +332,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Hangüzenet";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Hangfájl üzenet";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Hangfájlüzenet";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "Hanghívás";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Újra fogadhatsz üzeneteket és hívásokat ettől a kontakttól.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "A csoport tagjai újra hozzáadhatnak a csoporthoz a későbbiekben.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "A csoport tagjai később újra hozzáadhatnak a csoporthoz.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "A tagok ezután újra hozzáadhatnak majd a csoporthoz.";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Ellenőrzés kész.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ha az ellenőrzés kihagyását választod, előfordulhat, hogy nem kapsz meg, vagy nem tudsz elküldeni üzeneteket másoknak.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ha az ellenőrzés kihagyását választod, előfordulhat, hogy nem kapsz meg üzeneteket, illetve nem tudod elküldeni őket.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Folytatod ellenőrzés nélkül?";

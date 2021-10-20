@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Jullie zullen weer berichten aan elkaar kunnen verzenden en elkaar weer kunnen bellen via Signal.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Bestaande leden kunnen je weer aan de groep toevoegen.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Huidige leden van de groep zullen jou weer aan de groep kunnen toevoegen.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Groepsleden zullen je weer aan deze groep kunnen toevoegen.";
@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ongeregistreerd nummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Wijzigen";
+"CONTACT_EDIT_NAME_BUTTON" = "Aanpassen";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "E-mail";
@@ -3386,7 +3386,7 @@
 "MESSAGE_STATUS_VIEWED" = "Gezien";
 
 /* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nieuw bericht";
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "nieuw bericht";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ is niet langer gemarkeerd als geverifieerd. Tik voor opties.";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Verificatie succesvol voltooid.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Als je er voor kiest om verificatie van je telefoonnummer over te slaan, dan kan het zijn dat je sommige berichten niet ontvangt en dat het niet langer mogelijk is om berichten te verzenden.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Als je er voor kiest om de verificatie dat je echt een mens bent over te slaan, dan kan het zijn dat je sommige berichten niet ontvangt en dat het niet langer mogelijk is om berichten te verzenden.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Doorgaan zonder te verifiëren?";

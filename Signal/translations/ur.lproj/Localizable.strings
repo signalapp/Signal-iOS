@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "آپ ایک دوسرے کو پیغام بھیجنے اور کال کرنے کے اہل ہوں گے۔";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "موجودہ ممبران آپ کو دوبارہ گروپ میں شامل کرنے کے قابل ہونگے۔";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "موجودہ ممبران آپ کو دوبارہ گروپ میں شامل کرنے کے قابل ہوجائیںگے۔";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "گروپ ممبران آپ کو دوبارہ اس گروپ میں شامل کرسکیں گے۔";
@@ -434,7 +434,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "آپ خود کو بلاک نہیں کر سکتے۔";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "غلطی";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "غلطی ہے";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ان بلاکڈ ہو چکا ہے۔";
@@ -749,7 +749,7 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "دوسرا ذاتی نام";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "مقرر کرنا";
+"CONTACT_FIELD_NAME_PREFIX" = "سابقہ";
 
 /* Label for the 'name suffix' field of a contact. */
 "CONTACT_FIELD_NAME_SUFFIX" = "لاحقہ ";
@@ -2828,7 +2828,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "دھندلاپن کے لئے کہیں بھی خاکہ کھینچیں";
+"IMAGE_EDITOR_BLUR_HINT" = "دھندلاپن کے لئے کہیں بھی ڈرا کریں";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "دھندلا چہرے";
@@ -3509,7 +3509,7 @@
 "new_message" = "نیا پیغام";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "تلا ‎ش کر یں";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "تلاش کریں";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "صارف تلاش کریں";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "منسوخ کرنے کیلئے سلائیڈ کریں";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "آواز کے ذریعے پیغام";
+"VOICE_MESSAGE_FILE_NAME" = "پیغام بذریعہ آواز";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "ریکارڈ کرنے کیلئے دبائیں اور تھامیں۔";

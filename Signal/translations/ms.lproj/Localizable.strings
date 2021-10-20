@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Bukan sekarang";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Bukan Sekarang";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Mengenai Signal";
@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Mesej kepada %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Menghantar";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Hantar";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Lampiran";
@@ -3422,7 +3422,7 @@
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal memerlukan akses kepada lokasi anda untuk ciri ini.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Anda boleh mendayakan kebenaran ini dalam aplikasi Tetapan iOS";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Anda boleh mendayakan kebenaran ini di dalam aplikasi Tetapan iOS";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal memerlukan akses kepada foto anda untuk ciri ini.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Luncurkan untuk membatalkan";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Mesej suara";
+"VOICE_MESSAGE_FILE_NAME" = "Mesej Suara";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Tekan dan tahan untuk merakam.";

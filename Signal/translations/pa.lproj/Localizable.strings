@@ -227,7 +227,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "ਹੌਲੀ, ਵੱਧ ਡੇਟਾ";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "ਵੱਧ ਤੇਜ਼, ਘੱਟ ਡੇਟਾ";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Faster, less data";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "ਮੀਡੀਆ ਕੁਆਲਿਟੀ";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ਬੈਨਰ ਬੰਦ ਕਰੋ";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ਤੁਸੀਂ ਹੁਣ ਇਸ ਗਰੁੱਪ ਤੋਂ ਸੰਦੇਸ਼ ਜਾਂ ਅਪਡੇਟਸ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰੋਗੇ.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "ਤੁਸੀਂ ਹੁਣ ਇਸ ਗਰੁੱਪ ਤੋਂ ਸੁਨੇਹੇ ਜਾਂ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰੋਗੇ।";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ਬਲਾਕ";
@@ -386,7 +386,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" ਗਰੁੱਪ ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਅਤੇ ਛੱਡਣਾ ਹੈ?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ਨੂੰ ਬਲੌਕ ਕਰਨਾ ਹੈ?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਣੀ ਹੈ?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "ਪਾਬੰਦੀ ਲੱਗੇ ਗਰੁੱਪ";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "ਤੁਸੀਂ ਇੱਕ ਦੂਜੇ ਨੂੰ ਸੁਨੇਹੇ ਭੇਜ ਅਤੇ ਕਾਲ ਕਰ ਸਕੋਗੇ।";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "ਮੌਜੂਦਾ ਮੈਂਬਰ ਤੁਹਾਨੂੰ ਦੁਬਾਰਾ ਗਰੁੱਪ ਵਿੱਚ ਜੋੜਨ ਦੇ ਯੋਗ ਹੋਣਗੇ.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "ਮੌਜੂਦਾ ਮੈਂਬਰ ਤੁਹਾਨੂੰ ਦੁਬਾਰਾ ਗਰੁੱਪ ਵਿੱਚ ਜੋੜ ਸਕੋਗੇ।";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ਗਰੁੱਪ ਦੇ ਮੈਂਬਰ ਤੁਹਾਨੂੰ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਦੁਬਾਰਾ ਜੋੜਨ ਦੇ ਯੋਗ ਹੋਣਗੇ.";
@@ -434,7 +434,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "ਤੁਸੀਂ ਖੁਦ ਉੱਤੇ ਪਾਬੰਦੀ ਨਹੀਂ ਲਾ ਸਕਦੇ ਹੋ।";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ਗ਼ਲਤੀ";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ਤਰੁੱਟੀ";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ਤੋਂ ਪਾਬੰਦੀ ਹਟਾਈ ਜਾ ਚੁੱਕੀ ਹੈ। ";
@@ -2831,10 +2831,10 @@
 "IMAGE_EDITOR_BLUR_HINT" = "ਧੁੰਦਲਾ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਖਿੱਚੋ";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "ਧੁੰਦਲੇ ਚਿਹਰੇ";
+"IMAGE_EDITOR_BLUR_SETTING" = "ਚਿਹਰਿਆਂ ਨੂੰ ਧੁੰਦਲਾ ਕਰੋ";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "ਅਤਿਰਿਕਤ ਚਿਹਰੇ ਜਾਂ ਖੇਤਰ ਧੁੰਦਲਾ ਕਰਨ ਲਈ ਖਿੱਚੋ";
+"IMAGE_EDITOR_BLUR_TOAST" = "ਵਾਧੂ ਚਿਹਰੇ ਜਾਂ ਖੇਤਰ ਧੁੰਦਲੇ ਕਰਨ ਲਈ ਖਿੱਚੋ";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "ਤੁਸੀਂ %@ ਤੋਂ ਵੱਧ ਆਈਟਮਾਂ ਸਾਂਝੀਆਂ ਨਹੀਂ ਕਰ ਸਕਦੇ.";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "ਪ੍ਰਮਾਣੀਕਰਣ ਪੂਰਾ।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡਣਾ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਦੂਜੇ ਲੋਕਾਂ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਖੁੰਝਾ ਦਿਓ ਅਤੇ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਭੇਜੇ ਜਾਣ ਵਿੱਚ ਅਸਫ਼ਲ ਰਹਿਣ।";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "ਜੇ ਤੁਸੀਂ ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਦੂਜੇ ਲੋਕਾਂ ਦੇ ਸੁਨੇਹਿਆਂ ਨੂੰ ਖੁੰਝਾ ਦਿਓ ਅਤੇ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਸੁਨੇਹੇ ਭੇਜੇ ਜਾਣ ਵਿੱਚ ਅਸਫ਼ਲ ਰਹਿਣ।";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "ਪ੍ਰਮਾਣਿਤ ਕੀਤੇ ਬਗੈਰ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?";
@@ -5879,7 +5879,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "ਪ੍ਰਮਾਣੀਕਰਣ ਨੂੰ ਛੱਡੋ";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "ਤਸਦੀਕ ਕਰਨਾ ਪੂਰਾ ਹੋਇਆ";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "ਪ੍ਰਮਾਣੀਕਰਣ ਪੂਰਾ ਕਰੋ";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "ਮੌਜੂਦਾ ਗਰੁੱਪ ਆਉਣ ਵਾਲੇ ਹਫਤਿਆਂ ਵਿੱਚ ਆਪਣੇ ਆਪ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰ ਲੈਣਗੇ।";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "ਤੁਸੀਂ ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਹ ਸੁਨੇਹਾ ਦੇਖ ਲਿਆ ਹੈ.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "ਇਹ ਸੁਨੇਹਾ ਦੇਖੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਗਾਇਬ ਕਰਵਾਉਣ ਲਈ ਇੱਥੇ ਟੈਪ ਕਰੋ.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ਇਹ ਸੁਨੇਹਾ ਦੇਖਣ ਤੋਂ ਬਾਅਦ ਇਸਨੂੰ ਅਲੋਪ ਹੋਣ ਵਾਲਾ ਬਣਾਉਣ ਲਈ ਇੱਥੇ ਟੈਪ ਕਰੋ।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "ਬਾਹਰ ਭੇਜੇ ਜਾਣ ਵਾਲੀਆਂ ਇੱਕ ਵਾਰ ਦੇਖਣਯੋਗ ਮੀਡੀਆ ਫਾਈਲਾਂ ਭੇਜੇ ਜਾਣ ਤੋਂ ਬਾਅਦ ਆਪਣੇ ਆਪ ਹਟਾ ਦਿੱਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ਰੱਦ ਕਰਨ ਲਈ ਸਲਾਈਡ ਕਰੋ";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ਆਵਾਜ਼ ਦਾ ਸੁਨੇਹਾ";
+"VOICE_MESSAGE_FILE_NAME" = "ਆਵਾਜ਼ ਵਾਲਾ ਸੁਨੇਹਾ";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "ਰਿਕਾਰਡ ਕਰਨ ਲਈ ਪ੍ਰੈੱਸ ਕਰੋ ਤੇ ਦਬਾ ਕੇ ਰੱਖੋ।";

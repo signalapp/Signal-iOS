@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Magagawa nyong magpadala ng mensahe at tawagan ang isa't-isa.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Ang naririyan nang mga kasapi ay magagawang idagdag kang muli sa grupo.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Maidaragdag kang muli sa grupo ng mga kasalukuyang kasapi.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Ang mga kasapi ng grupong ito ay maaaring isali kang muli sa grupong ito.";
@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Panggitnang Pangalan";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Unlapi";
+"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Hulapi";
+"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organisasyon";
@@ -3509,7 +3509,7 @@
 "new_message" = "Bagong Mensahe";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Hanapin";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Maghanap";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Hanapin ang User";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Nakita mo na ang mensaheng ito.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Dito pindutin upang mawala ang mesaheng ito matapos tignan.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Pumindot dito upang mawala ang mesaheng ito matapos tingnan.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Ang mga papalabas na view-once na media file ay awtomatikong matatanggal matapos ipadala ang mga ito.";

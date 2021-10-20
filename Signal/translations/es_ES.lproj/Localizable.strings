@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Cerrar notificación";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No podrás enviar o recibir más mensajes en este grupo.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "No podrás enviar ni recibir más mensajes en este grupo.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquear";
@@ -911,7 +911,7 @@
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Imposible seleccionar más de %@ chats.";
 
 /* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "Grupo";
+"CONVERSATION_PICKER_SECTION_GROUPS" = "Grupos";
 
 /* table section header for section containing recent conversations */
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Chats recientes";

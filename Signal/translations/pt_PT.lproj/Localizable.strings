@@ -2828,13 +2828,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Desenhe onde quiser para ocultar";
+"IMAGE_EDITOR_BLUR_HINT" = "Desenhe onde quiser para desfocar";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Ocultar rostos";
+"IMAGE_EDITOR_BLUR_SETTING" = "Desfocar rostos";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Desenhe para ocultar rostos ou áreas adicionais";
+"IMAGE_EDITOR_BLUR_TOAST" = "Desenhe para desfocar rostos ou áreas adicionais";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Não pode partilhar mais do que %@ itens.";
@@ -3386,7 +3386,7 @@
 "MESSAGE_STATUS_VIEWED" = "Vista(s)";
 
 /* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Nova mensagem";
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = " Nova mensagem ";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ deixou de estar marcado como verificado. Toque para opções. ";

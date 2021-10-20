@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "നിങ്ങൾക്ക് പരസ്പരം സന്ദേശമയയ്‌ക്കാനും വിളിക്കാനും കഴിയും.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "നിലവിലുള്ള അംഗങ്ങൾക്ക് നിങ്ങളെ വീണ്ടും ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിയും.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "നിലവിലുള്ള അംഗങ്ങൾക്ക് നിങ്ങളെ ഗ്രൂപ്പിലേക്ക് വീണ്ടും ചേർക്കാൻ കഴിയും.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ഗ്രൂപ്പ് അംഗങ്ങൾക്ക് നിങ്ങളെ വീണ്ടും ഈ ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ കഴിയും.";
@@ -2831,7 +2831,7 @@
 "IMAGE_EDITOR_BLUR_HINT" = "മങ്ങിക്കാൻ എവിടെയും വരയ്‌ക്കുക";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "മുഖം മങ്ങിക്കുക";
+"IMAGE_EDITOR_BLUR_SETTING" = "മുഖങ്ങൾ മങ്ങിക്കുക";
 
 /* A toast indicating that you can blur more faces after detection */
 "IMAGE_EDITOR_BLUR_TOAST" = "അധിക മുഖങ്ങളോ പ്രദേശങ്ങളോ മങ്ങിക്കാൻ വരയ്‌ക്കുക";
@@ -3509,7 +3509,7 @@
 "new_message" = "പുതിയ സന്ദേശം";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "തിരയൽ";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "തിരയുക";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "യൂസറിനെ കണ്ടെത്തുക";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "ഓതൻ്റിക്കേഷൻ പരാജയപ്പെട്ടിരിക്കുന്നു";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal അൺലോക്കുചെയ്യുക";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal തുറക്കൂ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "ടീന ഉകുകു";
@@ -5864,7 +5864,7 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "പരിശോധന പൂർത്തിയായി.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "നിങ്ങൾ പരിശോധിച്ചുറപ്പിക്കൽ ഒഴിവാക്കാൻ തീരുമാനിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് മറ്റ് ആളുകളിൽ നിന്നുള്ള സന്ദേശങ്ങൾ നഷ്ടപ്പെട്ടേക്കാം, നിങ്ങളുടെ സന്ദേശങ്ങള്‍ അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടേക്കാം.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "നിങ്ങൾ പരിശോധിച്ചുറപ്പിക്കൽ ഒഴിവാക്കാൻ തീരുമാനിക്കുകയാണെങ്കിൽ, നിങ്ങൾക്ക് മറ്റ് ആളുകളിൽ നിന്നുള്ള സന്ദേശങ്ങള്‍ നഷ്ടപ്പെട്ടേക്കാം, നിങ്ങളുടെ സന്ദേശങ്ങള്‍ അയയ്ക്കുന്നതിൽ പരാജയപ്പെട്ടേക്കാം.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "പരിശോധിച്ചുറപ്പിക്കാതെ തുടരണോ?";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "നിങ്ങൾ ഇതിനകം തന്നെ ഈ സന്ദേശം കണ്ടിരിക്കുന്നു.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "ഈ സന്ദേശം കണ്ടതിനുശേഷം അത് അപ്രത്യക്ഷമാകാൻ ഇവിടെ ടാപ്പുചെയ്യുക.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ഈ സന്ദേശം കണ്ടതിനുശേഷം അത് അപ്രത്യക്ഷമാകാൻ ഇവിടെ തൊടുക.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "അയയ്ക്കുന്ന ഒറ്റ തവണ കാണാവുന്ന മീഡിയ ഫയലുകൾ അയച്ചതിനുശേഷം അവ സ്വയമേവ നീക്കംചെയ്യപ്പെടും.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "റദ്ദാക്കാൻ സ്ലൈഡ് ചെയ്യുക";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "വോയിസ് മെസേജ്";
+"VOICE_MESSAGE_FILE_NAME" = "ശബ്ദ സന്ദേശം";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "റെക്കോർഡ് ചെയ്യാൻ അമർത്തി പിടിക്കുക.";

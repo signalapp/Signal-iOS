@@ -914,7 +914,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Nhóm";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Cuộc trò chuyện gần đây";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Cuộc trò chuyện Gần đây";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Liên hệ";

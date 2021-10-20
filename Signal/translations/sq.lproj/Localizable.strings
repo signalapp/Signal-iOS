@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Mbylle banderolën";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "S’do të merrni më mesazhe apo përditësime nga ky grup.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "S\’do të merrni më mesazhe apo përditësime nga ky grup.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bllokoje";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Do të jeni në gjendje t’i shkruani mesazhe dhe t’i bëni thirrje njëri-tjetrit.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anëtarët ekzistues do të jenë në gjendje t’ju shtojnë sërish te grupi.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anëtarët ekzistues do të jenë në gjendje t\’ju shtojnë sërish te grupi.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anëtarë të grupit do të jenë në gjendje t’ju rishtojnë te ky grup.";
@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Emër i Dytë";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Parashtesë";
+"CONTACT_FIELD_NAME_PREFIX" = "Prefiks";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Prapashtesë";
+"CONTACT_FIELD_NAME_SUFFIX" = "Sufiks";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Ent";
@@ -3509,7 +3509,7 @@
 "new_message" = "Mesazh i Ri";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Kërkoni";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Kërko";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Gjeni Përdorues";

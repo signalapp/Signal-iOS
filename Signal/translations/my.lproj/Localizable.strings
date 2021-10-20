@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ယခု မရပါ";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ယခုမဟုတ်ပါ";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal ၏အကြောင်း";
@@ -221,7 +221,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "အရွယ်အစား %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "သိမ်းဆည်းပြီး";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "သိမ်းပြီး";
 
 /* Subtitle for the 'high' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Slower, more data";
@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ စီသို့ မက်ဆေ့ချ်";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ပေးပို့သည်";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "ပေးပို့မယ်";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "ပူးတွဲ ";
@@ -386,7 +386,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" အဖွဲ့ကို ပိတ်ပယ်ပြီး ၎င်းအဖွဲ့မှ ထွက်ခွာမည်လား?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ကို ပိတ်ပယ်မည်လား?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ကို ပိတ်မလား?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "ပိတ်ပင်ထားသော အဖွဲ့များ";
@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "စာရင်းမသွင်းထားသော နံပါတ် ";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "ပြင်ရန်";
+"CONTACT_EDIT_NAME_BUTTON" = "ပြင်မယ်";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "အီးမေးလ်";
@@ -2831,7 +2831,7 @@
 "IMAGE_EDITOR_BLUR_HINT" = "ကြိုက်သည့်နေရာတွင်ဆွဲ၍ မှုန်စေပါ";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "မျက်နှာများကို မှုန်စေပါ";
+"IMAGE_EDITOR_BLUR_SETTING" = "မျက်နှာမှုန်ဝါးစေပါ";
 
 /* A toast indicating that you can blur more faces after detection */
 "IMAGE_EDITOR_BLUR_TOAST" = "နောက်ထပ်မျက်နှာများ သို့မဟုတ် အခြားနေရာများကို မှုန်ဝါးရန်ဆွဲပါ";
@@ -3509,7 +3509,7 @@
 "new_message" = "စာအသစ်";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ရှာပါ";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "ရှာဖွေမယ်";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "အသုံးပြုသူ ရှာပါ";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "မှန်ကန်ကြောင်းအထောက်အထားပြခြင်း မအောင်မြင်ပါ။";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ကို ပြန်ဖြည်ပါ";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ကို ပြန်ဖွင့်ပါ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "မဇင်မာ";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "သင်မှ ၎င်းမက်ဆေ့ချ်အား ဖတ်ရှုပြီးပါပြီ။";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "မက်ဆေ့ ဖတ်ကြည့်ရှုပြီး ဖျောက်ကွယ်ရန် ဤနေရာနှိပ်ပါ";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "မက်ဆေ့ ဖတ်ကြည့်ရှုပြီး ဖျောက်ကွယ်ရန် ဤနေရာကိုနှိပ်ပါ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "အထွက် တစ်ခါသုံး မီဒီယာဖိုင်များသည် ပေးပို့ပြီးခဲ့လျှင် အလိုအလျောက် ဖယ်ရှားဖြစ်ပါမည်။";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "ပယ်ဖျက်ရန် ဆွဲချပါ";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "အသံသတင်းစကား";
+"VOICE_MESSAGE_FILE_NAME" = "အသံမက်ဆေ့ချ်";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

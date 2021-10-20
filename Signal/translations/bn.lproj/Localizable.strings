@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "বাতিল";
+"ALERT_DISCARD_BUTTON" = "বাতিল করুন";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "সংরক্ষণ করবেন না";
@@ -224,10 +224,10 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "সংরক্ষিত";
 
 /* Subtitle for the 'high' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "আরও ধীরগতি, আরও ডেটা";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "আরও ধীর, বেশি ডেটা";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "আরও দ্রুত, কম ডেটা";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "দ্রুততর, কম ডেটা";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "মিডিয়ার মান";
@@ -332,7 +332,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ভয়েস বার্তা";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "অডিও বার্তা";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "অডিও মেসেজ";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "অডিও কল";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ব্যানার বন্ধ করুন";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "আপনি আর এই গ্রুপ থেকে বার্তা বা আপডেট পাবেন না।";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "আপনি আর এই গ্রুপ থেকে মেসেজ বা আপডেট পাবেন না।";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "অবরূদ্ধ";
@@ -386,7 +386,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" গ্রুপটিকে অবরুদ্ধ করবেন এবং ছেড়ে যাবেন?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ অবরূদ্ধ করবেন?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@-কে ব্লক করবেন?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "অবরুদ্ধ গ্রুপসমূহ";
@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "অনিবন্ধিত নাম্বার";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "সম্পাদনা";
+"CONTACT_EDIT_NAME_BUTTON" = "সম্পাদনা করুন";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "ইমেইল";
@@ -911,7 +911,7 @@
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "আপনি %@টির বেশি চ্যাট নির্বাচন করতে পারবেন না।";
 
 /* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "গ্রুপ সমূহ";
+"CONVERSATION_PICKER_SECTION_GROUPS" = "গ্রুপ";
 
 /* table section header for section containing recent conversations */
 "CONVERSATION_PICKER_SECTION_RECENTS" = "সাম্প্রতিক চ্যাট";
@@ -1511,7 +1511,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "গ্রুপ সম্পাদনা করুন";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "এই ইউজারটিকে Signal আপগ্রেড না করা পর্যন্ত এই গ্রুপে যোগ করা যাবে না।";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Signal আপগ্রেড না করা পর্যন্ত এই গ্রুপে এই ইউজারকে যোগ করা যাবে না।";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "গ্রুপের সর্বোচ্চ আকার %@ সদস্যে পৌঁছেছে।";
@@ -2828,7 +2828,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "যেকোনও জায়গা অস্পষ্ট করতে আঁকুন";
+"IMAGE_EDITOR_BLUR_HINT" = "যেকোনো জায়গা অস্পষ্ট করতে আলতো চেপে টানুন";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "ফেস অস্পষ্ট করুন";
@@ -3386,7 +3386,7 @@
 "MESSAGE_STATUS_VIEWED" = "দেখা হয়েছে";
 
 /* placeholder text for the editable message field */
-"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "নতুন বার্তা";
+"MESSAGE_TEXT_FIELD_PLACEHOLDER" = "নতুন মেসেজ";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ আর যাচাইকৃত হিসাবে চিহ্নিত নয়। বিকল্পগুলির জন্য আলতো চাপুন।";
@@ -3509,7 +3509,7 @@
 "new_message" = "নতুন বার্তা";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "অনুসন্ধান";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "খুঁজুন";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ব্যবহারকারী খুঁজুন";
@@ -4592,7 +4592,7 @@
 "REGISTRATION_NON_VALID_NUMBER" = "এই ফোন নাম্বার ফর্ম্যাটটি সমর্থিত নয়, দয়া করে সহায়তার সাথে যোগাযোগ করুন।";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "ফোন নাম্বার";
+"REGISTRATION_PHONENUMBER_BUTTON" = "ফোন নম্বর";
 
 /* No comment provided by engineer. */
 "REGISTRATION_RESTRICTED_MESSAGE" = "একটি বার্তা প্রেরণের আগে আপনাকে নিবন্ধন করতে হবে।";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "প্রমাণীকরণ ব্যর্থ।";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal লক্ খুলুন";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal আনলক করুন";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "টিনা মুনিম";
@@ -5861,7 +5861,7 @@
 "SOUNDS_NONE" = "কিছুই না";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "যাচাইকরণ সম্পন্ন।";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "যাচাইকরণ সম্পূর্ণ হয়েছে।";
 
 /* Message for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "আপনি যাচাইকরণ এড়িয়ে গেলে, আপনি অন্য ব্যক্তিদের কাছ থেকে আসা মেসেজ নাও দেখতে পারেন এবং আপনার মেসেজগুলিও পাঠানো নাও যেতে পারে।";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "বাতিল করতে স্লাইড করুন";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ভয়েস বার্তা";
+"VOICE_MESSAGE_FILE_NAME" = "ভয়েস মেসেজ";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "রেকর্ড করতে টিপে ধরে রাখুন।";

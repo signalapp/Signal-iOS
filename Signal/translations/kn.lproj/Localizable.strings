@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ಕ್ಯಾಪ್ಷನ್ ಮಿತಿಯನ್ನು ತಲುಪಿದೆ.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ಶೀರ್ಷಿಕೆಯನ್ನು ಸೇರಿಸಿ…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "ಕ್ಯಾಪ್ಷನ್ ಸೇರಿಸಿ";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "ಕ್ಯಾಪ್ಷನ್ ";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "ನೀವು ಪರಸ್ಪರ ಸಂದೇಶ ನೀಡಲು ಮತ್ತು ಕರೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಸದಸ್ಯರನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ ನೀವು ಮತ್ತೆ ಗುಂಪಿಗೆ.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಸದಸ್ಯರಿಗೆ ನಿಮ್ಮನ್ನು ಮತ್ತೆ ಗುಂಪಿಗೆ ಸೇರಿಸಲು ಸಾಧ್ಯವಿರುತ್ತದೆ.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "ಗುಂಪಿನ ಸದಸ್ಯರು ನಿಮ್ಮನ್ನು ಮತ್ತೊಮ್ಮೆ ಈ ಗುಂಪಿಗೆ ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.";
@@ -752,7 +752,7 @@
 "CONTACT_FIELD_NAME_PREFIX" = "ಪೂರ್ವಪ್ರತ್ಯಯ";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "ಪ್ರತ್ಯಯ";
+"CONTACT_FIELD_NAME_SUFFIX" = "ಅಂತ್ಯಪ್ರತ್ಯಯ";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "ಸಂಸ್ಥೆ";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "ಪ್ರಮಾಣೀಕರಣ ವಿಫಲವಾಗಿದೆ";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "ಅನ್ಲಾಕ್ ಮಾಡಿ Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ಅನ್ಲಾಕ್ ಮಾಡಿ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "ಟೀನಾ ಉಕುಕು";

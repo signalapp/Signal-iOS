@@ -3503,7 +3503,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vuoi scartare questi cambiamenti?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Cambiamenti non salvati";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Modifiche non salvate";
 
 /* No comment provided by engineer. */
 "new_message" = "Nuovo messaggio";
@@ -4571,7 +4571,7 @@
 "REGISTRATION_BODY" = "Errore in fase di ri-registrazione delle notifiche push.";
 
 /* Label for the country code field */
-"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Codice del Paese";
+"REGISTRATION_DEFAULT_COUNTRY_NAME" = "Prefisso telefonico internazionale";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserisci numero";

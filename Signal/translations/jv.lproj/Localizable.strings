@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Wates teks katrangan sampun cekap.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Minggahaken teks gambaran...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Minggahaken teks katrangan…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Teks Katrangan";

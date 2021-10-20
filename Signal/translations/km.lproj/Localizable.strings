@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "អ្នកនិងអាចផ្ញើសារនិងហៅចេញទៅវិញទៅមក។";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "សមាជិកដែលមានស្រាប់នឹងអាចបន្ថែមអ្នកទៅក្រុមម្តងទៀត។";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "សមាជិកដែលមានស្រាប់នឹងអាចបន្ថែមអ្នកទៅក្នុងក្រុមម្តងទៀត។";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "សមាជិកនឹងអាចដាក់អ្នកចូលក្នុងក្រុមនេះបានម្តងទៀត។";

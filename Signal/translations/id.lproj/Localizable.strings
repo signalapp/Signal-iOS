@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Sebuah pesan, stiker, tanggapan, tanda pesan terbaca atau media tidak dapat Anda terima dari %@. Mereka mungkin mencoba mengirimkannya secara langsung, atau di dalam grup.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Buang";
+"ALERT_DISCARD_BUTTON" = "Batalkan";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Jangan disimpan";
@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Anda akan dapat mengirim pesan dan membuat panggilan satu sama lain.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota lainnya akan mampu menambahkan Anda ke grup lagi.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota grup yang masih ada dapat menambahkan Anda ke grup lagi.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anggota grup dapat mengundang Anda kembali ke dalam grup.";
@@ -3503,7 +3503,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Anda ingin membatalkan perubahan ini?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Perubahan Tidak Disimpan";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
 
 /* No comment provided by engineer. */
 "new_message" = "Pesan Baru";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Anda telah melihat pesan ini.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Ketuk di sini untuk membuat pesan ini menghikang setelah diihat.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Ketuk di sini untuk membuat pesan ini menghilang setelah dilihat.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Berkas media lihat-sekali akan langsung terhapus setelah terkirim.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Geser untuk membatalkan";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Pesan suara";
+"VOICE_MESSAGE_FILE_NAME" = "Pesan Suara";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Tekan dan tahan untuk merekam.";

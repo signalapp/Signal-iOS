@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Друге ім’я";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Префікс";
+"CONTACT_FIELD_NAME_PREFIX" = "Звання";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Суфікс";
+"CONTACT_FIELD_NAME_SUFFIX" = "Титул";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Організація";

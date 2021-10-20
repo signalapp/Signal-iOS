@@ -3509,7 +3509,7 @@
 "new_message" = "Uus sõnum";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Otsi";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Otsing";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Kasutaja leidmine";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Autentimine ei õnnestunud";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Ava Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Lukusta Signal lahti";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tiina Kuusk";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Sa vaatasid juba seda sõnumit.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Koputa siia, et muuta see sõnum haihtuvaks pärast selle vaatamist.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Koputa siia, et panna see sõnum haihtuma pärast selle vaatamist.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Väljuvad ühekordsed meediafailid kustutatakse automaatselt pärast nende saatmist.";

@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Mesaj către %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Trimite";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Trimiteți";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Atașament";
@@ -3509,7 +3509,7 @@
 "new_message" = "Mesaj nou";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Căutați";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Căutare";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Caută utilizator";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ați văzut deja acest mesaj.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Apăsați aici pentru a face acest mesaj să dispară după ce este vizualizat.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Atingeți aici pentru a face acest mesaj să dispară după ce este vizualizat.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Fișierele trimise de tip media vizibile o singură dată sunt eliminate automat după ce sunt trimise.";

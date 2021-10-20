@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Nid oedd modd anfon neges, sticer, ymateb, na derbynneb ddarllen i chi gan %@. Efallai eu bod wedi ceisio ei anfon atoch yn uniongyrchol, neu mewn grŵp.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Taflu";
+"ALERT_DISCARD_BUTTON" = "Dileu";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Paid â Chadw";
@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Terfyn hyd testun wedi'i gyrraedd";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ychwanegu pennawd...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Ychwanegu pennawd…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Testun";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Cau baner";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Fyddwch chi ddim yn derbyn negeseuon na diweddariadau gan y grŵp hwn.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Ni fyddwch bellach yn derbyn negeseuon na diweddariadau gan y grŵp hwn.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Rhwystro";
@@ -2831,7 +2831,7 @@
 "IMAGE_EDITOR_BLUR_HINT" = "Llunio unrhyw le i bylu";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Pylu gwynebau";
+"IMAGE_EDITOR_BLUR_SETTING" = "Pylu wynebau";
 
 /* A toast indicating that you can blur more faces after detection */
 "IMAGE_EDITOR_BLUR_TOAST" = "Llunio i bylu wynebau ychwanegol neu ardaloedd";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Methwyd Dilysu";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Datgloi Signal\n";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Datgloi Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tegwen Haf";

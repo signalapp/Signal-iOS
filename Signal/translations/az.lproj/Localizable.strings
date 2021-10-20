@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Başlıq limitinə çatıldı.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Başlıq əlavə et...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Bir başlıq əlavə et...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Başlıq";
@@ -1511,7 +1511,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Qrupa düzəliş et";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Signal yenilənməyənə qədər bu istifadəçi qrupa əlavə oluna bilməz.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Bu istifadəçi, Signal-ı yüksəldənə qədər qrupa əlavə edilə bilməyəcək.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Qrup həcmi üçün maksimum %@ üzv sayına çatıldı.";
@@ -5861,7 +5861,7 @@
 "SOUNDS_NONE" = "Heç biri";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Təsdiqlənmə tamamlandı.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Təsdiqləmə tamamlandı.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Əgər təsdiqləməni ötürsəniz, digər şəxslərdən gələn mesajlarınızı itirə bilərsiniz və mesajlarınız göndərilməyə bilər.";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "İmtina etmək üçün sürüşdürün";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Səsyazmalı Mesaj";
+"VOICE_MESSAGE_FILE_NAME" = "Səsyazmalı mesaj";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Səsyazmaq üçün basıb saxlayın.";

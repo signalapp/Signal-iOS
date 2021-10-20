@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "कैप्शन में औेेर शब्द नहीं जोङ सकते।";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "कैप्शन लिखें...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "शीर्षक लिखें...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "कैप्शन";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "बैनर को बंद करें";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "अब आपको इस ग्रुप से कोई मेसेज या हलचल की सूचना नहीं प्राप्त होगी।";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "अब आपको इस ग्रुप से कोई संदेश या अपडेट नहीं मिलेंगे।";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ब्लॉक";
@@ -386,7 +386,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "क्या आप \"%@\" ग्रुप को ब्लॉक करके छोङना चाहते हैं?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@को ब्लॉक करें?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ को ब्लॉक करें?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "ब्लॉक ग्रुप";
@@ -434,7 +434,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "आप खुद को ब्लॉक नहीं कर सकते।";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "त्रुटि";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = " त्रुटि";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ को अनब्लॉक कर दिया गया है।";
@@ -3509,7 +3509,7 @@
 "new_message" = "नया मेसेज";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "सर्च";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "खोजें";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "उपभोगकर्ता खोजें";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "रद्द करने के लिए स्लाइड करें";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "ध्वनि मेसेज";
+"VOICE_MESSAGE_FILE_NAME" = "ऑडियो मेसेज";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "रिकॉर्ड करने के लिए दबा कर रखें।";

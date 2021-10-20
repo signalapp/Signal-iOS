@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "İkinci ad";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Ön ek";
+"CONTACT_FIELD_NAME_PREFIX" = "Önek";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Son ek";
+"CONTACT_FIELD_NAME_SUFFIX" = "Sonek";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Kuruluş";
@@ -3509,7 +3509,7 @@
 "new_message" = "Yeni İleti";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Ara";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Konuşmada Ara";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Kullanıcıyı Bul";

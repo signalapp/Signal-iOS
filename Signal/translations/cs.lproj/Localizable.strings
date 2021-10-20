@@ -752,7 +752,7 @@
 "CONTACT_FIELD_NAME_PREFIX" = "Před jménem";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Za jménem";
+"CONTACT_FIELD_NAME_SUFFIX" = "Titul za";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organizace";
@@ -2828,13 +2828,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Kreslením kdekoli rozostřit";
+"IMAGE_EDITOR_BLUR_HINT" = "Rozostřit kreslením";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Rozostřit tváře";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Kreslením rozostřit další tváře nebo oblasti";
+"IMAGE_EDITOR_BLUR_TOAST" = "Rozostřit kreslením další tváře nebo oblasti";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nemůžete sdílet více než %@ položek.";
@@ -3509,7 +3509,7 @@
 "new_message" = "Nová zpráva";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Hledat";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Vyhledat";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Najít uživatele";

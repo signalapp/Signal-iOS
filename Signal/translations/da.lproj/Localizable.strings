@@ -749,10 +749,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Mellemnavn";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Fornavn";
+"CONTACT_FIELD_NAME_PREFIX" = "Navnepræfiks";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Efternavn";
+"CONTACT_FIELD_NAME_SUFFIX" = "Navnesuffiks";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organistation";
@@ -1511,7 +1511,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Rediger gruppe";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Brugeren kan ikke tilføjes gruppen, før Signal opdateres";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Brugeren kan ikke tilføjes gruppen, før vedkommende opdaterer Signal";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Maksimal størrelse på %@ gruppemedlemmer er nået";
@@ -2828,7 +2828,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Tegn hvor du vil for at sløre";
+"IMAGE_EDITOR_BLUR_HINT" = "Tegn hvor som helst for at sløre";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Tilslør ansigter";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Du har allerede set denne besked.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tryk her for at få beskeden til at forsvinde efter den er blevet set.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tryk her for at få denne besked til at forsvinde, efter at den er blevet vist.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Udgående vis-kun-én-gang mediefiler fjernes automatisk efter de er sendt.";

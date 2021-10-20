@@ -332,7 +332,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mensagem de voz";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensagem de áudio";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensagem de voz";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "Chamada de voz";
@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fechar balão";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Você deixará de receber mensagens e atualizações do grupo.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Você deixará de receber mensagens e notificações do grupo.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Bloquear";
@@ -3509,7 +3509,7 @@
 "new_message" = "Nova mensagem";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Buscar";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Pesquisar";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Encontrar uma pessoa no Signal";
@@ -4736,7 +4736,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Falha na autenticação";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloquear Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Destrancar Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";

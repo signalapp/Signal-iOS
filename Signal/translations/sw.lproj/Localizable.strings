@@ -5879,7 +5879,7 @@
 "SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Ruka Uthibitishaji";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Kamilisha kuthibitisha";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Kamilisha uthibitishaji";
 
 /* Footer for 'groups v2 and mentions' splash screen */
 "SPLASH_MEGAPHONE_GROUPS_V2_MENTIONS_NAMES_SPLASH_FOOTER" = "Vikundi vilivyopo vitapata huduma hizi kiotomatiki katika wiki chache zijazo.";

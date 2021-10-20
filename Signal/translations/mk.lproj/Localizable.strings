@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Лимитот на насловот е постигнат.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Додадете наслов...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Додај наслов...";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Наслов";
@@ -914,7 +914,7 @@
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Групи";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Неодамнешни разговори ";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Неодамнешни разговори";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Луѓе";
@@ -1127,7 +1127,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Детали за контакт";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Сподели профил";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Споделете профил";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Додадете во контакти";
@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Повлечи за откажување";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Гласовна порака";
+"VOICE_MESSAGE_FILE_NAME" = "Гласовна порака ";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

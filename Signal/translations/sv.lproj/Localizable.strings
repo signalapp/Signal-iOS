@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Ett meddelande, klistermärke, reaktion, läskvitto eller media kunde inte levereras till dig från %@. Personen kan ha försökt att skicka det direkt till dig eller i en grupp.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Stäng";
+"ALERT_DISCARD_BUTTON" = "Kassera";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Spara inte";
@@ -3500,7 +3500,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Välj medlemmar";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du ångra dina ändringar?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vill du slänga dessa ändringar?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Osparade ändringar";

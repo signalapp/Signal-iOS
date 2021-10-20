@@ -6287,7 +6287,7 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Ja gefe domin katsewa";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Salon murya";
+"VOICE_MESSAGE_FILE_NAME" = "Sakon murya";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Press and hold to record.";

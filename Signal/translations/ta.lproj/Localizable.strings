@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "இப்போது இல்லை";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "இப்போது வேண்டாம் ";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "சிக்னலை பற்றி";
@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "ஒரு செய்தி, ஓட்டி, எதிர்வினை, ரசீது வாசிக்கவும் அல்லது ஊடகம் இருந்து உங்களுக்கு வழங்க முடியவில்லை %@. . அவர்கள் அதை உங்களுக்கு நேரடியாக அனுப்ப முயற்சித்திருக்கலாம் அல்லது ஏகுழு.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "நிராகரி";
+"ALERT_DISCARD_BUTTON" = "புறந்தள்ளு";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "சேமிக்க வேண்டாம்";
@@ -221,7 +221,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "அளவு: %@";
 
 /* toast alert shown after user taps the 'save' button */
-"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "சேமித்த";
+"ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "சேமிக்கப்பட்டது ";
 
 /* Subtitle for the 'high' option for media quality. */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "மெதுவான, அதிகமான இணைய தரவு";
@@ -386,7 +386,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" குழுவைத் தடுத்து வெளியேறு?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ஐத் தடுக்கவா?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ஐ தடுக்கவா?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "தடுக்கப்பட்ட குழுக்கள்";
@@ -3509,7 +3509,7 @@
 "new_message" = "புதிய தகவல்";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "தேடல்";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "தேடு ";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "பயனரைக் கண்டறியவும்";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "நீங்கள் ஏற்கனவே இந்த செய்தியைப் பார்த்தேன்.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "தட்டவும் இந்த செய்தியை உருவாக்க இங்கே மறைந்துவிடும் அதைப் பார்த்த பிறகு.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "இந்த செய்தியைப் பார்த்த பிறகு மறைந்து போக இங்கே தட்டவும்.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "வெளிச்செல்லும் காண்க-ஒருமுறை முறை மீடியா கோப்புகள் அனுப்பப்பட்ட பின் தானாகவே அகற்றப்படும்.";

@@ -203,7 +203,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "標題字數已達到上限";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "新增標題…";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "新增附注…";
 
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "標題";
@@ -794,7 +794,7 @@
 "CONTACT_PICKER_TITLE" = "選取聯絡人";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "共享聯絡人";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "分享聯絡人";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "編輯姓名";

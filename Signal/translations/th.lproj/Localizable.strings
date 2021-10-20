@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "คุณเคยดูข้อความนี้แล้ว";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "แตะที่นี่เพื่อทำให้ข้อความหายไปหลังจากคุณเห็นข้อความ";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "แตะที่นี่เพื่อทำให้ข้อความหายไปหลังจากเห็นข้อความ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "แฟ้มสื่อที่ดูได้ครั้งเดียวขาออกจะถูกลบอัตโนมัติหลังจากส่งแล้ว";

@@ -1511,7 +1511,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Edytuj grupę";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Nie można dodać do grupy tego użytkownika, dopóki nie zaktualizuje aplikacji Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Nie można dodać tego użytkownika do grupy, dopóki nie zaktualizuje aplikacji Signal.";
 
 /* Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_FORMAT" = "Osiągnięto maksymalny rozmiar grupy, %@ członków.";
@@ -2828,7 +2828,7 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Rysuj gdziekolwiek, aby rozmyć";
+"IMAGE_EDITOR_BLUR_HINT" = "Rysuj, aby rozmyć dowolne miejsce";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Rozmyj twarze";

@@ -377,7 +377,7 @@
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Sluit banier";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Jy sal nie meer boodskappe of nuus van hierdie groep ontvang nie.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "U sal nie meer boodskappe of nuus van hierdie groep ontvang nie.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Versper";
