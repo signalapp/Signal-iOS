@@ -114,9 +114,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     });
 
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
-        if (CurrentAppContext().isNSE) {
-            return;
-        }
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
             [OWSProfileManager updateProfileOnServiceIfNecessary];
@@ -515,6 +512,9 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 }
 
 - (void)rotateLocalProfileKeyIfNecessary {
+    if (CurrentAppContext().isNSE) {
+        return;
+    }
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
         OWSAssertDebug(self.tsAccountManager.isRegistered);
         OWSLogVerbose(@"Not rotating profile key on non-primary device");
