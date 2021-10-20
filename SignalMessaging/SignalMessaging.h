@@ -11,16 +11,17 @@ FOUNDATION_EXPORT double SignalMessagingVersionNumber;
 FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 
 // The public headers of the framework
-#import "AppSetup.h"
-#import "DateUtil.h"
-#import "DebugLogger.h"
-#import "Environment.h"
-#import "OWSContactsManager.h"
-#import "OWSOrphanDataCleaner.h"
-#import "OWSPreferences.h"
-#import "OWSProfileManager.h"
-#import "OWSSounds.h"
-#import "OWSSyncManager.h"
-#import "ThreadUtil.h"
-#import "VersionMigrations.h"
+#import <SignalMessaging/AppSetup.h>
+#import <SignalMessaging/DateUtil.h>
+#import <SignalMessaging/DebugLogger.h>
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/OWSContactsManager.h>
+#import <SignalMessaging/OWSOrphanDataCleaner.h>
+#import <SignalMessaging/OWSPreferences.h>
+#import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSScrubbingLogFormatter.h>
+#import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/OWSSyncManager.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/OWSUserProfile.h>

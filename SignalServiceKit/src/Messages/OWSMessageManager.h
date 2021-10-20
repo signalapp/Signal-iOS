@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageHandler.h"
+#import <SignalServiceKit/OWSMessageHandler.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

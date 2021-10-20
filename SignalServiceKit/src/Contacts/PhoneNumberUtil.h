@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "PhoneNumber.h"
+#import <SignalServiceKit/PhoneNumber.h>
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN

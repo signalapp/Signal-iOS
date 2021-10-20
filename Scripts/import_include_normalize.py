@@ -235,6 +235,9 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
     if short_filepath.startswith(os.sep):
        short_filepath = short_filepath[len(os.sep):]
        
+    file_ext = os.path.splitext(filename)[1]
+    is_header_file = file_ext in ('.h', '.hpp', '.pch')
+     
     print 'Processing:', filename
 
     with open(file_path, 'rt') as f:
@@ -286,7 +289,10 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
             sys.exit(1)
 
         if header.targetName == target.name:
-            newline = '#import "%s"' % ( header.filename, )
+            if is_header_file and not target.isAppOrAppExtension():
+                newline = "#import <%s/%s>" % ( header.targetName, header.filename, )
+            else:
+                newline = '#import "%s"' % ( header.filename, )
         else:
             newline = "#import <%s/%s>" % ( header.targetName, header.filename, )
         new_lines.append(newline)
@@ -344,33 +350,31 @@ if __name__ == "__main__":
     headerSet = HeaderSet(targets, headers)
     
     if args.write_header_list:
+        def write_lines_to_file(lines, filename):
+            for header in headers:
+                lines.append(header.path)
+            lines.sort()
+            text = '\n'.join(lines)
+            text = text + '\n'
+
+            file_path = os.path.abspath(os.path.join(git_repo_path, filename))
+            print 'Header list:', filename
+            with open(file_path, 'wt') as f:
+                f.write(text)
+            
         lines = []
         for header in headers:
             lines.append(header.path)
-        lines.sort()
-        text = '\n'.join(lines)
-        text = text + '\n'
-
         filename = 'import_header_paths.txt'
-        file_path = os.path.abspath(os.path.join(git_repo_path, filename))
-        print 'Header list:', filename
-        with open(file_path, 'wt') as f:
-            f.write(text)
+        write_lines_to_file(lines, filename)
             
         lines = []
         for header in headers:
             lines.append(header.filename)
-        lines.sort()
-        text = '\n'.join(lines)
-        text = text + '\n'
-
         filename = 'import_header_filenames.txt'
-        file_path = os.path.abspath(os.path.join(git_repo_path, filename))
-        print 'Header list:', filename
-        with open(file_path, 'wt') as f:
-            f.write(text)
+        write_lines_to_file(lines, filename)
+
         
-    
     normalize_imports_and_includes(targets, headerSet)    
 
     print 'Complete.'

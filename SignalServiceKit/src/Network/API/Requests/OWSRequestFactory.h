@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "RemoteAttestation.h"
+#import <SignalServiceKit/RemoteAttestation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

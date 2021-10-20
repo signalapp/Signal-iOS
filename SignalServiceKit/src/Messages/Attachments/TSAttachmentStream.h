@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "DataSource.h"
-#import "TSAttachment.h"
+#import <SignalServiceKit/DataSource.h>
+#import <SignalServiceKit/TSAttachment.h>
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
