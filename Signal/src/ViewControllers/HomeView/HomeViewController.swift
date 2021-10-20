@@ -233,6 +233,20 @@ public enum ShowAppSettingsMode {
 public extension HomeViewController {
 
     @objc
+    func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
+        let avatarView = ConversationAvatarView2(sizeClass: .tiny, badged: true)
+        databaseStorage.read { readTx in
+            avatarView.update(readTx) { config in
+                if let address = tsAccountManager.localAddress(with: readTx) {
+                    config.dataSource = .forAddress(address, transaction: readTx)
+                }
+                return .synchronously
+            }
+        }
+        return avatarView
+    }
+
+    @objc
     func showAppSettings() {
         showAppSettings(mode: .none)
     }

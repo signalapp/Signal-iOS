@@ -495,26 +495,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     // Settings button.
-    const AvatarImageViewSizeClass avatarSizeClass = AvatarImageViewSizeClassTiny;
-    __block UIImage *_Nullable avatarImage = [OWSProfileManager.shared localProfileAvatarImage];
-    if (avatarImage == nil) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            avatarImage = [self.avatarBuilder avatarImageForLocalUserWithDiameterPoints:avatarSizeClass
-                                                                   localUserDisplayMode:LocalUserDisplayModeAsLocalUser
-                                                                            transaction:transaction];
-        }];
-    }
-    OWSAssertDebug(avatarImage);
-    OWSUserProfile *localProfile = OWSProfileManager.shared.localUserProfile;
-    ProfileBadge *_Nullable primaryBadge = localProfile.profileBadgeInfo.firstObject.badge;
-
-    AvatarImageView2 *avatarButton = [[AvatarImageView2 alloc] initWithSizeClass:avatarSizeClass];
-    avatarButton.avatarImage = avatarImage;
-    avatarButton.badgeProvider = primaryBadge.assets;
-    avatarButton.pinBoundsToSizeClass = YES;
-
+    UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
     [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
+
+    UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
+    [avatarButton addSubview:avatarImageView];
+    [avatarImageView autoPinEdgesToSuperviewEdges];
 
     UIView *avatarWrapper = [UIView containerView];
     [avatarWrapper addSubview:avatarButton];

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public protocol ConversationHeaderViewDelegate {
@@ -43,15 +44,6 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
-    public var avatarImage: UIImage? {
-        get {
-            return self.avatarView.image
-        }
-        set {
-            self.avatarView.image = newValue
-        }
-    }
-
     public let titlePrimaryFont: UIFont =  UIFont.ows_semiboldFont(withSize: 17)
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
@@ -59,13 +51,15 @@ public class ConversationHeaderView: UIStackView {
     private let titleLabel: UILabel
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
-    private lazy var avatarView = ConversationAvatarView(
-        diameterPoints: avatarDiameterPoints,
-        localUserDisplayMode: .noteToSelf
-    )
-    private var avatarDiameterPoints: UInt {
-        traitCollection.verticalSizeClass == .compact ? 24 : 36
+
+    private var shouldBadgeAvatar: Bool { avatarSizeClass == .small }
+    private var avatarSizeClass: ConversationAvatarView2.Configuration.SizeClass {
+        traitCollection.verticalSizeClass == .compact ? .custom(24) : .small
     }
+    private lazy var avatarView = ConversationAvatarView2(
+        sizeClass: avatarSizeClass,
+        localUserDisplayMode: .noteToSelf,
+        badged: shouldBadgeAvatar)
 
     public required init() {
         titleLabel = UILabel()
@@ -125,7 +119,10 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public func configure(thread: TSThread) {
-        avatarView.configureWithSneakyTransaction(thread: thread)
+        avatarView.updateWithSneakyTransaction { config in
+            config.dataSource = .forThread(thread)
+            return .synchronously
+        }
     }
 
     public override var intrinsicContentSize: CGSize {
@@ -140,18 +137,15 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public func updateAvatar() {
-        databaseStorage.read { transaction in
-            self.avatarView.updateImage(transaction: transaction)
-        }
+        avatarView.updateWithSneakyTransaction { _ in .asynchronously }
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        databaseStorage.read { transaction in
-            avatarView.reconfigure(
-                diameterPoints: avatarDiameterPoints,
-                transaction: transaction
-            )
+        avatarView.updateWithSneakyTransaction { config in
+            config.sizeClass = avatarSizeClass
+            config.addBadgeIfApplicable = shouldBadgeAvatar
+            return .asynchronously
         }
     }
 

@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalMessaging
 
 @objc
 public class HomeViewCell: UITableViewCell {
@@ -10,9 +11,11 @@ public class HomeViewCell: UITableViewCell {
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
-    private let avatarView = ConversationAvatarView(diameterPoints: HomeViewCell.avatarSize,
-                                                    localUserDisplayMode: .noteToSelf,
-                                                    shouldLoadAsync: false)
+    private let avatarView = ConversationAvatarView2(
+        sizeClass: .medium,
+        localUserDisplayMode: .noteToSelf,
+        badged: true,
+        useAutolayout: true)
 
     private let nameLabel = CVLabel()
     private let snippetLabel = CVLabel()
@@ -308,8 +311,10 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        avatarView.shouldLoadAsync = cellContentToken.shouldLoadAvatarAsync
-        avatarView.configureWithSneakyTransaction(thread: cellContentToken.thread)
+        avatarView.updateWithSneakyTransaction { config in
+            config.dataSource = .forThread(cellContentToken.thread)
+            return cellContentToken.shouldLoadAvatarAsync ? .asynchronously : .synchronously
+        }
 
         typingIndicatorView.configureForHomeView()
 
@@ -815,7 +820,6 @@ public class HomeViewCell: UITableViewCell {
         // Some ManualStackViews are _NOT_ reset to facilitate reuse.
 
         cellContentToken = nil
-        avatarView.image = nil
         avatarView.reset()
         typingIndicatorView.resetForReuse()
 

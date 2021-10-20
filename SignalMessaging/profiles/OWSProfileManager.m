@@ -54,7 +54,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                          bioEmoji:(nullable NSString *)bioEmoji
                          username:(nullable NSString *)username
                        avatarData:(nullable NSData *)avatarData
-                 profileBadgeInfo:(NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
+                 profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
 {
 
     self = [super init];

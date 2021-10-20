@@ -915,6 +915,11 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     return [[OWSFormat formatNameComponents:self.nameComponents] filterStringForDisplay];
 }
 
+- (nullable OWSUserProfileBadgeInfo *)primaryBadge
+{
+    return self.profileBadgeInfo.firstObject;
+}
+
 #pragma mark - Profile Avatars Directory
 
 + (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename

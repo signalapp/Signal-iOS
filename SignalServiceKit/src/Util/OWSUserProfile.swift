@@ -31,13 +31,9 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
     }
 
     @objc
-    public lazy var badge: ProfileBadge? = {
-        databaseStorage.read { readTx in
-            let badge = profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: readTx)
-            owsAssertDebug(badge != nil)
-            return badge
-        }
-    }()
+    public func fetchBadgeContent(transaction: SDSAnyReadTransaction) -> ProfileBadge? {
+        profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
+    }
 
     override public var description: String {
         var description = "Badge: \(badgeId)"

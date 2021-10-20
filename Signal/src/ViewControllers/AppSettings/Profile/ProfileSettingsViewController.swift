@@ -37,7 +37,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         username = snapshot.username
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
-        primaryBadge = snapshot.profileBadgeInfo.first?.badge
+        primaryBadge = nil// snapshot.profileBadgeInfo.first?
 
         updateTableContents()
     }
@@ -243,17 +243,17 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let sizeClass = AvatarImageView2.SizeClass.xlarge
-        let badgedAvatarView = AvatarImageView2(sizeClass: sizeClass)
-        badgedAvatarView.pinBoundsToSizeClass = true
-        badgedAvatarView.badgeProvider = primaryBadge?.assets
-
-        if let avatarData = avatarData {
-            badgedAvatarView.avatarImage = UIImage(data: avatarData)
-        } else {
-            badgedAvatarView.avatarImage = databaseStorage.read { transaction in
-                avatarBuilder.defaultAvatarImageForLocalUser(diameterPoints: UInt(sizeClass.size.largerAxis), transaction: transaction)
+        let badgedAvatarView = ConversationAvatarView2(sizeClass: .xlarge, badged: true)
+        badgedAvatarView.updateWithSneakyTransaction { config in
+            // TODO: Badges — Clean up data sources
+            if let avatarData = avatarData {
+                config.dataSource = ConversationContent.other(avatar: UIImage(data: avatarData), badge: nil)
+            } else if let address = tsAccountManager.localAddress {
+                config.dataSource = .unknownContact(contactAddress: address)
+            } else {
+                config.dataSource = nil
             }
+            return .asynchronously
         }
 
         cell.contentView.addSubview(badgedAvatarView)

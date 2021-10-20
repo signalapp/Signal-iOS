@@ -251,7 +251,7 @@ public class ContactCellView: ManualStackView {
                                                    selector: #selector(otherUsersProfileChanged(notification:)),
                                                    name: .otherUsersProfileDidChange,
                                                    object: nil)
-        case .group:
+        case .group, .other:
             break
         }
     }
@@ -309,6 +309,9 @@ public class ContactCellView: ManualStackView {
                 }
             case .unknownContact(let contactAddress):
                 return nameForAddress(contactAddress)
+            case .other:
+                owsFailDebug("To be removed")
+                return NSAttributedString()
             }
         }()
     }
