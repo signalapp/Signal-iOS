@@ -16,8 +16,6 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-//#import <SignalUI/UIFont+OWS.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const OWSContactsManagerSignalAccountsDidChangeNotification

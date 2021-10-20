@@ -313,8 +313,11 @@ public class OWSURLSession: NSObject {
             }
 
             if let error = task.error {
+                let requestUrl = requestConfig.requestUrl
+
                 if error.isNetworkConnectivityFailure {
                     Logger.warn("Request failed: \(error)")
+                    throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
                 } else {
 #if TESTABLE_BUILD
                     HTTPUtils.logCurl(for: task)
@@ -335,7 +338,17 @@ public class OWSURLSession: NSObject {
                         Logger.error("Request failed: \(error)")
                     }
                 }
-                throw error
+
+                guard let httpUrlResponse = task.response as? HTTPURLResponse else {
+                    throw OWSHTTPError.invalidResponse(requestUrl: requestUrl)
+                }
+                let statusCode = httpUrlResponse.statusCode
+                let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
+                throw OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
+                                                      responseStatus: statusCode,
+                                                      responseHeaders: responseHeaders,
+                                                      responseError: error,
+                                                      responseData: responseData)
             }
             guard let httpUrlResponse = task.response as? HTTPURLResponse else {
                 throw OWSAssertionError("Invalid response: \(type(of: task.response)).")
