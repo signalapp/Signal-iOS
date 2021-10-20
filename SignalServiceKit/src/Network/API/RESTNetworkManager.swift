@@ -37,22 +37,55 @@ public class RESTSessionManager: NSObject {
     }
 
     @objc
-    public func performRequest(_ rawRequest: TSRequest,
-                               canUseAuth: Bool,
+    public func performRequest(_ request: TSRequest,
                                success: @escaping RESTNetworkManagerSuccess,
                                failure: @escaping RESTNetworkManagerFailure) {
         assertOnQueue(NetworkManagerQueue())
         owsAssertDebug(!FeatureFlags.deprecateREST || signalService.isCensorshipCircumventionActive)
 
+        // We should only use the RESTSessionManager for requests to the Signal main service.
+        let urlSession = self.urlSession
+        owsAssertDebug(urlSession.unfrontedBaseUrl == URL(string: TSConstants.mainServiceURL))
+
+        guard let requestUrl = request.url else {
+            owsFailDebug("Missing requestUrl.")
+            let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.mainServiceURL)!
+            failure(OWSHTTPErrorWrapper(error: .missingRequest(requestUrl: url)))
+            return
+        }
+
+        firstly {
+            urlSession.promiseForTSRequest(request)
+        }.done(on: .global()) { (response: HTTPResponse) in
+            success(response)
+        }.catch(on: .global()) { error in
+            // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+            if let httpError = error as? OWSHTTPError {
+                HTTPUtils.applyHTTPError(httpError)
+
+                failure(OWSHTTPErrorWrapper(error: httpError))
+            } else {
+                owsFailDebug("Unexpected error: \(error)")
+
+                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: requestUrl)))
+            }
+        }
+    }
+}
+
+// MARK: -
+
+extension OWSURLSession {
+    public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
+
         guard let rawRequestUrl = rawRequest.url else {
             owsFailDebug("Missing requestUrl.")
-            failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: URL(string: "")!)))
-            return
+            let url: URL = self.baseUrl ?? URL(string: TSConstants.mainServiceURL)!
+            return Promise(error: OWSHTTPError.missingRequest(requestUrl: url))
         }
         guard !appExpiry.isExpired else {
             owsFailDebug("App is expired.")
-            failure(OWSHTTPErrorWrapper(error: .invalidAppState(requestUrl: rawRequestUrl)))
-            return
+            return Promise(error: OWSHTTPError.invalidAppState(requestUrl: rawRequestUrl))
         }
 
         let httpHeaders = OWSHttpHeaders()
@@ -60,6 +93,7 @@ public class RESTSessionManager: NSObject {
         // Set User-Agent and Accept-Language headers.
         httpHeaders.addDefaultHeaders()
 
+        // TODO: This is with the extraHeaders set in OWSSignalService.
         if signalService.isCensorshipCircumventionActive {
             httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
         }
@@ -67,7 +101,7 @@ public class RESTSessionManager: NSObject {
         // Then apply any custom headers for the request
         httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 
-        if canUseAuth,
+        if rawRequest.canUseAuth,
            rawRequest.shouldHaveAuthorizationHeaders {
             owsAssertDebug(nil != rawRequest.authUsername?.nilIfEmpty)
             owsAssertDebug(nil != rawRequest.authPassword?.nilIfEmpty)
@@ -76,7 +110,7 @@ public class RESTSessionManager: NSObject {
                                               password: rawRequest.authPassword ?? "")
             } catch {
                 owsFailDebug("Could not add auth header: \(error).")
-                failure(OWSHTTPErrorWrapper(error: .invalidAppState(requestUrl: rawRequestUrl)))
+                return Promise(error: OWSHTTPError.invalidAppState(requestUrl: rawRequestUrl))
             }
         }
 
@@ -85,8 +119,7 @@ public class RESTSessionManager: NSObject {
             method = try HTTPMethod.method(for: rawRequest.httpMethod)
         } catch {
             owsFailDebug("Invalid HTTP method: \(rawRequest.httpMethod)")
-            failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)))
-            return
+            return Promise(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl))
         }
 
         var requestBody = Data()
@@ -100,8 +133,7 @@ public class RESTSessionManager: NSObject {
                 jsonData = try JSONSerialization.data(withJSONObject: rawRequest.parameters, options: [])
             } catch {
                 owsFailDebug("Could not serialize JSON parameters: \(error).")
-                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl)))
-                return
+                return Promise(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl))
             }
 
             if let jsonData = jsonData {
@@ -114,55 +146,55 @@ public class RESTSessionManager: NSObject {
             }
         }
 
-        let urlSession = self.urlSession
+        let urlSession = self
         let request: URLRequest
         do {
             request = try urlSession.buildRequest(rawRequestUrl.absoluteString,
                                                   method: method,
                                                   headers: httpHeaders.headers,
-                                                  body: requestBody,
-                                                  customCensorshipCircumventionPrefix: rawRequest.customCensorshipCircumventionPrefix,
-                                                  customHost: rawRequest.customHost)
+                                                  body: requestBody)
         } catch {
             owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
-            failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: rawRequestUrl)))
-            return
-        }
-
-        guard let requestUrl = request.url else {
-            owsFailDebug("Missing or invalid requestUrl: \(rawRequestUrl).")
-            failure(OWSHTTPErrorWrapper(error: .invalidRequest(requestUrl: rawRequestUrl)))
-            return
+            return Promise(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl))
         }
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        Logger.verbose("Request: \(request)")
+        Logger.verbose("Making request: \(request.logDescription)")
 
-        firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
+        return firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
             urlSession.uploadTaskPromise(request: request, data: requestBody)
-        }.done(on: .global()) { (response: HTTPResponse) in
-            Logger.info("Success: \(request)")
-            success(response)
+        }.map(on: .global()) { (response: HTTPResponse) -> HTTPResponse in
+            Logger.info("Success: \(request.logDescription)")
+            return response
         }.ensure(on: .global()) {
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
-        }.catch(on: .global()) { error in
-            Logger.warn("Failure: \(request), error: \(error)")
-
-            if let httpError = error as? OWSHTTPError {
-                let isMainSignalServiceRequest = (rawRequest.customHost?.nilIfEmpty == nil &&
-                                                  rawRequest.customCensorshipCircumventionPrefix?.nilIfEmpty == nil)
-                if isMainSignalServiceRequest {
-                    HTTPUtils.applyHTTPError(httpError)
-                }
-
-                failure(OWSHTTPErrorWrapper(error: httpError))
-            } else {
-                owsFailDebug("Unexpected error: \(error)")
-
-                failure(OWSHTTPErrorWrapper(error: OWSHTTPError.invalidResponse(requestUrl: requestUrl)))
-            }
+        }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+            Logger.warn("Failure: \(request.logDescription), error: \(error)")
+            throw error
         }
+    }
+}
+
+// MARK: -
+
+@objc
+public extension TSRequest {
+    var canUseAuth: Bool { !isUDRequest }
+}
+
+// MARK: -
+
+public extension URLRequest {
+    var logDescription: String {
+        var splits = [String]()
+        if let httpMethod = self.httpMethod {
+            splits.append(httpMethod)
+        }
+        if let url = self.url {
+            splits.append(url.absoluteString)
+        }
+        return splits.joined(separator: ": ")
     }
 }

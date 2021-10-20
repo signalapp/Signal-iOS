@@ -855,88 +855,101 @@ public class KeyBackupService: NSObject {
         return RemoteAttestation.performForKeyBackup(
             auth: auth,
             enclave: enclave
-        ).then { remoteAttestation in
-            fetchToken(for: remoteAttestation).map { ($0, remoteAttestation) }
-        }.map(on: DispatchQueue.global()) { tokenResponse, remoteAttestation -> (TSRequest, RemoteAttestation) in
-            let requestOption = try requestOptionBuilder(tokenResponse)
-            let requestBuilder = KeyBackupProtoRequest.builder()
-            requestOption.set(on: requestBuilder)
-            let kbRequestData = try requestBuilder.buildSerializedData()
+        ).then { remoteAttestation -> Promise<RequestType.ResponseOptionType> in
+            firstly {
+                fetchToken(for: remoteAttestation)
+            }.then(on: .global()) { tokenResponse -> Promise<HTTPResponse> in
+                let requestOption = try requestOptionBuilder(tokenResponse)
+                let requestBuilder = KeyBackupProtoRequest.builder()
+                requestOption.set(on: requestBuilder)
+                let kbRequestData = try requestBuilder.buildSerializedData()
 
-            guard let encryptionResult = Cryptography.encryptAESGCM(
-                plainTextData: kbRequestData,
-                initializationVectorLength: kAESGCM256_DefaultIVLength,
-                additionalAuthenticatedData: remoteAttestation.requestId,
-                key: remoteAttestation.keys.clientKey
-            ) else {
-                owsFailDebug("Failed to encrypt request data")
-                throw KBSError.assertion
+                guard let encryptionResult = Cryptography.encryptAESGCM(
+                    plainTextData: kbRequestData,
+                    initializationVectorLength: kAESGCM256_DefaultIVLength,
+                    additionalAuthenticatedData: remoteAttestation.requestId,
+                    key: remoteAttestation.keys.clientKey
+                ) else {
+                    owsFailDebug("Failed to encrypt request data")
+                    throw KBSError.assertion
+                }
+
+                let request = OWSRequestFactory.kbsEnclaveRequest(
+                    withRequestId: remoteAttestation.requestId,
+                    data: encryptionResult.ciphertext,
+                    cryptIv: encryptionResult.initializationVector,
+                    cryptMac: encryptionResult.authTag,
+                    enclaveName: remoteAttestation.enclaveName,
+                    authUsername: remoteAttestation.auth.username,
+                    authPassword: remoteAttestation.auth.password,
+                    cookies: remoteAttestation.cookies,
+                    requestType: RequestType.stringRepresentation
+                )
+                let urlSession = Self.signalService.urlSessionForKBS()
+                guard let requestUrl = request.url else {
+                    owsFailDebug("Missing requestUrl.")
+                    let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
+                    throw OWSHTTPError.missingRequest(requestUrl: url)
+                }
+                return firstly {
+                    urlSession.promiseForTSRequest(request)
+                }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                    // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+                    if let httpError = error as? OWSHTTPError {
+                        throw httpError
+                    } else {
+                        owsFailDebug("Unexpected error: \(error)")
+                        throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                    }
+                }
+            }.map(on: .global()) { (response: HTTPResponse) in
+                guard let json = response.responseBodyJson else {
+                    owsFailDebug("Missing or invalid JSON.")
+                    throw KBSError.assertion
+                }
+                guard let parser = ParamParser(responseObject: json) else {
+                    owsFailDebug("Failed to parse response object")
+                    throw KBSError.assertion
+                }
+
+                let data = try parser.requiredBase64EncodedData(key: "data")
+                guard data.count > 0 else {
+                    owsFailDebug("data is invalid")
+                    throw KBSError.assertion
+                }
+
+                let iv = try parser.requiredBase64EncodedData(key: "iv")
+                guard iv.count == 12 else {
+                    owsFailDebug("iv is invalid")
+                    throw KBSError.assertion
+                }
+
+                let mac = try parser.requiredBase64EncodedData(key: "mac")
+                guard mac.count == 16 else {
+                    owsFailDebug("mac is invalid")
+                    throw KBSError.assertion
+                }
+
+                guard let encryptionResult = Cryptography.decryptAESGCM(
+                    withInitializationVector: iv,
+                    ciphertext: data,
+                    additionalAuthenticatedData: nil,
+                    authTag: mac,
+                    key: remoteAttestation.keys.serverKey
+                ) else {
+                    owsFailDebug("failed to decrypt KBS response")
+                    throw KBSError.assertion
+                }
+
+                let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
+
+                guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
+                    owsFailDebug("missing KBS response object")
+                    throw KBSError.assertion
+                }
+
+                return typedResponse
             }
-
-            let request = OWSRequestFactory.kbsEnclaveRequest(
-                withRequestId: remoteAttestation.requestId,
-                data: encryptionResult.ciphertext,
-                cryptIv: encryptionResult.initializationVector,
-                cryptMac: encryptionResult.authTag,
-                enclaveName: remoteAttestation.enclaveName,
-                authUsername: remoteAttestation.auth.username,
-                authPassword: remoteAttestation.auth.password,
-                cookies: remoteAttestation.cookies,
-                requestType: RequestType.stringRepresentation
-            )
-
-            return (request, remoteAttestation)
-        }.then { request, remoteAttestation in
-            networkManager.makePromise(request: request).map { (response) in
-                (response, remoteAttestation)
-            }
-        }.map(on: DispatchQueue.global()) { (response: HTTPResponse, remoteAttestation) in
-            guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
-                throw KBSError.assertion
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                owsFailDebug("Failed to parse response object")
-                throw KBSError.assertion
-            }
-
-            let data = try parser.requiredBase64EncodedData(key: "data")
-            guard data.count > 0 else {
-                owsFailDebug("data is invalid")
-                throw KBSError.assertion
-            }
-
-            let iv = try parser.requiredBase64EncodedData(key: "iv")
-            guard iv.count == 12 else {
-                owsFailDebug("iv is invalid")
-                throw KBSError.assertion
-            }
-
-            let mac = try parser.requiredBase64EncodedData(key: "mac")
-            guard mac.count == 16 else {
-                owsFailDebug("mac is invalid")
-                throw KBSError.assertion
-            }
-
-            guard let encryptionResult = Cryptography.decryptAESGCM(
-                withInitializationVector: iv,
-                ciphertext: data,
-                additionalAuthenticatedData: nil,
-                authTag: mac,
-                key: remoteAttestation.keys.serverKey
-            ) else {
-                owsFailDebug("failed to decrypt KBS response")
-                throw KBSError.assertion
-            }
-
-            let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
-
-            guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
-                owsFailDebug("missing KBS response object")
-                throw KBSError.assertion
-            }
-
-            return typedResponse
         }
     }
 
@@ -1179,8 +1192,24 @@ public class KeyBackupService: NSObject {
             cookies: remoteAttestation.cookies
         )
 
-        return firstly {
-            networkManager.makePromise(request: request)
+        return firstly { () -> Promise<HTTPResponse> in
+            let urlSession = Self.signalService.urlSessionForKBS()
+            guard let requestUrl = request.url else {
+                owsFailDebug("Missing requestUrl.")
+                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
+                throw OWSHTTPError.missingRequest(requestUrl: url)
+            }
+            return firstly {
+                urlSession.promiseForTSRequest(request)
+            }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+                if let httpError = error as? OWSHTTPError {
+                    throw httpError
+                } else {
+                    owsFailDebug("Unexpected error: \(error)")
+                    throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                }
+            }
         }.map(on: .global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
