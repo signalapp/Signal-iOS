@@ -262,6 +262,12 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
             new_lines.append(line)
             continue
         
+        def preserve_whitespace(newline):
+            # We only need to preserve _leading_ whitespace.
+            prefix_length = len(include.line) - len(include.line.lstrip())
+            newline = include.line[0:prefix_length] + newline
+            return newline        
+        
         swiftHeader = headerSet.find_swift_header(include.body)
         if swiftHeader is not None:
             # NOTE: Apps and app extensions import the -Swift.h header for their
@@ -274,6 +280,7 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
                     newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
             else:
                 newline = "#import <%s/%s>" % ( swiftHeader.targetName, swiftHeader.filename, )
+            newline = preserve_whitespace(newline)
             new_lines.append(newline)
             continue
         
@@ -296,6 +303,7 @@ def normalize_imports_and_includes_in_file(targets, target, headerSet, file_path
                 newline = '#import "%s"' % ( header.filename, )
         else:
             newline = "#import <%s/%s>" % ( header.targetName, header.filename, )
+        newline = preserve_whitespace(newline)
         new_lines.append(newline)
 
     lines = new_lines
