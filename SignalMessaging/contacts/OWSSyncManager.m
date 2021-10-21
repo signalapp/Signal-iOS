@@ -287,10 +287,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllContacts
 {
-    __block NSArray<SignalAccount *> *allSignalAccounts;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
-    }];
+    NSArray<SignalAccount *> *allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithSneakyTransaction];
     return [self syncContactsForSignalAccounts:allSignalAccounts
                                skipIfRedundant:NO
                                       debounce:NO
@@ -305,10 +302,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendSyncContactsMessageIfNecessary
 {
     OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
-    __block NSArray<SignalAccount *> *allSignalAccounts;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
-    }];
+
+    NSArray<SignalAccount *> *allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithSneakyTransaction];
     [self syncContactsForSignalAccounts:allSignalAccounts
                         skipIfRedundant:YES
                                debounce:YES

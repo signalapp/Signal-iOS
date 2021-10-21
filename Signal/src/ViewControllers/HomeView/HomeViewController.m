@@ -279,10 +279,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     // Load all signal accounts even though we only need the first N;
     // we want the returned value to be stable so we need to sort.
-    __block NSArray<SignalAccount *> *sortedSignalAccounts;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithTransaction:transaction];
-    }];
+    NSArray<SignalAccount *> *sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithSneakyTransaction];
     
     NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
     for (SignalAccount *account in sortedSignalAccounts) {

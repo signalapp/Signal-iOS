@@ -73,10 +73,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (void)setup {
-    __block NSArray<SignalAccount *> *signalAccounts;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        signalAccounts = [self unsortedSignalAccountsWithTransaction:transaction];
-    }];
+    NSArray<SignalAccount *> *signalAccounts = [self unsortedSignalAccountsWithSneakyTransaction];
     OWSLogInfo(@"Loaded %lu signal accounts from cache.", (unsigned long)signalAccounts.count);
     [self updateSignalAccounts:signalAccounts
 shouldSetHasLoadedSystemContacts:NO
