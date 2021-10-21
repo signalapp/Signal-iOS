@@ -166,15 +166,29 @@ extension RemoteAttestation {
             }
         }.then(on: .global()) { (auth: RemoteAttestationAuth) -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
-
-            let request = remoteAttestationRequest(enclaveName: config.enclaveName,
-                                                   host: config.host,
-                                                   censorshipCircumventionPrefix: config.censorshipCircumventionPrefix,
-                                                   authUsername: auth.username,
-                                                   authPassword: auth.password,
-                                                   clientEphemeralKeyPair: clientEphemeralKeyPair)
-            return firstly {
-                networkManager.makePromise(request: request)
+            return firstly { () -> Promise<HTTPResponse> in
+                let request = remoteAttestationRequest(enclaveName: config.enclaveName,
+                                                       authUsername: auth.username,
+                                                       authPassword: auth.password,
+                                                       clientEphemeralKeyPair: clientEphemeralKeyPair)
+                let urlSession = Self.signalService.urlSessionForRemoteAttestation(host: config.host,
+                                                                                   censorshipCircumventionPrefix: config.censorshipCircumventionPrefix)
+                guard let requestUrl = request.url else {
+                    owsFailDebug("Missing requestUrl.")
+                    let url: URL = urlSession.baseUrl ?? URL(string: config.host) ?? URL(string: TSConstants.mainServiceURL)!
+                    throw OWSHTTPError.missingRequest(requestUrl: url)
+                }
+                return firstly {
+                    urlSession.promiseForTSRequest(request)
+                }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                    // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+                    if let httpError = error as? OWSHTTPError {
+                        throw httpError
+                    } else {
+                        owsFailDebug("Unexpected error: \(error)")
+                        throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                    }
+                }
             }.map(on: .global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing or invalid JSON.")
@@ -196,8 +210,6 @@ extension RemoteAttestation {
     }
 
     private static func remoteAttestationRequest(enclaveName: String,
-                                                 host: String,
-                                                 censorshipCircumventionPrefix: String,
                                                  authUsername: String,
                                                  authPassword: String,
                                                  clientEphemeralKeyPair: ECKeyPair) -> TSRequest {
@@ -211,8 +223,6 @@ extension RemoteAttestation {
 
         request.authUsername = authUsername
         request.authPassword = authPassword
-        request.customHost = host
-        request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
         // OWSURLSession disables default cookie handling for all requests.
 

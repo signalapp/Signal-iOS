@@ -11,6 +11,9 @@ fileprivate extension OWSSignalService {
         case storageService
         case cdn0
         case cdn2
+        case cds(host: String, censorshipCircumventionPrefix: String)
+        case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
+        case kbs
 
         static func type(forCdnNumber cdnNumber: UInt32) -> SignalServiceType {
             switch cdnNumber {
@@ -33,8 +36,6 @@ fileprivate extension OWSSignalService {
     struct SignalServiceInfo {
         let baseUrl: URL
         let censorshipCircumventionPathPrefix: String
-        let requestSerializerType: SerializerType
-        let responseSerializerType: SerializerType
         let shouldHandleRemoteDeprecation: Bool
     }
 
@@ -43,27 +44,31 @@ fileprivate extension OWSSignalService {
         case .mainSignalService:
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.mainServiceURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
-                                     requestSerializerType: .json,
-                                     responseSerializerType: .json,
                                      shouldHandleRemoteDeprecation: true)
         case .storageService:
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.storageServiceURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.storageServiceCensorshipPrefix,
-                                     requestSerializerType: .binary,
-                                     responseSerializerType: .binary,
                                      shouldHandleRemoteDeprecation: true)
         case .cdn0:
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.textSecureCDN0ServerURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.cdn0CensorshipPrefix,
-                                     requestSerializerType: .binary,
-                                     responseSerializerType: .binary,
                                      shouldHandleRemoteDeprecation: false)
         case .cdn2:
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
-                                     requestSerializerType: .binary,
-                                     responseSerializerType: .binary,
                                      shouldHandleRemoteDeprecation: false)
+        case .cds(let host, let censorshipCircumventionPrefix):
+            return SignalServiceInfo(baseUrl: URL(string: host)!,
+                                     censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
+                                     shouldHandleRemoteDeprecation: false)
+        case .remoteAttestation(let host, let censorshipCircumventionPrefix):
+            return SignalServiceInfo(baseUrl: URL(string: host)!,
+                                     censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
+                                     shouldHandleRemoteDeprecation: false)
+        case .kbs:
+            return SignalServiceInfo(baseUrl: URL(string: TSConstants.keyBackupURL)!,
+                                     censorshipCircumventionPathPrefix: TSConstants.keyBackupCensorshipPrefix,
+                                     shouldHandleRemoteDeprecation: true)
         }
     }
 
@@ -117,5 +122,21 @@ public extension OWSSignalService {
     @objc(urlSessionForCdnNumber:)
     func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSession {
         buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
+    }
+
+    func urlSessionForCds(host: String,
+                          censorshipCircumventionPrefix: String) -> OWSURLSession {
+        buildUrlSession(for: .cds(host: host,
+                                  censorshipCircumventionPrefix: censorshipCircumventionPrefix))
+    }
+
+    func urlSessionForRemoteAttestation(host: String,
+                                        censorshipCircumventionPrefix: String) -> OWSURLSession {
+        buildUrlSession(for: .remoteAttestation(host: host,
+                                                censorshipCircumventionPrefix: censorshipCircumventionPrefix))
+    }
+
+    func urlSessionForKBS() -> OWSURLSession {
+        buildUrlSession(for: .kbs)
     }
 }

@@ -44,15 +44,31 @@ public struct ContactDiscoveryService: Dependencies {
         owsAssertDebug(host.strippedOrNil != nil)
 
         return firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
-            self.networkManager.makePromise(request: self.buildIntersectionRequest(
+            let urlSession = Self.signalService.urlSessionForCds(host: host,
+                                                                 censorshipCircumventionPrefix: censorshipCircumventionPrefix)
+            let request = self.buildIntersectionRequest(
                 query: query,
                 cookies: cookies,
                 authUsername: authUsername,
                 authPassword: authPassword,
-                enclaveName: enclaveName,
-                host: host,
-                censorshipCircumventionPrefix: censorshipCircumventionPrefix)
+                enclaveName: enclaveName
             )
+            guard let requestUrl = request.url else {
+                owsFailDebug("Missing requestUrl.")
+                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.contactDiscoveryURL)!
+                throw OWSHTTPError.missingRequest(requestUrl: url)
+            }
+            return firstly {
+                urlSession.promiseForTSRequest(request)
+            }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+                if let httpError = error as? OWSHTTPError {
+                    throw httpError
+                } else {
+                    owsFailDebug("Unexpected error: \(error)")
+                    throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                }
+            }
         }.map(on: .sharedUtility) { (response: HTTPResponse) throws -> IntersectionResponse in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid JSON")
@@ -74,9 +90,7 @@ public struct ContactDiscoveryService: Dependencies {
                                           cookies: [HTTPCookie],
                                           authUsername: String,
                                           authPassword: String,
-                                          enclaveName: String,
-                                          host: String,
-                                          censorshipCircumventionPrefix: String) -> TSRequest {
+                                          enclaveName: String) -> TSRequest {
         let path = "v1/discovery/\(enclaveName)"
         let parameters: [String: Any] = [
             "addressCount": query.addressCount,
@@ -97,8 +111,6 @@ public struct ContactDiscoveryService: Dependencies {
 
         request.authUsername = authUsername
         request.authPassword = authPassword
-        request.customHost = host
-        request.customCensorshipCircumventionPrefix = censorshipCircumventionPrefix
 
         // Set the cookie header.
         // OWSURLSession disables default cookie handling for all requests.

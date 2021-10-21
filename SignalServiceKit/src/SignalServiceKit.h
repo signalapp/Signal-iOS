@@ -90,6 +90,7 @@
 #import <SignalServiceKit/TSPaymentModel.h>
 #import <SignalServiceKit/TSPaymentModels.h>
 #import <SignalServiceKit/TSPaymentRequestModel.h>
+#import <SignalServiceKit/TSRequest.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>

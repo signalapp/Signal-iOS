@@ -114,6 +114,10 @@ public class OWSURLSession: NSObject {
 
     private let frontingInfo: FrontingInfo?
 
+    public var unfrontedBaseUrl: URL? {
+        frontingInfo?.unfrontedBaseUrl ?? baseUrl
+    }
+
     private let configuration: URLSessionConfiguration
 
     // TODO: Replace AFSecurityPolicy.
@@ -413,12 +417,8 @@ public class OWSURLSession: NSObject {
     public func buildRequest(_ urlString: String,
                              method: HTTPMethod,
                              headers: [String: String]? = nil,
-                             body: Data? = nil,
-                             customCensorshipCircumventionPrefix: String? = nil,
-                             customHost: String? = nil) throws -> URLRequest {
-        guard let url = buildUrl(urlString,
-                                 customCensorshipCircumventionPrefix: customCensorshipCircumventionPrefix,
-                                 customHost: customHost) else {
+                             body: Data? = nil) throws -> URLRequest {
+        guard let url = buildUrl(urlString) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
@@ -467,9 +467,7 @@ public class OWSURLSession: NSObject {
     //   * For some requests (CDS, KBS, remote attestation) we target a
     //     "custom host" baseUrl.
     //   * Otherwise we resolve using the baseUrl for this OWSURLSession.
-    private func buildUrl(_ urlString: String,
-                          customCensorshipCircumventionPrefix: String? = nil,
-                          customHost: String? = nil) -> URL? {
+    private func buildUrl(_ urlString: String) -> URL? {
 
         let baseUrl: URL? = {
             if signalService.isCensorshipCircumventionActive,
@@ -482,25 +480,10 @@ public class OWSURLSession: NSObject {
                     return nil
                 }
 
-                if let censorshipCircumventionPrefix = customCensorshipCircumventionPrefix?.nilIfEmpty {
-                    // When we are domain fronting, we target a fronting host and add a path prefix.
-                    let frontingUrl: URL = signalService.domainFrontBaseURL.appendingPathComponent(censorshipCircumventionPrefix)
-                    return frontingUrl
-                } else {
-                    // Only requests to Signal services require CC.
-                    // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
-                    let frontingUrl = frontingInfo.frontingURLWithPathPrefix
-                    return frontingUrl
-                }
-            }
-
-            if let customHost = customHost?.nilIfEmpty {
-                // For some requests (CDS, KBS, remote attestation) we target a "custom host".
-                guard let customBaseUrl = URL(string: customHost) else {
-                    owsFailDebug("Invalid customHost.")
-                    return nil
-                }
-                return customBaseUrl
+                // Only requests to Signal services require CC.
+                // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
+                let frontingUrl = frontingInfo.frontingURLWithPathPrefix
+                return frontingUrl
             }
 
             return self.baseUrl

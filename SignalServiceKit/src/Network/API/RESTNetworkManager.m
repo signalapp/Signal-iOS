@@ -157,7 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     BOOL isUDRequest = request.isUDRequest;
     NSString *label = (isUDRequest ? @"UD request" : @"Non-UD request");
-    BOOL canUseAuth = !isUDRequest;
     if (isUDRequest) {
         OWSAssert(!request.shouldHaveAuthorizationHeaders);
     }
@@ -180,11 +179,11 @@ NS_ASSUME_NONNULL_BEGIN
         
         dispatch_async(completionQueue, ^{
             OWSLogInfo(@"%@ succeeded : %@", label, request);
-            
-            if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
+
+            if (request.canUseAuth && request.shouldHaveAuthorizationHeaders) {
                 [RESTNetworkManager.tsAccountManager setIsDeregistered:NO];
             }
-            
+
             successParam(response);
             
             [OutageDetection.shared reportConnectionSuccess];
@@ -204,7 +203,6 @@ NS_ASSUME_NONNULL_BEGIN
     };
     
     [sessionManager performRequest:request
-                        canUseAuth:canUseAuth
                            success:success
                            failure:failure];
 }

@@ -680,8 +680,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = TSConstants.keyBackupURL;
-    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
     // Set the cookie header.
     // OWSURLSession disables default cookie handling for all requests.
@@ -715,10 +713,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = TSConstants.keyBackupURL;
-    request.customCensorshipCircumventionPrefix = TSConstants.keyBackupCensorshipPrefix;
 
-    [request setHTTPShouldHandleCookies:NO];
     // Set the cookie header.
     // OWSURLSession disables default cookie handling for all requests.
     OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
