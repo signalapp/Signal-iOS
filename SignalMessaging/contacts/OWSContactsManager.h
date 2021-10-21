@@ -81,7 +81,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */
-- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;

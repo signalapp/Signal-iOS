@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// - The address' UUID
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /// Returns the user's nickname / first name, if supported by the name's locale.
 /// If we don't know the user's name components, falls back to displayNameForAddress:

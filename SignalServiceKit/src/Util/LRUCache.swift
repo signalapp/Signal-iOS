@@ -117,7 +117,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
             return
         }
         guard maxSize > 0 else {
-            Logger.warn("Using disabled cache.")
+            Logger.verbose("Using disabled cache.")
             return
         }
         cache.setObject(value as AnyObject, forKey: key as AnyObject)

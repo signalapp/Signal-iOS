@@ -837,13 +837,6 @@ ignoreIfUnchanged:(BOOL)ignoreIfUnchanged
     return NSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
 }
 
-- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
-{
-    OWSAssertDebug(signalAccount);
-
-    return [self displayNameForAddress:signalAccount.recipientAddress];
-}
-
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -974,38 +967,6 @@ ignoreIfUnchanged:(BOOL)ignoreIfUnchanged
     }
 
     return contact.comparableNameLastFirst;
-}
-
-- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
-{
-    NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
-
-    if (name.length > 0) {
-        return name;
-    }
-
-    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
-    if (phoneNumber != nil) {
-        Contact *_Nullable contact = self.allContactsMap[phoneNumber];
-        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
-        if (comparableContactName.length > 0) {
-            return comparableContactName;
-        }
-    }
-
-    __block NSPersonNameComponents *_Nullable nameComponents;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        nameComponents = [self nameComponentsForAddress:signalAccount.recipientAddress transaction:transaction];
-    }];
-
-    if (nameComponents != nil && nameComponents.givenName.length > 0 && nameComponents.familyName.length > 0) {
-        NSString *leftName = self.shouldSortByGivenName ? nameComponents.givenName : nameComponents.familyName;
-        NSString *rightName = self.shouldSortByGivenName ? nameComponents.familyName : nameComponents.givenName;
-        return [NSString stringWithFormat:@"%@\t%@", leftName, rightName];
-    }
-
-    // Fall back to non-contact display name.
-    return [self displayNameForSignalAccount:signalAccount];
 }
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount

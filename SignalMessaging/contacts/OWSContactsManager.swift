@@ -954,4 +954,24 @@ extension OWSContactsManager {
         let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
         return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]
     }
+
+    @objc
+    public func comparableNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
+        databaseStorage.read { transaction in
+            self.comparableName(for: signalAccount, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func displayName(forSignalAccount signalAccount: SignalAccount,
+                            transaction: SDSAnyReadTransaction) -> String {
+        self.displayName(for: signalAccount.recipientAddress, transaction: transaction)
+    }
+
+    @objc
+    public func displayNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
+        databaseStorage.read { transaction in
+            self.displayName(forSignalAccount: signalAccount, transaction: transaction)
+        }
+    }
 }

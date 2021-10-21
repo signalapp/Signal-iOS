@@ -54,7 +54,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                        fromViewController:(UIViewController *)fromViewController
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [self.contactsManager displayNameForSignalAccount:signalAccount];
+    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
     [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                             displayName:displayName
                      fromViewController:fromViewController
@@ -289,7 +289,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                          fromViewController:(UIViewController *)fromViewController
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [self.contactsManager displayNameForSignalAccount:signalAccount];
+    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
     [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                               displayName:displayName
                        fromViewController:fromViewController
