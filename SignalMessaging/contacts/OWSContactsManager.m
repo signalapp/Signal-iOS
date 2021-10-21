@@ -35,7 +35,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 // contacts that do not correspond to any signal account.
 @property (atomic) NSArray<Contact *> *allContacts;
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
-@property (atomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) AnyLRUCache *cnContactCache;
@@ -58,7 +57,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _allContacts = @[];
     _allContactsMap = @{};
-    _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
     _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50
@@ -75,19 +73,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (void)setup {
-    __block NSMutableArray<SignalAccount *> *signalAccounts;
+    __block NSArray<SignalAccount *> *signalAccounts;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSUInteger signalAccountCount = [SignalAccount anyCountWithTransaction:transaction];
-        OWSLogInfo(@"loading %lu signal accounts from cache.", (unsigned long)signalAccountCount);
-
-        signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
-
-        [SignalAccount anyEnumerateWithTransaction:transaction
-                                             block:^(SignalAccount *signalAccount, BOOL *stop) {
-                                                 [signalAccounts addObject:signalAccount];
-                                             }];
+        signalAccounts = [self unsortedSignalAccountsWithTransaction:transaction];
     }];
-    [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
+    OWSLogInfo(@"Loaded %lu signal accounts from cache.", (unsigned long)signalAccounts.count);
+    [self updateSignalAccounts:signalAccounts
+shouldSetHasLoadedSystemContacts:NO
+             ignoreIfUnchanged:NO];
 }
 
 #pragma mark - System Contact Fetching
@@ -505,42 +498,51 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                           shouldClearStaleCache:shouldClearStaleCache
                                                      completion:^(NSArray<SignalAccount *> *signalAccounts) {
                                                          [self updateSignalAccounts:signalAccounts
-                                                             shouldSetHasLoadedContacts:didLoad];
+                                                             shouldSetHasLoadedSystemContacts:didLoad
+                                                                  ignoreIfUnchanged:YES];
                                                      }];
                          }];
         });
     });
 }
 
-- (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-    shouldSetHasLoadedContacts:(BOOL)shouldSetHasLoadedContacts
+- (void)updateSignalAccounts:(NSArray<SignalAccount *> *)newSignalAccounts
+shouldSetHasLoadedSystemContacts:(BOOL)shouldSetHasLoadedSystemContacts
+ignoreIfUnchanged:(BOOL)ignoreIfUnchanged
 {
     OWSAssertIsOnMainThread();
 
-    BOOL hadLoadedContacts = self.hasLoadedContacts;
-    if (shouldSetHasLoadedContacts) {
-        _hasLoadedContacts = YES;
+    BOOL hadLoadedContacts = self.hasLoadedSystemContacts;
+    if (shouldSetHasLoadedSystemContacts) {
+        _hasLoadedSystemContacts = YES;
     }
 
-    if ([signalAccounts isEqual:self.signalAccounts]) {
-        OWSLogDebug(@"SignalAccounts unchanged.");
-        self.isSetup = YES;
-
-        if (hadLoadedContacts != self.hasLoadedContacts) {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-                                   object:nil];
+    if (ignoreIfUnchanged) {
+        __block NSArray<SignalAccount *> *oldSortedSignalAccounts;
+        __block NSArray<SignalAccount *> *newSortedSignalAccounts;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            oldSortedSignalAccounts = [self sortedSignalAccountsWithTransaction:transaction];
+            newSortedSignalAccounts = [self sortSignalAccounts:newSignalAccounts transaction:transaction];
+        }];
+        
+        if ([oldSortedSignalAccounts isEqual:newSortedSignalAccounts]) {
+            OWSLogDebug(@"SignalAccounts unchanged.");
+            self.isSetup = YES;
+            
+            if (hadLoadedContacts != self.hasLoadedSystemContacts) {
+                [[NSNotificationCenter defaultCenter]
+                 postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                 object:nil];
+            }
+            
+            return;
         }
-
-        return;
     }
 
     NSMutableArray<SignalServiceAddress *> *allAddresses = [NSMutableArray new];
-    for (SignalAccount *signalAccount in signalAccounts) {
+    for (SignalAccount *signalAccount in newSignalAccounts) {
         [allAddresses addObject:signalAccount.recipientAddress];
     }
-
-    self.signalAccounts = [self sortSignalAccountsWithSneakyTransaction:signalAccounts];
 
     [self.profileManagerImpl setContactAddresses:allAddresses];
 

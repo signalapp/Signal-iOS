@@ -277,9 +277,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
 {
+    // Load all signal accounts even though we only need the first N;
+    // we want the returned value to be stable so we need to sort.
+    __block NSArray<SignalAccount *> *sortedSignalAccounts;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithTransaction:transaction];
+    }];
+    
     NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
-
-    for (SignalAccount *account in self.contactsManager.signalAccounts) {
+    for (SignalAccount *account in sortedSignalAccounts) {
         if (account.recipientAddress.isLocalAddress) {
             continue;
         }
@@ -294,7 +300,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateFirstConversationLabel
 {
-
     NSArray<SignalAccount *> *signalAccounts = self.suggestedAccountsForFirstContact;
 
     NSString *formatString = @"";

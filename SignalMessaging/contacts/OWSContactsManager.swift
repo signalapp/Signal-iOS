@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 // TODO: Should we use these caches in NSE?
 fileprivate extension OWSContactsManager {
@@ -882,5 +883,22 @@ public extension Array where Element == SignalAccount {
         self.sorted { (left, right) in
             left.recipientAddress.sortKey < right.recipientAddress.sortKey
         }
+    }
+}
+
+// MARK: -
+
+extension OWSContactsManager {
+
+    @objc
+    public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        SignalAccount.anyFetchAll(transaction: transaction)
+    }
+
+    // Order respects the systems contact sorting preference.
+    @objc
+    public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        sortSignalAccounts(unsortedSignalAccounts(transaction: transaction),
+                           transaction: transaction)
     }
 }

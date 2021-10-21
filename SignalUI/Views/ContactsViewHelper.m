@@ -217,7 +217,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
-    return self.contactsManagerImpl.hasLoadedContacts;
+    return self.contactsManagerImpl.hasLoadedSystemContacts;
 }
 
 - (void)updateContacts
@@ -229,12 +229,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
 
-    NSMutableArray<SignalAccount *> *accountsToProcess = [self.contactsManager.signalAccounts mutableCopy];
-
+    __block NSArray<SignalAccount *> *sortedSignalAccounts;
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithTransaction:transaction];
         whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
     }];
+    NSMutableArray<SignalAccount *> *accountsToProcess = [sortedSignalAccounts mutableCopy];
 
     for (SignalServiceAddress *address in whitelistedAddresses) {
         if ([self.contactsManager isSystemContactWithAddress:address]) {
@@ -264,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
-    self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
+    self.signalAccounts = sortedSignalAccounts;
     self.nonSignalContacts = nil;
 
     [self fireDidUpdateContacts];

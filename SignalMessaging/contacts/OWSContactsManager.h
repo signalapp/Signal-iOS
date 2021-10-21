@@ -30,9 +30,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
 
-// order of the signalAccounts array respects the systems contact sorting preference
-@property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
-
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 
@@ -59,7 +56,7 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 // Not set until a contact fetch has completed.
 // Set even if no contacts are found.
-@property (nonatomic, readonly) BOOL hasLoadedContacts;
+@property (nonatomic, readonly) BOOL hasLoadedSystemContacts;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
