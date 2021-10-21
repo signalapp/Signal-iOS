@@ -915,4 +915,43 @@ extension OWSContactsManager {
             sortedSignalAccounts(transaction: transaction)
         }
     }
+
+    @objc
+    public func allUnsortedContacts() -> [Contact] {
+        AssertIsOnMainThread()
+
+        // TODO: Use transaction?
+        let localNumber: String? = tsAccountManager.localNumber
+
+        var contactIdMap = [String: Contact]()
+        for contact in allContactsMap.values {
+            guard nil == contactIdMap[contact.uniqueId] else {
+                // De-deduplicate.
+                continue
+            }
+            // Skip local contacts.
+            func isLocalContact() -> Bool {
+                for phoneNumber in contact.parsedPhoneNumbers {
+                    if phoneNumber.toE164() == localNumber {
+                        return true
+                    }
+                }
+                return false
+            }
+            guard !isLocalContact() else {
+                continue
+            }
+            contactIdMap[contact.uniqueId] = contact
+        }
+        return Array(contactIdMap.values)
+    }
+
+    @objc
+    public func allSortedContacts() -> [Contact] {
+        AssertIsOnMainThread()
+
+        let contacts = (allUnsortedContacts() as NSArray)
+        let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
+        return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]
+    }
 }

@@ -466,16 +466,12 @@ shouldSetHasLoadedSystemContacts:NO
             }
         }
 
-        NSArray<Contact *> *sortedContacts = [allContacts
-            sortedArrayUsingComparator:[Contact comparatorSortingNamesByFirstThenLast:self.shouldSortByGivenName]];
-
         dispatch_async(dispatch_get_main_queue(), ^{
             if (SSKDebugFlags.internalLogging) {
-                OWSLogInfo(@"sortedContacts: %lu, allContactsMap: %lu",
-                    (unsigned long)sortedContacts.count,
+                OWSLogInfo(@"allContacts: %lu, allContactsMap: %lu",
+                    (unsigned long)allContacts.count,
                     (unsigned long)allContactsMap.count);
             }
-            self.allContacts = sortedContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
 
@@ -491,7 +487,7 @@ shouldSetHasLoadedSystemContacts:NO
                                  return;
                              }
                              [OWSContactsManager
-                                 buildSignalAccountsForContacts:sortedContacts
+                                 buildSignalAccountsForContacts:allContacts
                                           shouldClearStaleCache:shouldClearStaleCache
                                                      completion:^(NSArray<SignalAccount *> *signalAccounts) {
                                                          [self updateSignalAccounts:signalAccounts

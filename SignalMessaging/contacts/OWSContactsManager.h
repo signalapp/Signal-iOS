@@ -26,9 +26,9 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
-@property (atomic, readonly) NSArray<Contact *> *allContacts;
-
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
+
+@property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
