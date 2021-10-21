@@ -10,14 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PhoneNumberUtil ()
-
-@property (nonatomic, readonly) AnyLRUCache *parsedPhoneNumberCache;
-
-@end
-
-#pragma mark -
-
 @implementation PhoneNumberUtil
 
 - (instancetype)init {
@@ -26,41 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self) {
         _unfairLock = [UnfairLock new];
         _phoneNumberUtilWrapper = [PhoneNumberUtilWrapper new];
-        _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256 nseMaxSize:0 shouldEvacuateInBackground:NO];
     }
 
     return self;
-}
-
-- (nullable NBPhoneNumber *)parse:(NSString *)numberToParse
-                    defaultRegion:(NSString *)defaultRegion
-                            error:(NSError **)error
-{
-    NSString *hashKey = [NSString stringWithFormat:@"numberToParse:%@defaultRegion:%@", numberToParse, defaultRegion];
-
-    NBPhoneNumber *_Nullable result = (NBPhoneNumber *)[self.parsedPhoneNumberCache objectForKey:hashKey];
-
-    if (!result) {
-        result = [self.nbPhoneNumberUtil parse:numberToParse defaultRegion:defaultRegion error:error];
-        if (error && *error) {
-            OWSAssertDebug(!result);
-            return nil;
-        }
-
-        OWSAssertDebug(result);
-
-        if (result) {
-            [self.parsedPhoneNumberCache setObject:result forKey:hashKey];
-        } else {
-            [self.parsedPhoneNumberCache setObject:[NSNull null] forKey:hashKey];
-        }
-    }
-
-    if ([result class] == [NSNull class]) {
-        return nil;
-    } else {
-        return result;
-    }
 }
 
 // country code -> country name
@@ -220,28 +180,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
++ (nullable NBPhoneNumber *)getExampleNumberForType:(NSString *)regionCode
+                                               type:(NBEPhoneNumberType)type
+                                  nbPhoneNumberUtil:(NBPhoneNumberUtil *)nbPhoneNumberUtil
 {
-    PhoneNumberUtil *sharedUtil = [self sharedThreadLocal];
-
-    // Signal users are very likely using mobile devices, so prefer that kind of example.
     NSError *error;
-    NBPhoneNumber *nbPhoneNumber =
-        [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode type:NBEPhoneNumberTypeMOBILE error:&error];
-    OWSAssertDebug(!error);
-    if (!nbPhoneNumber) {
-        // For countries that with similar mobile and land lines, use "line or mobile"
-        // examples.
-        nbPhoneNumber = [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode
-                                                                         type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
-                                                                        error:&error];
-        OWSAssertDebug(!error);
+    NBPhoneNumber *_Nullable nbPhoneNumber = [nbPhoneNumberUtil getExampleNumberForType:regionCode type:type error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Error: %@", error);
     }
-    NSString *result = (nbPhoneNumber
-            ? [sharedUtil.nbPhoneNumberUtil format:nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:&error]
-            : nil);
-    OWSAssertDebug(!error);
-    return result;
+    return nbPhoneNumber;
 }
 
 @end

@@ -2,7 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/PhoneNumber.h>
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    to:(NSString *)target
                     stickingRightward:(bool)preferHigh;
 
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode;
-
-- (nullable NBPhoneNumber *)parse:(NSString *)numberToParse defaultRegion:(NSString *)defaultRegion error:(NSError **)error;
++ (nullable NBPhoneNumber *)getExampleNumberForType:(NSString *)regionCode
+                                               type:(NBEPhoneNumberType)type
+                                  nbPhoneNumberUtil:(NBPhoneNumberUtil *)nbPhoneNumberUtil;
 
 @end
 

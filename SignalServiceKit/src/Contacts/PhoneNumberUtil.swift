@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import libPhoneNumber_iOS
 
 @objc
 public class PhoneNumberUtilWrapper: NSObject {
@@ -11,7 +12,7 @@ public class PhoneNumberUtilWrapper: NSObject {
 
     fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()
     fileprivate var countryCodesFromCallingCodeCache = [String: [String]]()
-//    private let parsedPhoneNumberCache = LRUCache(maxSize: 256, nseMaxSize: 0, shouldEvacuateInBackground: false)
+    fileprivate let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(maxSize: 256, nseMaxSize: 0, shouldEvacuateInBackground: false)
 }
 
 // MARK: -
@@ -95,6 +96,55 @@ fileprivate extension PhoneNumberUtilWrapper {
     func format(phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
         try nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
     }
+
+    func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
+        let hashKey = "numberToParse:\(numberToParse), defaultRegion:\(defaultRegion)"
+        if let cachedValue = parsedPhoneNumberCache[hashKey] {
+            return cachedValue
+        }
+        let result = try nbPhoneNumberUtil.parse(numberToParse, defaultRegion: defaultRegion)
+        parsedPhoneNumberCache[hashKey] = result
+        return result
+    }
+
+    func examplePhoneNumber(forCountryCode countryCode: String) -> String? {
+        // Signal users are very likely using mobile devices, so prefer that kind of example.
+        do {
+            func findExamplePhoneNumber() -> NBPhoneNumber? {
+                if let nbPhoneNumber = PhoneNumberUtil.getExampleNumber(forType: countryCode,
+                                                                        type: .MOBILE,
+                                                                        nbPhoneNumberUtil: nbPhoneNumberUtil) {
+                    return nbPhoneNumber
+                }
+                if let nbPhoneNumber = PhoneNumberUtil.getExampleNumber(forType: countryCode,
+                                                                        type: .FIXED_LINE_OR_MOBILE,
+                                                                        nbPhoneNumberUtil: nbPhoneNumberUtil) {
+                    return nbPhoneNumber
+                }
+                return nil
+            }
+            guard let nbPhoneNumber = findExamplePhoneNumber() else {
+                owsFailDebug("Could not find example phone number for: \(countryCode)")
+                return nil
+            }
+            return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
+
+    func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
+        nbPhoneNumberUtil.isPossibleNumber(number)
+    }
+
+    func countryCodeByCarrier() -> String {
+        nbPhoneNumberUtil.countryCodeByCarrier()
+    }
+
+    func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
+        nbPhoneNumberUtil.getCountryCode(forRegion: countryCallingCode)
+    }
 }
 
 // MARK: -
@@ -127,9 +177,39 @@ extension PhoneNumberUtil {
         }
     }
 
-    public func format(phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
+    public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
         try unfairLock.withLock {
             try phoneNumberUtilWrapper.format(phoneNumber: phoneNumber, numberFormat: numberFormat)
+        }
+    }
+
+    public func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
+        try unfairLock.withLock {
+            try phoneNumberUtilWrapper.parse(numberToParse, defaultRegion: defaultRegion)
+        }
+    }
+
+    public func examplePhoneNumber(forCountryCode countryCode: String) -> String? {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.examplePhoneNumber(forCountryCode: countryCode)
+        }
+    }
+
+    public func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.isPossibleNumber(number)
+        }
+    }
+
+    public func countryCodeByCarrier() -> String {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.countryCodeByCarrier()
+        }
+    }
+
+    public func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.getRegionCodeForCountryCode(countryCallingCode)
         }
     }
 }
