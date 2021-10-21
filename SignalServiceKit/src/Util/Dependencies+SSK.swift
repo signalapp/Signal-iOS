@@ -473,6 +473,14 @@ public extension NSObject {
     static var appVersion: AppVersion {
         AppVersion.shared()
     }
+
+    var phoneNumberUtil: PhoneNumberUtil {
+        SSKEnvironment.shared.phoneNumberUtilRef
+    }
+
+    static var phoneNumberUtil: PhoneNumberUtil {
+        SSKEnvironment.shared.phoneNumberUtilRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -938,6 +946,14 @@ public extension Dependencies {
     static var appVersion: AppVersion {
         AppVersion.shared()
     }
+
+    var phoneNumberUtil: PhoneNumberUtil {
+        SSKEnvironment.shared.phoneNumberUtilRef
+    }
+
+    static var phoneNumberUtil: PhoneNumberUtil {
+        SSKEnvironment.shared.phoneNumberUtilRef
+    }
 }
 
 // MARK: - Swift-only Dependencies
@@ -1162,5 +1178,14 @@ public extension OWSIdentityManager {
 public extension OWSDisappearingMessagesJob {
     static var shared: OWSDisappearingMessagesJob {
         SSKEnvironment.shared.disappearingMessagesJobRef
+    }
+}
+
+// MARK: -
+
+@objc
+public extension PhoneNumberUtil {
+    static var shared: PhoneNumberUtil {
+        SSKEnvironment.shared.phoneNumberUtilRef
     }
 }

@@ -7,24 +7,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PhoneNumberUtilWrapper;
+@class UnfairLock;
+
 @interface PhoneNumberUtil : NSObject
 
-@property (nonatomic, retain) NBPhoneNumberUtil *nbPhoneNumberUtil;
-
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)sharedThreadLocal;
+// These properties should only be accessed by Swift.
+@property (nonatomic, readonly) UnfairLock *unfairLock;
+@property (nonatomic, readonly) PhoneNumberUtilWrapper *phoneNumberUtilWrapper;
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
-+ (NSString *)callingCodeFromCountryCode:(NSString *)countryCode;
 + (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
 
-// Returns a list of country codes for a calling code in descending
-// order of population.
-- (NSArray<NSString *> *)countryCodesFromCallingCode:(NSString *)callingCode;
 // Returns the most likely country code for a calling code based on population.
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode;
 
@@ -36,9 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode;
 
 - (nullable NBPhoneNumber *)parse:(NSString *)numberToParse defaultRegion:(NSString *)defaultRegion error:(NSError **)error;
-- (NSString *)format:(NBPhoneNumber *)phoneNumber
-        numberFormat:(NBEPhoneNumberFormat)numberFormat
-               error:(NSError **)error;
 
 @end
 

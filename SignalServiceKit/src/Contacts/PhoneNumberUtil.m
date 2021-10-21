@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PhoneNumberUtil ()
 
-@property (nonatomic, readonly) NSMutableDictionary *countryCodesFromCallingCodeCache;
 @property (nonatomic, readonly) AnyLRUCache *parsedPhoneNumberCache;
 
 @end
@@ -21,23 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PhoneNumberUtil
 
-+ (PhoneNumberUtil *)sharedThreadLocal
-{
-    NSString *key = PhoneNumberUtil.logTag;
-    PhoneNumberUtil *_Nullable threadLocal = NSThread.currentThread.threadDictionary[key];
-    if (!threadLocal) {
-        threadLocal = [PhoneNumberUtil new];
-        NSThread.currentThread.threadDictionary[key] = threadLocal;
-    }
-    return threadLocal;
-}
-
 - (instancetype)init {
     self = [super init];
 
     if (self) {
-        _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
-        _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
+        _unfairLock = [UnfairLock new];
+        _phoneNumberUtilWrapper = [PhoneNumberUtilWrapper new];
         _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256 nseMaxSize:0 shouldEvacuateInBackground:NO];
     }
 
@@ -75,13 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString *)format:(NBPhoneNumber *)phoneNumber
-        numberFormat:(NBEPhoneNumberFormat)numberFormat
-               error:(NSError **)error
-{
-    return [self.nbPhoneNumberUtil format:phoneNumber numberFormat:numberFormat error:error];
-}
-
 // country code -> country name
 + (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
 {
@@ -100,82 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
         countryName = NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
     }
     return countryName;
-}
-
-// country code -> calling code
-+ (NSString *)callingCodeFromCountryCode:(NSString *)countryCode
-{
-    if (countryCode.length < 1) {
-        return @"+0";
-    }
-
-    if ([countryCode isEqualToString:@"AQ"]) {
-        // Antarctica
-        return @"+672";
-    } else if ([countryCode isEqualToString:@"BV"]) {
-        // Bouvet Island
-        return @"+55";
-    } else if ([countryCode isEqualToString:@"IC"]) {
-        // Canary Islands
-        return @"+34";
-    } else if ([countryCode isEqualToString:@"EA"]) {
-        // Ceuta & Melilla
-        return @"+34";
-    } else if ([countryCode isEqualToString:@"CP"]) {
-        // Clipperton Island
-        //
-        // This country code should be filtered - it does not appear to have a calling code.
-        return nil;
-    } else if ([countryCode isEqualToString:@"DG"]) {
-        // Diego Garcia
-        return @"+246";
-    } else if ([countryCode isEqualToString:@"TF"]) {
-        // French Southern Territories
-        return @"+262";
-    } else if ([countryCode isEqualToString:@"HM"]) {
-        // Heard & McDonald Islands
-        return @"+672";
-    } else if ([countryCode isEqualToString:@"XK"]) {
-        // Kosovo
-        return @"+383";
-    } else if ([countryCode isEqualToString:@"PN"]) {
-        // Pitcairn Islands
-        return @"+64";
-    } else if ([countryCode isEqualToString:@"GS"]) {
-        // So. Georgia & So. Sandwich Isl.
-        return @"+500";
-    } else if ([countryCode isEqualToString:@"UM"]) {
-        // U.S. Outlying Islands
-        return @"+1";
-    }
-
-    NSString *callingCode =
-        [NSString stringWithFormat:@"%@%@",
-                  COUNTRY_CODE_PREFIX,
-                  [[[self sharedThreadLocal] nbPhoneNumberUtil] getCountryCodeForRegion:countryCode]];
-    return callingCode;
-}
-
-- (NSArray<NSString *> *)countryCodesFromCallingCode:(NSString *)callingCode
-{
-    @synchronized(self)
-    {
-        OWSAssertDebug(callingCode.length > 0);
-
-        NSArray *result = self.countryCodesFromCallingCodeCache[callingCode];
-        if (!result) {
-            NSMutableArray *countryCodes = [NSMutableArray new];
-            for (NSString *countryCode in [PhoneNumberUtil countryCodesSortedByPopulationDescending]) {
-                NSString *callingCodeForCountryCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-                if ([callingCode isEqualToString:callingCodeForCountryCode]) {
-                    [countryCodes addObject:countryCode];
-                }
-            }
-            result = [countryCodes copy];
-            self.countryCodesFromCallingCodeCache[callingCode] = result;
-        }
-        return result;
-    }
 }
 
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode
