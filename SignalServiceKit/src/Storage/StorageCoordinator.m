@@ -140,12 +140,14 @@ NSString *NSStringForDataStore(DataStore value)
                 [SSKPreferences setDidDropYdb:YES];
             }
 
-            [AppReadiness
-                runNowOrWhenAppDidBecomeReadyAsync:^{
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                        ^{ [YDBStorage deleteYDBStorage]; });
-                }
-                                             label:@"StorageCoordinator.configure"];
+            if (CurrentAppContext().isMainApp) {
+                [AppReadiness
+                    runNowOrWhenAppDidBecomeReadyAsync:^{
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                            ^{ [YDBStorage deleteYDBStorage]; });
+                    }
+                                                 label:@"StorageCoordinator.configure"];
+            }
             break;
         case StorageModeGrdbTests:
             self.state = StorageCoordinatorStateGRDBTests;

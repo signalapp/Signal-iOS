@@ -89,7 +89,10 @@ const NSUInteger OWSCustomSoundShift = 16;
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [OWSSounds migrateLegacySounds];
-            [OWSSounds cleanupOrphanedSounds];
+
+            if (!CurrentAppContext().isNSE) {
+                [OWSSounds cleanupOrphanedSounds];
+            }
         });
     });
 

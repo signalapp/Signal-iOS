@@ -235,6 +235,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                     }
                     self.uuidAccessCache[uuid] = mode
                 }
+
+                if DebugFlags.internalLogging {
+                    Logger.info("phoneNumberAccessCache: \(phoneNumberAccessCache.count), uuidAccessCache: \(uuidAccessCache.count), ")
+                }
             }
         }
     }

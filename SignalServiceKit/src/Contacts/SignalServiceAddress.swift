@@ -443,6 +443,10 @@ public class SignalServiceAddressCache: NSObject {
                 self.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber, trustLevel: .high)
             }
         }
+
+        if DebugFlags.internalLogging {
+            Logger.info("uuidToPhoneNumberCache: \(uuidToPhoneNumberCache.count), phoneNumberToUUIDCache: \(phoneNumberToUUIDCache.count), uuidToHashValueCache: \(uuidToHashValueCache.count), phoneNumberToHashValueCache: \(phoneNumberToHashValueCache.count), ")
+        }
     }
 
     /// Adds a uuid <-> phone number mapping to the cache (if necessary)

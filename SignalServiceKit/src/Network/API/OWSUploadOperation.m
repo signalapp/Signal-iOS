@@ -43,7 +43,7 @@ NSString *const kAttachmentUploadAttachmentIDKey = @"kAttachmentUploadAttachment
         operationQueue.name = @"Uploads";
 
         // TODO: Tune this limit.
-        operationQueue.maxConcurrentOperationCount = 8;
+        operationQueue.maxConcurrentOperationCount = CurrentAppContext().isNSE ? 2 : 8;
     });
 
     return operationQueue;

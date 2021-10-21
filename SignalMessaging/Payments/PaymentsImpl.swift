@@ -434,6 +434,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     private func updateCurrentPaymentBalanceIfNecessary() {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
         if let lastUpdateDate = paymentBalanceCache.get()?.date {
             // Don't bother updating if we've already updated in the last N hours.
             let updateFrequency: TimeInterval = kHourInterval * 4

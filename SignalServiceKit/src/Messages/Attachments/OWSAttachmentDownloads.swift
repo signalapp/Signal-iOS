@@ -190,7 +190,7 @@ public class OWSAttachmentDownloads: NSObject {
 
     private func dequeueNextJob() -> Job? {
         Self.unfairLock.withLock {
-            let kMaxSimultaneousDownloads = 4
+            let kMaxSimultaneousDownloads: Int = CurrentAppContext().isNSE ? 1 : 4
             guard activeJobMap.count < kMaxSimultaneousDownloads else {
                 return nil
             }

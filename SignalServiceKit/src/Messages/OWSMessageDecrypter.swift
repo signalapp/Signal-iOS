@@ -69,6 +69,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
             guard let self = self else { return }
+            guard CurrentAppContext().isMainApp, !CurrentAppContext().isRunningTests else { return }
             DispatchQueue.sharedUtility.async {
                 self.databaseStorage.read { readTx in
                     self.schedulePlaceholderCleanup(transaction: readTx)

@@ -27,6 +27,9 @@ public class PaymentsReconciliation: Dependencies {
     }
 
     private func reconcileIfNecessary() {
+        if CurrentAppContext().isNSE {
+            return
+        }
         operationQueue.addOperation(PaymentsReconciliationOperation())
     }
 
