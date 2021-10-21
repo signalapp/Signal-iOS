@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import "CVItemViewModel.h"
 #import <SignalServiceKit/TSQuotedMessage.h>
+#import <SignalUI/CVItemViewModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

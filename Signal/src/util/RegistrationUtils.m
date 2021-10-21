@@ -3,13 +3,13 @@
 //
 
 #import "RegistrationUtils.h"
-#import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalUI/OWSNavigationController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

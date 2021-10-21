@@ -3,14 +3,14 @@
 //
 
 #import "DebugUIStress.h"
-#import "MessageSender.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
-#import "ThreadUtil.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/ThreadUtil.h>
+#import <SignalServiceKit/MessageSender.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>

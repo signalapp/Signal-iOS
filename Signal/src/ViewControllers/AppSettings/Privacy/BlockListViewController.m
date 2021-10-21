@@ -3,17 +3,17 @@
 //
 
 #import "BlockListViewController.h"
-#import "BlockListUIUtils.h"
-#import "ContactsViewHelper.h"
-#import "PhoneNumber.h"
 #import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/TSGroupThread.h>
+#import <SignalUI/BlockListUIUtils.h>
+#import <SignalUI/ContactsViewHelper.h>
 #import <SignalUI/OWSTableViewController.h>
+#import <SignalUI/UIFont+OWS.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

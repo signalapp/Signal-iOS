@@ -3,7 +3,7 @@
 //
 
 #import "HTTPUtils.h"
-#import <SignalServiceKit/MIMETypeUtil.h>
+#import "MIMETypeUtil.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

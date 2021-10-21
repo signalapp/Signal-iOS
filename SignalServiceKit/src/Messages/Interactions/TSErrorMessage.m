@@ -3,12 +3,12 @@
 //
 
 #import "TSErrorMessage.h"
+#import "ContactsManagerProtocol.h"
+#import "OWSMessageManager.h"
+#import "SSKEnvironment.h"
+#import "TSContactThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

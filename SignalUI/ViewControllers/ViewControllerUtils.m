@@ -3,10 +3,10 @@
 //
 
 #import "ViewControllerUtils.h"
-#import "PhoneNumber.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN

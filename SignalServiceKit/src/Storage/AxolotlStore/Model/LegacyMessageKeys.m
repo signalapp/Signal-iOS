@@ -2,7 +2,7 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/LegacyMessageKeys.h>
+#import "LegacyMessageKeys.h"
 
 static NSString* const kCoderMessageKeysCipherKey = @"kCoderMessageKeysCipherKey";
 static NSString* const kCoderMessageKeysMacKey    = @"kCoderMessageKeysMacKey";

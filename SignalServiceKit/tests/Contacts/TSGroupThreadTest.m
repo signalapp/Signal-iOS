@@ -3,7 +3,7 @@
 //
 
 #import "SSKBaseTestObjC.h"
-#import <SignalServiceKit/TSGroupThread.h>
+#import "TSGroupThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

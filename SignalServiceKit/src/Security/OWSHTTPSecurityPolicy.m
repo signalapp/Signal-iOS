@@ -2,8 +2,8 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSHTTPSecurityPolicy.h"
 #import <AssertMacros.h>
-#import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,10 +2,10 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "UIViewController+OWS.h"
 #import "Theme.h"
 #import "UIUtil.h"
 #import "UIView+SignalUI.h"
-#import "UIViewController+OWS.h"
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalUI/SignalUI-Swift.h>

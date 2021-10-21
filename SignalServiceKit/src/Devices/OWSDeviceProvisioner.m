@@ -2,9 +2,9 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSDeviceProvisioner.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSProvisioningMessage.h>
+#import "OWSDeviceProvisioner.h"
+#import "OWSError.h"
+#import "OWSProvisioningMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

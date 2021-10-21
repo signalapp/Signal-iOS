@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/LegacySessionRecord.h>
-#import <SignalServiceKit/LegacyChainKey.h>
-#import <SignalServiceKit/LegacyReceivingChain.h>
-#import <SignalServiceKit/LegacySendingChain.h>
-#import <SignalServiceKit/LegacySessionState.h>
+#import "LegacySessionRecord.h"
+#import "LegacyChainKey.h"
+#import "LegacyReceivingChain.h"
+#import "LegacySendingChain.h"
+#import "LegacySessionState.h"
 
 #define ARCHIVED_STATES_MAX_LENGTH 40
 

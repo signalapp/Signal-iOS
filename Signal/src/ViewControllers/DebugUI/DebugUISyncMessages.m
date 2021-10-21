@@ -5,10 +5,10 @@
 #import "DebugUISyncMessages.h"
 #import "DebugUIContacts.h"
 #import "Signal-Swift.h"
-#import "ThreadUtil.h"
 #import <SignalCoreKit/Randomness.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSReceiptManager.h>

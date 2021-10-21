@@ -3,12 +3,12 @@
 //
 
 #import "DataSource.h"
+#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
+#import "OWSFileSystem.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

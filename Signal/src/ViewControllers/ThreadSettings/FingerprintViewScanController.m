@@ -4,16 +4,16 @@
 
 #import "FingerprintViewScanController.h"
 #import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
-#import "UIViewController+Permissions.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
+#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIUtil.h>
+#import <SignalUI/UIView+SignalUI.h>
+#import <SignalUI/UIViewController+Permissions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

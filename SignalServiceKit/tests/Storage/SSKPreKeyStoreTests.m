@@ -2,11 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
+#import "SDSDatabaseStorage+Objc.h"
 #import "SSKBaseTestObjC.h"
-#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
-#import <SignalServiceKit/SSKPreKeyStore.h>
+#import "SSKPreKeyStore.h"
+#import "SignedPrekeyRecord.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/SignedPreKeyRecord.h>
 
 @interface SSKPreKeyStoreTests : SSKBaseTestObjC
 

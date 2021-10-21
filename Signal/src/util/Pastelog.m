@@ -4,14 +4,14 @@
 
 #import "Pastelog.h"
 #import "Signal-Swift.h"
-#import "ThreadUtil.h"
 #import "zlib.h"
 #import <SSZipArchive/SSZipArchive.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/MimeTypeUtil.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>

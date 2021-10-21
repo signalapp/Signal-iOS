@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "UtilTest.h"
-#import "DateUtil.h"
 #import "TestUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalMessaging/DateUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface DateUtil (Test)

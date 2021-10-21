@@ -6,8 +6,6 @@
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
 #import "Signal-Swift.h"
-#import "UIFont+OWS.h"
-#import "UIView+SignalUI.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -17,7 +15,9 @@
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
+#import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIUtil.h>
+#import <SignalUI/UIView+SignalUI.h>
 
 @import SafariServices;
 
