@@ -575,6 +575,8 @@
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
+"call_outgoing" = "Outgoing Call";
+"call_incoming" = "Incoming Call";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
 "APN_Message" = "You've got a new message";
