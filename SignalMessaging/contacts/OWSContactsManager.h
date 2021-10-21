@@ -17,18 +17,22 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 @class SignalServiceAddress;
 @class UIFont;
 
+@protocol ContactsState;
+
 /**
  * Get latest Signal contacts, and be notified when they change.
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
+
+@property (nonatomic, readonly) BOOL shouldSortByGivenName;
+
+@property (nonatomic, readonly) id<ContactsState> contactsState;
 
 #pragma mark - Accessors
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
-
-@property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;

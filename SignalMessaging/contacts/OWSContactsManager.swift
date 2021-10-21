@@ -892,7 +892,7 @@ extension OWSContactsManager {
 
     @objc
     public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        SignalAccount.anyFetchAll(transaction: transaction)
+        contactsState.unsortedSignalAccounts(transaction: transaction)
     }
 
     @objc
@@ -905,8 +905,7 @@ extension OWSContactsManager {
     // Order respects the systems contact sorting preference.
     @objc
     public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        sortSignalAccounts(unsortedSignalAccounts(transaction: transaction),
-                           transaction: transaction)
+        contactsState.sortedSignalAccounts(transaction: transaction)
     }
 
     @objc

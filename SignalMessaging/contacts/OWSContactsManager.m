@@ -62,6 +62,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50
                                                 nseMaxSize:0
                                 shouldEvacuateInBackground:YES];
+    if (CurrentAppContext().isMainApp) {
+        _contactsState = [ContactsStateInMemory new];
+    } else {
+        _contactsState = [ContactsStateInDatabase new];
+    }
 
     OWSSingletonAssert();
 
@@ -536,6 +541,9 @@ ignoreIfUnchanged:(BOOL)ignoreIfUnchanged
     for (SignalAccount *signalAccount in newSignalAccounts) {
         [allAddresses addObject:signalAccount.recipientAddress];
     }
+    
+    NSArray<SignalAccount *> *sortedSignalAccounts = [self sortSignalAccountsWithSneakyTransaction:newSignalAccounts];
+    [self.contactsState setSortedSignalAccounts:sortedSignalAccounts];
 
     [self.profileManagerImpl setContactAddresses:allAddresses];
 
