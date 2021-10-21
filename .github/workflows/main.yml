@@ -87,7 +87,7 @@ jobs:
 
       - name: Lint files changed in the PR
         run: |
-          python2 Scripts/precommit.py --ref origin/${{ github.base_ref }}
+          python Scripts/precommit.py --ref origin/${{ github.base_ref }}
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'
@@ -95,5 +95,5 @@ jobs:
 
       - name: Lint Python files with flake8
         run: |
-          python2 -m pip install flake8
-          python2 -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          python -m pip install flake8
+          python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
