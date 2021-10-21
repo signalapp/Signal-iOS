@@ -210,10 +210,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return formattedPhoneNumber;
 }
 
-//+ (nullable NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString {
-//    NSNumber *countryCallingCode = @([[countryCodeString substringFromIndex:1] integerValue]);
-//    return [self.phoneNumberUtil getRegionCodeForCountryCode:countryCallingCode];
-//}
++ (nullable NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString {
+    NSNumber *countryCallingCode = @([[countryCodeString substringFromIndex:1] integerValue]);
+    return [self.phoneNumberUtil getRegionCodeForCountryCode:countryCallingCode];
+}
 
 + (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text {
     OWSAssertDebug(text != nil);
@@ -392,7 +392,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     // Italian phone number but use French region/language for their
     // phone. They're likely to have both Italian and French contacts.
     NSString *localCountryCode =
-        [PhoneNumberUtil.sharedThreadLocal probableCountryCodeForCallingCode:callingCodePrefix];
+        [self.phoneNumberUtil probableCountryCodeForCallingCode:callingCodePrefix];
     if (localCountryCode && ![localCountryCode isEqualToString:[self defaultCountryCode]]) {
         tryParsingWithCountryCode([callingCodePrefix stringByAppendingString:text], localCountryCode);
     }
@@ -583,9 +583,9 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 - (nullable NSString *)nationalNumber
 {
     NSError *error;
-    NSString *nationalNumber = [[PhoneNumberUtil sharedThreadLocal] format:self.phoneNumber
-                                                              numberFormat:NBEPhoneNumberFormatNATIONAL
-                                                                     error:&error];
+    NSString *nationalNumber = [self.phoneNumberUtil format:self.phoneNumber
+                                               numberFormat:NBEPhoneNumberFormatNATIONAL
+                                                      error:&error];
     if (error) {
         OWSLogVerbose(@"error parsing number into national format: %@", error);
         return nil;
@@ -596,7 +596,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 - (BOOL)isValid
 {
-    return [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil isValidNumber:self.phoneNumber];
+    return [self.phoneNumberUtil isValidNumber:self.phoneNumber];
 }
 
 - (NSString *)description {

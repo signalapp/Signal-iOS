@@ -65,10 +65,7 @@ fileprivate extension PhoneNumberUtilWrapper {
             return "+1"
         }
 
-        guard let countryCallingCode = nbPhoneNumberUtil.getCountryCode(forRegion: countryCode) else {
-            owsFailDebug("Unknown value: \(countryCode).")
-            return nil
-        }
+        let countryCallingCode = getCountryCode(forRegion: countryCode)
         let callingCode = COUNTRY_CODE_PREFIX + "\(countryCallingCode.intValue)"
         return callingCode
     }
@@ -143,7 +140,15 @@ fileprivate extension PhoneNumberUtilWrapper {
     }
 
     func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
-        nbPhoneNumberUtil.getCountryCode(forRegion: countryCallingCode)
+        nbPhoneNumberUtil.getRegionCode(forCountryCode: countryCallingCode)
+    }
+
+    func isValidNumber(_ number: NBPhoneNumber) -> Bool {
+        nbPhoneNumberUtil.isValidNumber(number)
+    }
+
+    func getCountryCode(forRegion regionCode: String) -> NSNumber {
+        nbPhoneNumberUtil.getCountryCode(forRegion: regionCode)
     }
 }
 
@@ -210,6 +215,18 @@ extension PhoneNumberUtil {
     public func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
         unfairLock.withLock {
             phoneNumberUtilWrapper.getRegionCodeForCountryCode(countryCallingCode)
+        }
+    }
+
+    public func isValidNumber(_ number: NBPhoneNumber) -> Bool {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.isValidNumber(number)
+        }
+    }
+
+    public func getCountryCode(forRegion regionCode: String) -> NSNumber {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.getCountryCode(forRegion: regionCode)
         }
     }
 }

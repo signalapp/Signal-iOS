@@ -361,15 +361,15 @@ extension DeleteAccountConfirmationViewController: CountryCodeViewControllerDele
         if let localE164 = PhoneNumber(fromE164: localNumber), let localCountryCode = localE164.getCountryCode()?.intValue {
             callingCodeInt = localCountryCode
         } else {
-            callingCodeInt = PhoneNumberUtil.sharedThreadLocal().nbPhoneNumberUtil.getCountryCode(
+            callingCodeInt = phoneNumberUtil.getCountryCode(
                 forRegion: PhoneNumber.defaultCountryCode()
-            )?.intValue
+            ).intValue
         }
 
         var callingCode: String?
         if let callingCodeInt = callingCodeInt {
             callingCode = COUNTRY_CODE_PREFIX + "\(callingCodeInt)"
-            countryCode = PhoneNumberUtil.sharedThreadLocal().probableCountryCode(forCallingCode: callingCode!)
+            countryCode = phoneNumberUtil.probableCountryCode(forCallingCode: callingCode!)
         }
 
         updateCountry(callingCode: callingCode, countryCode: countryCode)
