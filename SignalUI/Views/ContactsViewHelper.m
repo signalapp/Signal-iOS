@@ -227,15 +227,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
     NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
-    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
 
-    __block NSArray<SignalAccount *> *sortedSignalAccounts;
+    __block NSArray<SignalAccount *> *allSignalAccounts;
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithTransaction:transaction];
+        allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
         whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
     }];
-    NSMutableArray<SignalAccount *> *accountsToProcess = [sortedSignalAccounts mutableCopy];
+    NSMutableArray<SignalAccount *> *accountsToProcess = [allSignalAccounts mutableCopy];
 
     for (SignalServiceAddress *address in whitelistedAddresses) {
         if ([self.contactsManager isSystemContactWithAddress:address]) {
@@ -246,6 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet<SignalServiceAddress *> *addressSet = [NSMutableSet new];
+    NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
     for (SignalAccount *signalAccount in accountsToProcess) {
         if ([addressSet containsObject:signalAccount.recipientAddress]) {
             OWSLogVerbose(@"Ignoring duplicate: %@", signalAccount.recipientAddress);
@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
-    self.signalAccounts = sortedSignalAccounts;
+    self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
     self.nonSignalContacts = nil;
 
     [self fireDidUpdateContacts];
