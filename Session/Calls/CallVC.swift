@@ -4,7 +4,7 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import UIKit
 
-final class CallVC : UIViewController, WebRTCSessionDelegate {
+final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelegate {
     let sessionID: String
     let uuid: String
     let mode: Mode
@@ -225,7 +225,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
         view.addSubview(fadeView)
         fadeView.translatesAutoresizingMaskIntoConstraints = false
         fadeView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
-        // Close button
+        // Minimize button
         view.addSubview(minimizeButton)
         minimizeButton.translatesAutoresizingMaskIntoConstraints = false
         minimizeButton.pin(.left, to: .left, of: view)
@@ -354,15 +354,22 @@ final class CallVC : UIViewController, WebRTCSessionDelegate {
             cameraManager.stop()
             videoButton.alpha = 0.5
             switchCameraButton.isEnabled = false
+            isVideoEnabled = false
         } else {
-            webRTCSession.turnOnVideo()
-            localVideoView.isHidden = false
-            cameraManager.prepare()
-            cameraManager.start()
-            videoButton.alpha = 1.0
-            switchCameraButton.isEnabled = true
+            let previewVC = VideoPreviewVC()
+            previewVC.delegate = self
+            present(previewVC, animated: true, completion: nil)
         }
-        isVideoEnabled = !isVideoEnabled
+    }
+    
+    func cameraDidConfirmTurningOn() {
+        webRTCSession.turnOnVideo()
+        localVideoView.isHidden = false
+        cameraManager.prepare()
+        cameraManager.start()
+        videoButton.alpha = 1.0
+        switchCameraButton.isEnabled = true
+        isVideoEnabled = true
     }
     
     @objc private func switchCamera() {

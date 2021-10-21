@@ -27,7 +27,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     // MARK: Call
-    @objc func startCall(_ sender: Any) {
+    @objc func startCall(_ sender: Any?) {
         guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
         let callVC = CallVC(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
         callVC.conversationVC = self
@@ -36,6 +36,15 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         self.inputAccessoryView?.isHidden = true
         self.inputAccessoryView?.alpha = 0
         present(callVC, animated: true, completion: nil)
+    }
+    
+    internal func showCallModal() {
+        let callModal = CallModal() { [weak self] in
+            self?.startCall(nil)
+        }
+        callModal.modalPresentationStyle = .overFullScreen
+        callModal.modalTransitionStyle = .crossDissolve
+        present(callModal, animated: true, completion: nil)
     }
     
     internal func showCallVCIfNeeded() {
