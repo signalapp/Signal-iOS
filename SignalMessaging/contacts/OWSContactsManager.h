@@ -38,7 +38,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
                                              transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address;
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
                                             transaction:(SDSAnyReadTransaction *)transaction;
 
