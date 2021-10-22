@@ -55,7 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(isSystemContactWithSignalAccount(_:transaction:));
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 

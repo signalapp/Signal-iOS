@@ -569,7 +569,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        Contact *_Nullable nonSignalContact = self.allContactsMap[phoneNumber];
+        Contact *_Nullable nonSignalContact = [self contactForPhoneNumber:phoneNumber
+                                                              transaction:transaction];
         if (!nonSignalContact) {
             return nil;
         }
@@ -693,11 +694,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(address.isValid);
 
     return [self hasSignalAccountForAddress:address transaction:transaction];
-}
-
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
-{
-    return [self cachedContactNameForAddress:address].length > 0;
 }
 
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address

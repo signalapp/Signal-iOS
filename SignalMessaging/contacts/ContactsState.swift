@@ -14,6 +14,8 @@ public protocol ContactsState: AnyObject {
 
     func setSortedSignalAccounts(_ signalAccounts: [SignalAccount])
 
+    func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact?
+
     func setContactsMaps(_ contactsMaps: ContactsMaps,
                          localNumber: String?,
                          transaction: SDSAnyWriteTransaction)
@@ -148,18 +150,42 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
                 owsFailDebug("Missing data for key: \(key).")
                 return
             }
-            do {
-                guard let contact = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? Contact else {
-                    owsFailDebug("Invalid value: \(key).")
-                    return
-                }
-                contacts.append(contact)
-            } catch {
-                owsFailDebug("Deserialize failed[\(key)]: \(error).")
+            guard let contact = Self.deserializeContact(data: data, label: key) else {
+                return
             }
+            contacts.append(contact)
         }
         let localNumber: String? = tsAccountManager.localNumber(with: transaction)
         return ContactsMaps.build(contacts: contacts, localNumber: localNumber)
+    }
+
+    private static func serializeContact(_ contact: Contact, label: String) -> Data? {
+        let data = NSKeyedArchiver.archivedData(withRootObject: contact)
+        guard !data.isEmpty else {
+            owsFailDebug("Could not serialize contact: \(label).")
+            return nil
+        }
+        return data
+    }
+
+    private static func deserializeContact(data: Data, label: String) -> Contact? {
+        do {
+            guard let contact = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? Contact else {
+                owsFailDebug("Invalid value: \(label).")
+                return nil
+            }
+            return contact
+        } catch {
+            owsFailDebug("Deserialize failed[\(label)]: \(error).")
+        }
+    }
+
+    @objc
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        guard let data = Self.phoneNumberStore.getData(phoneNumber, transaction: transaction) else {
+            return nil
+        }
+        return Self.deserializeContact(data: data, label: phoneNumber)
     }
 
     @objc
@@ -181,10 +207,7 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
             guard !phoneNumbers.isEmpty else {
                 continue
             }
-
-            let contactData = NSKeyedArchiver.archivedData(withRootObject: contact)
-            guard !contactData.isEmpty else {
-                owsFailDebug("Could not serialize contact.")
+            guard let contactData = Self.serializeContact(contact, label: contact.uniqueId) else {
                 continue
             }
 
@@ -248,6 +271,18 @@ public class ContactsStateInMemory: NSObject, ContactsState {
     }
 
     @objc
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        unfairLock.withLock {
+            guard let contactsMaps = contactsMapsCache else {
+                owsFailDebug("Missing contactsMaps.")
+                // Don't bother failing over to contactsStateInDatabase.
+                return nil
+            }
+            return contactsMaps.phoneNumberToContactMap[phoneNumber]
+        }
+    }
+
+    @objc
     public func setContactsMaps(_ contactsMaps: ContactsMaps,
                                 localNumber: String?,
                                 transaction: SDSAnyWriteTransaction) {
@@ -274,5 +309,14 @@ public class ContactsStateInMemory: NSObject, ContactsState {
         // Don't call contactsStateInDatabase.warmCaches().
         return ContactsStateSummary(contactCount: UInt(contactsMaps.uniqueIdToContactMap.count),
                                     signalAccountCount: UInt(sortedSignalAccounts.count))
+    }
+}
+
+// MARK: -
+
+@objc
+extension OWSContactsManager {
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction)
     }
 }

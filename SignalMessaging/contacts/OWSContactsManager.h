@@ -32,8 +32,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
-@property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
-
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
 
@@ -80,7 +78,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
 /**
  * Used for sorting, respects system contacts name sort order preference.

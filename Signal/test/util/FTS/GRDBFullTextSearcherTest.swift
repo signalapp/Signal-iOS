@@ -90,10 +90,6 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         true
     }
 
-    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
-        (mockDisplayNameMap[address] ?? "").count > 0
-    }
-
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         owsFailDebug("if this method ends up being used by the tests, we should provide a better implementation.")
 

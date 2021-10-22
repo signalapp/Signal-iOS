@@ -389,10 +389,6 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         true
     }
 
-    func hasNameInSystemContacts(for address: SignalServiceAddress) -> Bool {
-        false
-    }
-
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         .orderedSame
     }
