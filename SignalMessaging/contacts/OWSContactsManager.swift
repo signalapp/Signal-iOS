@@ -915,19 +915,12 @@ extension OWSContactsManager {
         }
     }
 
-    @objc
-    public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        AssertIsOnMainThread()
+    private static func removeLocalContact(contacts: [Contact],
+                                           transaction: SDSAnyReadTransaction) -> [Contact] {
+        let localNumber: String? = tsAccountManager.localNumber(with: transaction)
 
-        // TODO: Use transaction?
-        let localNumber: String? = tsAccountManager.localNumber
-
-        var contactIdMap = [String: Contact]()
-        for contact in contactsState.allContacts(transaction: transaction) {
-            guard nil == contactIdMap[contact.uniqueId] else {
-                // De-deduplicate.
-                continue
-            }
+        var contactIdSet = Set<String>()
+        return contacts.compactMap { contact in
             // Skip local contacts.
             func isLocalContact() -> Bool {
                 for phoneNumber in contact.parsedPhoneNumbers {
@@ -938,17 +931,25 @@ extension OWSContactsManager {
                 return false
             }
             guard !isLocalContact() else {
-                continue
+                return nil
             }
-            contactIdMap[contact.uniqueId] = contact
+            // De-deduplicate.
+            guard !contactIdSet.contains(contact.uniqueId) else {
+                return nil
+            }
+            contactIdSet.insert(contact.uniqueId)
+            return contact
         }
-        return Array(contactIdMap.values)
+    }
+
+    @objc
+    public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        Self.removeLocalContact(contacts: contactsState.allContacts(transaction: transaction),
+                                transaction: transaction)
     }
 
     @objc
     public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        AssertIsOnMainThread()
-
         let contacts = (allUnsortedContacts(transaction: transaction) as NSArray)
         let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
         return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]

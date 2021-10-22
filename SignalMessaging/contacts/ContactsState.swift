@@ -274,7 +274,10 @@ public class ContactsStateInMemory: NSObject, ContactsState {
             return cachedValue
         }
         // Fail over.
-        return contactsStateInDatabase.unsortedSignalAccounts(transaction: transaction)
+        // NOTE: We use the "sorted" getter because our cache should be sorted.
+        let result = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
+        unfairLock.withLock { sortedSignalAccountsCache = result }
+        return result
     }
 
     // Order respects the systems contact sorting preference.
@@ -285,7 +288,9 @@ public class ContactsStateInMemory: NSObject, ContactsState {
             return cachedValue
         }
         // Fail over.
-        return contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
+        let result = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
+        unfairLock.withLock { sortedSignalAccountsCache = result }
+        return result
     }
 
     @objc

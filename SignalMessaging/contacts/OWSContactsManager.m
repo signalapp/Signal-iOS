@@ -482,7 +482,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-// TODO: Remove?
 - (void)updateSignalAccountsForSystemContactsFetch:(NSArray<SignalAccount *> *)newSignalAccounts
                   shouldSetHasLoadedSystemContacts:(BOOL)shouldSetHasLoadedSystemContacts
 {
@@ -718,7 +717,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 }
 
-// TODO: Remove?
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
 {
     if (thread.isNoteToSelf) {
