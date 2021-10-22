@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
 @property (nonatomic, readonly) BOOL isFromContactSync;
 
+// This property should only be accessed from Swift.
+@property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
+
 #if TARGET_OS_IOS
 
 - (instancetype)initWithSystemContact:(CNContact *)cnContact;

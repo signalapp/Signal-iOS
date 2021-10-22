@@ -25,7 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// - The address' UUID
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /// Returns the user's nickname / first name, if supported by the name's locale.
 /// If we don't know the user's name components, falls back to displayNameForAddress:
@@ -41,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
                                                   transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -49,16 +47,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
     NS_SWIFT_NAME(displayNameWithSneakyTransaction(thread:));
 
-- (NSArray<SignalAccount *> *)signalAccounts;
-
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContact(phoneNumber:));
-- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
+- (BOOL)isSystemContactWithPhoneNumberWithSneakyTransaction:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(phoneNumber:));
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
+                           transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isSystemContact(phoneNumber:transaction:));
+- (BOOL)isSystemContactWithAddressWithSneakyTransaction:(SignalServiceAddress *)address
+NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(address:));
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
+                       transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isSystemContact(address:transaction:));
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
     NS_SWIFT_NAME(isSystemContactWithSignalAccount(_:));
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
                              transaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(isSystemContactWithSignalAccount(_:transaction:));
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 

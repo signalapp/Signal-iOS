@@ -31,8 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)stringForCollation
 {
-    OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    return [contactsManager comparableNameForSignalAccount:self];
+    return [self.contactsManagerImpl comparableNameForSignalAccountWithSneakyTransaction:self];
 }
 
 @end

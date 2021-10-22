@@ -883,7 +883,7 @@ fileprivate extension CVComponentState.Builder {
         self.contactShare = ContactShare(state: state)
 
         let hasSendTextButton = !contactShare.systemContactsWithSignalAccountPhoneNumbers(transaction: transaction).isEmpty
-        let hasInviteButton = !contactShare.systemContactPhoneNumbers().isEmpty
+        let hasInviteButton = !contactShare.systemContactPhoneNumbers(transaction: transaction).isEmpty
         let hasAddToContactsButton = !contactShare.e164PhoneNumbers().isEmpty
 
         if hasSendTextButton {

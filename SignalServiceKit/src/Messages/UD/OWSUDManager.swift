@@ -493,7 +493,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         case .everybody:
             senderCertificate = senderCertificates.defaultCert
         case .contactsOnly:
-            if Self.contactsManager.isSystemContact(address: address) {
+            let isSystemContact = databaseStorage.read { transaction in
+                Self.contactsManager.isSystemContact(address: address, transaction: transaction)
+            }
+            if isSystemContact {
                 senderCertificate = senderCertificates.defaultCert
             } else {
                 senderCertificate = senderCertificates.uuidOnlyCert

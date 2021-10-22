@@ -303,6 +303,8 @@ public class SDSKeyValueStore: NSObject {
         write(codingValue, forKey: key, transaction: transaction)
     }
 
+    // MARK: - 
+
     @objc
     public func removeValue(forKey key: String, transaction: SDSAnyWriteTransaction) {
         write(nil, forKey: key, transaction: transaction)

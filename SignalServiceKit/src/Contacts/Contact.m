@@ -14,14 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface Contact ()
-
-@property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
-
-@end
-
-#pragma mark -
-
 @implementation Contact
 
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
