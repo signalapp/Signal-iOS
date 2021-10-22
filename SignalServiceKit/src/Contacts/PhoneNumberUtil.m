@@ -3,83 +3,24 @@
 //
 
 #import "PhoneNumberUtil.h"
-#import "ContactsManagerProtocol.h"
 #import "FunctionalUtil.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PhoneNumberUtil ()
-
-@property (nonatomic, readonly) NSMutableDictionary *countryCodesFromCallingCodeCache;
-@property (nonatomic, readonly) AnyLRUCache *parsedPhoneNumberCache;
-
-@end
-
-#pragma mark -
-
 @implementation PhoneNumberUtil
-
-+ (PhoneNumberUtil *)sharedThreadLocal
-{
-    NSString *key = PhoneNumberUtil.logTag;
-    PhoneNumberUtil *_Nullable threadLocal = NSThread.currentThread.threadDictionary[key];
-    if (!threadLocal) {
-        threadLocal = [PhoneNumberUtil new];
-        NSThread.currentThread.threadDictionary[key] = threadLocal;
-    }
-    return threadLocal;
-}
 
 - (instancetype)init {
     self = [super init];
 
     if (self) {
-        _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
-        _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
-        _parsedPhoneNumberCache = [[AnyLRUCache alloc] initWithMaxSize:256 nseMaxSize:0 shouldEvacuateInBackground:NO];
+        _phoneNumberUtilWrapper = [PhoneNumberUtilWrapper new];
     }
+
+    OWSSingletonAssert();
 
     return self;
-}
-
-- (nullable NBPhoneNumber *)parse:(NSString *)numberToParse
-                    defaultRegion:(NSString *)defaultRegion
-                            error:(NSError **)error
-{
-    NSString *hashKey = [NSString stringWithFormat:@"numberToParse:%@defaultRegion:%@", numberToParse, defaultRegion];
-
-    NBPhoneNumber *_Nullable result = (NBPhoneNumber *)[self.parsedPhoneNumberCache objectForKey:hashKey];
-
-    if (!result) {
-        result = [self.nbPhoneNumberUtil parse:numberToParse defaultRegion:defaultRegion error:error];
-        if (error && *error) {
-            OWSAssertDebug(!result);
-            return nil;
-        }
-
-        OWSAssertDebug(result);
-
-        if (result) {
-            [self.parsedPhoneNumberCache setObject:result forKey:hashKey];
-        } else {
-            [self.parsedPhoneNumberCache setObject:[NSNull null] forKey:hashKey];
-        }
-    }
-
-    if ([result class] == [NSNull class]) {
-        return nil;
-    } else {
-        return result;
-    }
-}
-
-- (NSString *)format:(NBPhoneNumber *)phoneNumber
-        numberFormat:(NBEPhoneNumberFormat)numberFormat
-               error:(NSError **)error
-{
-    return [self.nbPhoneNumberUtil format:phoneNumber numberFormat:numberFormat error:error];
 }
 
 // country code -> country name
@@ -100,82 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
         countryName = NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
     }
     return countryName;
-}
-
-// country code -> calling code
-+ (NSString *)callingCodeFromCountryCode:(NSString *)countryCode
-{
-    if (countryCode.length < 1) {
-        return @"+0";
-    }
-
-    if ([countryCode isEqualToString:@"AQ"]) {
-        // Antarctica
-        return @"+672";
-    } else if ([countryCode isEqualToString:@"BV"]) {
-        // Bouvet Island
-        return @"+55";
-    } else if ([countryCode isEqualToString:@"IC"]) {
-        // Canary Islands
-        return @"+34";
-    } else if ([countryCode isEqualToString:@"EA"]) {
-        // Ceuta & Melilla
-        return @"+34";
-    } else if ([countryCode isEqualToString:@"CP"]) {
-        // Clipperton Island
-        //
-        // This country code should be filtered - it does not appear to have a calling code.
-        return nil;
-    } else if ([countryCode isEqualToString:@"DG"]) {
-        // Diego Garcia
-        return @"+246";
-    } else if ([countryCode isEqualToString:@"TF"]) {
-        // French Southern Territories
-        return @"+262";
-    } else if ([countryCode isEqualToString:@"HM"]) {
-        // Heard & McDonald Islands
-        return @"+672";
-    } else if ([countryCode isEqualToString:@"XK"]) {
-        // Kosovo
-        return @"+383";
-    } else if ([countryCode isEqualToString:@"PN"]) {
-        // Pitcairn Islands
-        return @"+64";
-    } else if ([countryCode isEqualToString:@"GS"]) {
-        // So. Georgia & So. Sandwich Isl.
-        return @"+500";
-    } else if ([countryCode isEqualToString:@"UM"]) {
-        // U.S. Outlying Islands
-        return @"+1";
-    }
-
-    NSString *callingCode =
-        [NSString stringWithFormat:@"%@%@",
-                  COUNTRY_CODE_PREFIX,
-                  [[[self sharedThreadLocal] nbPhoneNumberUtil] getCountryCodeForRegion:countryCode]];
-    return callingCode;
-}
-
-- (NSArray<NSString *> *)countryCodesFromCallingCode:(NSString *)callingCode
-{
-    @synchronized(self)
-    {
-        OWSAssertDebug(callingCode.length > 0);
-
-        NSArray *result = self.countryCodesFromCallingCodeCache[callingCode];
-        if (!result) {
-            NSMutableArray *countryCodes = [NSMutableArray new];
-            for (NSString *countryCode in [PhoneNumberUtil countryCodesSortedByPopulationDescending]) {
-                NSString *callingCodeForCountryCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-                if ([callingCode isEqualToString:callingCodeForCountryCode]) {
-                    [countryCodes addObject:countryCode];
-                }
-            }
-            result = [countryCodes copy];
-            self.countryCodesFromCallingCodeCache[callingCode] = result;
-        }
-        return result;
-    }
 }
 
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode
@@ -315,28 +180,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
++ (nullable NBPhoneNumber *)getExampleNumberForType:(NSString *)regionCode
+                                               type:(NBEPhoneNumberType)type
+                                  nbPhoneNumberUtil:(NBPhoneNumberUtil *)nbPhoneNumberUtil
 {
-    PhoneNumberUtil *sharedUtil = [self sharedThreadLocal];
-
-    // Signal users are very likely using mobile devices, so prefer that kind of example.
     NSError *error;
-    NBPhoneNumber *nbPhoneNumber =
-        [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode type:NBEPhoneNumberTypeMOBILE error:&error];
-    OWSAssertDebug(!error);
-    if (!nbPhoneNumber) {
-        // For countries that with similar mobile and land lines, use "line or mobile"
-        // examples.
-        nbPhoneNumber = [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode
-                                                                         type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
-                                                                        error:&error];
-        OWSAssertDebug(!error);
+    NBPhoneNumber *_Nullable nbPhoneNumber = [nbPhoneNumberUtil getExampleNumberForType:regionCode type:type error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Error: %@", error);
     }
-    NSString *result = (nbPhoneNumber
-            ? [sharedUtil.nbPhoneNumberUtil format:nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:&error]
-            : nil);
-    OWSAssertDebug(!error);
-    return result;
+    return nbPhoneNumber;
 }
 
 @end

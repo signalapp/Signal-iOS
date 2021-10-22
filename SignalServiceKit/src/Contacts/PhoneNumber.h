@@ -33,8 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
                                               withSpecifiedCountryCodeString:(NSString *)countryCodeString;
 + (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber;
 
-+ (NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString;
-
 - (NSURL *)toSystemDialerURL;
 - (NSString *)toE164;
 - (nullable NSNumber *)getCountryCode;

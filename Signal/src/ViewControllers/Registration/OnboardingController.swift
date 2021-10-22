@@ -28,7 +28,7 @@ public class OnboardingCountryState: NSObject {
             countryCode = lastRegisteredCountryCode
         }
 
-        let callingCodeNumber: NSNumber = PhoneNumberUtil.sharedThreadLocal().nbPhoneNumberUtil.getCountryCode(forRegion: countryCode)
+        let callingCodeNumber: NSNumber = phoneNumberUtil.getCountryCode(forRegion: countryCode)
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
 
         var countryName = NSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")

@@ -89,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
+    PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -138,7 +139,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  payments:payments
                        paymentsCurrencies:paymentsCurrencies
                     spamChallengeResolver:spamChallengeResolver
-                           senderKeyStore:senderKeyStore];
+                           senderKeyStore:senderKeyStore
+                          phoneNumberUtil:phoneNumberUtil];
 
     if (!self) {
         return nil;

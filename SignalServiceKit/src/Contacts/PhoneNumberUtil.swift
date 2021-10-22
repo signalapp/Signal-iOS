@@ -3,10 +3,247 @@
 //
 
 import Foundation
+import libPhoneNumber_iOS
+
+@objc
+public class PhoneNumberUtilWrapper: NSObject {
+
+    fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()
+    fileprivate var countryCodesFromCallingCodeCache = [String: [String]]()
+    fileprivate let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(maxSize: 256, nseMaxSize: 0, shouldEvacuateInBackground: false)
+}
+
+// MARK: -
+
+fileprivate extension PhoneNumberUtilWrapper {
+
+    // country code -> calling code
+    func callingCode(fromCountryCode countryCode: String) -> String? {
+        guard let countryCode = countryCode.nilIfEmpty else {
+            return "+0"
+        }
+
+        if countryCode == "AQ" {
+            // Antarctica
+            return "+672"
+        } else if countryCode == "BV" {
+            // Bouvet Island
+            return "+55"
+        } else if countryCode == "IC" {
+            // Canary Islands
+            return "+34"
+        } else if countryCode == "EA" {
+            // Ceuta & Melilla
+            return "+34"
+        } else if countryCode == "CP" {
+            // Clipperton Island
+            //
+            // This country code should be filtered - it does not appear to have a calling code.
+            return nil
+        } else if countryCode == "DG" {
+            // Diego Garcia
+            return "+246"
+        } else if countryCode == "TF" {
+            // French Southern Territories
+            return "+262"
+        } else if countryCode == "HM" {
+            // Heard & McDonald Islands
+            return "+672"
+        } else if countryCode == "XK" {
+            // Kosovo
+            return "+383"
+        } else if countryCode == "PN" {
+            // Pitcairn Islands
+            return "+64"
+        } else if countryCode == "GS" {
+            // So. Georgia & So. Sandwich Isl.
+            return "+500"
+        } else if countryCode == "UM" {
+            // U.S. Outlying Islands
+            return "+1"
+        }
+
+        let countryCallingCode = getCountryCode(forRegion: countryCode)
+        let callingCode = COUNTRY_CODE_PREFIX + "\(countryCallingCode.intValue)"
+        return callingCode
+    }
+
+    // Returns a list of country codes for a calling code in descending
+    // order of population.
+    func countryCodes(fromCallingCode callingCode: String) -> [String] {
+        guard let callingCode = callingCode.nilIfEmpty else {
+            return []
+        }
+        if let cachedValue = countryCodesFromCallingCodeCache[callingCode] {
+            return cachedValue
+        }
+        let countryCodes: [String] = Self.countryCodesSortedByPopulationDescending.compactMap { (countryCode: String) -> String? in
+            let callingCodeForCountryCode: String? = self.callingCode(fromCountryCode: countryCode)
+            guard callingCode == callingCodeForCountryCode else {
+                return nil
+            }
+            return countryCode
+        }
+        countryCodesFromCallingCodeCache[callingCode] = countryCodes
+        return countryCodes
+    }
+
+    func format(phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
+        try nbPhoneNumberUtil.format(phoneNumber, numberFormat: numberFormat)
+    }
+
+    func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
+        let hashKey = "numberToParse:\(numberToParse), defaultRegion:\(defaultRegion)"
+        if let cachedValue = parsedPhoneNumberCache[hashKey] {
+            return cachedValue
+        }
+        let result = try nbPhoneNumberUtil.parse(numberToParse, defaultRegion: defaultRegion)
+        parsedPhoneNumberCache[hashKey] = result
+        return result
+    }
+
+    func examplePhoneNumber(forCountryCode countryCode: String) -> String? {
+        // Signal users are very likely using mobile devices, so prefer that kind of example.
+        do {
+            func findExamplePhoneNumber() -> NBPhoneNumber? {
+                if let nbPhoneNumber = PhoneNumberUtil.getExampleNumber(forType: countryCode,
+                                                                        type: .MOBILE,
+                                                                        nbPhoneNumberUtil: nbPhoneNumberUtil) {
+                    return nbPhoneNumber
+                }
+                if let nbPhoneNumber = PhoneNumberUtil.getExampleNumber(forType: countryCode,
+                                                                        type: .FIXED_LINE_OR_MOBILE,
+                                                                        nbPhoneNumberUtil: nbPhoneNumberUtil) {
+                    return nbPhoneNumber
+                }
+                return nil
+            }
+            guard let nbPhoneNumber = findExamplePhoneNumber() else {
+                if CurrentAppContext().isRunningTests {
+                    Logger.warn("Could not find example phone number for: \(countryCode)")
+                } else {
+                    owsFailDebug("Could not find example phone number for: \(countryCode)")
+                }
+                return nil
+            }
+            return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
+        } catch {
+            if CurrentAppContext().isRunningTests {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
+            return nil
+        }
+    }
+
+    func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
+        nbPhoneNumberUtil.isPossibleNumber(number)
+    }
+
+    func countryCodeByCarrier() -> String {
+        nbPhoneNumberUtil.countryCodeByCarrier()
+    }
+
+    func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
+        nbPhoneNumberUtil.getRegionCode(forCountryCode: countryCallingCode)
+    }
+
+    func isValidNumber(_ number: NBPhoneNumber) -> Bool {
+        nbPhoneNumberUtil.isValidNumber(number)
+    }
+
+    func getCountryCode(forRegion regionCode: String) -> NSNumber {
+        nbPhoneNumberUtil.getCountryCode(forRegion: regionCode)
+    }
+}
+
+// MARK: -
 
 @objc
 extension PhoneNumberUtil {
-    public static let countryCodesSortedByPopulationDescending: [String] = [
+    private static let unfairLock = UnfairLock()
+    private var unfairLock: UnfairLock { Self.unfairLock }
+
+    @objc(callingCodeFromCountryCode:)
+    public static func callingCode(fromCountryCode countryCode: String) -> String? {
+        shared.callingCode(fromCountryCode: countryCode)
+    }
+
+    @objc(callingCodeFromCountryCode:)
+    public func callingCode(fromCountryCode countryCode: String) -> String? {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.callingCode(fromCountryCode: countryCode)
+        }
+    }
+
+    @objc(countryCodesFromCallingCode:)
+    public static func countryCodes(fromCallingCode callingCode: String) -> [String] {
+        shared.countryCodes(fromCallingCode: callingCode)
+    }
+
+    // Returns a list of country codes for a calling code in descending
+    // order of population.
+    @objc(countryCodesFromCallingCode:)
+    public func countryCodes(fromCallingCode callingCode: String) -> [String] {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.countryCodes(fromCallingCode: callingCode)
+        }
+    }
+
+    public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
+        try unfairLock.withLock {
+            try phoneNumberUtilWrapper.format(phoneNumber: phoneNumber, numberFormat: numberFormat)
+        }
+    }
+
+    public func parse(_ numberToParse: String, defaultRegion: String) throws -> NBPhoneNumber {
+        try unfairLock.withLock {
+            try phoneNumberUtilWrapper.parse(numberToParse, defaultRegion: defaultRegion)
+        }
+    }
+
+    public func examplePhoneNumber(forCountryCode countryCode: String) -> String? {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.examplePhoneNumber(forCountryCode: countryCode)
+        }
+    }
+
+    public func isPossibleNumber(_ number: NBPhoneNumber) -> Bool {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.isPossibleNumber(number)
+        }
+    }
+
+    public func countryCodeByCarrier() -> String {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.countryCodeByCarrier()
+        }
+    }
+
+    public func getRegionCodeForCountryCode(_ countryCallingCode: NSNumber) -> String? {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.getRegionCodeForCountryCode(countryCallingCode)
+        }
+    }
+
+    public func isValidNumber(_ number: NBPhoneNumber) -> Bool {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.isValidNumber(number)
+        }
+    }
+
+    public func getCountryCode(forRegion regionCode: String) -> NSNumber {
+        unfairLock.withLock {
+            phoneNumberUtilWrapper.getCountryCode(forRegion: regionCode)
+        }
+    }
+}
+
+// MARK: -
+
+fileprivate extension PhoneNumberUtilWrapper {
+    static let countryCodesSortedByPopulationDescending: [String] = [
         "CN", // 1330044000
         "IN", // 1173108018
         "US", // 310232863

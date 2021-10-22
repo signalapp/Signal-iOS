@@ -114,7 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
-
+        PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
+        
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
                                                                              launchJobs:launchJobs
@@ -173,7 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          payments:payments
                                                                paymentsCurrencies:paymentsCurrencies
                                                             spamChallengeResolver:spamChallengeResolver
-                                                                   senderKeyStore:senderKeyStore]];
+                                                                   senderKeyStore:senderKeyStore
+                                                                  phoneNumberUtil:phoneNumberUtil]];
 
         appSpecificSingletonBlock();
 

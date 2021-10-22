@@ -8,6 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -183,7 +184,7 @@ NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
     OWSAssertDebug(countryCode.length > 0);
     OWSAssertDebug(callingCode.length > 0);
 
-    NSString *examplePhoneNumber = [PhoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
+    NSString *examplePhoneNumber = [self.phoneNumberUtil examplePhoneNumberForCountryCode:countryCode];
     OWSAssertDebug(!examplePhoneNumber || [examplePhoneNumber hasPrefix:callingCode]);
     if (examplePhoneNumber && [examplePhoneNumber hasPrefix:callingCode]) {
         NSString *formattedPhoneNumber =
