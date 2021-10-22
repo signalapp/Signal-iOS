@@ -353,8 +353,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             return nil
         }
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumeric)"
-        let countryCodes: [String] =
-            PhoneNumberUtil.sharedThreadLocal().countryCodes(fromCallingCode: callingCode)
+        let countryCodes: [String] = phoneNumberUtil.countryCodes(fromCallingCode: callingCode)
         guard let countryCode = countryCodes.first else {
             owsFailDebug("Could not resume re-registration; unknown countryCode.")
             return nil
