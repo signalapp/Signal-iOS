@@ -175,6 +175,8 @@ class EmojiGenerator {
     }
 
     static func generate() {
+        // This URL has been unavailable the past couple of weeks. If you're seeing failures here, try:
+        // https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json
         guard let jsonData = try? Data(contentsOf: URL(string: "https://unicodey.com/emoji-data/emoji.json")!) else {
             fatalError("Failed to download emoji-data json")
         }
@@ -391,15 +393,13 @@ class EmojiGenerator {
             fileHandle.writeLine("extension Emoji {")
 
             // Value lookup per emoji
-            fileHandle.writeLine("    var name: String? {")
+            fileHandle.writeLine("    var name: String {")
             fileHandle.writeLine("        switch self {")
 
             for emojiData in sortedEmojiData {
                 guard let name = emojiData.name else { continue }
                 fileHandle.writeLine("        case .\(emojiData.enumName): return \"\(name)\"")
             }
-
-            fileHandle.writeLine("        default: return nil")
 
             fileHandle.writeLine("        }")
             fileHandle.writeLine("    }")

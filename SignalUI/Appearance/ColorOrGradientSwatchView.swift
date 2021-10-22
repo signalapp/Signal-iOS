@@ -141,11 +141,9 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
                 // coordinate space with lower-left origin.  But the
                 // observed behavior is that they use an upper-left origin.
                 // I can't figure out why.
-                if false {
-                    return CGPoint(x: point.x, y: (1 - point.y))
-                } else {
-                    return point
-                }
+                //
+                // return CGPoint(x: point.x, y: (1 - point.y))
+                return point
             }
             let startPointLL = convertToLayerUnit(startPointUL)
             let endPointLL = convertToLayerUnit(endPointUL)

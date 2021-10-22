@@ -354,8 +354,7 @@ extension DeviceTransferService {
             success = true
         }
         if success {
-            // TODO: This should return a guarantee
-            finalizeRestorationIfNecessary().cauterize()
+            finalizeRestorationIfNecessary()
         }
         return success
     }
@@ -542,10 +541,11 @@ extension DeviceTransferService {
         GRDBDatabaseStorageAdapter.promoteTransferDirectoryToPrimary()
     }
 
-    func finalizeRestorationIfNecessary() -> Promise<Void> {
+    @discardableResult
+    func finalizeRestorationIfNecessary() -> Guarantee<Void> {
         resetTransferDirectory()
 
-        let (promise, future) = Promise<Void>.pending()
+        let (promise, future) = Guarantee<Void>.pending()
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.tsAccountManager.isTransferInProgress = false
 

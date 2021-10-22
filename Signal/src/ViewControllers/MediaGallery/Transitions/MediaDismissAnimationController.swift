@@ -10,7 +10,7 @@ class MediaDismissAnimationController: NSObject {
 
     var transitionView: UIView?
     var fromMediaFrame: CGRect?
-    var pendingCompletion: (() -> Promise<Void>)?
+    var pendingCompletion: (() -> Void)?
 
     init(galleryItem: MediaGalleryItem, interactionController: MediaInteractiveDismiss? = nil) {
         self.item = .gallery(galleryItem)
@@ -149,8 +149,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let duration = transitionDuration(using: transitionContext)
 
-        let completion = { () -> Promise<Void> in
-
+        let completion = {
             let destinationFrame: CGRect
             let destinationCornerRadius: CGFloat
             if transitionContext.transitionWasCancelled {
@@ -168,7 +167,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 destinationCornerRadius = fromMediaContext.cornerRadius
             }
 
-            return UIView.animate(.promise,
+            UIView.animate(.promise,
                                   duration: duration,
                                   delay: 0.0,
                                   options: [.beginFromCurrentState, .curveEaseInOut]) {
@@ -215,15 +214,15 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                        options: [.beginFromCurrentState, .curveEaseInOut]) {
                 fromTransitionalOverlayView?.alpha = 0.0
                 fromView.alpha = 0.0
-        }.then { (_: Bool) -> Promise<Void> in
+        }.done { _ in
             guard let pendingCompletion = self.pendingCompletion else {
                 Logger.verbose("pendingCompletion already ran by the time fadeout completed.")
-                return Promise.value(())
+                return
             }
 
             Logger.verbose("ran pendingCompletion after fadeout")
             self.pendingCompletion = nil
-            return pendingCompletion()
+            pendingCompletion()
         }
     }
 }
@@ -250,7 +249,7 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         if let pendingCompletion = pendingCompletion {
             Logger.verbose("interactive gesture started pendingCompletion during fadeout")
             self.pendingCompletion = nil
-            _ = pendingCompletion()
+            pendingCompletion()
         }
     }
 

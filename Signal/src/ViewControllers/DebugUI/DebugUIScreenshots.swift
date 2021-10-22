@@ -265,21 +265,29 @@ public extension DebugUIScreenshots {
                                                                                            comment: "This is for a group of people interested in discussing books they've read."),
                                                                    avatarData: buildAvatarData(bundleFilename: "address-group-book.jpg"),
                                                                    transaction: transaction)
-                let timestampMessage1 = startingDateMS - (3 * kDayInMs + 4 * kHourInMs)
-                let message1 = self.buildOutgoingMessage(thread: thread, messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE",
-                                                                                                        comment: "This is for a message in the 'Book Club' group chat"),
-                                                         timestamp: timestampMessage1, transaction: transaction)
-                let timestampMessage2 = startingDateMS - (3 * kDayInMs + 4 * kMinuteInMs)
-                let attachmentMessage2 = buildAttachment(bundleFilename: "1984.txt",
-                                                         mimeType: "text/plain",
-                                                         sourceFilename: NSLocalizedString("SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME",
-                                                                                           comment: "1984 is the book title. The file extension is a text file."),
-                                                         transaction: transaction)
-                let message2 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage2,
-                                                         attachments: [attachmentMessage2],
-                                                         transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE",
+                        comment: "This is for a message in the 'Book Club' group chat"),
+                    timestamp: startingDateMS - (3 * kDayInMs + 4 * kHourInMs),
+                    transaction: transaction)
+
+                let attachmentMessage2 = buildAttachment(
+                    bundleFilename: "1984.txt",
+                    mimeType: "text/plain",
+                    sourceFilename: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME",
+                        comment: "1984 is the book title. The file extension is a text file."),
+                    transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: nil,
+                    timestamp: startingDateMS - (3 * kDayInMs + 4 * kMinuteInMs),
+                    attachments: [attachmentMessage2],
+                    transaction: transaction)
             }
 
             // Group incoming attachment + caption
@@ -295,21 +303,30 @@ public extension DebugUIScreenshots {
                                                                                            comment: "This is for a group chat for people who want weather updates."),
                                                                    avatarData: buildAvatarData(bundleFilename: "nature-2-trees.JPG"),
                                                                    transaction: transaction)
-                let timestampMessage1 = startingDateMS - (2 * kDayInMs + 8 * kHourInMs)
-                let message1 = self.buildOutgoingMessage(thread: thread, messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE",
-                                                                                                        comment: "This is a message. Please include the emoji if possible."),
-                                                         timestamp: timestampMessage1, transaction: transaction)
-                let timestampMessage2 = startingDateMS - (2 * kDayInMs + 8 * kHourInMs + 1 * kMinuteInMs)
-                let attachmentMessage2 = buildAttachment(bundleFilename: "test-jpg-2.JPG",
-                                                         mimeType: OWSMimeTypeImageJpeg,
-                                                         transaction: transaction)
-                let message2 = self.buildIncomingMessage(thread: thread,
-                                                         authorAddress: address9,
-                                                         messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO",
-                                                                                        comment: "This is a message sent with an attachment."),
-                                                         timestamp: timestampMessage2,
-                                                         attachments: [attachmentMessage2],
-                                                         transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE",
+                        comment: "This is a message. Please include the emoji if possible."),
+                    timestamp: startingDateMS - (2 * kDayInMs + 8 * kHourInMs),
+                    transaction: transaction)
+
+                let attachmentMessage2 = buildAttachment(
+                    bundleFilename: "test-jpg-2.JPG",
+                    mimeType: OWSMimeTypeImageJpeg,
+                    transaction: transaction)
+
+                let message2 = buildIncomingMessage(
+                    thread: thread,
+                    authorAddress: address9,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO",
+                        comment: "This is a message sent with an attachment."),
+                    timestamp: startingDateMS - (2 * kDayInMs + 8 * kHourInMs + 1 * kMinuteInMs),
+                    attachments: [attachmentMessage2],
+                    transaction: transaction)
+
                 message2.debugonly_markAsReadNow(transaction: transaction)
             }
 
@@ -368,20 +385,27 @@ public extension DebugUIScreenshots {
                                                                                            comment: "Please include emoji. This is a group name/channel name for pictures of the sun in the sky."),
                                                                    avatarData: buildAvatarData(bundleFilename: "nature-4-sunset.jpg"),
                                                                    transaction: transaction)
-                let timestampMessage1 = startingDateMS - (1 * kDayInMs + 18 * kHourInMs)
-                let message1 = self.buildOutgoingMessage(thread: thread, messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE",
-                                                                                                        comment: "This is a message in the Sunsets group chat."),
-                                                         timestamp: timestampMessage1, transaction: transaction)
-                let timestampMessage2 = startingDateMS - (1 * kDayInMs + 18 * kHourInMs + 10 * kMinuteInMs)
-                let attachmentMessage2 = buildAttachment(bundleFilename: "nature-3-road.JPG",
-                                                         mimeType: OWSMimeTypeImageJpeg,
-                                                         transaction: transaction)
-                let message2 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage2,
-                                                         attachments: [attachmentMessage2],
-                                                         isViewOnceMessage: true,
-                                                         transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE",
+                        comment: "This is a message in the Sunsets group chat."),
+                    timestamp: startingDateMS - (1 * kDayInMs + 18 * kHourInMs),
+                    transaction: transaction)
+
+                let attachmentMessage2 = buildAttachment(
+                    bundleFilename: "nature-3-road.JPG",
+                    mimeType: OWSMimeTypeImageJpeg,
+                    transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: nil,
+                    timestamp: startingDateMS - (1 * kDayInMs + 18 * kHourInMs + 10 * kMinuteInMs),
+                    attachments: [attachmentMessage2],
+                    isViewOnceMessage: true,
+                    transaction: transaction)
             }
 
             // Example of how to make a simple 1:1 thread.
@@ -393,15 +417,22 @@ public extension DebugUIScreenshots {
                 let attachmentMessage1 = buildAttachment(bundleFilename: "test-jpg-3.JPG",
                                                          mimeType: OWSMimeTypeImageJpeg,
                                                          transaction: transaction)
-                let message1 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage1,
-                                                         attachments: [attachmentMessage1], transaction: transaction)
-                let timestampMessage2 = startingDateMS - (8 * kHourInMs + 27 * kMinuteInMs)
-                let message2 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: NSLocalizedString("SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE",
-                                                                                        comment: "This is a message expressing support/happiness/awe/shock."),
-                                                         timestamp: timestampMessage2, transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: nil,
+                    timestamp: timestampMessage1,
+                    attachments: [attachmentMessage1],
+                    transaction: transaction)
+
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE",
+                        comment: "This is a message expressing support/happiness/awe/shock."),
+                    timestamp: startingDateMS - (8 * kHourInMs + 27 * kMinuteInMs),
+                    transaction: transaction)
+
                 GroupManager.remoteUpdateDisappearingMessages(withContactOrV1GroupThread: thread,
                                                               disappearingMessageToken: DisappearingMessageToken(isEnabled: true, durationSeconds: UInt32(24 * kHourInterval)),
                                                               groupUpdateSourceAddress: localAddress,
@@ -483,15 +514,21 @@ public extension DebugUIScreenshots {
                                                                    avatarData: buildAvatarData(bundleFilename: "address-group-family.jpg"),
                                                                    // avatarData: nil,
                                                                    transaction: transaction)
-                let message1 = self.buildOutgoingMessage(thread: thread, messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE",
-                                                                                                        comment: "This is a message in the group chat of family members."),
-                                                         transaction: transaction)
-                let timestampMessage2 = startingDateMS - (1 * kHourInMs + 58 * kMinuteInMs)
-                let message2 = self.buildIncomingMessage(thread: thread,
-                                                         authorAddress: address6,
-                                                         messageBody: NSLocalizedString("SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO",
-                                                                                        comment: "This is a message in the group chat of family members."),
-                                                         timestamp: timestampMessage2, transaction: transaction)
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE",
+                        comment: "This is a message in the group chat of family members."),
+                    transaction: transaction)
+
+                buildIncomingMessage(
+                    thread: thread,
+                    authorAddress: address6,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO",
+                        comment: "This is a message in the group chat of family members."),
+                    timestamp: startingDateMS - (1 * kHourInMs + 58 * kMinuteInMs),
+                    transaction: transaction)
             }
 
             // 1:1 sent media
@@ -508,10 +545,11 @@ public extension DebugUIScreenshots {
                 let attachmentMessage2 = buildAttachment(bundleFilename: "test-jpg-3.JPG",
                                                          mimeType: OWSMimeTypeImageJpeg,
                                                          transaction: transaction)
-                let message2 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage2,
-                                                         attachments: [attachmentMessage2], transaction: transaction)
+                buildOutgoingMessage(
+                    thread: thread,
+                    messageBody: nil,
+                    timestamp: timestampMessage2,
+                    attachments: [attachmentMessage2], transaction: transaction)
             }
 
             // Group other file types -- in focus
@@ -525,12 +563,12 @@ public extension DebugUIScreenshots {
                 // You can find files in the repo using something like this...
                 // find . | grep -i "test-jpg"
                 // ...where test-jpg is a partial file name.
-                let attachment1 = buildAttachment(bundleFilename: "test-jpg-2.JPG",
-                                                  mimeType: OWSMimeTypeImageJpeg,
-                                                  transaction: transaction)
-                let attachment2 = buildAttachment(bundleFilename: "test-jpg-2.JPG",
-                                                  mimeType: OWSMimeTypeImageJpeg,
-                                                  transaction: transaction)
+                buildAttachment(bundleFilename: "test-jpg-2.JPG",
+                                mimeType: OWSMimeTypeImageJpeg,
+                                transaction: transaction)
+                buildAttachment(bundleFilename: "test-jpg-2.JPG",
+                                mimeType: OWSMimeTypeImageJpeg,
+                                transaction: transaction)
 
                 let memberAddresses = [
                     address1,
@@ -617,13 +655,12 @@ public extension DebugUIScreenshots {
                 let attachmentMessage7 = buildAttachment(bundleFilename: "test-jpg-3.JPG",
                                                          mimeType: OWSMimeTypeImageJpeg,
                                                          transaction: transaction)
-                let timestampMessage7 = startingDateMS - (9 * kMinuteInMs)
-                let message7 = self.buildOutgoingMessage(thread: thread,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage7,
-                                                         attachments: [attachmentMessage7],
-                                                         isViewOnceMessage: true,
-                                                         transaction: transaction)
+                buildOutgoingMessage(thread: thread,
+                                     messageBody: nil,
+                                     timestamp: startingDateMS - (9 * kMinuteInMs),
+                                     attachments: [attachmentMessage7],
+                                     isViewOnceMessage: true,
+                                     transaction: transaction)
                 let attachmentMessage8 = buildAttachment(bundleFilename: "certificate.PDF",
                                                          mimeType: "application/pdf",
                                                          sourceFilename: NSLocalizedString("SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME", comment: "This is a file name 'Instructions' for the cat chat group."),
@@ -645,37 +682,40 @@ public extension DebugUIScreenshots {
                 // you can fix that by saying:
                 // _ = self.buildOutgoingMessage(...)
                 let timestampMessage7 = startingDateMS - (4 * kMinuteInMs)
-                let message1 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "1", timestamp: timestampMessage7, transaction: transaction)
-                let message2 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "2", timestamp: timestampMessage7, transaction: transaction)
-                let message3 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "3", timestamp: timestampMessage7, transaction: transaction)
-                let message4 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "4.", timestamp: timestampMessage7, transaction: transaction)
-                let message5 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "5", timestamp: timestampMessage7, transaction: transaction)
-                let message6 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "6", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "1", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "2", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "3", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "4.", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "5", timestamp: timestampMessage7, transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: "6", timestamp: timestampMessage7, transaction: transaction)
                 let attachmentMessage7 = buildAttachment(bundleFilename: "sonarping.mp3",
                                                          mimeType: "audio/mp3",
                                                          transaction: transaction)
                 attachmentMessage7.attachmentType = .voiceMessage
                 attachmentMessage7.anyOverwritingUpdate(transaction: transaction)
-                let message7 = self.buildIncomingMessage(thread: thread,
-                                                         authorAddress: otherAddress,
-                                                         messageBody: nil,
-                                                         timestamp: timestampMessage7,
-                                                         attachments: [attachmentMessage7], transaction: transaction)
+                buildIncomingMessage(thread: thread, authorAddress: otherAddress, messageBody: nil, timestamp: timestampMessage7, attachments: [attachmentMessage7], transaction: transaction)
             }
 
             // Second Thread -- Missed call or emoji on iPad
             if true {
                 let otherAddress = address1
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
-                let timestampMessage1 = startingDateMS - (3 * kMinuteInMs)
-                let message1 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress,
-                                                         messageBody: "🤣🤣🤣",
-                                                         timestamp: timestampMessage1, transaction: transaction)
-                let timestampMessage2 = startingDateMS - (2 * kMinuteInMs)
-                let message2 = self.buildIncomingMessage(thread: thread, authorAddress: otherAddress,
-                                                         messageBody: NSLocalizedString("SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE", comment: "This is a message before a call."),
-                                                         timestamp: timestampMessage1, transaction: transaction)
-                let timestampCall1 = startingDateMS
+                buildIncomingMessage(
+                    thread: thread,
+                    authorAddress: otherAddress,
+                    messageBody: "🤣🤣🤣",
+                    timestamp: startingDateMS - (3 * kMinuteInMs),
+                    transaction: transaction)
+
+                buildIncomingMessage(
+                    thread: thread,
+                    authorAddress: otherAddress,
+                    messageBody: NSLocalizedString(
+                        "SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE",
+                        comment: "This is a message before a call."),
+                    timestamp: startingDateMS - (2 * kMinuteInMs),
+                    transaction: transaction)
+
                 // Replace .incomingIncomplete with other values to create other record types.
                 // Note that you have to remove the obj-c enum prefix.
                 //
@@ -1007,6 +1047,7 @@ public extension DebugUIScreenshots {
                        emails: [])
     }
 
+    @discardableResult
     private class func buildOutgoingMessage(thread: TSThread,
                                             messageBody: String?,
                                             timestamp: UInt64? = nil,
@@ -1063,6 +1104,7 @@ public extension DebugUIScreenshots {
         return message
     }
 
+    @discardableResult
     private class func buildIncomingMessage(thread: TSThread,
                                             authorAddress: SignalServiceAddress,
                                             messageBody: String?,
@@ -1099,6 +1141,7 @@ public extension DebugUIScreenshots {
         return try! Data(contentsOf: fileUrl)
     }
 
+    @discardableResult
     private class func buildAttachment(bundleFilename: String,
                                        mimeType: String,
                                        sourceFilename: String? = nil,

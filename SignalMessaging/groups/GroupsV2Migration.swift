@@ -49,7 +49,7 @@ public extension GroupsV2Migration {
     // the service.
     static func tryToMigrate(groupThread: TSGroupThread,
                              migrationMode: GroupsV2MigrationMode) -> Promise<TSGroupThread> {
-        firstly(on: .global()) {
+        firstly(on: .global()) { () -> Bool in
             if migrationMode == .isAlreadyMigratedOnService ||
                 migrationMode == .possiblyAlreadyMigratedOnService {
                 return true

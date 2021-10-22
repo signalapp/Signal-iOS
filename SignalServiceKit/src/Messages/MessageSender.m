@@ -42,7 +42,6 @@
 #import "TSThread.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMetadataKit/NSData+messagePadding.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>

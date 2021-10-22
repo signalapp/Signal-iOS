@@ -963,7 +963,7 @@ class CaptureOutput: NSObject {
         videoInput.expectsMediaDataInRealTime = true
         assetWriter.add(videoInput)
 
-        let audioSettings: [String: Any]? = self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4) as? [String: Any]
+        let audioSettings: [String: Any]? = self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4)
         let audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
         audioInput.expectsMediaDataInRealTime = true
         if audioSettings != nil {

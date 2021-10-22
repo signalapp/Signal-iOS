@@ -241,15 +241,15 @@ final class ContactSupportViewController: OWSTableViewController2 {
         }.done(on: .main) { _ in
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
+        }.ensure(on: .main) {
+            self.currentEmailComposeOperation = nil
+            self.showSpinnerOnNextButton = false
+
         }.catch(on: .main) { error in
             let alertTitle = error.userErrorDescription
             let alertMessage = NSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
                                                  comment: "Message for alert dialog presented when a support email failed to send")
             OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
-
-        }.ensure(on: .main) {
-            self.currentEmailComposeOperation = nil
-            self.showSpinnerOnNextButton = false
         }
     }
 }

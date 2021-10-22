@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 NSMutableData *flippedKey = [NSMutableData new];
                                 const char *currentKeyBytes = currentKey.bytes;
                                 for (NSUInteger i = 0; i < currentKey.length; i++) {
-                                    const char xorByte = currentKeyBytes[i] ^ 0xff;
+                                    const char xorByte = currentKeyBytes[i] ^ (char)0xff;
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssertDebug(flippedKey.length == currentKey.length);

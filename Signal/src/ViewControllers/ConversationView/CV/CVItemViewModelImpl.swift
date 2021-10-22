@@ -195,7 +195,7 @@ extension CVItemViewModelImpl {
         }
     }
 
-    func shareMediaAction(sender: Any) {
+    func shareMediaAction(sender: Any?) {
         guard !isViewOnce else {
             return
         }

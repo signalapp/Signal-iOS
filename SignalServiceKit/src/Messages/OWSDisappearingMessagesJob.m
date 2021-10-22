@@ -227,7 +227,7 @@ void AssertIsOnDisappearingMessagesQueue()
     dispatch_once(&onceToken, ^{
         dateFormatter = [NSDateFormatter new];
         dateFormatter.dateStyle = NSDateFormatterNoStyle;
-        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+        dateFormatter.timeStyle = NSDateFormatterMediumStyle;
         dateFormatter.locale = [NSLocale systemLocale];
     });
 

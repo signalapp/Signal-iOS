@@ -1072,7 +1072,6 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
         let bottomView: UIView
 
         let isPushing = operation == .push
-        let isInteractive = percentDrivenTransition != nil
 
         if isPushing {
             topView = fromView

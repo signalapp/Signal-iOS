@@ -794,8 +794,8 @@ void uncaughtExceptionHandler(NSException *exception)
  * create a document for your app to open using a URL.
  */
 - (BOOL)application:(UIApplication *)application
-    continueUserActivity:(nonnull NSUserActivity *)userActivity
-      restorationHandler:(nonnull void (^)(NSArray *_Nullable))restorationHandler
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler
 {
     OWSAssertIsOnMainThread();
 

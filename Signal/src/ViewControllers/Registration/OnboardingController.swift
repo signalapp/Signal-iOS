@@ -743,8 +743,13 @@ public class OnboardingController: NSObject {
                 self.kbsAuth = nil
 
                 if self.hasPendingRestoration {
-                    self.accountManager.performInitialStorageServiceRestore()
-                        .ensure { completion(.success) }
+                    firstly {
+                        self.accountManager.performInitialStorageServiceRestore()
+                    }.recover { error in
+                        Logger.warn("Timed out performing storage service restore: \(error). Ignoring...")
+                    }.done {
+                        completion(.success)
+                    }
 
                 } else {
                     // We've restored our keys, we can now re-run this method to post our registration token

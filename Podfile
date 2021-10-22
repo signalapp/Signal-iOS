@@ -116,6 +116,7 @@ post_install do |installer|
   enable_extension_support_for_purelayout(installer)
   configure_warning_flags(installer)
   configure_testable_build(installer)
+  promote_minimum_supported_version(installer)
   disable_bitcode(installer)
   disable_armv7(installer)
   strip_valid_archs(installer)
@@ -180,6 +181,24 @@ def configure_testable_build(installer)
         build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << ' TESTABLE_BUILD=1'
       end
       build_configuration.build_settings['ENABLE_TESTABILITY'] = 'YES'
+    end
+  end
+end
+
+# Xcode 13 dropped support for some older iOS versions. We only need them
+# to support our project's minimum version, so let's bump each Pod's min
+# version to our min to suppress these warnings.
+def promote_minimum_supported_version(installer)
+  project_min_version = current_target_definition.platform.deployment_target
+
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |build_configuration|
+      target_version_string = build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+      target_version = Version.create(target_version_string)
+
+      if target_version < project_min_version
+        build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = project_min_version.version
+      end
     end
   end
 end
