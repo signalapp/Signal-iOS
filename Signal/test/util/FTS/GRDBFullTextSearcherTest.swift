@@ -62,10 +62,6 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         "Fake name"
     }
 
-    func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
-        PersonNameComponents()
-    }
-
     func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
         PersonNameComponents()
     }
@@ -74,12 +70,20 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         []
     }
 
+    func isSystemContactWithSneakyTransaction(phoneNumber: String) -> Bool {
+        return true
+    }
+
     func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
-        true
+        return true
+    }
+
+    func isSystemContactWithSneakyTransaction(address: SignalServiceAddress) -> Bool {
+        return true
     }
 
     func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        true
+        return true
     }
 
     func isSystemContact(withSignalAccount recipientId: String) -> Bool {

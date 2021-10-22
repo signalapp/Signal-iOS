@@ -16,6 +16,10 @@ public protocol ContactsState: AnyObject {
 
     func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact?
 
+    func allContacts(transaction: SDSAnyReadTransaction) -> [Contact]
+
+    func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps
+
     func setContactsMaps(_ contactsMaps: ContactsMaps,
                          localNumber: String?,
                          transaction: SDSAnyWriteTransaction)
@@ -55,6 +59,8 @@ public class ContactsMaps: NSObject {
         self.uniqueIdToContactMap = uniqueIdToContactMap
         self.phoneNumberToContactMap = phoneNumberToContactMap
     }
+
+    static let empty: ContactsMaps = ContactsMaps(uniqueIdToContactMap: [:], phoneNumberToContactMap: [:])
 
     // Builds a map of phone number-to-Contact.
     // A given Contact may have multiple phone numbers.
@@ -100,6 +106,19 @@ public class ContactsMaps: NSObject {
         }
     }
 
+    @objc
+    public func isSystemContact(address: SignalServiceAddress) -> Bool {
+        guard let phoneNumber = address.phoneNumber?.nilIfEmpty else {
+            return false
+        }
+        return isSystemContact(phoneNumber: phoneNumber)
+    }
+
+    @objc
+    public func isSystemContact(phoneNumber: String) -> Bool {
+        phoneNumberToContactMap[phoneNumber] != nil
+    }
+
     public func isEqualForCache(_ other: ContactsMaps) -> Bool {
         let mapSelf = self.uniqueIdToContactMap
         let mapOther = other.uniqueIdToContactMap
@@ -143,22 +162,6 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
     private static let uniqueIdStore = SDSKeyValueStore(collection: "ContactsState.uniqueIdStore")
     private static let phoneNumberStore = SDSKeyValueStore(collection: "ContactsState.phoneNumberStore")
 
-    fileprivate func loadContactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
-        var contacts = [Contact]()
-        Self.uniqueIdStore.enumerateKeys(transaction: transaction) { (key, _) in
-            guard let data = Self.uniqueIdStore.getData(key, transaction: transaction) else {
-                owsFailDebug("Missing data for key: \(key).")
-                return
-            }
-            guard let contact = Self.deserializeContact(data: data, label: key) else {
-                return
-            }
-            contacts.append(contact)
-        }
-        let localNumber: String? = tsAccountManager.localNumber(with: transaction)
-        return ContactsMaps.build(contacts: contacts, localNumber: localNumber)
-    }
-
     private static func serializeContact(_ contact: Contact, label: String) -> Data? {
         let data = NSKeyedArchiver.archivedData(withRootObject: contact)
         guard !data.isEmpty else {
@@ -177,6 +180,7 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
             return contact
         } catch {
             owsFailDebug("Deserialize failed[\(label)]: \(error).")
+            return nil
         }
     }
 
@@ -189,11 +193,34 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
     }
 
     @objc
+    public func allContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        var contacts = [Contact]()
+        Self.uniqueIdStore.enumerateKeys(transaction: transaction) { (key, _) in
+            guard let data = Self.uniqueIdStore.getData(key, transaction: transaction) else {
+                owsFailDebug("Missing data for key: \(key).")
+                return
+            }
+            guard let contact = Self.deserializeContact(data: data, label: key) else {
+                return
+            }
+            contacts.append(contact)
+        }
+        return contacts
+    }
+
+    @objc
+    public func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
+        let contacts = allContacts(transaction: transaction)
+        let localNumber: String? = tsAccountManager.localNumber(with: transaction)
+        return ContactsMaps.build(contacts: contacts, localNumber: localNumber)
+    }
+
+    @objc
     public func setContactsMaps(_ newContactsMaps: ContactsMaps,
                                 localNumber: String?,
                                 transaction: SDSAnyWriteTransaction) {
 
-        let oldContactsMaps = loadContactsMaps(transaction: transaction)
+        let oldContactsMaps = self.contactsMaps(transaction: transaction)
         if oldContactsMaps.isEqualForCache(newContactsMaps) {
             Logger.verbose("Ignoring redundant contactsMap update.")
             return
@@ -283,6 +310,30 @@ public class ContactsStateInMemory: NSObject, ContactsState {
     }
 
     @objc
+    public func allContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        unfairLock.withLock {
+            guard let contactsMaps = contactsMapsCache else {
+                owsFailDebug("Missing contactsMaps.")
+                // Don't bother failing over to contactsStateInDatabase.
+                return []
+            }
+            return Array(contactsMaps.phoneNumberToContactMap.values)
+        }
+    }
+
+    @objc
+    public func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
+        unfairLock.withLock {
+            guard let contactsMaps = contactsMapsCache else {
+                owsFailDebug("Missing contactsMaps.")
+                // Don't bother failing over to contactsStateInDatabase.
+                return .empty
+            }
+            return contactsMaps
+        }
+    }
+
+    @objc
     public func setContactsMaps(_ contactsMaps: ContactsMaps,
                                 localNumber: String?,
                                 transaction: SDSAnyWriteTransaction) {
@@ -299,7 +350,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
     public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsStateSummary {
 
         let sortedSignalAccounts = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
-        let contactsMaps = contactsStateInDatabase.loadContactsMaps(transaction: transaction)
+        let contactsMaps = contactsStateInDatabase.contactsMaps(transaction: transaction)
 
         unfairLock.withLock {
             sortedSignalAccountsCache = sortedSignalAccounts
@@ -318,5 +369,9 @@ public class ContactsStateInMemory: NSObject, ContactsState {
 extension OWSContactsManager {
     public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
         contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction)
+    }
+
+    public func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
+        contactsState.contactsMaps(transaction: transaction)
     }
 }

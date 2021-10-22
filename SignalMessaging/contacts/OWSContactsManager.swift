@@ -567,7 +567,7 @@ extension OWSContactsManager {
         }
 
         if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
-           let contact = self.allContactsMap[phoneNumber],
+           let contact = contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction),
            let cnContactId = contact.cnContactId,
            let avatarData = self.avatarData(forCNContactId: cnContactId),
            let validData = validateIfNecessary(avatarData) {
@@ -916,14 +916,14 @@ extension OWSContactsManager {
     }
 
     @objc
-    public func allUnsortedContacts() -> [Contact] {
+    public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
         AssertIsOnMainThread()
 
         // TODO: Use transaction?
         let localNumber: String? = tsAccountManager.localNumber
 
         var contactIdMap = [String: Contact]()
-        for contact in allContactsMap.values {
+        for contact in contactsState.allContacts(transaction: transaction) {
             guard nil == contactIdMap[contact.uniqueId] else {
                 // De-deduplicate.
                 continue
@@ -946,10 +946,10 @@ extension OWSContactsManager {
     }
 
     @objc
-    public func allSortedContacts() -> [Contact] {
+    public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
         AssertIsOnMainThread()
 
-        let contacts = (allUnsortedContacts() as NSArray)
+        let contacts = (allUnsortedContacts(transaction: transaction) as NSArray)
         let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
         return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]
     }

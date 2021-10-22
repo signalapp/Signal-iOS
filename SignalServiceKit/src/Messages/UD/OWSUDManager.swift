@@ -122,7 +122,8 @@ public class OWSUDSendingAccess: NSObject {
     @objc
     func udSendingAccess(forAddress address: SignalServiceAddress,
                          requireSyncAccess: Bool,
-                         senderCertificates: SenderCertificates) -> OWSUDSendingAccess?
+                         senderCertificates: SenderCertificates,
+                         transaction: SDSAnyReadTransaction) -> OWSUDSendingAccess?
 
     // MARK: Sender Certificate
 
@@ -483,7 +484,8 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func udSendingAccess(forAddress address: SignalServiceAddress,
                                 requireSyncAccess: Bool,
-                                senderCertificates: SenderCertificates) -> OWSUDSendingAccess? {
+                                senderCertificates: SenderCertificates,
+                                transaction: SDSAnyReadTransaction) -> OWSUDSendingAccess? {
         guard let udAccess = self.udAccess(forAddress: address, requireSyncAccess: requireSyncAccess) else {
             return nil
         }
@@ -493,7 +495,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         case .everybody:
             senderCertificate = senderCertificates.defaultCert
         case .contactsOnly:
-            if Self.contactsManager.isSystemContact(address: address) {
+            if Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
                 senderCertificate = senderCertificates.defaultCert
             } else {
                 senderCertificate = senderCertificates.uuidOnlyCert

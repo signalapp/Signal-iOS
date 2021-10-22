@@ -588,27 +588,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
     }
 
-    return [self cachedContactNameComponentsForSignalAccount:signalAccount phoneNumber:phoneNumber];
+    return [self cachedContactNameComponentsForSignalAccount:signalAccount
+                                                 phoneNumber:phoneNumber
+                                                 transaction:transaction];
 }
 
-- (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address
-{
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    NSString *_Nullable phoneNumber = nil;
-    if (signalAccount == nil) {
-        // We only need the phone number if signalAccount is nil.
-        phoneNumber = [self phoneNumberForAddress:address];
-    }
-
-    return [self cachedContactNameComponentsForSignalAccount:signalAccount phoneNumber:phoneNumber];
-}
-
-- (nullable NSPersonNameComponents *)cForSignalAccount:(nullable SignalAccount *)signalAccount
+- (nullable NSPersonNameComponents *)cachedContactNameComponentsForSignalAccount:(nullable SignalAccount *)signalAccount
                                                                      phoneNumber:(nullable NSString *)phoneNumber
+                                                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        Contact *_Nullable nonSignalContact = self.allContactsMap[phoneNumber];
+        Contact *_Nullable nonSignalContact = [self.contactsState contactForPhoneNumber:phoneNumber
+                                                                            transaction:transaction];
         if (!nonSignalContact) {
             return nil;
         }
@@ -838,23 +830,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     return [OWSFormat formatNameComponentsShort:nameComponents];
-}
-
-// TODO: Remove?
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    NSPersonNameComponents *_Nullable savedContactNameComponents = [self cachedContactNameComponentsForAddress:address];
-    if (savedContactNameComponents) {
-        return savedContactNameComponents;
-    }
-
-    __block NSPersonNameComponents *_Nullable profileNameComponents;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileNameComponents = [self.profileManagerImpl nameComponentsForAddress:address transaction:transaction];
-    }];
-    return profileNameComponents;
 }
 
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address

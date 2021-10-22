@@ -8,6 +8,7 @@
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -230,17 +231,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block NSArray<SignalAccount *> *allSignalAccounts;
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
+    __block ContactsMaps *contactsMaps;
+    
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
         whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
+        contactsMaps = [self.contactsManagerImpl contactsMapsWithTransaction:transaction];
     }];
-    NSMutableArray<SignalAccount *> *accountsToProcess = [allSignalAccounts mutableCopy];
 
+    NSMutableArray<SignalAccount *> *accountsToProcess = [allSignalAccounts mutableCopy];
     for (SignalServiceAddress *address in whitelistedAddresses) {
-        if ([self.contactsManager isSystemContactWithAddress:address]) {
+        if ([contactsMaps isSystemContactWithAddress:address]) {
             continue;
         }
-
         [accountsToProcess addObject:[[SignalAccount alloc] initWithSignalServiceAddress:address]];
     }
 
@@ -362,18 +365,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<Contact *> *nonSignalContactSet = [NSMutableSet new];
     __block NSArray<Contact *> *nonSignalContacts;
 
-    [self.databaseStorage
-        asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (Contact *contact in self.contactsManagerImpl.allContactsMap.allValues) {
-                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                if (signalRecipients.count < 1) {
-                    [nonSignalContactSet addObject:contact];
-                }
+    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSArray<Contact *> *contacts = [self.contactsManagerImpl allSortedContactsWithTransaction:transaction];
+        for (Contact *contact in contacts) {
+            NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
+            if (signalRecipients.count < 1) {
+                [nonSignalContactSet addObject:contact];
             }
-            nonSignalContacts = [nonSignalContactSet.allObjects sortedArrayUsingComparator:^NSComparisonResult(
-                Contact *_Nonnull left, Contact *_Nonnull right) { return [left.fullName compare:right.fullName]; }];
         }
-        completion:^{ self.nonSignalContacts = nonSignalContacts; }];
+        nonSignalContacts = [nonSignalContactSet.allObjects sortedArrayUsingComparator:^NSComparisonResult(
+                                                                                                           Contact *_Nonnull left, Contact *_Nonnull right) { return [left.fullName compare:right.fullName]; }];
+    }
+                                  completion:^{ self.nonSignalContacts = nonSignalContacts; }];
 }
 
 - (nullable NSArray<Contact *> *)nonSignalContacts
@@ -384,7 +387,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (Contact *contact in self.contactsManagerImpl.allContactsMap.allValues) {
+            NSArray<Contact *> *contacts = [self.contactsManagerImpl allSortedContactsWithTransaction:transaction];
+            for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
                     [nonSignalContacts addObject:contact];

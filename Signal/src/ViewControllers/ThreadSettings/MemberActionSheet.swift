@@ -257,7 +257,10 @@ class MemberActionSheet: InteractiveSheetViewController {
         ))
 
         if contactsManagerImpl.supportsContactEditing {
-            if contactsManager.isSystemContact(address: address) {
+            let isSystemContact = databaseStorage.read { transaction in
+                contactsManager.isSystemContact(address: address, transaction: transaction)
+            }
+            if isSystemContact {
                 section.add(.actionItem(
                     icon: .settingsUserInContacts,
                     name: NSLocalizedString(

@@ -615,16 +615,19 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     });
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 
-    // 2. gather "ud sending access" using a single write transaction.
+    // 2. gather "ud sending access" using a single read transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificates != nil) {
-        for (SignalServiceAddress *address in addresses) {
-            if (!address.isLocalAddress) {
-                sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
-                                                                    requireSyncAccess:YES
-                                                                   senderCertificates:senderCertificates];
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            for (SignalServiceAddress *address in addresses) {
+                if (!address.isLocalAddress) {
+                    sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
+                                                                        requireSyncAccess:YES
+                                                                       senderCertificates:senderCertificates
+                                                                              transaction:transaction];
+                }
             }
-        }
+        }];
     }
 
     // 3. If we have any participants that support sender key, build a promise for their send.

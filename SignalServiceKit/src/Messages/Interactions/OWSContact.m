@@ -561,12 +561,13 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }]];
 }
 
-- (NSArray<NSString *> *)systemContactPhoneNumbers
+- (NSArray<NSString *> *)systemContactPhoneNumbersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.e164PhoneNumbers
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return [OWSContact.contactsManager isSystemContactWithPhoneNumber:recipientId];
+            return [OWSContact.contactsManager isSystemContactWithPhoneNumber:recipientId
+                                                                  transaction:transaction];
         }]];
 }
 

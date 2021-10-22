@@ -26,10 +26,6 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return "Short fake name"
     }
 
-    public func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
-        return PersonNameComponents()
-    }
-
     public func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
         return PersonNameComponents()
     }
@@ -42,7 +38,15 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return []
     }
 
+    public func isSystemContactWithSneakyTransaction(phoneNumber: String) -> Bool {
+        return true
+    }
+
     public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
+        return true
+    }
+
+    public func isSystemContactWithSneakyTransaction(address: SignalServiceAddress) -> Bool {
         return true
     }
 
