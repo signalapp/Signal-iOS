@@ -8,8 +8,6 @@ import libPhoneNumber_iOS
 @objc
 public class PhoneNumberUtilWrapper: NSObject {
 
-//    private let unfairLock = UnfairLock()
-
     fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()
     fileprivate var countryCodesFromCallingCodeCache = [String: [String]]()
     fileprivate let parsedPhoneNumberCache = LRUCache<String, NBPhoneNumber>(maxSize: 256, nseMaxSize: 0, shouldEvacuateInBackground: false)
