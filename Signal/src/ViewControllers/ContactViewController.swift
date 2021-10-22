@@ -138,7 +138,9 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     private func systemContactsForContact() -> [String] {
         AssertIsOnMainThread()
 
-        return contactShare.systemContactPhoneNumbers()
+        return databaseStorage.read { transaction in
+            contactShare.systemContactPhoneNumbers(transaction: transaction)
+        }
     }
 
     private func updateContent() {

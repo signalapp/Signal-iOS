@@ -84,7 +84,9 @@ public class OWSAddToContactViewController: OWSViewController {
     }
 
     private func updateData() {
-        contacts = contactsManagerImpl.allContacts
+        contacts = databaseStorage.read { transaction in
+            contactsManagerImpl.allSortedContacts(transaction: transaction)
+        }
     }
 }
 

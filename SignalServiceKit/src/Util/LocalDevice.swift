@@ -19,8 +19,7 @@ public class LocalDevice: NSObject {
         ProcessInfo.processInfo.activeProcessorCount
     }
 
-    @objc
-    public static var memoryUsage: String {
+    public static var memoryUsageUInt64: UInt64? {
         let vmInfoExpectedSize = MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<natural_t>.size
         var vmInfo = task_vm_info_data_t()
         var vmInfoSize = mach_msg_type_number_t(vmInfoExpectedSize)
@@ -37,9 +36,17 @@ public class LocalDevice: NSObject {
         guard kern == KERN_SUCCESS else {
             let errorString = String(cString: mach_error_string(kern), encoding: .ascii) ?? "Unknown error"
             owsFailDebug(errorString)
-            return "Unknown"
+            return nil
         }
 
-        return "\(vmInfo.phys_footprint)"
+        return vmInfo.phys_footprint
+    }
+
+    @objc
+    public static var memoryUsage: String {
+        guard let memoryUsageUInt64 = self.memoryUsageUInt64 else {
+            return "Unknown"
+        }
+        return "\(memoryUsageUInt64)"
     }
 }

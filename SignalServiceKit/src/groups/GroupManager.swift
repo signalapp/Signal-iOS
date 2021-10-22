@@ -2352,7 +2352,8 @@ public class GroupManager: NSObject {
         }
 
         let isLocalAddress = groupUpdateSourceAddress.isLocalAddress
-        let isSystemContact = contactsManager.isSystemContact(address: groupUpdateSourceAddress)
+        let isSystemContact = contactsManager.isSystemContact(address: groupUpdateSourceAddress,
+                                                              transaction: transaction)
         let isUserInProfileWhitelist = profileManager.isUser(inProfileWhitelist: groupUpdateSourceAddress,
                                                              transaction: transaction)
         let shouldAddToWhitelist = (isLocalAddress || isSystemContact || isUserInProfileWhitelist)

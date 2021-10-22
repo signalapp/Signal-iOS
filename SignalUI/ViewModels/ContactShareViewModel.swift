@@ -124,8 +124,8 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func systemContactPhoneNumbers() -> [String] {
-        return dbRecord.systemContactPhoneNumbers()
+    public func systemContactPhoneNumbers(transaction: SDSAnyReadTransaction) -> [String] {
+        return dbRecord.systemContactPhoneNumbers(with: transaction)
     }
 
     @objc

@@ -17,21 +17,20 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 @class SignalServiceAddress;
 @class UIFont;
 
+@protocol ContactsState;
+
 /**
  * Get latest Signal contacts, and be notified when they change.
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
+@property (nonatomic, readonly) BOOL shouldSortByGivenName;
+
+@property (nonatomic, readonly) id<ContactsState> contactsState;
+
 #pragma mark - Accessors
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
-
-@property (atomic, readonly) NSArray<Contact *> *allContacts;
-
-@property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
-
-// order of the signalAccounts array respects the systems contact sorting preference
-@property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
@@ -39,7 +38,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
                                              transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address;
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
                                             transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -59,7 +57,7 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 // Not set until a contact fetch has completed.
 // Set even if no contacts are found.
-@property (nonatomic, readonly) BOOL hasLoadedContacts;
+@property (nonatomic, readonly) BOOL hasLoadedSystemContacts;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
@@ -77,14 +75,9 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 #pragma mark - Util
 
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
-- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
-- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
-
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */
-- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;

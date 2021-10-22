@@ -21,7 +21,10 @@ extension ConversationViewController {
             }
 
             // If the user is in the system contacts, show a badge
-            if self.contactsManagerImpl.isSystemContact(address: contactThread.contactAddress) {
+            let isSystemContact = databaseStorage.read { transaction in
+                contactsManagerImpl.isSystemContact(address: contactThread.contactAddress, transaction: transaction)
+            }
+            if isSystemContact {
                 icon = UIImage(named: "contact-outline-16")?.withRenderingMode(.alwaysTemplate)
             }
         } else if let groupThread = thread as? TSGroupThread {

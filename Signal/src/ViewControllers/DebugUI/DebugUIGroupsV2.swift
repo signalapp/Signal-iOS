@@ -153,10 +153,12 @@ class DebugUIGroupsV2: DebugUIPage {
 
         let prefix = prefix + " "
 
+        let signalAccounts = self.contactsManagerImpl.unsortedSignalAccounts(transaction: transaction)
+
         // These will fail if you aren't registered or
         // don't have some Signal users in your contacts.
         let localAddress = tsAccountManager.localAddress!
-        var allAddresses = contactsManagerImpl.signalAccounts.map { $0.recipientAddress }
+        var allAddresses = signalAccounts.map { $0.recipientAddress }
         if groupsVersion == .V2 {
             // V2 group members must have a uuid.
             allAddresses = allAddresses.filter { $0.uuid != nil }

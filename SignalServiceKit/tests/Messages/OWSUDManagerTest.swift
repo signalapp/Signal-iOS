@@ -237,9 +237,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         let completed = self.expectation(description: "completed")
-        udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict).done { senderCertificates in
+        firstly {
+            udManagerImpl.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        }.done { senderCertificates in
             do {
-                let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates)!
+                let sendingAccess = self.udManagerImpl.udSendingAccess(forAddress: bobRecipientAddress,
+                                                                       requireSyncAccess: false,
+                                                                       senderCertificates: senderCertificates)!
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
                 XCTAssertEqual(sendingAccess.senderCertificate.serialize(),

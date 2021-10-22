@@ -155,7 +155,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers;
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbersWithTransaction:
     (SDSAnyReadTransaction *)transaction;
-- (NSArray<NSString *> *)systemContactPhoneNumbers;
+- (NSArray<NSString *> *)systemContactPhoneNumbersWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<NSString *> *)e164PhoneNumbers NS_SWIFT_NAME(e164PhoneNumbers());
 
 @end

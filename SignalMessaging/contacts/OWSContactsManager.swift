@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 // TODO: Should we use these caches in NSE?
 fileprivate extension OWSContactsManager {
@@ -566,7 +567,7 @@ extension OWSContactsManager {
         }
 
         if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
-           let contact = self.allContactsMap[phoneNumber],
+           let contact = contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction),
            let cnContactId = contact.cnContactId,
            let avatarData = self.avatarData(forCNContactId: cnContactId),
            let validData = validateIfNecessary(avatarData) {
@@ -881,6 +882,96 @@ public extension Array where Element == SignalAccount {
         // Use an arbitrary sort but ensure the ordering is stable.
         self.sorted { (left, right) in
             left.recipientAddress.sortKey < right.recipientAddress.sortKey
+        }
+    }
+}
+
+// MARK: -
+
+extension OWSContactsManager {
+
+    @objc
+    public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        contactsState.unsortedSignalAccounts(transaction: transaction)
+    }
+
+    @objc
+    public func unsortedSignalAccountsWithSneakyTransaction() -> [SignalAccount] {
+        databaseStorage.read { transaction in
+            unsortedSignalAccounts(transaction: transaction)
+        }
+    }
+
+    // Order respects the systems contact sorting preference.
+    @objc
+    public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        contactsState.sortedSignalAccounts(transaction: transaction)
+    }
+
+    @objc
+    public func sortedSignalAccountsWithSneakyTransaction() -> [SignalAccount] {
+        databaseStorage.read { transaction in
+            sortedSignalAccounts(transaction: transaction)
+        }
+    }
+
+    private static func removeLocalContact(contacts: [Contact],
+                                           transaction: SDSAnyReadTransaction) -> [Contact] {
+        let localNumber: String? = tsAccountManager.localNumber(with: transaction)
+
+        var contactIdSet = Set<String>()
+        return contacts.compactMap { contact in
+            // Skip local contacts.
+            func isLocalContact() -> Bool {
+                for phoneNumber in contact.parsedPhoneNumbers {
+                    if phoneNumber.toE164() == localNumber {
+                        return true
+                    }
+                }
+                return false
+            }
+            guard !isLocalContact() else {
+                return nil
+            }
+            // De-deduplicate.
+            guard !contactIdSet.contains(contact.uniqueId) else {
+                return nil
+            }
+            contactIdSet.insert(contact.uniqueId)
+            return contact
+        }
+    }
+
+    @objc
+    public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        Self.removeLocalContact(contacts: contactsState.allContacts(transaction: transaction),
+                                transaction: transaction)
+    }
+
+    @objc
+    public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        let contacts = (allUnsortedContacts(transaction: transaction) as NSArray)
+        let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
+        return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]
+    }
+
+    @objc
+    public func comparableNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
+        databaseStorage.read { transaction in
+            self.comparableName(for: signalAccount, transaction: transaction)
+        }
+    }
+
+    @objc
+    public func displayName(forSignalAccount signalAccount: SignalAccount,
+                            transaction: SDSAnyReadTransaction) -> String {
+        self.displayName(for: signalAccount.recipientAddress, transaction: transaction)
+    }
+
+    @objc
+    public func displayNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
+        databaseStorage.read { transaction in
+            self.displayName(forSignalAccount: signalAccount, transaction: transaction)
         }
     }
 }

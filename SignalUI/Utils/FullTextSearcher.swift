@@ -421,7 +421,7 @@ public class FullTextSearcher: NSObject {
         if address.isLocalAddress {
             return omitLocalUser
         }
-        if self.contactsManager.isSystemContact(address: address) {
+        if self.contactsManager.isSystemContact(address: address, transaction: transaction) {
             return false
         }
         guard let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) else {

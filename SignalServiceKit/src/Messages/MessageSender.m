@@ -615,7 +615,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     });
     OWSLogDebug(@"built message: %@ plainTextData.length: %lu", [message class], (unsigned long)plaintext.length);
 
-    // 2. gather "ud sending access" using a single write transaction.
+    // 2. Gather "ud sending access".
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificates != nil) {
         for (SignalServiceAddress *address in addresses) {
