@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public protocol ContactsState: AnyObject {
+public protocol ContactsManagerCache: AnyObject {
     func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount]
 
     // Order respects the systems contact sorting preference.
@@ -24,13 +24,13 @@ public protocol ContactsState: AnyObject {
                          localNumber: String?,
                          transaction: SDSAnyWriteTransaction)
 
-    func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsStateSummary
+    func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary
 }
 
 // MARK: -
 
 @objc
-public class ContactsStateSummary: NSObject {
+public class ContactsManagerCacheSummary: NSObject {
     @objc
     public let contactCount: UInt
     @objc
@@ -141,7 +141,7 @@ public class ContactsMaps: NSObject {
 // MARK: -
 
 @objc
-public class ContactsStateInDatabase: NSObject, ContactsState {
+public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
     @objc
     public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
         SignalAccount.anyFetchAll(transaction: transaction)
@@ -159,8 +159,8 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
         // Ignore.
     }
 
-    private static let uniqueIdStore = SDSKeyValueStore(collection: "ContactsState.uniqueIdStore")
-    private static let phoneNumberStore = SDSKeyValueStore(collection: "ContactsState.phoneNumberStore")
+    private static let uniqueIdStore = SDSKeyValueStore(collection: "ContactsManagerCache.uniqueIdStore")
+    private static let phoneNumberStore = SDSKeyValueStore(collection: "ContactsManagerCache.phoneNumberStore")
 
     private static func serializeContact(_ contact: Contact, label: String) -> Data? {
         let data = NSKeyedArchiver.archivedData(withRootObject: contact)
@@ -247,21 +247,21 @@ public class ContactsStateInDatabase: NSObject, ContactsState {
     }
 
     @objc
-    public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsStateSummary {
+    public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary {
         // Only load the summary.
         let contactCount = Self.uniqueIdStore.numberOfKeys(transaction: transaction)
         let signalAccountCount = SignalAccount.anyCount(transaction: transaction)
-        return ContactsStateSummary(contactCount: contactCount, signalAccountCount: signalAccountCount)
+        return ContactsManagerCacheSummary(contactCount: contactCount, signalAccountCount: signalAccountCount)
     }
 }
 
 // MARK: -
 
 @objc
-public class ContactsStateInMemory: NSObject, ContactsState {
+public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     private let unfairLock = UnfairLock()
 
-    private let contactsStateInDatabase = ContactsStateInDatabase()
+    private let contactsManagerCacheInDatabase = ContactsManagerCacheInDatabase()
 
     private var sortedSignalAccountsCache: [SignalAccount]?
 
@@ -275,7 +275,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
         }
         // Fail over.
         // NOTE: We use the "sorted" getter because our cache should be sorted.
-        let result = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
+        let result = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
         unfairLock.withLock { sortedSignalAccountsCache = result }
         return result
     }
@@ -288,7 +288,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
             return cachedValue
         }
         // Fail over.
-        let result = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
+        let result = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
         unfairLock.withLock { sortedSignalAccountsCache = result }
         return result
     }
@@ -299,7 +299,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
             // Update cache.
             sortedSignalAccountsCache = signalAccounts
         }
-        return contactsStateInDatabase.setSortedSignalAccounts(signalAccounts)
+        return contactsManagerCacheInDatabase.setSortedSignalAccounts(signalAccounts)
     }
 
     @objc
@@ -307,7 +307,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
                 owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsStateInDatabase.
+                // Don't bother failing over to contactsManagerCacheInDatabase.
                 return nil
             }
             return contactsMaps.phoneNumberToContactMap[phoneNumber]
@@ -319,7 +319,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
                 owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsStateInDatabase.
+                // Don't bother failing over to contactsManagerCacheInDatabase.
                 return []
             }
             return Array(contactsMaps.phoneNumberToContactMap.values)
@@ -331,7 +331,7 @@ public class ContactsStateInMemory: NSObject, ContactsState {
         unfairLock.withLock {
             guard let contactsMaps = contactsMapsCache else {
                 owsFailDebug("Missing contactsMaps.")
-                // Don't bother failing over to contactsStateInDatabase.
+                // Don't bother failing over to contactsManagerCacheInDatabase.
                 return .empty
             }
             return contactsMaps
@@ -346,25 +346,25 @@ public class ContactsStateInMemory: NSObject, ContactsState {
             // Update cache.
             contactsMapsCache = contactsMaps
         }
-        return contactsStateInDatabase.setContactsMaps(contactsMaps,
-                                                       localNumber: localNumber,
-                                                       transaction: transaction)
+        return contactsManagerCacheInDatabase.setContactsMaps(contactsMaps,
+                                                              localNumber: localNumber,
+                                                              transaction: transaction)
     }
 
     @objc
-    public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsStateSummary {
+    public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary {
 
-        let sortedSignalAccounts = contactsStateInDatabase.sortedSignalAccounts(transaction: transaction)
-        let contactsMaps = contactsStateInDatabase.contactsMaps(transaction: transaction)
+        let sortedSignalAccounts = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
+        let contactsMaps = contactsManagerCacheInDatabase.contactsMaps(transaction: transaction)
 
         unfairLock.withLock {
             sortedSignalAccountsCache = sortedSignalAccounts
             contactsMapsCache = contactsMaps
         }
 
-        // Don't call contactsStateInDatabase.warmCaches().
-        return ContactsStateSummary(contactCount: UInt(contactsMaps.uniqueIdToContactMap.count),
-                                    signalAccountCount: UInt(sortedSignalAccounts.count))
+        // Don't call contactsManagerCacheInDatabase.warmCaches().
+        return ContactsManagerCacheSummary(contactCount: UInt(contactsMaps.uniqueIdToContactMap.count),
+                                           signalAccountCount: UInt(sortedSignalAccounts.count))
     }
 }
 
@@ -373,10 +373,10 @@ public class ContactsStateInMemory: NSObject, ContactsState {
 @objc
 extension OWSContactsManager {
     public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
-        contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction)
+        contactsManagerCache.contact(forPhoneNumber: phoneNumber, transaction: transaction)
     }
 
     public func contactsMaps(transaction: SDSAnyReadTransaction) -> ContactsMaps {
-        contactsState.contactsMaps(transaction: transaction)
+        contactsManagerCache.contactsMaps(transaction: transaction)
     }
 }

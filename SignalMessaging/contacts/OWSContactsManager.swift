@@ -359,7 +359,7 @@ public extension OWSContactsManager {
         let sortableAccounts = signalAccounts.map { signalAccount in
             return SortableAccount(value: signalAccount,
                                    comparableName: self.comparableName(for: signalAccount,
-                                                                       transaction: transaction),
+                                                                          transaction: transaction),
                                    comparableAddress: signalAccount.recipientAddress.stringForDisplay)
         }
         return sort(sortableAccounts)
@@ -380,7 +380,7 @@ public extension OWSContactsManager {
         let sortableAddresses = addresses.map { address in
             return SortableAddress(value: address,
                                    comparableName: self.comparableName(for: address,
-                                                                       transaction: transaction),
+                                                                          transaction: transaction),
                                    comparableAddress: address.stringForDisplay)
         }
         return sort(sortableAddresses)
@@ -439,7 +439,7 @@ extension SortableValue: Equatable, Comparable {
 
     public static func == (lhs: SortableValue<T>, rhs: SortableValue<T>) -> Bool {
         return (lhs.comparableName == rhs.comparableName &&
-                    lhs.comparableAddress == rhs.comparableAddress)
+                lhs.comparableAddress == rhs.comparableAddress)
     }
 
     // MARK: - Comparable
@@ -497,24 +497,24 @@ extension OWSContactsManager {
                                 transaction: SDSAnyReadTransaction) -> Data? {
         guard let address = address,
               address.isValid else {
-            owsFailDebug("Missing or invalid address.")
-            return nil
-        }
+                  owsFailDebug("Missing or invalid address.")
+                  return nil
+              }
 
         if SSKPreferences.preferContactAvatars(transaction: transaction) {
             return (systemContactOrSyncedImageData(forAddress: address,
                                                    shouldValidate: shouldValidate,
                                                    transaction: transaction)
-                        ?? profileAvatarImageData(forAddress: address,
-                                                  shouldValidate: shouldValidate,
-                                                  transaction: transaction))
+                    ?? profileAvatarImageData(forAddress: address,
+                                              shouldValidate: shouldValidate,
+                                              transaction: transaction))
         } else {
             return (profileAvatarImageData(forAddress: address,
                                            shouldValidate: shouldValidate,
                                            transaction: transaction)
-                        ?? systemContactOrSyncedImageData(forAddress: address,
-                                                          shouldValidate: shouldValidate,
-                                                          transaction: transaction))
+                    ?? systemContactOrSyncedImageData(forAddress: address,
+                                                      shouldValidate: shouldValidate,
+                                                      transaction: transaction))
         }
     }
 
@@ -534,9 +534,9 @@ extension OWSContactsManager {
 
         guard let address = address,
               address.isValid else {
-            owsFailDebug("Missing or invalid address.")
-            return nil
-        }
+                  owsFailDebug("Missing or invalid address.")
+                  return nil
+              }
 
         if let avatarData = profileManagerImpl.profileAvatarData(for: address, transaction: transaction),
            let validData = validateIfNecessary(avatarData) {
@@ -562,12 +562,12 @@ extension OWSContactsManager {
 
         guard let address = address,
               address.isValid else {
-            owsFailDebug("Missing or invalid address.")
-            return nil
-        }
+                  owsFailDebug("Missing or invalid address.")
+                  return nil
+              }
 
         if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
-           let contact = contactsState.contact(forPhoneNumber: phoneNumber, transaction: transaction),
+           let contact = contactsManagerCache.contact(forPhoneNumber: phoneNumber, transaction: transaction),
            let cnContactId = contact.cnContactId,
            let avatarData = self.avatarData(forCNContactId: cnContactId),
            let validData = validateIfNecessary(avatarData) {
@@ -615,12 +615,12 @@ extension OWSContactsManager {
 
         // 1. Find the address type of this account.
         let addressLabel: String = contact.name(for: address,
-                                                registeredAddresses: registeredAddresses).filterStringForDisplay()
+                                                   registeredAddresses: registeredAddresses).filterStringForDisplay()
 
         // 2. Find all addresses for this contact of the same type.
         let addressesWithTheSameName = registeredAddresses.filter {
             addressLabel == contact.name(for: $0,
-                                         registeredAddresses: registeredAddresses).filterStringForDisplay()
+                                            registeredAddresses: registeredAddresses).filterStringForDisplay()
         }.stableSort()
 
         owsAssertDebug(addressesWithTheSameName.contains(address))
@@ -660,7 +660,7 @@ extension OWSContactsManager {
         }
     }
 
-    private struct SystemContactsState {
+    private struct SystemContactsManagerCache {
         let signalAccounts: [SignalAccount]
         let seenAddresses: Set<SignalServiceAddress>
     }
@@ -671,8 +671,8 @@ extension OWSContactsManager {
         let registeredAddresses: [SignalServiceAddress]
     }
 
-    private static func buildSystemContactsState(forSystemContacts contacts: [Contact],
-                                                 transaction: SDSAnyReadTransaction) -> SystemContactsState {
+    private static func buildSystemContactsManagerCache(forSystemContacts contacts: [Contact],
+                                                        transaction: SDSAnyReadTransaction) -> SystemContactsManagerCache {
 
         let fetchedContacts: [FetchedContact] = contacts.map { contact in
             let signalRecipients = contact.signalRecipients(transaction: transaction)
@@ -713,8 +713,8 @@ extension OWSContactsManager {
                 signalAccounts.append(signalAccount)
             }
         }
-        return SystemContactsState(signalAccounts: signalAccounts.stableSort(),
-                                   seenAddresses: seenAddresses)
+        return SystemContactsManagerCache(signalAccounts: signalAccounts.stableSort(),
+                                          seenAddresses: seenAddresses)
     }
 
     @objc
@@ -728,10 +728,10 @@ extension OWSContactsManager {
             var persistedSignalAccountMap = [SignalServiceAddress: SignalAccount]()
             var signalAccountsToKeep = [SignalServiceAddress: SignalAccount]()
             Self.databaseStorage.read { transaction in
-                let systemContactsState = buildSystemContactsState(forSystemContacts: contacts,
-                                                                   transaction: transaction)
-                systemContactsSignalAccounts = systemContactsState.signalAccounts
-                seenAddresses = systemContactsState.seenAddresses
+                let systemContactsManagerCache = buildSystemContactsManagerCache(forSystemContacts: contacts,
+                                                                                 transaction: transaction)
+                systemContactsSignalAccounts = systemContactsManagerCache.signalAccounts
+                seenAddresses = systemContactsManagerCache.seenAddresses
 
                 SignalAccount.anyEnumerate(transaction: transaction) { (signalAccount, _) in
                     persistedSignalAccountMap[signalAccount.recipientAddress] = signalAccount
@@ -834,13 +834,13 @@ extension OWSContactsManager {
                                              userProfileWriter: UserProfileWriter.systemContactsFetch,
                                              transaction: transaction)
 
-                #if DEBUG
+#if DEBUG
                 let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
                     $0.recipientAddress
                 }
                 let persistedAddressSet = Set(persistedAddresses)
                 owsAssertDebug(persistedAddresses.count == persistedAddressSet.count)
-                #endif
+#endif
             }
 
             DispatchQueue.main.async {
@@ -892,7 +892,7 @@ extension OWSContactsManager {
 
     @objc
     public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        contactsState.unsortedSignalAccounts(transaction: transaction)
+        contactsManagerCache.unsortedSignalAccounts(transaction: transaction)
     }
 
     @objc
@@ -905,7 +905,7 @@ extension OWSContactsManager {
     // Order respects the systems contact sorting preference.
     @objc
     public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        contactsState.sortedSignalAccounts(transaction: transaction)
+        contactsManagerCache.sortedSignalAccounts(transaction: transaction)
     }
 
     @objc
@@ -944,7 +944,7 @@ extension OWSContactsManager {
 
     @objc
     public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        Self.removeLocalContact(contacts: contactsState.allContacts(transaction: transaction),
+        Self.removeLocalContact(contacts: contactsManagerCache.allContacts(transaction: transaction),
                                 transaction: transaction)
     }
 

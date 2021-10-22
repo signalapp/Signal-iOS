@@ -17,7 +17,7 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 @class SignalServiceAddress;
 @class UIFont;
 
-@protocol ContactsState;
+@protocol ContactsManagerCache;
 
 /**
  * Get latest Signal contacts, and be notified when they change.
@@ -26,7 +26,7 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
-@property (nonatomic, readonly) id<ContactsState> contactsState;
+@property (nonatomic, readonly) id<ContactsManagerCache> contactsManagerCache;
 
 #pragma mark - Accessors
 

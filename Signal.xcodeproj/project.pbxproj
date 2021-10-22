@@ -240,7 +240,7 @@
 		342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE73271EF580000AC89F /* UIResponder+OWS.swift */; };
 		342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */; };
 		342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */; };
-		342FFE832721D4B6000AC89F /* ContactsState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE822721D4B6000AC89F /* ContactsState.swift */; };
+		342FFE832721D4B6000AC89F /* ContactsManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE822721D4B6000AC89F /* ContactsManagerCache.swift */; };
 		34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */; };
 		343417F12530A7480034FE0C /* CVComponentReactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 343417F02530A7480034FE0C /* CVComponentReactions.swift */; };
 		3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */; };
@@ -1236,7 +1236,7 @@
 		342FFE73271EF580000AC89F /* UIResponder+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
 		342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
 		342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
-		342FFE822721D4B6000AC89F /* ContactsState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsState.swift; sourceTree = "<group>"; };
+		342FFE822721D4B6000AC89F /* ContactsManagerCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsManagerCache.swift; sourceTree = "<group>"; };
 		34330A591E7875FB00DF2FB9 /* fontawesome-webfont.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "fontawesome-webfont.ttf"; sourceTree = "<group>"; };
 		343417F02530A7480034FE0C /* CVComponentReactions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVComponentReactions.swift; sourceTree = "<group>"; };
 		3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessageViewController.swift; sourceTree = "<group>"; };
@@ -2749,7 +2749,7 @@
 		346129A11FD1F09100532771 /* contacts */ = {
 			isa = PBXGroup;
 			children = (
-				342FFE822721D4B6000AC89F /* ContactsState.swift */,
+				342FFE822721D4B6000AC89F /* ContactsManagerCache.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 				346129A21FD1F09100532771 /* OWSContactsManager.h */,
@@ -5724,7 +5724,7 @@
 			files = (
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
-				342FFE832721D4B6000AC89F /* ContactsState.swift in Sources */,
+				342FFE832721D4B6000AC89F /* ContactsManagerCache.swift in Sources */,
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
