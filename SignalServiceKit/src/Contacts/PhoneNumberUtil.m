@@ -3,7 +3,6 @@
 //
 
 #import "PhoneNumberUtil.h"
-#import "ContactsManagerProtocol.h"
 #import "FunctionalUtil.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
@@ -16,9 +15,10 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
 
     if (self) {
-        _unfairLock = [UnfairLock new];
         _phoneNumberUtilWrapper = [PhoneNumberUtilWrapper new];
     }
+
+    OWSSingletonAssert();
 
     return self;
 }

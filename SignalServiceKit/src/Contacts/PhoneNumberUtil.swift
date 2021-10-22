@@ -119,12 +119,20 @@ fileprivate extension PhoneNumberUtilWrapper {
                 return nil
             }
             guard let nbPhoneNumber = findExamplePhoneNumber() else {
-                owsFailDebug("Could not find example phone number for: \(countryCode)")
+                if CurrentAppContext().isRunningTests {
+                    Logger.warn("Could not find example phone number for: \(countryCode)")
+                } else {
+                    owsFailDebug("Could not find example phone number for: \(countryCode)")
+                }
                 return nil
             }
             return try nbPhoneNumberUtil.format(nbPhoneNumber, numberFormat: .E164)
         } catch {
-            owsFailDebug("Error: \(error)")
+            if CurrentAppContext().isRunningTests {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
             return nil
         }
     }
@@ -154,6 +162,9 @@ fileprivate extension PhoneNumberUtilWrapper {
 
 @objc
 extension PhoneNumberUtil {
+    private static let unfairLock = UnfairLock()
+    private var unfairLock: UnfairLock { Self.unfairLock }
+
     @objc(callingCodeFromCountryCode:)
     public static func callingCode(fromCountryCode countryCode: String) -> String? {
         shared.callingCode(fromCountryCode: countryCode)

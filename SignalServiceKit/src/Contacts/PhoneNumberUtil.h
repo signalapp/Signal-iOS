@@ -7,12 +7,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class PhoneNumberUtilWrapper;
-@class UnfairLock;
 
 @interface PhoneNumberUtil : NSObject
 
-// These properties should only be accessed by Swift.
-@property (nonatomic, readonly) UnfairLock *unfairLock;
+// This property should only be accessed by Swift.
 @property (nonatomic, readonly) PhoneNumberUtilWrapper *phoneNumberUtilWrapper;
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
