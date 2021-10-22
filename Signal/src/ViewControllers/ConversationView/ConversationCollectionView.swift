@@ -39,7 +39,7 @@ public extension ConversationCollectionView {
                                            lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
             super.performBatchUpdates(batchUpdates) { (finished: Bool) in
                 AssertIsOnMainThread()
-                
+
                 layout.didCompleteBatchUpdates()
                 completion(finished)
             }
