@@ -12,6 +12,7 @@ public protocol SDSSwiftSerializable: Codable {}
 extension Array: SDSSwiftSerializable where Element: SDSSwiftSerializable {}
 extension Dictionary: SDSSwiftSerializable where Key: SDSSwiftSerializable, Value: SDSSwiftSerializable {}
 extension Set: SDSSwiftSerializable where Element: SDSSwiftSerializable {}
+extension Optional: SDSSwiftSerializable where Wrapped: SDSSwiftSerializable {}
 
 // This class can be used to convert database values to Swift values.
 //
@@ -82,14 +83,14 @@ public class SDSDeserialization {
         }
     }
 
-    public class func optionalUnarchive<T>(_ encoded: Data?, name: String) throws -> T? {
+    public class func optionalUnarchive<T: Any>(_ encoded: Data?, name: String) throws -> T? {
         guard let encoded = encoded else {
             return nil
         }
         return try unarchive(encoded, name: name)
     }
 
-    public class func unarchive<T>(_ encoded: Data?, name: String) throws -> T {
+    public class func unarchive<T: Any>(_ encoded: Data?, name: String) throws -> T {
         guard let encoded = encoded else {
             owsFailDebug("Missing required field: \(name).")
             throw SDSError.missingRequiredField

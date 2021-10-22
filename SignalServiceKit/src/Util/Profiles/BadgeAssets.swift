@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import ImageIO
+import CoreServices
 
 class BadgeAssets: Dependencies {
     private let remoteSourceUrl: URL
@@ -92,7 +93,7 @@ class BadgeAssets: Dependencies {
         OWSFileSystem.ensureDirectoryExists(localAssetDirectory.path)
         firstly(on: .sharedUtility) { () -> Promise<Void> in
             self.fetchSpritesheetIfNecessary()
-        }.map(on: .sharedUtility) { spriteUrl in
+        }.map(on: .sharedUtility) { _ in
             try self.extractSpritesFromSpritesheetIfNecessary()
         }.catch(on: .sharedUtility) { error in
             owsFailDebug("Failed to fetch badge assets with error: \(error)")
@@ -108,7 +109,7 @@ class BadgeAssets: Dependencies {
 
         // TODO: Badges — Censorship circumvention
         let urlSession = signalService.urlSessionForMainSignalService()
-        return urlSession.urlDownloadTaskPromise(remoteSourceUrl.absoluteString, method: .get).map { result in
+        return urlSession.downloadTaskPromise(remoteSourceUrl.absoluteString, method: .get).map { result in
             let resultUrl = result.downloadUrl
 
             guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {
@@ -126,7 +127,7 @@ class BadgeAssets: Dependencies {
             throw OWSAssertionError("Couldn't load CGImageSource")
         }
         let imageOptions = [kCGImageSourceShouldCache: kCFBooleanFalse] as CFDictionary
-        guard let rawImage = CGImageSourceCreateImageAtIndex(source, 0,  imageOptions) else {
+        guard let rawImage = CGImageSourceCreateImageAtIndex(source, 0, imageOptions) else {
             throw OWSAssertionError("Couldn't load image")
         }
 
@@ -148,7 +149,7 @@ class BadgeAssets: Dependencies {
 
 // MARK: - Sprite parsing
 
-fileprivate class DefaultSpriteSheetParser {
+private class DefaultSpriteSheetParser {
     let scale: Int
     let spritesheet: CGImage
 

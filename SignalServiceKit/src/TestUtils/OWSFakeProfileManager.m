@@ -292,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -340,6 +340,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Do nothing.
 }
+
+- (nullable NSURL *)writeAvatarDataToFile:(nonnull NSData *)avatarData {
+    return nil;
+}
+
 
 - (void)migrateWhitelistedGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
 {

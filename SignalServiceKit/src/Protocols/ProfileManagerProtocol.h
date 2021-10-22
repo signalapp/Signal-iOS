@@ -67,6 +67,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                                      transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData NS_SWIFT_NAME(writeAvatarDataToFile(_:));
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
                userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -130,7 +131,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 // Profile fetches will make a best effort
 // to download and decrypt avatar data,
-// but optionalDecryptedAvatarData may
+// but optionalAvatarFileUrl may
 // not be populated due to network failures,
 // decryption errors, service issues, etc.
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
@@ -141,7 +142,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter

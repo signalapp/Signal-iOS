@@ -1578,6 +1578,26 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
+- (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData
+{
+    OWSAssertDebug(avatarData.length > 0);
+    NSString *filename = [self generateAvatarFilename];
+    NSString *avatarPath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
+    NSURL *avatarUrl = [NSURL URLWithString:avatarPath];
+    if (!avatarUrl) {
+        OWSFailDebug(@"Invalid URL for avatarPath %@", avatarPath);
+        return nil;
+    }
+
+    BOOL success = [avatarData writeToURL:avatarUrl atomically:YES];
+    if (success) {
+        return avatarUrl;
+    } else {
+        OWSFailDebug(@"Failed write");
+        return nil;
+    }
+}
+
 - (NSString *)generateAvatarFilename
 {
     return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
@@ -1689,7 +1709,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
                   profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
@@ -1700,7 +1720,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSAssertDebug(NSThread.isMainThread == NO);
 
     OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
-                @"avatarData: %d, userProfileWriter: %@",
+                @"avatarFile: %@, userProfileWriter: %@",
         addressParam,
         address,
         givenName,
@@ -1708,28 +1728,15 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         bio,
         bioEmoji,
         avatarUrlPath,
-        optionalDecryptedAvatarData.length > 0,
+        optionalAvatarFileUrl,
         NSStringForUserProfileWriter(userProfileWriter));
 
     // If the optional avatar data is present, prepare for
     // its possible usage by trying to write it to disk
     // and verifying that it can be read.
-    NSString *_Nullable avatarFileName;
     UIImage *_Nullable avatarImage = nil;
-    // The avatar won't always be pre-downloaded.
-    // We may have to fill in it below.
-    if (optionalDecryptedAvatarData.length > 0) {
-        OWSAssertDebug(avatarUrlPath.length > 0);
-
-        NSString *newAvatarFileName = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
-        BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
-        if (!success) {
-            OWSFailDebug(@"Could not write avatar to disk.");
-        } else {
-            avatarFileName = newAvatarFileName;
-            avatarImage = [UIImage imageWithContentsOfFile:filePath];
-        }
+    if (optionalAvatarFileUrl) {
+        avatarImage = [UIImage imageWithContentsOfFile:optionalAvatarFileUrl.path];
     }
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:writeTx];
@@ -1748,7 +1755,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                            isUuidCapable:isUuidCapable
                                   badges:profileBadges
                            avatarUrlPath:avatarUrlPath
-                          avatarFileName:avatarFileName
+                          avatarFileName:optionalAvatarFileUrl.path
                            lastFetchDate:lastFetchDate
                        userProfileWriter:userProfileWriter
                              transaction:writeTx
@@ -1775,6 +1782,12 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                 userProfile.address,
                 NSStringForUserProfileWriter(userProfileWriter));
             [userProfile updateWithAvatarFileName:nil userProfileWriter:userProfileWriter transaction:writeTx];
+        }
+    } else if (optionalAvatarFileUrl) {
+        NSError *error = nil;
+        BOOL success = [OWSFileSystem deleteFileIfExistsWithUrl:optionalAvatarFileUrl error:&error];
+        if (!success || error) {
+            OWSFailDebug(@"Failed to remove orphaned avatar file: %@", error);
         }
     }
 
