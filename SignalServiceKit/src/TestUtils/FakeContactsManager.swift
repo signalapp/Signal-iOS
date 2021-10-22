@@ -42,11 +42,11 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return []
     }
 
-    public func isSystemContact(phoneNumber: String) -> Bool {
+    public func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
         return true
     }
 
-    public func isSystemContact(address: SignalServiceAddress) -> Bool {
+    public func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         return true
     }
 

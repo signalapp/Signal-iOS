@@ -1084,7 +1084,8 @@ extension CVComponentSystemMessage {
             guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
                 return nil
             }
-            guard Self.contactsManager.isSystemContact(address: profileChangeAddress) else {
+            guard Self.contactsManager.isSystemContact(address: profileChangeAddress,
+                                                       transaction: transaction) else {
                 return nil
             }
             let systemContactName = Self.contactsManagerImpl.nameFromSystemContacts(for: profileChangeAddress,

@@ -198,7 +198,8 @@ import SignalMessaging
         // * The thread belongs to someone in our system contacts
         // * The thread existed before messages requests
         return (self.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
-                || self.contactsManager.isSystemContact(address: thread.contactAddress)
+                || self.contactsManager.isSystemContact(address: thread.contactAddress,
+                                                        transaction: transaction)
                 || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead))
     }
 

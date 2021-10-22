@@ -48,8 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
     NS_SWIFT_NAME(displayNameWithSneakyTransaction(thread:));
 
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContact(phoneNumber:));
-- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
+- (BOOL)isSystemContactWithPhoneNumberWithSneakyTransaction:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(phoneNumber:));
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
+                           transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isSystemContact(phoneNumber:transaction:));
+- (BOOL)isSystemContactWithAddressWithSneakyTransaction:(SignalServiceAddress *)address
+NS_SWIFT_NAME(isSystemContactWithSneakyTransaction(address:));
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
+                       transaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isSystemContact(address:transaction:));
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address
     NS_SWIFT_NAME(isSystemContactWithSignalAccount(_:));
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address

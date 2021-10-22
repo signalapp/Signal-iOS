@@ -603,7 +603,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameComponentsForSignalAccount:signalAccount phoneNumber:phoneNumber];
 }
 
-- (nullable NSPersonNameComponents *)cachedContactNameComponentsForSignalAccount:(nullable SignalAccount *)signalAccount
+- (nullable NSPersonNameComponents *)cForSignalAccount:(nullable SignalAccount *)signalAccount
                                                                      phoneNumber:(nullable NSString *)phoneNumber
 {
     if (!signalAccount) {
@@ -652,20 +652,41 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark - Whisper User Management
 
+- (BOOL)isSystemContactWithPhoneNumberWithSneakyTransaction:(NSString *)phoneNumber
+{
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self isSystemContactWithPhoneNumber:phoneNumber transaction:transaction];
+    }];
+    return result;
+}
+
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
+                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
-    return self.allContactsMap[phoneNumber] != nil;
+    return [self.contactsState contactForPhoneNumber:phoneNumber
+                                         transaction:transaction] != nil;
+}
+
+- (BOOL)isSystemContactWithAddressWithSneakyTransaction:(SignalServiceAddress *)address
+{
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self isSystemContactWithAddress:address transaction:transaction];
+    }];
+    return result;
 }
 
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
+                       transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *phoneNumber = address.phoneNumber;
+    NSString *_Nullable phoneNumber = address.phoneNumber;
     if (phoneNumber.length == 0) {
         return NO;
     }
-    return [self isSystemContactWithPhoneNumber:phoneNumber];
+    return [self isSystemContactWithPhoneNumber:phoneNumber transaction:transaction];
 }
 
 - (BOOL)isSystemContactWithSignalAccount:(SignalServiceAddress *)address

@@ -75,9 +75,6 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 #pragma mark - Util
 
-- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
-- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
-
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */

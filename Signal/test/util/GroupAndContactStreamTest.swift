@@ -373,11 +373,11 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         []
     }
 
-    func isSystemContact(phoneNumber: String) -> Bool {
+    func isSystemContact(phoneNumber: String, transaction: SDSAnyReadTransaction) -> Bool {
         true
     }
 
-    func isSystemContact(address: SignalServiceAddress) -> Bool {
+    func isSystemContact(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         true
     }
 
