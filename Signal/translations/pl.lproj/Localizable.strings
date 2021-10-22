@@ -2834,7 +2834,7 @@
 "IMAGE_EDITOR_BLUR_SETTING" = "Rozmyj twarze";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Rysuj, aby rozmyć dodatkowe twarze lub obszary";
+"IMAGE_EDITOR_BLUR_TOAST" = "Rysuj, aby rozmyć dodatkowe twarze, lub obszary";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nie można udostępnić więcej niż %@ multimediów.";

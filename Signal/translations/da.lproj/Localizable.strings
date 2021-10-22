@@ -431,22 +431,22 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Gruppe blokeret";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Du kan ikke blokere dig selv";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Du kan ikke blokere dig selv.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fejl";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ er ikke længere blokeret";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ er ikke længere blokeret.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Eksisterende medlemmer kan nu tilføje dig til gruppen igen";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Eksisterende medlemmer kan nu tilføje dig til gruppen igen.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokerede brugere vil ikke kunne ringe eller sende beskeder til dig";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Nyt: Tilslør ansigter eller tegn hvor som helst for at sløre.";
+"BLUR_TOOLTIP" = "Nyt: Slør ansigter eller tegn hvor som helst for at sløre.";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Tilføj";
@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ikke-registreret nummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Redigér";
+"CONTACT_EDIT_NAME_BUTTON" = "Rediger";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "E-mail";
@@ -734,7 +734,7 @@
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "Postnummer";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Område";
+"CONTACT_FIELD_ADDRESS_REGION" = "Region";
 
 /* Label for the 'street' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_STREET" = "Gade";
@@ -803,7 +803,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ugyldig kontakt";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ingen kontaktfelter blev valgt";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ingen kontaktfelter blev valgt.";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Kontakt Support";
@@ -908,7 +908,7 @@
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Kun administratorer kan sende beskeder til denne gruppe.";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge flere end %@ chats";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge mere end %@ chats.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupper";
@@ -917,7 +917,7 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Seneste chats";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Kontakter";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Personer";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Vælg modtagere";
@@ -1427,7 +1427,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Når funktionen er aktiveret, forsvinder nye sendte og modtagne beskeder i chatten, efter de er blevet set.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Beskeder forsvinder efter %@";
+"DISAPPEARING_MESSAGES_HINT" = "I øjeblikket forsvinder beskeder efter %@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "timer";
@@ -2831,7 +2831,7 @@
 "IMAGE_EDITOR_BLUR_HINT" = "Tegn hvor som helst for at sløre";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Tilslør ansigter";
+"IMAGE_EDITOR_BLUR_SETTING" = "Slør ansigter";
 
 /* A toast indicating that you can blur more faces after detection */
 "IMAGE_EDITOR_BLUR_TOAST" = "Tegn for at sløre flere ansigter eller områder";
@@ -5756,7 +5756,7 @@
 "SETTINGS_SHARING_SUGGESTIONS" = "Del kontakter med iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter and chats for at få adgang til funktioner såsom delingsforslag.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter og -chats for at få adgang til funktioner såsom delingsforslag.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Giv iOS adgang til Signal-kontakter and chats for at få adgang til funktioner såsom delingsforslag og meddelelser.";

@@ -2432,7 +2432,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ गटात सामील झाले.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "गट लिंक द्वारा %@ गटात सामील झाला. ";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ ने गट लिंक द्वारा आपण गटात सामील झाला आहात.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ने गट सोडले.";
@@ -2462,7 +2462,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ कडील गटात सामील होण्याची विनंती नाकारली गेली होती.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ने गट लिंक द्वारा सामील होण्यासाठी विनंती केली.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ ने गट लिंक द्वारे सामिल होण्यासाठी विनंती केली.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ नी त्यांचे प्रशासक विशेषाधिकार रद्द केले.";
