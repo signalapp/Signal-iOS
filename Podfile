@@ -109,7 +109,7 @@ target 'SignalUI' do
   ui_pods
 end
 
-target 'NotificationServiceExtension'
+target 'SignalNSE'
 
 post_install do |installer|
   enable_strip(installer)

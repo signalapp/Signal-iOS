@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1130"
+   LastUpgradeVersion = "1300"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "885AC56323AB42430077705E"
-               BuildableName = "NotificationServiceExtension.appex"
-               BlueprintName = "NotificationServiceExtension"
+               BlueprintIdentifier = "342FFE8727245850000AC89F"
+               BuildableName = "SignalNSE.appex"
+               BlueprintName = "SignalNSE"
                ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,16 +43,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "34A954B0271A471300B05242"
-               BuildableName = "SignalUITests.xctest"
-               BlueprintName = "SignalUITests"
-               ReferencedContainer = "container:Signal.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -68,9 +58,9 @@
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2">
       <RemoteRunnable
-         runnableDebuggingMode = "0"
-         BundleIdentifier = "org.whispersystems.signal"
-         RemotePath = "/var/containers/Bundle/Application/ECAFCFF5-4A87-4F0E-A730-98C68E40D868/Signal.app">
+         runnableDebuggingMode = "1"
+         BundleIdentifier = "com.Eventifica.StDavidsSchool"
+         RemotePath = "/var/containers/Bundle/Application/15967485-15B1-4518-95A6-552BF0D45880/StDavids.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
@@ -83,7 +73,7 @@
       </MacroExpansion>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Profiling"
+      buildConfiguration = "App Store Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"

@@ -136,7 +136,7 @@ class Target:
         self.path = path
     
     def isAppOrAppExtension(self):
-        appOrAppExtensionTargets = [ 'Signal', 'SignalShareExtension','NotificationServiceExtension' ]
+        appOrAppExtensionTargets = [ 'Signal', 'SignalShareExtension','SignalNSE' ]
         return self.name in appOrAppExtensionTargets
 
 
@@ -351,7 +351,7 @@ if __name__ == "__main__":
         Target('SignalShareExtension', 'SignalShareExtension'),
         Target('SignalUI', 'SignalUI'),
         Target('SignalUI', 'SignalUITests'),
-        Target('NotificationServiceExtension', 'NotificationServiceExtension'),
+        Target('SignalNSE', 'SignalNSE'),
     ]
     
     headers = find_headers(targets)    
