@@ -266,12 +266,12 @@ public class MessageProcessor: NSObject {
 
             guard !batchEnvelopes.isEmpty, messagePipelineSupervisor.isMessageProcessingPermitted else {
                 if DebugFlags.internalLogging {
-                    Logger.info("Processing complete: \(self.queuedContentCount).")
+                    Logger.info("Processing complete: \(self.queuedContentCount) (memoryUsage: \(LocalDevice.memoryUsage).")
                 }
                 return false
             }
 
-            Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s).")
+            Logger.info("Processing batch of \(batchEnvelopes.count)/\(pendingEnvelopesCount) received envelope(s). (memoryUsage: \(LocalDevice.memoryUsage)")
 
             var processedEnvelopes: [PendingEnvelope] = []
             SDSDatabaseStorage.shared.write { transaction in

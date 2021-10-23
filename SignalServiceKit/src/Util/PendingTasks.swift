@@ -30,7 +30,7 @@ public class PendingTasks: NSObject {
             Promise.when(resolved: promises).asVoid()
         }.map(on: .global()) {
             if DebugFlags.internalLogging {
-                Logger.info("Complete \(label).")
+                Logger.info("Complete \(label) (memoryUsage: \(LocalDevice.memoryUsage).")
             }
         }
     }

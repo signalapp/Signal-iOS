@@ -36,21 +36,43 @@ class NotificationService: UNNotificationServiceExtension {
     private typealias ContentHandler = (UNNotificationContent) -> Void
     private var contentHandler = AtomicOptional<ContentHandler>(nil)
 
-    private var logTimer: OffMainThreadTimer?
+    // MARK: -
 
-    private static let nseCounter = AtomicUInt(0)
+    private static let unfairLock = UnfairLock()
+    private static var _logTimer: OffMainThreadTimer?
+    private static var _nseCounter: Int = 0
 
-    deinit {
-        logTimer?.invalidate()
-        logTimer = nil
+    private static func nseDidStart() -> Int {
+        unfairLock.withLock {
+            if _logTimer == nil {
+                _logTimer = OffMainThreadTimer(timeInterval: 1.0, repeats: true) { _ in
+                    Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+                }
+            }
+
+            _nseCounter = _nseCounter + 1
+            return _nseCounter
+        }
     }
+
+    private static func nseDidComplete() -> Int {
+        unfairLock.withLock {
+            _nseCounter = _nseCounter > 0 ? _nseCounter - 1 : 0
+
+            if _nseCounter == 0, _logTimer != nil {
+                _logTimer?.invalidate()
+                _logTimer = nil
+            }
+            return _nseCounter
+        }
+    }
+
+    // MARK: -
 
     // This method is thread-safe.
     func completeSilenty(timeHasExpired: Bool = false) {
-        let nseCount = Self.nseCounter.decrementOrZero()
 
-        logTimer?.invalidate()
-        logTimer = nil
+        let nseCount = Self.nseDidComplete()
 
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
@@ -114,15 +136,9 @@ class NotificationService: UNNotificationServiceExtension {
 
         owsAssertDebug(FeatureFlags.notificationServiceExtension)
 
-        let nseCount = Self.nseCounter.increment()
+        let nseCount = Self.nseDidStart()
 
         Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount)")
-
-        owsAssertDebug(logTimer == nil)
-        logTimer?.invalidate()
-        logTimer = OffMainThreadTimer(timeInterval: 2.0, repeats: true) { _ in
-            Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
-        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
