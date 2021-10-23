@@ -1130,14 +1130,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     for (NSDictionary *deviceMessage in deviceMessages) {
-        TSWhisperMessageType messageType = [deviceMessage[@"type"] integerValue];
+        SSKProtoEnvelopeType messageType = [deviceMessage[@"type"] intValue];
         BOOL hasValidMessageType = NO;
         if (messageSend.isUDSend) {
-            hasValidMessageType |= (messageType == TSUnidentifiedSenderMessageType);
+            hasValidMessageType |= (messageType == SSKProtoEnvelopeTypeUnidentifiedSender);
         } else {
-            hasValidMessageType |= (messageType == TSEncryptedWhisperMessageType);
-            hasValidMessageType |= (messageType == TSPreKeyWhisperMessageType);
-            hasValidMessageType |= (messageType == TSPlaintextMessageType);
+            hasValidMessageType |= (messageType == SSKProtoEnvelopeTypeCiphertext);
+            hasValidMessageType |= (messageType == SSKProtoEnvelopeTypePrekeyBundle);
+            hasValidMessageType |= (messageType == SSKProtoEnvelopeTypePlaintextContent);
         }
 
         if (!hasValidMessageType) {

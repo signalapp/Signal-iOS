@@ -1148,7 +1148,7 @@ extension MessageSender {
         let paddedPlaintext = (plainText as NSData).paddedMessageBody()
 
         let serializedMessage: Data
-        let messageType: TSWhisperMessageType
+        let messageType: SSKProtoEnvelopeType
 
         let protocolAddress = try ProtocolAddress(from: recipientAddress, deviceId: UInt32(bitPattern: deviceId))
 
@@ -1168,7 +1168,7 @@ extension MessageSender {
                 senderCertificate: udSendingAccess.senderCertificate,
                 protocolContext: transaction)
 
-            messageType = .unidentifiedSenderMessageType
+            messageType = .unidentifiedSender
 
         } else {
             let result = try signalEncrypt(message: paddedPlaintext,
@@ -1179,14 +1179,14 @@ extension MessageSender {
 
             switch result.messageType {
             case .whisper:
-                messageType = .encryptedWhisperMessageType
+                messageType = .ciphertext
             case .preKey:
-                messageType = .preKeyWhisperMessageType
+                messageType = .prekeyBundle
             case .plaintext:
-                messageType = .plaintextMessageType
+                messageType = .plaintextContent
             default:
                 owsFailDebug("Unrecognized message type")
-                messageType = .unknownMessageType
+                messageType = .unknown
             }
 
             serializedMessage = Data(result.serialize())
@@ -1231,7 +1231,7 @@ extension MessageSender {
         let plaintext = try PlaintextContent(bytes: rawPlaintext)
 
         let serializedMessage: Data
-        let messageType: TSWhisperMessageType
+        let messageType: SSKProtoEnvelopeType
 
         if let udSendingAccess = messageSend.udSendingAccess {
             let usmc = try UnidentifiedSenderMessageContent(
@@ -1247,11 +1247,11 @@ extension MessageSender {
                 context: transaction)
 
             serializedMessage = Data(outerBytes)
-            messageType = .unidentifiedSenderMessageType
+            messageType = .unidentifiedSender
 
         } else {
             serializedMessage = Data(plaintext.serialize())
-            messageType = .plaintextMessageType
+            messageType = .plaintextContent
         }
 
         // Returns the per-device-message parameters used when submitting a message to
