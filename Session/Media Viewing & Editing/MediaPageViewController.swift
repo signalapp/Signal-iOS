@@ -406,7 +406,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let deleteAction = UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
+        let deleteAction = UIAlertAction(title: NSLocalizedString("delete_message_for_me", comment: ""),
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
                                             mediaGalleryDataSource.delete(items: [deletedItem], initiatedBy: self)

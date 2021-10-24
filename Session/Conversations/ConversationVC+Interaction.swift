@@ -595,8 +595,13 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             return
         }
         
-        if viewItem.interaction.interactionType() == .outgoingMessage,
-           let message = viewItem.interaction as? TSMessage, message.serverHash != nil  {
+        guard let message = viewItem.interaction as? TSMessage else { return self.deleteLocally(viewItem) }
+        
+        // Handle open group messages the old way
+        if message.isOpenGroupMessage { return self.deleteForEveryone(viewItem) }
+        
+        // Handle 1-1 and closed group messages with unsend request
+        if viewItem.interaction.interactionType() == .outgoingMessage, message.serverHash != nil  {
             let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
             let deleteLocallyAction = UIAlertAction.init(title: NSLocalizedString("delete_message_for_me", comment: ""), style: .destructive) { _ in
                 self.deleteLocally(viewItem)
