@@ -4190,10 +4190,10 @@
 "PIN_CREATION_ERROR_TITLE" = "Kon nie PIN skep nie";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"PIN_CREATION_EXPLANATION" = "PIN’s sorg dat inligting wat met Signal bewaar word, geënkripteer is sodat u alleen toegang daartoe het. U profiel, instellings en kontakte sal teruggestel word sodra u herinstalleer. U PIN sal nie benodig word om die toep te open nie.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Learn More About PINs";
+"PIN_CREATION_LEARN_MORE" = "Leer meer oor PIN’s";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN’s is nie dieselfde nie. Probeer weer.";
@@ -5012,7 +5012,7 @@
 "SET_WALLPAPER_PRESETS" = "Voorinstellings";
 
 /* Title for the set wallpaper settings view. */
-"SET_WALLPAPER_TITLE" = "Set Wallpaper";
+"SET_WALLPAPER_TITLE" = "Stel muurpapier";
 
 /* Title for the 'account' link in settings. */
 "SETTINGS_ACCOUNT" = "Rekening";
@@ -6002,7 +6002,7 @@
 "SWITCH_ON" = "Aan";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifieer";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
@@ -6158,7 +6158,7 @@
 "UNNAMED_DEVICE" = "Naamlose toestel";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Maak los";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Kletse";
@@ -6170,31 +6170,31 @@
 "UNSUPPORTED_ATTACHMENT" = "Nieondersteunde aanhegseltipe ontvang.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Jou toestel ondersteun nie hierdie funksie nie.";
+"UNSUPPORTED_FEATURE_ERROR" = "U toestel ondersteun nie hierdie funksie nie.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
 "UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
 
 /* Action to verify a safety number after it has changed */
-"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verify";
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verifieer";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Update Contact";
+"UPDATE_CONTACT_ACTION" = "Werk kontak by";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Kon nie groep opdateer nie.";
+"UPDATE_GROUP_FAILED" = "Kon nie groep bywerk nie.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Groep kon nie bygewerk word nie. Gaan u internetverbinding na en probeer weer.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Skep jou PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Skep u PIN";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Learn More About PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Leer meer oor PIN’s";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall. You won’t need your PIN to open the app.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN’s sorg dat inligting wat met Signal bewaar word, geënkripteer is sodat u alleen toegang daartoe het. U profiel, instellings en kontakte sal teruggestel word sodra u herinstalleer. U PIN sal nie benodig word om die toep te open nie.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ons stel PIN’s voor";
@@ -6203,22 +6203,22 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiveer PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signaal vereis binnekort iOS 10 of jonger. Gradeer op via die Instellings-program >> Algemeen >> Sagtewareopdatering.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signaal vereis binnekort iOS 11 of nuwer. Werk op d.m.v. die Instellingstoep >> Algemeen >> Programmatuurbywerking.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Gradeer iOS op";
+"UPGRADE_IOS_ALERT_TITLE" = "Werk iOS by";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Gebruikername op Signal is opsioneel. As jy kies om ’n gebruikernaam te skep, sal ander Signal-gebruikers jou via hierdie gebruikernaam kan vind en jou kan kontak sonder om jou foonnommer te weet.";
+"USERNAME_DESCRIPTION" = "Gebruikername op Signal is opsioneel. As u kies om ’n gebruikernaam te skep, sal ander Signal-gebruikers u via hierdie gebruikernaam kan vind en u kan kontak sonder om u foonnommer te hê.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Gebruikername mag slegs a-z, 0-9 en _ bevat";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "’n Fout het voorgekom tydens soek van gebruikernaam. Probeer gerus later weer.";
+"USERNAME_LOOKUP_ERROR" = "’n Fout het voorgekom tydens soek van gebruikernaam. Probeer later weer.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is nie ’n Signal-gebruiker nie. Maak seker jy het die volledige gebruikernaam ingevoer.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ is nie ’n Signal-gebruiker nie. Maak seker u het die volledige gebruikernaam ingevoer.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Gebruiker nie gevind nie";
@@ -6230,7 +6230,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Gebruikername mag nie met ’n nommer begin nie.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Gebruikername mag nie met ’n syfer begin nie.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Gebruikernaam";
@@ -6242,7 +6242,7 @@
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is geneem.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Kon nie gebruikernaam opdateer nie.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Kon nie gebruikernaam bywerk nie.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Toestelnaam mag nie leeg wees nie";
@@ -6251,16 +6251,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "Toestelnaam is te lank";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Jy het %@ gemerk as nie geverifieer nie.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "U het %@ gemerk as ongeverifieer.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Jy het %@ gemerk as nie geverifieer nie, op ’n ander toestel.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "U het %@ op ’n ander toestel gemerk as ongeverifieer.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Jy het %@ gemerk as geverifieer.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "U het %@ gemerk as geverifieer.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Jy het %@ gemerk as geverifieer, op ’n ander toestel.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "U het %@ op ’n ander toestel gemerk as geverifieer.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Verifiëringstaat het verander.";
@@ -6275,16 +6275,16 @@
 "VIDEO_CALL_LABEL" = "Video-oproep";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Jy het reeds hierdie boodskap bekyk.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "U het reeds hierdie boodskap bekyk.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Druk hier om hierdie boodskap te laat verdwyn nadat dit bekyk is.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenkeerkyk-medialêers word outomaties verwyder nadat dit gestuur is.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmalige medialêers word outomaties verwyder nadat dit gestuur is.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Skuif om te kanselleer";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Stemboodskap";
@@ -6302,91 +6302,91 @@
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "Vervaag foto";
 
 /* The incoming bubble text when setting a photo */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Pinch to zoom, drag to adjust.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO" = "Knyp vir zoem, sleep on te maak pas.";
 
 /* The incoming bubble text when setting a preset */
-"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Swipe to preview more wallpapers.";
+"WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Vee vir voorskou van nog muurpapiere.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Set wallpaper for all chats.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Stel muurpapier vir alle kletse.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Set wallpaper for %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Stel muurpapier vir %@.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Voorskou";
 
 /* Clear chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Clear Chat Color";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Wis kletskleur";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Clear chat color for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Wis kletskleur vir hierdie klets?";
 
 /* Clear wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Clear Wallpaper";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Wis muurpapier";
 
 /* Confirmation dialog when clearing the wallpaper for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Clear wallpaper for this chat?";
+"WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION" = "Wis muurpapier vir hierdie klets?";
 
 /* Dim wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Dark Theme Dims Wallpaper";
+"WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Donkertema doof muurpapier uit";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "The wallpaper could not be cleared, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Die muurpapier kon nie gewis word nie, probeer later weer of kontak ons indien die probleem voortduur.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "All wallpapers could not be reset, please try again later or contact support if the error persists.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Alle muurpapiere kon nie teruggestel word nie, probeer later weer of kontak ons indien die probleem voortduur.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Reset All Colors";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Stel alle kleure terug";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Reset All Wallpapers";
+"WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Stel alle muurpapiere terug";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Would you like to override all chat colors?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Wil u alle kletskleure oorheers?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Stel kletskleure terug";
 
 /* Reset conversation chat color action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Stel kletskleur terug";
 
 /* Reset conversation wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Stel muurpapier terug";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Stel verstekkleure terug";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Stel kletskleure terug";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Stel verstekmuurpapier terug";
 
 /* Reset wallpapers action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Reset Wallpapers";
+"WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Stel muurpapiere terug";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Would you like to override all wallpapers?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Wil u alle muurpapiere oorheers?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Reset Wallpaper";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Stel muurpapier terug";
 
 /* Set chat color action in color and wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_CHAT_COLOR" = "Kletskleur";
 
 /* Set wallpaper action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Set Wallpaper";
+"WALLPAPER_SETTINGS_SET_WALLPAPER" = "Stel muurpapier";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "U het hierdie boodskap uitgevee.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jy het verdwynboodskappe deaktiveer.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "U het verdwynboodskappe gedeaktiveer.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Jy moet opstelling voltooi voordat jy voortgaan.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "U moet opstelling voltooi voordat u voortgaan.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jy het verdwynboodskap-tyd gestel na %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "U het verdwynboodskaptyd gestel na %@.";

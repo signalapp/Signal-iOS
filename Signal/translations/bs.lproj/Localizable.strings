@@ -482,7 +482,7 @@
 "BUTTON_PREVIOUS" = "Prethodno";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Označi";
 
 /* Label for the 'set' button. */
 "BUTTON_SET" = "Podesi";
@@ -893,7 +893,7 @@
 "CONTEXT_MENU_REPLY" = "Odgovori";
 
 /* Context menu button title */
-"CONTEXT_MENU_SELECT_MESSAGE" = "Select";
+"CONTEXT_MENU_SELECT_MESSAGE" = "Označi";
 
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Dijeli";
@@ -4154,7 +4154,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Pin";
+"PIN_ACTION" = "Istakni";
 
 /* Label indicating the user must use at least 4 characters */
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
@@ -6158,13 +6158,13 @@
 "UNNAMED_DEVICE" = "Neimenovani uređaj";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Unpin";
+"UNPIN_ACTION" = "Prestani isticati";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Razgovori";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Nepročitano";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Primljeni privitak nije podržan.";

@@ -236,7 +236,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ へのメッセージ";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信する";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "送信";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "添付ファイル";
@@ -803,7 +803,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "連絡先が不正です。";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "連絡先の項目が未選択";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "連絡先の項目が選択されていません。";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "サポートに問い合わせる";
@@ -920,7 +920,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "連絡先";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "送信先を選択";
+"CONVERSATION_PICKER_TITLE" = "送信先の選択";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "見つかりません";
@@ -1505,7 +1505,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOSの設定でアクセス権限を制御できます。";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "連絡先を編集するには連絡先へのアクセス権限が必要です。";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "連絡先を編集するには、Signalに連絡先へのアクセス権限が必要です。";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "グループを編集";
@@ -2834,7 +2834,7 @@
 "IMAGE_EDITOR_BLUR_SETTING" = "顔をぼかす";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "ぼかす顔や場所を追加できます";
+"IMAGE_EDITOR_BLUR_TOAST" = "追加で顔や場所をぼかせます";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "画像の共有は%@点までです。";
@@ -3770,7 +3770,7 @@
 "OUTGOING_CALL_FORMAT" = "%@ に発信";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "申請を拒否";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "申請を却下";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ (%2$@)";
@@ -3779,19 +3779,19 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ に拒否が通知されます。";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ に却下したことが通知されます。";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "この申請を拒否しますか？";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "この申請を却下しますか？";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup 手数料";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "申請はキャンセルできませんでした。";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "申請をキャンセルできませんでした。";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "申請は拒否できませんでした。";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "申請を却下できませんでした。";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "失敗";
@@ -6278,7 +6278,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "このメッセージは閲覧済みです。";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "ここをタップして、このメッセージが閲覧後に消えるようにします。";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "ここをタップして、このメッセージが閲覧後に消えるようにできます。";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "使い捨てメディアファイルは、送信後に自動で削除されます。";

@@ -731,7 +731,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "Caixa postal";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Código Postal";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Código postal";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "Região";
@@ -746,7 +746,7 @@
 "CONTACT_FIELD_GIVEN_NAME" = "Nome";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Segundo nome";
+"CONTACT_FIELD_MIDDLE_NAME" = "Nome do meio";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Prefixo";
@@ -4574,7 +4574,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código do país";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserir Número";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserir número";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Erro ao registrar";

@@ -1589,16 +1589,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "കോൺടാക്ടുകൾ അക്സസ് ചെയ്യാൻ കഴിഞ്ഞില്ല.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "സന്ദേശം ഫോർവേഡ് ചെയ്യാൻ സാധിച്ചില്ല ";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "സന്ദേശം ഫോർവേഡ് ചെയ്യാൻ സാധിച്ചില്ല കാരണം അത് ഇപ്പോൾ ലഭ്യമല്ല ";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "സന്ദേശങ്ങൾ ഫോർവേഡ് ചെയ്യാൻ സാധിച്ചില്ല കാരണം അതൊന്നും ഇപ്പോൾ ലഭ്യമല്ല ";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "സന്ദേശങ്ങൾ ഫോർവേഡ് ചെയ്യാൻ സാധിച്ചില്ല";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "വീഡിയോ സംരക്ഷിക്കാനായില്ല.";
@@ -1655,7 +1655,7 @@
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@-ൽ നിന്നുള്ള ഒരു സന്ദേശം കൈമാറാൻ കഴിഞ്ഞില്ല";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "ഒരു സന്ദേശം ഡെലിവർ ചെയ്യാൻ സാധിച്ചില്ല";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ഒരു ഡ്യൂപ്ലിക്കേറ്റ് സന്ദേശം ലഭിച്ചിരിക്കുന്നു.";

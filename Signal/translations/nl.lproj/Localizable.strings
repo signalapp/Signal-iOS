@@ -3026,7 +3026,7 @@
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Voor elke website voorbeeldafbeeldingen";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Je moet op beide apparaten toegang hebben tot lokale netwerk om je Signal-gegevens over te kunnen zetten.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Je moet op beide apparaten toegang hebben tot het lokale netwerk om je Signal-gegevens over te kunnen zetten.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Hulp nodig?";
@@ -3041,7 +3041,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Zoek Signal in de lijst";
 
 /* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel “Toegang tot lokaal netwerk” in";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Schakel “Lokale netwerktoegang” in";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
@@ -5972,7 +5972,7 @@
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS-versie: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Taalgebied: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Foutopsporingslog-URL: %@";

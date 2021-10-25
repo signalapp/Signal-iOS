@@ -1013,7 +1013,7 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Vždy upozorniť";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Neupozorniť, ak je stlmená";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Neupozorniť, ak je stlmené";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Prijímať hlásenia, keď vás spomenú v stlmených chatoch?";
@@ -1031,7 +1031,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Vždy";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "stlmiť";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Stlmiť";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 hodín";
