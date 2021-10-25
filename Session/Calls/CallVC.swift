@@ -320,14 +320,29 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         }
     }
     
+    internal func showCallModal() {
+        let callModal = CallModal() { [weak self] in
+            self?.answerCall()
+        }
+        callModal.modalPresentationStyle = .overFullScreen
+        callModal.modalTransitionStyle = .crossDissolve
+        present(callModal, animated: true, completion: nil)
+    }
+    
     @objc private func answerCall() {
-        if case let .answer(sdp) = mode {
-            callInfoLabel.text = "Connecting..."
-            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
-            self.answerButton.alpha = 0
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                self.answerButton.isHidden = true
-            }, completion: nil)
+        let userDefaults = UserDefaults.standard
+        if userDefaults[.hasSeenCallIPExposureWarning] {
+            if case let .answer(sdp) = mode {
+                callInfoLabel.text = "Connecting..."
+                webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+                self.answerButton.alpha = 0
+                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                    self.answerButton.isHidden = true
+                }, completion: nil)
+            }
+        } else {
+            userDefaults[.hasSeenCallIPExposureWarning] = true
+            showCallModal()
         }
     }
     

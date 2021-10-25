@@ -28,14 +28,20 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     // MARK: Call
     @objc func startCall(_ sender: Any?) {
-        guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
-        let callVC = CallVC(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
-        callVC.conversationVC = self
-        callVC.modalPresentationStyle = .overFullScreen
-        callVC.modalTransitionStyle = .crossDissolve
-        self.inputAccessoryView?.isHidden = true
-        self.inputAccessoryView?.alpha = 0
-        present(callVC, animated: true, completion: nil)
+        let userDefaults = UserDefaults.standard
+        if userDefaults[.hasSeenCallIPExposureWarning] {
+            guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
+            let callVC = CallVC(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
+            callVC.conversationVC = self
+            callVC.modalPresentationStyle = .overFullScreen
+            callVC.modalTransitionStyle = .crossDissolve
+            self.inputAccessoryView?.isHidden = true
+            self.inputAccessoryView?.alpha = 0
+            present(callVC, animated: true, completion: nil)
+        } else {
+            userDefaults[.hasSeenCallIPExposureWarning] = true
+            showCallModal()
+        }
     }
     
     internal func showCallModal() {

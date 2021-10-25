@@ -140,7 +140,22 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     }
     
     @objc private func answerCall() {
-        showCallVC(answer: true)
+        let userDefaults = UserDefaults.standard
+        if userDefaults[.hasSeenCallIPExposureWarning] {
+            showCallVC(answer: true)
+        } else {
+            showCallModal()
+        }
+    }
+    
+    internal func showCallModal() {
+        let callModal = CallModal() { [weak self] in
+            self?.showCallVC(answer: true)
+        }
+        callModal.modalPresentationStyle = .overFullScreen
+        callModal.modalTransitionStyle = .crossDissolve
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        presentingVC.present(callModal, animated: true, completion: nil)
     }
     
     @objc private func endCall() {
