@@ -277,12 +277,15 @@ extension MessageReceiver {
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
-            let currentSession = getWebRTCSession()
-            if currentSession.uuid != message.uuid! {
+            if getWebRTCSession().uuid != message.uuid! {
                 // TODO: Call in progress, put the new call on hold/reject
             }
         case .offer:
             print("[Calls] Received offer message.")
+            if getWebRTCSession().uuid != message.uuid! {
+                // TODO: Call in progress, put the new call on hold/reject
+                return
+            }
             let storage = SNMessagingKitConfiguration.shared.storage
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
@@ -296,11 +299,13 @@ extension MessageReceiver {
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
+            guard getWebRTCSession().uuid == message.uuid! else { return }
             let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
             getWebRTCSession().handleRemoteSDP(sdp, from: message.sender!)
             handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):
+            guard getWebRTCSession().uuid == message.uuid! else { return }
             var candidates: [RTCIceCandidate] = []
             let sdps = message.sdps!
             for i in 0..<sdps.count {
@@ -313,6 +318,7 @@ extension MessageReceiver {
             getWebRTCSession().handleICECandidates(candidates)
         case .endCall:
             print("[Calls] Received end call message.")
+            guard getWebRTCSession().uuid == message.uuid! else { return }
             handleEndCallMessage?(message)
         }
     }
