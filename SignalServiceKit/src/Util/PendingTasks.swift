@@ -30,7 +30,7 @@ public class PendingTasks: NSObject {
             Promise.when(resolved: promises).asVoid()
         }.map(on: .global()) {
             if DebugFlags.internalLogging {
-                Logger.info("Complete \(label) (memoryUsage: \(LocalDevice.memoryUsage).")
+                Logger.info("Complete \(label) (memoryUsage: \(LocalDevice.memoryUsage)).")
             }
         }
     }
@@ -49,7 +49,7 @@ public class PendingTasks: NSObject {
         let wasRemoved = nil != pendingTasks.removeValue(forKey: pendingTask.id)
         owsAssertDebug(wasRemoved)
         if DebugFlags.internalLogging {
-            Logger.info("Completed: \(self.label).\(pendingTask.label)")
+            Logger.info("Completed: \(self.label).\(pendingTask.label) (memoryUsage: \(LocalDevice.memoryUsage))")
         }
         pendingTask.future.resolve(())
     }

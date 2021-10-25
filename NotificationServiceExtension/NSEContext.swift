@@ -59,7 +59,43 @@ class NSEContext: NSObject, AppContext {
         return userDefaults
     }
 
-    override init() { super.init() }
+    override init() {
+        super.init()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationWillResignActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationWillTerminate),
+                                               name: UIApplication.willTerminateNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidReceiveMemoryWarning),
+                                               name: UIApplication.didReceiveMemoryWarningNotification,
+                                               object: nil)
+    }
+
+    @objc
+    private func applicationWillResignActive(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+    }
+
+    @objc
+    private func applicationWillTerminate(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+    }
+
+    @objc
+    private func applicationDidReceiveMemoryWarning(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+    }
 
     // MARK: - Unused in this extension
 

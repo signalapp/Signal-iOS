@@ -44,7 +44,8 @@ class NotificationService: UNNotificationServiceExtension {
 
     private static func nseDidStart() -> Int {
         unfairLock.withLock {
-            if _logTimer == nil {
+            if DebugFlags.internalLogging,
+               _logTimer == nil {
                 _logTimer = OffMainThreadTimer(timeInterval: 1.0, repeats: true) { _ in
                     Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
                 }
