@@ -538,8 +538,8 @@
 "modal_link_previews_title" = "Enable Link Previews?";
 "modal_link_previews_explanation" = "Enabling link previews will show previews for URLs you send and receive. This can be useful, but Session will need to contact linked websites to generate previews. You can always disable link previews in Session's settings.";
 "modal_link_previews_button_title" = "Enable";
-"modal_call_title" = "Voice and video calls";
-"modal_call_explanation" = "The current implementation of voice/video calls will expose your IP address to the Oxen Foundation servers and the calling/called user.";
+"modal_call_title" = "Voice / video calls";
+"modal_call_explanation" = "The current implementation of voice / video calls will expose your IP address to the Oxen Foundation servers and the calling / called user.";
 "modal_share_logs_title" = "Share Logs";
 "modal_share_logs_explanation" = "Would you like to export your application logs to be able to share for troubleshooting?";
 "vc_share_title" = "Share to Session";
