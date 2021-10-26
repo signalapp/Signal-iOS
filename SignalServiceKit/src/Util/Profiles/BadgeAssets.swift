@@ -176,13 +176,13 @@ private class DefaultSpriteSheetParser {
     // Since these sprites should never change, I've just hardcoded each origin into a dictionary
     // mapping spriteType -> [1x, 2x, 3x] origins
     static let spriteOrigins: [BadgeAssets.Variant: [CGPoint]] = [
-        .universal160:  [CGPoint(x:   1, y:   1), CGPoint(x:   1, y:   1), CGPoint(x:   1, y:   1)],
-        .light16:       [CGPoint(x: 163, y:   1), CGPoint(x: 323, y:   1), CGPoint(x: 483, y:   1)],
-        .light24:       [CGPoint(x: 163, y:  19), CGPoint(x: 323, y:  35), CGPoint(x: 483, y:  51)],
-        .light36:       [CGPoint(x: 189, y:   1), CGPoint(x: 373, y:   1), CGPoint(x: 557, y:   1)],
-        .dark16:        [CGPoint(x: 189, y:  39), CGPoint(x: 373, y:  75), CGPoint(x: 557, y: 111)],
-        .dark24:        [CGPoint(x: 207, y:  39), CGPoint(x: 407, y:  75), CGPoint(x: 607, y: 111)],
-        .dark36:        [CGPoint(x: 163, y:  57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
+        .universal160: [CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1)],
+        .light16: [CGPoint(x: 163, y: 1), CGPoint(x: 323, y: 1), CGPoint(x: 483, y: 1)],
+        .light24: [CGPoint(x: 163, y: 19), CGPoint(x: 323, y: 35), CGPoint(x: 483, y: 51)],
+        .light36: [CGPoint(x: 189, y: 1), CGPoint(x: 373, y: 1), CGPoint(x: 557, y: 1)],
+        .dark16: [CGPoint(x: 189, y: 39), CGPoint(x: 373, y: 75), CGPoint(x: 557, y: 111)],
+        .dark24: [CGPoint(x: 207, y: 39), CGPoint(x: 407, y: 75), CGPoint(x: 607, y: 111)],
+        .dark36: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)]
     ]
 
     func copySprite(variant: BadgeAssets.Variant) -> CGImage? {
