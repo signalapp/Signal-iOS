@@ -80,21 +80,21 @@ class NSEContext: NSObject, AppContext {
     private func applicationWillResignActive(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
     }
 
     @objc
     private func applicationWillTerminate(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
     }
 
     @objc
     private func applicationDidReceiveMemoryWarning(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
-        Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
     }
 
     // MARK: - Unused in this extension

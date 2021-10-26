@@ -889,7 +889,8 @@ private struct GRDBStorage {
         }
         // Useful when your app opens multiple databases
         configuration.label = "GRDB Storage"
-        configuration.maximumReaderCount = 10   // The default is 5
+        let isMainApp = CurrentAppContext().isMainApp
+        configuration.maximumReaderCount = isMainApp ? 10 : 5  // The default is 5
         configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
             // sleep N milliseconds
             let millis = 25

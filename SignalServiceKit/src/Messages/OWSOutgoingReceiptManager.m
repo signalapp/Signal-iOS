@@ -128,6 +128,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             if (completion) {
                 completion();
             }
+            [self logMemoryUsage];
             return;
         }
 
@@ -141,6 +142,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             if (completion) {
                 completion();
             }
+            [self logMemoryUsage];
             return;
         }
 
@@ -155,6 +157,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             if (completion) {
                 completion();
             }
+            [self logMemoryUsage];
             return;
         }
 
@@ -179,6 +182,14 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
                 });
         });
     });
+}
+
+- (void)logMemoryUsage {
+    if (SSKDebugFlags.internalLogging) {
+        dispatch_async(self.serialQueue, ^{
+            OWSLogVerbose(@"memoryUsage: %@", LocalDevice.memoryUsage);
+        });
+    }
 }
 
 - (NSArray<AnyPromise *> *)sendReceiptsForReceiptType:(OWSReceiptType)receiptType {
