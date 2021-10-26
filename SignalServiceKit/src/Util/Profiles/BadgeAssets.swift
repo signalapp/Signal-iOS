@@ -123,6 +123,10 @@ class BadgeAssets: Dependencies {
     }
 
     private func extractSpritesFromSpritesheetIfNecessary() throws {
+        guard NSData.ows_isValidImage(atPath: fileUrlForSpritesheet().path) else {
+            throw OWSAssertionError("Invalid spritesheet source image")
+        }
+
         guard let source = CGImageSourceCreateWithURL(fileUrlForSpritesheet() as CFURL, nil) else {
             throw OWSAssertionError("Couldn't load CGImageSource")
         }
