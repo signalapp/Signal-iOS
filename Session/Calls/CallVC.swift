@@ -302,6 +302,15 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         }
     }
     
+    func dataChannelDidOpen() {
+        // Send initial video status
+        if (isVideoEnabled) {
+            webRTCSession.turnOnVideo()
+        } else {
+            webRTCSession.turnOffVideo()
+        }
+    }
+    
     // MARK: Interaction
     func handleAnswerMessage(_ message: CallMessage) {
         callInfoLabel.text = "Connecting..."

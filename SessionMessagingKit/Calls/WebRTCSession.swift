@@ -6,6 +6,7 @@ public protocol WebRTCSessionDelegate : AnyObject {
     
     func webRTCIsConnected()
     func isRemoteVideoDidChange(isEnabled: Bool)
+    func dataChannelDidOpen()
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
@@ -250,6 +251,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
         print("[Calls] Peer connection should negotiate.")
+        Storage.write { transaction in
+            self.sendOffer(to: self.contactSessionID, using: transaction).retainUntilComplete()
+        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
@@ -274,6 +278,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("[Calls] Data channel opened.")
         self.remoteDataChannel = dataChannel
+        delegate?.dataChannelDidOpen()
     }
 }
 
