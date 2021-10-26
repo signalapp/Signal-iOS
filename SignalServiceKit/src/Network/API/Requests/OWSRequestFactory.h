@@ -199,6 +199,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)paymentsAuthenticationCredentialRequest;
 
+#pragma mark - Subscriptions
+
++ (TSRequest *)subscriptionLevelsRequest;
+
 #pragma mark - Spam
 
 + (TSRequest *)pushChallengeRequest;

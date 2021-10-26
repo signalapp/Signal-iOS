@@ -57,7 +57,7 @@ public class BadgeAssets: NSObject {
 
     // MARK: - Sprite fetching
 
-    func prepareAssetsIfNecessary() {
+    func prepareAssetsIfNecessary() -> Promise<Void> {
         let shouldFetch: Bool = lock.withLock {
             // If we're already fetching, or have hit a terminal state, there's nothing left to do
             guard state != .fetching, state != .fetched, state != .unavailable else { return false }
@@ -80,11 +80,11 @@ public class BadgeAssets: NSObject {
             return true
         }
 
-        guard shouldFetch else { return }
+        guard shouldFetch else { return Promise.value(()) }
         OWSFileSystem.ensureDirectoryExists(localAssetDirectory.path)
-        firstly(on: .sharedUtility) { () -> Promise<Void> in
+        return firstly(on: .sharedUtility) { () -> Promise<Void> in
             self.fetchSpritesheetIfNecessary()
-        }.map(on: .sharedUtility) { _ in
+        }.done(on: .sharedUtility) { _ in
             try self.extractSpritesFromSpritesheetIfNecessary()
         }.catch(on: .sharedUtility) { error in
             owsFailDebug("Failed to fetch badge assets with error: \(error)")

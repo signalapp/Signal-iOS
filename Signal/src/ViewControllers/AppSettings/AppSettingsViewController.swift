@@ -231,15 +231,39 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.showInviteFlow()
             }
         ))
-        section4.add(.disclosureItem(
-            icon: .settingsDonate,
-            name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
-            actionBlock: { [weak self] in
-                let vc = DonationViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
+        if FeatureFlags.subscriptions {
+            section4.add(.disclosureItem(
+                icon: .settingsDonate,
+                name: NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"),
+                actionBlock: { [weak self] in
+                    let vc = SubscriptionViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+
+            section4.add(.disclosureItem(
+                icon: .settingsDonate,
+                name: NSLocalizedString("SETTINGS_SIGNAL_BOOST", comment: "Title for the 'signal boost' link in settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "signal boost"),
+                actionBlock: { [weak self] in
+                    let vc = DonationViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+
+        } else {
+            section4.add(.disclosureItem(
+                icon: .settingsDonate,
+                name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
+                actionBlock: { [weak self] in
+                    let vc = DonationViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
+
         contents.addSection(section4)
 
         if DebugFlags.internalSettings {

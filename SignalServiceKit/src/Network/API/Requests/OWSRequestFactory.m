@@ -925,6 +925,15 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:parameters];
 }
 
+#pragma mark - Subscriptions
+
++ (TSRequest *)subscriptionLevelsRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/levels"]
+                              method:@"GET"
+                          parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

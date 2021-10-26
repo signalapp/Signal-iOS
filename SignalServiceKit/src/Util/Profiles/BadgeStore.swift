@@ -8,10 +8,10 @@ import GRDB
 /// Model object for a badge. Only information for the badge itself, nothing user-specific (expirations, visibility, etc.)
 @objc
 public class ProfileBadge: NSObject, Codable {
-    let id: String
-    let rawCategory: String
-    let localizedName: String
-    let localizedDescriptionFormatString: String
+    public let id: String
+    public let rawCategory: String
+    public let localizedName: String
+    public let localizedDescriptionFormatString: String
     let resourcePath: String
 
     let badgeVariant: BadgeVariant
@@ -163,7 +163,12 @@ public class BadgeStore: NSObject {
             try newBadge.save(writeTx.unwrapGrdbWrite.database)
 
             // Finally we update our cached badge and start preparing our assets
-            populateAssetsOnBadge(newBadge)
+            firstly {
+                populateAssets(newBadge)
+            }.catch { error in
+                owsFailDebug("Failed to populate assets on badge \(error)")
+            }
+
             owsAssertDebug(newBadge.assets != nil)
             badgeCache[newBadge.id] = newBadge
         }
@@ -176,7 +181,12 @@ public class BadgeStore: NSObject {
                     owsAssertDebug(cachedBadge.assets != nil)
                     return cachedBadge
                 } else if let fetchedBadge = try ProfileBadge.filter(key: badgeId).fetchOne(readTx.unwrapGrdbRead.database) {
-                    populateAssetsOnBadge(fetchedBadge)
+                    firstly {
+                        populateAssets(fetchedBadge)
+                    }.catch { error in
+                        owsFailDebug("Failed to populate assets on badge \(error)")
+                    }
+
                     owsAssertDebug(fetchedBadge.assets != nil)
                     badgeCache[fetchedBadge.id] = fetchedBadge
                     return fetchedBadge
@@ -190,7 +200,13 @@ public class BadgeStore: NSObject {
         }
     }
 
-    func populateAssetsOnBadge(_ badge: ProfileBadge) {
+    public func populateAssetsOnBadge(_ badge: ProfileBadge) -> Promise<Void> {
+        return lock.withLock {
+            populateAssets(badge)
+        }
+    }
+
+    private func populateAssets(_ badge: ProfileBadge) -> Promise<Void> {
         lock.assertOwner()
 
         // We try and reuse any existing BadgeAssets instances if we have one cached
@@ -203,6 +219,10 @@ public class BadgeStore: NSObject {
             assetCache[badge.resourcePath] = badge.assets
         }
         owsAssertDebug(badge.assets != nil)
-        badge.assets?.prepareAssetsIfNecessary()
+        guard let assets = badge.assets else {
+            return Promise.value(())
+        }
+
+        return assets.prepareAssetsIfNecessary()
     }
 }
