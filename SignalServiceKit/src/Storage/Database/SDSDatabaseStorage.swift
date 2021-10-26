@@ -50,7 +50,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         guard !CurrentAppContext().isRunningTests else {
             return
         }
-        owsAssertDebug(StorageCoordinator.dataStoreForUI == .grdb)
         // Cross process writes
         crossProcess.callback = { [weak self] in
             DispatchQueue.main.async {

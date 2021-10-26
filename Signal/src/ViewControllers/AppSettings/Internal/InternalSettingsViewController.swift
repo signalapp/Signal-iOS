@@ -112,8 +112,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.label(withText: "Database WAL size: \(byteCountFormatter.string(for: databaseStorage.databaseWALFileSize) ?? "Unknown")"))
         infoSection.add(.label(withText: "Database SHM size: \(byteCountFormatter.string(for: databaseStorage.databaseSHMFileSize) ?? "Unknown")"))
 
-        infoSection.add(.label(withText: "dataStoreForUI: \(NSStringForDataStore(StorageCoordinator.dataStoreForUI))"))
-
         infoSection.add(.label(withText: "hasGrdbFile: \(StorageCoordinator.hasGrdbFile)"))
         infoSection.add(.label(withText: "didEverUseYdb: \(SSKPreferences.didEverUseYdb())"))
         infoSection.add(.label(withText: "Core count: \(LocalDevice.allCoreCount) (active: \(LocalDevice.activeCoreCount))"))

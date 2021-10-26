@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessagePipelineSupervisor *messagePipelineSupervisor = [OWSMessagePipelineSupervisor createStandardSupervisor];
     AppExpiry *appExpiry = [AppExpiry new];
     MessageProcessor *messageProcessor = [MessageProcessor new];
-    id<PaymentsHelper> payments = [MockPaymentsHelper new];
+    id<PaymentsHelper> paymentsHelper = [MockPaymentsHelper new];
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];

@@ -219,9 +219,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                         [DeviceSleepManager.shared removeBlockWithBlockObject:sleepBlockObject];
 
-                        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-                            [SSKEnvironment.shared warmCaches];
-                        }
+                        [SSKEnvironment.shared warmCaches];
                         migrationCompletion(nil);
 
                         OWSAssertDebug(backgroundTask);
@@ -243,9 +241,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldTruncateGrdbWal
 {
-    if (StorageCoordinator.dataStoreForUI != DataStoreGrdb) {
-        return NO;
-    }
     if (!CurrentAppContext().isMainApp) {
         return NO;
     }

@@ -85,24 +85,24 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.paymentRequest != nil) {
         OWSLogInfo(@"Processing payment request from sync transcript.");
-        [self.payments processReceivedTranscriptPaymentRequestWithThread:transcript.thread
-                                                          paymentRequest:transcript.paymentRequest
-                                                        messageTimestamp:messageTimestamp
-                                                             transaction:transaction];
+        [self.paymentsHelper processReceivedTranscriptPaymentRequestWithThread:transcript.thread
+                                                                paymentRequest:transcript.paymentRequest
+                                                              messageTimestamp:messageTimestamp
+                                                                   transaction:transaction];
         return;
     } else if (transcript.paymentNotification != nil) {
         OWSLogInfo(@"Processing payment notification from sync transcript.");
-        [self.payments processReceivedTranscriptPaymentNotificationWithThread:transcript.thread
-                                                          paymentNotification:transcript.paymentNotification
-                                                             messageTimestamp:messageTimestamp
-                                                                  transaction:transaction];
+        [self.paymentsHelper processReceivedTranscriptPaymentNotificationWithThread:transcript.thread
+                                                                paymentNotification:transcript.paymentNotification
+                                                                   messageTimestamp:messageTimestamp
+                                                                        transaction:transaction];
         return;
     } else if (transcript.paymentCancellation != nil) {
         OWSLogInfo(@"Processing payment cancellation from sync transcript.");
-        [self.payments processReceivedTranscriptPaymentCancellationWithThread:transcript.thread
-                                                          paymentCancellation:transcript.paymentCancellation
-                                                             messageTimestamp:messageTimestamp
-                                                                  transaction:transaction];
+        [self.paymentsHelper processReceivedTranscriptPaymentCancellationWithThread:transcript.thread
+                                                                paymentCancellation:transcript.paymentCancellation
+                                                                   messageTimestamp:messageTimestamp
+                                                                        transaction:transaction];
         return;
     }
 

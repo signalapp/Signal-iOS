@@ -33,10 +33,6 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 @property (class, nonatomic, readonly) BOOL hasInvalidDatabaseVersion;
 
-// The data store that will be used once the app is ready.
-// This data store may not be available before then.
-@property (class, nonatomic, readonly) DataStore dataStoreForUI;
-
 - (BOOL)isDatabasePasswordAccessible;
 
 - (void)markStorageSetupAsComplete;

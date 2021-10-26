@@ -4,8 +4,6 @@
 
 import Foundation
 
-// TODO: Rename this source file.
-
 @objc
 public protocol Payments: AnyObject {
 
@@ -21,41 +19,8 @@ public protocol Payments: AnyObject {
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
 
-    func processIncomingPaymentRequest(thread: TSThread,
-                                       paymentRequest: TSPaymentRequest,
-                                       transaction: SDSAnyWriteTransaction)
-
-    func processIncomingPaymentNotification(thread: TSThread,
-                                            paymentNotification: TSPaymentNotification,
-                                            senderAddress: SignalServiceAddress,
-                                            transaction: SDSAnyWriteTransaction)
-
-    func processIncomingPaymentCancellation(thread: TSThread,
-                                            paymentCancellation: TSPaymentCancellation,
-                                            transaction: SDSAnyWriteTransaction)
-
-    func processReceivedTranscriptPaymentRequest(thread: TSThread,
-                                                 paymentRequest: TSPaymentRequest,
-                                                 messageTimestamp: UInt64,
-                                                 transaction: SDSAnyWriteTransaction)
-
-    func processReceivedTranscriptPaymentNotification(thread: TSThread,
-                                                      paymentNotification: TSPaymentNotification,
-                                                      messageTimestamp: UInt64,
-                                                      transaction: SDSAnyWriteTransaction)
-
-    func processReceivedTranscriptPaymentCancellation(thread: TSThread,
-                                                      paymentCancellation: TSPaymentCancellation,
-                                                      messageTimestamp: UInt64,
-                                                      transaction: SDSAnyWriteTransaction)
-
     func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction)
     func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction)
-
-    @objc(processIncomingPaymentSyncMessage:messageTimestamp:transaction:)
-    func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
-                                           messageTimestamp: UInt64,
-                                           transaction: SDSAnyWriteTransaction)
 
     func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction)
 
@@ -120,24 +85,7 @@ public protocol PaymentsSwift: Payments {
 
 // MARK: -
 
-public struct PaymentsPassphrase: Equatable, Dependencies {
-
-    public let words: [String]
-
-    public init(words: [String]) throws {
-        guard words.count == PaymentsConstants.passphraseWordCount else {
-            owsFailDebug("words.count \(words.count) != \(PaymentsConstants.passphraseWordCount)")
-            throw PaymentsError.invalidPassphrase
-        }
-
-        self.words = words
-    }
-
-    public var wordCount: Int { words.count }
-
-    public var asPassphrase: String { words.joined(separator: " ") }
-
-    public var debugDescription: String { asPassphrase }
+extension PaymentsPassphrase {
 
     public static func parse(passphrase: String,
                              validateWords: Bool) throws -> PaymentsPassphrase {
@@ -246,52 +194,6 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool {
-        owsFail("Not implemented.")
-    }
-
-    public func processIncomingPaymentRequest(thread: TSThread,
-                                              paymentRequest: TSPaymentRequest,
-                                              transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processIncomingPaymentNotification(thread: TSThread,
-                                                   paymentNotification: TSPaymentNotification,
-                                                   senderAddress: SignalServiceAddress,
-                                                   transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processIncomingPaymentCancellation(thread: TSThread,
-                                                   paymentCancellation: TSPaymentCancellation,
-                                                   transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processReceivedTranscriptPaymentRequest(thread: TSThread,
-                                                        paymentRequest: TSPaymentRequest,
-                                                        messageTimestamp: UInt64,
-                                                        transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processReceivedTranscriptPaymentNotification(thread: TSThread,
-                                                             paymentNotification: TSPaymentNotification,
-                                                             messageTimestamp: UInt64,
-                                                             transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processReceivedTranscriptPaymentCancellation(thread: TSThread,
-                                                             paymentCancellation: TSPaymentCancellation,
-                                                             messageTimestamp: UInt64,
-                                                             transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
-                                                  messageTimestamp: UInt64,
-                                                  transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 

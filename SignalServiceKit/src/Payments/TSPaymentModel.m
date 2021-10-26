@@ -52,20 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSPaymentModel
 
-#pragma mark - Dependencies
-
-+ (id<Payments>)payments
-{
-    return SSKEnvironment.shared.payments;
-}
-
-- (id<Payments>)payments
-{
-    return SSKEnvironment.shared.payments;
-}
-
-#pragma mark -
-
 - (instancetype)initWithPaymentType:(TSPaymentType)paymentType
                        paymentState:(TSPaymentState)paymentState
                       paymentAmount:(nullable TSPaymentAmount *)paymentAmount

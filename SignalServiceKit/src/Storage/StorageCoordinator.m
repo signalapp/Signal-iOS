@@ -37,8 +37,6 @@ NSString *NSStringForDataStore(DataStore value)
 
 @property (atomic) BOOL isStorageSetupComplete;
 
-@property (nonatomic, readonly) DataStore dataStoreForUI;
-
 @end
 
 #pragma mark -
@@ -53,10 +51,6 @@ NSString *NSStringForDataStore(DataStore value)
     }
 
     OWSSingletonAssert();
-
-    _dataStoreForUI = [StorageCoordinator computeDataStoreForUI];
-
-    OWSLogInfo(@"dataStoreForUI: %@", NSStringForDataStore(self.dataStoreForUI));
 
     _databaseStorage = [[SDSDatabaseStorage alloc] initWithDelegate:self];
 
@@ -95,25 +89,6 @@ NSString *NSStringForDataStore(DataStore value)
 - (StorageCoordinatorState)storageCoordinatorState
 {
     return self.state;
-}
-
-+ (DataStore)dataStoreForUI
-{
-    // Computing dataStoreForUI is slightly expensive.
-    // Once SSKEnvironment is configured, we use the cached value
-    // that hangs on StorageCoordinator.  Until then, we compute every
-    // time.
-    if (!SSKEnvironment.hasShared) {
-        return self.computeDataStoreForUI;
-    }
-
-    return SSKEnvironment.shared.storageCoordinator.dataStoreForUI;
-}
-
-+ (DataStore)computeDataStoreForUI
-{
-    // TODO:
-    return DataStoreGrdb;
 }
 
 - (void)configure

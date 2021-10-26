@@ -331,7 +331,7 @@
 		3465F4D827287677001663AF /* PaymentsImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4D327287675001663AF /* PaymentsImpl.swift */; };
 		3465F4D927287677001663AF /* MobileCoinAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4D427287675001663AF /* MobileCoinAPI.swift */; };
 		3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
-		3465F4DD2728812B001663AF /* Payments+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DC2728812A001663AF /* Payments+SignalUI.swift */; };
+		3465F4DD2728812B001663AF /* Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DC2728812A001663AF /* Payments.swift */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
 		34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */; };
 		34684DB025C2228D00C5A93C /* determinate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */; };
@@ -1325,7 +1325,7 @@
 		3465F4D327287675001663AF /* PaymentsImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsImpl.swift; sourceTree = "<group>"; };
 		3465F4D427287675001663AF /* MobileCoinAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinAPI.swift; sourceTree = "<group>"; };
 		3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHelperImpl.swift; sourceTree = "<group>"; };
-		3465F4DC2728812A001663AF /* Payments+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Payments+SignalUI.swift"; sourceTree = "<group>"; };
+		3465F4DC2728812A001663AF /* Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Payments.swift; sourceTree = "<group>"; };
 		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
 		34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_white.json; sourceTree = "<group>"; };
 		34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_blue.json; sourceTree = "<group>"; };
@@ -3297,7 +3297,7 @@
 			children = (
 				3465F4D427287675001663AF /* MobileCoinAPI.swift */,
 				3465F4D227287675001663AF /* MobileCoinAPI+Configuration.swift */,
-				3465F4DC2728812A001663AF /* Payments+SignalUI.swift */,
+				3465F4DC2728812A001663AF /* Payments.swift */,
 				34A955B8271B553D00B05242 /* PaymentsFormat.swift */,
 				3465F4D327287675001663AF /* PaymentsImpl.swift */,
 				3465F4D127287674001663AF /* PaymentsProcessor.swift */,
@@ -5587,7 +5587,7 @@
 				3402AA4B271D9DCD0084CBAE /* AttachmentApprovalToolbar.swift in Sources */,
 				3402AA9A271D9E180084CBAE /* ImageEditorBrushViewController.swift in Sources */,
 				34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */,
-				3465F4DD2728812B001663AF /* Payments+SignalUI.swift in Sources */,
+				3465F4DD2728812B001663AF /* Payments.swift in Sources */,
 				3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */,
 				3465F4D527287677001663AF /* PaymentsReconciliation.swift in Sources */,
 				3402AAAB271D9E180084CBAE /* OWSActionSheets.swift in Sources */,
