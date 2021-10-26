@@ -827,10 +827,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Άλλο";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "Πληρωμές";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Payments";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Πληρωμές";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "Πως μπορούμε να βοηθήσουμε;";
@@ -3770,31 +3770,31 @@
 "OUTGOING_CALL_FORMAT" = "Κάλεσες τον/-ην %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Απόρριψη αιτήματος";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ at %2$@";
 
 /* Indicator for unknown currency. */
-"PAYMENTS_CURRENCY_UNKNOWN" = "?";
+"PAYMENTS_CURRENCY_UNKNOWN" = ";";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ will be notified that you declined.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "Ο/Η %@ θα ειδοποιηθεί ότι απέρριψες.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Decline this Request?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Απόρριψη του αιτήματος;";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Request could not be cancelled.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Το αίτημα δεν μπόρεσε να ακυρωθεί.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Request could not be declined.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Το αίτημα δεν μπόρεσε να απορριφθεί.";
 
 /* Status indicator for incoming payments which failed. */
-"PAYMENTS_FAILURE_INCOMING_FAILED" = "Failed";
+"PAYMENTS_FAILURE_INCOMING_FAILED" = "Απέτυχε";
 
 /* Status indicator for incoming payments which failed to verify. */
 "PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
@@ -3863,7 +3863,7 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
 
 /* Placeholder for the new payment or payment request message. */
-"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Note";
+"PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "Σημείωση";
 
 /* Label for the 'new payment' button. */
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Pay";
@@ -3878,7 +3878,7 @@
 "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
 
 /* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Request";
+"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Αίτημα";
 
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 new payment notification";
@@ -3896,13 +3896,13 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Verified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for outgoing payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sending…";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Στέλνεται...";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Στάλθηκε στις";
@@ -3914,7 +3914,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Verified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for payments which had an unknown failure. */
 "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
@@ -3926,13 +3926,13 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
 
 /* Status indicator for incoming payments which have been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Verified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for outgoing payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sending…";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Στέλνεται...";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Στάλθηκε στις";
@@ -3944,7 +3944,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Verified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for payments which had an unknown failure. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
@@ -5354,7 +5354,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Update PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Ανανέωση PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
@@ -5387,7 +5387,7 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
 
 /* Title for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Not Registered";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Μη εγγεγραμμένος";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Ενεργοποίηση πληρωμών";
@@ -5417,7 +5417,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Received";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Ελήφθη";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
@@ -5429,7 +5429,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "You";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Εσύ";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Στάλθηκε στις";
@@ -5462,10 +5462,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "All";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Όλοι/ες";
 
 /* Label for the 'incoming payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "Received";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "Ελήφθη";
 
 /* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Στάλθηκε στις";
@@ -5549,7 +5549,7 @@
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Scan QR Code";
+"SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Σκανάρισμα κωδικού QR";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Αποστολή πληρωμής";
@@ -5561,7 +5561,7 @@
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Μετατροπή νομίσματος";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "Payments";
+"SETTINGS_PAYMENTS_TITLE" = "Πληρωμές";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";

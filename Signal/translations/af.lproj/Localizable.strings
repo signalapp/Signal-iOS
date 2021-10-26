@@ -5978,19 +5978,19 @@
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal-weergawe: %@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
+"SUPPORT_EMAIL_SUBJECT" = "Signal-iOS-ondersteuningsversoek";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "How do you feel? (Optional)";
+"SUPPORT_EMOJI_PROMPT" = "Hoe voel u? (Opsioneel)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Het jy al ons FAQ gelees?";
+"SUPPORT_FAQ_PROMPT" = "Het u al ons Gereelde Vrae gelees?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Include debug log";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Sluit ontfout-log in";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Laai tans";
@@ -6005,22 +6005,22 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifieer";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "The disappearing message time will be set to %@ when you message them.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Die verdwynboodskaptyd sal op %@ gestel word wanneer u ’n boodskap aan hulle stuur.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "No groups in common. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Geen groepe in gemeen nie. Gaan versoeke noukeuring na.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Geen kontakte in hierdie groep nie. Gaan versoeke noukeurig na.";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Hierdie boodskap is gewis.";
+"THIS_MESSAGE_WAS_DELETED" = "Hierdie boodskap is geskrap.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en %lu ekstra groepe";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en nog %lu groepe";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this chat. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "U kan notas vir uself in hierdie klets toevoeg. Nuwe notas word op gekoppelde toestelle gesinchroniseer.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Lid van %@";
@@ -6098,7 +6098,7 @@
 "UNARCHIVE_ACTION" = "Ontargiveer";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Gebruiker nie in jou kontakte nie. Wil jy hierdie gebruiker blokkeer?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Gebruiker nie in u kontakte nie. Wil u hierdie gebruiker versper?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Onbekende kontak";
@@ -6107,25 +6107,25 @@
 "UNKNOWN_COUNTRY_NAME" = "Onbekende land";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Een van jou toestelle het ’n boodskap gestuur wat nie verwerk of hier gewys kan word nie, omdat dit ’n nuwe Signal-funksie gebruik.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Een van u toestelle het ’n boodskap gestuur wat nie verwerk of hier gewys kan word nie, omdat dit ’n nuwe Signal-funksie gebruik.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ het ’n boodskap gestuur wat nie verwerk of hier gewys kan word nie, omdat dit ’n nuwe Signal-funksie gebruik.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Jy het ’n boodskap ontvang wat nie verwerk of hier gewys kan word nie, omdat dit ’n nuwe Signal-funksie gebruik.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "U het ’n boodskap ontvang wat nie verwerk of hier gewys kan word nie, omdat dit ’n nuwe Signal-funksie gebruik.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Dateer Signal nou op";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Werk Signal nou by";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Opgedateer na die jongste weergawe van Signal. Jy kan nou hierdie boodskaptipe op jou toestel ontvang.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Bygewerk na die jongste weergawe van Signal. U kan nou hierdie boodskaptipe op u toestel ontvang.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Jy kan %@ vra om hierdie boodskap te herstuur omdat jy nou ’n op datum weergawe van Signal gebruik.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "U kan %@ vra om hierdie boodskap weer te stuur omdat u nou ’n bygewerkte weergawe van Signal gebruik.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Jy kan die afsender vra om hierdie boodskap te herstuur omdat jy nou ’n op datum weergawe van Signal gebruik.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "U kan die afsender vra om hierdie boodskap weer te stuur omdat u nou ’n bygewerkte weergawe van Signal gebruik.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Onbekend";
@@ -6134,7 +6134,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verdwynboodskappe is gedeaktiveer";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verdwynboodskap-tyd is gestel as %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verdwynboodskaptyd is gestel as %@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -6143,16 +6143,16 @@
 "UNLINK_ACTION" = "Ontkoppel";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "As jy hierdie toestel ontkoppel, sal dit nie meer boodskappe kan stuur of ontvang nie.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "As u hierdie toestel ontkoppel, sal dit nie meer boodskappe kan stuur of ontvang nie.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Ontkoppel “%@”?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Toestel is nie meer gekoppel nie. Herkoppel Signal aan jou foon om aan te hou boodskappe stuur.";
+"UNLINKED_WARNING" = "Toestel is nie meer gekoppel nie. Herkoppel Signal aan u foon om aan te hou boodskappe stuur.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal kon nie jou toestel ontkoppel nie.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal kon nie u toestel ontkoppel nie.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Naamlose toestel";
@@ -6173,7 +6173,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "U toestel ondersteun nie hierdie funksie nie.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Your Safety Number with %@ changed likely because they reinstalled Signal or changed devices. Tap Verify to confirm the new safety number. This is optional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "U veiligheidsnommer met %@ het verander, moontlik omdat hulle Signal geherinstalleer het of van toestelle verander het. Tik op Verifieer om die nuwe veiligheidsnommer te bevestig. Dit is opsioneel.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verifieer";
@@ -6203,7 +6203,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiveer PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signaal vereis binnekort iOS 11 of nuwer. Werk op d.m.v. die Instellingstoep >> Algemeen >> Programmatuurbywerking.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal vereis binnekort iOS 11 of nuwer. Werk op d.m.v. die Instellingstoep >> Algemeen >> Programmatuurbywerking.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Werk iOS by";

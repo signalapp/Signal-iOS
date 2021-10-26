@@ -1757,7 +1757,7 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "సందేశాలు పంపబడ్డాయి";
 
 /* Indicates that the user can add a text message to forwarded messages. */
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";

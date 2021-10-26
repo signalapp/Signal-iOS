@@ -560,7 +560,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Avsluta samtal";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mikrofon av";
+"CALL_VIEW_MUTE_LABEL" = "Ljud av";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ kommer att få en meddelandeförfrågan från dig. Du kan ringa när din meddelandeförfrågan har accepterats.";
@@ -713,7 +713,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Oregistrerat nummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Ändra";
+"CONTACT_EDIT_NAME_BUTTON" = "Redigera";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "E-post";
@@ -1013,10 +1013,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Meddela alltid";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Meddela inte om tystad";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Meddela inte om ljudet är avstängt";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Få notiser när du omnämns i tystade chattar?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Få notiser när du omnämns i chattar med ljudet avstängt?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Omnämnanden";
@@ -1025,22 +1025,22 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "meddelande";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta denna chatt i…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stäng av ljudet för denna chatt i…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Alltid";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "tysta";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "ljud av";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 timmar";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Tysta";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Ljud av";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Inte tystad";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ljud på";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 dag";
@@ -1058,16 +1058,16 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Alltid";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Alltid tystad";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Ljudet är avstängt för alltid";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "tystad";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "ljudet avstängt";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fram tills %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Tystad till %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Ljudet är avstängt till %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ grupper gemensamt";
@@ -3437,7 +3437,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter som du för närvarande kan länka till med ditt konto. Vänligen ta bort en enhet och försök igen.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Tystad";
+"MUTED_BADGE" = "Ljudet avstängt";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nyligen ändrat sitt profilnamn från %1$@ till %2$@.";
@@ -5228,7 +5228,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkludera tystade chattar";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkludera chattar med avstängt ljud";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Ikonräknare";
