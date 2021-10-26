@@ -26,9 +26,6 @@ public class ContactCellConfiguration: NSObject {
     public let localUserDisplayMode: LocalUserDisplayMode
 
     @objc
-    public var useLargeAvatars = false
-
-    @objc
     public var forceDarkAppearance = false
 
     @objc
@@ -47,12 +44,11 @@ public class ContactCellConfiguration: NSObject {
     public var allowUserInteraction = false
 
     @objc
+    public var badged = true // TODO: Badges — Default false? Configure each use-case?
+
+    @objc
     public var hasAccessoryText: Bool {
         accessoryMessage?.nilIfEmpty != nil
-    }
-
-    fileprivate var avatarSize: UInt {
-        useLargeAvatars ? AvatarBuilder.standardAvatarSizePoints : AvatarBuilder.smallAvatarSizePoints
     }
 
     public init(content: ConversationContent,
@@ -114,7 +110,11 @@ public class ContactCellView: ManualStackView {
     public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .small }
 
     // TODO: Update localUserDisplayMode.
-    private let avatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser, useAutolayout: false)
+    private let avatarView = ConversationAvatarView(
+        sizeClass: avatarSizeClass,
+        localUserDisplayMode: .asUser,
+        badged: true,
+        useAutolayout: false)
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
@@ -170,7 +170,7 @@ public class ContactCellView: ManualStackView {
 
         avatarView.update(transaction) { config in
             config.dataSource = configuration.content
-            config.sizeClass = .custom(configuration.avatarSize)
+            config.addBadgeIfApplicable = configuration.badged
             config.localUserDisplayMode = configuration.localUserDisplayMode
             return .asynchronously
         }
@@ -183,7 +183,7 @@ public class ContactCellView: ManualStackView {
         // Configure self.
         do {
             var rootStackSubviews: [UIView] = [ avatarView ]
-            let avatarSize = CGSize.square(CGFloat(configuration.avatarSize))
+            let avatarSize = CGSize.square(CGFloat(Self.avatarSizeClass.avatarSize.largerAxis))
             var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
             // Configure textStack.
