@@ -3,13 +3,12 @@
 //
 
 import Foundation
+import SignalUI
 
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
-    let contactAvatarView = ConversationAvatarView(diameterPoints: PaymentModelCell.avatarDiameter,
-                                                   localUserDisplayMode: .asUser)
-
+    let contactAvatarView = ConversationAvatarView2(sizeClass: .custom(PaymentModelCell.avatarDiameter))
     let nameLabel = UILabel()
     let statusLabel = UILabel()
     let amountLabel = UILabel()
@@ -73,8 +72,10 @@ public class PaymentModelCell: UITableViewCell {
 
         var avatarView: UIView
         if let address = paymentItem.address {
-            contactAvatarView.configureWithSneakyTransaction(address: address)
-            contactAvatarView.removeAllSubviews()
+            contactAvatarView.updateWithSneakyTransaction { config in
+                config.dataSource = .unknownContact(contactAddress: address)
+                return .asynchronously
+            }
             avatarView = contactAvatarView
         } else {
             owsAssertDebug(paymentItem.isUnidentified ||

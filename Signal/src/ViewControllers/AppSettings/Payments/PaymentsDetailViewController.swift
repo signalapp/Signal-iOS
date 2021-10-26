@@ -345,9 +345,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         var stackViews = [UIView]()
 
-        let avatarSize: UInt = 52
-        let avatarView = ConversationAvatarView(diameterPoints: avatarSize,
-                                                localUserDisplayMode: .asUser)
+        let avatarView = ConversationAvatarView2(sizeClass: .custom(52))
         stackViews.append(avatarView)
         stackViews.append(UIView.spacer(withHeight: 12))
 
@@ -368,7 +366,10 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         databaseStorage.read { transaction in
-            avatarView.configure(address: address, transaction: transaction)
+            avatarView.update(transaction) { config in
+                config.dataSource = .unknownContact(contactAddress: address)
+                return .asynchronously
+            }
 
             let username = Self.contactsManager.displayName(for: address, transaction: transaction)
             let usernameFormat = (self.paymentItem.isIncoming

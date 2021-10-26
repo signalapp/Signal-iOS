@@ -234,8 +234,7 @@ extension GroupCallMemberSheet: CallObserver {
 private class GroupCallMemberCell: UITableViewCell {
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    let avatarView = ConversationAvatarView(diameterPoints: 36,
-                                            localUserDisplayMode: .asUser)
+    let avatarView = ConversationAvatarView2(sizeClass: .custom(36))
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()
@@ -246,10 +245,7 @@ private class GroupCallMemberCell: UITableViewCell {
 
         backgroundColor = .clear
         selectionStyle = .none
-
         layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-
-        avatarView.autoSetDimensions(to: CGSize(square: 36))
 
         nameLabel.font = .ows_dynamicTypeBody
 
@@ -307,8 +303,10 @@ private class GroupCallMemberCell: UITableViewCell {
         presentingIndicator.isHidden = item.isPresenting != true
 
         nameLabel.text = item.displayName
-
-        avatarView.configureWithSneakyTransaction(address: item.address)
+        avatarView.updateWithSneakyTransaction { config in
+            config.dataSource = .unknownContact(contactAddress: item.address)
+            return .asynchronously
+        }
     }
 }
 

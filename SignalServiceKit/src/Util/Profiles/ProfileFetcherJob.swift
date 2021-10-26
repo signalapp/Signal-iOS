@@ -557,7 +557,7 @@ public class ProfileFetcherJob: NSObject {
             } else {
                 return nil
             }
-        }.done { (avatarUrl: URL?) in
+        }.done(on: .global()) { (avatarUrl: URL?) in
             self.databaseStorage.write { writeTx in
                 // First, we add ensure we have a copy of any new badge in our badge store
                 let badgeModels = fetchedProfile.profile.badges.map { $0.1 }

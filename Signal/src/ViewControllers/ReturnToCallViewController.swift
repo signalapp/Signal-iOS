@@ -56,8 +56,10 @@ public class ReturnToCallViewController: UIViewController {
         updateLocalVideoFrame()
 
         let profileImage = databaseStorage.read { transaction -> UIImage? in
-            avatarView.configure(address: callViewController.remoteVideoAddress, transaction: transaction)
-
+            avatarView.update(transaction) { config in
+                config.dataSource = .unknownContact(contactAddress: callViewController.remoteVideoAddress)
+                return .asynchronously
+            }
             return self.profileManagerImpl.profileAvatar(for: callViewController.remoteVideoAddress,
                                                          transaction: transaction)
         }
@@ -74,8 +76,7 @@ public class ReturnToCallViewController: UIViewController {
         callViewController = nil
     }
 
-    private lazy var avatarView = ConversationAvatarView(diameterPoints: 60,
-                                                         localUserDisplayMode: .asUser)
+    private lazy var avatarView = ConversationAvatarView2(sizeClass: .custom(60))
     private lazy var backgroundAvatarView = UIImageView()
     private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 

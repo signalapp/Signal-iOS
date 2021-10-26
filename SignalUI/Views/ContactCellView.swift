@@ -111,13 +111,10 @@ public class ContactCellView: ManualStackView {
     }
 
     private var content: ConversationContent? { configuration?.content }
-
-    @objc
-    public static var avatarDiameterPoints: UInt { AvatarBuilder.smallAvatarSizePoints }
+    public static var avatarSizeClass: ConversationAvatarView2.Configuration.SizeClass { .small }
 
     // TODO: Update localUserDisplayMode.
-    private let avatarView = ConversationAvatarView(diameterPoints: ContactCellView.avatarDiameterPoints,
-                                                    localUserDisplayMode: .asUser)
+    private let avatarView = ConversationAvatarView2(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser, useAutolayout: false)
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
@@ -133,7 +130,6 @@ public class ContactCellView: ManualStackView {
 
         nameLabel.lineBreakMode = .byTruncatingTail
         accessoryLabel.textAlignment = .right
-        avatarView.shouldDeactivateConstraints = true
 
         self.shouldDeactivateConstraints = false
     }
@@ -172,10 +168,12 @@ public class ContactCellView: ManualStackView {
 
         self.isUserInteractionEnabled = configuration.allowUserInteraction
 
-        avatarView.configure(content: configuration.content,
-                             diameterPoints: configuration.avatarSize,
-                             localUserDisplayMode: configuration.localUserDisplayMode,
-                             transaction: transaction)
+        avatarView.update(transaction) { config in
+            config.dataSource = configuration.content
+            config.sizeClass = .custom(configuration.avatarSize)
+            config.localUserDisplayMode = configuration.localUserDisplayMode
+            return .asynchronously
+        }
 
         // Update fonts to reflect changes to dynamic type.
         configureFontsAndColors(forceDarkAppearance: configuration.forceDarkAppearance)

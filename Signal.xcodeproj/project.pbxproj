@@ -29,10 +29,10 @@
 		32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */; };
 		32C584A825B81C6600256804 /* AvatarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C584A725B81C6600256804 /* AvatarViewController.swift */; };
 		32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32CBF07C258C939800D56903 /* NameCollisionResolutionViewController.swift */; };
-		32D275F4272004C400D062FF /* PrimaryImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D275F3272004C400D062FF /* PrimaryImageView.swift */; };
 		32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32E958A925C12B3800BF12AD /* AnimatedProgressView.swift */; };
 		32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */; };
 		32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */; };
+		32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */; };
 		3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9D9271D953A0084CBAE /* SUIEnvironment.swift */; };
 		3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */; };
 		3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9E0271D96570084CBAE /* UIView+OWS.swift */; };
@@ -1148,10 +1148,10 @@
 		32B3286424C6957B00E4F974 /* ComposeSupportEmailOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeSupportEmailOperation.swift; sourceTree = "<group>"; };
 		32C584A725B81C6600256804 /* AvatarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewController.swift; sourceTree = "<group>"; };
 		32CBF07C258C939800D56903 /* NameCollisionResolutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionResolutionViewController.swift; sourceTree = "<group>"; };
-		32D275F3272004C400D062FF /* PrimaryImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryImageView.swift; sourceTree = "<group>"; };
 		32E958A925C12B3800BF12AD /* AnimatedProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedProgressView.swift; sourceTree = "<group>"; };
 		32ECD08724BFBF8000EDDED0 /* HelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		32ECD08924BFBF9500EDDED0 /* ContactSupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactSupportViewController.swift; sourceTree = "<group>"; };
+		32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrimaryImageView.swift; sourceTree = "<group>"; };
 		3402A9D9271D953A0084CBAE /* SUIEnvironment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SUIEnvironment.swift; sourceTree = "<group>"; };
 		3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dependencies+SignalUI.swift"; sourceTree = "<group>"; };
 		3402A9E0271D96570084CBAE /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
@@ -3082,6 +3082,7 @@
 		34A95508271B510400B05242 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */,
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				34A9550B271B510400B05242 /* ContactCellView.swift */,
@@ -5587,6 +5588,7 @@
 				34A955B3271B53F600B05242 /* BlockListUIUtils.m in Sources */,
 				3402AA8D271D9E180084CBAE /* ManualStackView.swift in Sources */,
 				34A954E1271B4F3E00B05242 /* Theme.m in Sources */,
+				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
 				3402AAAC271D9E180084CBAE /* NonContactTableViewCell.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */,
@@ -5716,7 +5718,6 @@
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
-				32D275F4272004C400D062FF /* PrimaryImageView.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				34BB78B5272C510900DA0D04 /* MobileCoinHelperMinimal.swift in Sources */,

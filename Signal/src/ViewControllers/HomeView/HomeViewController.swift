@@ -77,9 +77,11 @@ public extension HomeViewController {
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
-        let avatarView = ConversationAvatarView(diameterPoints: Self.paymentsBannerAvatarSize,
-                                                localUserDisplayMode: .asUser)
-        avatarView.configure(address: address, transaction: transaction)
+        let avatarView = ConversationAvatarView2(sizeClass: .custom(Self.paymentsBannerAvatarSize))
+        avatarView.update(transaction) { config in
+            config.dataSource = .unknownContact(contactAddress: address)
+            return .asynchronously
+        }
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
                                                       displayName: userName)
@@ -166,7 +168,6 @@ public extension HomeViewController {
                                                         : .ows_gray02)
         }
 
-        avatarView.autoSetDimensions(to: .square(CGFloat(Self.paymentsBannerAvatarSize)))
         avatarView.setCompressionResistanceHigh()
         avatarView.setContentHuggingHigh()
 

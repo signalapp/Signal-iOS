@@ -69,8 +69,7 @@ extension EmojiReactorsTableView: UITableViewDataSource {
 private class EmojiReactorCell: UITableViewCell {
     static let reuseIdentifier = "EmojiReactorCell"
 
-    let avatarView = ConversationAvatarView(diameterPoints: 36,
-                                            localUserDisplayMode: .asUser)
+    let avatarView = ConversationAvatarView2(sizeClass: .custom(36))
     let nameLabel = UILabel()
     let emojiLabel = UILabel()
 
@@ -84,7 +83,7 @@ private class EmojiReactorCell: UITableViewCell {
 
         contentView.addSubview(avatarView)
         avatarView.autoPinLeadingToSuperviewMargin()
-        avatarView.autoPinHeightToSuperviewMargins()
+        avatarView.autoHCenterInSuperview()
 
         contentView.addSubview(nameLabel)
         nameLabel.autoPinLeading(toTrailingEdgeOf: avatarView, offset: 8)
@@ -114,6 +113,9 @@ private class EmojiReactorCell: UITableViewCell {
             nameLabel.text = item.displayName
         }
 
-        avatarView.configureWithSneakyTransaction(address: item.address)
+        avatarView.updateWithSneakyTransaction { config in
+            config.dataSource = .unknownContact(contactAddress: item.address)
+            return .asynchronously
+        }
     }
 }
