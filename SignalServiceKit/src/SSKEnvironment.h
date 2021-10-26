@@ -57,7 +57,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol GroupV2Updates;
 @protocol PendingReceiptRecorder;
 @protocol VersionedProfiles;
-@protocol Payments;
+@protocol PaymentsHelper;
 @protocol PaymentsCurrencies;
 
 @interface SSKEnvironment : NSObject
@@ -110,7 +110,7 @@ extern NSNotificationName const WarmCachesNotification;
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
                               appExpiry:(AppExpiry *)appExpiry
                        messageProcessor:(MessageProcessor *)messageProcessor
-                               payments:(id<Payments>)payments
+                         paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
@@ -172,7 +172,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) OWSMessagePipelineSupervisor *messagePipelineSupervisorRef;
 @property (nonatomic, readonly) AppExpiry *appExpiryRef;
 @property (nonatomic, readonly) MessageProcessor *messageProcessorRef;
-@property (nonatomic, readonly) id<Payments> paymentsRef;
+@property (nonatomic, readonly) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;

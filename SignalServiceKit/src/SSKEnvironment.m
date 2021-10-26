@@ -51,7 +51,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) EarlyMessageManager *earlyMessageManagerRef;
 @property (nonatomic) OWSMessagePipelineSupervisor *messagePipelineSupervisorRef;
 @property (nonatomic) AppExpiry *appExpiryRef;
-@property (nonatomic) id<Payments> paymentsRef;
+@property (nonatomic) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
@@ -111,7 +111,7 @@ static SSKEnvironment *sharedSSKEnvironment;
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
                               appExpiry:(AppExpiry *)appExpiry
                        messageProcessor:(MessageProcessor *)messageProcessor
-                               payments:(id<Payments>)payments
+                         paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
@@ -121,7 +121,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     if (!self) {
         return self;
     }
-
+    
     _contactsManagerRef = contactsManager;
     _linkPreviewManagerRef = linkPreviewManager;
     _messageSenderRef = messageSender;
@@ -167,7 +167,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messagePipelineSupervisorRef = messagePipelineSupervisor;
     _appExpiryRef = appExpiry;
     _messageProcessorRef = messageProcessor;
-    _paymentsRef = payments;
+    _paymentsHelperRef = paymentsHelper;
     _paymentsCurrenciesRef = paymentsCurrencies;
     _spamChallengeResolverRef = spamResolver;
     _senderKeyStoreRef = senderKeyStore;
@@ -179,7 +179,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 + (instancetype)shared
 {
     OWSAssertDebug(sharedSSKEnvironment);
-
+    
     return sharedSSKEnvironment;
 }
 
@@ -187,7 +187,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 {
     OWSAssertDebug(env);
     OWSAssertDebug(!sharedSSKEnvironment || CurrentAppContext().isRunningTests);
-
+    
     sharedSSKEnvironment = env;
 }
 
@@ -207,7 +207,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 {
     @synchronized(self) {
         OWSAssertDebug(_callMessageHandlerRef);
-
+        
         return _callMessageHandlerRef;
     }
 }
@@ -217,7 +217,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     @synchronized(self) {
         OWSAssertDebug(callMessageHandlerRef);
         OWSAssertDebug(!_callMessageHandlerRef);
-
+        
         _callMessageHandlerRef = callMessageHandlerRef;
     }
 }
@@ -226,7 +226,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 {
     @synchronized(self) {
         OWSAssertDebug(_notificationsManagerRef);
-
+        
         return _notificationsManagerRef;
     }
 }
@@ -236,7 +236,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     @synchronized(self) {
         OWSAssertDebug(notificationsManagerRef);
         OWSAssertDebug(!_notificationsManagerRef);
-
+        
         _notificationsManagerRef = notificationsManagerRef;
     }
 }
@@ -260,7 +260,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [self.typingIndicatorsImpl warmCaches];
     [self.payments warmCaches];
     [self.paymentsCurrencies warmCaches];
-
+    
     [NSNotificationCenter.defaultCenter postNotificationName:WarmCachesNotification object:nil];
 }
 

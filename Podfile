@@ -71,13 +71,13 @@ pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_war
 
 pod 'Reachability', :inhibit_warnings => true
 
-pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
-pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
-
 def ui_pods
   pod 'BonMot', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'lottie-ios', :inhibit_warnings => true
+
+  pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
+  pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
 end
 
 target 'Signal' do

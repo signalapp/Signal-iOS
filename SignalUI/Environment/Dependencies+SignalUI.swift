@@ -35,6 +35,14 @@ public extension NSObject {
     static var chatColors: ChatColors {
         SUIEnvironment.shared.chatColorsRef
     }
+
+    var payments: Payments {
+        SUIEnvironment.shared.paymentsRef
+    }
+
+    static var payments: Payments {
+        SUIEnvironment.shared.paymentsRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -67,14 +75,38 @@ public extension Dependencies {
     static var chatColors: ChatColors {
         SUIEnvironment.shared.chatColorsRef
     }
+
+    var payments: Payments {
+        SUIEnvironment.shared.paymentsRef
+    }
+
+    static var payments: Payments {
+        SUIEnvironment.shared.paymentsRef
+    }
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension NSObject {
+
+    final var paymentsSwift: PaymentsSwift {
+        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
+
+    static var paymentsSwift: PaymentsSwift {
+        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+
+    var paymentsSwift: PaymentsSwift {
+        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
+
+    static var paymentsSwift: PaymentsSwift {
+        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
 }
