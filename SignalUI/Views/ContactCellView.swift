@@ -111,10 +111,10 @@ public class ContactCellView: ManualStackView {
     }
 
     private var content: ConversationContent? { configuration?.content }
-    public static var avatarSizeClass: ConversationAvatarView2.Configuration.SizeClass { .small }
+    public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .small }
 
     // TODO: Update localUserDisplayMode.
-    private let avatarView = ConversationAvatarView2(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser, useAutolayout: false)
+    private let avatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser, useAutolayout: false)
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12

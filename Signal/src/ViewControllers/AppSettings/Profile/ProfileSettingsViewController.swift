@@ -243,7 +243,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView2(sizeClass: .xlarge, badged: true)
+        let badgedAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
         badgedAvatarView.updateWithSneakyTransaction { config in
             // TODO: Badges — Clean up data sources
             if let avatarData = avatarData {

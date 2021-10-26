@@ -9,7 +9,7 @@ import UIKit
 struct ConversationHeaderBuilder: Dependencies {
     weak var delegate: ConversationHeaderDelegate!
     let transaction: SDSAnyReadTransaction
-    let sizeClass: ConversationAvatarView2.Configuration.SizeClass
+    let sizeClass: ConversationAvatarView.Configuration.SizeClass
     let options: Options
 
     var subviews = [UIView]()
@@ -28,7 +28,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     static func buildHeader(
         for thread: TSThread,
-        sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate
     ) -> UIView {
@@ -54,7 +54,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     static func buildHeaderForGroup(
         groupThread: TSGroupThread,
-        sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate
     ) -> UIView {
@@ -74,7 +74,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     static func buildHeaderForGroup(
         groupThread: TSGroupThread,
-        sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
         transaction: SDSAnyReadTransaction
@@ -121,7 +121,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     static func buildHeaderForContact(
         contactThread: TSContactThread,
-        sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate
     ) -> UIView {
@@ -141,7 +141,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
     static func buildHeaderForContact(
         contactThread: TSContactThread,
-        sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
         transaction: SDSAnyReadTransaction
@@ -213,7 +213,7 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     init(delegate: ConversationHeaderDelegate,
-         sizeClass: ConversationAvatarView2.Configuration.SizeClass,
+         sizeClass: ConversationAvatarView.Configuration.SizeClass,
          options: Options,
          transaction: SDSAnyReadTransaction) {
 
@@ -436,7 +436,7 @@ struct ConversationHeaderBuilder: Dependencies {
     }
 
     func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
-        let avatarView = ConversationAvatarView2(
+        let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
             localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser,
             badged: true)

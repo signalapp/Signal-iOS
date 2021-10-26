@@ -11,7 +11,7 @@ public class HomeViewCell: UITableViewCell {
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
-    private let avatarView = ConversationAvatarView2(
+    private let avatarView = ConversationAvatarView(
         sizeClass: .medium,
         localUserDisplayMode: .noteToSelf,
         badged: true,

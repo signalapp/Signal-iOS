@@ -53,10 +53,10 @@ public class ConversationHeaderView: UIStackView {
     private let subtitleLabel: UILabel
 
     private var shouldBadgeAvatar: Bool { avatarSizeClass == .small }
-    private var avatarSizeClass: ConversationAvatarView2.Configuration.SizeClass {
+    private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         traitCollection.verticalSizeClass == .compact ? .custom(24) : .small
     }
-    private lazy var avatarView = ConversationAvatarView2(
+    private lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .noteToSelf,
         badged: shouldBadgeAvatar)

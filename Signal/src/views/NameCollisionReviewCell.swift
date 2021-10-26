@@ -89,7 +89,7 @@ extension NameCollision {
 class NameCollisionCell: UITableViewCell {
     typealias Action = (title: String, action: () -> Void)
 
-    let avatarView = ConversationAvatarView2(sizeClass: .custom(64))
+    let avatarView = ConversationAvatarView(sizeClass: .custom(64))
     let nameLabel: UILabel = {
         let label = UILabel()
 

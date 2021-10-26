@@ -8,7 +8,7 @@ import SignalUI
 
 @objc class GroupTableViewCell: UITableViewCell {
 
-    private let avatarView = ConversationAvatarView2(sizeClass: .small)
+    private let avatarView = ConversationAvatarView(sizeClass: .small)
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()

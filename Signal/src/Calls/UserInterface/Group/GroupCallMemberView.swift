@@ -254,7 +254,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
-    let avatarView = ConversationAvatarView2(sizeClass: .custom(0))
+    let avatarView = ConversationAvatarView(sizeClass: .custom(0))
 
     var isCallMinimized: Bool = false {
         didSet {

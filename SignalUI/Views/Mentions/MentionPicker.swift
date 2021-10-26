@@ -274,7 +274,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
 private class MentionableUserCell: UITableViewCell {
     static let reuseIdentifier = "MentionPickerCell"
 
-    static let avatarSizeClass: ConversationAvatarView2.Configuration.SizeClass = .small
+    static let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass = .small
     static let vSpacing: CGFloat = 10
     static let hSpacing: CGFloat = 12
 
@@ -287,7 +287,7 @@ private class MentionableUserCell: UITableViewCell {
 
     let displayNameLabel = UILabel()
     let usernameLabel = UILabel()
-    let avatarView = ConversationAvatarView2(
+    let avatarView = ConversationAvatarView(
         sizeClass: MentionableUserCell.avatarSizeClass,
         localUserDisplayMode: .asUser,
         badged: true,
