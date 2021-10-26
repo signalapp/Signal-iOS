@@ -368,12 +368,6 @@ private class ModelReadCache<KeyType: Hashable & Equatable, ValueType: BaseModel
             owsAssertDebug(address.uuid == nil)
             return true
         }
-        #if TESTABLE_BUILD
-        if !DebugFlags.reduceLogChatter,
-           !CurrentAppContext().isNSE {
-            Logger.warn("Skipping cache for: \(address), \(cacheName)")
-        }
-        #endif
         return false
     }
 
