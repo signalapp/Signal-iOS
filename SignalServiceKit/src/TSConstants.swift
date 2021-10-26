@@ -14,6 +14,7 @@ private protocol TSConstantsProtocol: AnyObject {
     var sfuURL: String { get }
     var sfuTestURL: String { get }
     var kUDTrustRoot: String { get }
+    var updates2URL: String { get }
 
     var censorshipReflectorHost: String { get }
 
@@ -74,6 +75,8 @@ public class TSConstants: NSObject {
     public static var sfuTestURL: String { shared.sfuTestURL }
     @objc
     public static var kUDTrustRoot: String { shared.kUDTrustRoot }
+    @objc
+    public static var updates2URL: String { shared.updates2URL }
 
     @objc
     public static var censorshipReflectorHost: String { shared.censorshipReflectorHost }
@@ -183,6 +186,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let sfuURL = "https://sfu.voip.signal.org"
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
     public let kUDTrustRoot = "BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
+    public let updates2URL = "https://updates2.signal.org"
 
     public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
 
@@ -245,6 +249,8 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // There's no separate test SFU for staging.
     public let sfuTestURL = "https://sfu.test.voip.signal.org"
     public let kUDTrustRoot = "BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+    // There's no separate updates endpoint for staging.
+    public let updates2URL = "https://updates2.signal.org"
 
     public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
 

@@ -14,6 +14,7 @@ fileprivate extension OWSSignalService {
         case cds(host: String, censorshipCircumventionPrefix: String)
         case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
         case kbs
+        case updates2
 
         static func type(forCdnNumber cdnNumber: UInt32) -> SignalServiceType {
             switch cdnNumber {
@@ -69,6 +70,10 @@ fileprivate extension OWSSignalService {
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.keyBackupURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.keyBackupCensorshipPrefix,
                                      shouldHandleRemoteDeprecation: true)
+        case .updates2:
+            return SignalServiceInfo(baseUrl: URL(string: TSConstants.updates2URL)!,
+                                     censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
+                                     shouldHandleRemoteDeprecation: false)
         }
     }
 
@@ -138,5 +143,9 @@ public extension OWSSignalService {
 
     func urlSessionForKBS() -> OWSURLSession {
         buildUrlSession(for: .kbs)
+    }
+
+    func urlSessionForUpdates2() -> OWSURLSession {
+        buildUrlSession(for: .updates2)
     }
 }
