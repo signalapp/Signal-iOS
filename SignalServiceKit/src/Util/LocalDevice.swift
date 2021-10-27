@@ -47,6 +47,12 @@ public class LocalDevice: NSObject {
         guard let memoryUsageUInt64 = self.memoryUsageUInt64 else {
             return "Unknown"
         }
-        return "\(memoryUsageUInt64)"
+        let nseMemoryUsageWarn: UInt64 = 24 * 1000 * 1000
+        if CurrentAppContext().isNSE,
+           memoryUsageUInt64 > nseMemoryUsageWarn {
+            return "\(memoryUsageUInt64) ⚠️⚠️⚠️"
+        } else {
+            return "\(memoryUsageUInt64)"
+        }
     }
 }
