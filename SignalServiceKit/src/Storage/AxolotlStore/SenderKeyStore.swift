@@ -335,7 +335,7 @@ extension SenderKeyStore {
 
     // MARK: Logging
 
-    static private var logThrottleExpiration = Date.distantPast
+    static private var logThrottleExpiration = AtomicValue<Date>(Date.distantPast)
 
     // This method traverses all groups where `recipient` is a member and logs out information on any sent
     // sender key distribution messages.
@@ -344,11 +344,11 @@ extension SenderKeyStore {
 
         // To avoid doing too much work for a flood of failed decryptions, we'll only honor an SKDM log
         // dump request every 10s. That's frequent enough to be captured in a log zip.
-        guard Self.logThrottleExpiration.isBeforeNow else {
+        guard Self.logThrottleExpiration.get().isBeforeNow else {
             Logger.info("Dumped SKDM logs recently. Ignoring request for \(recipient)...")
             return
         }
-        Self.logThrottleExpiration = Date() + 10.0
+        Self.logThrottleExpiration.set(Date() + 10.0)
 
         // We deliberately avoid the cached pathways here and just query the database directly
         // Locality isn't super useful when we're just iterating over everything. This would just
