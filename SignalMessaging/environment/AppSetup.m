@@ -110,8 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
         OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
-        id<Payments> payments = [PaymentsImpl new];
+        id<PaymentsHelper> paymentsHelper = [PaymentsHelperImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
+        id<PaymentsEvents> paymentsEvents = [PaymentsEventsMainApp new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
@@ -171,7 +172,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         messagePipelineSupervisor:messagePipelineSupervisor
                                                                         appExpiry:appExpiry
                                                                  messageProcessor:messageProcessor
-                                                                         payments:payments
+                                                                   paymentsHelper:paymentsHelper
+                                                               paymentsCurrencies:paymentsCurrencies
+                                                                   paymentsEvents:paymentsEvents
                                                                paymentsCurrencies:paymentsCurrencies
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore

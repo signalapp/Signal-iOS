@@ -59,6 +59,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol VersionedProfiles;
 @protocol PaymentsHelper;
 @protocol PaymentsCurrencies;
+@protocol PaymentsEvents;
 
 @interface SSKEnvironment : NSObject
 
@@ -112,6 +113,7 @@ extern NSNotificationName const WarmCachesNotification;
                        messageProcessor:(MessageProcessor *)messageProcessor
                          paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
+                         paymentsEvents:(id<PaymentsEvents>)paymentsEvents
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil NS_DESIGNATED_INITIALIZER;
@@ -174,6 +176,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) MessageProcessor *messageProcessorRef;
 @property (nonatomic, readonly) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
+@property (nonatomic, readonly) id<PaymentsEvents> paymentsEventsRef;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;

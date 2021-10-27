@@ -450,7 +450,15 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsCurrenciesRef
     }
 
-    var spamChallengeResolver: SpamChallengeResolver {
+    final var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+    
+    static var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    final var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
 
@@ -458,7 +466,7 @@ public extension NSObject {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
 
-    var senderKeyStore: SenderKeyStore {
+    final var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
@@ -466,7 +474,7 @@ public extension NSObject {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
-    var appVersion: AppVersion {
+    final var appVersion: AppVersion {
         AppVersion.shared()
     }
 
@@ -474,7 +482,7 @@ public extension NSObject {
         AppVersion.shared()
     }
 
-    var phoneNumberUtil: PhoneNumberUtil {
+    final var phoneNumberUtil: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
 
@@ -923,6 +931,14 @@ public extension Dependencies {
         SSKEnvironment.shared.paymentsCurrenciesRef
     }
 
+    var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+    
+    static var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+    
     var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }

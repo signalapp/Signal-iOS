@@ -19,9 +19,6 @@ public protocol Payments: AnyObject {
 
     func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool
 
-    func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction)
-    func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction)
-
     func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction)
 
     func replaceAsUnidentified(paymentModel oldPaymentModel: TSPaymentModel,
@@ -46,14 +43,6 @@ public protocol Payments: AnyObject {
 // MARK: -
 
 public protocol PaymentsSwift: Payments {
-
-    var paymentsState: PaymentsState { get }
-    func setPaymentsState(_ value: PaymentsState,
-                          updateStorageService: Bool,
-                          transaction: SDSAnyWriteTransaction)
-    func enablePayments(transaction: SDSAnyWriteTransaction)
-    func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
-    func disablePayments(transaction: SDSAnyWriteTransaction)
 
     var currentPaymentBalance: PaymentBalance? { get }
     func updateCurrentPaymentBalance()
@@ -109,6 +98,30 @@ extension PaymentsPassphrase {
 
 // MARK: -
 
+public protocol SendPaymentRecipient {
+    var address: SignalServiceAddress? { get }
+    var isIdentifiedPayment: Bool { get }
+}
+
+// MARK: -
+
+public protocol PreparedPayment {
+}
+
+// MARK: -
+
+public struct PaymentBalance {
+    public let amount: TSPaymentAmount
+    public let date: Date
+    
+    public init(amount: TSPaymentAmount, date: Date) {
+        self.amount = amount
+        self.date = date
+    }
+}
+
+// MARK: -
+
 public class MockPayments: NSObject {
 }
 
@@ -117,24 +130,6 @@ public class MockPayments: NSObject {
 extension MockPayments: PaymentsSwift {
 
     public var paymentsState: PaymentsState { .disabled }
-
-    public func setPaymentsState(_ value: PaymentsState,
-                                 updateStorageService: Bool,
-                                 transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func enablePayments(transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
-        owsFail("Not implemented.")
-    }
-
-    public func disablePayments(transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
 
     public var shouldShowPaymentsUI: Bool {
         owsFail("Not implemented.")
@@ -194,14 +189,6 @@ extension MockPayments: PaymentsSwift {
     }
 
     public func isValidMobileCoinPublicAddress(_ publicAddressData: Data) -> Bool {
-        owsFail("Not implemented.")
-    }
-
-    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
-    }
-
-    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 

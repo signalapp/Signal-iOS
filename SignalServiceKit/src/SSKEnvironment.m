@@ -53,6 +53,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) AppExpiry *appExpiryRef;
 @property (nonatomic) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
+@property (nonatomic) id<PaymentsEvents> paymentsEventsRef;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
@@ -113,6 +114,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        messageProcessor:(MessageProcessor *)messageProcessor
                          paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
+                         paymentsEvents:(id<PaymentsEvents>)paymentsEvents
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
@@ -169,6 +171,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageProcessorRef = messageProcessor;
     _paymentsHelperRef = paymentsHelper;
     _paymentsCurrenciesRef = paymentsCurrencies;
+    _paymentsEventsRef = paymentsEvents;
     _spamChallengeResolverRef = spamResolver;
     _senderKeyStoreRef = senderKeyStore;
     _phoneNumberUtilRef = phoneNumberUtil;
@@ -258,7 +261,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     [OWSKeyBackupService warmCaches];
     [PinnedThreadManager warmCaches];
     [self.typingIndicatorsImpl warmCaches];
-    [self.payments warmCaches];
+    [self.paymentsHelper warmCaches];
     [self.paymentsCurrencies warmCaches];
     
     [NSNotificationCenter.defaultCenter postNotificationName:WarmCachesNotification object:nil];

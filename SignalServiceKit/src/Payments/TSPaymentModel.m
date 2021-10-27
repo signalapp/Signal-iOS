@@ -275,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillInsertWithTransaction:transaction];
 
-    [self.payments willInsertPayment:self transaction:transaction];
+    [self.paymentsEvents willInsertPayment:self transaction:transaction];
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -291,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self.payments willUpdatePayment:self transaction:transaction];
+    [self.paymentsEvents willUpdatePayment:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

@@ -15,7 +15,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     private var refreshBalanceEvent: RefreshEvent?
 
-    private let paymentsReconciliation = PaymentsReconciliation()
+    fileprivate let paymentsReconciliation = PaymentsReconciliation()
 
     private let paymentsProcessor = PaymentsProcessor()
 
@@ -161,26 +161,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 
     // MARK: - PaymentsState
 
-//    private static let arePaymentsEnabledKey = "isPaymentEnabled"
-//    private static let paymentsEntropyKey = "paymentsEntropy"
-//
-//    private let paymentStateCache = AtomicOptional<PaymentsState>(nil)
-//
-//    @objc
-//    public static let arePaymentsEnabledDidChange = Notification.Name("arePaymentsEnabledDidChange")
-//
-//    public func warmCaches() {
-//        owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
-//
-//        Self.databaseStorage.read { transaction in
-//            self.paymentStateCache.set(Self.loadPaymentsState(transaction: transaction))
-//        }
-//    }
-//
-//    public var paymentsState: PaymentsState {
-//        paymentStateCache.get() ?? .disabled
-//    }
-
     public var arePaymentsEnabled: Bool {
         paymentsHelper.arePaymentsEnabled
     }
@@ -219,112 +199,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         MobileCoinAPI.isValidPassphraseWord(word)
     }
 
-    public func enablePayments(transaction: SDSAnyWriteTransaction) {
-        // We must preserve any existing paymentsEntropy.
-        let paymentsEntropy = self.paymentsEntropy ?? Self.generateRandomPaymentsEntropy()
-        _ = enablePayments(withPaymentsEntropy: paymentsEntropy, transaction: transaction)
-    }
-
-    public func enablePayments(withPaymentsEntropy newPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
-        let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
-        guard oldPaymentsEntropy == nil || oldPaymentsEntropy == newPaymentsEntropy else {
-            owsFailDebug("paymentsEntropy is already set.")
-            return false
-        }
-        let paymentsState = PaymentsState.build(arePaymentsEnabled: true,
-                                                paymentsEntropy: newPaymentsEntropy)
-        owsAssertDebug(paymentsState.isEnabled)
-        setPaymentsState(paymentsState,
-                         updateStorageService: true,
-                         transaction: transaction)
-        owsAssertDebug(arePaymentsEnabled)
-        return true
-    }
-
-    public func disablePayments(transaction: SDSAnyWriteTransaction) {
-        switch paymentsState {
-        case .enabled(let paymentsEntropy):
-            setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
-                             updateStorageService: true,
-                             transaction: transaction)
-        case .disabled, .disabledWithPaymentsEntropy:
-            owsFailDebug("Payments already disabled.")
-        }
-        owsAssertDebug(!arePaymentsEnabled)
-    }
-
-    public func setPaymentsState(_ newPaymentsState: PaymentsState,
-                                 updateStorageService: Bool,
-                                 transaction: SDSAnyWriteTransaction) {
-        let oldPaymentsState = self.paymentsState
-
-        guard !newPaymentsState.isEnabled || canEnablePayments else {
-            owsFailDebug("Payments cannot be enabled.")
-            return
-        }
-        guard newPaymentsState != oldPaymentsState else {
-            Logger.verbose("Ignoring redundant change.")
-            return
-        }
-        if let oldPaymentsEntropy = oldPaymentsState.paymentsEntropy,
-           let newPaymentsEntropy = newPaymentsState.paymentsEntropy,
-           oldPaymentsEntropy != newPaymentsEntropy {
-            Logger.verbose("oldPaymentsEntropy: \(oldPaymentsEntropy.hexadecimalString) != newPaymentsEntropy: \(newPaymentsEntropy.hexadecimalString).")
-            owsFailDebug("paymentsEntropy does not match.")
-        }
-
-        Self.keyValueStore.setBool(newPaymentsState.isEnabled,
-                                   key: Self.arePaymentsEnabledKey,
-                                   transaction: transaction)
-        if let paymentsEntropy = newPaymentsState.paymentsEntropy {
-            Self.keyValueStore.setData(paymentsEntropy,
-                                       key: Self.paymentsEntropyKey,
-                                       transaction: transaction)
-        }
-
-        self.paymentStateCache.set(newPaymentsState)
-
-        transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(Self.arePaymentsEnabledDidChange, object: nil)
-
-            self.updateCurrentPaymentBalance()
-
-            Self.profileManager.reuploadLocalProfile()
-
-            if updateStorageService {
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
-            }
-        }
-    }
-
-    private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
-        guard FeatureFlags.paymentsEnabled else {
-            return .disabled
-        }
-        func loadPaymentsEntropy() -> Data? {
-            guard storageCoordinator.isStorageReady else {
-                owsFailDebug("Storage is not ready.")
-                return nil
-            }
-            guard tsAccountManager.isRegisteredAndReady else {
-                return nil
-            }
-            return keyValueStore.getData(paymentsEntropyKey, transaction: transaction)
-        }
-        guard let paymentsEntropy = loadPaymentsEntropy() else {
-            return .disabled
-        }
-        let arePaymentsEnabled = keyValueStore.getBool(Self.arePaymentsEnabledKey,
-                                                       defaultValue: false,
-                                                       transaction: transaction)
-        return PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
-                                   paymentsEntropy: paymentsEntropy)
-    }
-
-    public static func generateRandomPaymentsEntropy() -> Data {
-        Cryptography.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
-    }
-
     public func clearState(transaction: SDSAnyWriteTransaction) {
         Self.keyValueStore.removeAll(transaction: transaction)
 
@@ -332,28 +206,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         paymentBalanceCache.set(nil)
 
         discardApiHandle()
-    }
-
-    // MARK: - Public Keys
-
-    private static let arePaymentsEnabledForUserStore = SDSKeyValueStore(collection: "arePaymentsEnabledForUserStore")
-
-    public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
-        guard let uuid = address.uuid else {
-            Logger.warn("User is missing uuid.")
-            return
-        }
-        Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: uuid.uuidString, transaction: transaction)
-    }
-
-    public func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            Logger.warn("User is missing uuid.")
-            return false
-        }
-        return Self.arePaymentsEnabledForUserStore.getBool(uuid.uuidString,
-                                                           defaultValue: false,
-                                                           transaction: transaction)
     }
 
     // MARK: - Public Keys
@@ -1332,19 +1184,33 @@ public extension PaymentsImpl {
     }
 }
 
-// MARK: - Formatting
+// MARK: -
 
-public extension PaymentsImpl {
-    func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        paymentsReconciliation.willInsertPayment(paymentModel, transaction: transaction)
+@objc
+public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
+    public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+        let payments = self.payments as! PaymentsImpl
+        
+        payments.paymentsReconciliation.willInsertPayment(paymentModel, transaction: transaction)
 
         // If we're inserting a new payment of any kind, our balance may have changed.
-        updateCurrentPaymentBalance()
+        payments.updateCurrentPaymentBalance()
     }
 
-    func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
-        paymentsReconciliation.willUpdatePayment(paymentModel, transaction: transaction)
+    public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
+        let payments = self.payments as! PaymentsImpl
+        payments.paymentsReconciliation.willUpdatePayment(paymentModel, transaction: transaction)
     }
+
+    public func clearState(transaction: SDSAnyWriteTransaction) {
+        paymentsHelper.clearState(transaction: transaction)
+        payments.clearState(transaction: transaction)
+    }
+}
+
+// MARK: -
+
+public extension PaymentsImpl {
 
     func scheduleReconciliationNow(transaction: SDSAnyWriteTransaction) {
         paymentsReconciliation.scheduleReconciliationNow(transaction: transaction)
