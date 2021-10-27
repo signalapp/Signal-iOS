@@ -724,7 +724,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: - Phone Number Sharing
 
-    private static let phoneNumberSharingModeKey = "phoneNumberSharingMode"
+    private static var phoneNumberSharingModeKey: String { "phoneNumberSharingMode" }
     private var phoneNumberSharingModeCached = AtomicOptional<PhoneNumberSharingMode>(nil)
 
     public var phoneNumberSharingMode: PhoneNumberSharingMode {

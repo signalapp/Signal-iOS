@@ -1047,10 +1047,10 @@ public class KeyBackupService: NSObject {
             return KeyBackupService.tokenStore
         }
 
-        private static let backupIdKey = "backupIdKey"
-        private static let dataKey = "dataKey"
-        private static let triesKey = "triesKey"
-        private static let enclaveNameKey = "enclaveNameKey"
+        private static var backupIdKey: String { "backupIdKey" }
+        private static var dataKey: String { "dataKey" }
+        private static var triesKey: String { "triesKey" }
+        private static var enclaveNameKey: String { "enclaveNameKey" }
 
         let backupId: Data
         let data: Data

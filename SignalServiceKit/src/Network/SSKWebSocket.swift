@@ -54,7 +54,7 @@ public class SSKWebSocketError: NSObject, CustomNSError {
 
     // TODO: Eliminate.
     @objc
-    public static let kStatusCodeKey = "SSKWebSocketErrorStatusCode"
+    public static var kStatusCodeKey: String { "SSKWebSocketErrorStatusCode" }
 
     public override var description: String {
         return "SSKWebSocketError - underlyingError: \(underlyingError)"

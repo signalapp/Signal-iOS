@@ -17,7 +17,7 @@ public class PinnedThreadManager: NSObject {
     public static let maxPinnedThreads = 4
 
     private static let keyValueStore = SDSKeyValueStore(collection: "PinnedConversationManager")
-    private static let pinnedThreadIdsKey = "pinnedThreadIds"
+    private static var pinnedThreadIdsKey: String { "pinnedThreadIds" }
     private static let cachedPinnedThreadIds = AtomicArray<String>()
 
     @objc
