@@ -574,7 +574,10 @@ public class SenderKeyUnavailableError: NSObject, CustomNSError, IsRetryableProv
 
     public var localizedDescription: String { customLocalizedDescription }
 
-    public var isRetryableProvider: Bool { false }
+    // These errors are retryable in the sense that a sent message can be retried and be successful, just not with sender key.
+    // If any intended recipient has previously failed with this error code in a prior send, the next send attempt
+    // will restrict itself to fanout send and not use sender key.
+    public var isRetryableProvider: Bool { true }
 }
 
 // MARK: -

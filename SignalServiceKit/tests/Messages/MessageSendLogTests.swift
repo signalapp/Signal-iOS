@@ -30,6 +30,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: payloadIndex,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: deviceId,
+                message: newMessage,
                 transaction: writeTx)
 
             // Re-fetch the payload
@@ -59,6 +60,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: payloadIndex,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: deviceId,
+                message: newMessage,
                 transaction: writeTx)
 
             // Expect no results when re-fetching the payload with a different deviceId
@@ -91,6 +93,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     payloadId: payloadIndex,
                     recipientUuid: recipientAddress.uuid!,
                     recipientDeviceId: deviceId,
+                    message: newMessage,
                     transaction: writeTx)
             }
 
@@ -131,6 +134,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: payloadIndex,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: deviceId,
+                message: newMessage,
                 transaction: writeTx)
 
             // Expect no results when re-fetching the payload since it's expired
@@ -156,6 +160,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     payloadId: payloadIndex,
                     recipientUuid: recipientAddress.uuid!,
                     recipientDeviceId: deviceId,
+                    message: newMessage,
                     transaction: writeTx)
             }
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
@@ -196,6 +201,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: payloadIndex,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
+                message: newMessage,
                 transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
                 timestamp: newMessage.timestamp,
@@ -212,6 +218,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     payloadId: payloadIndex,
                     recipientUuid: recipientAddress.uuid!,
                     recipientDeviceId: deviceId,
+                    message: newMessage,
                     transaction: writeTx)
             }
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
@@ -252,6 +259,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: initialPayloadId,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
+                message: newMessage,
                 transaction: writeTx)
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
 
@@ -265,6 +273,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: initialPayloadId,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
+                message: newMessage,
                 transaction: writeTx)
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
 
@@ -310,6 +319,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: initialPayloadId,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 0,
+                message: newMessage,
                 transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
                 timestamp: newMessage.timestamp,
@@ -330,6 +340,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: secondPayloadId,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: 1,
+                message: newMessage,
                 transaction: writeTx)
             MessageSendLog.sendComplete(message: newMessage, transaction: writeTx)
             MessageSendLog.recordSuccessfulDelivery(
@@ -382,6 +393,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                 payloadId: payloadIndex,
                 recipientUuid: recipientAddress.uuid!,
                 recipientDeviceId: deviceId,
+                message: newMessage,
                 transaction: writeTx)
 
             // Delete the message
@@ -414,6 +426,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     payloadId: index,
                     recipientUuid: recipientAddress.uuid!,
                     recipientDeviceId: deviceId,
+                    message: newMessage,
                     transaction: writeTx)
             }
 
@@ -470,7 +483,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             XCTAssertEqual(message.timestamp, originalTimestamp)
 
             let index = MessageSendLog.recordPayload(data, forMessageBeingSent: message, transaction: writeTx)!.int64Value
-            MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, transaction: writeTx)
+            MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, message: newMessage, transaction: writeTx)
 
             let fetchedPayload = MessageSendLog.test_fetchPayload(
                 address: address,

@@ -736,14 +736,15 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   return;
                                               }
 
-                                              if ([SpamChallengeRequiredError isSpamChallengeRequiredError:error] ||
-                                                  [SpamChallengeResolvedError isSpamChallengeResolvedError:error]) {
-                                                  recipientState.state = OWSOutgoingMessageRecipientStatePending;
-                                              } else {
-                                                  recipientState.state = OWSOutgoingMessageRecipientStateFailed;
-                                              }
-                                              recipientState.errorCode = @(error.code);
-                                          }];
+        if (error.isRetryable && recipientState.state == OWSOutgoingMessageRecipientStateSending) {
+            // For retryable errors, we can just set the error code and leave the state set as Sending
+        } else if ([SpamChallengeRequiredError isSpamChallengeRequiredError:error] || [SpamChallengeResolvedError isSpamChallengeResolvedError:error]) {
+            recipientState.state = OWSOutgoingMessageRecipientStatePending;
+        } else {
+            recipientState.state = OWSOutgoingMessageRecipientStateFailed;
+        }
+        recipientState.errorCode = @(error.code);
+    }];
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress

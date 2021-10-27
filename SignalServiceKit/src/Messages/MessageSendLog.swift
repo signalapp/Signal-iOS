@@ -260,6 +260,7 @@ public class MessageSendLog: NSObject {
         payloadId: Int64,
         recipientUuid: UUID,
         recipientDeviceId: Int64,
+        message: TSOutgoingMessage,
         transaction writeTx: SDSAnyWriteTransaction
     ) {
         guard !RemoteConfig.messageResendKillSwitch else {
@@ -272,6 +273,17 @@ public class MessageSendLog: NSObject {
                 recipientUUID: recipientUuid.uuidString,
                 recipientDeviceId: recipientDeviceId
             ).insert(writeTx.unwrapGrdbWrite.database)
+        } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
+            // There's a tiny race where a recipient could send a delivery receipt before we record an MSL entry
+            // This might cause the payload entry to be deleted before we can mark the recipient as sent. This
+            // would mean that we'd hit a foreign key constraint failure when trying to save the recipient since
+            // the payload is now missing.
+
+            // This block of code just avoids a spurious assert by only asserting if the message has not been marked delivered:
+            let dbCopy = TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: message.uniqueId, transaction: writeTx)
+            let recipientAddress = SignalServiceAddress(uuid: recipientUuid)
+            owsAssertDebug(dbCopy?.recipientState(for: recipientAddress)?.deliveryTimestamp != nil)
+
         } catch {
             owsFailDebug("Failed to record pending delivery \(error)")
         }
