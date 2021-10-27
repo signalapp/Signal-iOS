@@ -187,10 +187,11 @@ extension OWSMessageManager {
             }
             let protocolAddress = try ProtocolAddress(from: sourceAddress, deviceId: sourceDeviceId)
 
-            // If a ratchet key is included, this was a 1:1 session message
-            // Archive the session if the current key matches.
             let didPerformSessionReset: Bool
+
             if let ratchetKey = errorMessage.ratchetKey {
+                // If a ratchet key is included, this was a 1:1 session message
+                // Archive the session if the current key matches.
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: writeTx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")
@@ -203,6 +204,9 @@ extension OWSMessageManager {
                     didPerformSessionReset = false
                 }
             } else {
+                // If we don't have a ratchet key, this was a sender key session message.
+                // Let's log any info about SKDMs that we had sent to the address requesting resend
+                senderKeyStore.logSKDMInfo(for: sourceAddress, transaction: writeTx)
                 didPerformSessionReset = false
             }
 
