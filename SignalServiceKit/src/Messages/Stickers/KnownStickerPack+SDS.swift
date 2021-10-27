@@ -15,10 +15,12 @@ public struct KnownStickerPackRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return KnownStickerPackSerializer.table
+        KnownStickerPackSerializer.table
     }
 
-    public static let databaseTableName: String = KnownStickerPackSerializer.table.tableName
+    public static var databaseTableName: String {
+        KnownStickerPackSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -42,7 +44,7 @@ public struct KnownStickerPackRecord: SDSRecord {
     }
 
     public static func columnName(_ column: KnownStickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -58,7 +60,7 @@ public struct KnownStickerPackRecord: SDSRecord {
 
 public extension KnownStickerPackRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -132,15 +134,15 @@ extension KnownStickerPack: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return KnownStickerPackRecord.databaseTableName
+        KnownStickerPackRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return KnownStickerPackSerializer.table
+        KnownStickerPackSerializer.table
     }
 }
 
@@ -182,19 +184,20 @@ extension KnownStickerPackSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .double)
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob)
-    static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64)
+    static var dateCreatedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "dateCreated", columnType: .double) }
+    static var infoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "info", columnType: .blob) }
+    static var referenceCountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "referenceCount", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: KnownStickerPack.collection(),
-                                               tableName: "model_KnownStickerPack",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: KnownStickerPack.collection(),
+                         tableName: "model_KnownStickerPack",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -202,6 +205,7 @@ extension KnownStickerPackSerializer {
         infoColumn,
         referenceCountColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

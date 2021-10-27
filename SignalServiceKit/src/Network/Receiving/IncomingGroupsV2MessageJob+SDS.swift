@@ -15,10 +15,12 @@ public struct IncomingGroupsV2MessageJobRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return IncomingGroupsV2MessageJobSerializer.table
+        IncomingGroupsV2MessageJobSerializer.table
     }
 
-    public static let databaseTableName: String = IncomingGroupsV2MessageJobSerializer.table.tableName
+    public static var databaseTableName: String {
+        IncomingGroupsV2MessageJobSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -48,7 +50,7 @@ public struct IncomingGroupsV2MessageJobRecord: SDSRecord {
     }
 
     public static func columnName(_ column: IncomingGroupsV2MessageJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -64,7 +66,7 @@ public struct IncomingGroupsV2MessageJobRecord: SDSRecord {
 
 public extension IncomingGroupsV2MessageJobRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -146,15 +148,15 @@ extension IncomingGroupsV2MessageJob: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return IncomingGroupsV2MessageJobRecord.databaseTableName
+        IncomingGroupsV2MessageJobRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return IncomingGroupsV2MessageJobSerializer.table
+        IncomingGroupsV2MessageJobSerializer.table
     }
 }
 
@@ -200,22 +202,23 @@ extension IncomingGroupsV2MessageJobSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob)
-    static let plaintextDataColumn = SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int)
-    static let groupIdColumn = SDSColumnMetadata(columnName: "groupId", columnType: .blob, isOptional: true)
-    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64)
+    static var createdAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdAt", columnType: .double) }
+    static var envelopeDataColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "envelopeData", columnType: .blob) }
+    static var plaintextDataColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "plaintextData", columnType: .blob, isOptional: true) }
+    static var wasReceivedByUDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int) }
+    static var groupIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupId", columnType: .blob, isOptional: true) }
+    static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: IncomingGroupsV2MessageJob.collection(),
-                                               tableName: "model_IncomingGroupsV2MessageJob",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: IncomingGroupsV2MessageJob.collection(),
+                         tableName: "model_IncomingGroupsV2MessageJob",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -226,6 +229,7 @@ extension IncomingGroupsV2MessageJobSerializer {
         groupIdColumn,
         serverDeliveryTimestampColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

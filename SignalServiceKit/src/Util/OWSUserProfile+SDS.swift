@@ -15,10 +15,12 @@ public struct UserProfileRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSUserProfileSerializer.table
+        OWSUserProfileSerializer.table
     }
 
-    public static let databaseTableName: String = OWSUserProfileSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSUserProfileSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -62,7 +64,7 @@ public struct UserProfileRecord: SDSRecord {
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -78,7 +80,7 @@ public struct UserProfileRecord: SDSRecord {
 
 public extension UserProfileRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -183,15 +185,15 @@ extension OWSUserProfile: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return UserProfileRecord.databaseTableName
+        UserProfileRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSUserProfileSerializer.table
+        OWSUserProfileSerializer.table
     }
 }
 
@@ -263,29 +265,30 @@ extension OWSUserProfileSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let avatarFileNameColumn = SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true)
-    static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true)
-    static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true)
-    static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true)
-    static let usernameColumn = SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true)
-    static let familyNameColumn = SDSColumnMetadata(columnName: "familyName", columnType: .unicodeString, isOptional: true)
-    static let isUuidCapableColumn = SDSColumnMetadata(columnName: "isUuidCapable", columnType: .int)
-    static let lastFetchDateColumn = SDSColumnMetadata(columnName: "lastFetchDate", columnType: .double, isOptional: true)
-    static let lastMessagingDateColumn = SDSColumnMetadata(columnName: "lastMessagingDate", columnType: .double, isOptional: true)
-    static let bioColumn = SDSColumnMetadata(columnName: "bio", columnType: .unicodeString, isOptional: true)
-    static let bioEmojiColumn = SDSColumnMetadata(columnName: "bioEmoji", columnType: .unicodeString, isOptional: true)
+    static var avatarFileNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "avatarFileName", columnType: .unicodeString, isOptional: true) }
+    static var avatarUrlPathColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true) }
+    static var profileKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true) }
+    static var profileNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true) }
+    static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
+    static var usernameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true) }
+    static var familyNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "familyName", columnType: .unicodeString, isOptional: true) }
+    static var isUuidCapableColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isUuidCapable", columnType: .int) }
+    static var lastFetchDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastFetchDate", columnType: .double, isOptional: true) }
+    static var lastMessagingDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastMessagingDate", columnType: .double, isOptional: true) }
+    static var bioColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bio", columnType: .unicodeString, isOptional: true) }
+    static var bioEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bioEmoji", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSUserProfile.collection(),
-                                               tableName: "model_OWSUserProfile",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSUserProfile.collection(),
+                         tableName: "model_OWSUserProfile",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -303,6 +306,7 @@ extension OWSUserProfileSerializer {
         bioColumn,
         bioEmojiColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

@@ -15,10 +15,12 @@ public struct JobRecordRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return SSKJobRecordSerializer.table
+        SSKJobRecordSerializer.table
     }
 
-    public static let databaseTableName: String = SSKJobRecordSerializer.table.tableName
+    public static var databaseTableName: String {
+        SSKJobRecordSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -66,7 +68,7 @@ public struct JobRecordRecord: SDSRecord {
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -82,7 +84,7 @@ public struct JobRecordRecord: SDSRecord {
 
 public extension JobRecordRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -316,15 +318,15 @@ extension SSKJobRecord: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return JobRecordRecord.databaseTableName
+        JobRecordRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return SSKJobRecordSerializer.table
+        SSKJobRecordSerializer.table
     }
 }
 
@@ -514,31 +516,32 @@ extension SSKJobRecordSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let failureCountColumn = SDSColumnMetadata(columnName: "failureCount", columnType: .int64)
-    static let labelColumn = SDSColumnMetadata(columnName: "label", columnType: .unicodeString)
-    static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int)
-    static let attachmentIdMapColumn = SDSColumnMetadata(columnName: "attachmentIdMap", columnType: .blob, isOptional: true)
-    static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true)
-    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true)
-    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true)
-    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true)
-    static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true)
-    static let isMediaMessageColumn = SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true)
-    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
-    static let exclusiveProcessIdentifierColumn = SDSColumnMetadata(columnName: "exclusiveProcessIdentifier", columnType: .unicodeString, isOptional: true)
-    static let isHighPriorityColumn = SDSColumnMetadata(columnName: "isHighPriority", columnType: .int, isOptional: true)
+    static var failureCountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "failureCount", columnType: .int64) }
+    static var labelColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "label", columnType: .unicodeString) }
+    static var statusColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "status", columnType: .int) }
+    static var attachmentIdMapColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentIdMap", columnType: .blob, isOptional: true) }
+    static var contactThreadIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true) }
+    static var envelopeDataColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true) }
+    static var invisibleMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true) }
+    static var messageIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true) }
+    static var removeMessageAfterSendingColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true) }
+    static var threadIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true) }
+    static var attachmentIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true) }
+    static var isMediaMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true) }
+    static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true) }
+    static var exclusiveProcessIdentifierColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "exclusiveProcessIdentifier", columnType: .unicodeString, isOptional: true) }
+    static var isHighPriorityColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isHighPriority", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: SSKJobRecord.collection(),
-                                               tableName: "model_SSKJobRecord",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: SSKJobRecord.collection(),
+                         tableName: "model_SSKJobRecord",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -558,6 +561,7 @@ extension SSKJobRecordSerializer {
         exclusiveProcessIdentifierColumn,
         isHighPriorityColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

@@ -15,10 +15,12 @@ public struct ExperienceUpgradeRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return ExperienceUpgradeSerializer.table
+        ExperienceUpgradeSerializer.table
     }
 
-    public static let databaseTableName: String = ExperienceUpgradeSerializer.table.tableName
+    public static var databaseTableName: String {
+        ExperienceUpgradeSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -42,7 +44,7 @@ public struct ExperienceUpgradeRecord: SDSRecord {
     }
 
     public static func columnName(_ column: ExperienceUpgradeRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -58,7 +60,7 @@ public struct ExperienceUpgradeRecord: SDSRecord {
 
 public extension ExperienceUpgradeRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -130,15 +132,15 @@ extension ExperienceUpgrade: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return ExperienceUpgradeRecord.databaseTableName
+        ExperienceUpgradeRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return ExperienceUpgradeSerializer.table
+        ExperienceUpgradeSerializer.table
     }
 }
 
@@ -178,19 +180,20 @@ extension ExperienceUpgradeSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let firstViewedTimestampColumn = SDSColumnMetadata(columnName: "firstViewedTimestamp", columnType: .double)
-    static let lastSnoozedTimestampColumn = SDSColumnMetadata(columnName: "lastSnoozedTimestamp", columnType: .double)
-    static let isCompleteColumn = SDSColumnMetadata(columnName: "isComplete", columnType: .int)
+    static var firstViewedTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "firstViewedTimestamp", columnType: .double) }
+    static var lastSnoozedTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastSnoozedTimestamp", columnType: .double) }
+    static var isCompleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isComplete", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: ExperienceUpgrade.collection(),
-                                               tableName: "model_ExperienceUpgrade",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: ExperienceUpgrade.collection(),
+                         tableName: "model_ExperienceUpgrade",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -198,6 +201,7 @@ extension ExperienceUpgradeSerializer {
         lastSnoozedTimestampColumn,
         isCompleteColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

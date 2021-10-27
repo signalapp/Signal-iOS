@@ -15,10 +15,12 @@ public struct InstalledStickerRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return InstalledStickerSerializer.table
+        InstalledStickerSerializer.table
     }
 
-    public static let databaseTableName: String = InstalledStickerSerializer.table.tableName
+    public static var databaseTableName: String {
+        InstalledStickerSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -42,7 +44,7 @@ public struct InstalledStickerRecord: SDSRecord {
     }
 
     public static func columnName(_ column: InstalledStickerRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -58,7 +60,7 @@ public struct InstalledStickerRecord: SDSRecord {
 
 public extension InstalledStickerRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -131,15 +133,15 @@ extension InstalledSticker: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return InstalledStickerRecord.databaseTableName
+        InstalledStickerRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return InstalledStickerSerializer.table
+        InstalledStickerSerializer.table
     }
 }
 
@@ -181,19 +183,20 @@ extension InstalledStickerSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let emojiStringColumn = SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true)
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob)
-    static let contentTypeColumn = SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, isOptional: true)
+    static var emojiStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "emojiString", columnType: .unicodeString, isOptional: true) }
+    static var infoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "info", columnType: .blob) }
+    static var contentTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: InstalledSticker.collection(),
-                                               tableName: "model_InstalledSticker",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: InstalledSticker.collection(),
+                         tableName: "model_InstalledSticker",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -201,6 +204,7 @@ extension InstalledStickerSerializer {
         infoColumn,
         contentTypeColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

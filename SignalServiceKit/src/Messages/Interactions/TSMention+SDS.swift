@@ -15,10 +15,12 @@ public struct MentionRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSMentionSerializer.table
+        TSMentionSerializer.table
     }
 
-    public static let databaseTableName: String = TSMentionSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSMentionSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -44,7 +46,7 @@ public struct MentionRecord: SDSRecord {
     }
 
     public static func columnName(_ column: MentionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -60,7 +62,7 @@ public struct MentionRecord: SDSRecord {
 
 public extension MentionRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -136,15 +138,15 @@ extension TSMention: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return MentionRecord.databaseTableName
+        MentionRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSMentionSerializer.table
+        TSMentionSerializer.table
     }
 }
 
@@ -186,20 +188,21 @@ extension TSMentionSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let uniqueMessageIdColumn = SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString)
-    static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString)
-    static let uuidStringColumn = SDSColumnMetadata(columnName: "uuidString", columnType: .unicodeString)
-    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double)
+    static var uniqueMessageIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString) }
+    static var uniqueThreadIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString) }
+    static var uuidStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uuidString", columnType: .unicodeString) }
+    static var creationTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSMention.collection(),
-                                               tableName: "model_TSMention",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSMention.collection(),
+                         tableName: "model_TSMention",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -208,6 +211,7 @@ extension TSMentionSerializer {
         uuidStringColumn,
         creationTimestampColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

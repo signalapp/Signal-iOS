@@ -15,10 +15,12 @@ public struct MessageDecryptJobRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSMessageDecryptJobSerializer.table
+        OWSMessageDecryptJobSerializer.table
     }
 
-    public static let databaseTableName: String = OWSMessageDecryptJobSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSMessageDecryptJobSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -42,7 +44,7 @@ public struct MessageDecryptJobRecord: SDSRecord {
     }
 
     public static func columnName(_ column: MessageDecryptJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -58,7 +60,7 @@ public struct MessageDecryptJobRecord: SDSRecord {
 
 public extension MessageDecryptJobRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -131,15 +133,15 @@ extension OWSMessageDecryptJob: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return MessageDecryptJobRecord.databaseTableName
+        MessageDecryptJobRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSMessageDecryptJobSerializer.table
+        OWSMessageDecryptJobSerializer.table
     }
 }
 
@@ -179,19 +181,20 @@ extension OWSMessageDecryptJobSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob)
-    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64)
+    static var createdAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdAt", columnType: .double) }
+    static var envelopeDataColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "envelopeData", columnType: .blob) }
+    static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSMessageDecryptJob.collection(),
-                                               tableName: "model_OWSMessageDecryptJob",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSMessageDecryptJob.collection(),
+                         tableName: "model_OWSMessageDecryptJob",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -199,6 +202,7 @@ extension OWSMessageDecryptJobSerializer {
         envelopeDataColumn,
         serverDeliveryTimestampColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

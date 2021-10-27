@@ -15,10 +15,12 @@ public struct InteractionRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSInteractionSerializer.table
+        TSInteractionSerializer.table
     }
 
-    public static let databaseTableName: String = TSInteractionSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSInteractionSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -164,7 +166,7 @@ public struct InteractionRecord: SDSRecord {
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -180,7 +182,7 @@ public struct InteractionRecord: SDSRecord {
 
 public extension InteractionRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -1506,15 +1508,15 @@ extension TSInteraction: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return InteractionRecord.databaseTableName
+        InteractionRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSInteractionSerializer.table
+        TSInteractionSerializer.table
     }
 }
 
@@ -3906,80 +3908,81 @@ extension TSInteractionSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64)
-    static let timestampColumn = SDSColumnMetadata(columnName: "timestamp", columnType: .int64)
-    static let uniqueThreadIdColumn = SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString)
-    static let attachmentIdsColumn = SDSColumnMetadata(columnName: "attachmentIds", columnType: .blob, isOptional: true)
-    static let authorIdColumn = SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true)
-    static let authorPhoneNumberColumn = SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true)
-    static let authorUUIDColumn = SDSColumnMetadata(columnName: "authorUUID", columnType: .unicodeString, isOptional: true)
-    static let bodyColumn = SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true)
-    static let callTypeColumn = SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true)
-    static let configurationDurationSecondsColumn = SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true)
-    static let configurationIsEnabledColumn = SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true)
-    static let contactShareColumn = SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true)
-    static let createdByRemoteNameColumn = SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true)
-    static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true)
-    static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true)
-    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true)
-    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true)
-    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true)
-    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true)
-    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true)
-    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true)
-    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true)
-    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true)
-    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true)
-    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true)
-    static let isViewOnceCompleteColumn = SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true)
-    static let isViewOnceMessageColumn = SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true)
-    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true)
-    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true)
-    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true)
-    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true)
-    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true)
-    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true)
-    static let recipientAddressColumn = SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true)
-    static let recipientAddressStatesColumn = SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true)
-    static let senderColumn = SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true)
-    static let storedMessageStateColumn = SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true)
-    static let storedShouldStartExpireTimerColumn = SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true)
-    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true)
-    static let infoMessageUserInfoColumn = SDSColumnMetadata(columnName: "infoMessageUserInfo", columnType: .blob, isOptional: true)
-    static let wasRemotelyDeletedColumn = SDSColumnMetadata(columnName: "wasRemotelyDeleted", columnType: .int, isOptional: true)
-    static let bodyRangesColumn = SDSColumnMetadata(columnName: "bodyRanges", columnType: .blob, isOptional: true)
-    static let offerTypeColumn = SDSColumnMetadata(columnName: "offerType", columnType: .int, isOptional: true)
-    static let serverDeliveryTimestampColumn = SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true)
-    static let eraIdColumn = SDSColumnMetadata(columnName: "eraId", columnType: .unicodeString, isOptional: true)
-    static let hasEndedColumn = SDSColumnMetadata(columnName: "hasEnded", columnType: .int, isOptional: true)
-    static let creatorUuidColumn = SDSColumnMetadata(columnName: "creatorUuid", columnType: .unicodeString, isOptional: true)
-    static let joinedMemberUuidsColumn = SDSColumnMetadata(columnName: "joinedMemberUuids", columnType: .blob, isOptional: true)
-    static let wasIdentityVerifiedColumn = SDSColumnMetadata(columnName: "wasIdentityVerified", columnType: .int, isOptional: true)
-    static let paymentCancellationColumn = SDSColumnMetadata(columnName: "paymentCancellation", columnType: .blob, isOptional: true)
-    static let paymentNotificationColumn = SDSColumnMetadata(columnName: "paymentNotification", columnType: .blob, isOptional: true)
-    static let paymentRequestColumn = SDSColumnMetadata(columnName: "paymentRequest", columnType: .blob, isOptional: true)
-    static let viewedColumn = SDSColumnMetadata(columnName: "viewed", columnType: .int, isOptional: true)
-    static let serverGuidColumn = SDSColumnMetadata(columnName: "serverGuid", columnType: .unicodeString, isOptional: true)
+    static var receivedAtTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64) }
+    static var timestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "timestamp", columnType: .int64) }
+    static var uniqueThreadIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueThreadId", columnType: .unicodeString) }
+    static var attachmentIdsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentIds", columnType: .blob, isOptional: true) }
+    static var authorIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "authorId", columnType: .unicodeString, isOptional: true) }
+    static var authorPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "authorPhoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var authorUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "authorUUID", columnType: .unicodeString, isOptional: true) }
+    static var bodyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "body", columnType: .unicodeString, isOptional: true) }
+    static var callTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "callType", columnType: .int, isOptional: true) }
+    static var configurationDurationSecondsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "configurationDurationSeconds", columnType: .int64, isOptional: true) }
+    static var configurationIsEnabledColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "configurationIsEnabled", columnType: .int, isOptional: true) }
+    static var contactShareColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactShare", columnType: .blob, isOptional: true) }
+    static var createdByRemoteNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdByRemoteName", columnType: .unicodeString, isOptional: true) }
+    static var createdInExistingGroupColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true) }
+    static var customMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true) }
+    static var envelopeDataColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true) }
+    static var errorTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true) }
+    static var expireStartedAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true) }
+    static var expiresAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true) }
+    static var expiresInSecondsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true) }
+    static var groupMetaMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true) }
+    static var hasLegacyMessageStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true) }
+    static var hasSyncedTranscriptColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true) }
+    static var isFromLinkedDeviceColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true) }
+    static var isLocalChangeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true) }
+    static var isViewOnceCompleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isViewOnceComplete", columnType: .int, isOptional: true) }
+    static var isViewOnceMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isViewOnceMessage", columnType: .int, isOptional: true) }
+    static var isVoiceMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true) }
+    static var legacyMessageStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true) }
+    static var legacyWasDeliveredColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true) }
+    static var linkPreviewColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true) }
+    static var messageIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true) }
+    static var messageStickerColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true) }
+    static var messageTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true) }
+    static var mostRecentFailureTextColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true) }
+    static var preKeyBundleColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true) }
+    static var protocolVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true) }
+    static var quotedMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true) }
+    static var readColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true) }
+    static var recipientAddressColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientAddress", columnType: .blob, isOptional: true) }
+    static var recipientAddressStatesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientAddressStates", columnType: .blob, isOptional: true) }
+    static var senderColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sender", columnType: .blob, isOptional: true) }
+    static var serverTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true) }
+    static var sourceDeviceIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true) }
+    static var storedMessageStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storedMessageState", columnType: .int, isOptional: true) }
+    static var storedShouldStartExpireTimerColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storedShouldStartExpireTimer", columnType: .int, isOptional: true) }
+    static var unregisteredAddressColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true) }
+    static var verificationStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true) }
+    static var wasReceivedByUDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true) }
+    static var infoMessageUserInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "infoMessageUserInfo", columnType: .blob, isOptional: true) }
+    static var wasRemotelyDeletedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "wasRemotelyDeleted", columnType: .int, isOptional: true) }
+    static var bodyRangesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bodyRanges", columnType: .blob, isOptional: true) }
+    static var offerTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "offerType", columnType: .int, isOptional: true) }
+    static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true) }
+    static var eraIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "eraId", columnType: .unicodeString, isOptional: true) }
+    static var hasEndedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasEnded", columnType: .int, isOptional: true) }
+    static var creatorUuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "creatorUuid", columnType: .unicodeString, isOptional: true) }
+    static var joinedMemberUuidsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "joinedMemberUuids", columnType: .blob, isOptional: true) }
+    static var wasIdentityVerifiedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "wasIdentityVerified", columnType: .int, isOptional: true) }
+    static var paymentCancellationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentCancellation", columnType: .blob, isOptional: true) }
+    static var paymentNotificationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentNotification", columnType: .blob, isOptional: true) }
+    static var paymentRequestColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentRequest", columnType: .blob, isOptional: true) }
+    static var viewedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "viewed", columnType: .int, isOptional: true) }
+    static var serverGuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverGuid", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSInteraction.collection(),
-                                               tableName: "model_TSInteraction",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSInteraction.collection(),
+                         tableName: "model_TSInteraction",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -4048,6 +4051,7 @@ extension TSInteractionSerializer {
         viewedColumn,
         serverGuidColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

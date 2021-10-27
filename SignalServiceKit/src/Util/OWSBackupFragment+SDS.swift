@@ -15,10 +15,12 @@ public struct BackupFragmentRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSBackupFragmentSerializer.table
+        OWSBackupFragmentSerializer.table
     }
 
-    public static let databaseTableName: String = OWSBackupFragmentSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSBackupFragmentSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -48,7 +50,7 @@ public struct BackupFragmentRecord: SDSRecord {
     }
 
     public static func columnName(_ column: BackupFragmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -64,7 +66,7 @@ public struct BackupFragmentRecord: SDSRecord {
 
 public extension BackupFragmentRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -145,15 +147,15 @@ extension OWSBackupFragment: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return BackupFragmentRecord.databaseTableName
+        BackupFragmentRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSBackupFragmentSerializer.table
+        OWSBackupFragmentSerializer.table
     }
 }
 
@@ -199,22 +201,23 @@ extension OWSBackupFragmentSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true)
-    static let downloadFilePathColumn = SDSColumnMetadata(columnName: "downloadFilePath", columnType: .unicodeString, isOptional: true)
-    static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob)
-    static let recordNameColumn = SDSColumnMetadata(columnName: "recordName", columnType: .unicodeString)
-    static let relativeFilePathColumn = SDSColumnMetadata(columnName: "relativeFilePath", columnType: .unicodeString, isOptional: true)
-    static let uncompressedDataLengthColumn = SDSColumnMetadata(columnName: "uncompressedDataLength", columnType: .int64, isOptional: true)
+    static var attachmentIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true) }
+    static var downloadFilePathColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "downloadFilePath", columnType: .unicodeString, isOptional: true) }
+    static var encryptionKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob) }
+    static var recordNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordName", columnType: .unicodeString) }
+    static var relativeFilePathColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "relativeFilePath", columnType: .unicodeString, isOptional: true) }
+    static var uncompressedDataLengthColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uncompressedDataLength", columnType: .int64, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSBackupFragment.collection(),
-                                               tableName: "model_OWSBackupFragment",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSBackupFragment.collection(),
+                         tableName: "model_OWSBackupFragment",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -225,6 +228,7 @@ extension OWSBackupFragmentSerializer {
         relativeFilePathColumn,
         uncompressedDataLengthColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

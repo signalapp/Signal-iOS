@@ -15,10 +15,12 @@ public struct StickerPackRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return StickerPackSerializer.table
+        StickerPackSerializer.table
     }
 
-    public static let databaseTableName: String = StickerPackSerializer.table.tableName
+    public static var databaseTableName: String {
+        StickerPackSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -50,7 +52,7 @@ public struct StickerPackRecord: SDSRecord {
     }
 
     public static func columnName(_ column: StickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -66,7 +68,7 @@ public struct StickerPackRecord: SDSRecord {
 
 public extension StickerPackRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -154,15 +156,15 @@ extension StickerPack: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return StickerPackRecord.databaseTableName
+        StickerPackRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return StickerPackSerializer.table
+        StickerPackSerializer.table
     }
 }
 
@@ -216,23 +218,24 @@ extension StickerPackSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let authorColumn = SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true)
-    static let coverColumn = SDSColumnMetadata(columnName: "cover", columnType: .blob)
-    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .double)
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob)
-    static let isInstalledColumn = SDSColumnMetadata(columnName: "isInstalled", columnType: .int)
-    static let itemsColumn = SDSColumnMetadata(columnName: "items", columnType: .blob)
-    static let titleColumn = SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true)
+    static var authorColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "author", columnType: .unicodeString, isOptional: true) }
+    static var coverColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cover", columnType: .blob) }
+    static var dateCreatedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "dateCreated", columnType: .double) }
+    static var infoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "info", columnType: .blob) }
+    static var isInstalledColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isInstalled", columnType: .int) }
+    static var itemsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "items", columnType: .blob) }
+    static var titleColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "title", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: StickerPack.collection(),
-                                               tableName: "model_StickerPack",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: StickerPack.collection(),
+                         tableName: "model_StickerPack",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -244,6 +247,7 @@ extension StickerPackSerializer {
         itemsColumn,
         titleColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

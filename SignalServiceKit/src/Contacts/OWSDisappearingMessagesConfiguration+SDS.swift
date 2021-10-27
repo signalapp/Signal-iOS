@@ -15,10 +15,12 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSDisappearingMessagesConfigurationSerializer.table
+        OWSDisappearingMessagesConfigurationSerializer.table
     }
 
-    public static let databaseTableName: String = OWSDisappearingMessagesConfigurationSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSDisappearingMessagesConfigurationSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -40,7 +42,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
     }
 
     public static func columnName(_ column: DisappearingMessagesConfigurationRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -56,7 +58,7 @@ public struct DisappearingMessagesConfigurationRecord: SDSRecord {
 
 public extension DisappearingMessagesConfigurationRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -125,15 +127,15 @@ extension OWSDisappearingMessagesConfiguration: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return DisappearingMessagesConfigurationRecord.databaseTableName
+        DisappearingMessagesConfigurationRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSDisappearingMessagesConfigurationSerializer.table
+        OWSDisappearingMessagesConfigurationSerializer.table
     }
 }
 
@@ -171,24 +173,26 @@ extension OWSDisappearingMessagesConfigurationSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let durationSecondsColumn = SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64)
-    static let enabledColumn = SDSColumnMetadata(columnName: "enabled", columnType: .int)
+    static var durationSecondsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "durationSeconds", columnType: .int64) }
+    static var enabledColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "enabled", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSDisappearingMessagesConfiguration.collection(),
-                                               tableName: "model_OWSDisappearingMessagesConfiguration",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSDisappearingMessagesConfiguration.collection(),
+                         tableName: "model_OWSDisappearingMessagesConfiguration",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
         durationSecondsColumn,
         enabledColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

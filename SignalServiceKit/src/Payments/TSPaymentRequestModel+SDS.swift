@@ -15,10 +15,12 @@ public struct PaymentRequestModelRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSPaymentRequestModelSerializer.table
+        TSPaymentRequestModelSerializer.table
     }
 
-    public static let databaseTableName: String = TSPaymentRequestModelSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSPaymentRequestModelSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -48,7 +50,7 @@ public struct PaymentRequestModelRecord: SDSRecord {
     }
 
     public static func columnName(_ column: PaymentRequestModelRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -64,7 +66,7 @@ public struct PaymentRequestModelRecord: SDSRecord {
 
 public extension PaymentRequestModelRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -146,15 +148,15 @@ extension TSPaymentRequestModel: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return PaymentRequestModelRecord.databaseTableName
+        PaymentRequestModelRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSPaymentRequestModelSerializer.table
+        TSPaymentRequestModelSerializer.table
     }
 }
 
@@ -202,22 +204,23 @@ extension TSPaymentRequestModelSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let addressUuidStringColumn = SDSColumnMetadata(columnName: "addressUuidString", columnType: .unicodeString)
-    static let createdTimestampColumn = SDSColumnMetadata(columnName: "createdTimestamp", columnType: .int64)
-    static let isIncomingRequestColumn = SDSColumnMetadata(columnName: "isIncomingRequest", columnType: .int)
-    static let memoMessageColumn = SDSColumnMetadata(columnName: "memoMessage", columnType: .unicodeString, isOptional: true)
-    static let paymentAmountColumn = SDSColumnMetadata(columnName: "paymentAmount", columnType: .blob)
-    static let requestUuidStringColumn = SDSColumnMetadata(columnName: "requestUuidString", columnType: .unicodeString)
+    static var addressUuidStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "addressUuidString", columnType: .unicodeString) }
+    static var createdTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdTimestamp", columnType: .int64) }
+    static var isIncomingRequestColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isIncomingRequest", columnType: .int) }
+    static var memoMessageColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "memoMessage", columnType: .unicodeString, isOptional: true) }
+    static var paymentAmountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentAmount", columnType: .blob) }
+    static var requestUuidStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "requestUuidString", columnType: .unicodeString) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSPaymentRequestModel.collection(),
-                                               tableName: "model_TSPaymentRequestModel",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSPaymentRequestModel.collection(),
+                         tableName: "model_TSPaymentRequestModel",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -228,6 +231,7 @@ extension TSPaymentRequestModelSerializer {
         paymentAmountColumn,
         requestUuidStringColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update
