@@ -7,6 +7,10 @@ import Foundation
 @objc
 public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
+    public var isKillSwitchActive: Bool {
+        RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
+    }
+
     // MARK: - PaymentsState
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"

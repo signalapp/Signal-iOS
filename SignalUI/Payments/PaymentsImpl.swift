@@ -151,9 +151,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         return validCountryCodes.contains(nsCountryCode.intValue)
     }
 
-    public var isKillSwitchActive: Bool {
-        RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
-    }
+    public var isKillSwitchActive: Bool { paymentsHelper.isKillSwitchActive }
 
     public var shouldShowPaymentsUI: Bool {
         arePaymentsEnabled || canEnablePayments

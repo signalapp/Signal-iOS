@@ -62,9 +62,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let hasAvatar = profileAvatarData != nil
 
             var profilePaymentAddressData: Data?
-            if Self.payments.arePaymentsEnabled,
-               !Self.payments.isKillSwitchActive,
-               let addressProtoData = Self.payments.localPaymentAddressProtoData() {
+            if Self.paymentsHelper.arePaymentsEnabled,
+               !Self.paymentsHelper.isKillSwitchActive,
+               let addressProtoData = Self.paymentsHelper.localPaymentAddressProtoData() {
 
                 var paymentAddressDataWithLength = Data()
                 var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))

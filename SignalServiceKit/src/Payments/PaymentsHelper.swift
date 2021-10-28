@@ -9,6 +9,8 @@ public protocol PaymentsHelper: AnyObject {
     
     func warmCaches()
     
+    var isKillSwitchActive: Bool { get }
+
     func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
     
