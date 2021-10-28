@@ -38,13 +38,13 @@ lane :release do |options|
 
   # NSE provisioning
   sigh(
-    app_identifier: "#{app_identifier}.NotificationServiceExtension",
+    app_identifier: "#{app_identifier}.SignalNSE",
     template_name: 'Notification Service Extension Filtering iOS (Dist)'
   )
   update_project_provisioning(
-    target_filter: "^NotificationServiceExtension$",
+    target_filter: "^SignalNSE$",
     build_configuration: configuration,
-    profile: "./AppStore_#{app_identifier}.NotificationServiceExtension.mobileprovision"
+    profile: "./AppStore_#{app_identifier}.SignalNSE.mobileprovision"
   )
 
   # SAE Provisioning

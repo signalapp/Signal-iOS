@@ -11,7 +11,7 @@ SAE_DIR="./SignalShareExtension"
 SM_DIR="./SignalMessaging"
 SUI_DIR="./SignalUI"
 SCK_DIR="./Pods/SignalCoreKit"
-NSE_DIR="./NotificationServiceExtension"
+NSE_DIR="./SignalNSE"
 
 TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR} ${NSE_DIR} ${SUI_DIR}"
 TMP="$(mktemp -d)"

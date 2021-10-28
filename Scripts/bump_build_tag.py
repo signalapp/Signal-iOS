@@ -303,7 +303,7 @@ if __name__ == '__main__':
     if not os.path.exists(sae_plist_path):
         fail('Could not find share extension info .plist')
 
-    nse_plist_path = os.path.join(project_root_path, 'NotificationServiceExtension', 'Info.plist')
+    nse_plist_path = os.path.join(project_root_path, 'SignalNSE', 'Info.plist')
     if not os.path.exists(nse_plist_path):
         fail('Could not find NSE info .plist')
 
