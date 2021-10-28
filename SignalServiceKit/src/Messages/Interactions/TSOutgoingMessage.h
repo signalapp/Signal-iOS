@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (atomic, nullable, readonly) NSNumber *readTimestamp;
 // This property should only be set if state == .sent.
 @property (atomic, nullable, readonly) NSNumber *viewedTimestamp;
-// This property should only be set if state == .failed
+// This property should only be set if state == .failed or state == .sending (with a prior failure)
 @property (atomic, nullable, readonly) NSNumber *errorCode;
 
 @property (atomic, readonly) BOOL wasSentByUD;

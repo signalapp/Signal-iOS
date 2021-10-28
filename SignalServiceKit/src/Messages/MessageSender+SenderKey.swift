@@ -51,6 +51,9 @@ extension MessageSender {
             case let .recipientSKDMFailed(underlyingError):
                 result = underlyingError
             case .invalidAuthHeader, .invalidRecipient, .oversizeMessage:
+                // For all of these error types, there's a chance that a fanout send may be successful. This
+                // error is retryable, but indicates that the next send attempt should restrict itself to fanout
+                // send only.
                 result = SenderKeyUnavailableError(customLocalizedDescription: localizedDescription)
             case .deviceUpdate, .staleDevices:
                 result = SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
@@ -276,6 +279,7 @@ extension MessageSender {
                                 payloadId: payloadId,
                                 recipientUuid: uuid,
                                 recipientDeviceId: Int64(deviceId),
+                                message: message,
                                 transaction: writeTx)
                         }
                     }

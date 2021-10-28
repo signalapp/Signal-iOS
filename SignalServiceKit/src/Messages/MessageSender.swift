@@ -865,6 +865,7 @@ public extension MessageSender {
                         payloadId: payloadId,
                         recipientUuid: uuid,
                         recipientDeviceId: deviceId,
+                        message: message,
                         transaction: transaction)
                 }
             }

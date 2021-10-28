@@ -824,12 +824,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                         continue;
                     }
 
-                    // We only want to record a failure for errors we can
-                    // no longer retry.
-                    if (error.isRetryable) {
-                        continue;
-                    }
-
                     [message updateWithFailedRecipient:address error:error transaction:transaction];
                 }
             });
