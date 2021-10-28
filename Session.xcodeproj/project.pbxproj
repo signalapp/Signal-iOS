@@ -147,10 +147,11 @@
 		7B7CB18E270D066F0079FF93 /* IncomingCallBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */; };
 		7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18F270FB2150079FF93 /* MiniCallView.swift */; };
 		7B7CB192271508AD0079FF93 /* Vibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB191271508AD0079FF93 /* Vibration.swift */; };
+		7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA68908272A27BE00EFC32F /* SessionCall.swift */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
 		7BC01A42241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		7BC707EA27267973002817AD /* AppDelegate+VoIP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC707E927267973002817AD /* AppDelegate+VoIP.swift */; };
-		7BC707EF2727C3C6002817AD /* WebRTCSession+CallKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC707EE2727C3C6002817AD /* WebRTCSession+CallKit.swift */; };
+		7BC707F227290ACB002817AD /* SessionCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC707F127290ACB002817AD /* SessionCallManager.swift */; };
 		7BCD116C27016062006330F1 /* WebRTCSession+DataChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCD116B27016062006330F1 /* WebRTCSession+DataChannel.swift */; };
 		7BDCFC08242186E700641C39 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */; };
 		7BDCFC0B2421EB7600641C39 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
@@ -1132,11 +1133,12 @@
 		7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallBanner.swift; sourceTree = "<group>"; };
 		7B7CB18F270FB2150079FF93 /* MiniCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniCallView.swift; sourceTree = "<group>"; };
 		7B7CB191271508AD0079FF93 /* Vibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibration.swift; sourceTree = "<group>"; };
+		7BA68908272A27BE00EFC32F /* SessionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCall.swift; sourceTree = "<group>"; };
 		7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtension.swift; sourceTree = "<group>"; };
 		7BC01A3F241F40AB00BC7C55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BC707E927267973002817AD /* AppDelegate+VoIP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+VoIP.swift"; sourceTree = "<group>"; };
-		7BC707EE2727C3C6002817AD /* WebRTCSession+CallKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTCSession+CallKit.swift"; sourceTree = "<group>"; };
+		7BC707F127290ACB002817AD /* SessionCallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCallManager.swift; sourceTree = "<group>"; };
 		7BCD116B27016062006330F1 /* WebRTCSession+DataChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTCSession+DataChannel.swift"; sourceTree = "<group>"; };
 		7BDCFC0424206E7300641C39 /* SessionNotificationServiceExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SessionNotificationServiceExtension.entitlements; sourceTree = "<group>"; };
 		7BDCFC07242186E700641C39 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
@@ -2068,6 +2070,15 @@
 			path = "Views & Modals";
 			sourceTree = "<group>";
 		};
+		7BA68907272A279900EFC32F /* Call Management */ = {
+			isa = PBXGroup;
+			children = (
+				7BC707F127290ACB002817AD /* SessionCallManager.swift */,
+				7BA68908272A27BE00EFC32F /* SessionCall.swift */,
+			);
+			path = "Call Management";
+			sourceTree = "<group>";
+		};
 		7BC01A3C241F40AB00BC7C55 /* SessionNotificationServiceExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2365,6 +2376,7 @@
 				7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */,
 				B877E24526CA13BA0007970A /* CallVC+Camera.swift */,
 				B8B558F026C4BB0600693325 /* CameraManager.swift */,
+				7BA68907272A279900EFC32F /* Call Management */,
 				7B7CB18C270D06350079FF93 /* Views & Modals */,
 			);
 			path = Calls;
@@ -2404,7 +2416,6 @@
 				B8B558FE26C4E05E00693325 /* WebRTCSession+MessageHandling.swift */,
 				B8BF43B926CC95FB007828D1 /* WebRTC+Utilities.swift */,
 				7BCD116B27016062006330F1 /* WebRTCSession+DataChannel.swift */,
-				7BC707EE2727C3C6002817AD /* WebRTCSession+CallKit.swift */,
 			);
 			path = Calls;
 			sourceTree = "<group>";
@@ -4811,7 +4822,6 @@
 				C32C5AF8256DC051003C73A2 /* OWSDisappearingMessagesConfiguration.m in Sources */,
 				C32C5EBA256DE130003C73A2 /* OWSQuotedReplyModel.m in Sources */,
 				C32C5B62256DC333003C73A2 /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
-				7BC707EF2727C3C6002817AD /* WebRTCSession+CallKit.swift in Sources */,
 				C352A2F525574B4700338F3E /* Job.swift in Sources */,
 				C32C5C01256DC9A0003C73A2 /* OWSIdentityManager.m in Sources */,
 				C32C59C4256DB41F003C73A2 /* TSContactThread.m in Sources */,
@@ -4874,6 +4884,7 @@
 				C3548F0624456447009433A8 /* PNModeVC.swift in Sources */,
 				B80A579F23DFF1F300876683 /* NewClosedGroupVC.swift in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
+				7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
 				B835247925C38D880089A44F /* MessageCell.swift in Sources */,
 				B86BD08623399CEF000F5AE3 /* SeedModal.swift in Sources */,
@@ -4935,6 +4946,7 @@
 				B8CCF6432397711F0091D419 /* SettingsVC.swift in Sources */,
 				C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */,
 				7B1581E827210ECC00848B49 /* RenderView.swift in Sources */,
+				7BC707F227290ACB002817AD /* SessionCallManager.swift in Sources */,
 				3441FD9F21A3604F00BB9542 /* BackupRestoreViewController.swift in Sources */,
 				45C0DC1B1E68FE9000E04C47 /* UIApplication+OWS.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,

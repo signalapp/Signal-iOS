@@ -5,9 +5,7 @@ import SessionMessagingKit
 final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     private static let swipeToOperateThreshold: CGFloat = 60
     private var previousY: CGFloat = 0
-    let sessionID: String
-    let uuid: String
-    let sdp: RTCSessionDescription
+    let call: SessionCall
     
     // MARK: UI Components
     private lazy var profilePictureView: ProfilePictureView = {
@@ -60,10 +58,8 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     // MARK: Initialization
     public static var current: IncomingCallBanner?
     
-    init(for sessionID: String, uuid: String, sdp: RTCSessionDescription) {
-        self.uuid = uuid
-        self.sessionID = sessionID
-        self.sdp = sdp
+    init(for call: SessionCall) {
+        self.call = call
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
         setUpGestureRecognizers()
@@ -86,9 +82,9 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         self.layer.cornerRadius = Values.veryLargeSpacing
         self.layer.masksToBounds = true
         self.set(.height, to: 100)
-        profilePictureView.publicKey = self.sessionID
+        profilePictureView.publicKey = call.sessionID
         profilePictureView.update()
-        displayNameLabel.text = Storage.shared.getContact(with: sessionID)?.name
+        displayNameLabel.text = call.contactName
         let stackView = UIStackView(arrangedSubviews: [profilePictureView, displayNameLabel, hangUpButton, answerButton])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -159,16 +155,15 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     }
     
     @objc private func endCall() {
-        Storage.write { transaction in
-            WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
+        self.call.endSessionCall{
+            self.dismiss()
         }
-        dismiss()
     }
     
     public func showCallVC(answer: Bool) {
         dismiss()
         guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-        let callVC = CallVC(for: sessionID, uuid: uuid, mode: .answer(sdp: sdp))
+        let callVC = CallVC(for: self.call)
         callVC.shouldAnswer = answer
         callVC.modalPresentationStyle = .overFullScreen
         callVC.modalTransitionStyle = .crossDissolve

@@ -5,15 +5,13 @@ import SessionUtilitiesKit
 import UIKit
 
 final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelegate {
-    let sessionID: String
-    let uuid: String
-    let mode: Mode
-    let webRTCSession: WebRTCSession
+    let call: SessionCall
+    var webRTCSession: WebRTCSession { return call.webRTCSession }
     var shouldAnswer = false
     var isMuted = false
     var isVideoEnabled = false
     var shouldRestartCamera = true
-    var conversationVC: ConversationVC? = nil
+    weak var conversationVC: ConversationVC? = nil
     
     lazy var cameraManager: CameraManager = {
         let result = CameraManager()
@@ -159,20 +157,15 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         return result
     }()
     
-    // MARK: Mode
-    enum Mode {
-        case offer
-        case answer(sdp: RTCSessionDescription)
-    }
-    
     // MARK: Lifecycle
-    init(for sessionID: String, uuid: String, mode: Mode) {
-        self.sessionID = sessionID
-        self.uuid = uuid
-        self.mode = mode
-        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
+    init(for call: SessionCall) {
+        self.call = call
         super.init(nibName: nil, bundle: nil)
-        self.webRTCSession.delegate = self
+        self.call.webRTCSession.delegate = self
+        self.call.hasEndedDidChange = {
+            self.conversationVC?.showInputAccessoryView()
+            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        }
     }
     
     required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }
@@ -184,19 +177,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         setUpViewHierarchy()
         if shouldRestartCamera { cameraManager.prepare() }
         touch(videoCapturer)
-        var contact: Contact?
-        Storage.read { transaction in
-            contact = Storage.shared.getContact(with: self.sessionID)
-        }
-        titleLabel.text = contact?.displayName(for: Contact.Context.regular) ?? sessionID
-        if case .offer = mode {
-            callInfoLabel.text = "Ringing..."
-            Storage.write { transaction in
-                self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
-                    self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).retainUntilComplete()
-                }.retainUntilComplete()
-            }
-            answerButton.isHidden = true
+        titleLabel.text = self.call.contactName
+        self.call.startSessionCall{
+            self.callInfoLabel.text = "Ringing..."
+            self.answerButton.isHidden = true
         }
         if shouldAnswer { answerCall() }
     }
@@ -251,12 +235,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         imageView.layer.cornerRadius = 150
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
-        if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: sessionID) {
-            imageView.image = profilePicture
-        } else {
-            let displayName = Storage.shared.getContact(with: sessionID)?.name ?? sessionID
-            imageView.image = Identicon.generatePlaceholderIcon(seed: sessionID, text: displayName, size: 300)
-        }
+        imageView.image = self.call.profilePicture
         background.addSubview(imageView)
         imageView.set(.width, to: 300)
         imageView.set(.height, to: 300)
@@ -284,6 +263,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     func webRTCIsConnected() {
         DispatchQueue.main.async {
             self.callInfoLabel.text = "Connected"
+            self.call.hasConnected = true
             self.minimizeButton.isHidden = false
             UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
                 self.callInfoLabel.alpha = 0
@@ -341,9 +321,8 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     @objc private func answerCall() {
         let userDefaults = UserDefaults.standard
         if userDefaults[.hasSeenCallIPExposureWarning] {
-            if case let .answer(sdp) = mode {
-                callInfoLabel.text = "Connecting..."
-                webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            self.call.answerSessionCall{
+                self.callInfoLabel.text = "Connecting..."
                 self.answerButton.alpha = 0
                 UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
                     self.answerButton.isHidden = true
@@ -356,11 +335,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     }
     
     @objc private func endCall() {
-        Storage.write { transaction in
-            WebRTCSession.current?.endCall(with: self.sessionID, using: transaction)
-        }
-        self.conversationVC?.showInputAccessoryView()
-        presentingViewController?.dismiss(animated: true, completion: nil)
+        self.call.endSessionCall()
     }
     
     @objc private func minimize() {

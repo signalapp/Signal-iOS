@@ -31,7 +31,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let userDefaults = UserDefaults.standard
         if userDefaults[.hasSeenCallIPExposureWarning] {
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
-            let callVC = CallVC(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
+            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
+            let callVC = CallVC(for: call)
             callVC.conversationVC = self
             callVC.modalPresentationStyle = .overFullScreen
             callVC.modalTransitionStyle = .crossDissolve
@@ -54,9 +55,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
     
     internal func showCallVCIfNeeded() {
-        guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID(),
-              let incomingCallBanner = IncomingCallBanner.current, incomingCallBanner.sessionID == contactSessionID
-        else { return }
+        guard let incomingCallBanner = IncomingCallBanner.current else { return }
         incomingCallBanner.showCallVC(answer: false)
     }
 

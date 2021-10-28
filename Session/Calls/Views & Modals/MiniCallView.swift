@@ -50,12 +50,7 @@ final class MiniCallView: UIView {
         imageView.layer.cornerRadius = 32
         imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
-        if let profilePicture = OWSProfileManager.shared().profileAvatar(forRecipientId: callVC.sessionID) {
-            imageView.image = profilePicture
-        } else {
-            let displayName = Storage.shared.getContact(with: callVC.sessionID)?.name ?? callVC.sessionID
-            imageView.image = Identicon.generatePlaceholderIcon(seed: callVC.sessionID, text: displayName, size: 64)
-        }
+        imageView.image = callVC.call.profilePicture
         background.addSubview(imageView)
         imageView.set(.width, to: 64)
         imageView.set(.height, to: 64)

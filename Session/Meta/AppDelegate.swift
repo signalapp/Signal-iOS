@@ -11,9 +11,10 @@ extension AppDelegate {
         MessageReceiver.handleOfferCallMessage = { message in
             DispatchQueue.main.async {
                 let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
+                let call = SessionCall(for: message.sender!, uuid: message.uuid!, mode: .answer(sdp: sdp))
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                 if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == message.sender! {
-                    let callVC = CallVC(for: message.sender!, uuid: message.uuid!, mode: .answer(sdp: sdp))
+                    let callVC = CallVC(for: call)
                     callVC.modalPresentationStyle = .overFullScreen
                     callVC.modalTransitionStyle = .crossDissolve
                     callVC.conversationVC = conversationVC
@@ -21,7 +22,7 @@ extension AppDelegate {
                     conversationVC.inputAccessoryView?.alpha = 0
                     presentingVC.present(callVC, animated: true, completion: nil)
                 } else {
-                    let incomingCallBanner = IncomingCallBanner(for: message.sender!, uuid: message.uuid!, sdp: sdp)
+                    let incomingCallBanner = IncomingCallBanner(for: call)
                     incomingCallBanner.show()
                 }
             }
