@@ -11,15 +11,55 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         RemoteConfig.paymentsResetKillSwitch || !hasValidPhoneNumberForPayments
     }
 
+    public var hasValidPhoneNumberForPayments: Bool {
+        guard Self.tsAccountManager.isRegisteredAndReady else {
+            return false
+        }
+        if DebugFlags.paymentsAllowAllCountries {
+            return true
+        }
+        guard let localNumber = Self.tsAccountManager.localNumber else {
+            return false
+        }
+        guard let phoneNumber = PhoneNumber(fromE164: localNumber) else {
+            owsFailDebug("Could not parse phone number: \(localNumber).")
+            return false
+        }
+        guard let nsCountryCode = phoneNumber.getCountryCode() else {
+            owsFailDebug("Missing countryCode: \(localNumber).")
+            return false
+        }
+        let validCountryCodes: [Int] = [
+            // France
+            33,
+            // Switzerland
+            41,
+            // Parts of UK.
+            44,
+            // Germany
+            49
+        ]
+        return validCountryCodes.contains(nsCountryCode.intValue)
+    }
+
+    public var canEnablePayments: Bool {
+        guard FeatureFlags.paymentsEnabled else {
+            return false
+        }
+        guard !isKillSwitchActive else {
+            return false
+        }
+        return hasValidPhoneNumberForPayments
+    }
+
     // MARK: - PaymentsState
+
+    fileprivate static let keyValueStore = SDSKeyValueStore(collection: "Payments")
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
     private static let paymentsEntropyKey = "paymentsEntropy"
 
     private let paymentStateCache = AtomicOptional<PaymentsState>(nil)
-
-    @objc
-    public static let arePaymentsEnabledDidChange = Notification.Name("arePaymentsEnabledDidChange")
 
     public func warmCaches() {
         owsAssertDebug(GRDBSchemaMigrator.areMigrationsComplete)
@@ -46,7 +86,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         let paymentsEntropy = self.paymentsEntropy ?? Self.generateRandomPaymentsEntropy()
         _ = enablePayments(withPaymentsEntropy: paymentsEntropy, transaction: transaction)
     }
-    
+
     public func enablePayments(withPaymentsEntropy newPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
         let oldPaymentsEntropy = Self.loadPaymentsState(transaction: transaction).paymentsEntropy
         guard oldPaymentsEntropy == nil || oldPaymentsEntropy == newPaymentsEntropy else {
@@ -62,7 +102,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         owsAssertDebug(arePaymentsEnabled)
         return true
     }
-    
+
     public func disablePayments(transaction: SDSAnyWriteTransaction) {
         switch paymentsState {
         case .enabled(let paymentsEntropy):
@@ -74,12 +114,12 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         }
         owsAssertDebug(!arePaymentsEnabled)
     }
-    
+
     public func setPaymentsState(_ newPaymentsState: PaymentsState,
                                  updateStorageService: Bool,
                                  transaction: SDSAnyWriteTransaction) {
         let oldPaymentsState = self.paymentsState
-        
+
         guard !newPaymentsState.isEnabled || canEnablePayments else {
             owsFailDebug("Payments cannot be enabled.")
             return
@@ -94,7 +134,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
             Logger.verbose("oldPaymentsEntropy: \(oldPaymentsEntropy.hexadecimalString) != newPaymentsEntropy: \(newPaymentsEntropy.hexadecimalString).")
             owsFailDebug("paymentsEntropy does not match.")
         }
-        
+
         Self.keyValueStore.setBool(newPaymentsState.isEnabled,
                                    key: Self.arePaymentsEnabledKey,
                                    transaction: transaction)
@@ -103,22 +143,22 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                        key: Self.paymentsEntropyKey,
                                        transaction: transaction)
         }
-        
+
         self.paymentStateCache.set(newPaymentsState)
-        
+
         transaction.addAsyncCompletionOffMain {
-            NotificationCenter.default.postNotificationNameAsync(Self.arePaymentsEnabledDidChange, object: nil)
-            
+            NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
+
             self.updateCurrentPaymentBalance()
-            
+
             Self.profileManager.reuploadLocalProfile()
-            
+
             if updateStorageService {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
     }
-    
+
     private static func loadPaymentsState(transaction: SDSAnyReadTransaction) -> PaymentsState {
         guard FeatureFlags.paymentsEnabled else {
             return .disabled
@@ -142,15 +182,21 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         return PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
                                    paymentsEntropy: paymentsEntropy)
     }
-    
+
     private static func generateRandomPaymentsEntropy() -> Data {
         Cryptography.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
     }
-    
+
+    public func clearState(transaction: SDSAnyWriteTransaction) {
+        Self.keyValueStore.removeAll(transaction: transaction)
+
+        paymentStateCache.set(nil)
+    }
+
     // MARK: -
-    
+
     private static let arePaymentsEnabledForUserStore = SDSKeyValueStore(collection: "arePaymentsEnabledForUserStore")
-    
+
     public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
         guard let uuid = address.uuid else {
             Logger.warn("User is missing uuid.")
@@ -158,7 +204,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         }
         Self.arePaymentsEnabledForUserStore.setBool(hasPaymentsEnabled, key: uuid.uuidString, transaction: transaction)
     }
-    
+
     public func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
         guard let uuid = address.uuid else {
             Logger.warn("User is missing uuid.")
@@ -171,14 +217,14 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
     // MARK: - Incoming Messages
 
-    func processIncomingPaymentRequest(thread: TSThread,
+    public func processIncomingPaymentRequest(thread: TSThread,
                                        paymentRequest: TSPaymentRequest,
                                        transaction: SDSAnyWriteTransaction) {
         // TODO: Handle requests.
         owsFailDebug("Not yet implemented.")
     }
 
-    func processIncomingPaymentNotification(thread: TSThread,
+    public func processIncomingPaymentNotification(thread: TSThread,
                                             paymentNotification: TSPaymentNotification,
                                             senderAddress: SignalServiceAddress,
                                             transaction: SDSAnyWriteTransaction) {
@@ -196,7 +242,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                                          transaction: transaction)
     }
 
-    func processIncomingPaymentCancellation(thread: TSThread,
+    public func processIncomingPaymentCancellation(thread: TSThread,
                                             paymentCancellation: TSPaymentCancellation,
                                             transaction: SDSAnyWriteTransaction) {
         guard paymentCancellation.isValid else {
@@ -215,7 +261,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         paymentRequestModel.anyRemove(transaction: transaction)
     }
 
-    func processReceivedTranscriptPaymentRequest(thread: TSThread,
+    public func processReceivedTranscriptPaymentRequest(thread: TSThread,
                                                  paymentRequest: TSPaymentRequest,
                                                  messageTimestamp: UInt64,
                                                  transaction: SDSAnyWriteTransaction) {
@@ -242,14 +288,14 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         }
     }
 
-    func processReceivedTranscriptPaymentNotification(thread: TSThread,
+    public func processReceivedTranscriptPaymentNotification(thread: TSThread,
                                                       paymentNotification: TSPaymentNotification,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction) {
         Logger.info("Ignoring payment notification from sync transcript.")
     }
 
-    func processReceivedTranscriptPaymentCancellation(thread: TSThread,
+    public func processReceivedTranscriptPaymentCancellation(thread: TSThread,
                                                       paymentCancellation: TSPaymentCancellation,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction) {
@@ -261,7 +307,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         }
     }
 
-    func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
+    public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction) {
         Logger.verbose("")
@@ -394,6 +440,29 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         }
     }
 
+    // Incoming requests are for outgoing payments and vice versa.
+    private class func findPaymentRequestModel(forRequestUuidString requestUuidString: String,
+                                               expectedIsIncomingRequest: Bool?,
+                                               transaction: SDSAnyReadTransaction) -> TSPaymentRequestModel? {
+
+        guard let paymentRequestModel = PaymentFinder.paymentRequestModel(forRequestUuidString: requestUuidString,
+                                                                          transaction: transaction) else {
+            return nil
+        }
+        // Incoming requests are for outgoing payments and vice versa.
+        if let expectedIsIncomingRequest = expectedIsIncomingRequest {
+            guard expectedIsIncomingRequest == paymentRequestModel.isIncomingRequest else {
+                owsFailDebug("Unexpected isIncomingRequest: \(paymentRequestModel.isIncomingRequest).")
+                return nil
+            }
+        }
+        guard paymentRequestModel.isValid else {
+            owsFailDebug("Invalid paymentRequestModel.")
+            return nil
+        }
+        return paymentRequestModel
+    }
+
     // This method enforces invariants around TSPaymentModel.
     private func isProposedPaymentModelRedundant(_ paymentModel: TSPaymentModel,
                                                  transaction: SDSAnyWriteTransaction) throws -> Bool {
@@ -484,13 +553,45 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         return false
     }
 
-    public func clearState(transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.removeAll(transaction: transaction)
-        
-        paymentStateCache.set(nil)
-        paymentBalanceCache.set(nil)
-        
-        discardApiHandle()
+    // MARK: - Upsert Payment Records
+
+    private func upsertPaymentModelForIncomingPaymentNotification(_ paymentNotification: TSPaymentNotification,
+                                                                  thread: TSThread,
+                                                                  senderAddress: SignalServiceAddress,
+                                                                  transaction: SDSAnyWriteTransaction) {
+        do {
+            let mcReceiptData = paymentNotification.mcReceiptData
+            guard let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
+                throw OWSAssertionError("Invalid receipt.")
+            }
+
+            let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
+                                               transactionData: nil,
+                                               receiptData: paymentNotification.mcReceiptData,
+                                               incomingTransactionPublicKeys: [ receipt.txOutPublicKey ],
+                                               spentKeyImages: nil,
+                                               outputPublicKeys: nil,
+                                               ledgerBlockTimestamp: 0,
+                                               ledgerBlockIndex: 0,
+                                               feeAmount: nil)
+            let paymentModel = TSPaymentModel(paymentType: .incomingPayment,
+                                              paymentState: .incomingUnverified,
+                                              paymentAmount: nil,
+                                              createdDate: Date(),
+                                              addressUuidString: senderAddress.uuidString,
+                                              memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
+                                              requestUuidString: nil,
+                                              isUnread: true,
+                                              mobileCoin: mobileCoin)
+            guard paymentModel.isValid else {
+                throw OWSAssertionError("Invalid paymentModel.")
+            }
+            try tryToInsertPaymentModel(paymentModel, transaction: transaction)
+
+            // TODO: Remove any corresponding payment request.
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
     }
 }
 

@@ -112,14 +112,6 @@ public extension NSObject {
         Environment.shared.orphanDataCleanerRef
     }
 
-    final var paymentsImpl: PaymentsImpl {
-        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
-    }
-
-    static var paymentsImpl: PaymentsImpl {
-        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
-    }
-
     var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
     }
@@ -234,14 +226,6 @@ public extension Dependencies {
 
     static var orphanDataCleaner: OWSOrphanDataCleaner {
         Environment.shared.orphanDataCleanerRef
-    }
-
-    var paymentsImpl: PaymentsImpl {
-        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
-    }
-
-    static var paymentsImpl: PaymentsImpl {
-        SSKEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 
     var avatarBuilder: AvatarBuilder {

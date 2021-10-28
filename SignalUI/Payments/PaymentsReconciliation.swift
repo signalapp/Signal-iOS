@@ -20,7 +20,7 @@ public class PaymentsReconciliation: Dependencies {
                 self?.reconcileIfNecessary()
             }
         }
-        NotificationCenter.default.addObserver(forName: PaymentsImpl.arePaymentsEnabledDidChange,
+        NotificationCenter.default.addObserver(forName: PaymentsConstants.arePaymentsEnabledDidChange,
                                                object: nil, queue: nil) { [weak self] _ in
             self?.reconcileIfNecessary()
         }

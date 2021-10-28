@@ -9,10 +9,6 @@ import SignalServiceKit
 @objc
 public class PaymentsImpl: NSObject, PaymentsSwift {
 
-    // MARK: - KV Store
-
-    fileprivate static let keyValueStore = SDSKeyValueStore(collection: "Payments")
-
     private var refreshBalanceEvent: RefreshEvent?
 
     fileprivate let paymentsReconciliation = PaymentsReconciliation()
@@ -110,48 +106,11 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
-    public var canEnablePayments: Bool {
-        guard FeatureFlags.paymentsEnabled else {
-            return false
-        }
-        guard !isKillSwitchActive else {
-            return false
-        }
-        return hasValidPhoneNumberForPayments
-    }
-
-    private var hasValidPhoneNumberForPayments: Bool {
-        guard Self.tsAccountManager.isRegisteredAndReady else {
-            return false
-        }
-        if DebugFlags.paymentsAllowAllCountries {
-            return true
-        }
-        guard let localNumber = Self.tsAccountManager.localNumber else {
-            return false
-        }
-        guard let phoneNumber = PhoneNumber(fromE164: localNumber) else {
-            owsFailDebug("Could not parse phone number: \(localNumber).")
-            return false
-        }
-        guard let nsCountryCode = phoneNumber.getCountryCode() else {
-            owsFailDebug("Missing countryCode: \(localNumber).")
-            return false
-        }
-        let validCountryCodes: [Int] = [
-            // France
-            33,
-            // Switzerland
-            41,
-            // Parts of UK.
-            44,
-            // Germany
-            49
-        ]
-        return validCountryCodes.contains(nsCountryCode.intValue)
-    }
+    public var hasValidPhoneNumberForPayments: Bool { paymentsHelper.hasValidPhoneNumberForPayments }
 
     public var isKillSwitchActive: Bool { paymentsHelper.isKillSwitchActive }
+
+    public var canEnablePayments: Bool { paymentsHelper.canEnablePayments }
 
     public var shouldShowPaymentsUI: Bool {
         arePaymentsEnabled || canEnablePayments
@@ -198,9 +157,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
-        Self.keyValueStore.removeAll(transaction: transaction)
-
-        paymentStateCache.set(nil)
         paymentBalanceCache.set(nil)
 
         discardApiHandle()
@@ -309,70 +265,6 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
                                         let publicKeys = $0.mobileCoin?.incomingTransactionPublicKeys ?? []
                                         return publicKeys.contains(mcIncomingTransactionPublicKey)
                                     }
-    }
-
-    // MARK: - Upsert Payment Records
-
-    private func upsertPaymentModelForIncomingPaymentNotification(_ paymentNotification: TSPaymentNotification,
-                                                                  thread: TSThread,
-                                                                  senderAddress: SignalServiceAddress,
-                                                                  transaction: SDSAnyWriteTransaction) {
-        do {
-            let mcReceiptData = paymentNotification.mcReceiptData
-            guard let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
-                throw OWSAssertionError("Invalid receipt.")
-            }
-
-            let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
-                                               transactionData: nil,
-                                               receiptData: paymentNotification.mcReceiptData,
-                                               incomingTransactionPublicKeys: [ receipt.txOutPublicKey ],
-                                               spentKeyImages: nil,
-                                               outputPublicKeys: nil,
-                                               ledgerBlockTimestamp: 0,
-                                               ledgerBlockIndex: 0,
-                                               feeAmount: nil)
-            let paymentModel = TSPaymentModel(paymentType: .incomingPayment,
-                                              paymentState: .incomingUnverified,
-                                              paymentAmount: nil,
-                                              createdDate: Date(),
-                                              addressUuidString: senderAddress.uuidString,
-                                              memoMessage: paymentNotification.memoMessage?.nilIfEmpty,
-                                              requestUuidString: nil,
-                                              isUnread: true,
-                                              mobileCoin: mobileCoin)
-            guard paymentModel.isValid else {
-                throw OWSAssertionError("Invalid paymentModel.")
-            }
-            try tryToInsertPaymentModel(paymentModel, transaction: transaction)
-
-            // TODO: Remove any corresponding payment request.
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    // Incoming requests are for outgoing payments and vice versa.
-    private class func findPaymentRequestModel(forRequestUuidString requestUuidString: String,
-                                               expectedIsIncomingRequest: Bool?,
-                                               transaction: SDSAnyReadTransaction) -> TSPaymentRequestModel? {
-
-        guard let paymentRequestModel = PaymentFinder.paymentRequestModel(forRequestUuidString: requestUuidString,
-                                                                          transaction: transaction) else {
-            return nil
-        }
-        // Incoming requests are for outgoing payments and vice versa.
-        if let expectedIsIncomingRequest = expectedIsIncomingRequest {
-            guard expectedIsIncomingRequest == paymentRequestModel.isIncomingRequest else {
-                owsFailDebug("Unexpected isIncomingRequest: \(paymentRequestModel.isIncomingRequest).")
-                return nil
-            }
-        }
-        guard paymentRequestModel.isValid else {
-            owsFailDebug("Invalid paymentRequestModel.")
-            return nil
-        }
-        return paymentRequestModel
     }
 }
 
@@ -1188,7 +1080,7 @@ public extension PaymentsImpl {
 public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     public func willInsertPayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         let payments = self.payments as! PaymentsImpl
-        
+
         payments.paymentsReconciliation.willInsertPayment(paymentModel, transaction: transaction)
 
         // If we're inserting a new payment of any kind, our balance may have changed.

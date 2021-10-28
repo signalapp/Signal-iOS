@@ -215,7 +215,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(arePaymentsEnabledDidChange),
-            name: PaymentsImpl.arePaymentsEnabledDidChange,
+            name: PaymentsConstants.arePaymentsEnabledDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(

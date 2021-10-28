@@ -47,6 +47,9 @@ public class PaymentsConstants {
     private init() {}
 
     @objc
+    public static let arePaymentsEnabledDidChange = Notification.Name("arePaymentsEnabledDidChange")
+
+    @objc
     public static let picoMobPerMob: UInt64 = 1000 * 1000 * 1000 * 1000
 
     @objc

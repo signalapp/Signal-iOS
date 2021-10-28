@@ -6,14 +6,16 @@ import Foundation
 
 @objc
 public protocol PaymentsHelper: AnyObject {
-    
+
     func warmCaches()
-    
+
     var isKillSwitchActive: Bool { get }
+    var hasValidPhoneNumberForPayments: Bool { get }
+    var canEnablePayments: Bool { get }
 
     func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
-    
+
     var arePaymentsEnabled: Bool { get }
     func enablePayments(transaction: SDSAnyWriteTransaction)
     func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
@@ -23,30 +25,30 @@ public protocol PaymentsHelper: AnyObject {
     func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction)
-    
+
     func processIncomingPaymentRequest(thread: TSThread,
                                        paymentRequest: TSPaymentRequest,
                                        transaction: SDSAnyWriteTransaction)
-    
+
     func processIncomingPaymentNotification(thread: TSThread,
                                             paymentNotification: TSPaymentNotification,
                                             senderAddress: SignalServiceAddress,
                                             transaction: SDSAnyWriteTransaction)
-    
+
     func processIncomingPaymentCancellation(thread: TSThread,
                                             paymentCancellation: TSPaymentCancellation,
                                             transaction: SDSAnyWriteTransaction)
-    
+
     func processReceivedTranscriptPaymentRequest(thread: TSThread,
                                                  paymentRequest: TSPaymentRequest,
                                                  messageTimestamp: UInt64,
                                                  transaction: SDSAnyWriteTransaction)
-    
+
     func processReceivedTranscriptPaymentNotification(thread: TSThread,
                                                       paymentNotification: TSPaymentNotification,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction)
-    
+
     func processReceivedTranscriptPaymentCancellation(thread: TSThread,
                                                       paymentCancellation: TSPaymentCancellation,
                                                       messageTimestamp: UInt64,
@@ -54,7 +56,6 @@ public protocol PaymentsHelper: AnyObject {
 }
 
 // MARK: -
-
 
 public protocol PaymentsHelperSwift: PaymentsHelper {
 
@@ -68,11 +69,11 @@ public protocol PaymentsHelperSwift: PaymentsHelper {
 // MARK: -
 
 public enum PaymentsState: Equatable, Dependencies {
-    
+
     case disabled
     case disabledWithPaymentsEntropy(paymentsEntropy: Data)
     case enabled(paymentsEntropy: Data)
-    
+
     // We should almost always construct instances of PaymentsState
     // using this method.  It enforces important invariants.
     //
@@ -94,7 +95,7 @@ public enum PaymentsState: Equatable, Dependencies {
             return .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
         }
     }
-    
+
     public var isEnabled: Bool {
         switch self {
         case .enabled:
@@ -103,7 +104,7 @@ public enum PaymentsState: Equatable, Dependencies {
             return false
         }
     }
-    
+
     public var paymentsEntropy: Data? {
         switch self {
         case .enabled(let paymentsEntropy):
@@ -114,9 +115,9 @@ public enum PaymentsState: Equatable, Dependencies {
             return paymentsEntropy
         }
     }
-    
+
     // MARK: Equatable
-    
+
     public static func == (lhs: PaymentsState, rhs: PaymentsState) -> Bool {
         return (lhs.isEnabled == rhs.isEnabled &&
                 lhs.paymentsEntropy == rhs.paymentsEntropy)
@@ -131,6 +132,10 @@ public class MockPaymentsHelper: NSObject {
 // MARK: -
 
 extension MockPaymentsHelper: PaymentsHelperSwift {
+
+    public var isKillSwitchActive: Bool { false }
+    public var hasValidPhoneNumberForPayments: Bool { false }
+    public var canEnablePayments: Bool { false }
 
     public func warmCaches() {
         owsFail("Not implemented.")
@@ -151,11 +156,11 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     public func enablePayments(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
-    
+
     public func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool {
         owsFail("Not implemented.")
     }
-    
+
     public func disablePayments(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
