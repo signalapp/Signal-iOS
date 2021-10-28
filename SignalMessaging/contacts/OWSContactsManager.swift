@@ -34,8 +34,6 @@ fileprivate extension OWSContactsManager {
         }
     }
 
-    private static var canCacheTrust: Bool { CurrentAppContext().isMainApp }
-
     struct LowTrustCache {
         let contactCache = AtomicSet<UUID>()
         let groupCache = AtomicSet<Data>()
@@ -56,9 +54,6 @@ fileprivate extension OWSContactsManager {
         }
 
         func add(groupThread: TSGroupThread) {
-            guard OWSContactsManager.canCacheTrust else {
-                return
-            }
             groupCache.insert(groupThread.groupId)
         }
 
@@ -67,9 +62,6 @@ fileprivate extension OWSContactsManager {
         }
 
         func add(address: SignalServiceAddress) {
-            guard OWSContactsManager.canCacheTrust else {
-                return
-            }
             guard let uuid = address.uuid else {
                 return
             }
@@ -212,8 +204,7 @@ fileprivate extension OWSContactsManager {
             }
             return false
         }()
-        if OWSContactsManager.canCacheTrust,
-            let cacheKey = otherAddress.uuid {
+        if let cacheKey = otherAddress.uuid {
             cache[cacheKey] = result
         }
         return result
@@ -236,9 +227,7 @@ fileprivate extension OWSContactsManager {
             }
             return false
         }()
-        if OWSContactsManager.canCacheTrust {
-            cache[cacheKey] = result
-        }
+        cache[cacheKey] = result
         return result
     }
 }
