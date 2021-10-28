@@ -70,7 +70,7 @@ final class HelpViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
                 actionBlock: {
                     Logger.info("Submitting debug logs")
-                    DDLog.flushLog()
+                    Logger.flush()
                     Pastelog.submitLogs()
                 }
             ))

@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareAndPerformNTimes:(NSUInteger)count
 {
     OWSLogInfo(@"%@ prepareAndPerformNTimes: %zd", self.label, count);
-    [DDLog flushLog];
+    OWSLogFlush();
 
     [self prepare:^{
         [self performNTimes:count
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(failure);
 
     OWSLogInfo(@"%@ performNTimes: %zd", self.label, countParam);
-    [DDLog flushLog];
+    OWSLogFlush();
 
     if (countParam < 1) {
         success();
@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     DebugUIMessagesAction *nextAction = unpreparedSubactions.lastObject;
     [unpreparedSubactions removeLastObject];
     OWSLogInfo(@"preparing: %@", nextAction.label);
-    [DDLog flushLog];
+    OWSLogFlush();
     [nextAction prepare:^{
         [self prepareSubactions:unpreparedSubactions success:success failure:failure];
     }

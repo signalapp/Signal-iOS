@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
             parameters);
     }
     if (![self shouldReportAsync:severity]) {
-        [DDLog flushLog];
+        OWSLogFlush();
     }
 }
 

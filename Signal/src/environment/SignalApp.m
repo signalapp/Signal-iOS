@@ -245,7 +245,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 {
     // This _should_ be wiped out below.
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 
     DispatchSyncMainThreadSafe(^{
         [self.databaseStorage resetAllStorage];

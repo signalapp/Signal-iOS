@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.reportedApplicationState = UIApplicationStateInactive;
 
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 
     [BenchManager benchWithTitle:@"Slow post WillResignActive"
                  logIfLongerThan:0.01
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 
     self.reportedApplicationState = UIApplicationStateBackground;
 

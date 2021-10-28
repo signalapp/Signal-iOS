@@ -59,8 +59,8 @@
       launchAutomaticallySubstyle = "2">
       <RemoteRunnable
          runnableDebuggingMode = "1"
-         BundleIdentifier = "com.Eventifica.StDavidsSchool"
-         RemotePath = "/var/containers/Bundle/Application/15967485-15B1-4518-95A6-552BF0D45880/StDavids.app">
+         BundleIdentifier = "com.apple.mobilesafari"
+         RemotePath = "/Applications/MobileSafari.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference

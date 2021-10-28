@@ -158,7 +158,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 }
 
 - (void)sendConfigurationSyncMessage_AppReady {
-    DDLogInfo(@"");
+    OWSLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
         return;
@@ -487,7 +487,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)sendFetchLatestSyncMessageWithType:(OWSSyncFetchType)fetchType
 {
-    DDLogInfo(@"");
+    OWSLogInfo(@"");
 
     if (!self.tsAccountManager.isRegisteredAndReady) {
         OWSFailDebug(@"Unexpectedly tried to send sync message before registration.");

@@ -127,7 +127,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     self.reportedApplicationState = UIApplicationStateBackground;
 
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 
     [BenchManager benchWithTitle:@"Slow post DidEnterBackground"
                  logIfLongerThan:0.01
@@ -146,7 +146,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     self.reportedApplicationState = UIApplicationStateInactive;
 
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 
     [BenchManager benchWithTitle:@"Slow post WillResignActive"
                  logIfLongerThan:0.01
@@ -183,7 +183,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
-    [DDLog flushLog];
+    OWSLogFlush();
 }
 
 #pragma mark -

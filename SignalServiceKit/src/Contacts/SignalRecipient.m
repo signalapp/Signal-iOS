@@ -104,7 +104,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // ensure the local user always has at least *this* device.
     if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         if (self.address.isLocalAddress) {
-            DDLogInfo(@"Adding primary device to self recipient.");
+            OWSLogInfo(@"Adding primary device to self recipient.");
             [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
         }
     }

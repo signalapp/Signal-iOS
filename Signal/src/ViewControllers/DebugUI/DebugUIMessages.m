@@ -324,7 +324,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
 + (void)sendTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     OWSLogInfo(@"sendTextMessageInThread: %zd", counter);
-    [DDLog flushLog];
+    OWSLogFlush();
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -402,7 +402,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     OWSAssertDebug(attachment);
     if ([attachment hasError]) {
         OWSLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
-        [DDLog flushLog];
+        OWSLogFlush();
     }
     OWSAssertDebug(![attachment hasError]);
 
@@ -1715,7 +1715,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
     OWSAssertDebug(attachment);
     if ([attachment hasError]) {
         OWSLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
-        [DDLog flushLog];
+        OWSLogFlush();
     }
     OWSAssertDebug(![attachment hasError]);
     return attachment;
@@ -4449,7 +4449,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSAssertDebug(attachment);
         if ([attachment hasError]) {
             OWSLogError(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
-            [DDLog flushLog];
+            OWSLogFlush();
         }
         OWSAssertDebug(![attachment hasError]);
         [self sendAttachment:attachment thread:thread messageBody:nil];

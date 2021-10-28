@@ -58,7 +58,7 @@ typedef NSDictionary<NSString *, id> *_Nonnull (^OWSProdAssertParametersBlock)(v
     {                                                                                                                  \
         if (!(BOOL)(__value)) {                                                                                        \
             NSDictionary<NSString *, id> *__eventParameters = (__parametersBlock ? __parametersBlock() : nil);         \
-            [DDLog flushLog];                                                                                          \
+            OWSLogFlush();                                                                                          \
             [OWSAnalytics logEvent:__eventName                                                                         \
                           severity:OWSAnalyticsSeverityError                                                           \
                         parameters:__eventParameters                                                                   \

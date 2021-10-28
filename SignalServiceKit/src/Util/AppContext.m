@@ -53,7 +53,7 @@ void ClearCurrentAppContextForTests()
 void ExitShareExtension(void)
 {
     OWSLogInfo(@"ExitShareExtension");
-    [DDLog flushLog];
+    OWSLogFlush();
     exit(0);
 }
 

@@ -110,7 +110,7 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"applicationDidEnterBackground.");
 
-    [DDLog flushLog];
+    OWSLogFlush();
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -129,7 +129,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [SignalApp.shared applicationWillTerminate];
 
-    [DDLog flushLog];
+    OWSLogFlush();
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -320,7 +320,7 @@ void uncaughtExceptionHandler(NSException *exception)
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
 
-    [DDLog flushLog];
+    OWSLogFlush();
     exit(0);
 }
 
@@ -732,7 +732,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [self clearAllNotificationsAndRestoreBadgeCount];
 
-    [DDLog flushLog];
+    OWSLogFlush();
 }
 
 - (void)clearAllNotificationsAndRestoreBadgeCount
