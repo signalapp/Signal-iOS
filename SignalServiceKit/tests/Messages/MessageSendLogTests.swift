@@ -426,7 +426,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
                     payloadId: index,
                     recipientUuid: recipientAddress.uuid!,
                     recipientDeviceId: deviceId,
-                    message: newMessage,
+                    message: message1,
                     transaction: writeTx)
             }
 
@@ -483,7 +483,7 @@ class MessageSendLogTests: SSKBaseTestSwift {
             XCTAssertEqual(message.timestamp, originalTimestamp)
 
             let index = MessageSendLog.recordPayload(data, forMessageBeingSent: message, transaction: writeTx)!.int64Value
-            MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, message: newMessage, transaction: writeTx)
+            MessageSendLog.recordPendingDelivery(payloadId: index, recipientUuid: address.uuid!, recipientDeviceId: 1, message: message, transaction: writeTx)
 
             let fetchedPayload = MessageSendLog.test_fetchPayload(
                 address: address,

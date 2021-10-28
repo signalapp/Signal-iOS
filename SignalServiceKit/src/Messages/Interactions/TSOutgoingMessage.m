@@ -725,16 +725,12 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         error,
         error.isRetryable);
 
-    [self
-        anyUpdateOutgoingMessageWithTransaction:transaction
-                                          block:^(TSOutgoingMessage *message) {
-                                              TSOutgoingMessageRecipientState *_Nullable recipientState
-                                                  = message.recipientAddressStates[recipientAddress];
-                                              if (!recipientState) {
-                                                  OWSFailDebug(
-                                                      @"Missing recipient state for recipient: %@", recipientAddress);
-                                                  return;
-                                              }
+    [self anyUpdateOutgoingMessageWithTransaction:transaction block:^(TSOutgoingMessage *message) {
+        TSOutgoingMessageRecipientState *_Nullable recipientState = message.recipientAddressStates[recipientAddress];
+        if (!recipientState) {
+            OWSFailDebug(@"Missing recipient state for recipient: %@", recipientAddress);
+            return;
+        }
 
         if (error.isRetryable && recipientState.state == OWSOutgoingMessageRecipientStateSending) {
             // For retryable errors, we can just set the error code and leave the state set as Sending
