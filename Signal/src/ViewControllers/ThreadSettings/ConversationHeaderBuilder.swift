@@ -442,7 +442,7 @@ struct ConversationHeaderBuilder: Dependencies {
             badged: true)
 
         avatarView.update(transaction) {
-            $0.dataSource = .forThread(delegate.thread)
+            $0.dataSource = .thread(delegate.thread)
             return .asynchronously
         }
 

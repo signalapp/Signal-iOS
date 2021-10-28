@@ -57,7 +57,7 @@ public class ReturnToCallViewController: UIViewController {
 
         let profileImage = databaseStorage.read { transaction -> UIImage? in
             avatarView.update(transaction) { config in
-                config.dataSource = .unknownContact(contactAddress: callViewController.remoteVideoAddress)
+                config.dataSource = .address(callViewController.remoteVideoAddress)
                 return .asynchronously
             }
             return self.profileManagerImpl.profileAvatar(for: callViewController.remoteVideoAddress,

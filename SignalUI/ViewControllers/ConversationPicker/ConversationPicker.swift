@@ -659,10 +659,10 @@ private class ConversationPickerCell: ContactTableViewCell {
     // MARK: - ContactTableViewCell
 
     public func configure(conversationItem: ConversationItem, transaction: SDSAnyReadTransaction) {
-        let content: ConversationContent
+        let configuration: ContactCellConfiguration
         switch conversationItem.messageRecipient {
         case .contact(let address):
-            content = ConversationContent.forAddress(address, transaction: transaction)
+            configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
         case .group(let groupThreadId):
             guard let groupThread = TSGroupThread.anyFetchGroupThread(
                 uniqueId: groupThreadId,
@@ -671,10 +671,8 @@ private class ConversationPickerCell: ContactTableViewCell {
                 owsFailDebug("Failed to find group thread")
                 return
             }
-            content = ConversationContent.forThread(groupThread)
+            configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
         }
-        let configuration = ContactCellConfiguration(content: content,
-                                                     localUserDisplayMode: .noteToSelf)
         if conversationItem.isBlocked {
             configuration.accessoryMessage = MessageStrings.conversationIsBlocked
         } else {

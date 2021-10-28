@@ -499,7 +499,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     func updateAvatarImage() {
         databaseStorage.read { transaction in
             contactAvatarView.update(transaction) { config in
-                config.dataSource = .contact(contactThread: thread)
+                config.dataSource = .thread(thread)
                 return .asynchronously
             }
             backgroundAvatarView.image = contactsManagerImpl.avatarImage(forAddress: thread.contactAddress,

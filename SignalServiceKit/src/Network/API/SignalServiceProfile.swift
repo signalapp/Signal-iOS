@@ -89,7 +89,6 @@ public class SignalServiceProfile: NSObject {
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
 
-        // TODO: Badges — Should we be fetching badges in the non-main app?
         if FeatureFlags.fetchAndDisplayBadges,
            let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             self.badges = badgeArray.compactMap {

@@ -489,10 +489,7 @@ extension ConversationSettingsViewController {
                 }
 
                 Self.databaseStorage.read { transaction in
-                    let configuration = ContactCellConfiguration.build(address: memberAddress,
-                                                                       localUserDisplayMode: .asLocalUser,
-                                                                       transaction: transaction)
-
+                    let configuration = ContactCellConfiguration(address: memberAddress, localUserDisplayMode: .asLocalUser)
                     let isGroupAdmin = groupMembership.isFullMemberAndAdministrator(memberAddress)
                     let isVerified = verificationState == .verified
                     let isNoLongerVerified = verificationState == .noLongerVerified

@@ -225,7 +225,7 @@ class NameCollisionCell: UITableViewCell {
         owsAssertDebug(actions.count < 3, "Only supports two actions. Feel free to update this for more.")
 
         avatarView.updateWithSneakyTransaction { config in
-            config.dataSource = .unknownContact(contactAddress: model.address)
+            config.dataSource = .address(model.address)
             return .asynchronously
         }
         if model.address.isLocalAddress {

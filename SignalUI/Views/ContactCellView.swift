@@ -20,7 +20,12 @@ public class ContactCellAccessoryView: NSObject {
 
 @objc
 public class ContactCellConfiguration: NSObject {
-    public let content: ConversationContent
+    fileprivate enum CellDataSource {
+        case address(SignalServiceAddress)
+        case groupThread(TSGroupThread)
+    }
+
+    fileprivate let dataSource: CellDataSource
 
     @objc
     public let localUserDisplayMode: LocalUserDisplayMode
@@ -51,37 +56,17 @@ public class ContactCellConfiguration: NSObject {
         accessoryMessage?.nilIfEmpty != nil
     }
 
-    public init(content: ConversationContent,
-                localUserDisplayMode: LocalUserDisplayMode) {
-        self.content = content
+    @objc
+    public init(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode) {
+        self.dataSource = .address(address)
         self.localUserDisplayMode = localUserDisplayMode
-
         super.init()
     }
 
-    @objc(buildWithSneakyTransactionForaddress:localUserDisplayMode:)
-    public static func buildWithSneakyTransaction(address: SignalServiceAddress,
-                                                  localUserDisplayMode: LocalUserDisplayMode) -> ContactCellConfiguration {
-        databaseStorage.read { transaction in
-            build(address: address, localUserDisplayMode: localUserDisplayMode, transaction: transaction)
-        }
-    }
-
-    @objc(buildForAddress:localUserDisplayMode:transaction:)
-    public static func build(address: SignalServiceAddress,
-                             localUserDisplayMode: LocalUserDisplayMode,
-                             transaction: SDSAnyReadTransaction) -> ContactCellConfiguration {
-        let content = ConversationContent.forAddress(address, transaction: transaction)
-        return ContactCellConfiguration(content: content,
-                                        localUserDisplayMode: localUserDisplayMode)
-    }
-
-    @objc(buildForThread:localUserDisplayMode:)
-    public static func build(thread: TSThread,
-                             localUserDisplayMode: LocalUserDisplayMode) -> ContactCellConfiguration {
-        let content = ConversationContent.forThread(thread)
-        return ContactCellConfiguration(content: content,
-                                        localUserDisplayMode: localUserDisplayMode)
+    public init(groupThread: TSGroupThread, localUserDisplayMode: LocalUserDisplayMode) {
+        self.dataSource = .groupThread(groupThread)
+        self.localUserDisplayMode = localUserDisplayMode
+        super.init()
     }
 
     public func useVerifiedSubtitle() {
@@ -106,8 +91,14 @@ public class ContactCellView: ManualStackView {
         }
     }
 
-    private var content: ConversationContent? { configuration?.content }
     public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .small }
+    private var avatarDataSource: ConversationAvatarDataSource? {
+        switch configuration?.dataSource {
+        case let .groupThread(thread): return .thread(thread)
+        case let .address(address): return .address(address)
+        case nil: return nil
+        }
+    }
 
     // TODO: Update localUserDisplayMode.
     private let avatarView = ConversationAvatarView(
@@ -169,7 +160,7 @@ public class ContactCellView: ManualStackView {
         self.isUserInteractionEnabled = configuration.allowUserInteraction
 
         avatarView.update(transaction) { config in
-            config.dataSource = configuration.content
+            config.dataSource = avatarDataSource
             config.addBadgeIfApplicable = configuration.badged
             config.localUserDisplayMode = configuration.localUserDisplayMode
             return .asynchronously
@@ -238,19 +229,11 @@ public class ContactCellView: ManualStackView {
 
     private func ensureObservers() {
         NotificationCenter.default.removeObserver(self)
-
-        guard let content = content else {
-            return
-        }
-
-        switch content {
-        case .contact, .unknownContact:
+        if case .address = configuration?.dataSource {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(otherUsersProfileChanged(notification:)),
                                                    name: .otherUsersProfileDidChange,
                                                    object: nil)
-        case .group, .other:
-            break
         }
     }
 
@@ -290,12 +273,12 @@ public class ContactCellView: ManualStackView {
                 return name.asAttributedString
             }
 
-            switch configuration.content {
-            case .contact(let contactThread):
-                return nameForAddress(contactThread.contactAddress)
-            case .group(let groupThread):
+            switch configuration.dataSource {
+            case .address(let address):
+                return nameForAddress(address)
+            case .groupThread(let thread):
                 // TODO: Ensure nameLabel.textColor.
-                let threadName = contactsManager.displayName(for: groupThread,
+                let threadName = contactsManager.displayName(for: thread,
                                                              transaction: transaction)
                 if let nameLabelColor = nameLabel.textColor {
                     return threadName.asAttributedString(attributes: [
@@ -305,11 +288,6 @@ public class ContactCellView: ManualStackView {
                     owsFailDebug("Missing nameLabelColor.")
                     return TSGroupThread.defaultGroupName.asAttributedString
                 }
-            case .unknownContact(let contactAddress):
-                return nameForAddress(contactAddress)
-            case .other:
-                owsFailDebug("To be removed")
-                return NSAttributedString()
             }
         }()
     }
@@ -341,16 +319,9 @@ public class ContactCellView: ManualStackView {
             owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
-        guard let contactAddress = configuration.content.contactAddress else {
-            // shouldn't call this for group threads
-            owsFailDebug("contactAddress was unexpectedly nil")
-            return
-        }
-        guard contactAddress == changedAddress else {
-            // not this avatar
-            return
-        }
 
-        updateNameLabelsWithSneakyTransaction(configuration: configuration)
+        if case .address(changedAddress) = configuration.dataSource {
+            updateNameLabelsWithSneakyTransaction(configuration: configuration)
+        }
     }
 }

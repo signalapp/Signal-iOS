@@ -164,7 +164,7 @@ public class GroupMigrationActionSheet: UIView {
 
             let avatarView = ConversationAvatarView(sizeClass: .custom(28))
             avatarView.update(transaction) { config in
-                config.dataSource = .unknownContact(contactAddress: address)
+                config.dataSource = .address(address)
                 return .asynchronously
             }
 

@@ -227,7 +227,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
     func configure(member: NewGroupMember) {
         self.member = member
         avatarView.updateWithSneakyTransaction { config in
-            config.dataSource = .unknownContact(contactAddress: member.address)
+            config.dataSource = .address(member.address)
             return .asynchronously
         }
         textLabel.text = member.shortName

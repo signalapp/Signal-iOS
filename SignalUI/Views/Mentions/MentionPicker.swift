@@ -351,8 +351,7 @@ private class MentionableUserCell: UITableViewCell {
         }
 
         avatarView.updateWithSneakyTransaction { configuration in
-            // TODO: Badges — Better interface for this data source
-            configuration.dataSource = .unknownContact(contactAddress: mentionableUser.address)
+            configuration.dataSource = .address(mentionableUser.address)
             return .asynchronously
         }
     }

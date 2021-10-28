@@ -327,7 +327,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         let profileImage = databaseStorage.read { transaction -> UIImage? in
             let updatedSize = avatarDiameter
             avatarView.update(transaction) { config in
-                config.dataSource = .unknownContact(contactAddress: device.address)
+                config.dataSource = .address(device.address)
                 config.sizeClass = .custom(updatedSize)
                 return .asynchronously
             }

@@ -524,9 +524,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         }
 
         Self.databaseStorage.read { transaction in
-            let configuration = ContactCellConfiguration.build(address: item.address,
-                                                               localUserDisplayMode: .asUser,
-                                                               transaction: transaction)
+            let configuration = ContactCellConfiguration(address: item.address, localUserDisplayMode: .asUser)
             configuration.allowUserInteraction = true
 
             configuration.forceDarkAppearance = (theme == .translucentDark)

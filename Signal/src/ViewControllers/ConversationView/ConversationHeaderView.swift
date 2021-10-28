@@ -120,7 +120,7 @@ public class ConversationHeaderView: UIStackView {
 
     public func configure(thread: TSThread) {
         avatarView.updateWithSneakyTransaction { config in
-            config.dataSource = .forThread(thread)
+            config.dataSource = .thread(thread)
             return .synchronously
         }
     }

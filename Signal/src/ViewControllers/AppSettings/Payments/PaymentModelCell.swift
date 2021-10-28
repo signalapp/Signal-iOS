@@ -73,7 +73,7 @@ public class PaymentModelCell: UITableViewCell {
         var avatarView: UIView
         if let address = paymentItem.address {
             contactAvatarView.updateWithSneakyTransaction { config in
-                config.dataSource = .unknownContact(contactAddress: address)
+                config.dataSource = .address(address)
                 return .asynchronously
             }
             avatarView = contactAvatarView

@@ -245,11 +245,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         let badgedAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
         badgedAvatarView.updateWithSneakyTransaction { config in
-            // TODO: Badges — Clean up data sources
             if let avatarData = avatarData {
-                config.dataSource = ConversationContent.other(avatar: UIImage(data: avatarData), badge: nil)
+                config.dataSource = .asset(avatar: UIImage(data: avatarData), badge: nil)
             } else if let address = tsAccountManager.localAddress {
-                config.dataSource = .unknownContact(contactAddress: address)
+                config.dataSource = .address(address)
             } else {
                 config.dataSource = nil
             }

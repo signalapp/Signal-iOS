@@ -79,7 +79,7 @@ public extension HomeViewController {
 
         let avatarView = ConversationAvatarView(sizeClass: .custom(Self.paymentsBannerAvatarSize))
         avatarView.update(transaction) { config in
-            config.dataSource = .unknownContact(contactAddress: address)
+            config.dataSource = .address(address)
             return .asynchronously
         }
 
@@ -239,7 +239,7 @@ public extension HomeViewController {
         databaseStorage.read { readTx in
             avatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {
-                    config.dataSource = .forAddress(address, transaction: readTx)
+                    config.dataSource = .address(address)
                 }
                 return .synchronously
             }

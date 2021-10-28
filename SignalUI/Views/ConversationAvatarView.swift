@@ -31,7 +31,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             useAutolayout: useAutolayout)
 
         super.init(frame: .zero)
-        
+
         addSubview(avatarView)
         addSubview(badgeView)
         autoresizesSubviews = false
@@ -62,7 +62,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         }
 
         public var sizeClass: SizeClass
-        public var dataSource: ConversationContent?
+        public var dataSource: ConversationAvatarDataSource?
         public var localUserDisplayMode: LocalUserDisplayMode
         public var addBadgeIfApplicable: Bool
 
@@ -162,6 +162,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         self.avatarView.image = avatarImage
         self.badgeView.image = badgeImage
         currentModelGeneration = nextModelGeneration.get()
+        setNeedsLayout()
     }
 
     // MARK: - Model Tracking
@@ -225,7 +226,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         return view
     }()
 
-    private var sizeConstraints: (width: NSLayoutConstraint, height: NSLayoutConstraint)? = nil
+    private var sizeConstraints: (width: NSLayoutConstraint, height: NSLayoutConstraint)?
     override public func updateConstraints() {
         let targetSize = configuration.sizeClass.avatarSize
 
@@ -295,9 +296,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                name: .ThemeDidChange,
                                                object: nil)
 
-        guard let dataSource = configuration.dataSource else { return }
-        switch dataSource {
-        case .contact, .unknownContact:
+        if configuration.dataSource?.isContactAvatar == true {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(otherUsersProfileDidChange(notification:)),
                                                    name: .otherUsersProfileDidChange,
@@ -310,7 +309,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                    selector: #selector(skipContactAvatarBlurDidChange(notification:)),
                                                    name: OWSContactsManager.skipContactAvatarBlurDidChange,
                                                    object: nil)
-        case .group:
+        } else if configuration.dataSource?.isGroupAvatar == true {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(handleGroupAvatarChanged(notification:)),
                                                    name: .TSGroupThreadAvatarChanged,
@@ -319,7 +318,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                    selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
                                                    name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                    object: nil)
-        case .other: break
         }
     }
 
@@ -399,8 +397,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private func handleUpdatedGroupThreadNotification(changedThreadId: String) {
         AssertIsOnMainThread()
-        guard let dataSource = configuration.dataSource else { return }
-        guard let contentThreadId = dataSource.groupThreadId else {
+        guard let dataSource = configuration.dataSource, dataSource.isGroupAvatar else { return }
+        guard let contentThreadId = dataSource.threadId else {
             // Should always be set for non-group thread avatar providers
             owsFailDebug("contactAddress was unexpectedly nil")
             return
@@ -408,7 +406,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         if contentThreadId == changedThreadId {
             databaseStorage.read {
-                configuration.dataSource = dataSource.reload(transaction: $0)
+                dataSource.reload(transaction: $0)
                 updateModel(.asynchronously, transaction: $0)
             }
         }
@@ -429,105 +427,58 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
 // MARK: -
 
-// Represents a real or potential conversation.
-public enum ConversationContent: Equatable, Dependencies {
-    // TODO: Badges — This isn't necessarily converation only. This should all be renamed to drop
-    // the "conversation" prefix
-    case contact(contactThread: TSContactThread)
-    case group(groupThread: TSGroupThread)
-    case unknownContact(contactAddress: SignalServiceAddress)
-    case other(avatar: UIImage?, badge: UIImage?)
+public enum ConversationAvatarDataSource: Equatable, Dependencies {
+    case thread(TSThread)
+    case address(SignalServiceAddress)
+    case asset(avatar: UIImage?, badge: UIImage?)
 
-    static public func forThread(_ thread: TSThread) -> ConversationContent {
-        if let contactThread = thread as? TSContactThread {
-            return .contact(contactThread: contactThread)
-        } else if let groupThread = thread as? TSGroupThread {
-            return .group(groupThread: groupThread)
+    var isContactAvatar: Bool { contactAddress != nil }
+    var isGroupAvatar: Bool {
+        if case .thread(_ as TSGroupThread) = self {
+            return true
         } else {
-            owsFail("Invalid thread.")
+            return false
         }
     }
 
-    static public func forAddress(_ address: SignalServiceAddress,
-                           transaction: SDSAnyReadTransaction) -> ConversationContent {
-        if let contactThread = TSContactThread.getWithContactAddress(address,
-                                                                     transaction: transaction) {
-            return .contact(contactThread: contactThread)
-        } else {
-            return .unknownContact(contactAddress: address)
-        }
-    }
-
-    public var contactAddress: SignalServiceAddress? {
+    var contactAddress: SignalServiceAddress? {
         switch self {
-        case .contact(let contactThread):
-            return contactThread.contactAddress
-        case .group:
-            return nil
-        case .unknownContact(let contactAddress):
-            return contactAddress
-        case .other:
-            return nil
+        case .address(let address): return address
+        case .thread(let thread as TSContactThread): return thread.contactAddress
+        case .thread: return nil
+        case .asset: return nil
         }
     }
 
-    fileprivate var groupThreadId: String? {
+    fileprivate var threadId: String? {
         switch self {
-        case .contact:
-            return nil
-        case .group(let groupThread):
-            return groupThread.uniqueId
-        case .unknownContact:
-            return nil
-        case .other:
-            return nil
-        }
-    }
-
-    fileprivate var thread: TSThread? {
-        switch self {
-        case .contact(let contactThread):
-            return contactThread
-        case .group(let groupThread):
-            return groupThread
-        case .unknownContact:
-            return nil
-        case .other:
-            return nil
-        }
-    }
-
-    fileprivate func reload(transaction: SDSAnyReadTransaction) -> ConversationContent {
-        if let contactAddress = self.contactAddress {
-            return Self.forAddress(contactAddress, transaction: transaction)
-        } else {
-            guard let thread = self.thread else {
-                return self
-            }
-            guard let latestThread = TSThread.anyFetch(uniqueId: thread.uniqueId,
-                                                       transaction: transaction) else {
-                owsFailDebug("Missing thread.")
-                return self
-            }
-            return ConversationContent.forThread(latestThread)
+        case .thread(let thread): return thread.uniqueId
+        case .address, .asset: return nil
         }
     }
 
     // TODO: Badges — Should this be async?
     fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
-        if case let .other(_, badge) = self {
+        guard configuration.addBadgeIfApplicable else { return nil }
+
+        let targetAddress: SignalServiceAddress
+        switch self {
+        case .address(let address):
+            targetAddress = address
+        case .thread(let contactThread as TSContactThread):
+            targetAddress = (contactThread).contactAddress
+        case .thread(_):
+            return nil
+        case .asset(avatar: _, badge: let badge):
             return badge
         }
 
-        guard let profileAddress = self.contactAddress else { return nil }
-        guard configuration.addBadgeIfApplicable else { return nil }
-
         let userProfile: OWSUserProfile?
-        if profileAddress.isLocalAddress {
+        if targetAddress.isLocalAddress {
             // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
             userProfile = OWSProfileManager.shared.localUserProfile()
         } else {
-            userProfile = AnyUserProfileFinder().userProfile(for: profileAddress, transaction: transaction)
+            userProfile = AnyUserProfileFinder().userProfile(for: targetAddress, transaction: transaction)
         }
         let primaryBadge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
         guard let badgeAssets = primaryBadge?.assets else { return nil }
@@ -548,88 +499,72 @@ public enum ConversationContent: Equatable, Dependencies {
 
     fileprivate func buildImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
         switch self {
-        case .contact(contactThread: let thread):
+        case .thread(let contactThread as TSContactThread):
             return Self.avatarBuilder.avatarImage(
-                forAddress: thread.contactAddress,
+                forAddress: contactThread.contactAddress,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 localUserDisplayMode: configuration.localUserDisplayMode,
                 transaction: transaction)
 
-        case .unknownContact(contactAddress: let address):
+        case .address(let address):
             return Self.avatarBuilder.avatarImage(
                 forAddress: address,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 localUserDisplayMode: configuration.localUserDisplayMode,
                 transaction: transaction)
 
-        case .group(groupThread: let thread):
+        case .thread(let groupThread as TSGroupThread):
             return Self.avatarBuilder.avatarImage(
-                forGroupThread: thread,
+                forGroupThread: groupThread,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 transaction: transaction)
-        case .other(let avatar, _):
+
+        case .asset(let avatar, _):
             return avatar
+
+        case .thread(_):
+            owsFailDebug("Unrecognized thread subclass: \(self)")
+            return nil
         }
     }
 
     fileprivate func fetchCachedImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
         switch self {
-        case .contact(contactThread: let thread):
+        case .thread(let contactThread as TSContactThread):
             return Self.avatarBuilder.precachedAvatarImage(
-                forAddress: thread.contactAddress,
+                forAddress: contactThread.contactAddress,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 localUserDisplayMode: configuration.localUserDisplayMode,
                 transaction: transaction)
 
-        case .unknownContact(contactAddress: let address):
+        case .address(let address):
             return Self.avatarBuilder.precachedAvatarImage(
                 forAddress: address,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 localUserDisplayMode: configuration.localUserDisplayMode,
                 transaction: transaction)
 
-        case .group(groupThread: let thread):
+        case .thread(let groupThread as TSGroupThread):
             return Self.avatarBuilder.precachedAvatarImage(
-                forGroupThread: thread,
+                forGroupThread: groupThread,
                 diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
                 transaction: transaction)
-        case .other(let avatar, _):
+
+        case .asset(let avatar, _):
             return avatar
+
+        case .thread(_):
+            owsFailDebug("Unrecognized thread subclass: \(self)")
+            return nil
         }
     }
 
-    // MARK: - Equatable
-
-    public static func == (lhs: ConversationContent, rhs: ConversationContent) -> Bool {
-        switch lhs {
-        case .contact(let contactThreadLhs):
-            switch rhs {
-            case .contact(let contactThreadRhs):
-                return contactThreadLhs.contactAddress == contactThreadRhs.contactAddress
-            default:
-                return false
-            }
-        case .group(let groupThreadLhs):
-            switch rhs {
-            case .group(let groupThreadRhs):
-                return groupThreadLhs.groupId == groupThreadRhs.groupId
-            default:
-                return false
-            }
-        case .unknownContact(let contactAddressLhs):
-            switch rhs {
-            case .unknownContact(let contactAddressRhs):
-                return contactAddressLhs == contactAddressRhs
-            default:
-                return false
-            }
-        case .other(let avatarLHS, let badgeLHS):
-            switch rhs {
-            case .other(let avatarRHS, let badgeRHS):
-                return avatarLHS == avatarRHS && badgeLHS == badgeRHS
-            default:
-                return false
-            }
+    fileprivate func reload(transaction: SDSAnyReadTransaction) {
+        switch self {
+        case .thread(let thread):
+            thread.anyReload(transaction: transaction)
+        case .asset, .address:
+            break
         }
     }
 }
