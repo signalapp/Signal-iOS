@@ -73,22 +73,26 @@
       </MacroExpansion>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "App Store Release"
+      buildConfiguration = "Profiling"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES"
       launchAutomaticallySubstyle = "2">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <RemoteRunnable
+         runnableDebuggingMode = "1"
+         BundleIdentifier = "com.google.Authenticator"
+         RemotePath = "/var/containers/Bundle/Application/82827351-64BE-4367-BC08-48F4DBD3A035/otpauth_app_rc.app">
+      </RemoteRunnable>
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
-            BuildableName = "Signal.app"
-            BlueprintName = "Signal"
+            BlueprintIdentifier = "342FFE8727245850000AC89F"
+            BuildableName = "SignalNSE.appex"
+            BlueprintName = "SignalNSE"
             ReferencedContainer = "container:Signal.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
