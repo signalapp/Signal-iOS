@@ -88,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<PaymentsHelper> paymentsHelper = [MockPaymentsHelper new];
     id<PaymentsCurrencies> paymentsCurrencies = [MockPaymentsCurrencies new];
     id<PaymentsEvents> paymentsEvents = [PaymentsEventsNoop new];
+    id<MobileCoinHelper> mobileCoinHelper = [MobileCoinHelperMock new];
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
     PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
@@ -140,6 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
                            paymentsHelper:paymentsHelper
                        paymentsCurrencies:paymentsCurrencies
                            paymentsEvents:paymentsEvents
+                         mobileCoinHelper:mobileCoinHelper
                     spamChallengeResolver:spamChallengeResolver
                            senderKeyStore:senderKeyStore
                           phoneNumberUtil:phoneNumberUtil];

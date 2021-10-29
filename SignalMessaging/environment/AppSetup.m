@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation AppSetup
 
 + (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
+                                       paymentsEvents:(id<PaymentsEvents>)paymentsEvents
+                                     mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
                                   migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {
     OWSAssertDebug(appSpecificSingletonBlock);
@@ -112,7 +114,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
         id<PaymentsHelper> paymentsHelper = [PaymentsHelperImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
-        id<PaymentsEvents> paymentsEvents = [PaymentsEventsMainApp new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
@@ -175,6 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    paymentsHelper:paymentsHelper
                                                                paymentsCurrencies:paymentsCurrencies
                                                                    paymentsEvents:paymentsEvents
+                                                                 mobileCoinHelper:mobileCoinHelper
                                                                paymentsCurrencies:paymentsCurrencies
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore

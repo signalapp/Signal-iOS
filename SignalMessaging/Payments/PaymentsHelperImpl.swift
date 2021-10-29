@@ -343,10 +343,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                 throw OWSAssertionError("Invalid payment sync message: Missing outputPublicKeys.")
             }
             guard let mcReceiptData = mobileCoinProto.receipt,
-                  !mcReceiptData.isEmpty,
-                  nil != MobileCoin.Receipt(serializedData: mcReceiptData) else {
+                  !mcReceiptData.isEmpty else {
                       throw OWSAssertionError("Invalid payment sync message: Missing or invalid receipt.")
                   }
+            _ = try self.mobileCoinHelper.info(forReceiptData: mcReceiptData)
             let ledgerBlockIndex = mobileCoinProto.ledgerBlockIndex
             guard ledgerBlockIndex > 0 else {
                 throw OWSAssertionError("Invalid payment sync message: Invalid ledgerBlockIndex.")
@@ -561,14 +561,12 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                                                   transaction: SDSAnyWriteTransaction) {
         do {
             let mcReceiptData = paymentNotification.mcReceiptData
-            guard let receipt = MobileCoin.Receipt(serializedData: mcReceiptData) else {
-                throw OWSAssertionError("Invalid receipt.")
-            }
+            let receiptInfo = try self.mobileCoinHelper.info(forReceiptData: mcReceiptData)
 
             let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
                                                transactionData: nil,
                                                receiptData: paymentNotification.mcReceiptData,
-                                               incomingTransactionPublicKeys: [ receipt.txOutPublicKey ],
+                                               incomingTransactionPublicKeys: [ receiptInfo.txOutPublicKey ],
                                                spentKeyImages: nil,
                                                outputPublicKeys: nil,
                                                ledgerBlockTimestamp: 0,

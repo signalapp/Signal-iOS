@@ -453,9 +453,17 @@ public extension NSObject {
     final var paymentsEvents: PaymentsEvents {
         SSKEnvironment.shared.paymentsEventsRef
     }
-    
+
     static var paymentsEvents: PaymentsEvents {
         SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    final var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
+    static var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
     }
 
     final var spamChallengeResolver: SpamChallengeResolver {
@@ -934,11 +942,19 @@ public extension Dependencies {
     var paymentsEvents: PaymentsEvents {
         SSKEnvironment.shared.paymentsEventsRef
     }
-    
+
     static var paymentsEvents: PaymentsEvents {
         SSKEnvironment.shared.paymentsEventsRef
     }
-    
+
+    var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
+    static var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
     var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }

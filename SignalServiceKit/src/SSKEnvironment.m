@@ -54,6 +54,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic) id<PaymentsCurrencies> paymentsCurrenciesRef;
 @property (nonatomic) id<PaymentsEvents> paymentsEventsRef;
+@property (nonatomic) id<MobileCoinHelper> mobileCoinHelperRef;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
@@ -115,6 +116,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
                          paymentsEvents:(id<PaymentsEvents>)paymentsEvents
+                       mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
@@ -172,6 +174,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _paymentsHelperRef = paymentsHelper;
     _paymentsCurrenciesRef = paymentsCurrencies;
     _paymentsEventsRef = paymentsEvents;
+    _mobileCoinHelperRef = mobileCoinHelper;
     _spamChallengeResolverRef = spamResolver;
     _senderKeyStoreRef = senderKeyStore;
     _phoneNumberUtilRef = phoneNumberUtil;

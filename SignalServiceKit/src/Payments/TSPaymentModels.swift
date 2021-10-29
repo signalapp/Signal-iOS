@@ -84,7 +84,7 @@ extension TSPaymentAddress: TSPaymentBaseModel {
             owsFailDebug("Unexpected currency.")
             return false
         }
-        return true
+        return mobileCoinHelper.isValidMobileCoinPublicAddress(mobileCoinPublicAddressData)
     }
 
     public func buildProto() throws -> SSKProtoPaymentAddress {

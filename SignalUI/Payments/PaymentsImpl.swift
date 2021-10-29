@@ -775,6 +775,7 @@ public extension PaymentsImpl {
             if DebugFlags.paymentsIgnoreBadData.get() {
                 Logger.warn("Missing or invalid mcReceiptData.")
             } else {
+
                 owsFailDebug("Missing or invalid mcReceiptData.")
             }
             return
