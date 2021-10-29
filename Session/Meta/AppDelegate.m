@@ -149,8 +149,6 @@ static NSTimeInterval launchStartedAt;
     launchStartedAt = CACurrentMediaTime();
 
     [LKAppModeManager configureWithDelegate:self];
-    
-    [self registerVoIP];
 
     // OWSLinkPreview is now in SessionMessagingKit, so to still be able to deserialize them we
     // need to tell NSKeyedUnarchiver about the changes.

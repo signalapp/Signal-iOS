@@ -15,8 +15,6 @@ extension AppDelegate {
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                 if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == message.sender! {
                     let callVC = CallVC(for: call)
-                    callVC.modalPresentationStyle = .overFullScreen
-                    callVC.modalTransitionStyle = .crossDissolve
                     callVC.conversationVC = conversationVC
                     conversationVC.inputAccessoryView?.isHidden = true
                     conversationVC.inputAccessoryView?.alpha = 0

@@ -45,13 +45,15 @@ public final class SessionCallManager: NSObject, CXProviderDelegate {
     
     public func providerDidReset(_ provider: CXProvider) {
         AssertIsOnMainThread()
-        
+        currentCall?.endSessionCall()
     }
     
-    public func reportOutgoingCall(_ call: SessionCall, completion: @escaping (Error?) -> Void) {
+    public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
-        self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
         self.currentCall = call
+        call.hasStartedConnectingDidChange = {
+            self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
+        }
         call.hasConnectedDidChange = {
             self.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectedDate)
         }
@@ -78,6 +80,10 @@ public final class SessionCallManager: NSObject, CXProviderDelegate {
             self.currentCall = call
             completion(nil)
         }
+    }
+    
+    public func reportCurrentCallEnded() {
+        self.currentCall = nil
     }
     
     // MARK: Util

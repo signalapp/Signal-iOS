@@ -34,8 +34,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
             let callVC = CallVC(for: call)
             callVC.conversationVC = self
-            callVC.modalPresentationStyle = .overFullScreen
-            callVC.modalTransitionStyle = .crossDissolve
             self.inputAccessoryView?.isHidden = true
             self.inputAccessoryView?.alpha = 0
             present(callVC, animated: true, completion: nil)

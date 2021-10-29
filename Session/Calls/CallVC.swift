@@ -166,6 +166,8 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
             self.conversationVC?.showInputAccessoryView()
             self.presentingViewController?.dismiss(animated: true, completion: nil)
         }
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
     }
     
     required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }

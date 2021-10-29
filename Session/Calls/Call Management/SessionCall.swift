@@ -98,13 +98,16 @@ public final class SessionCall: NSObject {
     func reportIncomingCallIfNeeded() {
         guard case .offer = mode else { return }
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in
-            
+            if let error = error {
+                SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+            }
         }
     }
     
     // MARK: Actions
     func startSessionCall(completion: (() -> Void)?) {
         guard case .offer = mode else { return }
+        AppEnvironment.shared.callManager.reportOutgoingCall(self)
         Storage.write { transaction in
             self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
                 self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).done {
@@ -128,5 +131,6 @@ public final class SessionCall: NSObject {
             self.webRTCSession.endCall(with: self.sessionID, using: transaction)
         }
         hasEnded = true
+        AppEnvironment.shared.callManager.reportCurrentCallEnded()
     }
 }

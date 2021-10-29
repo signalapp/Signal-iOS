@@ -155,9 +155,8 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     }
     
     @objc private func endCall() {
-        self.call.endSessionCall{
-            self.dismiss()
-        }
+        self.call.endSessionCall()
+        self.dismiss()
     }
     
     public func showCallVC(answer: Bool) {
@@ -165,8 +164,6 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
         let callVC = CallVC(for: self.call)
         callVC.shouldAnswer = answer
-        callVC.modalPresentationStyle = .overFullScreen
-        callVC.modalTransitionStyle = .crossDissolve
         if let conversationVC = presentingVC as? ConversationVC {
             callVC.conversationVC = conversationVC
             conversationVC.inputAccessoryView?.isHidden = true
