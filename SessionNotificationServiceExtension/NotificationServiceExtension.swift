@@ -2,6 +2,7 @@ import UserNotifications
 import BackgroundTasks
 import SessionMessagingKit
 import SignalUtilitiesKit
+import CallKit
 
 public final class NotificationServiceExtension : UNNotificationServiceExtension {
     private var didPerformSetup = false
@@ -95,7 +96,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         notificationContent.badge = 1
                         notificationContent.title = "Session"
                         notificationContent.body = "\(senderDisplayName) is calling..."
-                        return self.handleSuccessForIncomingCall(for: notificationContent)
+                        return self.handleSuccessForIncomingCall(for: notificationContent, callID: callMessage.uuid!)
                     default: return self.completeSilenty()
                     }
                     if (senderPublicKey == userPublicKey) {
@@ -215,9 +216,18 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         contentHandler!(.init())
     }
     
-    private func handleSuccessForIncomingCall(for content: UNMutableNotificationContent) {
+    private func handleSuccessForIncomingCall(for content: UNMutableNotificationContent, callID: String) {
         // TODO: poll for the real offer, play incoming call ring
-        contentHandler!(content)
+        if #available(iOSApplicationExtension 14.5, *) {
+            CXProvider.reportNewIncomingVoIPPushPayload(["uuid": callID]) { error in
+                if let error = error {
+                    owsFailDebug("Failed to notify main app of call message: \(error)")
+                } else {
+                    Logger.info("Successfully notified main app of call message.")
+                }
+                self.contentHandler!(content)
+            }
+        }
     }
 
     private func handleSuccess(for content: UNMutableNotificationContent) {

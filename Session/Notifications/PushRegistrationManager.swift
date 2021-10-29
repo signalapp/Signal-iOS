@@ -234,6 +234,12 @@ public enum PushRegistrationError: Error {
 
         voipTokenResolver.fulfill(pushCredentials.token)
     }
+    
+    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
+        owsAssertDebug(CurrentAppContext().isMainApp)
+        owsAssertDebug(type == .voIP)
+        Vibration.shared.startVibration()
+    }
 }
 
 // We transmit pushToken data as hex encoded string to the server

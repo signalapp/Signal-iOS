@@ -96,7 +96,7 @@ public final class SessionCall: NSObject {
     }
     
     func reportIncomingCallIfNeeded() {
-        guard case .offer = mode else { return }
+        guard case .answer(_) = mode else { return }
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in
             if let error = error {
                 SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
