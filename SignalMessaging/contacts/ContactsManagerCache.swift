@@ -269,15 +269,9 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
 
     @objc
     public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        // Prefer cache.
-        if let cachedValue = (unfairLock.withLock { sortedSignalAccountsCache }) {
-            return cachedValue
-        }
-        // Fail over.
-        // NOTE: We use the "sorted" getter because our cache should be sorted.
-        let result = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
-        unfairLock.withLock { sortedSignalAccountsCache = result }
-        return result
+        // The in-memory cache always maintains a sorted list;
+        // use that even if we don't need sorted results.
+        sortedSignalAccounts(transaction: transaction)
     }
 
     // Order respects the systems contact sorting preference.
@@ -354,12 +348,16 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     @objc
     public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary {
 
-        let sortedSignalAccounts = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
+        // We consult the contactsMapsCache when sorting the
+        // sortedSignalAccounts, so make sure it is set first.
         let contactsMaps = contactsManagerCacheInDatabase.contactsMaps(transaction: transaction)
+        unfairLock.withLock {
+            contactsMapsCache = contactsMaps
+        }
 
+        let sortedSignalAccounts = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
         unfairLock.withLock {
             sortedSignalAccountsCache = sortedSignalAccounts
-            contactsMapsCache = contactsMaps
         }
 
         // Don't call contactsManagerCacheInDatabase.warmCaches().
