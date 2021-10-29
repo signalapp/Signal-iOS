@@ -90,7 +90,12 @@ class MentionPicker: UIView {
 
     @objc public override var center: CGPoint {
         didSet {
-            if oldValue != center { resizingScrollView.refreshHeightConstraints() }
+            // iOS 15 layout changes introduce a crash where we re-enterantly perform
+            // layout. A stopgap candidate fix may be to only refresh height constraints
+            // if the center changes *significantly* (rather than any change at all)
+            if !oldValue.fuzzyEquals(center, tolerance: 0.1) {
+                resizingScrollView.refreshHeightConstraints()
+            }
         }
     }
 
