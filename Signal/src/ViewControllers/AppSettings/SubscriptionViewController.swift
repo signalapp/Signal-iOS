@@ -375,11 +375,6 @@ class SubscriptionViewController: OWSTableViewController2 {
         
     }
     
-    @objc
-    func requestApplePayDonation() {
-
-    }
-    
     private func openDonateWebsite() {
         UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
     }
@@ -403,6 +398,133 @@ class SubscriptionViewController: OWSTableViewController2 {
     
 }
 
+extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
+    
+    @objc
+    fileprivate func requestApplePayDonation() {
+
+        guard let subscription = selectedSubscription else {
+            owsFailDebug("No selected subscription, can't invoke Apple Pay donation")
+            return
+        }
+        
+        guard let subscriptionAmount = subscription.currency[currencyCode] else {
+            owsFailDebug("Failed to get amount for current currency code")
+            return
+        }
+
+        guard !Stripe.isAmountTooSmall(subscriptionAmount, in: currencyCode) else {
+            owsFailDebug("Subscription amount is too small per Stripe API")
+            return
+        }
+
+        guard !Stripe.isAmountTooLarge(subscriptionAmount, in: currencyCode) else {
+            owsFailDebug("Subscription amount is too large per Stripe API")
+            return
+        }
+
+        let request = PKPaymentRequest()
+        request.paymentSummaryItems = [PKPaymentSummaryItem(
+            label: NSLocalizedString(
+                "DONATION_VIEW_DONATION_TO_SIGNAL",
+                comment: "Text describing to the user that they're going to pay a donation to Signal"
+            ),
+            amount: subscriptionAmount,
+            type: .final
+        )]
+        request.merchantIdentifier = "merchant.org.signalfoundation"
+        request.merchantCapabilities = .capability3DS
+        request.countryCode = "US"
+        request.currencyCode = currencyCode
+        request.requiredShippingContactFields = [.emailAddress]
+        request.supportedNetworks = DonationUtilities.supportedNetworks
+
+        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+        paymentController.delegate = self
+        paymentController.present { presented in
+            if !presented { owsFailDebug("Failed to present payment controller") }
+        }
+    }
+    
+    func paymentAuthorizationController(
+        _ controller: PKPaymentAuthorizationController,
+        didAuthorizePayment payment: PKPayment,
+        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
+    ) {
+
+        guard let selectedSubscription = self.selectedSubscription else {
+            owsFailDebug("No currently selected subscription")
+            let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
+            completion(authResult)
+            return
+        }
+        
+        let currencyCode = self.currencyCode
+        var generatedSubscriberID = Data()
+        var generatedClientSecret = ""
+        var generatedPaymentID = ""
+        
+        //Generate new subscriber ID
+        firstly {
+            return try SubscriptionManager.setupNewSubscriberID()
+            
+        //Create Stripe SetupIntent against new subscriberID
+        }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
+            
+            generatedSubscriberID = subscriberID
+            DispatchQueue.main.async {
+                SubscriptionManager.subscriberID = subscriberID
+                SubscriptionManager.subscriberCurrencyCode = self.currencyCode
+                self.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+            return try SubscriptionManager.createPaymentMethod(for: subscriberID)
+        
+        //Create new payment method
+        }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+        
+            generatedClientSecret = clientSecret
+            return DonationUtilities.createPaymentMethod(with: payment)
+        
+        //Bind payment method to SetupIntent, confirm SetupIntent
+        }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
+            
+            generatedPaymentID = paymentID
+            return try DonationUtilities.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
+        
+        //Update payment on server
+        }.then(on: .sharedUserInitiated) { response -> Promise<Void> in
+            
+            return try SubscriptionManager.setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
+        
+        //Select subscription level
+        }.then(on: .sharedUserInitiated) { response -> Promise<Void> in
+            
+            return SubscriptionManager.setSubscription(for: generatedSubscriberID, subscription: selectedSubscription, currency: currencyCode)
+        
+        //Report success and dismiss sheet
+        }.done(on: .main) {
+        
+            let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
+            completion(authResult)
+        
+        //Report failure
+        }.catch { error in
+        
+            let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
+            completion(authResult)
+            owsFailDebug("Error setting up subscription, \(error)")
+        
+        }
+
+    }
+    
+    func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
+        controller.dismiss()
+    }
+    
+    
+}
+
 private class SubscriptionLevelCell: UITableViewCell {
-    public var subscriptionID: Int = 0
+    public var subscriptionID: UInt = 0
 }

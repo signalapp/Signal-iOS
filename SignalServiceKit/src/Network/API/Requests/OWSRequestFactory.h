@@ -202,6 +202,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 #pragma mark - Subscriptions
 
 + (TSRequest *)subscriptionLevelsRequest;
++ (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID;
++ (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID;
++ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID;
++ (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
 
 #pragma mark - Spam
 

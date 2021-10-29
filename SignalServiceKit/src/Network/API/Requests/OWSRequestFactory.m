@@ -934,6 +934,39 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:@{}];
 }
 
++ (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID
+{
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
+                                              method:@"PUT"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/create_payment_method", base64SubscriberID]]
+                                              method:@"POST"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/default_payment_method/%@", base64SubscriberID, paymentID]]
+                                              method:@"POST"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey  {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/level/%@/%@/%@", base64SubscriberID, level, currency, idempotencyKey]]
+                                              method:@"PUT"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

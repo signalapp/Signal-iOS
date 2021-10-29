@@ -42,21 +42,11 @@ struct Stripe: Dependencies {
     }
 }
 
+// TODO EB Factor this out
+
 // MARK: - API
 fileprivate extension Stripe {
     struct API {
-        static let publishableKey: String = FeatureFlags.isUsingProductionService
-            ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
-            : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
-
-        static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
-
-        static let urlSession = OWSURLSession(
-            baseUrl: URL(string: "https://api.stripe.com/v1/")!,
-            securityPolicy: OWSURLSession.defaultSecurityPolicy,
-            configuration: URLSessionConfiguration.ephemeral
-        )
-
         struct PaymentIntent {
             let id: String
             let clientSecret: String
@@ -103,7 +93,7 @@ fileprivate extension Stripe {
 
         static func confirmPaymentIntent(for payment: PKPayment, clientSecret: String, paymentIntentId: String) -> Promise<Void> {
             firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-                createPaymentMethod(with: payment)
+                DonationUtilities.createPaymentMethod(with: payment)
             }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
                 var parameters = [
                     "payment_method": paymentMethodId,
@@ -116,91 +106,12 @@ fileprivate extension Stripe {
             }.asVoid()
         }
 
-        static func createToken(with payment: PKPayment) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing responseBodyJson")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try parser.required(key: "id")
-            }
-        }
-
-        static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-                createToken(with: payment)
-            }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
-                let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
-                return try postForm(endpoint: "payment_methods", parameters: parameters)
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing responseBodyJson")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try parser.required(key: "id")
-            }
-        }
-
-        static func parameters(for payment: PKPayment) -> [String: Any] {
-            var parameters = [String: Any]()
-            parameters["pk_token"] = String(data: payment.token.paymentData, encoding: .utf8)
-
-            if let billingContact = payment.billingContact {
-                parameters["card"] = self.parameters(for: billingContact)
-            }
-
-            parameters["pk_token_instrument_name"] = payment.token.paymentMethod.displayName?.nilIfEmpty
-            parameters["pk_token_payment_network"] = payment.token.paymentMethod.network.map { $0.rawValue }
-
-            if payment.token.transactionIdentifier == "Simulated Identifier" {
-                owsAssertDebug(!FeatureFlags.isUsingProductionService, "Simulated ApplePay only works in staging")
-                // Generate a fake transaction identifier
-                parameters["pk_token_transaction_id"] = "ApplePayStubs~4242424242424242~0~USD~\(UUID().uuidString)"
-            } else {
-                parameters["pk_token_transaction_id"] =  payment.token.transactionIdentifier.nilIfEmpty
-            }
-
-            return parameters
-        }
-
-        static func parameters(for contact: PKContact) -> [String: Any] {
-            var parameters = [String: Any]()
-
-            if let name = contact.name {
-                parameters["name"] = OWSFormat.formatNameComponents(name).nilIfEmpty
-            }
-
-            if let email = contact.emailAddress {
-                parameters["email"] = email.nilIfEmpty
-            }
-
-            if let phoneNumber = contact.phoneNumber {
-                parameters["phone"] = phoneNumber.stringValue.nilIfEmpty
-            }
-
-            if let address = contact.postalAddress {
-                parameters["address_line1"] = address.street.nilIfEmpty
-                parameters["address_city"] = address.city.nilIfEmpty
-                parameters["address_state"] = address.state.nilIfEmpty
-                parameters["address_zip"] = address.postalCode.nilIfEmpty
-                parameters["address_country"] = address.isoCountryCode.uppercased()
-            }
-
-            return parameters
-        }
-
         static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
             guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
             }
 
-            return urlSession.dataTaskPromise(
+            return DonationUtilities.urlSession.dataTaskPromise(
                 endpoint,
                 method: .post,
                 headers: ["Content-Type": "application/x-www-form-urlencoded", "Authorization": authorizationHeader],

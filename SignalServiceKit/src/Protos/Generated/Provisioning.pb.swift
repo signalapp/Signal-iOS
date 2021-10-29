@@ -206,9 +206,13 @@ extension ProvisioningProtos_ProvisioningUuid: SwiftProtobuf.Message, SwiftProto
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._uuid {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._uuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -240,12 +244,16 @@ extension ProvisioningProtos_ProvisionEnvelope: SwiftProtobuf.Message, SwiftProt
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._publicKey {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._publicKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._body {
+    } }()
+    try { if let v = self._body {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -292,33 +300,37 @@ extension ProvisioningProtos_ProvisionMessage: SwiftProtobuf.Message, SwiftProto
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._identityKeyPublic {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._identityKeyPublic {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._identityKeyPrivate {
+    } }()
+    try { if let v = self._identityKeyPrivate {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
-    }
-    if let v = self._number {
+    } }()
+    try { if let v = self._number {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
-    }
-    if let v = self._provisioningCode {
+    } }()
+    try { if let v = self._provisioningCode {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    }
-    if let v = self._userAgent {
+    } }()
+    try { if let v = self._userAgent {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
-    }
-    if let v = self._profileKey {
+    } }()
+    try { if let v = self._profileKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
-    }
-    if let v = self._readReceipts {
+    } }()
+    try { if let v = self._readReceipts {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
-    }
-    if let v = self._uuid {
+    } }()
+    try { if let v = self._uuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 8)
-    }
-    if let v = self._provisioningVersion {
+    } }()
+    try { if let v = self._provisioningVersion {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 

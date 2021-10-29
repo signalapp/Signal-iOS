@@ -485,6 +485,16 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._universalExpireTimer = newValue}
   }
 
+  var subscriberID: Data {
+    get {return _storage._subscriberID}
+    set {_uniqueStorage()._subscriberID = newValue}
+  }
+
+  var subscriberCurrencyCode: String {
+    get {return _storage._subscriberCurrencyCode}
+    set {_uniqueStorage()._subscriberCurrencyCode = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -798,9 +808,13 @@ extension StorageServiceProtos_WriteOperation: SwiftProtobuf.Message, SwiftProto
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._manifest {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._manifest {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
-    }
+    } }()
     if !self.insertItem.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.insertItem, fieldNumber: 2)
     }
@@ -983,8 +997,9 @@ extension StorageServiceProtos_StorageRecord: SwiftProtobuf.Message, SwiftProtob
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every case branch when no optimizations are
-    // enabled. https://github.com/apple/swift-protobuf/issues/1034
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     switch self.record {
     case .contact?: try {
       guard case .contact(let v)? = self.record else { preconditionFailure() }
@@ -1269,7 +1284,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     14: .same(proto: "pinnedConversations"),
     15: .same(proto: "preferContactAvatars"),
     16: .same(proto: "payments"),
-    17: .same(proto: "universalExpireTimer")
+    17: .same(proto: "universalExpireTimer"),
+    21: .same(proto: "subscriberID"),
+    22: .same(proto: "subscriberCurrencyCode")
   ]
 
   fileprivate class _StorageClass {
@@ -1290,6 +1307,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _preferContactAvatars: Bool = false
     var _payments: StorageServiceProtos_AccountRecord.Payments?
     var _universalExpireTimer: UInt32 = 0
+    var _subscriberID: Data = Data()
+    var _subscriberCurrencyCode: String = String()
 
     static let defaultInstance = _StorageClass()
 
@@ -1313,6 +1332,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _preferContactAvatars = source._preferContactAvatars
       _payments = source._payments
       _universalExpireTimer = source._universalExpireTimer
+      _subscriberID = source._subscriberID
+      _subscriberCurrencyCode = source._subscriberCurrencyCode
     }
   }
 
@@ -1348,6 +1369,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 15: try { try decoder.decodeSingularBoolField(value: &_storage._preferContactAvatars) }()
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._payments) }()
         case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._universalExpireTimer) }()
+        case 21: try { try decoder.decodeSingularBytesField(value: &_storage._subscriberID) }()
+        case 22: try { try decoder.decodeSingularStringField(value: &_storage._subscriberCurrencyCode) }()
         default: break
         }
       }
@@ -1356,6 +1379,10 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
       if !_storage._profileKey.isEmpty {
         try visitor.visitSingularBytesField(value: _storage._profileKey, fieldNumber: 1)
       }
@@ -1401,11 +1428,17 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._preferContactAvatars != false {
         try visitor.visitSingularBoolField(value: _storage._preferContactAvatars, fieldNumber: 15)
       }
-      if let v = _storage._payments {
+      try { if let v = _storage._payments {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
-      }
+      } }()
       if _storage._universalExpireTimer != 0 {
         try visitor.visitSingularUInt32Field(value: _storage._universalExpireTimer, fieldNumber: 17)
+      }
+      if !_storage._subscriberID.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._subscriberID, fieldNumber: 21)
+      }
+      if !_storage._subscriberCurrencyCode.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._subscriberCurrencyCode, fieldNumber: 22)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -1433,6 +1466,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._preferContactAvatars != rhs_storage._preferContactAvatars {return false}
         if _storage._payments != rhs_storage._payments {return false}
         if _storage._universalExpireTimer != rhs_storage._universalExpireTimer {return false}
+        if _storage._subscriberID != rhs_storage._subscriberID {return false}
+        if _storage._subscriberCurrencyCode != rhs_storage._subscriberCurrencyCode {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -1500,8 +1535,9 @@ extension StorageServiceProtos_AccountRecord.PinnedConversation: SwiftProtobuf.M
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every case branch when no optimizations are
-    // enabled. https://github.com/apple/swift-protobuf/issues/1034
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     switch self.identifier {
     case .contact?: try {
       guard case .contact(let v)? = self.identifier else { preconditionFailure() }
