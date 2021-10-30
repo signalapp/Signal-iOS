@@ -1,3 +1,1 @@
-• Corrigimos algumas questões relacionadas às notificações
-• Conheça a nova permissão 'enviar mensagens' em um grupo. Ela existe para restringir quem pode enviar mensagens no grupo. Ótimo recurso para organizar um evento ou para criar um canal de anúncios. Lembramos que todos os membros do grupo devem atualizar o Signal para a versão mais recente, de modo a usufruírem dessa configuração.
-• A partir de agora, mensagens são enviadas mais rapidamente.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

@@ -1,3 +1,1 @@
-• Corretti alcuni problemi relativi alle notifiche
-• Prova il nuovo permesso 'invia messaggi' per limitare chi può inviare messaggi nei tuoi gruppi. Ottimo per organizzare un evento, fare un annuncio o semplicemente gridare dai tetti. Tutti i membri devono avere l'ultima versione di Signal perché l'impostazione appaia.
-• Sappiamo che amate la velocità (e non intendiamo il successo del 1994 con Sandra Bullock), quindi inviare messaggi è ora più veloce che mai.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

@@ -1,3 +1,1 @@
-• Fixed some issues related to notifications
-• Try out the new 'send messages' permission to restrict who can send messages in your groups. Great for organizing an event, making an announcement, or just shouting from the rooftops. All members must be on the latest version of Signal for the setting to appear.
-• We know you love speed (and we don't mean the 1994 blockbuster hit starring Sandra Bullock), so sending messages is now faster than ever.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

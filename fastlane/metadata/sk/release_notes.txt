@@ -1,3 +1,1 @@
-• Opravené niektoré problémy súvisiace s upozorneniami
-• Vyskúšajte nové povolenie na odosielanie správ a obmedzte tým, kto môže odosielať správy vo vašich skupinách. Skvelé na zorganizovanie akcie, oznámenie, alebo len kričanie zo striech. Na zobrazenie nastavenia musia mať všetci členovia najnovšiu verziu Signal.
-• Vieme, že milujete rýchlosť (a nemyslíme tým trhák z roku 1994 so Sandrou Bullock), takže odosielanie správ je teraz rýchlejšie ako kedykoľvek predtým.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

@@ -1,3 +1,1 @@
-• Åtgärdade vissa problem relaterade till notiser
-• Prova den nya behörigheten "skicka meddelanden" för att begränsa vem som kan skicka meddelanden i dina grupper. Perfekt för att organisera ett evenemang, göra ett tillkännagivande eller bara skrika från hustaken. Alla medlemmar måste ha den senaste versionen av Signal för att inställningen ska visas.
-• Vi vet att du älskar hastighet (och vi menar inte blockbusterhiten från 1994 med Sandra Bullock i huvudrollen), så det är snabbare än någonsin att skicka meddelanden.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

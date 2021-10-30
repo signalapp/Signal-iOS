@@ -1,3 +1,1 @@
-• Néhány értesítéssel kapcsolatos hiba javítása
-• Próbáld ki az új 'üzenetek küldése' jogosultságot, hogy korlátozd, ki küldhet üzentet a csoportjaidban. Kiváló események szervezéséhez, vagy közleményekhez vagy csak kiabálni a háztetőkről. Minden tagnak a Signal legfrissebb verzióját kell használni, ahhoz, hogy a beállítás megjelenjen.
-• Tudjuk hogy szereted a sebességet (és nem az 1994-es sikerfilmre gondolunk Sandra Bullock-kal), így az üzentek küldése gyorsabb, mint valaha.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

@@ -1,3 +1,1 @@
-• Opraveny některé problémy související s oznámeními
-• Vyzkoušejte nové oprávnění "posílat zprávy", které omezuje, kdo může posílat zprávy ve vašich skupinách. Skvěle se hodí pro organizování události, oznámení nebo jen pro křik ze střech. Aby se toto nastavení zobrazilo, musí mít všichni členové nejnovější verzi aplikace Signal.
-• Víme, že milujete rychlost (a nemyslíme tím trhák z roku 1994 se Sandrou Bullock v hlavní roli), takže posílání zpráv je nyní rychlejší než kdykoli předtím.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat

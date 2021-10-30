@@ -1,3 +1,1 @@
-• Bildirimlere ilişkin kimi sorunlar çözüldü
-• Gruplarınızda kimin ileti gönderebileceğini kısıtlamak için yeni 'ileti gönderme' iznini deneyin. Bir etkinlik düzenlemek, duyuru yapmak veya sadece çatılardan bağırmak için harika. Ayarın görünmesi için tüm üyelerin Signal'in en son sürümünde olması gerekir.
-• Hızı (hayır, Sandra Bullock'un başrol oynadığı gişe rekortmeni 1994 yapımı filmi kastetmiyoruz) sevdiğinizi biliyoruz, bu nedenle ileti gönderimi şimdi öncekinden çok daha hızlı.
+• We’ve made several improvements to notification reliability to keep you messaging without missing a beat
