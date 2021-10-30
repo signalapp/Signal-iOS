@@ -118,7 +118,7 @@ class NSEContext: NSObject, AppContext {
 
     // The NSE can't update UIApplication directly, so instead we cache our last desired badge number
     // and use it to update the modified notification content
-    var desiredBadgeNumber: AtomicValue<Int?> = .init(nil)
+    var desiredBadgeNumber: AtomicOptional<Int> = .init(nil)
     func setMainAppBadgeNumber(_ value: Int) {
         desiredBadgeNumber.set(value)
     }

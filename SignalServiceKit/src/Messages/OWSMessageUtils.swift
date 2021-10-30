@@ -14,13 +14,17 @@ extension OWSMessageUtils {
 
     @objc
     static public func updateApplicationBadgeCount() {
-        firstly { () -> Promise<UInt> in
+        let fetchBadgeCount = { () -> Promise<UInt> in
+            // The main app gets to perform this synchronously
             if CurrentAppContext().isMainApp {
                 return .value(unreadMessagesCount())
             } else {
-                return unreadMessageCountPromise()
+                return self.unreadMessageCountPromise()
             }
-        }.done {
+        }
+
+
+        fetchBadgeCount().done {
             CurrentAppContext().setMainAppBadgeNumber(Int($0))
         }.catch { error in
             owsFailDebug("Failed to update badge number: \(error)")
