@@ -36,6 +36,7 @@
 #import <SignalServiceKit/OWSMessageContentJob.h>
 #import <SignalServiceKit/OWSMessageDecryptJob.h>
 #import <SignalServiceKit/OWSMessageManager.h>
+#import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSOperation.h>
 #import <SignalServiceKit/OWSOutgoingPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingReceiptManager.h>

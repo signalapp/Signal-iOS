@@ -94,17 +94,20 @@ class NSEEnvironment: Dependencies {
     // MARK: - Setup
 
     private let unfairLock = UnfairLock()
-    private var hasAppContext = false
+    private var _hasAppContext = false
+    public var hasAppContent: Bool {
+        unfairLock.withLock { _hasAppContext }
+    }
 
     // This should be the first thing we do.
     public func ensureAppContext() {
         unfairLock.withLock {
-            if hasAppContext {
+            if _hasAppContext {
                 return
             }
             // This should be the first thing we do.
             SetCurrentAppContext(NSEContext())
-            hasAppContext = true
+            _hasAppContext = true
         }
     }
 

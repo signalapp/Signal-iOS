@@ -21,30 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageUtils
 
-+ (instancetype)shared
-{
-    static OWSMessageUtils *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [self new];
-    });
-    return sharedMyManager;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSSingletonAssert();
-
-    return self;
-}
-
-- (NSUInteger)unreadMessagesCount
++ (NSUInteger)unreadMessagesCount
 {
     __block NSUInteger numberOfItems;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -54,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     return numberOfItems;
 }
 
-- (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
++ (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
 {
     __block NSUInteger numberOfItems;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -65,16 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return numberOfItems;
-}
-
-- (void)updateApplicationBadgeCount
-{
-    if (!CurrentAppContext().isMainApp) {
-        return;
-    }
-
-    NSUInteger numberOfItems = [self unreadMessagesCount];
-    [CurrentAppContext() setMainAppBadgeNumber:numberOfItems];
 }
 
 @end

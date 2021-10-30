@@ -140,7 +140,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         let currentValue = databaseStorage.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
         guard currentValue != sender.isOn else { return }
         databaseStorage.write { SSKPreferences.setIncludeMutedThreadsInBadgeCount(sender.isOn, transaction: $0) }
-        OWSMessageUtils.shared().updateApplicationBadgeCount()
+        OWSMessageUtils.updateApplicationBadgeCount()
     }
 
     @objc
