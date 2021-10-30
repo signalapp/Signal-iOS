@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     // When app is not active, we should update badge count whenever
     // changes to interactions are committed.
     if (CurrentAppContext().isMainApp && !CurrentAppContext().isMainAppAndActive) {
-        [OWSMessageUtils.shared updateApplicationBadgeCount];
+        [OWSMessageUtils updateApplicationBadgeCount];
     }
 }
 
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [OWSMessageUtils.shared updateApplicationBadgeCount];
+    [OWSMessageUtils updateApplicationBadgeCount];
 }
 
 - (void)databaseChangesDidUpdateExternally
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils.shared updateApplicationBadgeCount];
+    [OWSMessageUtils updateApplicationBadgeCount];
 }
 
 - (void)databaseChangesDidReset
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    [OWSMessageUtils.shared updateApplicationBadgeCount];
+    [OWSMessageUtils updateApplicationBadgeCount];
 }
 
 #pragma mark - Blocking

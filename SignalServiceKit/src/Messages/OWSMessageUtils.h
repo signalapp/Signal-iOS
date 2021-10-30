@@ -4,18 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSMessage;
 @class TSThread;
 
 @interface OWSMessageUtils : NSObject
-
-+ (instancetype)shared;
-
-- (NSUInteger)unreadMessagesCount;
-- (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;
-
-- (void)updateApplicationBadgeCount;
-
++ (NSUInteger)unreadMessagesCount;
++ (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread;
 @end
 
 NS_ASSUME_NONNULL_END

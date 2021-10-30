@@ -85,12 +85,24 @@ class NotificationService: UNNotificationServiceExtension {
 
         let content = UNMutableNotificationContent()
 
-        // We cannot perform a database read when the NSE's time
-        // has expired, we must exit immediately.
-        if !timeHasExpired {
-            let badgeCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
-            content.badge = NSNumber(value: badgeCount)
+        let updatedBadgeCount: NSNumber?
+        if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
+            if !timeHasExpired {
+                // If we have time, we might as well get the current up-to-date badge count
+                let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
+                updatedBadgeCount = NSNumber(value: freshCount)
+            } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
+                // If we don't have time to get a fresh count, let's use the cached count stored in our context
+                updatedBadgeCount = NSNumber(value: cachedBadgeCount)
+            } else {
+                // The context never set a badge count, let's leave things as-is:
+                updatedBadgeCount = nil
+            }
+        } else {
+            // We never set up an NSEContext. Let's leave things as-is:
+            updatedBadgeCount = nil
         }
+        content.badge = updatedBadgeCount
 
         if DebugFlags.internalLogging {
             Logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount).")

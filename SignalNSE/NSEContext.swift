@@ -116,7 +116,13 @@ class NSEContext: NSObject, AppContext {
 
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
 
-    func setMainAppBadgeNumber(_ value: Int) {}
+    // The NSE can't update UIApplication directly, so instead we cache our last desired badge number
+    // and use it to update the modified notification content
+    var desiredBadgeNumber: AtomicValue<Int?> = .init(nil)
+    func setMainAppBadgeNumber(_ value: Int) {
+        desiredBadgeNumber.set(value)
+    }
+
     func setStatusBarHidden(_ isHidden: Bool, animated isAnimated: Bool) {}
 
     func frontmostViewController() -> UIViewController? { nil }
