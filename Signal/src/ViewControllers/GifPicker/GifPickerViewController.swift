@@ -603,7 +603,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         assert(lastQuery == nil)
 
         firstly {
-            giphyAPI.trending()
+            GiphyAPI.trending()
         }.done(on: .main) { [weak self] imageInfos in
             guard let self = self else { return }
 
@@ -637,7 +637,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.contentOffset = CGPoint.zero
 
         firstly {
-            giphyAPI.search(query: query)
+            GiphyAPI.search(query: query)
         }.done(on: .main) { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("search complete")

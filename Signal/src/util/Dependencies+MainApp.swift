@@ -210,11 +210,6 @@ public extension Dependencies {
 
 @objc
 extension NSObject {
-
-    final var giphyAPI: GiphyAPI { .shared }
-
-    static var giphyAPI: GiphyAPI { .shared }
-
     final var deviceTransferService: DeviceTransferService { .shared }
 
     static var deviceTransferService: DeviceTransferService { .shared }
