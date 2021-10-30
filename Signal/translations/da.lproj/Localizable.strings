@@ -974,7 +974,7 @@
 "CONVERSATION_SETTINGS_EDIT" = "Redigér";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Rediger Gruppeinformation";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Rediger gruppeinformation";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Kun administratorer";
@@ -1571,7 +1571,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Rejser & Steder";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ingen af dine kontakter har Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ingen af dine kontakter har Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Hvorfor ikke invitere nogle af dem?";
@@ -1583,7 +1583,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Optaget";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Opkald fejlede";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Opkald mislykkedes.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kunne ikke få adgang til kontakter";
@@ -1898,7 +1898,7 @@
 "GROUP_CALL_MANY_IN_THIS_CALL_FORMAT" = "I dette opkald · %ld personer";
 
 /* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ og %3$@ andre deltager i samtalen";
+"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ og %3$@ andre deltager i opkaldet";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Der modtages ikke lyd & video fra %@";
@@ -2876,10 +2876,10 @@
 "IN_CALL_RINGING_VIDEO" = "Videoopkald...";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Besvaret. Sikre...";
+"IN_CALL_SECURING" = "Besvaret. Sikrer...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Opkald afsluttet";
+"IN_CALL_TERMINATED" = "Opkald afsluttet.";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse chats arkiveres og vises kun i indbakken, hvis der modtages nye beskeder";
@@ -4361,7 +4361,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_ENCRYPTED" = "Krypteret";
 
 /* The 'free to chat' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Gratis at chatte";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Klar til at chatte";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Tal frit";
@@ -5180,7 +5180,7 @@
 "SETTINGS_INVITE_TITLE" = "Invitér dine venner";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Du kan få fat på mig ved at bruge @signalapp. Hent det nu: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Du kan få fat på mig ved at bruge @signalapp. Hent den nu: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Chatfarve og baggrund";
