@@ -49,8 +49,10 @@ fileprivate extension Stripe {
             ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
             : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
 
+        static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
+
         static let urlSession = OWSURLSession(
-            baseUrl: URL(string: "https://\(publishableKey):@api.stripe.com/v1/")!,
+            baseUrl: URL(string: "https://api.stripe.com/v1/")!,
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
             configuration: URLSessionConfiguration.ephemeral
         )
@@ -116,7 +118,7 @@ fileprivate extension Stripe {
 
         static func createToken(with payment: PKPayment) -> Promise<String> {
             firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                try postForm(endpoint: "tokens", parameters: parameters(for: payment))
+                return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
             }.map(on: .sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing responseBodyJson")
@@ -201,7 +203,7 @@ fileprivate extension Stripe {
             return urlSession.dataTaskPromise(
                 endpoint,
                 method: .post,
-                headers: ["Content-Type": "application/x-www-form-urlencoded"],
+                headers: ["Content-Type": "application/x-www-form-urlencoded", "Authorization": authorizationHeader],
                 body: formData
             )
         }

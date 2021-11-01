@@ -137,20 +137,15 @@ extension TSThread {
 
         let sendMessageIntent: INSendMessageIntent
 
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), FeatureFlags.communicationStyleNotifications {
             sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(transaction: transaction, sender: sender)
         } else {
             sendMessageIntent = generateChatSuggestionSendMessageIntent(transaction: transaction)
         }
-        #else
-            sendMessageIntent = generateChatSuggestionSendMessageIntent(transaction: transaction)
-        #endif
 
         return sendMessageIntent
     }
 
-#if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
     private func generateRichCommunicationNotificationSendMessageIntent(transaction: SDSAnyReadTransaction, sender: SignalServiceAddress?) -> INSendMessageIntent {
         let threadName = contactsManager.displayName(for: self, transaction: transaction)
@@ -192,7 +187,6 @@ extension TSThread {
 
         return sendMessageIntent
     }
-    #endif
 
     @available(iOS 13, *)
     private func generateChatSuggestionSendMessageIntent(transaction: SDSAnyReadTransaction) -> INSendMessageIntent {
@@ -218,7 +212,6 @@ extension TSThread {
 
     @available(iOS 15, *)
     public func generateStartCallIntent() -> INStartCallIntent? {
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         databaseStorage.read { transaction in
             guard FeatureFlags.communicationStyleNotifications, SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
@@ -246,12 +239,8 @@ extension TSThread {
 
             return startCallIntent
         }
-        #else
-            return nil
-        #endif
     }
 
-#if swift(>=5.5) // TODO Temporary for Xcode 12 support.
     @available(iOS 15, *)
     private func inPersonForRecipient(_ recipient: SignalServiceAddress,
                                       shouldGenerateAvatar: Bool,
@@ -313,7 +302,6 @@ extension TSThread {
         }
         return image
     }
-#endif
 
     private func intentThreadAvatarImage(transaction: SDSAnyReadTransaction) -> INImage? {
         var image: INImage?
