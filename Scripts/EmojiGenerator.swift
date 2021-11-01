@@ -98,7 +98,6 @@ class EmojiGenerator {
             case "100": return "oneHundred"
             case "1234": return "oneTwoThreeFour"
             case "couplekiss": return "personKissPerson"
-            case "couple": return "womanAndManHoldingHands"
             case "couple_with_heart": return "personHeartPerson"
             default:
                 let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
@@ -158,11 +157,19 @@ class EmojiGenerator {
             // There's no great way to do this except manually. Some emoji have multiple skin tones.
             // In the picker, we need to use one emoji to represent each person. For now, we manually
             // specify this. Hopefully, in the future, the data set will contain this information.
-            switch shortName {
-            case "two_women_holding_hands": return "[.womanStanding, .womanStanding]"
-            case "two_men_holding_hands": return "[.manStanding, .manStanding]"
-            case "people_holding_hands": return "[.standingPerson, .standingPerson]"
-            case "couple": return "[.womanStanding, .manStanding]"
+            switch enumName {
+            case "peopleHoldingHands": return "[.standingPerson, .standingPerson]"
+            case "twoWomenHoldingHands": return "[.womanStanding, .womanStanding]"
+            case "manAndWomanHoldingHands": return "[.womanStanding, .manStanding]"
+            case "twoMenHoldingHands": return "[.manStanding, .manStanding]"
+            case "personKissPerson": return "[.adult, .adult]"
+            case "womanKissMan": return "[.woman, .man]"
+            case "manKissMan": return "[.man, .man]"
+            case "womanKissWoman": return "[.woman, .woman]"
+            case "personHeartPerson": return "[.adult, .adult]"
+            case "womanHeartMan": return "[.woman, .man]"
+            case "manHeartMan": return "[.man, .man]"
+            case "womanHeartWoman": return "[.woman, .woman]"
             default:
                 return nil
             }
