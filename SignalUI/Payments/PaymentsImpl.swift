@@ -427,7 +427,9 @@ public extension PaymentsImpl {
 
 public extension PaymentsImpl {
 
-    private func localMobileCoinAccount() -> MobileCoinAPI.MobileCoinAccount? {
+    private func localMobileCoinAccount(paymentsState: PaymentsState) -> MobileCoinAPI.MobileCoinAccount? {
+        owsAssertDebug(paymentsState.isEnabled)
+
         guard let paymentsEntropy = paymentsState.paymentsEntropy else {
             owsFailDebug("Missing paymentsEntropy.")
             return nil
@@ -441,8 +443,14 @@ public extension PaymentsImpl {
         }
     }
 
-    func buildLocalPaymentAddress() -> TSPaymentAddress? {
-        guard let localAccount = self.localMobileCoinAccount() else {
+    private func localMobileCoinAccount() -> MobileCoinAPI.MobileCoinAccount? {
+        localMobileCoinAccount(paymentsState: self.paymentsState)
+    }
+
+    func buildLocalPaymentAddress(paymentsState: PaymentsState) -> TSPaymentAddress? {
+        owsAssertDebug(paymentsState.isEnabled)
+
+        guard let localAccount = self.localMobileCoinAccount(paymentsState: paymentsState) else {
             owsFailDebug("Missing local account.")
             return nil
         }
@@ -468,7 +476,13 @@ public extension PaymentsImpl {
     }
 
     func localPaymentAddressProtoData() -> Data? {
-        guard let localPaymentAddress = buildLocalPaymentAddress() else {
+        localPaymentAddressProtoData(paymentsState: self.paymentsState)
+    }
+
+    func localPaymentAddressProtoData(paymentsState: PaymentsState) -> Data? {
+        owsAssertDebug(paymentsState.isEnabled)
+
+        guard let localPaymentAddress = buildLocalPaymentAddress(paymentsState: paymentsState) else {
             owsFailDebug("Missing localPaymentAddress.")
             return nil
         }
@@ -488,7 +502,13 @@ public extension PaymentsImpl {
     }
 
     func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
-        let data: Data? = localPaymentAddressProtoData()
+        let data: Data?
+        let paymentsState = self.paymentsState
+        if paymentsState.isEnabled {
+            data = localPaymentAddressProtoData(paymentsState: paymentsState)
+        } else {
+            data = nil
+        }
         paymentsHelper.setLastKnownLocalPaymentAddressProtoData(data, transaction: transaction)
     }
 }
