@@ -58,7 +58,7 @@ public class PaymentsReconciliation: Dependencies {
         guard !CurrentAppContext().isRunningTests else {
             return false
         }
-        guard Self.payments.arePaymentsEnabled else {
+        guard Self.paymentsHelper.arePaymentsEnabled else {
             return false
         }
         guard AppReadiness.isAppReady,

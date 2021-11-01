@@ -100,7 +100,7 @@ public class PaymentsProcessor: NSObject {
             guard !CurrentAppContext().isRunningTests else {
                 return
             }
-            guard Self.payments.arePaymentsEnabled else {
+            guard Self.paymentsHelper.arePaymentsEnabled else {
                 return
             }
             guard AppReadiness.isAppReady,

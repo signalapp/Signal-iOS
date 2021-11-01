@@ -90,11 +90,19 @@ public extension Dependencies {
 public extension NSObject {
 
     final var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+        SUIEnvironment.shared.paymentsRef as! PaymentsSwift
     }
 
     static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+        SUIEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
+
+    final var paymentsImpl: PaymentsImpl {
+        SUIEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SUIEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 }
 
@@ -103,10 +111,18 @@ public extension NSObject {
 public extension Dependencies {
 
     var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+        SUIEnvironment.shared.paymentsRef as! PaymentsSwift
     }
 
     static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+        SUIEnvironment.shared.paymentsRef as! PaymentsSwift
+    }
+
+    var paymentsImpl: PaymentsImpl {
+        SUIEnvironment.shared.paymentsRef as! PaymentsImpl
+    }
+
+    static var paymentsImpl: PaymentsImpl {
+        SUIEnvironment.shared.paymentsRef as! PaymentsImpl
     }
 }

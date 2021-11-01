@@ -32,6 +32,44 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
 
         MobileCoinAPI.configureSDKLogging()
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            DispatchQueue.global().async {
+                self.updateLastKnownLocalPaymentAddressProtoDataIfNecessary()
+            }
+        }
+    }
+
+    private func updateLastKnownLocalPaymentAddressProtoDataIfNecessary() {
+        guard tsAccountManager.isRegisteredAndReady else {
+            return
+        }
+        guard AppReadiness.isAppReady else {
+            return
+        }
+
+        let appVersionKey = "appVersion"
+        let currentAppVersion4 = appVersion.currentAppVersion4
+
+        let shouldUpdate = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
+            // Check if the app version has changed.
+            let lastAppVersion = self.keyValueStore.getString(appVersionKey, transaction: transaction)
+            guard lastAppVersion == currentAppVersion4 else {
+                return true
+            }
+            Logger.info("Skipping; lastAppVersion: \(String(describing: lastAppVersion)), currentAppVersion4: \(currentAppVersion4).")
+            return false
+        }
+        guard shouldUpdate else {
+            return
+        }
+        Logger.info("Updating last known local payment address.")
+
+        databaseStorage.write { transaction in
+            self.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+
+            self.keyValueStore.setString(currentAppVersion4, key: appVersionKey, transaction: transaction)
+        }
     }
 
     struct ApiHandle {
@@ -117,6 +155,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     }
 
     // MARK: - PaymentsState
+
+    public var paymentsState: PaymentsState {
+        paymentsHelper.paymentsState
+    }
 
     public var arePaymentsEnabled: Bool {
         paymentsHelper.arePaymentsEnabled
@@ -439,6 +481,11 @@ public extension PaymentsImpl {
             owsFailDebug("Error: \(error)")
             return nil
         }
+    }
+
+    func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
+        let data: Data? = localPaymentAddressProtoData()
+        paymentsHelper.setLastKnownLocalPaymentAddressProtoData(data, transaction: transaction)
     }
 }
 
@@ -775,7 +822,6 @@ public extension PaymentsImpl {
             if DebugFlags.paymentsIgnoreBadData.get() {
                 Logger.warn("Missing or invalid mcReceiptData.")
             } else {
-
                 owsFailDebug("Missing or invalid mcReceiptData.")
             }
             return
@@ -1091,6 +1137,14 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     public func willUpdatePayment(_ paymentModel: TSPaymentModel, transaction: SDSAnyWriteTransaction) {
         let payments = self.payments as! PaymentsImpl
         payments.paymentsReconciliation.willUpdatePayment(paymentModel, transaction: transaction)
+    }
+
+    public func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
+        payments.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+    }
+
+    public func paymentsStateDidChange() {
+        payments.updateCurrentPaymentBalance()
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {

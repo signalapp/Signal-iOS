@@ -22,10 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppSetup
 
-+ (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
-                                       paymentsEvents:(id<PaymentsEvents>)paymentsEvents
-                                     mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
-                                  migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
++ (void)setupEnvironmentWithPaymentsEvents:(id<PaymentsEvents>)paymentsEvents
+                          mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
+                 appSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
+                       migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {
     OWSAssertDebug(appSpecificSingletonBlock);
     OWSAssertDebug(migrationCompletion);
@@ -177,7 +177,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                paymentsCurrencies:paymentsCurrencies
                                                                    paymentsEvents:paymentsEvents
                                                                  mobileCoinHelper:mobileCoinHelper
-                                                               paymentsCurrencies:paymentsCurrencies
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore
                                                                   phoneNumberUtil:phoneNumberUtil]];

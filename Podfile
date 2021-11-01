@@ -71,6 +71,11 @@ pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_war
 
 pod 'Reachability', :inhibit_warnings => true
 
+# pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
+# pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
+# pod 'MobileCoinMinimal', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
+
+
 def ui_pods
   pod 'BonMot', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
@@ -99,7 +104,10 @@ end
 
 # These extensions inherit all of the common pods
 
-target 'SignalMessaging'
+# target 'SignalMessaging'
+target 'SignalMessaging' do 
+  pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
+end
 
 target 'SignalShareExtension' do 
   ui_pods
@@ -109,7 +117,11 @@ target 'SignalUI' do
   ui_pods
 end
 
-target 'SignalNSE'
+target 'SignalNSE' do 
+  # pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'
+  # pod 'MobileCoinProtos', path: '../MobileCoinProtos-Swift', testspecs: ["Tests"]
+  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
+end
 
 post_install do |installer|
   enable_strip(installer)
@@ -224,6 +236,7 @@ def strip_valid_archs(installer)
   Dir.glob('Pods/Target Support Files/**/*.xcconfig') do |xcconfig_path|
     xcconfig = File.read(xcconfig_path)
     xcconfig_mod = xcconfig.gsub('VALID_ARCHS[sdk=iphoneos*] = arm64', '')
+    xcconfig_mod = xcconfig_mod.gsub('VALID_ARCHS[sdk=iphonesimulator*] = x86_64 arm64', '')
     xcconfig_mod = xcconfig_mod.gsub('VALID_ARCHS[sdk=iphonesimulator*] = x86_64', '')
     File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
   end

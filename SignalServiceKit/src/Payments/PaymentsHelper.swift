@@ -21,6 +21,9 @@ public protocol PaymentsHelper: AnyObject {
     func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
     func disablePayments(transaction: SDSAnyWriteTransaction)
 
+    func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction)
+    func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data?
+
     @objc(processIncomingPaymentSyncMessage:messageTimestamp:transaction:)
     func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
@@ -174,6 +177,14 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data? {
         owsFail("Not implemented.")
     }
 

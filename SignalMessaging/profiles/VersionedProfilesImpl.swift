@@ -61,10 +61,16 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
 
+            func fetchLocalPaymentAddressProtoData() -> Data? {
+                Self.databaseStorage.write { transaction in
+                    Self.paymentsHelper.lastKnownLocalPaymentAddressProtoData(transaction: transaction)
+                }
+            }
+
             var profilePaymentAddressData: Data?
             if Self.paymentsHelper.arePaymentsEnabled,
                !Self.paymentsHelper.isKillSwitchActive,
-               let addressProtoData = Self.paymentsHelper.localPaymentAddressProtoData() {
+               let addressProtoData = fetchLocalPaymentAddressProtoData() {
 
                 var paymentAddressDataWithLength = Data()
                 var littleEndian: UInt32 = CFSwapInt32HostToLittle(UInt32(addressProtoData.count))

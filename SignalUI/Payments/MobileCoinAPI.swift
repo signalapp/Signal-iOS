@@ -67,7 +67,7 @@ public class MobileCoinAPI: Dependencies {
             throw PaymentsError.invalidEntropy
         }
 
-        owsAssertDebug(Self.payments.arePaymentsEnabled)
+        owsAssertDebug(Self.paymentsHelper.arePaymentsEnabled)
 
         self.paymentsEntropy = paymentsEntropy
         self.localAccount = localAccount

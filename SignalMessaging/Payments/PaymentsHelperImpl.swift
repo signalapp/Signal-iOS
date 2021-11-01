@@ -58,6 +58,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
     private static let paymentsEntropyKey = "paymentsEntropy"
+    private static let lastKnownLocalPaymentAddressProtoDataKey = "lastKnownLocalPaymentAddressProtoData"
 
     private let paymentStateCache = AtomicOptional<PaymentsState>(nil)
 
@@ -146,10 +147,12 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
         self.paymentStateCache.set(newPaymentsState)
 
+        paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.arePaymentsEnabledDidChange, object: nil)
 
-            self.updateCurrentPaymentBalance()
+            Self.paymentsEvents.paymentsStateDidChange()
 
             Self.profileManager.reuploadLocalProfile()
 
@@ -191,6 +194,15 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         Self.keyValueStore.removeAll(transaction: transaction)
 
         paymentStateCache.set(nil)
+    }
+
+    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction) {
+        Self.keyValueStore.setData(data, key: Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
+    }
+
+    public func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data? {
+        paymentsEvents.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+        return Self.keyValueStore.getData(Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
     }
 
     // MARK: -
