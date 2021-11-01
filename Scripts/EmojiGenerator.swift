@@ -5,29 +5,32 @@
 
 import Foundation
 
-class EmojiGenerator {
-    // from http://stackoverflow.com/a/31480534/255489
-    static var pathToFolderContainingThisScript: URL? = {
-        let cwd = FileManager.default.currentDirectoryPath
+// OWSAssertionError but for this script
 
-        let script = CommandLine.arguments[0]
+enum EmojiError: Error {
+    case assertion(String)
+    init(_ string: String) {
+        self = .assertion(string)
+    }
+}
 
-        if script.hasPrefix("/") { // absolute
-            let path = (script as NSString).deletingLastPathComponent
-            return URL(fileURLWithPath: path)
-        } else { // relative
-            let urlCwd = URL(fileURLWithPath: cwd)
+// MARK: - Remote Model
+// These definitions are kept fairly lightweight since we don't control their format
+// All processing of remote data is done by converting RemoteModel items to EmojiModel items
 
-            if let urlPath = URL(string: script, relativeTo: urlCwd) {
-                let path = (urlPath.path as NSString).deletingLastPathComponent
-                return URL(fileURLWithPath: path)
-            }
-        }
+enum RemoteModel {
+    struct EmojiItem: Codable {
+        let name: String
+        let shortName: String
+        let unified: String
+        let sortOrder: UInt
+        let category: EmojiCategory
+        let skinVariations: [String: SkinVariation]?
+    }
 
-        return nil
-    }()
-
-    static let emojiDirectory = URL(fileURLWithPath: "../Signal/src/util/Emoji", isDirectory: true, relativeTo: pathToFolderContainingThisScript!)
+    struct SkinVariation: Codable {
+        let unified: String
+    }
 
     enum EmojiCategory: String, Codable, Equatable {
         case smileys = "Smileys & Emotion"
@@ -44,53 +47,94 @@ class EmojiGenerator {
         case objects = "Objects"
         case symbols = "Symbols"
         case flags = "Flags"
-        case skinTones = "Skin Tones"
         case components = "Component"
     }
 
-    enum SkinTone: String, CaseIterable, Equatable {
-        case light = "1F3FB"
-        case mediumLight = "1F3FC"
-        case medium = "1F3FD"
-        case mediumDark = "1F3FE"
-        case dark = "1F3FF"
-
-        var sortId: Int { return SkinTone.allCases.firstIndex(of: self)! }
-
-        var unicodeScalar: UnicodeScalar { UnicodeScalar(Int(rawValue, radix: 16)!)! }
+    static func fetchEmojiData() throws -> Data {
+        // let remoteSourceUrl = URL(string: "https://unicodey.com/emoji-data/emoji.json")!
+        // This URL has been unavailable the past couple of weeks. If you're seeing failures here, try this other one:
+        let remoteSourceUrl = URL(string: "https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json")!
+        return try Data(contentsOf: remoteSourceUrl)
     }
+}
 
-    static let outputCategories: [EmojiCategory] = [
-        .smileysAndPeople,
-        .animals,
-        .food,
-        .activities,
-        .travel,
-        .objects,
-        .symbols,
-        .flags
-    ]
+// MARK: - Local Model
 
-    struct SkinVariation: Codable {
-        let unified: String
+struct EmojiModel {
+    let definitions: [EmojiDefinition]
 
-        var emoji: String {
-            let unicodeComponents = unified.components(separatedBy: "-").map { Int($0, radix: 16)! }
-            return unicodeComponents.map { String(UnicodeScalar($0)!) }.joined()
+    struct EmojiDefinition {
+        let category: RemoteModel.EmojiCategory
+        let rawName: String
+        let enumName: String
+        let variants: [Emoji]
+        var baseEmoji: Character { variants[0].base }
+
+        struct Emoji: Comparable {
+            let emojiChar: Character
+
+            let base: Character
+            let skintoneSequence: SkinToneSequence
+
+            static func <(lhs: Self, rhs: Self) -> Bool {
+                for (leftElement, rightElement) in zip(lhs.skintoneSequence, rhs.skintoneSequence) {
+                    if leftElement.sortId != rightElement.sortId {
+                        return leftElement.sortId < rightElement.sortId
+                    }
+                }
+                if lhs.skintoneSequence.count != rhs.skintoneSequence.count {
+                    return lhs.skintoneSequence.count < rhs.skintoneSequence.count
+                } else {
+                    return false
+                }
+            }
         }
-    }
 
-    struct EmojiData: Codable {
-        let name: String?
-        let shortName: String
-        let unified: String
-        let sortOrder: UInt
-        let category: EmojiCategory
-        let skinVariations: [String: SkinVariation]?
+        init(parsingRemoteItem remoteItem: RemoteModel.EmojiItem) throws {
+            category = remoteItem.category
+            rawName = remoteItem.name
+            enumName = Self.parseEnumNameFromRemoteItem(remoteItem)
 
-        var enumName: String {
+            let baseEmojiChar = try Self.codePointsToCharacter(Self.parseCodePointString(remoteItem.unified))
+            let baseEmoji = Emoji(emojiChar: baseEmojiChar, base: baseEmojiChar, skintoneSequence: .none)
+
+            let toneVariants: [Emoji]
+            if let skinVariations = remoteItem.skinVariations {
+                toneVariants = try skinVariations.map { key, value in
+                    let modifier = SkinTone.sequence(from: Self.parseCodePointString(key))
+                    let parsedEmoji = try Self.codePointsToCharacter(Self.parseCodePointString(value.unified))
+                    return Emoji(emojiChar: parsedEmoji, base: baseEmojiChar, skintoneSequence: modifier)
+                }.sorted()
+            } else {
+                toneVariants = []
+            }
+
+            variants = [baseEmoji] + toneVariants
+            try postInitValidation()
+        }
+
+        func postInitValidation() throws {
+            guard variants.count > 0 else {
+                throw EmojiError("Expecting at least one variant")
+            }
+
+            guard variants.allSatisfy({ $0.base == baseEmoji }) else {
+                // All emoji variants must have a common base emoji
+                throw EmojiError("Inconsistent base emoji: \(baseEmoji)")
+            }
+
+            let hasMultipleComponents = variants.first(where: { $0.skintoneSequence.count > 1 }) != nil
+            if hasMultipleComponents, skinToneComponents == nil {
+                // If you hit this, this means a new emoji was added where a skintone modifier sequence specifies multiple
+                // skin tones for multiple emoji components: e.g. 👫 -> 🧍‍♀️+🧍‍♂️
+                // These are defind in `skinToneComponents`. You'll need to add a new case.
+                throw EmojiError("\(baseEmoji):\(enumName) definition has variants with multiple skintone modifiers but no component emojis defined")
+            }
+        }
+
+        static func parseEnumNameFromRemoteItem(_ item: RemoteModel.EmojiItem) -> String {
             // some names don't play nice with swift, so we special case them
-            switch shortName {
+            switch item.shortName {
             case "+1": return "plusOne"
             case "-1": return "negativeOne"
             case "8ball": return "eightBall"
@@ -100,58 +144,15 @@ class EmojiGenerator {
             case "couplekiss": return "personKissPerson"
             case "couple_with_heart": return "personHeartPerson"
             default:
-                let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
-                return String(uppperCamelCase.unicodeScalars.first!).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())
+                let uppperCamelCase = item.shortName
+                    .replacingOccurrences(of: "-", with: " ")
+                    .replacingOccurrences(of: "_", with: " ")
+                    .titlecase
+                    .replacingOccurrences(of: " ", with: "")
+
+                return uppperCamelCase.first!.lowercased() + uppperCamelCase.dropFirst()
             }
         }
-
-        var emoji: String {
-            let unicodeComponents = unified.components(separatedBy: "-").map { Int($0, radix: 16)! }
-            return unicodeComponents.map { String(UnicodeScalar($0)!) }.joined()
-        }
-
-        var hasSkinVariations: Bool { skinVariations?.isEmpty == false }
-        var emojiPerSkinTone: [[SkinTone]: String]? {
-            guard let skinVariations = skinVariations else { return nil }
-            var emojiPerSkinTone = [[SkinTone]: String]()
-            for (key, value) in skinVariations {
-                let skinTones = key
-                    .components(separatedBy: "-")
-                    .map { SkinTone(rawValue: $0)! }
-                    .reduce(into: [SkinTone]()) { result, skinTone in
-                        guard !result.contains(skinTone) else { return }
-                        result.append(skinTone)
-                    }
-                emojiPerSkinTone[skinTones] = value.emoji
-            }
-            return emojiPerSkinTone
-        }
-        var sortedEmojiPerSkinTone: [([SkinTone], String)]? {
-            guard let emojiPerSkinTone = emojiPerSkinTone else { return nil }
-            return emojiPerSkinTone.sorted { lhs, rhs in
-                var index = 0
-                while true {
-                    if index >= lhs.key.count {
-                        return true
-                    }
-
-                    if index >= rhs.key.count {
-                        return false
-                    }
-
-                    let lhsSkinTone = lhs.key[index]
-                    let rhsSkinTone = rhs.key[index]
-
-                    if lhsSkinTone != rhsSkinTone {
-                        return lhsSkinTone.sortId < rhsSkinTone.sortId
-                    }
-
-                    index += 1
-                }
-            }
-        }
-
-        var allowsMultipleSkinTones: Bool { hasSkinVariations && emojiPerSkinTone!.count > 5 }
 
         var skinToneComponents: String? {
             // There's no great way to do this except manually. Some emoji have multiple skin tones.
@@ -175,261 +176,381 @@ class EmojiGenerator {
             }
         }
 
-        func titlecase(_ value: String) -> String {
-            guard let first = value.unicodeScalars.first else { return value }
-            return String(first).uppercased() + String(value.unicodeScalars.dropFirst())
+        static func parseCodePointString(_ pointString: String) -> [UnicodeScalar] {
+            return pointString
+                .components(separatedBy: "-")
+                .map { Int($0, radix: 16)! }
+                .map { UnicodeScalar($0)! }
+        }
+
+        static func codePointsToCharacter(_ codepoints: [UnicodeScalar]) throws -> Character {
+            let result = codepoints.map { String($0) }.joined()
+            if result.count != 1 {
+                throw EmojiError("Invalid number of chars for codepoint sequence: \(codepoints)")
+            }
+            return result.first!
         }
     }
 
-    static func generate() {
-        // This URL has been unavailable the past couple of weeks. If you're seeing failures here, try:
-        // https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json
-        guard let jsonData = try? Data(contentsOf: URL(string: "https://unicodey.com/emoji-data/emoji.json")!) else {
-            fatalError("Failed to download emoji-data json")
-        }
-
+    init(rawJSONData jsonData: Data) throws {
         let jsonDecoder = JSONDecoder()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
 
-        let sortedEmojiData = try! jsonDecoder.decode([EmojiData].self, from: jsonData)
+        definitions = try jsonDecoder
+            .decode([RemoteModel.EmojiItem].self, from: jsonData)
             .sorted { $0.sortOrder < $1.sortOrder }
-            .filter { $0.category != .skinTones } // for now, we don't care about skin tones
+            .map { try EmojiDefinition(parsingRemoteItem: $0) }
 
-        // Main enum
+    }
+
+    typealias SkinToneSequence = [EmojiModel.SkinTone]
+    enum SkinTone: UnicodeScalar, CaseIterable, Equatable {
+        case light = "🏻"
+        case mediumLight = "🏼"
+        case medium = "🏽"
+        case mediumDark = "🏾"
+        case dark = "🏿"
+
+        var sortId: Int { return SkinTone.allCases.firstIndex(of: self)! }
+
+        static func sequence(from codepoints: [UnicodeScalar]) -> SkinToneSequence {
+            codepoints
+                .map { SkinTone(rawValue: $0)! }
+                .reduce(into: [SkinTone]()) { result, skinTone in
+                    guard !result.contains(skinTone) else { return }
+                    result.append(skinTone)
+                }
+        }
+    }
+}
+
+extension EmojiModel.SkinToneSequence {
+    static var none: EmojiModel.SkinToneSequence = []
+}
+
+// MARK: - File Writers
+
+extension EmojiGenerator {
+    static func writePrimaryFile(from emojiModel: EmojiModel) {
+        // Main enum: Create a string enum definining our enumNames equal to the baseEmoji string
+        // e.g. case grinning = "😀"
         writeBlock(fileName: "Emoji.swift") { fileHandle in
             fileHandle.writeLine("/// A sorted representation of all available emoji")
             fileHandle.writeLine("// swiftlint:disable all")
             fileHandle.writeLine("enum Emoji: String, CaseIterable, Equatable {")
-
-            for emojiData in sortedEmojiData {
-                fileHandle.writeLine("    case \(emojiData.enumName) = \"\(emojiData.emoji)\"")
+            fileHandle.indent {
+                emojiModel.definitions.forEach {
+                    fileHandle.writeLine("case \($0.enumName) = \"\($0.baseEmoji)\"")
+                }
             }
-
             fileHandle.writeLine("}")
             fileHandle.writeLine("// swiftlint:disable all")
         }
+    }
 
-        // Conversion from String
+    static func writeStringConversionsFile(from emojiModel: EmojiModel) {
+        // Inline helpers:
+        var firstItem = true
+        func conditionalCheckForEmojiItem(_ item: EmojiModel.EmojiDefinition.Emoji) -> String {
+            let isFirst = (firstItem == true)
+            firstItem = false
+
+            let prefix = isFirst ? "" : "} else "
+            let suffix = "if rawValue == \"\(item.emojiChar)\" {"
+            return prefix + suffix
+        }
+        func conversionForEmojiItem(_ item: EmojiModel.EmojiDefinition.Emoji, definition: EmojiModel.EmojiDefinition) -> String {
+            let skinToneString: String
+            if item.skintoneSequence.isEmpty {
+                skinToneString = "nil"
+            } else {
+                skinToneString = "[\(item.skintoneSequence.map { ".\($0)" }.joined(separator: ", "))]"
+            }
+            return "self.init(baseEmoji: .\(definition.enumName), skinTones: \(skinToneString))"
+        }
+
+        // Conversion from String: Creates an initializer mapping a single character emoji string to an EmojiWithSkinTones
+        // e.g.
+        // if rawValue == "😀" { self.init(baseEmoji: .grinning, skinTones: nil) }
+        // else if rawValue == "🦻🏻" { self.init(baseEmoji: .earWithHearingAid, skinTones: [.light])
         writeBlock(fileName: "EmojiWithSkinTones+String.swift") { fileHandle in
             fileHandle.writeLine("extension EmojiWithSkinTones {")
+            fileHandle.indent {
+                fileHandle.writeLine("init?(rawValue: String) {")
+                fileHandle.indent {
+                    fileHandle.writeLine("guard rawValue.isSingleEmoji else { return nil }")
 
-            fileHandle.writeLine("    init?(rawValue: String) {")
-            fileHandle.writeLine("        guard rawValue.isSingleEmoji else { return nil }")
-
-            for (index, emojiData) in sortedEmojiData.enumerated() {
-                if index == 0 {
-                    fileHandle.writeLine("        if rawValue == \"\(emojiData.emoji)\" {")
-                } else {
-                    fileHandle.writeLine("        } else if rawValue == \"\(emojiData.emoji)\" {")
-                }
-
-                fileHandle.writeLine("            self.init(baseEmoji: .\(emojiData.enumName), skinTones: nil)")
-
-                if let sortedEmojiPerSkinTone = emojiData.sortedEmojiPerSkinTone {
-                    for (skinTones, emoji) in sortedEmojiPerSkinTone {
-                        fileHandle.writeLine("        } else if rawValue == \"\(emoji)\" {")
-                        fileHandle.writeLine("            self.init(baseEmoji: .\(emojiData.enumName), skinTones: [\(skinTones.map { ".\($0)" }.joined(separator: ", "))])")
+                    emojiModel.definitions.forEach { definition in
+                        definition.variants.forEach { emoji in
+                            fileHandle.writeLine(conditionalCheckForEmojiItem(emoji))
+                            fileHandle.indent {
+                                fileHandle.writeLine(conversionForEmojiItem(emoji, definition: definition))
+                            }
+                        }
                     }
-                }
-            }
 
-            fileHandle.writeLine("        } else {")
-            fileHandle.writeLine("            return nil ")
-            fileHandle.writeLine("        }")
-
-            fileHandle.writeLine("    }")
-
-            fileHandle.writeLine("}")
-        }
-
-        // Skin tones lookup
-        writeBlock(fileName: "Emoji+SkinTones.swift") { fileHandle in
-            fileHandle.writeLine("extension Emoji {")
-
-            // Start SkinTone enum
-            fileHandle.writeLine("    enum SkinTone: String, CaseIterable, Equatable {")
-            for skinTone in SkinTone.allCases {
-                fileHandle.writeLine("        case \(skinTone) = \"\(skinTone.unicodeScalar)\"")
-            }
-
-            // End SkinTone Enum
-            fileHandle.writeLine("    }")
-
-            fileHandle.writeLine("")
-
-            // skin tone helpers
-            fileHandle.writeLine("    var hasSkinTones: Bool { return emojiPerSkinTonePermutation != nil }")
-            fileHandle.writeLine("    var allowsMultipleSkinTones: Bool { return hasSkinTones && skinToneComponentEmoji != nil }")
-
-            fileHandle.writeLine("")
-
-            // Start skinToneComponentEmoji
-            fileHandle.writeLine("    var skinToneComponentEmoji: [Emoji]? {")
-
-            fileHandle.writeLine("        switch self {")
-
-            for emojiData in sortedEmojiData.filter({ $0.skinToneComponents != nil }) {
-                fileHandle.writeLine("        case .\(emojiData.enumName): return \(emojiData.skinToneComponents!)")
-            }
-
-            fileHandle.writeLine("        default: return nil")
-
-            fileHandle.writeLine("        }")
-
-            // End skinToneComponentEmoji
-            fileHandle.writeLine("    }")
-
-            fileHandle.writeLine("")
-
-            // Start emojiPerSkinTonePermutation
-            fileHandle.writeLine("    var emojiPerSkinTonePermutation: [[SkinTone]: String]? {")
-
-            fileHandle.writeLine("        switch self {")
-
-            for emojiData in sortedEmojiData.filter({ $0.sortedEmojiPerSkinTone != nil }) {
-                fileHandle.writeLine("        case .\(emojiData.enumName):")
-                fileHandle.writeLine("            return [")
-                for (skinTones, emoji) in emojiData.sortedEmojiPerSkinTone! {
-                    fileHandle.writeLine("                [\(skinTones.map { ".\($0)" }.joined(separator: ", "))]: \"\(emoji)\",")
-                }
-                fileHandle.writeLine("            ]")
-            }
-
-            fileHandle.writeLine("        default: return nil")
-
-            fileHandle.writeLine("        }")
-
-            // End emojiPerSkinTonePermutation
-            fileHandle.writeLine("    }")
-
-            fileHandle.writeLine("}")
-        }
-
-        // Category lookup
-        writeBlock(fileName: "Emoji+Category.swift") { fileHandle in
-            // Start Extension
-            fileHandle.writeLine("extension Emoji {")
-
-            // Start Category enum
-            fileHandle.writeLine("    enum Category: String, CaseIterable, Equatable {")
-            for category in outputCategories {
-                fileHandle.writeLine("        case \(category) = \"\(category.rawValue)\"")
-            }
-
-            fileHandle.writeLine("")
-
-            // Localized name for category
-            fileHandle.writeLine("        var localizedName: String {")
-            fileHandle.writeLine("            switch self {")
-
-            for category in outputCategories {
-                fileHandle.writeLine("            case .\(category):")
-                fileHandle.writeLine("                return NSLocalizedString(\"EMOJI_CATEGORY_\("\(category)".uppercased())_NAME\",")
-                fileHandle.writeLine("                                         comment: \"The name for the emoji category '\(category.rawValue)'\")")
-            }
-
-            fileHandle.writeLine("            }")
-            fileHandle.writeLine("        }")
-            fileHandle.writeLine("")
-
-            // Emoji lookup per category
-            fileHandle.writeLine("        var emoji: [Emoji] {")
-            fileHandle.writeLine("            switch self {")
-
-            let emojiPerCategory = sortedEmojiData.reduce(into: [EmojiCategory: [EmojiData]]()) { result, emojiData in
-                var categoryList = result[emojiData.category] ?? []
-                categoryList.append(emojiData)
-                result[emojiData.category] = categoryList
-            }
-
-            for category in outputCategories {
-                let emoji: [EmojiData] = {
-                    switch category {
-                    case .smileysAndPeople:
-                        // Merge smileys & people. It's important we initially bucket these seperately,
-                        // because we want the emojis to be sorted smileys followed by people
-                        return emojiPerCategory[.smileys]! + emojiPerCategory[.people]!
-                    default:
-                        return emojiPerCategory[category]!
+                    fileHandle.writeLine("} else {")
+                    fileHandle.indent {
+                        fileHandle.writeLine("return nil")
                     }
-                }()
-
-                fileHandle.writeLine("            case .\(category):")
-
-                fileHandle.writeLine("                return [")
-
-                emoji.compactMap { $0.enumName }.forEach { name in
-                    fileHandle.writeLine("                    .\(name),")
+                    fileHandle.writeLine("}")
                 }
-
-                fileHandle.writeLine("                ]")
+                fileHandle.writeLine("}")
             }
-
-            fileHandle.writeLine("            }")
-            fileHandle.writeLine("        }")
-
-            // End Category Enum
-            fileHandle.writeLine("    }")
-
-            fileHandle.writeLine("")
-
-            // Category lookup per emoji
-            fileHandle.writeLine("    var category: Category {")
-            fileHandle.writeLine("        switch self {")
-
-            for emojiData in sortedEmojiData {
-                let category = [.smileys, .people].contains(emojiData.category) ? .smileysAndPeople : emojiData.category
-                if category != .components {
-                    fileHandle.writeLine("        case .\(emojiData.enumName): return .\(category)")
-                }
-            }
-
-            // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
-            fileHandle.writeLine("        default: fatalError(\"Unexpected case \\(self)\")")
-
-            fileHandle.writeLine("        }")
-            fileHandle.writeLine("    }")
-
-            // End Extension
-            fileHandle.writeLine("}")
-        }
-
-        // Name lookup
-        writeBlock(fileName: "Emoji+Name.swift") { fileHandle in
-            // Start Extension
-            fileHandle.writeLine("extension Emoji {")
-
-            // Value lookup per emoji
-            fileHandle.writeLine("    var name: String {")
-            fileHandle.writeLine("        switch self {")
-
-            for emojiData in sortedEmojiData {
-                guard let name = emojiData.name else { continue }
-                fileHandle.writeLine("        case .\(emojiData.enumName): return \"\(name)\"")
-            }
-
-            fileHandle.writeLine("        }")
-            fileHandle.writeLine("    }")
-
-            // End Extension
             fileHandle.writeLine("}")
         }
     }
 
-    static func writeBlock(fileName: String, block: (FileHandle) -> Void) {
-        if !FileManager.default.fileExists(atPath: emojiDirectory.path) {
-            try! FileManager.default.createDirectory(at: emojiDirectory, withIntermediateDirectories: true, attributes: nil)
+    static func writeSkinToneLookupFile(from emojiModel: EmojiModel) {
+        writeBlock(fileName: "Emoji+SkinTones.swift") { fileHandle in
+            fileHandle.writeLine("extension Emoji {")
+            fileHandle.indent {
+                // SkinTone enum
+                fileHandle.writeLine("enum SkinTone: String, CaseIterable, Equatable {")
+                fileHandle.indent {
+                    for skinTone in EmojiModel.SkinTone.allCases {
+                        fileHandle.writeLine("case \(skinTone) = \"\(skinTone.rawValue)\"")
+                    }
+                }
+                fileHandle.writeLine("}")
+                fileHandle.writeLine("")
+
+                // skin tone helpers
+                fileHandle.writeLine("var hasSkinTones: Bool { return emojiPerSkinTonePermutation != nil }")
+                fileHandle.writeLine("var allowsMultipleSkinTones: Bool { return hasSkinTones && skinToneComponentEmoji != nil }")
+                fileHandle.writeLine("")
+
+                // Start skinToneComponentEmoji
+                fileHandle.writeLine("var skinToneComponentEmoji: [Emoji]? {")
+                fileHandle.indent {
+                    fileHandle.writeLine("switch self {")
+                    emojiModel.definitions.forEach { emojiDef in
+                        if let components = emojiDef.skinToneComponents {
+                            fileHandle.writeLine("case .\(emojiDef.enumName): return \(components)")
+                        }
+                    }
+
+                    fileHandle.writeLine("default: return nil")
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+                fileHandle.writeLine("")
+
+                // Start emojiPerSkinTonePermutation
+                fileHandle.writeLine("var emojiPerSkinTonePermutation: [[SkinTone]: String]? {")
+                fileHandle.indent {
+                    fileHandle.writeLine("switch self {")
+                    emojiModel.definitions.forEach { emojiDef in
+                        let skintoneVariants = emojiDef.variants.filter({ $0.skintoneSequence != .none})
+                        if skintoneVariants.isEmpty {
+                            // None of our variants have a skintone, nothing to do
+                            return
+                        }
+
+                        fileHandle.writeLine("case .\(emojiDef.enumName):")
+                        fileHandle.indent {
+                            fileHandle.writeLine("return [")
+                            fileHandle.indent {
+                                skintoneVariants.forEach {
+                                    let skintoneSequenceKey = $0.skintoneSequence.map({ ".\($0)" }).joined(separator: ", ")
+                                    fileHandle.writeLine("[\(skintoneSequenceKey)]: \"\($0.emojiChar)\",")
+                                }
+                            }
+                            fileHandle.writeLine("]")
+                        }
+                    }
+                    fileHandle.writeLine("default: return nil")
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+            }
+            fileHandle.writeLine("}")
+        }
+    }
+
+    static func writeCategoryLookupFile(from emojiModel: EmojiModel) {
+        let outputCategories: [RemoteModel.EmojiCategory] = [
+            .smileysAndPeople,
+            .animals,
+            .food,
+            .activities,
+            .travel,
+            .objects,
+            .symbols,
+            .flags
+        ]
+
+        writeBlock(fileName: "Emoji+Category.swift") { fileHandle in
+            fileHandle.writeLine("extension Emoji {")
+            fileHandle.indent {
+
+                // Category enum
+                fileHandle.writeLine("enum Category: String, CaseIterable, Equatable {")
+                fileHandle.indent {
+                    // Declare cases
+                    for category in outputCategories {
+                        fileHandle.writeLine("case \(category) = \"\(category.rawValue)\"")
+                    }
+                    fileHandle.writeLine("")
+
+                    // Localized name for category
+                    fileHandle.writeLine("var localizedName: String {")
+                    fileHandle.indent {
+                        fileHandle.writeLine("switch self {")
+                        for category in outputCategories {
+                            fileHandle.writeLine("case .\(category):")
+                            fileHandle.indent {
+                                let stringKey = "EMOJI_CATEGORY_\("\(category)".uppercased())_NAME"
+                                let stringComment = "The name for the emoji category '\(category.rawValue)'"
+
+                                fileHandle.writeLine("return NSLocalizedString(\"\(stringKey)\", comment: \"\(stringComment)\")")
+                            }
+                        }
+                        fileHandle.writeLine("}")
+                    }
+                    fileHandle.writeLine("}")
+                    fileHandle.writeLine("")
+
+                    // Emoji lookup per category
+                    fileHandle.writeLine("var emoji: [Emoji] {")
+                    fileHandle.indent {
+                        fileHandle.writeLine("switch self {")
+
+                        let emojiPerCategory: [RemoteModel.EmojiCategory: [EmojiModel.EmojiDefinition]]
+                        emojiPerCategory = emojiModel.definitions.reduce(into: [:]) { result, emojiDef in
+                            var categoryList = result[emojiDef.category] ?? []
+                            categoryList.append(emojiDef)
+                            result[emojiDef.category] = categoryList
+                        }
+
+                        for category in outputCategories {
+                            let emoji: [EmojiModel.EmojiDefinition] = {
+                                switch category {
+                                case .smileysAndPeople:
+                                    // Merge smileys & people. It's important we initially bucket these seperately,
+                                    // because we want the emojis to be sorted smileys followed by people
+                                    return emojiPerCategory[.smileys]! + emojiPerCategory[.people]!
+                                default:
+                                    return emojiPerCategory[category]!
+                                }
+                            }()
+
+                            fileHandle.writeLine("case .\(category):")
+                            fileHandle.indent {
+                                fileHandle.writeLine("return [")
+                                fileHandle.indent {
+                                    emoji.compactMap { $0.enumName }.forEach { name in
+                                        fileHandle.writeLine(".\(name),")
+                                    }
+                                }
+                                fileHandle.writeLine("]")
+                            }
+                        }
+                        fileHandle.writeLine("}")
+                    }
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+                fileHandle.writeLine("")
+
+                // Category lookup per emoji
+                fileHandle.writeLine("var category: Category {")
+                fileHandle.indent {
+                    fileHandle.writeLine("switch self {")
+                    for emojiDef in emojiModel.definitions {
+                        let category = [.smileys, .people].contains(emojiDef.category) ? .smileysAndPeople : emojiDef.category
+                        if category != .components {
+                            fileHandle.writeLine("case .\(emojiDef.enumName): return .\(category)")
+                        }
+                    }
+                    // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
+                    fileHandle.writeLine("default: fatalError(\"Unexpected case \\(self)\")")
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+            }
+            fileHandle.writeLine("}")
+        }
+    }
+
+    static func writeNameLookupFile(from emojiModel: EmojiModel) {
+        // Name lookup: Create a computed property mapping an Emoji enum element to the raw Emoji name string
+        // e.g. case .grinning: return "GRINNING FACE"
+        writeBlock(fileName: "Emoji+Name.swift") { fileHandle in
+            fileHandle.writeLine("extension Emoji {")
+            fileHandle.indent {
+                fileHandle.writeLine("var name: String {")
+                fileHandle.indent {
+                    fileHandle.writeLine("switch self {")
+                    emojiModel.definitions.forEach {
+                        fileHandle.writeLine("case .\($0.enumName): return \"\($0.rawName)\"")
+                    }
+                    fileHandle.writeLine("}")
+                }
+                fileHandle.writeLine("}")
+            }
+            fileHandle.writeLine("}")
+        }
+    }
+}
+
+// MARK: - File I/O Helpers
+
+class WriteHandle {
+    static let emojiDirectory = URL(
+        fileURLWithPath: "../Signal/src/util/Emoji",
+        isDirectory: true,
+        relativeTo: EmojiGenerator.pathToFolderContainingThisScript!)
+
+    let handle: FileHandle
+
+    var indentDepth: Int = 0
+    var hasBeenClosed = false
+
+    func indent(_ block: () -> Void) {
+        indentDepth += 1
+        block()
+        indentDepth -= 1
+    }
+
+    func writeLine(_ body: String) {
+        let spaces = indentDepth * 4
+        let prefix = String(repeating: " ", count: spaces)
+        let suffix = "\n"
+
+        let line = prefix + body + suffix
+        handle.write(line.data(using: .utf8)!)
+    }
+
+    init(fileName: String) {
+        // Create directory if necessary
+        if !FileManager.default.fileExists(atPath: Self.emojiDirectory.path) {
+            try! FileManager.default.createDirectory(at: Self.emojiDirectory, withIntermediateDirectories: true, attributes: nil)
         }
 
-        let url = URL(fileURLWithPath: fileName, relativeTo: emojiDirectory)
-
+        // Delete old file and create anew
+        let url = URL(fileURLWithPath: fileName, relativeTo: Self.emojiDirectory)
         if FileManager.default.fileExists(atPath: url.path) {
             try! FileManager.default.removeItem(at: url)
         }
         FileManager.default.createFile(atPath: url.path, contents: nil, attributes: nil)
+        handle = try! FileHandle(forWritingTo: url)
+    }
 
-        let fileHandle = try! FileHandle(forWritingTo: url)
-        defer { fileHandle.closeFile() }
+    deinit {
+        precondition(hasBeenClosed, "File handle still open at de-init")
+    }
+
+    func close() {
+        handle.closeFile()
+        hasBeenClosed = true
+    }
+}
+
+extension EmojiGenerator {
+    static func writeBlock(fileName: String, block: (WriteHandle) -> Void) {
+        let fileHandle = WriteHandle(fileName: fileName)
+        defer { fileHandle.close() }
 
         fileHandle.writeLine("//")
         fileHandle.writeLine("//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.")
@@ -441,14 +562,58 @@ class EmojiGenerator {
 
         block(fileHandle)
     }
+
+    // from http://stackoverflow.com/a/31480534/255489
+    static var pathToFolderContainingThisScript: URL? = {
+        let cwd = FileManager.default.currentDirectoryPath
+
+        let script = CommandLine.arguments[0]
+
+        if script.hasPrefix("/") { // absolute
+            let path = (script as NSString).deletingLastPathComponent
+            return URL(fileURLWithPath: path)
+        } else { // relative
+            let urlCwd = URL(fileURLWithPath: cwd)
+
+            if let urlPath = URL(string: script, relativeTo: urlCwd) {
+                let path = (urlPath.path as NSString).deletingLastPathComponent
+                return URL(fileURLWithPath: path)
+            }
+        }
+
+        return nil
+    }()
 }
 
-extension FileHandle {
-    func writeLine(_ string: String) {
-        write((string + "\n").data(using: .utf8)!)
+// MARK: - Misc
+
+extension String {
+    var titlecase: String {
+        components(separatedBy: " ")
+            .map { $0.first!.uppercased() + $0.dropFirst().lowercased() }
+            .joined(separator: " ")
+    }
+}
+
+// MARK: - Lifecycle
+
+class EmojiGenerator {
+    static func run() throws {
+        let remoteData = try RemoteModel.fetchEmojiData()
+        let model = try EmojiModel(rawJSONData: remoteData)
+
+        writePrimaryFile(from: model)
+        writeStringConversionsFile(from: model)
+        writeSkinToneLookupFile(from: model)
+        writeCategoryLookupFile(from: model)
+        writeNameLookupFile(from: model)
     }
 }
 
 do {
-    EmojiGenerator.generate()
+    try EmojiGenerator.run()
+} catch {
+    print("Failed to generate emoji data: \(error)")
+    let errorCode = (error as? CustomNSError)?.errorCode ?? -1
+    exit(Int32(errorCode))
 }
