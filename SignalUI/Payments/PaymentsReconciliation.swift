@@ -416,7 +416,7 @@ public class PaymentsReconciliation: Dependencies {
                                               mobileCoin: mobileCoin)
 
             if let transaction = transaction as? SDSAnyWriteTransaction {
-                try Self.payments.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+                try Self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
             } else {
                 throw ReconciliationError.unsavedChanges
             }
@@ -646,7 +646,7 @@ public class PaymentsReconciliation: Dependencies {
                                              isUnread: false,
                                              mobileCoin: mobileCoin)
         do {
-            try Self.payments.tryToInsertPaymentModel(newPaymentModel, transaction: transaction)
+            try Self.paymentsHelper.tryToInsertPaymentModel(newPaymentModel, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
         }

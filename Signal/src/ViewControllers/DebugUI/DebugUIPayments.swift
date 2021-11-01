@@ -193,7 +193,7 @@ class DebugUIPayments: DebugUIPage {
                                                   isUnread: false,
                                                   mobileCoin: mobileCoin)
                 do {
-                    try Self.payments.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+                    try Self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
                 } catch {
                     owsFailDebug("Error: \(error)")
                 }

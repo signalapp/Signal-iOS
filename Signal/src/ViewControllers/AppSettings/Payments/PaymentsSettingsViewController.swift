@@ -164,7 +164,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func updateNavbar() {
-        if paymentsSwift.arePaymentsEnabled {
+        if paymentsHelperSwift.arePaymentsEnabled {
             let moreOptionsIcon = UIImage(named: "more-horiz-24")?.withRenderingMode(.alwaysTemplate)
             navigationItem.rightBarButtonItem = UIBarButtonItem(
                 image: moreOptionsIcon,
@@ -237,7 +237,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         updateTableContents()
         updateNavbar()
 
-        if !Self.payments.arePaymentsEnabled {
+        if !Self.paymentsHelper.arePaymentsEnabled {
             presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST",
                                                  comment: "Message indicating that payments have been disabled in the app settings."))
         }
@@ -247,7 +247,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     private func updateTableContents() {
         AssertIsOnMainThread()
 
-        let arePaymentsEnabled = paymentsSwift.arePaymentsEnabled
+        let arePaymentsEnabled = paymentsHelper.arePaymentsEnabled
         if arePaymentsEnabled {
             updateTableContentsEnabled()
         } else {
@@ -914,7 +914,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
 
         databaseStorage.asyncWrite { transaction in
-            Self.paymentsSwift.enablePayments(transaction: transaction)
+            Self.paymentsHelperSwift.enablePayments(transaction: transaction)
 
             transaction.addAsyncCompletionOnMain {
                 self.showPaymentsActivatedToast()
@@ -988,7 +988,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
         guard paymentBalance.amount.picoMob > 0 else {
             databaseStorage.write { transaction in
-                Self.paymentsSwift.disablePayments(transaction: transaction)
+                Self.paymentsHelperSwift.disablePayments(transaction: transaction)
             }
             return
         }

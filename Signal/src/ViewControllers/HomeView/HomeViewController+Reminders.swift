@@ -143,7 +143,7 @@ extension HomeViewController {
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
         AssertIsOnMainThread()
 
-        guard payments.arePaymentsEnabled else {
+        guard paymentsHelper.arePaymentsEnabled else {
             self.unreadPaymentNotificationsCount = 0
             self.firstUnreadPaymentModel = nil
 

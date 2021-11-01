@@ -28,14 +28,9 @@ public protocol Payments: AnyObject {
                            mcIncomingTransactionPublicKey: Data,
                            transaction: SDSAnyReadTransaction) -> [TSPaymentModel]
 
-    func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
-                                 transaction: SDSAnyWriteTransaction) throws
-
     func didReceiveMCAuthError()
 
     var isKillSwitchActive: Bool { get }
-
-    func warmCaches()
 
     func clearState(transaction: SDSAnyWriteTransaction)
 }
@@ -113,7 +108,7 @@ public protocol PreparedPayment {
 public struct PaymentBalance {
     public let amount: TSPaymentAmount
     public let date: Date
-    
+
     public init(amount: TSPaymentAmount, date: Date) {
         self.amount = amount
         self.date = date
@@ -204,11 +199,6 @@ extension MockPayments: PaymentsSwift {
     public func findPaymentModels(withMCLedgerBlockIndex mcLedgerBlockIndex: UInt64,
                                   mcIncomingTransactionPublicKey: Data,
                                   transaction: SDSAnyReadTransaction) -> [TSPaymentModel] {
-        owsFail("Not implemented.")
-    }
-
-    public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
-                                        transaction: SDSAnyWriteTransaction) throws {
         owsFail("Not implemented.")
     }
 

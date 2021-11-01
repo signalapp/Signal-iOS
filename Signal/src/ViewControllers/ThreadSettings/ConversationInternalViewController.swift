@@ -80,7 +80,7 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 section.add(.label(withText: String(format: "Capabilities: %@",
                                                     capabilities.joined(separator: ", "))))
 
-                let arePaymentsEnabled = payments.arePaymentsEnabled(for: address,
+                let arePaymentsEnabled = paymentsHelper.arePaymentsEnabled(for: address,
                                                                      transaction: transaction)
                 section.add(.label(withText: String(format: "Payments Enabled: %@",
                                                     arePaymentsEnabled ? "Yes" : "No")))

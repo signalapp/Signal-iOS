@@ -9,6 +9,8 @@ public protocol PaymentsHelper: AnyObject {
 
     func warmCaches()
 
+    var keyValueStore: SDSKeyValueStore { get }
+
     var isKillSwitchActive: Bool { get }
     var hasValidPhoneNumberForPayments: Bool { get }
     var canEnablePayments: Bool { get }
@@ -17,11 +19,12 @@ public protocol PaymentsHelper: AnyObject {
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
 
     var arePaymentsEnabled: Bool { get }
+    var paymentsEntropy: Data? { get }
     func enablePayments(transaction: SDSAnyWriteTransaction)
     func enablePayments(withPaymentsEntropy: Data, transaction: SDSAnyWriteTransaction) -> Bool
     func disablePayments(transaction: SDSAnyWriteTransaction)
 
-    func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction)
+    func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: SDSAnyWriteTransaction)
     func lastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) -> Data?
 
     @objc(processIncomingPaymentSyncMessage:messageTimestamp:transaction:)
@@ -56,6 +59,9 @@ public protocol PaymentsHelper: AnyObject {
                                                       paymentCancellation: TSPaymentCancellation,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction)
+
+    func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
+                                 transaction: SDSAnyWriteTransaction) throws
 }
 
 // MARK: -
@@ -140,6 +146,9 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     public var hasValidPhoneNumberForPayments: Bool { false }
     public var canEnablePayments: Bool { false }
 
+    fileprivate static let keyValueStore = SDSKeyValueStore(collection: "MockPayments")
+    public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}
+
     public func warmCaches() {
         owsFail("Not implemented.")
     }
@@ -153,6 +162,10 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     }
 
     public var arePaymentsEnabled: Bool {
+        owsFail("Not implemented.")
+    }
+
+    public var paymentsEntropy: Data? {
         owsFail("Not implemented.")
     }
 
@@ -180,7 +193,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
         owsFail("Not implemented.")
     }
 
-    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction) {
+    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -231,6 +244,11 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                                   messageTimestamp: UInt64,
                                                   transaction: SDSAnyWriteTransaction) {
+        owsFail("Not implemented.")
+    }
+
+    public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
+                                        transaction: SDSAnyWriteTransaction) throws {
         owsFail("Not implemented.")
     }
 }

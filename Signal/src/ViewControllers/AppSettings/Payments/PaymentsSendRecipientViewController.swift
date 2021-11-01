@@ -71,7 +71,7 @@ class PaymentsSendRecipientViewController: OWSViewController {
 
     private func showSendPayment(address: SignalServiceAddress) {
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.payments.arePaymentsEnabled(for: address, transaction: transaction)
+            Self.paymentsHelper.arePaymentsEnabled(for: address, transaction: transaction)
         }
         guard recipientHasPaymentsEnabled else {
             // TODO: Should we try to fill in this state before showing the error alert?

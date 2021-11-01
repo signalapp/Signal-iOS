@@ -40,6 +40,10 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         }
     }
 
+    // NOTE: This k-v store is shared by PaymentsHelperImpl and PaymentsImpl.
+    fileprivate static var keyValueStore: SDSKeyValueStore { paymentsHelper.keyValueStore}
+    fileprivate var keyValueStore: SDSKeyValueStore { paymentsHelper.keyValueStore}
+
     private func updateLastKnownLocalPaymentAddressProtoDataIfNecessary() {
         guard tsAccountManager.isRegisteredAndReady else {
             return
@@ -157,7 +161,7 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
     // MARK: - PaymentsState
 
     public var paymentsState: PaymentsState {
-        paymentsHelper.paymentsState
+        paymentsHelperSwift.paymentsState
     }
 
     public var arePaymentsEnabled: Bool {
@@ -411,7 +415,7 @@ public extension PaymentsImpl {
             }
 
             try Self.databaseStorage.write { transaction in
-                try self.tryToInsertPaymentModel(paymentModel, transaction: transaction)
+                try self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
             }
 
             return paymentModel
@@ -687,7 +691,7 @@ public extension PaymentsImpl {
                         throw OWSAssertionError("Invalid paymentModel.")
                     }
 
-                    try self.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
+                    try self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: dbTransaction)
 
                     return paymentModel
                 }
@@ -1140,15 +1144,15 @@ public class PaymentsEventsMainApp: NSObject, PaymentsEvents {
     }
 
     public func updateLastKnownLocalPaymentAddressProtoData(transaction: SDSAnyWriteTransaction) {
-        payments.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
+        paymentsImpl.updateLastKnownLocalPaymentAddressProtoData(transaction: transaction)
     }
 
     public func paymentsStateDidChange() {
-        payments.updateCurrentPaymentBalance()
+        paymentsImpl.updateCurrentPaymentBalance()
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {
-        paymentsHelper.clearState(transaction: transaction)
+        paymentsHelperSwift.clearState(transaction: transaction)
         payments.clearState(transaction: transaction)
     }
 }

@@ -54,7 +54,9 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
     // MARK: - PaymentsState
 
+    // NOTE: This k-v store is shared by PaymentsHelperImpl and PaymentsImpl.
     fileprivate static let keyValueStore = SDSKeyValueStore(collection: "Payments")
+    public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}
 
     private static let arePaymentsEnabledKey = "isPaymentEnabled"
     private static let paymentsEntropyKey = "paymentsEntropy"
@@ -196,7 +198,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         paymentStateCache.set(nil)
     }
 
-    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data, transaction: SDSAnyWriteTransaction) {
+    public func setLastKnownLocalPaymentAddressProtoData(_ data: Data?, transaction: SDSAnyWriteTransaction) {
         Self.keyValueStore.setData(data, key: Self.lastKnownLocalPaymentAddressProtoDataKey, transaction: transaction)
     }
 
@@ -425,8 +427,8 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     }
 
     // This method enforces invariants around TSPaymentModel.
-    func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
-                                 transaction: SDSAnyWriteTransaction) throws {
+    public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
+                                        transaction: SDSAnyWriteTransaction) throws {
 
         Logger.info("Trying to insert: \(paymentModel.descriptionForLogs)")
 
