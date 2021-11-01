@@ -45,7 +45,6 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         contents.addSection(linkPreviewSection)
 
         let sharingSuggestionsSection = OWSTableSection()
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *) {
             sharingSuggestionsSection.footerTitle = NSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER",
@@ -57,13 +56,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Footer for setting for enabling & disabling contact sharing with iOS."
             )
         }
-        #else
-        sharingSuggestionsSection.footerTitle = NSLocalizedString(
-            "SETTINGS_SHARING_SUGGESTIONS_FOOTER",
-            comment: "Footer for setting for enabling & disabling contact sharing with iOS."
-        )
 
-        #endif
         sharingSuggestionsSection.add(.switch(
             withText: NSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS",

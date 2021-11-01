@@ -80,7 +80,6 @@ public class UserNotificationConfig {
         title: String,
         options: UNNotificationActionOptions,
         systemImage: String?) -> UNNotificationAction {
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let systemImage = systemImage {
             let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
             return UNNotificationAction(identifier: identifier,
@@ -92,11 +91,6 @@ public class UserNotificationConfig {
                                         title: title,
                                         options: options)
         }
-        #else
-            return UNNotificationAction(identifier: identifier,
-                                        title: title,
-                                        options: options)
-        #endif
     }
 
     private class func textInputNotificationActionWithIdentifier(
@@ -106,7 +100,6 @@ public class UserNotificationConfig {
         textInputButtonTitle: String,
         textInputPlaceholder: String,
         systemImage: String?) -> UNNotificationAction {
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let systemImage = systemImage {
             let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
             return UNTextInputNotificationAction(identifier: identifier,
@@ -122,13 +115,6 @@ public class UserNotificationConfig {
                                                  textInputButtonTitle: textInputButtonTitle,
                                                  textInputPlaceholder: textInputPlaceholder)
         }
-        #else
-            return UNTextInputNotificationAction(identifier: identifier,
-                                                 title: title,
-                                                 options: options,
-                                                 textInputButtonTitle: textInputButtonTitle,
-                                                 textInputPlaceholder: textInputPlaceholder)
-        #endif
     }
 
     public class func action(identifier: String) -> AppNotificationAction? {
@@ -232,20 +218,6 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
 
         var contentToUse: UNNotificationContent = content
-        let postNotification = {
-            let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
-
-            if DebugFlags.internalLogging {
-                Logger.info("presenting notification with identifier: \(notificationIdentifier)")
-            }
-            self.notificationCenter.add(request) { (error: Error?) in
-                if let error = error {
-                    owsFailDebug("Error: \(error)")
-                }
-                completion?()
-            }
-        }
-        #if swift(>=5.5) // TODO Temporary for Xcode 12 support.
         if #available(iOS 15, *), let interaction = interaction {
             if DebugFlags.internalLogging {
                 Logger.info("Will donate interaction")
@@ -274,14 +246,19 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
                     owsFailDebug("Failed to update UNNotificationContent for comm style notification")
                 }
             }
-
-            postNotification()
-        } else {
-            postNotification()
         }
-        #else
-        postNotification()
-        #endif
+
+        let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
+
+        if DebugFlags.internalLogging {
+            Logger.info("presenting notification with identifier: \(notificationIdentifier)")
+        }
+        notificationCenter.add(request) { (error: Error?) in
+            if let error = error {
+                owsFailDebug("Error: \(error)")
+            }
+            completion?()
+        }
     }
 
     // This method is thread-safe.
