@@ -350,7 +350,7 @@ private class MentionableUserCell: UITableViewCell {
             usernameLabel.isHidden = true
         }
 
-        avatarView.updateWithSneakyTransaction { configuration in
+        avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             configuration.dataSource = .address(mentionableUser.address)
             return .asynchronously
         }

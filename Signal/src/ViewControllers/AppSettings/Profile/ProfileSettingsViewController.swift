@@ -244,7 +244,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         cell.selectionStyle = .none
 
         let badgedAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
-        badgedAvatarView.updateWithSneakyTransaction { config in
+        badgedAvatarView.updateWithSneakyTransactionIfNecessary { config in
             if let avatarData = avatarData {
                 config.dataSource = .asset(avatar: UIImage(data: avatarData), badge: nil)
             } else if let address = tsAccountManager.localAddress {

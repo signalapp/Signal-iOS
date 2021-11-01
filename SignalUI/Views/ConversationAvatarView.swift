@@ -54,6 +54,23 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
             // Badges are not available when using a custom size class
             case custom(UInt)
+
+            public init(avatarDiameter: UInt) {
+                switch CGFloat(avatarDiameter) {
+                case Self.tiny.avatarSize.largerAxis:
+                    self = .tiny
+                case Self.small.avatarSize.largerAxis:
+                    self = .small
+                case Self.medium.avatarSize.largerAxis:
+                    self = .medium
+                case Self.large.avatarSize.largerAxis:
+                    self = .large
+                case Self.xlarge.avatarSize.largerAxis:
+                    self = .xlarge
+                default:
+                    self = .custom(avatarDiameter)
+                }
+            }
         }
 
         public enum Shape {
@@ -107,13 +124,18 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         case asynchronously
     }
 
-    public func updateWithSneakyTransaction(_ block: (inout Configuration) -> UpdateBehavior) {
-        databaseStorage.read { update($0, block) }
+    public func updateWithSneakyTransactionIfNecessary(_ block: (inout Configuration) -> UpdateBehavior) {
+        update(optionalTransaction: nil, block)
     }
 
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
     /// Callers can specify a synchronous or asynchronous model update through the closure's return value
     public func update(_ transaction: SDSAnyReadTransaction, _ block: (inout Configuration) -> UpdateBehavior) {
+        AssertIsOnMainThread()
+        update(optionalTransaction: transaction, block)
+    }
+
+    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ block: (inout Configuration) -> UpdateBehavior) {
         AssertIsOnMainThread()
 
         let oldConfiguration = configuration
@@ -132,7 +154,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If the model has been dirtied, performs an update
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
-    private func updateModelIfNecessary(_ behavior: UpdateBehavior, transaction readTx: SDSAnyReadTransaction) {
+    private func updateModelIfNecessary(_ behavior: UpdateBehavior, transaction readTx: SDSAnyReadTransaction?) {
         AssertIsOnMainThread()
 
         guard nextModelGeneration.get() > currentModelGeneration else { return }
@@ -457,8 +479,18 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         }
     }
 
+    private func performWithTransaction<T>(_ existingTx: SDSAnyReadTransaction?, _ block: (SDSAnyReadTransaction) -> T) -> T {
+        if let transaction = existingTx {
+            return block(transaction)
+        } else {
+            return databaseStorage.read { readTx in
+                block(readTx)
+            }
+        }
+    }
+
     // TODO: Badges — Should this be async?
-    fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
+    fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         guard configuration.addBadgeIfApplicable else { return nil }
 
         let targetAddress: SignalServiceAddress
@@ -473,14 +505,16 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return badge
         }
 
-        let userProfile: OWSUserProfile?
-        if targetAddress.isLocalAddress {
-            // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
-            userProfile = OWSProfileManager.shared.localUserProfile()
-        } else {
-            userProfile = AnyUserProfileFinder().userProfile(for: targetAddress, transaction: transaction)
+        let primaryBadge: ProfileBadge? = performWithTransaction(transaction) {
+            let userProfile: OWSUserProfile?
+            if targetAddress.isLocalAddress {
+                // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
+                userProfile = OWSProfileManager.shared.localUserProfile()
+            } else {
+                userProfile = AnyUserProfileFinder().userProfile(for: targetAddress, transaction: $0)
+            }
+            return userProfile?.primaryBadge?.fetchBadgeContent(transaction: $0)
         }
-        let primaryBadge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
         guard let badgeAssets = primaryBadge?.assets else { return nil }
 
         switch configuration.sizeClass {
@@ -497,27 +531,33 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         }
     }
 
-    fileprivate func buildImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
+    fileprivate func buildImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         switch self {
         case .thread(let contactThread as TSContactThread):
-            return Self.avatarBuilder.avatarImage(
-                forAddress: contactThread.contactAddress,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                localUserDisplayMode: configuration.localUserDisplayMode,
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.avatarImage(
+                    forAddress: contactThread.contactAddress,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    localUserDisplayMode: configuration.localUserDisplayMode,
+                    transaction: $0)
+            }
 
         case .address(let address):
-            return Self.avatarBuilder.avatarImage(
-                forAddress: address,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                localUserDisplayMode: configuration.localUserDisplayMode,
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.avatarImage(
+                    forAddress: address,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    localUserDisplayMode: configuration.localUserDisplayMode,
+                    transaction: $0)
+            }
 
         case .thread(let groupThread as TSGroupThread):
-            return Self.avatarBuilder.avatarImage(
-                forGroupThread: groupThread,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.avatarImage(
+                    forGroupThread: groupThread,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    transaction: $0)
+            }
 
         case .asset(let avatar, _):
             return avatar
@@ -528,27 +568,33 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         }
     }
 
-    fileprivate func fetchCachedImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction) -> UIImage? {
+    fileprivate func fetchCachedImage(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         switch self {
         case .thread(let contactThread as TSContactThread):
-            return Self.avatarBuilder.precachedAvatarImage(
-                forAddress: contactThread.contactAddress,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                localUserDisplayMode: configuration.localUserDisplayMode,
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.precachedAvatarImage(
+                    forAddress: contactThread.contactAddress,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    localUserDisplayMode: configuration.localUserDisplayMode,
+                    transaction: $0)
+            }
 
         case .address(let address):
-            return Self.avatarBuilder.precachedAvatarImage(
-                forAddress: address,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                localUserDisplayMode: configuration.localUserDisplayMode,
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.precachedAvatarImage(
+                    forAddress: address,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    localUserDisplayMode: configuration.localUserDisplayMode,
+                    transaction: $0)
+            }
 
         case .thread(let groupThread as TSGroupThread):
-            return Self.avatarBuilder.precachedAvatarImage(
-                forGroupThread: groupThread,
-                diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
-                transaction: transaction)
+            return performWithTransaction(transaction) {
+                Self.avatarBuilder.precachedAvatarImage(
+                    forGroupThread: groupThread,
+                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    transaction: $0)
+            }
 
         case .asset(let avatar, _):
             return avatar

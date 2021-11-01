@@ -224,7 +224,7 @@ class NameCollisionCell: UITableViewCell {
     func configure(model: NameCollisionCellModel, actions: [NameCollisionCell.Action]) {
         owsAssertDebug(actions.count < 3, "Only supports two actions. Feel free to update this for more.")
 
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(model.address)
             return .asynchronously
         }

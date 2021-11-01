@@ -61,7 +61,7 @@ import SignalUI
         let groupMembersCount = thread.groupModel.groupMembership.fullMembers.count
         self.subtitleLabel.text = customSubtitle ?? GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
 
-        self.avatarView.updateWithSneakyTransaction { config in
+        self.avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
             return .asynchronously
         }

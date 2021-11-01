@@ -226,7 +226,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
     func configure(member: NewGroupMember) {
         self.member = member
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(member.address)
             return .asynchronously
         }

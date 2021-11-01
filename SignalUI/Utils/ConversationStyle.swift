@@ -70,8 +70,7 @@ public class ConversationStyle: NSObject {
     @objc
     public let fullWidthGutterTrailing: CGFloat
 
-    @objc
-    static public let groupMessageAvatarDiameter: UInt = 28
+    static public let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.tiny
     @objc
     static public let selectionViewWidth: CGFloat = 24
     @objc
@@ -189,7 +188,7 @@ public class ConversationStyle: NSObject {
         maxMessageWidth -= Self.messageDirectionSpacing
 
         if thread.isGroupThread {
-            maxMessageWidth -= (CGFloat(Self.groupMessageAvatarDiameter) + Self.messageStackSpacing)
+            maxMessageWidth -= (CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarSize.width) + Self.messageStackSpacing)
         }
         self.maxMessageWidth = maxMessageWidth
 

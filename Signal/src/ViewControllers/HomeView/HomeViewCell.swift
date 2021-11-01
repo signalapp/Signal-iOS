@@ -311,7 +311,7 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(cellContentToken.thread)
             return cellContentToken.shouldLoadAvatarAsync ? .asynchronously : .synchronously
         }

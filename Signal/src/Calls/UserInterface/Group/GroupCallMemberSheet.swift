@@ -303,7 +303,7 @@ private class GroupCallMemberCell: UITableViewCell {
         presentingIndicator.isHidden = item.isPresenting != true
 
         nameLabel.text = item.displayName
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(item.address)
             return .asynchronously
         }

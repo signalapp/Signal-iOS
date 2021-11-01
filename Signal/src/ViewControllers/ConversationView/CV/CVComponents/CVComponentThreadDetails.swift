@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalUI
+import SignalServiceKit
 
 public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
@@ -16,7 +18,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
     private let threadDetails: CVComponentState.ThreadDetails
 
-    private var avatarImage: UIImage? { threadDetails.avatar }
+    private var avatarDataSource: ConversationAvatarDataSource? { threadDetails.avatarDataSource }
     private var titleText: String { threadDetails.titleText }
     private var bioText: String? { threadDetails.bioText }
     private var detailsText: String? { threadDetails.detailsText }
@@ -73,8 +75,12 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         var innerViews = [UIView]()
 
-        let avatarView = AvatarImageView(image: self.avatarImage)
-        avatarView.shouldDeactivateConstraints = true
+        let avatarView = ConversationAvatarView(sizeClass: .custom(Self.avatarDiameter), useAutolayout: false)
+        avatarView.updateWithSneakyTransactionIfNecessary { configuration in
+            // Transaction isn't necessary since we pre-fetched our data source
+            configuration.dataSource = avatarDataSource
+            return .synchronously
+        }
         componentView.avatarView = avatarView
         if threadDetails.isAvatarBlurred {
             let avatarWrapper = ManualLayoutView(name: "avatarWrapper")
@@ -232,7 +238,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                        avatarBuilder: avatarBuilder)
         } else {
             owsFailDebug("Invalid thread.")
-            return CVComponentState.ThreadDetails(avatar: nil,
+            return CVComponentState.ThreadDetails(avatarDataSource: nil,
                                                   isAvatarBlurred: false,
                                                   titleText: TSGroupThread.defaultGroupName,
                                                   bioText: nil,
@@ -246,9 +252,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             transaction: SDSAnyReadTransaction,
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
-        let avatar = avatarBuilder.buildAvatar(forAddress: contactThread.contactAddress,
-                                               localUserDisplayMode: .noteToSelf,
-                                               diameterPoints: avatarDiameter)
+        let avatarDataSource = avatarBuilder.buildAvatarDataSource(forAddress: contactThread.contactAddress,
+                                                                   includingBadge: false,
+                                                                   localUserDisplayMode: .noteToSelf,
+                                                                   diameterPoints: avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(contactThread: contactThread,
                                                                           transaction: transaction)
@@ -376,7 +383,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return mutableAttributedString
         }()
 
-        return CVComponentState.ThreadDetails(avatar: avatar,
+        return CVComponentState.ThreadDetails(avatarDataSource: avatarDataSource,
                                               isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: bioText,
@@ -392,7 +399,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         // If we need to reload this cell to reflect changes to any of the
         // state captured here, we need update the didThreadDetailsChange().        
 
-        let avatar = avatarBuilder.buildAvatar(forGroupThread: groupThread, diameterPoints: avatarDiameter)
+        let avatarDataSource = avatarBuilder.buildAvatarDataSource(forGroupThread: groupThread, diameterPoints: avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                         transaction: transaction)
@@ -415,7 +422,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return groupModelV2.descriptionText
         }()
 
-        return CVComponentState.ThreadDetails(avatar: avatar,
+        return CVComponentState.ThreadDetails(avatarDataSource: avatarDataSource,
                                               isAvatarBlurred: isAvatarBlurred,
                                               titleText: titleText,
                                               bioText: nil,
@@ -540,7 +547,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     // It could be the entire item or some part thereof.
     public class CVComponentViewThreadDetails: NSObject, CVComponentView {
 
-        fileprivate var avatarView: AvatarImageView?
+        fileprivate var avatarView: ConversationAvatarView?
 
         fileprivate let titleLabel = CVLabel()
         fileprivate let bioLabel = CVLabel()

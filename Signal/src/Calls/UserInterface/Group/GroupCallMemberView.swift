@@ -410,7 +410,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
 
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = .custom(avatarDiameter)
             return .asynchronously
         }

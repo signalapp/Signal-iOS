@@ -119,7 +119,7 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public func configure(thread: TSThread) {
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
             return .synchronously
         }
@@ -137,12 +137,12 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public func updateAvatar() {
-        avatarView.updateWithSneakyTransaction { _ in .asynchronously }
+        avatarView.updateWithSneakyTransactionIfNecessary { _ in .asynchronously }
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        avatarView.updateWithSneakyTransaction { config in
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = avatarSizeClass
             config.addBadgeIfApplicable = shouldBadgeAvatar
             return .asynchronously
