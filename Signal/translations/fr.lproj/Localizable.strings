@@ -3680,7 +3680,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Veuillez patienter quelques minutes avant de réessayer. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Saisissez votre numéro de téléphone";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Saisir votre numéro de téléphone";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Votre numéro de téléphone";
