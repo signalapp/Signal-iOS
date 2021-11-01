@@ -407,7 +407,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ihr werdet einander schreiben und euch anrufen können.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Bestehende Mitglieder werden dich wieder zur Gruppe hinzufügen können.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Vorhandene Mitglieder können dich wieder zur Gruppe hinzufügen.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppenmitglieder werden dich wieder zu dieser Gruppe hinzufügen können.";
@@ -3533,7 +3533,7 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Neue Nachricht an:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Kein Nutzer gefunden. Via SMS einladen?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Keinen Nutzer gefunden. Via SMS einladen?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notiz an mich";
@@ -3779,7 +3779,7 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ wird über dein Ablehnen benachrichtigt.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ wird über deine Ablehnung benachrichtigt.";
 
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Diese Anfrage ablehnen?";

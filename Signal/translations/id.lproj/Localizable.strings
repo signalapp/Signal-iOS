@@ -5126,7 +5126,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Atur Ulang Pengaturan Unduh-Otomatis ";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kualitas Media Terkiri";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kualitas Media Terkirim";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Pilih kualitas untuk foto dan video yang Anda kirimkan.";
@@ -5231,7 +5231,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Masukkan Percakapan yang Disenyapkan";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Hitungan Spanduk";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Hitungan Lencana";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Notifikasi Panggilan dan Pesan dapat muncul saat ponsel Anda terkunci.";

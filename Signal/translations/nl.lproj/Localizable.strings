@@ -1031,7 +1031,7 @@
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Voor altijd";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Dempen";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "Meldingen dempen";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 uur";
