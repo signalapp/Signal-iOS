@@ -5,6 +5,7 @@
 import XCTest
 @testable import SignalServiceKit
 @testable import SignalMessaging
+@testable import SignalUI
 @testable import Signal
 @testable import MobileCoin
 
@@ -54,8 +55,8 @@ class PaymentsReconciliationTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        let sskEnvironment = SSKEnvironment.shared as! MockSSKEnvironment
-        sskEnvironment.paymentsRef = PaymentsImpl()
+        SSKEnvironment.shared.paymentsHelperRef = PaymentsHelperImpl()
+        SUIEnvironment.shared.paymentsRef = PaymentsImpl()
     }
 
     override func tearDown() {

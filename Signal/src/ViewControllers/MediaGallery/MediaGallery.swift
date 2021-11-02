@@ -222,10 +222,6 @@ class MediaGallery: Dependencies {
     }
 
     func setupDatabaseObservation() {
-        guard StorageCoordinator.dataStoreForUI == .grdb else {
-            owsFailDebug("Invalid data store.")
-            return
-        }
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 

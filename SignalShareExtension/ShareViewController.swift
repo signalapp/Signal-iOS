@@ -61,7 +61,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
+        AppSetup.setupEnvironment(
+            paymentsEvents: PaymentsEventsAppExtension(),
+            mobileCoinHelper: MobileCoinHelperMinimal(),
+            appSpecificSingletonBlock: {
             // Create SUIEnvironment.
             SUIEnvironment.shared.setup()
             SSKEnvironment.shared.callMessageHandlerRef = NoopCallMessageHandler()

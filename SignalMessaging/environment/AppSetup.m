@@ -22,8 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppSetup
 
-+ (void)setupEnvironmentWithAppSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
-                                  migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
++ (void)setupEnvironmentWithPaymentsEvents:(id<PaymentsEvents>)paymentsEvents
+                          mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
+                 appSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
+                       migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {
     OWSAssertDebug(appSpecificSingletonBlock);
     OWSAssertDebug(migrationCompletion);
@@ -110,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
         BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
         OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
-        id<Payments> payments = [PaymentsImpl new];
+        id<PaymentsHelper> paymentsHelper = [PaymentsHelperImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
@@ -171,8 +173,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                         messagePipelineSupervisor:messagePipelineSupervisor
                                                                         appExpiry:appExpiry
                                                                  messageProcessor:messageProcessor
-                                                                         payments:payments
+                                                                   paymentsHelper:paymentsHelper
                                                                paymentsCurrencies:paymentsCurrencies
+                                                                   paymentsEvents:paymentsEvents
+                                                                 mobileCoinHelper:mobileCoinHelper
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore
                                                                   phoneNumberUtil:phoneNumberUtil]];
@@ -219,9 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                         [DeviceSleepManager.shared removeBlockWithBlockObject:sleepBlockObject];
 
-                        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-                            [SSKEnvironment.shared warmCaches];
-                        }
+                        [SSKEnvironment.shared warmCaches];
                         migrationCompletion(nil);
 
                         OWSAssertDebug(backgroundTask);
@@ -243,9 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)shouldTruncateGrdbWal
 {
-    if (StorageCoordinator.dataStoreForUI != DataStoreGrdb) {
-        return NO;
-    }
     if (!CurrentAppContext().isMainApp) {
         return NO;
     }

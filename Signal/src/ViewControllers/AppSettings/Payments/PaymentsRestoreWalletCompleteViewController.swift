@@ -163,8 +163,8 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
             return
         }
         let didSucceed = databaseStorage.write { transaction in
-            paymentsSwift.enablePayments(withPaymentsEntropy: paymentsEntropy,
-                                         transaction: transaction)
+            paymentsHelperSwift.enablePayments(withPaymentsEntropy: paymentsEntropy,
+                                               transaction: transaction)
         }
         guard didSucceed else {
             owsFailDebug("Could not restore payments entropy.")

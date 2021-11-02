@@ -202,7 +202,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
     }
 
     private func showDeletionConfirmUI_checkPayments() {
-        if self.payments.arePaymentsEnabled,
+        if self.paymentsHelper.arePaymentsEnabled,
            let paymentBalance = self.paymentsSwift.currentPaymentBalance,
            !paymentBalance.amount.isZero {
             showDeleteAccountPaymentsConfirmationUI(paymentBalance: paymentBalance.amount)

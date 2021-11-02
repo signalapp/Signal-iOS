@@ -741,7 +741,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             if (wasPrimaryDevice) {
                 // Don't reset payments state at this time.
             } else {
-                [self.payments clearStateWithTransaction:transaction];
+                // PaymentsEvents will dispatch this event to the appropriate singletons.
+                [self.paymentsEvents clearStateWithTransaction:transaction];
             }
 
             [self loadAccountStateWithTransaction:transaction];

@@ -52,20 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSPaymentModel
 
-#pragma mark - Dependencies
-
-+ (id<Payments>)payments
-{
-    return SSKEnvironment.shared.payments;
-}
-
-- (id<Payments>)payments
-{
-    return SSKEnvironment.shared.payments;
-}
-
-#pragma mark -
-
 - (instancetype)initWithPaymentType:(TSPaymentType)paymentType
                        paymentState:(TSPaymentState)paymentState
                       paymentAmount:(nullable TSPaymentAmount *)paymentAmount
@@ -289,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillInsertWithTransaction:transaction];
 
-    [self.payments willInsertPayment:self transaction:transaction];
+    [self.paymentsEvents willInsertPayment:self transaction:transaction];
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -305,7 +291,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super anyWillUpdateWithTransaction:transaction];
 
-    [self.payments willUpdatePayment:self transaction:transaction];
+    [self.paymentsEvents willUpdatePayment:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

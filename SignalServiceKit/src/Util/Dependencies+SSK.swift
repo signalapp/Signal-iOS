@@ -434,12 +434,12 @@ public extension NSObject {
         SSKEnvironment.shared.notificationsManager
     }
 
-    final var payments: Payments {
-        SSKEnvironment.shared.paymentsRef
+    final var paymentsHelper: PaymentsHelper {
+        SSKEnvironment.shared.paymentsHelperRef
     }
 
-    static var payments: Payments {
-        SSKEnvironment.shared.paymentsRef
+    static var paymentsHelper: PaymentsHelper {
+        SSKEnvironment.shared.paymentsHelperRef
     }
 
     final var paymentsCurrencies: PaymentsCurrencies {
@@ -450,7 +450,23 @@ public extension NSObject {
         SSKEnvironment.shared.paymentsCurrenciesRef
     }
 
-    var spamChallengeResolver: SpamChallengeResolver {
+    final var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    static var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    final var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
+    static var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
+    final var spamChallengeResolver: SpamChallengeResolver {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
 
@@ -458,7 +474,7 @@ public extension NSObject {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
 
-    var senderKeyStore: SenderKeyStore {
+    final var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
@@ -466,7 +482,7 @@ public extension NSObject {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
-    var appVersion: AppVersion {
+    final var appVersion: AppVersion {
         AppVersion.shared()
     }
 
@@ -474,7 +490,7 @@ public extension NSObject {
         AppVersion.shared()
     }
 
-    var phoneNumberUtil: PhoneNumberUtil {
+    final var phoneNumberUtil: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
 
@@ -907,12 +923,12 @@ public extension Dependencies {
         SSKEnvironment.shared.notificationsManager
     }
 
-    var payments: Payments {
-        SSKEnvironment.shared.paymentsRef
+    var paymentsHelper: PaymentsHelper {
+        SSKEnvironment.shared.paymentsHelperRef
     }
 
-    static var payments: Payments {
-        SSKEnvironment.shared.paymentsRef
+    static var paymentsHelper: PaymentsHelper {
+        SSKEnvironment.shared.paymentsHelperRef
     }
 
     var paymentsCurrencies: PaymentsCurrencies {
@@ -921,6 +937,22 @@ public extension Dependencies {
 
     static var paymentsCurrencies: PaymentsCurrencies {
         SSKEnvironment.shared.paymentsCurrenciesRef
+    }
+
+    var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    static var paymentsEvents: PaymentsEvents {
+        SSKEnvironment.shared.paymentsEventsRef
+    }
+
+    var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
+    }
+
+    static var mobileCoinHelper: MobileCoinHelper {
+        SSKEnvironment.shared.mobileCoinHelperRef
     }
 
     var spamChallengeResolver: SpamChallengeResolver {
@@ -984,12 +1016,12 @@ public extension NSObject {
         SignalServiceRestClient.shared
     }
 
-    final var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    final var paymentsHelperSwift: PaymentsHelperSwift {
+        SSKEnvironment.shared.paymentsHelperRef as! PaymentsHelperSwift
     }
 
-    static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    static var paymentsHelperSwift: PaymentsHelperSwift {
+        SSKEnvironment.shared.paymentsHelperRef as! PaymentsHelperSwift
     }
 
     final var paymentsCurrenciesSwift: PaymentsCurrenciesSwift {
@@ -1029,12 +1061,12 @@ public extension Dependencies {
         SignalServiceRestClient.shared
     }
 
-    var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    var paymentsHelperSwift: PaymentsHelperSwift {
+        SSKEnvironment.shared.paymentsHelperRef as! PaymentsHelperSwift
     }
 
-    static var paymentsSwift: PaymentsSwift {
-        SSKEnvironment.shared.paymentsRef as! PaymentsSwift
+    static var paymentsHelperSwift: PaymentsHelperSwift {
+        SSKEnvironment.shared.paymentsHelperRef as! PaymentsHelperSwift
     }
 
     var paymentsCurrenciesSwift: PaymentsCurrenciesSwift {

@@ -144,7 +144,7 @@ public class SendPaymentViewController: OWSViewController {
                                 isOutgoingTransfer: Bool,
                                 mode: SendPaymentMode) {
 
-        guard payments.arePaymentsEnabled else {
+        guard paymentsHelper.arePaymentsEnabled else {
             Logger.info("Payments not enabled.")
             showEnablePaymentsActionSheet()
             return
@@ -201,7 +201,7 @@ public class SendPaymentViewController: OWSViewController {
         }
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
+            Self.paymentsHelper.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         if recipientHasPaymentsEnabled {
             presentAfterRecipientCheck(presentationMode: presentationMode,
@@ -251,7 +251,7 @@ public class SendPaymentViewController: OWSViewController {
                                                    mode: SendPaymentMode) {
 
         let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.payments.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
+            Self.paymentsHelper.arePaymentsEnabled(for: recipientAddress, transaction: transaction)
         }
         guard recipientHasPaymentsEnabled else {
             showRecipientNotEnabledAlert()

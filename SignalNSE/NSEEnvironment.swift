@@ -143,6 +143,8 @@ class NSEEnvironment: Dependencies {
         }
 
         AppSetup.setupEnvironment(
+            paymentsEvents: PaymentsEventsAppExtension(),
+            mobileCoinHelper: MobileCoinHelperMinimal(),
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()

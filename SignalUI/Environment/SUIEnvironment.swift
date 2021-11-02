@@ -35,6 +35,9 @@ public class SUIEnvironment: NSObject {
     @objc
     public var chatColorsRef: ChatColors = ChatColors()
 
+    @objc
+    public var paymentsRef: Payments = PaymentsImpl()
+
     private override init() {
         super.init()
 

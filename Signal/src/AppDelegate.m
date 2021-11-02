@@ -212,8 +212,9 @@ void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-    [AppSetup
-        setupEnvironmentWithAppSpecificSingletonBlock:^{
+    [AppSetup setupEnvironmentWithPaymentsEvents:[PaymentsEventsMainApp new]
+                                mobileCoinHelper:[MobileCoinHelperSDK new]
+                       appSpecificSingletonBlock:^{
             // Create SUIEnvironment.
             [SUIEnvironment.shared setup];
             // Create AppEnvironment.

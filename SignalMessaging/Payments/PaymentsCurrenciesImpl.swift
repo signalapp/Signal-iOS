@@ -21,7 +21,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateConversationRatesIfStale),
-            name: PaymentsImpl.arePaymentsEnabledDidChange,
+            name: PaymentsConstants.arePaymentsEnabledDidChange,
             object: nil
         )
     }
@@ -148,7 +148,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
                   !CurrentAppContext().isRunningTests else {
                 return false
             }
-            guard Self.payments.arePaymentsEnabled else {
+            guard Self.paymentsHelper.arePaymentsEnabled else {
                 return false
             }
             guard let conversionRates = self.conversionRates else {
@@ -171,7 +171,7 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift {
               Self.tsAccountManager.isRegisteredAndReady else {
             return
         }
-        guard Self.payments.arePaymentsEnabled else {
+        guard Self.paymentsHelper.arePaymentsEnabled else {
             return
         }
         if let conversionRates = self.conversionRates,

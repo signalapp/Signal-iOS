@@ -44,21 +44,23 @@ extern NSNotificationName const WarmCachesNotification;
 @class TSAccountManager;
 
 @protocol ContactsManagerProtocol;
+@protocol GroupV2Updates;
+@protocol GroupsV2;
+@protocol MobileCoinHelper;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
+@protocol OWSTypingIndicators;
+@protocol OWSUDManager;
+@protocol PaymentsCurrencies;
+@protocol PaymentsEvents;
+@protocol PaymentsHelper;
+@protocol PendingReceiptRecorder;
 @protocol ProfileManagerProtocol;
 @protocol RemoteConfigManager;
-@protocol OWSUDManager;
 @protocol SSKReachabilityManager;
-@protocol SyncManagerProtocol;
-@protocol OWSTypingIndicators;
 @protocol StorageServiceManagerProtocol;
-@protocol GroupsV2;
-@protocol GroupV2Updates;
-@protocol PendingReceiptRecorder;
+@protocol SyncManagerProtocol;
 @protocol VersionedProfiles;
-@protocol Payments;
-@protocol PaymentsCurrencies;
 
 @interface SSKEnvironment : NSObject
 
@@ -110,8 +112,10 @@ extern NSNotificationName const WarmCachesNotification;
               messagePipelineSupervisor:(OWSMessagePipelineSupervisor *)messagePipelineSupervisor
                               appExpiry:(AppExpiry *)appExpiry
                        messageProcessor:(MessageProcessor *)messageProcessor
-                               payments:(id<Payments>)payments
+                         paymentsHelper:(id<PaymentsHelper>)paymentsHelper
                      paymentsCurrencies:(id<PaymentsCurrencies>)paymentsCurrencies
+                         paymentsEvents:(id<PaymentsEvents>)paymentsEvents
+                       mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil NS_DESIGNATED_INITIALIZER;
@@ -172,8 +176,10 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) OWSMessagePipelineSupervisor *messagePipelineSupervisorRef;
 @property (nonatomic, readonly) AppExpiry *appExpiryRef;
 @property (nonatomic, readonly) MessageProcessor *messageProcessorRef;
-@property (nonatomic, readonly) id<Payments> paymentsRef;
+@property (nonatomic, readonly) id<PaymentsHelper> paymentsHelperRef;
 @property (nonatomic, readonly) id<PaymentsCurrencies> paymentsCurrenciesRef;
+@property (nonatomic, readonly) id<PaymentsEvents> paymentsEventsRef;
+@property (nonatomic, readonly) id<MobileCoinHelper> mobileCoinHelperRef;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;

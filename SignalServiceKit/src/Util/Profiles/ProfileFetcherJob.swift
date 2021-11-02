@@ -349,7 +349,7 @@ public class ProfileFetcherJob: NSObject {
         Logger.verbose("address: \(address)")
 
         let shouldUseVersionedFetch = (shouldUseVersionedFetchForUuids
-                                        && address.uuid != nil)
+                                       && address.uuid != nil)
 
         let udAccess: OWSUDAccess?
         if address.isLocalAddress {
@@ -363,27 +363,27 @@ public class ProfileFetcherJob: NSObject {
         var currentVersionedProfileRequest: VersionedProfileRequest?
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
-                                            // Clear out any existing request.
-                                            currentVersionedProfileRequest = nil
+            // Clear out any existing request.
+            currentVersionedProfileRequest = nil
 
-                                            if shouldUseVersionedFetch {
-                                                do {
-                                                    let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
-                                                    currentVersionedProfileRequest = request
-                                                    return request.request
-                                                } catch {
-                                                    owsFailDebug("Error: \(error)")
-                                                    return nil
-                                                }
-                                            } else {
-                                                Logger.info("Unversioned profile fetch.")
-                                                return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
-                                            }
-                                        }, udAuthFailureBlock: {
-                                            // Do nothing
-                                        }, websocketFailureBlock: {
-                                            // Do nothing
-                                        }, address: address,
+            if shouldUseVersionedFetch {
+                do {
+                    let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                    currentVersionedProfileRequest = request
+                    return request.request
+                } catch {
+                    owsFailDebug("Error: \(error)")
+                    return nil
+                }
+            } else {
+                Logger.info("Unversioned profile fetch.")
+                return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+            }
+        }, udAuthFailureBlock: {
+            // Do nothing
+        }, websocketFailureBlock: {
+            // Do nothing
+        }, address: address,
                                         udAccess: udAccess,
                                         canFailoverUDAuth: canFailoverUDAuth)
 
@@ -421,10 +421,10 @@ public class ProfileFetcherJob: NSObject {
 
         let hasExistingAvatarData = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             guard let oldAvatarURLPath = self.profileManager.profileAvatarURLPath(for: profileAddress,
-                                                                                  transaction: transaction),
+                                                                                     transaction: transaction),
                   oldAvatarURLPath == avatarUrlPath else {
-                return false
-            }
+                      return false
+                  }
             return self.profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
         }
         if hasExistingAvatarData {
@@ -488,7 +488,7 @@ public class ProfileFetcherJob: NSObject {
         let profileAddress = profile.address
         if let profileKey = (databaseStorage.read { transaction in
             self.profileManager.profileKey(for: profileAddress,
-                                           transaction: transaction)
+                                              transaction: transaction)
         }) {
             if DebugFlags.internalLogging {
                 Logger.info("Using profileKey from database.")
@@ -533,16 +533,16 @@ public class ProfileFetcherJob: NSObject {
             let hasPaymentAddress = paymentAddress != nil
 
             Logger.info("address: \(address), " +
-                            "isVersionedProfile: \(isVersionedProfile), " +
-                            "hasAvatar: \(hasAvatar), " +
-                            "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
-                            "hasGivenName: \(hasGivenName), " +
-                            "hasFamilyName: \(hasFamilyName), " +
-                            "hasBio: \(hasBio), " +
-                            "hasBioEmoji: \(hasBioEmoji), " +
-                            "hasUsername: \(hasUsername), " +
-                            "hasPaymentAddress: \(hasPaymentAddress), " +
-                            "profileKey: \(profileKeyDescription)")
+                        "isVersionedProfile: \(isVersionedProfile), " +
+                        "hasAvatar: \(hasAvatar), " +
+                        "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
+                        "hasGivenName: \(hasGivenName), " +
+                        "hasFamilyName: \(hasFamilyName), " +
+                        "hasBio: \(hasBio), " +
+                        "hasBioEmoji: \(hasBioEmoji), " +
+                        "hasUsername: \(hasUsername), " +
+                        "hasPaymentAddress: \(hasPaymentAddress), " +
+                        "profileKey: \(profileKeyDescription)")
         }
 
         if let profileRequest = fetchedProfile.versionedProfileRequest {
@@ -550,16 +550,16 @@ public class ProfileFetcherJob: NSObject {
         }
 
         profileManager.updateProfile(for: address,
-                                     givenName: givenName,
-                                     familyName: familyName,
-                                     bio: bio,
-                                     bioEmoji: bioEmoji,
-                                     username: profile.username,
-                                     isUuidCapable: true,
-                                     avatarUrlPath: profile.avatarUrlPath,
-                                     optionalDecryptedAvatarData: optionalAvatarData,
-                                     lastFetch: Date(),
-                                     userProfileWriter: .profileFetch)
+                                        givenName: givenName,
+                                        familyName: familyName,
+                                        bio: bio,
+                                        bioEmoji: bioEmoji,
+                                        username: profile.username,
+                                        isUuidCapable: true,
+                                        avatarUrlPath: profile.avatarUrlPath,
+                                        optionalDecryptedAvatarData: optionalAvatarData,
+                                        lastFetch: Date(),
+                                        userProfileWriter: .profileFetch)
 
         updateUnidentifiedAccess(address: address,
                                  verifier: profile.unidentifiedAccessVerifier,
@@ -582,9 +582,9 @@ public class ProfileFetcherJob: NSObject {
                                         latestIdentityKey: profile.identityKey,
                                         transaction: transaction)
 
-            self.payments.setArePaymentsEnabled(for: address,
-                                                hasPaymentsEnabled: paymentAddress != nil,
-                                                transaction: transaction)
+            self.paymentsHelper.setArePaymentsEnabled(for: address,
+                                                         hasPaymentsEnabled: paymentAddress != nil,
+                                                         transaction: transaction)
         }
     }
 
@@ -731,7 +731,7 @@ public struct FetchedProfile {
 public extension DecryptedProfile {
 
     var paymentAddress: TSPaymentAddress? {
-        guard payments.arePaymentsEnabled else {
+        guard paymentsHelper.arePaymentsEnabled else {
             return nil
         }
         guard let paymentAddressDataWithLength = paymentAddressData else {

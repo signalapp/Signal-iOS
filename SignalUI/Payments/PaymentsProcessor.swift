@@ -27,7 +27,7 @@ public class PaymentsProcessor: NSObject {
                                                object: nil, queue: nil) { [weak self] _ in
             self?.process()
         }
-        NotificationCenter.default.addObserver(forName: PaymentsImpl.arePaymentsEnabledDidChange,
+        NotificationCenter.default.addObserver(forName: PaymentsConstants.arePaymentsEnabledDidChange,
                                                object: nil, queue: nil) { [weak self] _ in
             self?.process()
         }
@@ -100,7 +100,7 @@ public class PaymentsProcessor: NSObject {
             guard !CurrentAppContext().isRunningTests else {
                 return
             }
-            guard Self.payments.arePaymentsEnabled else {
+            guard Self.paymentsHelper.arePaymentsEnabled else {
                 return
             }
             guard AppReadiness.isAppReady,

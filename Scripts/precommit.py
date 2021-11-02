@@ -168,7 +168,7 @@ def sort_include_block(text, filepath, filename, file_extension):
     return '\n'.join(blocks) + '\n'
 
 
-def sort_class_statement_block(text, filepath, filename, file_extension):
+def sort_forward_decl_statement_block(text, filepath, filename, file_extension):
     lines = text.split('\n')
     lines = [line.strip() for line in lines if line.strip()]
     lines = list(set(lines))
@@ -260,11 +260,18 @@ def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, ma
     return processed
 
 
-def find_class_statement_section(text):
-    def is_class_statement(line):
+def find_forward_class_statement_section(text):
+    def is_forward_class_statement(line):
         return line.strip().startswith('@class ')
 
-    return find_matching_section(text, is_class_statement)
+    return find_matching_section(text, is_forward_class_statement)
+
+
+def find_forward_protocol_statement_section(text):
+    def is_forward_protocol_statement(line):
+        return line.strip().startswith('@protocol ')
+
+    return find_matching_section(text, is_forward_protocol_statement)
 
 
 def find_include_section(text):
@@ -282,11 +289,18 @@ def sort_includes(filepath, filename, file_extension, text):
     return sort_matching_blocks('sort_includes', filepath, filename, file_extension, text, find_include_section, sort_include_block)
 
 
-def sort_class_statements(filepath, filename, file_extension, text):
+def sort_forward_class_statements(filepath, filename, file_extension, text):
     # print 'sort_class_statements', filepath
     if file_extension not in ('.h', '.m', '.mm'):
         return text
-    return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
+    return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_forward_class_statement_section, sort_forward_decl_statement_block)
+
+
+def sort_forward_protocol_statements(filepath, filename, file_extension, text):
+    # print 'sort_class_statements', filepath
+    if file_extension not in ('.h', '.m', '.mm'):
+        return text
+    return sort_matching_blocks('sort_forward_protocol_statements', filepath, filename, file_extension, text, find_forward_protocol_statement_section, sort_forward_decl_statement_block)
 
 
 def splitall(path):
@@ -336,7 +350,8 @@ def process(filepath):
     original_text = text
 
     text = sort_includes(filepath, filename, file_ext, text)
-    text = sort_class_statements(filepath, filename, file_ext, text)
+    text = sort_forward_class_statements(filepath, filename, file_ext, text)
+    text = sort_forward_protocol_statements(filepath, filename, file_ext, text)
 
     lines = text.split('\n')
 

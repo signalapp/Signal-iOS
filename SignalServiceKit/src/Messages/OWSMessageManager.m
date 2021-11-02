@@ -1756,9 +1756,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                transaction:transaction];
     } else if (syncMessage.outgoingPayment) {
         // An "incoming" sync message notifies us of an "outgoing" payment.
-        [self.payments processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
-                                        messageTimestamp:serverDeliveryTimestamp
-                                             transaction:transaction];
+        [self.paymentsHelper processIncomingPaymentSyncMessage:syncMessage.outgoingPayment
+                                              messageTimestamp:serverDeliveryTimestamp
+                                                   transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -2025,22 +2025,22 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread];
     if (paymentModels.request != nil) {
         OWSLogInfo(@"Processing payment request.");
-        [self.payments processIncomingPaymentRequestWithThread:thread
-                                                paymentRequest:paymentModels.request
-                                                   transaction:transaction];
+        [self.paymentsHelper processIncomingPaymentRequestWithThread:thread
+                                                      paymentRequest:paymentModels.request
+                                                         transaction:transaction];
         return nil;
     } else if (paymentModels.notification != nil) {
         OWSLogInfo(@"Processing payment notification.");
-        [self.payments processIncomingPaymentNotificationWithThread:thread
-                                                paymentNotification:paymentModels.notification
-                                                      senderAddress:envelope.sourceAddress
-                                                        transaction:transaction];
+        [self.paymentsHelper processIncomingPaymentNotificationWithThread:thread
+                                                      paymentNotification:paymentModels.notification
+                                                            senderAddress:envelope.sourceAddress
+                                                              transaction:transaction];
         return nil;
     } else if (paymentModels.cancellation != nil) {
         OWSLogInfo(@"Processing payment cancellation.");
-        [self.payments processIncomingPaymentCancellationWithThread:thread
-                                                paymentCancellation:paymentModels.cancellation
-                                                        transaction:transaction];
+        [self.paymentsHelper processIncomingPaymentCancellationWithThread:thread
+                                                      paymentCancellation:paymentModels.cancellation
+                                                              transaction:transaction];
         return nil;
     } else if (paymentModels != nil) {
         OWSFailDebug(@"Unexpected payment model.");

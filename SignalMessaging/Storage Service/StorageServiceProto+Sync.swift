@@ -561,7 +561,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let preferContactAvatars = SSKPreferences.preferContactAvatars(transaction: transaction)
         builder.setPreferContactAvatars(preferContactAvatars)
 
-        let paymentsState = paymentsSwift.paymentsState
+        let paymentsState = paymentsHelperSwift.paymentsState
         var paymentsBuilder = StorageServiceProtoAccountRecordPayments.builder()
         paymentsBuilder.setEnabled(paymentsState.isEnabled)
         if let paymentsEntropy = paymentsState.paymentsEntropy {
@@ -711,7 +711,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                 transaction: transaction)
         }
 
-        let localPaymentsState = Self.paymentsSwift.paymentsState
+        let localPaymentsState = Self.paymentsHelperSwift.paymentsState
         let servicePaymentsState = PaymentsState.build(arePaymentsEnabled: self.payments?.enabled ?? false,
                                                        paymentsEntropy: self.payments?.paymentsEntropy)
         if localPaymentsState != servicePaymentsState {
@@ -725,9 +725,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             let mergedPaymentsState = PaymentsState.build(arePaymentsEnabled: arePaymentsEnabled,
                                                           paymentsEntropy: paymentsEntropy)
 
-            Self.paymentsSwift.setPaymentsState(mergedPaymentsState,
-                                                updateStorageService: false,
-                                                transaction: transaction)
+            Self.paymentsHelperSwift.setPaymentsState(mergedPaymentsState,
+                                                      updateStorageService: false,
+                                                      transaction: transaction)
         }
 
         let localConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefaultUniversalConfiguration(with: transaction)

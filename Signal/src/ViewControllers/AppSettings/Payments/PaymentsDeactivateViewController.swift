@@ -53,7 +53,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(arePaymentsEnabledDidChange),
-            name: PaymentsImpl.arePaymentsEnabledDidChange,
+            name: PaymentsConstants.arePaymentsEnabledDidChange,
             object: nil
         )
         NotificationCenter.default.addObserver(
@@ -222,7 +222,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
     private func deactivateImmediately() {
         dismiss(animated: true) {
             Self.databaseStorage.write { transaction in
-                Self.paymentsSwift.disablePayments(transaction: transaction)
+                Self.paymentsHelperSwift.disablePayments(transaction: transaction)
             }
         }
     }
