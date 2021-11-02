@@ -15,10 +15,12 @@ public struct SignalRecipientRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return SignalRecipientSerializer.table
+        SignalRecipientSerializer.table
     }
 
-    public static let databaseTableName: String = SignalRecipientSerializer.table.tableName
+    public static var databaseTableName: String {
+        SignalRecipientSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -42,7 +44,7 @@ public struct SignalRecipientRecord: SDSRecord {
     }
 
     public static func columnName(_ column: SignalRecipientRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -58,7 +60,7 @@ public struct SignalRecipientRecord: SDSRecord {
 
 public extension SignalRecipientRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -131,15 +133,15 @@ extension SignalRecipient: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return SignalRecipientRecord.databaseTableName
+        SignalRecipientRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return SignalRecipientSerializer.table
+        SignalRecipientSerializer.table
     }
 }
 
@@ -181,19 +183,20 @@ extension SignalRecipientSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let devicesColumn = SDSColumnMetadata(columnName: "devices", columnType: .blob)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true)
+    static var devicesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "devices", columnType: .blob) }
+    static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: SignalRecipient.collection(),
-                                               tableName: "model_SignalRecipient",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: SignalRecipient.collection(),
+                         tableName: "model_SignalRecipient",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -201,6 +204,7 @@ extension SignalRecipientSerializer {
         recipientPhoneNumberColumn,
         recipientUUIDColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

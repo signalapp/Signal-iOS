@@ -130,7 +130,7 @@ public class OWSHttpHeaders: NSObject {
     // MARK: - Default Headers
 
     @objc
-    public static let userAgentHeaderKey = "User-Agent"
+    public static var userAgentHeaderKey: String { "User-Agent" }
 
     @objc
     public static var userAgentHeaderValueSignalIos: String {
@@ -138,7 +138,7 @@ public class OWSHttpHeaders: NSObject {
     }
 
     @objc
-    public static let acceptLanguageHeaderKey = "Accept-Language"
+    public static var acceptLanguageHeaderKey: String { "Accept-Language" }
 
     @objc
     public static var acceptLanguageHeaderValue: String {
@@ -162,7 +162,7 @@ public class OWSHttpHeaders: NSObject {
     // MARK: - Auth Headers
 
     @objc
-    public static let authHeaderKey = "Authorization"
+    public static var authHeaderKey: String { "Authorization" }
 
     @objc
     public static func authHeaderValue(username: String, password: String) throws -> String {

@@ -76,7 +76,7 @@ public extension TSAccountManager {
 
     // MARK: - Account Attributes & Capabilities
 
-    private static let needsAccountAttributesUpdateKey = "TSAccountManager_NeedsAccountAttributesUpdateKey"
+    private static var needsAccountAttributesUpdateKey: String { "TSAccountManager_NeedsAccountAttributesUpdateKey" }
 
     // Sets the flag to force an account attributes update,
     // then returns a promise for the current attempt.

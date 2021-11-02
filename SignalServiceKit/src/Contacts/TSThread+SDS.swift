@@ -15,10 +15,12 @@ public struct ThreadRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSThreadSerializer.table
+        TSThreadSerializer.table
     }
 
-    public static let databaseTableName: String = TSThreadSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSThreadSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -70,7 +72,7 @@ public struct ThreadRecord: SDSRecord {
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -86,7 +88,7 @@ public struct ThreadRecord: SDSRecord {
 
 public extension ThreadRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -282,15 +284,15 @@ extension TSThread: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return ThreadRecord.databaseTableName
+        ThreadRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSThreadSerializer.table
+        TSThreadSerializer.table
     }
 }
 
@@ -464,33 +466,34 @@ extension TSThreadSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let conversationColorNameObsoleteColumn = SDSColumnMetadata(columnName: "conversationColorNameObsolete", columnType: .unicodeString)
-    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true)
-    static let isArchivedObsoleteColumn = SDSColumnMetadata(columnName: "isArchivedObsolete", columnType: .int)
-    static let lastInteractionRowIdColumn = SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64)
-    static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true)
-    static let mutedUntilDateObsoleteColumn = SDSColumnMetadata(columnName: "mutedUntilDateObsolete", columnType: .double, isOptional: true)
-    static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int)
-    static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true)
-    static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true)
-    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true)
-    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true)
-    static let isMarkedUnreadObsoleteColumn = SDSColumnMetadata(columnName: "isMarkedUnreadObsolete", columnType: .int)
-    static let lastVisibleSortIdOnScreenPercentageObsoleteColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentageObsolete", columnType: .double)
-    static let lastVisibleSortIdObsoleteColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdObsolete", columnType: .int64)
-    static let messageDraftBodyRangesColumn = SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true)
-    static let mentionNotificationModeColumn = SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int)
-    static let mutedUntilTimestampObsoleteColumn = SDSColumnMetadata(columnName: "mutedUntilTimestampObsolete", columnType: .int64)
+    static var conversationColorNameObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "conversationColorNameObsolete", columnType: .unicodeString) }
+    static var creationDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "creationDate", columnType: .double, isOptional: true) }
+    static var isArchivedObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isArchivedObsolete", columnType: .int) }
+    static var lastInteractionRowIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastInteractionRowId", columnType: .int64) }
+    static var messageDraftColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true) }
+    static var mutedUntilDateObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mutedUntilDateObsolete", columnType: .double, isOptional: true) }
+    static var shouldThreadBeVisibleColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int) }
+    static var contactPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var contactUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true) }
+    static var groupModelColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true) }
+    static var hasDismissedOffersColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true) }
+    static var isMarkedUnreadObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isMarkedUnreadObsolete", columnType: .int) }
+    static var lastVisibleSortIdOnScreenPercentageObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentageObsolete", columnType: .double) }
+    static var lastVisibleSortIdObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastVisibleSortIdObsolete", columnType: .int64) }
+    static var messageDraftBodyRangesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageDraftBodyRanges", columnType: .blob, isOptional: true) }
+    static var mentionNotificationModeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mentionNotificationMode", columnType: .int) }
+    static var mutedUntilTimestampObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mutedUntilTimestampObsolete", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSThread.collection(),
-                                               tableName: "model_TSThread",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSThread.collection(),
+                         tableName: "model_TSThread",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -512,6 +515,7 @@ extension TSThreadSerializer {
         mentionNotificationModeColumn,
         mutedUntilTimestampObsoleteColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

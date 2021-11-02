@@ -36,7 +36,7 @@ public class AppExpiry: NSObject {
         }
     }
     private let expirationState = AtomicValue<ExpirationState>(.init(mode: .default))
-    private static let expirationStateKey = "expirationState"
+    private static var expirationStateKey: String { "expirationState" }
 
     @objc
     public required override init() {

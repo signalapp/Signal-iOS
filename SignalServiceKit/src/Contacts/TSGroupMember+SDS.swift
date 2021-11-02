@@ -15,10 +15,12 @@ public struct GroupMemberRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSGroupMemberSerializer.table
+        TSGroupMemberSerializer.table
     }
 
-    public static let databaseTableName: String = TSGroupMemberSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSGroupMemberSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -44,7 +46,7 @@ public struct GroupMemberRecord: SDSRecord {
     }
 
     public static func columnName(_ column: GroupMemberRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -60,7 +62,7 @@ public struct GroupMemberRecord: SDSRecord {
 
 public extension GroupMemberRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -135,15 +137,15 @@ extension TSGroupMember: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return GroupMemberRecord.databaseTableName
+        GroupMemberRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSGroupMemberSerializer.table
+        TSGroupMemberSerializer.table
     }
 }
 
@@ -185,20 +187,21 @@ extension TSGroupMemberSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let groupThreadIdColumn = SDSColumnMetadata(columnName: "groupThreadId", columnType: .unicodeString)
-    static let phoneNumberColumn = SDSColumnMetadata(columnName: "phoneNumber", columnType: .unicodeString, isOptional: true)
-    static let uuidStringColumn = SDSColumnMetadata(columnName: "uuidString", columnType: .unicodeString, isOptional: true)
-    static let lastInteractionTimestampColumn = SDSColumnMetadata(columnName: "lastInteractionTimestamp", columnType: .int64)
+    static var groupThreadIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "groupThreadId", columnType: .unicodeString) }
+    static var phoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "phoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var uuidStringColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uuidString", columnType: .unicodeString, isOptional: true) }
+    static var lastInteractionTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastInteractionTimestamp", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSGroupMember.collection(),
-                                               tableName: "model_TSGroupMember",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSGroupMember.collection(),
+                         tableName: "model_TSGroupMember",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -207,6 +210,7 @@ extension TSGroupMemberSerializer {
         uuidStringColumn,
         lastInteractionTimestampColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

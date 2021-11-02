@@ -14,8 +14,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public enum DirectoryMode: Int {
         public static let commonGRDBPrefix = "grdb"
-        public static let primaryFolderNameKey = "GRDBPrimaryDirectoryNameKey"
-        public static let transferFolderNameKey = "GRDBTransferDirectoryNameKey"
+        public static var primaryFolderNameKey: String { "GRDBPrimaryDirectoryNameKey" }
+        public static var transferFolderNameKey: String { "GRDBTransferDirectoryNameKey" }
         static var storedPrimaryFolderName: String? {
             get {
                 CurrentAppContext().appUserDefaults().string(forKey: primaryFolderNameKey)
@@ -136,43 +136,47 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         pool.add(function: function)
     }
 
-    static let tables: [SDSTableMetadata] = [
-        // Models
-        TSThread.table,
-        TSInteraction.table,
-        StickerPack.table,
-        InstalledSticker.table,
-        KnownStickerPack.table,
-        TSAttachment.table,
-        SSKJobRecord.table,
-        OWSMessageContentJob.table,
-        OWSRecipientIdentity.table,
-        ExperienceUpgrade.table,
-        OWSDisappearingMessagesConfiguration.table,
-        SignalRecipient.table,
-        SignalAccount.table,
-        OWSUserProfile.table,
-        OWSDevice.table,
-        TestModel.table,
-        OWSReaction.table,
-        IncomingGroupsV2MessageJob.table,
-        TSMention.table,
-        TSPaymentModel.table,
-        TSPaymentRequestModel.table,
-        TSGroupMember.table
-        // NOTE: We don't include OWSMessageDecryptJob,
-        // since we should never use it with GRDB.
-    ]
+    static var tables: [SDSTableMetadata] {
+        [
+            // Models
+            TSThread.table,
+            TSInteraction.table,
+            StickerPack.table,
+            InstalledSticker.table,
+            KnownStickerPack.table,
+            TSAttachment.table,
+            SSKJobRecord.table,
+            OWSMessageContentJob.table,
+            OWSRecipientIdentity.table,
+            ExperienceUpgrade.table,
+            OWSDisappearingMessagesConfiguration.table,
+            SignalRecipient.table,
+            SignalAccount.table,
+            OWSUserProfile.table,
+            OWSDevice.table,
+            TestModel.table,
+            OWSReaction.table,
+            IncomingGroupsV2MessageJob.table,
+            TSMention.table,
+            TSPaymentModel.table,
+            TSPaymentRequestModel.table,
+            TSGroupMember.table
+            // NOTE: We don't include OWSMessageDecryptJob,
+            // since we should never use it with GRDB.
+        ]
+    }
 
-    static let swiftTables: [TableRecord.Type] = [
-        ThreadAssociatedData.self,
-        PendingReadReceiptRecord.self,
-        PendingViewedReceiptRecord.self,
-        MediaGalleryRecord.self,
-        MessageSendLog.Payload.self,
-        MessageSendLog.Recipient.self,
-        MessageSendLog.Message.self
-    ]
+    static var swiftTables: [TableRecord.Type] {
+        [
+            ThreadAssociatedData.self,
+            PendingReadReceiptRecord.self,
+            PendingViewedReceiptRecord.self,
+            MediaGalleryRecord.self,
+            MessageSendLog.Payload.self,
+            MessageSendLog.Recipient.self,
+            MessageSendLog.Message.self
+        ]
+    }
 
     // MARK: - DatabasePathObservation
 
@@ -870,7 +874,7 @@ private struct GRDBStorage {
     // The isCheckpointing flag is backed by a thread local.
     // We don't want to affect the behavior of the busy-handler (aka busyMode callback)
     // in other threads while checkpointing.
-    fileprivate static let isCheckpointingKey = "GRDBStorage.isCheckpointingKey"
+    fileprivate static var isCheckpointingKey: String { "GRDBStorage.isCheckpointingKey" }
     fileprivate static var isCheckpointing: Bool {
         get {
             Thread.current.threadDictionary[Self.isCheckpointingKey] as? Bool == true

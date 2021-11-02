@@ -15,10 +15,12 @@ public struct TestModelRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TestModelSerializer.table
+        TestModelSerializer.table
     }
 
-    public static let databaseTableName: String = TestModelSerializer.table.tableName
+    public static var databaseTableName: String {
+        TestModelSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -54,7 +56,7 @@ public struct TestModelRecord: SDSRecord {
     }
 
     public static func columnName(_ column: TestModelRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -70,7 +72,7 @@ public struct TestModelRecord: SDSRecord {
 
 public extension TestModelRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -161,15 +163,15 @@ extension TestModel: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return TestModelRecord.databaseTableName
+        TestModelRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TestModelSerializer.table
+        TestModelSerializer.table
     }
 }
 
@@ -221,25 +223,26 @@ extension TestModelSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true)
-    static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double)
-    static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double)
-    static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64)
-    static let nsIntegerValueColumn = SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64)
-    static let nsNumberValueUsingInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingInt64", columnType: .int64, isOptional: true)
-    static let nsNumberValueUsingUInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingUInt64", columnType: .int64, isOptional: true)
-    static let nsuIntegerValueColumn = SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64)
-    static let uint64ValueColumn = SDSColumnMetadata(columnName: "uint64Value", columnType: .int64)
+    static var dateValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true) }
+    static var doubleValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "doubleValue", columnType: .double) }
+    static var floatValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "floatValue", columnType: .double) }
+    static var int64ValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "int64Value", columnType: .int64) }
+    static var nsIntegerValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64) }
+    static var nsNumberValueUsingInt64Column: SDSColumnMetadata { SDSColumnMetadata(columnName: "nsNumberValueUsingInt64", columnType: .int64, isOptional: true) }
+    static var nsNumberValueUsingUInt64Column: SDSColumnMetadata { SDSColumnMetadata(columnName: "nsNumberValueUsingUInt64", columnType: .int64, isOptional: true) }
+    static var nsuIntegerValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64) }
+    static var uint64ValueColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uint64Value", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TestModel.collection(),
-                                               tableName: "model_TestModel",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TestModel.collection(),
+                         tableName: "model_TestModel",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -253,6 +256,7 @@ extension TestModelSerializer {
         nsuIntegerValueColumn,
         uint64ValueColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

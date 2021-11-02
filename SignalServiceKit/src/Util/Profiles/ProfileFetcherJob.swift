@@ -114,15 +114,12 @@ public class ProfileFetcherJob: NSObject {
     private static let queueCluster = GCDQueueCluster(label: "org.signal.profileFetcherJob",
                                                       concurrency: 5)
 
-    // This property is only accessed on the serial queue.
-    private static var fetchDateMap = [ProfileRequestSubject: Date]()
+    private static var fetchDateMap = LRUCache<ProfileRequestSubject, Date>(maxSize: 256)
 
     private let subject: ProfileRequestSubject
     private let options: ProfileFetchOptions
 
     private var backgroundTask: OWSBackgroundTask?
-
-    private static let unfairLock = UnfairLock()
 
     @objc
     public class func fetchProfilePromiseObjc(address: SignalServiceAddress,
@@ -637,15 +634,11 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func lastFetchDate(for subject: ProfileRequestSubject) -> Date? {
-        Self.unfairLock.withLock {
-            ProfileFetcherJob.fetchDateMap[subject]
-        }
+        ProfileFetcherJob.fetchDateMap[subject]
     }
 
     private func recordLastFetchDate(for subject: ProfileRequestSubject) {
-        Self.unfairLock.withLock {
-            ProfileFetcherJob.fetchDateMap[subject] = Date()
-        }
+        ProfileFetcherJob.fetchDateMap[subject] = Date()
     }
 
     private func addBackgroundTask() {

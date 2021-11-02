@@ -71,14 +71,14 @@ public class BlockingManager: NSObject {
         fileprivate static let keyValueStore = SDSKeyValueStore(collection: "kOWSBlockingManager_BlockedPhoneNumbersCollection")
 
         // These keys are used to persist the current local "block list" state.
-        private static let blockedPhoneNumbersKey = "kOWSBlockingManager_BlockedPhoneNumbersKey"
-        private static let blockedUUIDsKey = "kOWSBlockingManager_BlockedUUIDsKey"
-        private static let blockedGroupMapKey = "kOWSBlockingManager_BlockedGroupMapKey"
+        private static var blockedPhoneNumbersKey: String { "kOWSBlockingManager_BlockedPhoneNumbersKey" }
+        private static var blockedUUIDsKey: String { "kOWSBlockingManager_BlockedUUIDsKey" }
+        private static var blockedGroupMapKey: String { "kOWSBlockingManager_BlockedGroupMapKey" }
 
         // These keys are used to persist the most recently synced remote "block list" state.
-        private static let syncedBlockedPhoneNumbersKey = "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey"
-        private static let syncedBlockedUUIDsKey = "kOWSBlockingManager_SyncedBlockedUUIDsKey"
-        private static let syncedBlockedGroupIdsKey = "kOWSBlockingManager_SyncedBlockedGroupIdsKey"
+        private static var syncedBlockedPhoneNumbersKey: String { "kOWSBlockingManager_SyncedBlockedPhoneNumbersKey" }
+        private static var syncedBlockedUUIDsKey: String { "kOWSBlockingManager_SyncedBlockedUUIDsKey" }
+        private static var syncedBlockedGroupIdsKey: String { "kOWSBlockingManager_SyncedBlockedGroupIdsKey" }
 
         static func loadState(transaction: SDSAnyReadTransaction) -> State {
             load(phoneNumbersKey: blockedPhoneNumbersKey,

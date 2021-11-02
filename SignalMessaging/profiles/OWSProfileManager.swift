@@ -641,14 +641,12 @@ public extension OWSProfileManager {
                                                           profileKey: profileKey,
                                                           remainingRetries: 3)
             avatarDownloadCache[cacheKey] = promise
-            _ = promise.ensure(on: .global()) {
-                serialQueue.sync {
-                    guard avatarDownloadCache[cacheKey] != nil else {
-                        owsFailDebug("Missing cached promise.")
-                        return
-                    }
-                    avatarDownloadCache.removeValue(forKey: cacheKey)
+            _ = promise.ensure(on: OWSProfileManager.serialQueue) {
+                guard avatarDownloadCache[cacheKey] != nil else {
+                    owsFailDebug("Missing cached promise.")
+                    return
                 }
+                avatarDownloadCache.removeValue(forKey: cacheKey)
             }
             return promise
         }

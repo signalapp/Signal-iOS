@@ -63,7 +63,7 @@ public enum ImageQualityLevel: UInt {
     }
 
     private static let keyValueStore = SDSKeyValueStore(collection: "ImageQualityLevel")
-    private static let defaultQualityKey = "defaultQuality"
+    private static var defaultQualityKey: String { "defaultQuality" }
     public static func `default`(transaction: SDSAnyReadTransaction) -> ImageQualityLevel {
         guard let rawStoredQuality = keyValueStore.getUInt(defaultQualityKey, transaction: transaction),
               let storedQuality = ImageQualityLevel(rawValue: rawStoredQuality) else {

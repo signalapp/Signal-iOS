@@ -15,8 +15,8 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
-    private static let areLegacyLinkPreviewsEnabledKey = "areLegacyLinkPreviewsEnabled"
+    private static var areLinkPreviewsEnabledKey: String { "areLinkPreviewsEnabled" }
+    private static var areLegacyLinkPreviewsEnabledKey: String { "areLegacyLinkPreviewsEnabled" }
 
     @objc
     public static func areLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
@@ -46,7 +46,7 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let areIntentDonationsEnabledKey = "areSharingSuggestionsEnabled"
+    private static var areIntentDonationsEnabledKey: String { "areSharingSuggestionsEnabled" }
 
     @objc
     public static func areIntentDonationsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
@@ -92,7 +92,7 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static let didEverUseYdbKey = "didEverUseYdb"
+    private static var didEverUseYdbKey: String { "didEverUseYdb" }
 
     @objc
     public static func didEverUseYdb() -> Bool {
@@ -110,7 +110,7 @@ public class SSKPreferences: NSObject {
         appUserDefaults.synchronize()
     }
 
-    private static let didDropYdbKey = "didDropYdb"
+    private static var didDropYdbKey: String { "didDropYdb" }
 
     @objc
     public static func didDropYdb() -> Bool {
@@ -130,7 +130,7 @@ public class SSKPreferences: NSObject {
 
     // MARK: - messageRequestInteractionIdEpoch
 
-    private static let messageRequestInteractionIdEpochKey = "messageRequestInteractionIdEpoch"
+    private static var messageRequestInteractionIdEpochKey: String { "messageRequestInteractionIdEpoch" }
     private static var messageRequestInteractionIdEpochCached: Int?
     public static func messageRequestInteractionIdEpoch(transaction: GRDBReadTransaction) -> Int? {
         if let value = messageRequestInteractionIdEpochCached {
@@ -175,7 +175,7 @@ public class SSKPreferences: NSObject {
 
     @objc
     public static let preferContactAvatarsPreferenceDidChange = Notification.Name("PreferContactAvatarsPreferenceDidChange")
-    private static let preferContactAvatarsKey = "preferContactAvatarsKey"
+    private static var preferContactAvatarsKey: String { "preferContactAvatarsKey" }
     private static var preferContactAvatarsCached: Bool?
 
     @objc
@@ -213,7 +213,7 @@ public class SSKPreferences: NSObject {
         return GRDBSchemaMigrator.grdbSchemaVersionLatest
     }
 
-    private static let grdbSchemaVersionKey = "grdbSchemaVersion"
+    private static var grdbSchemaVersionKey: String { "grdbSchemaVersion" }
 
     private static func grdbSchemaVersion() -> UInt {
         let appUserDefaults = CurrentAppContext().appUserDefaults()
@@ -254,7 +254,7 @@ public class SSKPreferences: NSObject {
 
     // MARK: - Keep Muted Chats Archived
 
-    private static let shouldKeepMutedChatsArchivedKey = "shouldKeepMutedChatsArchived"
+    private static var shouldKeepMutedChatsArchivedKey: String { "shouldKeepMutedChatsArchived" }
 
     @objc
     public static func shouldKeepMutedChatsArchived(transaction: SDSAnyReadTransaction) -> Bool {
@@ -266,7 +266,7 @@ public class SSKPreferences: NSObject {
         store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
     }
 
-    private static let hasGrdbDatabaseCorruptionKey = "hasGrdbDatabaseCorruption"
+    private static var hasGrdbDatabaseCorruptionKey: String { "hasGrdbDatabaseCorruption" }
     @objc
     public static func hasGrdbDatabaseCorruption() -> Bool {
         let appUserDefaults = CurrentAppContext().appUserDefaults()

@@ -734,7 +734,7 @@ private extension SDSKeyValueStore {
 
     // MARK: - Remote Config Enabled Flags
 
-    private static let remoteConfigIsEnabledFlagsKey = "remoteConfigKey"
+    private static var remoteConfigIsEnabledFlagsKey: String { "remoteConfigKey" }
 
     func getRemoteConfigIsEnabledFlags(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
         guard let object = getObject(forKey: Self.remoteConfigIsEnabledFlagsKey,
@@ -758,7 +758,7 @@ private extension SDSKeyValueStore {
 
     // MARK: - Remote Config Value Flags
 
-    private static let remoteConfigValueFlagsKey = "remoteConfigValueFlags"
+    private static var remoteConfigValueFlagsKey: String { "remoteConfigValueFlags" }
 
     func getRemoteConfigValueFlags(transaction: SDSAnyReadTransaction) -> [String: AnyObject]? {
         guard let object = getObject(forKey: Self.remoteConfigValueFlagsKey, transaction: transaction) else {

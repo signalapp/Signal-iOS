@@ -236,9 +236,9 @@ public class GroupMembership: MTLModel {
         super.init()
     }
 
-    private static let memberStatesKey = "memberStates"
-    private static let legacyMemberStatesKey = "memberStateMap"
-    private static let invalidInviteMapKey = "invalidInviteMap"
+    private static var memberStatesKey: String { "memberStates" }
+    private static var legacyMemberStatesKey: String { "memberStateMap" }
+    private static var invalidInviteMapKey: String { "invalidInviteMap" }
 
     public override func encode(with aCoder: NSCoder) {
         let encoder = JSONEncoder()

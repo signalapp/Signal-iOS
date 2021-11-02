@@ -15,10 +15,12 @@ public struct ReactionRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSReactionSerializer.table
+        OWSReactionSerializer.table
     }
 
-    public static let databaseTableName: String = OWSReactionSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSReactionSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -50,7 +52,7 @@ public struct ReactionRecord: SDSRecord {
     }
 
     public static func columnName(_ column: ReactionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -66,7 +68,7 @@ public struct ReactionRecord: SDSRecord {
 
 public extension ReactionRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -150,15 +152,15 @@ extension OWSReaction: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return ReactionRecord.databaseTableName
+        ReactionRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSReactionSerializer.table
+        OWSReactionSerializer.table
     }
 }
 
@@ -206,23 +208,24 @@ extension OWSReactionSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let emojiColumn = SDSColumnMetadata(columnName: "emoji", columnType: .unicodeString)
-    static let reactorE164Column = SDSColumnMetadata(columnName: "reactorE164", columnType: .unicodeString, isOptional: true)
-    static let reactorUUIDColumn = SDSColumnMetadata(columnName: "reactorUUID", columnType: .unicodeString, isOptional: true)
-    static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64)
-    static let sentAtTimestampColumn = SDSColumnMetadata(columnName: "sentAtTimestamp", columnType: .int64)
-    static let uniqueMessageIdColumn = SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int)
+    static var emojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "emoji", columnType: .unicodeString) }
+    static var reactorE164Column: SDSColumnMetadata { SDSColumnMetadata(columnName: "reactorE164", columnType: .unicodeString, isOptional: true) }
+    static var reactorUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "reactorUUID", columnType: .unicodeString, isOptional: true) }
+    static var receivedAtTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64) }
+    static var sentAtTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sentAtTimestamp", columnType: .int64) }
+    static var uniqueMessageIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString) }
+    static var readColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "read", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSReaction.collection(),
-                                               tableName: "model_OWSReaction",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSReaction.collection(),
+                         tableName: "model_OWSReaction",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -234,6 +237,7 @@ extension OWSReactionSerializer {
         uniqueMessageIdColumn,
         readColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

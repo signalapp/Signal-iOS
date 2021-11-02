@@ -15,10 +15,12 @@ public struct SignalAccountRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return SignalAccountSerializer.table
+        SignalAccountSerializer.table
     }
 
-    public static let databaseTableName: String = SignalAccountSerializer.table.tableName
+    public static var databaseTableName: String {
+        SignalAccountSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -48,7 +50,7 @@ public struct SignalAccountRecord: SDSRecord {
     }
 
     public static func columnName(_ column: SignalAccountRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -64,7 +66,7 @@ public struct SignalAccountRecord: SDSRecord {
 
 public extension SignalAccountRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -146,15 +148,15 @@ extension SignalAccount: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return SignalAccountRecord.databaseTableName
+        SignalAccountRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return SignalAccountSerializer.table
+        SignalAccountSerializer.table
     }
 }
 
@@ -212,22 +214,23 @@ extension SignalAccountSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true)
-    static let contactAvatarHashColumn = SDSColumnMetadata(columnName: "contactAvatarHash", columnType: .blob, isOptional: true)
-    static let contactAvatarJpegDataObsoleteColumn = SDSColumnMetadata(columnName: "contactAvatarJpegDataObsolete", columnType: .blob, isOptional: true)
-    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true)
+    static var contactColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true) }
+    static var contactAvatarHashColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactAvatarHash", columnType: .blob, isOptional: true) }
+    static var contactAvatarJpegDataObsoleteColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contactAvatarJpegDataObsolete", columnType: .blob, isOptional: true) }
+    static var multipleAccountLabelTextColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString) }
+    static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
+    static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: SignalAccount.collection(),
-                                               tableName: "model_SignalAccount",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: SignalAccount.collection(),
+                         tableName: "model_SignalAccount",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -238,6 +241,7 @@ extension SignalAccountSerializer {
         recipientPhoneNumberColumn,
         recipientUUIDColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

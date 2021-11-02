@@ -933,10 +933,12 @@ public struct %s: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return %sSerializer.table
+        %sSerializer.table
     }
 
-    public static let databaseTableName: String = %sSerializer.table.tableName
+    public static var databaseTableName: String { 
+        %sSerializer.table.tableName 
+    }
 
     public var id: Int64?
 
@@ -1007,7 +1009,7 @@ public struct %s: SDSRecord {
 '''
         swift_body += '''
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -1025,7 +1027,7 @@ public struct %s: SDSRecord {
 
 public extension %s {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {''' % (record_name)
@@ -1269,15 +1271,15 @@ extension %s: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return %s.databaseTableName
+        %s.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return %sSerializer.table
+        %sSerializer.table
     }
 }
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
@@ -1383,7 +1385,7 @@ extension %sSerializer {
                 database_column_type = '.primaryKey'
 
             # TODO: Use skipSelect.
-            return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s%s)
+            return '''    static var %sColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "%s", columnType: %s%s%s) }
 ''' % ( str(column_name), str(column_name), database_column_type, optional_split, is_unique_split )
 
         for property in sds_properties:
@@ -1398,15 +1400,17 @@ extension %sSerializer {
         swift_body += '''
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: %s.collection(),
-                                               tableName: "%s",
-                                               columns: [
+    public static var table: SDSTableMetadata { 
+        SDSTableMetadata(collection: %s.collection(),
+                         tableName: "%s",
+                         columns: [
 ''' % ( str(clazz.name), database_table_name, )
 
         for column_property_name in column_property_names:
             swift_body += '''        %sColumn,
 ''' % ( str(column_property_name) )
-        swift_body += '''        ])
+        swift_body += '''        ]) 
+    }
 }
 '''
 

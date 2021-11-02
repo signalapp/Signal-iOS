@@ -15,10 +15,12 @@ public struct DeviceRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSDeviceSerializer.table
+        OWSDeviceSerializer.table
     }
 
-    public static let databaseTableName: String = OWSDeviceSerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSDeviceSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -44,7 +46,7 @@ public struct DeviceRecord: SDSRecord {
     }
 
     public static func columnName(_ column: DeviceRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -60,7 +62,7 @@ public struct DeviceRecord: SDSRecord {
 
 public extension DeviceRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -137,15 +139,15 @@ extension OWSDevice: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return DeviceRecord.databaseTableName
+        DeviceRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSDeviceSerializer.table
+        OWSDeviceSerializer.table
     }
 }
 
@@ -187,20 +189,21 @@ extension OWSDeviceSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
-    static let deviceIdColumn = SDSColumnMetadata(columnName: "deviceId", columnType: .int64)
-    static let lastSeenAtColumn = SDSColumnMetadata(columnName: "lastSeenAt", columnType: .double)
-    static let nameColumn = SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true)
+    static var createdAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdAt", columnType: .double) }
+    static var deviceIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "deviceId", columnType: .int64) }
+    static var lastSeenAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastSeenAt", columnType: .double) }
+    static var nameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "name", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSDevice.collection(),
-                                               tableName: "model_OWSDevice",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSDevice.collection(),
+                         tableName: "model_OWSDevice",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -209,6 +212,7 @@ extension OWSDeviceSerializer {
         lastSeenAtColumn,
         nameColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

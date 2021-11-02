@@ -15,10 +15,12 @@ public struct RecipientIdentityRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return OWSRecipientIdentitySerializer.table
+        OWSRecipientIdentitySerializer.table
     }
 
-    public static let databaseTableName: String = OWSRecipientIdentitySerializer.table.tableName
+    public static var databaseTableName: String {
+        OWSRecipientIdentitySerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -46,7 +48,7 @@ public struct RecipientIdentityRecord: SDSRecord {
     }
 
     public static func columnName(_ column: RecipientIdentityRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -62,7 +64,7 @@ public struct RecipientIdentityRecord: SDSRecord {
 
 public extension RecipientIdentityRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -141,15 +143,15 @@ extension OWSRecipientIdentity: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return RecipientIdentityRecord.databaseTableName
+        RecipientIdentityRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return OWSRecipientIdentitySerializer.table
+        OWSRecipientIdentitySerializer.table
     }
 }
 
@@ -193,21 +195,22 @@ extension OWSRecipientIdentitySerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString)
-    static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .double)
-    static let identityKeyColumn = SDSColumnMetadata(columnName: "identityKey", columnType: .blob)
-    static let isFirstKnownKeyColumn = SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int)
+    static var accountIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString) }
+    static var createdAtColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "createdAt", columnType: .double) }
+    static var identityKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "identityKey", columnType: .blob) }
+    static var isFirstKnownKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isFirstKnownKey", columnType: .int) }
+    static var verificationStateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "verificationState", columnType: .int) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
-                                               tableName: "model_OWSRecipientIdentity",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
+                         tableName: "model_OWSRecipientIdentity",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -217,6 +220,7 @@ extension OWSRecipientIdentitySerializer {
         isFirstKnownKeyColumn,
         verificationStateColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

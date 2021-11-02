@@ -7,7 +7,7 @@ import Foundation
 @objc
 open class OWSDeviceProvisioningCodeService: NSObject {
 
-    private static let provisioningCodeKey = "verificationCode"
+    private static var provisioningCodeKey: String { "verificationCode" }
 
     @objc
     public func requestProvisioningCode(success: @escaping (String) -> Void,

@@ -15,10 +15,12 @@ public struct AttachmentRecord: SDSRecord {
     public weak var delegate: SDSRecordDelegate?
 
     public var tableMetadata: SDSTableMetadata {
-        return TSAttachmentSerializer.table
+        TSAttachmentSerializer.table
     }
 
-    public static let databaseTableName: String = TSAttachmentSerializer.table.tableName
+    public static var databaseTableName: String {
+        TSAttachmentSerializer.table.tableName
+    }
 
     public var id: Int64?
 
@@ -88,7 +90,7 @@ public struct AttachmentRecord: SDSRecord {
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
-        return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
+        fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
 
     public func didInsert(with rowID: Int64, for column: String?) {
@@ -104,7 +106,7 @@ public struct AttachmentRecord: SDSRecord {
 
 public extension AttachmentRecord {
     static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+        CodingKeys.allCases
     }
 
     init(row: Row) {
@@ -323,15 +325,15 @@ extension TSAttachment: SDSModel {
     }
 
     public func asRecord() throws -> SDSRecord {
-        return try serializer.asRecord()
+        try serializer.asRecord()
     }
 
     public var sdsTableName: String {
-        return AttachmentRecord.databaseTableName
+        AttachmentRecord.databaseTableName
     }
 
     public static var table: SDSTableMetadata {
-        return TSAttachmentSerializer.table
+        TSAttachmentSerializer.table
     }
 }
 
@@ -483,42 +485,43 @@ extension TSAttachmentSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
+    static var idColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "id", columnType: .primaryKey) }
+    static var recordTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recordType", columnType: .int64) }
+    static var uniqueIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true) }
     // Properties
-    static let albumMessageIdColumn = SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true)
-    static let attachmentTypeColumn = SDSColumnMetadata(columnName: "attachmentType", columnType: .int)
-    static let blurHashColumn = SDSColumnMetadata(columnName: "blurHash", columnType: .unicodeString, isOptional: true)
-    static let byteCountColumn = SDSColumnMetadata(columnName: "byteCount", columnType: .int64)
-    static let captionColumn = SDSColumnMetadata(columnName: "caption", columnType: .unicodeString, isOptional: true)
-    static let contentTypeColumn = SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString)
-    static let encryptionKeyColumn = SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, isOptional: true)
-    static let serverIdColumn = SDSColumnMetadata(columnName: "serverId", columnType: .int64)
-    static let sourceFilenameColumn = SDSColumnMetadata(columnName: "sourceFilename", columnType: .unicodeString, isOptional: true)
-    static let cachedAudioDurationSecondsColumn = SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true)
-    static let cachedImageHeightColumn = SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true)
-    static let cachedImageWidthColumn = SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true)
-    static let creationTimestampColumn = SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double, isOptional: true)
-    static let digestColumn = SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true)
-    static let isUploadedColumn = SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true)
-    static let isValidImageCachedColumn = SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true)
-    static let isValidVideoCachedColumn = SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true)
-    static let lazyRestoreFragmentIdColumn = SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true)
-    static let localRelativeFilePathColumn = SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true)
-    static let mediaSizeColumn = SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true)
-    static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true)
-    static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true)
-    static let uploadTimestampColumn = SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64)
-    static let cdnKeyColumn = SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString)
-    static let cdnNumberColumn = SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64)
-    static let isAnimatedCachedColumn = SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true)
+    static var albumMessageIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true) }
+    static var attachmentTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentType", columnType: .int) }
+    static var blurHashColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "blurHash", columnType: .unicodeString, isOptional: true) }
+    static var byteCountColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "byteCount", columnType: .int64) }
+    static var captionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "caption", columnType: .unicodeString, isOptional: true) }
+    static var contentTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "contentType", columnType: .unicodeString) }
+    static var encryptionKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "encryptionKey", columnType: .blob, isOptional: true) }
+    static var serverIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverId", columnType: .int64) }
+    static var sourceFilenameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "sourceFilename", columnType: .unicodeString, isOptional: true) }
+    static var cachedAudioDurationSecondsColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cachedAudioDurationSeconds", columnType: .double, isOptional: true) }
+    static var cachedImageHeightColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cachedImageHeight", columnType: .double, isOptional: true) }
+    static var cachedImageWidthColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cachedImageWidth", columnType: .double, isOptional: true) }
+    static var creationTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "creationTimestamp", columnType: .double, isOptional: true) }
+    static var digestColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "digest", columnType: .blob, isOptional: true) }
+    static var isUploadedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isUploaded", columnType: .int, isOptional: true) }
+    static var isValidImageCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isValidImageCached", columnType: .int, isOptional: true) }
+    static var isValidVideoCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isValidVideoCached", columnType: .int, isOptional: true) }
+    static var lazyRestoreFragmentIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lazyRestoreFragmentId", columnType: .unicodeString, isOptional: true) }
+    static var localRelativeFilePathColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "localRelativeFilePath", columnType: .unicodeString, isOptional: true) }
+    static var mediaSizeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "mediaSize", columnType: .blob, isOptional: true) }
+    static var pointerTypeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true) }
+    static var stateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true) }
+    static var uploadTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64) }
+    static var cdnKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString) }
+    static var cdnNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64) }
+    static var isAnimatedCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(collection: TSAttachment.collection(),
-                                               tableName: "model_TSAttachment",
-                                               columns: [
+    public static var table: SDSTableMetadata {
+        SDSTableMetadata(collection: TSAttachment.collection(),
+                         tableName: "model_TSAttachment",
+                         columns: [
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
@@ -549,6 +552,7 @@ extension TSAttachmentSerializer {
         cdnNumberColumn,
         isAnimatedCachedColumn
         ])
+    }
 }
 
 // MARK: - Save/Remove/Update

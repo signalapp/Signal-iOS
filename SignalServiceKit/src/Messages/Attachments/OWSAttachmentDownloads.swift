@@ -1397,9 +1397,9 @@ public extension OWSAttachmentDownloads {
     @objc
     static let attachmentDownloadProgressNotification = Notification.Name("AttachmentDownloadProgressNotification")
     @objc
-    static let attachmentDownloadProgressKey = "attachmentDownloadProgressKey"
+    static var attachmentDownloadProgressKey: String { "attachmentDownloadProgressKey" }
     @objc
-    static let attachmentDownloadAttachmentIDKey = "attachmentDownloadAttachmentIDKey"
+    static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
     private class func fireProgressNotification(progress: Double, attachmentId: AttachmentId) {
         NotificationCenter.default.postNotificationNameAsync(attachmentDownloadProgressNotification,
