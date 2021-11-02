@@ -242,6 +242,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                             paymentNotification: TSPaymentNotification,
                                             senderAddress: SignalServiceAddress,
                                             transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
         guard paymentNotification.isValid else {
             owsFailDebug("Invalid paymentNotification.")
             return
@@ -259,6 +260,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     public func processIncomingPaymentCancellation(thread: TSThread,
                                             paymentCancellation: TSPaymentCancellation,
                                             transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
         guard paymentCancellation.isValid else {
             owsFailDebug("Invalid paymentNotification.")
             return
@@ -279,6 +281,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                                  paymentRequest: TSPaymentRequest,
                                                  messageTimestamp: UInt64,
                                                  transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
         do {
             guard let contactThread = thread as? TSContactThread else {
                 throw OWSAssertionError("Invalid thread.")
@@ -313,6 +316,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                                       paymentCancellation: TSPaymentCancellation,
                                                       messageTimestamp: UInt64,
                                                       transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
         let requestUuidString = paymentCancellation.requestUuidString
         if let paymentRequestModel = Self.findPaymentRequestModel(forRequestUuidString: requestUuidString,
                                                                   expectedIsIncomingRequest: nil,
@@ -324,7 +328,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
                                            messageTimestamp: UInt64,
                                            transaction: SDSAnyWriteTransaction) {
-        Logger.verbose("")
+        Logger.info("")
         do {
             guard let mobileCoinProto = paymentProto.mobileCoin else {
                 throw OWSAssertionError("Invalid payment sync message: Missing mobileCoinProto.")

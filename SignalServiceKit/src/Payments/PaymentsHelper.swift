@@ -149,9 +149,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     fileprivate static let keyValueStore = SDSKeyValueStore(collection: "MockPayments")
     public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}
 
-    public func warmCaches() {
-        owsFail("Not implemented.")
-    }
+    public func warmCaches() {}
 
     public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
