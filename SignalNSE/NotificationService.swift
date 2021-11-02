@@ -225,7 +225,7 @@ class NotificationService: UNNotificationServiceExtension {
                 return joinedPromise.asVoid()
             }
             processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
-                runningAndCompletedPromises.get().filter { $0.1.isSealed }.forEach {
+                runningAndCompletedPromises.get().filter { $0.1.isSealed == false }.forEach {
                     Logger.warn("Completion promise: \($0.0) did not finish.")
                 }
                 return NotificationServiceError.timeout
