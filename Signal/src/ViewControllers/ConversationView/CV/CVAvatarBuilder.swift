@@ -67,7 +67,7 @@ public class CVAvatarBuilder: Dependencies {
                 badgeImage =  Theme.isDarkThemeEnabled ? badgeAssets?.dark24 : badgeAssets?.light24
             case .large, .xlarge:
                 badgeImage = Theme.isDarkThemeEnabled ? badgeAssets?.dark36 : badgeAssets?.light36
-            case .custom:
+            case .customDiameter:
                 // We never vend badges if it's not one of the blessed sizes
                 owsFailDebug("")
                 badgeImage = nil

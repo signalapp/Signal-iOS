@@ -15,7 +15,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         useAutolayout: Bool = true
     ) {
         var shouldBadgeResolved: Bool
-        if case Configuration.SizeClass.custom = sizeClass {
+        if case Configuration.SizeClass.customDiameter = sizeClass {
             owsAssertDebug(badged == false, "Badging not supported with custom size classes")
             shouldBadgeResolved = false
         } else {
@@ -53,22 +53,22 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             case xlarge // 88x88
 
             // Badges are not available when using a custom size class
-            case custom(UInt)
+            case customDiameter(UInt)
 
             public init(avatarDiameter: UInt) {
-                switch CGFloat(avatarDiameter) {
-                case Self.tiny.avatarSize.largerAxis:
+                switch avatarDiameter {
+                case Self.tiny.avatarDiameter:
                     self = .tiny
-                case Self.small.avatarSize.largerAxis:
+                case Self.small.avatarDiameter:
                     self = .small
-                case Self.medium.avatarSize.largerAxis:
+                case Self.medium.avatarDiameter:
                     self = .medium
-                case Self.large.avatarSize.largerAxis:
+                case Self.large.avatarDiameter:
                     self = .large
-                case Self.xlarge.avatarSize.largerAxis:
+                case Self.xlarge.avatarDiameter:
                     self = .xlarge
                 default:
-                    self = .custom(avatarDiameter)
+                    self = .customDiameter(avatarDiameter)
                 }
             }
         }
@@ -90,7 +90,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     public private(set) var configuration: Configuration {
         didSet {
             AssertIsOnMainThread()
-            if configuration.addBadgeIfApplicable, case Configuration.SizeClass.custom = configuration.sizeClass {
+            if configuration.addBadgeIfApplicable, case Configuration.SizeClass.customDiameter = configuration.sizeClass {
                 owsFailDebug("Invalid configuration. Badging not supported with custom size classes")
                 configuration.addBadgeIfApplicable = false
             }
@@ -283,7 +283,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             // The superview is responsibile for ensuring our size is correct. If it's not, layout may appear incorrect
             owsAssertDebug(bounds.size == configuration.sizeClass.avatarSize)
 
-        case .custom:
+        case .customDiameter:
             // With a custom size, we will layout everything to fit our superview's layout
             // Badge views will always be hidden
             avatarView.frame = bounds
@@ -492,6 +492,10 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
     // TODO: Badges — Should this be async?
     fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         guard configuration.addBadgeIfApplicable else { return nil }
+        guard FeatureFlags.fetchAndDisplayBadges else {
+            Logger.warn("Ignoring badge request. Badge flag currently disabled")
+            return nil
+        }
 
         let targetAddress: SignalServiceAddress
         switch self {
@@ -524,7 +528,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return Theme.isDarkThemeEnabled ? badgeAssets.dark24 : badgeAssets.light24
         case .large, .xlarge:
             return Theme.isDarkThemeEnabled ? badgeAssets.dark36 : badgeAssets.light36
-        case .custom:
+        case .customDiameter:
             // We never vend badges if it's not one of the blessed sizes
             owsFailDebug("")
             return nil
@@ -537,7 +541,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forAddress: contactThread.contactAddress,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -546,7 +550,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forAddress: address,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -555,7 +559,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.avatarImage(
                     forGroupThread: groupThread,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     transaction: $0)
             }
 
@@ -574,7 +578,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forAddress: contactThread.contactAddress,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -583,7 +587,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forAddress: address,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     localUserDisplayMode: configuration.localUserDisplayMode,
                     transaction: $0)
             }
@@ -592,7 +596,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             return performWithTransaction(transaction) {
                 Self.avatarBuilder.precachedAvatarImage(
                     forGroupThread: groupThread,
-                    diameterPoints: UInt(configuration.sizeClass.avatarSize.largerAxis),
+                    diameterPoints: UInt(configuration.sizeClass.avatarDiameter),
                     transaction: $0)
             }
 
@@ -616,15 +620,27 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
 }
 
 extension ConversationAvatarView.Configuration.SizeClass {
-    /// The size of the avatar image and the target size of the AvatarImageView
-    public var avatarSize: CGSize {
+    // Badge layout is hardcoded. There's no simple rule to precisely place a badge on
+    // an arbitrarily sized avatar. Design has provided us with these pre-defined sizes.
+    // An avatar outside of these sizes will not support badging
+
+    public var avatarDiameter: UInt {
         switch self {
-        case .tiny: return CGSize(square: 28)
-        case .small: return CGSize(square: 36)
-        case .medium: return CGSize(square: 56)
-        case .large: return CGSize(square: 80)
-        case .xlarge: return CGSize(square: 88)
-        case .custom(let diameter): return CGSize(square: CGFloat(diameter))
+        case .tiny: return 28
+        case .small: return 36
+        case .medium: return 56
+        case .large: return 80
+        case .xlarge: return 88
+        case .customDiameter(let diameter): return diameter
+        }
+    }
+
+    var badgeDiameter: UInt {
+        switch self {
+        case .tiny, .small: return 16
+        case .medium: return 24
+        case .large, .xlarge: return 36
+        case .customDiameter: return 0
         }
     }
 
@@ -636,17 +652,10 @@ extension ConversationAvatarView.Configuration.SizeClass {
         case .medium: return CGPoint(x: 32, y: 38)
         case .large: return CGPoint(x: 44, y: 52)
         case .xlarge: return CGPoint(x: 49, y: 56)
-        case .custom: return .zero
+        case .customDiameter: return .zero
         }
     }
 
-    /// The badge size
-    var badgeSize: CGSize {
-        switch self {
-        case .tiny, .small: return CGSize(square: 16)
-        case .medium: return CGSize(square: 24)
-        case .large, .xlarge: return CGSize(square: 36)
-        case .custom: return .zero
-        }
-    }
+    public var avatarSize: CGSize { .init(square: CGFloat(avatarDiameter)) }
+    public var badgeSize: CGSize { .init(square: CGFloat(badgeDiameter)) }
 }

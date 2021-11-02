@@ -648,7 +648,7 @@ fileprivate extension CVComponentState.Builder {
                     forAddress: typingIndicatorInteraction.address,
                     includingBadge: false,
                     localUserDisplayMode: .asUser,
-                    diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarSize.largerAxis))
+                    diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
             }()
             self.typingIndicator = TypingIndicator(address: typingIndicatorInteraction.address,
                                                    avatarDataSource: avatarDataSource)
@@ -690,7 +690,7 @@ fileprivate extension CVComponentState.Builder {
             forAddress: incomingMessage.authorAddress,
             includingBadge: true,
             localUserDisplayMode: .asUser,
-            diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarSize.largerAxis)
+            diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter)
         ) else {
             owsFailDebug("Could build avatar image")
             return nil

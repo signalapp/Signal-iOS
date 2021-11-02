@@ -174,7 +174,7 @@ public class ContactCellView: ManualStackView {
         // Configure self.
         do {
             var rootStackSubviews: [UIView] = [ avatarView ]
-            let avatarSize = CGSize.square(CGFloat(Self.avatarSizeClass.avatarSize.largerAxis))
+            let avatarSize = Self.avatarSizeClass.avatarSize
             var rootStackSubviewInfos = [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
 
             // Configure textStack.

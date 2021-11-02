@@ -333,7 +333,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         self.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
-                                                CGFloat(ContactCellView.avatarSizeClass.avatarSize.largerAxis) +
+                                                CGFloat(ContactCellView.avatarSizeClass.avatarDiameter) +
                                                 ContactCellView.avatarTextHSpacing)
 
         let conversationCollection = self.conversationCollection

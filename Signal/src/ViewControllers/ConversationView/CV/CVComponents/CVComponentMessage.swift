@@ -1263,7 +1263,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if hasSenderAvatarLayout,
            nil != self.senderAvatar {
             // Sender avatar in groups.
-            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarSize.largerAxis))
+            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
             hInnerStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
         // NOTE: The contentStackSize does not have fixed width and may grow

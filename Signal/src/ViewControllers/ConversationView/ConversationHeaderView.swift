@@ -54,7 +54,7 @@ public class ConversationHeaderView: UIStackView {
 
     private var shouldBadgeAvatar: Bool { avatarSizeClass == .small }
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
-        traitCollection.verticalSizeClass == .compact ? .custom(24) : .small
+        traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .small
     }
     private lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,

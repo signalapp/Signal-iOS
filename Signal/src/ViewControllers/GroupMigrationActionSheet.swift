@@ -162,7 +162,7 @@ public class GroupMigrationActionSheet: UIView {
         mutating func addMemberRow(address: SignalServiceAddress,
                                    transaction: SDSAnyReadTransaction) {
 
-            let avatarView = ConversationAvatarView(sizeClass: .custom(28))
+            let avatarView = ConversationAvatarView(sizeClass: .customDiameter(28))
             avatarView.update(transaction) { config in
                 config.dataSource = .address(address)
                 return .asynchronously

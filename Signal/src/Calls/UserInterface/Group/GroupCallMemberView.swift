@@ -254,7 +254,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
-    let avatarView = ConversationAvatarView(sizeClass: .custom(0))
+    let avatarView = ConversationAvatarView(sizeClass: .customDiameter(0))
 
     var isCallMinimized: Bool = false {
         didSet {
@@ -328,7 +328,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             let updatedSize = avatarDiameter
             avatarView.update(transaction) { config in
                 config.dataSource = .address(device.address)
-                config.sizeClass = .custom(updatedSize)
+                config.sizeClass = .customDiameter(updatedSize)
                 return .asynchronously
             }
 
@@ -411,7 +411,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteHeightConstraint.constant = muteHeight
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.sizeClass = .custom(avatarDiameter)
+            config.sizeClass = .customDiameter(avatarDiameter)
             return .asynchronously
         }
     }
