@@ -5,6 +5,7 @@
 import Foundation
 import PassKit
 import BonMot
+import SignalServiceKit
 
 /* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.
  If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
@@ -622,6 +623,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
             self?.state = .donatedSuccessfully
             ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.donateMegaphone)
         }.catch { error in
+            owsFailDebugUnlessNetworkFailure(error)
             completion(.init(status: .failure, errors: [error]))
         }
     }
