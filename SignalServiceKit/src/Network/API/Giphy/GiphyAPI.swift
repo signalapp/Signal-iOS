@@ -9,17 +9,9 @@ public class GiphyAPI: NSObject {
 
     // MARK: - Properties
 
-    static public let shared = GiphyAPI()
+    private static let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
 
-    // Force usage as a singleton
-    override private init() {
-        super.init()
-        SwiftSingletons.register(self)
-    }
-
-    private let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
-
-    private func buildURLSession() -> OWSURLSession {
+    private static func buildURLSession() -> OWSURLSession {
         let configuration = ContentProxy.sessionConfiguration()
 
         // Don't use any caching to protect privacy of these requests.
@@ -34,10 +26,10 @@ public class GiphyAPI: NSObject {
     // MARK: Search
 
     // This is the Signal iOS API key.
-    let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
-    let kGiphyPageSize = 100
+    private static let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
+    private static let kGiphyPageSize = 100
 
-    public func trending() -> Promise<[GiphyImageInfo]> {
+    public static func trending() -> Promise<[GiphyImageInfo]> {
         let urlSession = buildURLSession()
         let urlString = "/v1/gifs/trending?api_key=\(kGiphyApiKey)&limit=\(kGiphyPageSize)"
 
@@ -59,7 +51,7 @@ public class GiphyAPI: NSObject {
         }
     }
 
-    public func search(query: String) -> Promise<[GiphyImageInfo]> {
+    public static func search(query: String) -> Promise<[GiphyImageInfo]> {
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             owsFailDebug("Could not URL encode query: \(query).")
@@ -88,7 +80,7 @@ public class GiphyAPI: NSObject {
 
     // MARK: Parse API Responses
 
-    private func parseGiphyImages(responseJson: Any?) -> [GiphyImageInfo]? {
+    private static func parseGiphyImages(responseJson: Any?) -> [GiphyImageInfo]? {
         guard let responseJson = responseJson else {
             Logger.error("Missing response.")
             return nil

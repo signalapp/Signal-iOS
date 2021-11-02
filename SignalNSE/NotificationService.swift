@@ -198,27 +198,37 @@ class NotificationService: UNNotificationServiceExtension {
         fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
             Logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
-            let processingCompletePromise = firstly {
-                self.messageProcessor.processingCompletePromise()
+
+            let runningAndCompletedPromises = AtomicArray<(String, Promise<Void>)>()
+
+            let processingCompletePromise = firstly { () -> Promise<Void> in
+                let promise = self.messageProcessor.processingCompletePromise()
+                runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
+                return promise
             }.then(on: .global()) { () -> Promise<Void> in
                 // Wait until all async side effects of
                 // message processing are complete.
-                let completionPromises: [Promise<Void>] = [
+                let completionPromises: [(String, Promise<Void>)] = [
                     // Wait until all notifications are posted.
-                    NotificationPresenter.pendingNotificationsPromise(),
+                    ("Pending notification post", NotificationPresenter.pendingNotificationsPromise()),
                     // Wait until all ACKs are complete.
-                    Self.messageFetcherJob.pendingAcksPromise(),
+                    ("Pending messageFetch ack", Self.messageFetcherJob.pendingAcksPromise()),
                     // Wait until all outgoing receipt sends are complete.
-                    Self.outgoingReceiptManager.pendingSendsPromise(),
+                    ("Pending receipt sends", Self.outgoingReceiptManager.pendingSendsPromise()),
                     // Wait until all outgoing messages are sent.
-                    Self.messageSender.pendingSendsPromise(),
+                    ("Pending outgoing message", Self.messageSender.pendingSendsPromise()),
                     // Wait until all sync requests are fulfilled.
-                    OWSMessageManager.pendingTasksPromise()
+                    ("Pending sync request", OWSMessageManager.pendingTasksPromise())
                 ]
-                return Promise.when(resolved: completionPromises).asVoid()
+                let joinedPromise = Promise.when(resolved: completionPromises.map { $0.1 })
+                completionPromises.forEach { runningAndCompletedPromises.append($0) }
+                return joinedPromise.asVoid()
             }
             processingCompletePromise.timeout(seconds: 20, description: "Message Processing Timeout.") {
-                NotificationServiceError.timeout
+                runningAndCompletedPromises.get().filter { $0.1.isSealed == false }.forEach {
+                    Logger.warn("Completion promise: \($0.0) did not finish.")
+                }
+                return NotificationServiceError.timeout
             }.catch { _ in
                 // Do nothing, Promise.timeout() will log timeouts.
             }

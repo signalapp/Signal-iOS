@@ -14,7 +14,7 @@ extension OWSSyncContactsMessage {
             return nil
         }
 
-        let fileUrl = OWSFileSystem.temporaryFileUrl()
+        let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
             owsFailDebug("Could not open outputStream.")
             return nil
