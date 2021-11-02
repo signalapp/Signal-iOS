@@ -20,7 +20,16 @@ extension Emoji {
         switch self {
         case .peopleHoldingHands: return [.standingPerson, .standingPerson]
         case .twoWomenHoldingHands: return [.womanStanding, .womanStanding]
+        case .manAndWomanHoldingHands: return [.womanStanding, .manStanding]
         case .twoMenHoldingHands: return [.manStanding, .manStanding]
+        case .personKissPerson: return [.adult, .adult]
+        case .womanKissMan: return [.woman, .man]
+        case .manKissMan: return [.man, .man]
+        case .womanKissWoman: return [.woman, .woman]
+        case .personHeartPerson: return [.adult, .adult]
+        case .womanHeartMan: return [.woman, .man]
+        case .manHeartMan: return [.man, .man]
+        case .womanHeartWoman: return [.woman, .woman]
         default: return nil
         }
     }

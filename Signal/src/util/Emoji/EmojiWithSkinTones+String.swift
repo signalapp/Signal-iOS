@@ -7042,7 +7042,7 @@ extension EmojiWithSkinTones {
         } else if rawValue == "🏴󠁧󠁢󠁷󠁬󠁳󠁿" {
             self.init(baseEmoji: .flagWales, skinTones: nil)
         } else {
-            return nil 
+            return nil
         }
     }
 }
