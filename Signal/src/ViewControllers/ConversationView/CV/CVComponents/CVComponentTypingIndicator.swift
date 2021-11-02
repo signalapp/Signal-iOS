@@ -61,10 +61,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
         if let avatarDataSource = typingIndicator.avatarDataSource {
             let avatarView = componentView.avatarView
-            // No transaction is necessary since our data source is already loaded
             avatarView.updateWithSneakyTransactionIfNecessary { config in
                 config.dataSource = avatarDataSource
-                config.applyConfigurationSynchronously()
             }
             outerViews.append(avatarView)
         }

@@ -77,9 +77,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.avatarDiameter), useAutolayout: false)
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
-            // Transaction isn't necessary since we pre-fetched our data source
             configuration.dataSource = avatarDataSource
-            configuration.applyConfigurationSynchronously()
         }
         componentView.avatarView = avatarView
         if threadDetails.isAvatarBlurred {

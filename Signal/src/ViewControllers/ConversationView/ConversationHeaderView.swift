@@ -54,6 +54,7 @@ public class ConversationHeaderView: UIStackView {
 
     private var shouldBadgeAvatar: Bool { avatarSizeClass == .small }
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
+        // TODO: Badges — Check with design about landscape view
         traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .small
     }
     private lazy var avatarView = ConversationAvatarView(
@@ -137,7 +138,7 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public func updateAvatar() {
-        avatarView.updateWithSneakyTransactionIfNecessary { _ in }
+        avatarView.reloadDataIfNecessary()
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

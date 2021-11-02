@@ -172,7 +172,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     // MARK: Model Updates
 
-    // Forces a model update
+    public func reloadDataIfNecessary() {
+        updateModel(transaction: nil)
+    }
     private func updateModel(transaction readTx: SDSAnyReadTransaction?) {
         setNeedsModelUpdate()
         updateModelIfNecessary(transaction: readTx)

@@ -20,6 +20,7 @@ public class CVAvatarBuilder: Dependencies {
     // We _DO NOT_ want to use LRUCache here; we need to gather
     // all of the avatars for this load and retain them for the
     // duration of the load.
+    // TODO: Badges — Key off of avatar size? Badge size? Clear on badge update
     private var cache = [String: ConversationAvatarDataSource]()
 
     required init(transaction: SDSAnyReadTransaction) {
@@ -51,6 +52,7 @@ public class CVAvatarBuilder: Dependencies {
             let userProfile: OWSUserProfile? = {
                 if address.isLocalAddress {
                     // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
+                    // TODO: Badges — Unify with ConversationAvatarDataSource
                     return OWSProfileManager.shared.localUserProfile()
                 } else {
                     return AnyUserProfileFinder().userProfile(for: address, transaction: transaction)
@@ -69,7 +71,7 @@ public class CVAvatarBuilder: Dependencies {
                 badgeImage = Theme.isDarkThemeEnabled ? badgeAssets?.dark36 : badgeAssets?.light36
             case .customDiameter:
                 // We never vend badges if it's not one of the blessed sizes
-                owsFailDebug("")
+                owsFailDebug("Cannot place badge on arbitrarily sized avatar")
                 badgeImage = nil
             }
         } else {

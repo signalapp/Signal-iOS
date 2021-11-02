@@ -37,7 +37,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         username = snapshot.username
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
-        primaryBadge = nil// snapshot.profileBadgeInfo.first?
+        // TODO: Badging
+        primaryBadge = nil
 
         updateTableContents()
     }
@@ -246,6 +247,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let badgedAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
         badgedAvatarView.updateWithSneakyTransactionIfNecessary { config in
             if let avatarData = avatarData {
+                // TODO: Badging — Add badge
                 config.dataSource = .asset(avatar: UIImage(data: avatarData), badge: nil)
             } else if let address = tsAccountManager.localAddress {
                 config.dataSource = .address(address)
@@ -267,9 +269,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let changeLabel = UILabel()
         changeLabel.font = .ows_dynamicTypeBody2.ows_semibold
         changeLabel.textAlignment = .center
-        changeLabel.text = "Change Photo" // localize
+        changeLabel.text = NSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar")
 
-        // TODO: Badges — Dark theme?
+        // TODO: Badges — Dark theme? Check with design
         changeLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray95
 
         cell.contentView.addSubview(changeLabel)

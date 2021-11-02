@@ -372,10 +372,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         if hasSenderAvatarLayout, let senderAvatar = self.senderAvatar {
             if hasSenderAvatar {
-                // No transaction will be necessary since our data source is preloaded
                 componentView.avatarView.updateWithSneakyTransactionIfNecessary { config in
                     config.dataSource = senderAvatar.avatarDataSource
-                    config.applyConfigurationSynchronously()
                 }
             }
             // Add the view wrapper, not the view.

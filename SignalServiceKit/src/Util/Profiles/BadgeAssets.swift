@@ -7,17 +7,6 @@ import ImageIO
 import CoreServices
 
 @objc
-public protocol BadgeProvider {
-    @objc var light16: UIImage? { get }
-    @objc var light24: UIImage? { get }
-    @objc var light36: UIImage? { get }
-    @objc var dark16: UIImage? { get }
-    @objc var dark24: UIImage? { get }
-    @objc var dark36: UIImage? { get }
-    @objc var universal160: UIImage? { get }
-}
-
-@objc
 public class BadgeAssets: NSObject {
     private let remoteSourceUrl: URL
     private let localAssetDirectory: URL
@@ -153,7 +142,7 @@ public class BadgeAssets: NSObject {
     }
 }
 // MARK: - Sprite retrieval
-extension BadgeAssets: BadgeProvider {
+extension BadgeAssets {
 
     // TODO: Badges — Lazy initialization? Double check backing memory is all purgable
     @objc public var light16: UIImage? { imageForVariant(.light16) }
