@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ public class ProfileBadge: NSObject, Codable {
 
     // Nil until a badge is checked in to the BadgeStore
     @objc
-    public fileprivate(set) var assets: BadgeAssets? = nil
+    public fileprivate(set) var assets: BadgeAssets?
 
     private enum CodingKeys: String, CodingKey {
         // Skip encoding of `assets`

@@ -158,7 +158,7 @@ extension BadgeAssets {
         guard let imageSource = CGImageSourceCreateWithURL(fileUrl as CFURL, nil) else { return nil }
 
         let imageOptions = [kCGImageSourceShouldCache: kCFBooleanFalse] as CFDictionary
-        guard let rawImage = CGImageSourceCreateImageAtIndex(imageSource, 0,  imageOptions) else {
+        guard let rawImage = CGImageSourceCreateImageAtIndex(imageSource, 0, imageOptions) else {
             owsFailDebug("Couldn't load image")
             return nil
         }
