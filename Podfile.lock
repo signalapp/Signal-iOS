@@ -361,7 +361,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
     :tag: v1.1.0
   MobileCoinMinimal:
-    :commit: 03ea44a99bb619f9e88513b037089bdc32c15bed
+    :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
   OpenSSL-Universal:
     :commit: c277886d6fc025f828dafba03eacfef2ecc7936a
