@@ -369,13 +369,18 @@ public class OWSURLSession: NSObject {
                     let requestUrl = requestConfig.requestUrl
                     if statusCode > 0 {
                         let responseHeaders = OWSHttpHeaders(response: httpUrlResponse)
-                        throw OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
-                                                              responseStatus: statusCode,
-                                                              responseHeaders: responseHeaders,
-                                                              responseError: nil,
-                                                              responseData: responseData)
+                        let error = OWSHTTPError.forServiceResponse(requestUrl: requestUrl,
+                                                                    responseStatus: statusCode,
+                                                                    responseHeaders: responseHeaders,
+                                                                    responseError: nil,
+                                                                    responseData: responseData)
+                        Logger.warn("Request failed: \(error)")
+                        throw error
                     } else {
-                        throw OWSHTTPError.networkFailure(requestUrl: requestUrl)
+                        owsFailDebug("Missing status code.")
+                        let error = OWSHTTPError.networkFailure(requestUrl: requestUrl)
+                        Logger.warn("Request failed: \(error)")
+                        throw error
                     }
                 }
             }
