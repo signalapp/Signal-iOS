@@ -80,7 +80,6 @@ public extension HomeViewController {
         let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize))
         avatarView.update(transaction) { config in
             config.dataSource = .address(address)
-            return .asynchronously
         }
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
@@ -240,8 +239,8 @@ public extension HomeViewController {
             avatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {
                     config.dataSource = .address(address)
+                    config.applyConfigurationSynchronously()
                 }
-                return .synchronously
             }
         }
         return avatarView

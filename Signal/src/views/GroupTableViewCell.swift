@@ -63,7 +63,6 @@ import SignalUI
 
         self.avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(thread)
-            return .asynchronously
         }
 
         if let accessoryMessage = accessoryMessage, !accessoryMessage.isEmpty {

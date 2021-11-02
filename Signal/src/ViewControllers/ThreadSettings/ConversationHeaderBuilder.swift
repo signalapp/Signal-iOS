@@ -443,7 +443,6 @@ struct ConversationHeaderBuilder: Dependencies {
 
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)
-            return .asynchronously
         }
 
         // Track the most recent avatar view.

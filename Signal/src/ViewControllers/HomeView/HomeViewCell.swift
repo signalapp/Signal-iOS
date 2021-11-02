@@ -313,7 +313,9 @@ public class HomeViewCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(cellContentToken.thread)
-            return cellContentToken.shouldLoadAvatarAsync ? .asynchronously : .synchronously
+            if !cellContentToken.shouldLoadAvatarAsync {
+                config.applyConfigurationSynchronously()
+            }
         }
 
         typingIndicatorView.configureForHomeView()

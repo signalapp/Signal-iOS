@@ -8,7 +8,7 @@ import SignalMessaging
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public required init(
-        sizeClass: Configuration.SizeClass,
+        sizeClass: Configuration.SizeClass = .customDiameter(0),
         localUserDisplayMode: LocalUserDisplayMode = .asUser,
         badged: Bool = false,
         shape: Configuration.Shape = .circular,
@@ -78,13 +78,33 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             case circular
         }
 
+        /// The preferred size class of the avatar. Used for avatar generation and autolayout (if enabled)
+        /// If a predefined size class is used, a badge can optionally be placed by specifying `addBadgeIfApplicable`
         public var sizeClass: SizeClass
+        /// The data provider used to fetch an avatar and badge
         public var dataSource: ConversationAvatarDataSource?
+        /// Adjusts how the local user profile avatar is generated (Note to Self or Avatar?)
         public var localUserDisplayMode: LocalUserDisplayMode
+        /// Places the user's badge (if they have one) over the avatar. Only supported for predefined size classes
         public var addBadgeIfApplicable: Bool
 
+        /// Adjusts the mask of the avatar view
         public var shape: Shape
+        /// If set `true`, adds constraints to the view to ensure that it's sized for the provided size class
+        /// Otherwise, it's the superview's responsibility to ensure this view is sized appropriately
         public var useAutolayout: Bool
+
+        // Adopters that'd like to fetch the image synchronously can set this to perform
+        // the next model update synchronously if necessary.
+        fileprivate var updateSynchronously: Bool = false
+        public mutating func applyConfigurationSynchronously() {
+            updateSynchronously = true
+        }
+        fileprivate mutating func checkForSyncUpdateAndClear() -> Bool {
+            let shouldUpdateSync = updateSynchronously
+            updateSynchronously = false
+            return shouldUpdateSync
+        }
     }
 
     public private(set) var configuration: Configuration {
@@ -94,67 +114,74 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                 owsFailDebug("Invalid configuration. Badging not supported with custom size classes")
                 configuration.addBadgeIfApplicable = false
             }
-
-            // We may need to update our model, layout, or constraints based on the changes to the configuration
-            let sizeClassDidChange = configuration.sizeClass != oldValue.sizeClass
-            let dataSourceDidChange = configuration.dataSource != oldValue.dataSource
-            let localUserDisplayModeDidChange = configuration.localUserDisplayMode != oldValue.localUserDisplayMode
-            let shouldShowBadgeDidChange = configuration.addBadgeIfApplicable != oldValue.addBadgeIfApplicable
-            let shapeDidChange = configuration.shape != oldValue.shape
-            let autolayoutDidChange = configuration.useAutolayout != oldValue.useAutolayout
-
-            // Any changes to avatar size or provider will trigger a model update
-            if sizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
-                setNeedsModelUpdate()
-            }
-
-            // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
-            if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
-                setNeedsUpdateConstraints()
-            }
-
-            if sizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange {
-                setNeedsLayout()
+            if configuration.dataSource != oldValue.dataSource {
+                ensureObservers()
             }
         }
     }
 
-    public enum UpdateBehavior {
-        case synchronously
-        case asynchronously
+    func updateConfigurationAndSetDirtyIfNecessary(_ newValue: Configuration) {
+        let oldValue = configuration
+        configuration = newValue
+
+        // We may need to update our model, layout, or constraints based on the changes to the configuration
+        let sizeClassDidChange = configuration.sizeClass != oldValue.sizeClass
+        let dataSourceDidChange = configuration.dataSource != oldValue.dataSource
+        let localUserDisplayModeDidChange = configuration.localUserDisplayMode != oldValue.localUserDisplayMode
+        let shouldShowBadgeDidChange = configuration.addBadgeIfApplicable != oldValue.addBadgeIfApplicable
+        let shapeDidChange = configuration.shape != oldValue.shape
+        let autolayoutDidChange = configuration.useAutolayout != oldValue.useAutolayout
+
+        // Any changes to avatar size or provider will trigger a model update
+        if sizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
+            setNeedsModelUpdate()
+        }
+
+        // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
+        if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
+            setNeedsUpdateConstraints()
+        }
+
+        if sizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange {
+            setNeedsLayout()
+        }
     }
 
-    public func updateWithSneakyTransactionIfNecessary(_ block: (inout Configuration) -> UpdateBehavior) {
-        update(optionalTransaction: nil, block)
+    // MARK: Configuration updates
+
+    public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
+        update(optionalTransaction: nil, updateBlock)
     }
 
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
-    /// Callers can specify a synchronous or asynchronous model update through the closure's return value
-    public func update(_ transaction: SDSAnyReadTransaction, _ block: (inout Configuration) -> UpdateBehavior) {
+    /// Configuration updates will be applied all at once
+    public func update(_ transaction: SDSAnyReadTransaction, _ updateBlock: (inout Configuration) -> Void) {
         AssertIsOnMainThread()
-        update(optionalTransaction: transaction, block)
+        update(optionalTransaction: transaction, updateBlock)
     }
 
-    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ block: (inout Configuration) -> UpdateBehavior) {
+    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
         AssertIsOnMainThread()
 
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
-        let updateBehavior = block(&mutableConfig)
-        configuration = mutableConfig
-        updateModelIfNecessary(updateBehavior, transaction: transaction)
+        updateBlock(&mutableConfig)
+        updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
+        updateModelIfNecessary(transaction: transaction)
     }
 
+    // MARK: Model Updates
+
     // Forces a model update
-    private func updateModel(_ behavior: UpdateBehavior, transaction readTx: SDSAnyReadTransaction) {
+    private func updateModel(transaction readTx: SDSAnyReadTransaction?) {
         setNeedsModelUpdate()
-        updateModelIfNecessary(behavior, transaction: readTx)
+        updateModelIfNecessary(transaction: readTx)
     }
 
     // If the model has been dirtied, performs an update
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
-    private func updateModelIfNecessary(_ behavior: UpdateBehavior, transaction readTx: SDSAnyReadTransaction?) {
+    private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
         AssertIsOnMainThread()
 
         guard nextModelGeneration.get() > currentModelGeneration else { return }
@@ -163,17 +190,15 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             return
         }
 
-        switch behavior {
-        case .synchronously:
+        let updateSynchronously = configuration.checkForSyncUpdateAndClear()
+        if updateSynchronously {
             let avatarImage = dataSource.buildImage(configuration: configuration, transaction: readTx)
             let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
             updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
-
-        case .asynchronously:
+        } else {
             let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
             let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
             updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
-
             enqueueAsyncModelUpdate()
         }
     }
@@ -346,10 +371,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     @objc
     private func themeDidChange() {
         AssertIsOnMainThread()
-
-        databaseStorage.read { readTx in
-            updateModel(.asynchronously, transaction: readTx)
-        }
+        updateModel(transaction: nil)
     }
 
     @objc
@@ -358,9 +380,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
-        databaseStorage.read { readTx in
-            updateModel(.asynchronously, transaction: readTx)
-        }
+        updateModel(transaction: nil)
     }
 
     @objc
@@ -393,7 +413,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         }
 
         if providerAddress == address {
-            databaseStorage.read { updateModel(.asynchronously, transaction: $0) }
+            updateModel(transaction: nil)
         }
     }
 
@@ -429,7 +449,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         if contentThreadId == changedThreadId {
             databaseStorage.read {
                 dataSource.reload(transaction: $0)
-                updateModel(.asynchronously, transaction: $0)
+                updateModel(transaction: $0)
             }
         }
     }

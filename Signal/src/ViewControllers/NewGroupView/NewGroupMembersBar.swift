@@ -228,7 +228,6 @@ private class NewGroupMemberCell: UICollectionViewCell {
         self.member = member
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(member.address)
-            return .asynchronously
         }
         textLabel.text = member.shortName
     }

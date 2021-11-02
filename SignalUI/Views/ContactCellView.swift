@@ -163,7 +163,6 @@ public class ContactCellView: ManualStackView {
             config.dataSource = avatarDataSource
             config.addBadgeIfApplicable = configuration.badged
             config.localUserDisplayMode = configuration.localUserDisplayMode
-            return .asynchronously
         }
 
         // Update fonts to reflect changes to dynamic type.

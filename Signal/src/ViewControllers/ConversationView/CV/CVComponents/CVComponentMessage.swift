@@ -375,7 +375,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 // No transaction will be necessary since our data source is preloaded
                 componentView.avatarView.updateWithSneakyTransactionIfNecessary { config in
                     config.dataSource = senderAvatar.avatarDataSource
-                    return .synchronously
+                    config.applyConfigurationSynchronously()
                 }
             }
             // Add the view wrapper, not the view.
@@ -2173,7 +2173,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             let avatarView = ConversationAvatarView(sizeClass: componentView.avatarView.configuration.sizeClass)
             avatarView.updateWithSneakyTransactionIfNecessary { newConfig in
                 newConfig = componentView.avatarView.configuration
-                return .synchronously
             }
             avatarView.frame = componentView.avatarView.bounds
             let isRTL = CurrentAppContext().isRTL

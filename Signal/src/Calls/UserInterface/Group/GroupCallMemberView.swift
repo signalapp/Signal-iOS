@@ -254,7 +254,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
-    let avatarView = ConversationAvatarView(sizeClass: .customDiameter(0))
+    let avatarView = ConversationAvatarView()
 
     var isCallMinimized: Bool = false {
         didSet {
@@ -329,7 +329,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             avatarView.update(transaction) { config in
                 config.dataSource = .address(device.address)
                 config.sizeClass = .customDiameter(updatedSize)
-                return .asynchronously
             }
 
             return self.contactsManagerImpl.avatarImage(forAddress: device.address,
@@ -412,7 +411,6 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = .customDiameter(avatarDiameter)
-            return .asynchronously
         }
     }
 

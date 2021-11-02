@@ -64,7 +64,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             // No transaction is necessary since our data source is already loaded
             avatarView.updateWithSneakyTransactionIfNecessary { config in
                 config.dataSource = avatarDataSource
-                return .synchronously
+                config.applyConfigurationSynchronously()
             }
             outerViews.append(avatarView)
         }

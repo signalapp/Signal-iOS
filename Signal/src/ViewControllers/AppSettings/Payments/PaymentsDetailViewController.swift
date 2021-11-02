@@ -368,7 +368,6 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         databaseStorage.read { transaction in
             avatarView.update(transaction) { config in
                 config.dataSource = .address(address)
-                return .asynchronously
             }
 
             let username = Self.contactsManager.displayName(for: address, transaction: transaction)

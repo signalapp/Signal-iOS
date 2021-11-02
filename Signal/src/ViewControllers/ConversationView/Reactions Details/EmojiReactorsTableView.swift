@@ -115,7 +115,6 @@ private class EmojiReactorCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(item.address)
-            return .asynchronously
         }
     }
 }

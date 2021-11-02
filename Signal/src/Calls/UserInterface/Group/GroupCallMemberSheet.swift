@@ -305,7 +305,6 @@ private class GroupCallMemberCell: UITableViewCell {
         nameLabel.text = item.displayName
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(item.address)
-            return .asynchronously
         }
     }
 }

@@ -352,7 +352,6 @@ private class MentionableUserCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             configuration.dataSource = .address(mentionableUser.address)
-            return .asynchronously
         }
     }
 }

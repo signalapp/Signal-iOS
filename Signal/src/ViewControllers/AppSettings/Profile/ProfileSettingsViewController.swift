@@ -252,7 +252,6 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             } else {
                 config.dataSource = nil
             }
-            return .asynchronously
         }
 
         cell.contentView.addSubview(badgedAvatarView)

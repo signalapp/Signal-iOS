@@ -79,7 +79,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             // Transaction isn't necessary since we pre-fetched our data source
             configuration.dataSource = avatarDataSource
-            return .synchronously
+            configuration.applyConfigurationSynchronously()
         }
         componentView.avatarView = avatarView
         if threadDetails.isAvatarBlurred {

@@ -74,7 +74,6 @@ public class PaymentModelCell: UITableViewCell {
         if let address = paymentItem.address {
             contactAvatarView.updateWithSneakyTransactionIfNecessary { config in
                 config.dataSource = .address(address)
-                return .asynchronously
             }
             avatarView = contactAvatarView
         } else {

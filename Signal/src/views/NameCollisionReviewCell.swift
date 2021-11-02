@@ -226,7 +226,6 @@ class NameCollisionCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(model.address)
-            return .asynchronously
         }
         if model.address.isLocalAddress {
             nameLabel.text = NSLocalizedString(

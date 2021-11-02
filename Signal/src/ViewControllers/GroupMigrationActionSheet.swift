@@ -165,7 +165,6 @@ public class GroupMigrationActionSheet: UIView {
             let avatarView = ConversationAvatarView(sizeClass: .customDiameter(28))
             avatarView.update(transaction) { config in
                 config.dataSource = .address(address)
-                return .asynchronously
             }
 
             let label = buildLabel()
