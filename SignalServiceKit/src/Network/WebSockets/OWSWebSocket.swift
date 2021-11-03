@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public enum OWSWebSocketType: CaseIterable {
     case identified
@@ -758,6 +759,11 @@ public class OWSWebSocket: NSObject {
             return .open(reason: "unsubmittedRequestTokens")
         }
 
+        guard webSocketFactory.canBuildWebSocket else {
+            owsFailDebug("\(logPrefix) Could not build webSocket.")
+            return .closed(reason: "couldNotBuildWebSocket")
+        }
+
         let shouldDrainQueue: Bool = {
             guard Self.holdWebsocketOpenUntilDrained else {
                 return false
@@ -953,8 +959,12 @@ public class OWSWebSocket: NSObject {
         var request = URLRequest(url: webSocketConnectURL)
         request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
                          forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
-        var webSocket = SSKWebSocketManager.buildSocket(request: request,
-                                                        callbackQueue: OWSWebSocket.serialQueue)
+        owsAssertDebug(webSocketFactory.canBuildWebSocket)
+        guard let webSocket = webSocketFactory.buildSocket(request: request,
+                                                           callbackQueue: OWSWebSocket.serialQueue) else {
+            owsFailDebug("Missing webSocket.")
+            return
+        }
         webSocket.delegate = self
         let newWebSocket = WebSocketConnection(webSocketType: webSocketType, webSocket: webSocket)
         self.currentWebSocket = newWebSocket
@@ -1338,8 +1348,9 @@ extension OWSWebSocket: SSKWebSocketDelegate {
 
         self.currentWebSocket = nil
 
-        if let webSocketError = error as? SSKWebSocketError {
-            if webSocketError.code == 403,
+        if let error = error {
+            let webSocketErrorStatusCode = webSocketFactory.statusCode(forError: error)
+            if webSocketErrorStatusCode == 403,
                webSocketType == .identified {
                 tsAccountManager.setIsDeregistered(true)
             }

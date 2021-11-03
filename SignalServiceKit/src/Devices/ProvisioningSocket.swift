@@ -10,6 +10,8 @@ public protocol ProvisioningSocketDelegate: AnyObject {
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error)
 }
 
+// MARK: -
+
 // TODO: Do we still need the ProvisioningSocket if we have the unidentified websocket?
 public class ProvisioningSocket {
     let socket: SSKWebSocket
@@ -23,7 +25,10 @@ public class ProvisioningSocket {
                             relativeTo: serviceBaseURL)!
 
         let request = URLRequest(url: socketURL)
-        var webSocket = SSKWebSocketManager.buildSocket(request: request)
+        let websocketFactory = SSKEnvironment.shared.webSocketFactoryRef
+        owsAssert(websocketFactory.canBuildWebSocket)
+        let webSocket = websocketFactory.buildSocket(request: request,
+                                                     callbackQueue: .main)!
         self.socket = webSocket
         webSocket.delegate = self
     }

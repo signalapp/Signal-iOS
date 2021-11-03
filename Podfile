@@ -54,9 +54,6 @@ pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master
 pod 'OpenSSL-Universal', git: 'https://github.com/signalapp/GRKOpenSSLFramework'
 # pod 'OpenSSL-Universal', path: '../GRKOpenSSLFramework'
 
-pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
-# pod 'Starscream', path: '../Starscream'
-
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 
@@ -75,6 +72,9 @@ def ui_pods
   pod 'BonMot', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
   pod 'lottie-ios', :inhibit_warnings => true
+
+  pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
+  # pod 'Starscream', path: '../Starscream'
 
   pod 'LibMobileCoin', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.1.0'
   pod 'MobileCoin', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.1.0'

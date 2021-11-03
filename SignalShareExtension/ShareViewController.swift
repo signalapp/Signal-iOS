@@ -64,6 +64,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppSetup.setupEnvironment(
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
+            webSocketFactory: WebSocketFactoryNative(),
             appSpecificSingletonBlock: {
             // Create SUIEnvironment.
             SUIEnvironment.shared.setup()

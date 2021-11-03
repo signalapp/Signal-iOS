@@ -58,6 +58,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
+@property (nonatomic) id<WebSocketFactory> webSocketFactoryRef;
 
 @end
 
@@ -120,6 +121,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
+                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory
 {
     self = [super init];
     if (!self) {
@@ -178,6 +180,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _spamChallengeResolverRef = spamResolver;
     _senderKeyStoreRef = senderKeyStore;
     _phoneNumberUtilRef = phoneNumberUtil;
+    _webSocketFactoryRef = webSocketFactory;
     
     return self;
 }

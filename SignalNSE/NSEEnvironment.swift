@@ -145,6 +145,7 @@ class NSEEnvironment: Dependencies {
         AppSetup.setupEnvironment(
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
+            webSocketFactory: WebSocketFactoryNative(),
             appSpecificSingletonBlock: {
                 SSKEnvironment.shared.callMessageHandlerRef = NSECallMessageHandler()
                 SSKEnvironment.shared.notificationsManagerRef = NotificationPresenter()

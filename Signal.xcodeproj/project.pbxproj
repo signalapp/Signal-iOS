@@ -593,6 +593,7 @@
 		34F1072026D005340053EF4D /* BatchUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1071F26D005340053EF4D /* BatchUpdate.swift */; };
 		34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F1072126D045290053EF4D /* BatchUpdateTest.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
+		34F316F32732C695008D7352 /* WebSocketFactoryHybrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F316F22732C694008D7352 /* WebSocketFactoryHybrid.swift */; };
 		34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */; };
 		34FB6A5325D2D10400E599B1 /* PaymentsViewUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */; };
 		34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */; };
@@ -1749,6 +1750,7 @@
 		34F1072126D045290053EF4D /* BatchUpdateTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdateTest.swift; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
+		34F316F22732C694008D7352 /* WebSocketFactoryHybrid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketFactoryHybrid.swift; sourceTree = "<group>"; };
 		34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDetailViewController.swift; sourceTree = "<group>"; };
 		34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewUtils.swift; sourceTree = "<group>"; };
 		34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentModelCell.swift; sourceTree = "<group>"; };
@@ -2433,6 +2435,7 @@
 			children = (
 				3402A9DB271D95C10084CBAE /* Dependencies+SignalUI.swift */,
 				3402A9D9271D953A0084CBAE /* SUIEnvironment.swift */,
+				34F316F22732C694008D7352 /* WebSocketFactoryHybrid.swift */,
 			);
 			path = Environment;
 			sourceTree = "<group>";
@@ -5166,7 +5169,6 @@
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
@@ -5188,6 +5190,7 @@
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalRingRTC/SignalRingRTC.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftNIO/NIO.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftNIOConcurrencyHelpers/NIOConcurrencyHelpers.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftNIOExtras/NIOExtras.framework",
@@ -5219,7 +5222,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
@@ -5241,6 +5243,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalRingRTC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIO.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOConcurrencyHelpers.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NIOExtras.framework",
@@ -5300,7 +5303,6 @@
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
@@ -5326,7 +5328,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
@@ -5424,7 +5425,6 @@
 				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
-				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ZKGroup/ZKGroup.framework",
@@ -5450,7 +5450,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ZKGroup.framework",
@@ -5617,6 +5616,7 @@
 				3402AA5C271D9DCD0084CBAE /* UIViewController+Permissions.m in Sources */,
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
 				3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */,
+				34F316F32732C695008D7352 /* WebSocketFactoryHybrid.swift in Sources */,
 				3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */,
 				3402AAAF271D9E180084CBAE /* Mention.swift in Sources */,
 				3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */,

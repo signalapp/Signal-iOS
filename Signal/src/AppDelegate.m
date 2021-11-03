@@ -214,6 +214,7 @@ void uncaughtExceptionHandler(NSException *exception)
 
     [AppSetup setupEnvironmentWithPaymentsEvents:[PaymentsEventsMainApp new]
                                 mobileCoinHelper:[MobileCoinHelperSDK new]
+                                webSocketFactory:[WebSocketFactoryHybrid new]
                        appSpecificSingletonBlock:^{
             // Create SUIEnvironment.
             [SUIEnvironment.shared setup];

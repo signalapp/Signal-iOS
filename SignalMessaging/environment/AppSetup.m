@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setupEnvironmentWithPaymentsEvents:(id<PaymentsEvents>)paymentsEvents
                           mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
+                          webSocketFactory:(id<WebSocketFactory>)webSocketFactory
                  appSpecificSingletonBlock:(dispatch_block_t)appSpecificSingletonBlock
                        migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {
@@ -179,7 +180,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  mobileCoinHelper:mobileCoinHelper
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore
-                                                                  phoneNumberUtil:phoneNumberUtil]];
+                                                                  phoneNumberUtil:phoneNumberUtil
+                                                                 webSocketFactory:webSocketFactory]];
 
         appSpecificSingletonBlock();
 

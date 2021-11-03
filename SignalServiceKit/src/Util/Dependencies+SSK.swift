@@ -497,6 +497,14 @@ public extension NSObject {
     static var phoneNumberUtil: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
+
+    final var webSocketFactory: WebSocketFactory {
+        SSKEnvironment.shared.webSocketFactoryRef
+    }
+
+    static var webSocketFactory: WebSocketFactory {
+        SSKEnvironment.shared.webSocketFactoryRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -985,6 +993,14 @@ public extension Dependencies {
 
     static var phoneNumberUtil: PhoneNumberUtil {
         SSKEnvironment.shared.phoneNumberUtilRef
+    }
+
+    var webSocketFactory: WebSocketFactory {
+        SSKEnvironment.shared.webSocketFactoryRef
+    }
+
+    static var webSocketFactory: WebSocketFactory {
+        SSKEnvironment.shared.webSocketFactoryRef
     }
 }
 

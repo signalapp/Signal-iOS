@@ -61,6 +61,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol StorageServiceManagerProtocol;
 @protocol SyncManagerProtocol;
 @protocol VersionedProfiles;
+@protocol WebSocketFactory;
 
 @interface SSKEnvironment : NSObject
 
@@ -118,7 +119,8 @@ extern NSNotificationName const WarmCachesNotification;
                        mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
-                        phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil NS_DESIGNATED_INITIALIZER;
+                        phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
+                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -183,6 +185,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
+@property (nonatomic, readonly) id<WebSocketFactory> webSocketFactoryRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;
