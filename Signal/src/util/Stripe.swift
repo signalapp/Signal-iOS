@@ -102,22 +102,10 @@ fileprivate extension Stripe {
                 if let email = payment.shippingContact?.emailAddress {
                     parameters["receipt_email"] = email
                 }
-                return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
+                return try DonationUtilities.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
             }.asVoid()
         }
 
-        static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
-            guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
-                throw OWSAssertionError("Failed to generate post body data")
-            }
-
-            return DonationUtilities.urlSession.dataTaskPromise(
-                endpoint,
-                method: .post,
-                headers: ["Content-Type": "application/x-www-form-urlencoded", "Authorization": authorizationHeader],
-                body: formData
-            )
-        }
     }
 }
 

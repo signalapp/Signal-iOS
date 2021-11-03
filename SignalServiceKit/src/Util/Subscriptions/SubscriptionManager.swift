@@ -18,6 +18,7 @@ public class SubscriptionLevel: Comparable {
         let currencyDict: [String: Any] = try params.required(key: "currencies")
         currency = currencyDict.compactMapValues {
             guard let int64Currency = $0 as? Int64 else {
+                owsFailDebug("Failed to convert currency value")
                 return nil
             }
             return NSDecimalNumber(value: int64Currency)
@@ -60,12 +61,12 @@ public class SubscriptionManager: NSObject {
 
             do {
                 let subscriptionDicts: [String: Any] = try parser.required(key: "levels")
-                let subscriptions: [SubscriptionLevel] = try subscriptionDicts.compactMap {
-                    guard let subscriptionDict = $1 as? [String: Any] else {
+                let subscriptions: [SubscriptionLevel] = try subscriptionDicts.compactMap { (subscriptionKey: String, value: Any) in
+                    guard let subscriptionDict = value as? [String: Any] else {
                         return nil
                     }
                     
-                    guard let level = UInt($0) else {
+                    guard let level = UInt(subscriptionKey) else {
                         throw OWSAssertionError("Unable to determine subscription level")
                     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,16 +19,16 @@ class SubscriptionViewController: OWSTableViewController2 {
             updateTableContents()
         }
     }
-    
+
     private var selectedSubscription: SubscriptionLevel?
-    
+
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
             guard oldValue != currencyCode else { return }
             updateTableContents()
         }
     }
-    
+
     private lazy var avatarView: ConversationAvatarView = {
         let newAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
         databaseStorage.read { readTx in
@@ -36,74 +36,70 @@ class SubscriptionViewController: OWSTableViewController2 {
                 if let address = tsAccountManager.localAddress(with: readTx) {
                     config.dataSource = .address(address)
                 }
-                return .synchronously
             }
         }
         return newAvatarView
     }()
-    
+
     private let bottomFooterStackView = UIStackView()
-    
+
     open override var bottomFooter: UIView? {
         get { bottomFooterStackView }
         set {}
     }
-    
+
     static let bubbleBorderWidth: CGFloat = 1.5
     static let bubbleBorderColor = UIColor(rgbHex: 0xdedede)
     static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
     private static let subscriptionBannerAvatarSize: UInt = 88
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //Fetch available subscriptions
+
+        // Fetch available subscriptions
         firstly {
             SubscriptionManager.getSubscriptions()
         }.done(on: .main) { (fetchedSubscriptions: [SubscriptionLevel]) in
             self.subscriptions = fetchedSubscriptions
             Logger.debug("successfully fetched subscriptions")
-            
-            //Populate badges
-            let badgeModels = fetchedSubscriptions.map { return $0.badge }
-            for badge in badgeModels {
-                firstly {
-                    self.profileManager.badgeStore.populateAssetsOnBadge(badge)
-                }.done(on: .main) {
-                    self.updateTableContents()
-                }.catch { error in
-                    owsFailDebug("Failed to fetch assets for badge \(error)")
-                }
+
+            let badgeUpdatePromises = fetchedSubscriptions.map { return self.profileManager.badgeStore.populateAssetsOnBadge($0.badge) }
+            firstly {
+                return Promise.when(fulfilled: badgeUpdatePromises)
+            }.done(on: .main) {
+                self.updateTableContents()
+            }.catch { error in
+                owsFailDebug("Failed to fetch assets for badge \(error)")
             }
+
         }.catch(on: .main) { error in
             owsFailDebug("Failed to fetch subscriptions \(error)")
         }
-        
+
         updateTableContents()
     }
-    
-    
+
     func updateTableContents() {
         let contents = OWSTableContents()
         defer {
             self.contents = contents
         }
-        
+
         let section = OWSTableSection()
         section.hasBackground = false
         contents.addSection(section)
-        
+
         section.customHeaderView = {
             let stackView = UIStackView()
             stackView.axis = .vertical
             stackView.alignment = .center
             stackView.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 0, right: 19)
             stackView.isLayoutMarginsRelativeArrangement = true
-            
+
             stackView.addArrangedSubview(avatarView)
             stackView.setCustomSpacing(16, after: avatarView)
 
-            //Title text
+            // Title text
             let titleLabel = UILabel()
             titleLabel.textAlignment = .center
             titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
@@ -115,17 +111,17 @@ class SubscriptionViewController: OWSTableViewController2 {
             titleLabel.lineBreakMode = .byWordWrapping
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(20, after: titleLabel)
-            
-            //Body text
+
+            // Body text
             let textView = LinkingTextView()
             let bodyFormat = NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view, embeds {{link to donation read more}}")
             let readMore = NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body")
-            let body = String.init(format: bodyFormat, readMore)
-            
+            let body = String(format: bodyFormat, readMore)
+
             let bodyAttributedString = NSMutableAttributedString(string: body)
-            bodyAttributedString.addAttributesToEntireString([.font : UIFont.ows_dynamicTypeBody, .foregroundColor : Theme.primaryTextColor])
-            bodyAttributedString.addAttributes([.link : NSURL()], range: NSRange(location: body.count - readMore.count, length: readMore.count))
-            
+            bodyAttributedString.addAttributesToEntireString([.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor])
+            bodyAttributedString.addAttributes([.link: NSURL()], range: NSRange(location: body.utf16.count - readMore.utf16.count, length: readMore.utf16.count))
+
             textView.attributedText = bodyAttributedString
             textView.linkTextAttributes = [
                 .foregroundColor: Theme.accentBlueColor,
@@ -134,12 +130,12 @@ class SubscriptionViewController: OWSTableViewController2 {
             ]
             textView.textAlignment = .center
             stackView.addArrangedSubview(textView)
-            
+
             return stackView
         }()
-        
-        //TODO EB Disable currency swapping if a subscription already exists (pull currency code from storage service)
-        if true {//DonationUtilities.isApplePayAvailable {
+
+        // TODO EB Disable currency swapping if a subscription already exists (pull currency code from storage service)
+        if true {// DonationUtilities.isApplePayAvailable {
             section.add(.init(
                 customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
@@ -187,8 +183,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                         .color(Theme.primaryTextColor)
                     ), for: .normal)
 
-                    picker.setBackgroundImage(UIImage.init(color: Self.bubbleBackgroundColor), for: .normal)
-                    picker.setBackgroundImage(UIImage.init(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
+                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor), for: .normal)
+                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
 
                     let pillView = PillView()
                     pillView.layer.borderWidth = Self.bubbleBorderWidth
@@ -211,11 +207,11 @@ class SubscriptionViewController: OWSTableViewController2 {
                 },
                 actionBlock: {}
             ))
-            
-            //Subscription levels
-            //TODO EB Can't load subscriptions UI
-            //TODO EB Apple pay not available UI
-            
+
+            // Subscription levels
+            // TODO EB Can't load subscriptions UI
+            // TODO EB Apple pay not available UI
+
             if let subscriptions = self.subscriptions {
                 for (index, subscription) in subscriptions.enumerated() {
                     section.add(.init(
@@ -223,7 +219,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                             guard let self = self else { return UITableViewCell() }
                             let cell = self.newSubscriptionCell()
                             cell.subscriptionID = subscription.level
-                            
+
                             let stackView = UIStackView()
                             stackView.axis = .horizontal
                             stackView.alignment = .center
@@ -234,8 +230,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                             stackView.autoPinEdgesToSuperviewEdges()
 
                             let isSelected = self.selectedSubscription?.level == subscription.level
-                            
-                            //Background view
+
+                            // Background view
                             let background = UIView()
                             background.backgroundColor = Theme.backgroundColor
                             background.layer.borderWidth = Self.bubbleBorderWidth
@@ -291,7 +287,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     ))
                 }
             } else {
-                //TODO EB Loading subscription UI / not available
+                // TODO EB Loading subscription UI / not available
                 section.add(.init(
                     customCellBlock: { [weak self] in
                         guard let self = self else { return UITableViewCell() }
@@ -301,16 +297,16 @@ class SubscriptionViewController: OWSTableViewController2 {
                         stackView.alignment = .center
                         cell.contentView.addSubview(stackView)
                         stackView.autoPinEdgesToSuperviewEdges()
-                        
+
                         let activitySpinner: UIActivityIndicatorView
                         if #available(iOS 13, *) {
                             activitySpinner = UIActivityIndicatorView(style: .medium)
                         } else {
                             activitySpinner = UIActivityIndicatorView(style: .gray)
                         }
-                        
+
                         activitySpinner.startAnimating()
-                        
+
                         stackView.addArrangedSubview(activitySpinner)
 
                         return cell
@@ -318,9 +314,9 @@ class SubscriptionViewController: OWSTableViewController2 {
                     actionBlock: {}
                 ))
             }
-            
-            //Footer
-            
+
+            // Footer
+
             bottomFooterStackView.axis = .vertical
             bottomFooterStackView.alignment = .center
             bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
@@ -328,27 +324,29 @@ class SubscriptionViewController: OWSTableViewController2 {
             bottomFooterStackView.spacing = 16
             bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
             bottomFooterStackView.removeAllSubviews()
-            
-            //Apple pay button
-            let buttonType : PKPaymentButtonType
+
+            // Apple pay button
+            let buttonType: PKPaymentButtonType
             if #available(iOS 14, *) {
                 buttonType = .contribute
             } else {
                 buttonType = .donate
             }
+
             let applePayContributeButton = PKPaymentButton(
                 paymentButtonType: buttonType,
                 paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
             )
+
             if #available(iOS 12, *) { applePayContributeButton.cornerRadius = 12 }
             applePayContributeButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
-            
+
             bottomFooterStackView.addArrangedSubview(applePayContributeButton)
             applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
 
-            //Other ways to donate
-            
+            // Other ways to donate
+
             let donateButton = OWSFlatButton()
             donateButton.setTitleColor(Theme.accentBlueColor)
             donateButton.setAttributedTitle(NSAttributedString.composed(of: [
@@ -368,17 +366,16 @@ class SubscriptionViewController: OWSTableViewController2 {
             donateButton.setPressedBlock { [weak self] in
                 self?.openDonateWebsite()
             }
-            
+
             bottomFooterStackView.addArrangedSubview(donateButton)
         }
-        
-        
+
     }
-    
+
     private func openDonateWebsite() {
         UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
     }
-    
+
     private func newCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none
@@ -386,7 +383,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         cell.contentView.layoutMargins = .zero
         return cell
     }
-    
+
     private func newSubscriptionCell() -> SubscriptionLevelCell {
         let cell = SubscriptionLevelCell()
         OWSTableItem.configureCell(cell)
@@ -395,11 +392,15 @@ class SubscriptionViewController: OWSTableViewController2 {
         cell.selectionStyle = .none
         return cell
     }
-    
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        updateTableContents()
+    }
+
 }
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
-    
+
     @objc
     fileprivate func requestApplePayDonation() {
 
@@ -407,7 +408,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             owsFailDebug("No selected subscription, can't invoke Apple Pay donation")
             return
         }
-        
+
         guard let subscriptionAmount = subscription.currency[currencyCode] else {
             owsFailDebug("Failed to get amount for current currency code")
             return
@@ -445,7 +446,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             if !presented { owsFailDebug("Failed to present payment controller") }
         }
     }
-    
+
     func paymentAuthorizationController(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
@@ -458,19 +459,21 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             completion(authResult)
             return
         }
-        
+
         let currencyCode = self.currencyCode
         var generatedSubscriberID = Data()
         var generatedClientSecret = ""
         var generatedPaymentID = ""
-        
-        //Generate new subscriber ID
+
+        // TODO EB cancel chain if Apple Pay times out
+
+        // Generate new subscriber ID
         firstly {
             return try SubscriptionManager.setupNewSubscriberID()
-            
-        //Create Stripe SetupIntent against new subscriberID
+
+        // Create Stripe SetupIntent against new subscriberID
         }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
-            
+
             generatedSubscriberID = subscriberID
             DispatchQueue.main.async {
                 SubscriptionManager.subscriberID = subscriberID
@@ -478,51 +481,50 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
             return try SubscriptionManager.createPaymentMethod(for: subscriberID)
-        
-        //Create new payment method
+
+        // Create new payment method
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
-        
+
             generatedClientSecret = clientSecret
             return DonationUtilities.createPaymentMethod(with: payment)
-        
-        //Bind payment method to SetupIntent, confirm SetupIntent
+
+        // Bind payment method to SetupIntent, confirm SetupIntent
         }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
-            
+
             generatedPaymentID = paymentID
             return try DonationUtilities.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
-        
-        //Update payment on server
-        }.then(on: .sharedUserInitiated) { response -> Promise<Void> in
-            
+
+        // Update payment on server
+        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+
             return try SubscriptionManager.setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
-        
-        //Select subscription level
-        }.then(on: .sharedUserInitiated) { response -> Promise<Void> in
-            
+
+        // Select subscription level
+        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+
             return SubscriptionManager.setSubscription(for: generatedSubscriberID, subscription: selectedSubscription, currency: currencyCode)
-        
-        //Report success and dismiss sheet
+
+        // Report success and dismiss sheet
         }.done(on: .main) {
-        
+
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)
-        
-        //Report failure
+
+        // Report failure
         }.catch { error in
-        
+
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
             completion(authResult)
             owsFailDebug("Error setting up subscription, \(error)")
-        
+
         }
 
     }
-    
+
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         controller.dismiss()
     }
-    
-    
+
 }
 
 private class SubscriptionLevelCell: UITableViewCell {
