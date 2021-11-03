@@ -279,7 +279,9 @@ extension MessageReceiver {
             print("[Calls] Received pre-offer message.")
             if getWebRTCSession().uuid != message.uuid! {
                 // TODO: Call in progress, put the new call on hold/reject
+                return
             }
+            handlePreOfferCallMessage?(message)
         case .offer:
             print("[Calls] Received offer message.")
             if getWebRTCSession().uuid != message.uuid! {

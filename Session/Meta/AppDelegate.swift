@@ -6,23 +6,38 @@ import UIKit
 extension AppDelegate {
 
     // MARK: Call handling
-    @objc func setUpCallHandling() {
-        // Offer messages
-        MessageReceiver.handleOfferCallMessage = { message in
-            DispatchQueue.main.async {
-                let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
-                let call = SessionCall(for: message.sender!, uuid: message.uuid!, mode: .answer(sdp: sdp))
-                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == message.sender! {
-                    let callVC = CallVC(for: call)
-                    callVC.conversationVC = conversationVC
-                    conversationVC.inputAccessoryView?.isHidden = true
-                    conversationVC.inputAccessoryView?.alpha = 0
-                    presentingVC.present(callVC, animated: true, completion: nil)
-                } else {
+    func createNewIncomingCall(caller: String, uuid: String) {
+        let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
+            let callVC = CallVC(for: call)
+            callVC.conversationVC = conversationVC
+            conversationVC.inputAccessoryView?.isHidden = true
+            conversationVC.inputAccessoryView?.alpha = 0
+            presentingVC.present(callVC, animated: true, completion: nil)
+        } else {
+            call.reportIncomingCallIfNeeded{ error in
+                if let error = error {
+                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
                     let incomingCallBanner = IncomingCallBanner(for: call)
                     incomingCallBanner.show()
                 }
+            }
+        }
+    }
+    
+    @objc func setUpCallHandling() {
+        // Pre offer messages
+        MessageReceiver.handlePreOfferCallMessage = { message in
+            guard CurrentAppContext().isMainApp else { return }
+            self.createNewIncomingCall(caller: message.sender!, uuid: message.uuid!)
+        }
+        // Offer messages
+        MessageReceiver.handleOfferCallMessage = { message in
+            DispatchQueue.main.async {
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid == call.uuid.uuidString else { return }
+                let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
+                call.didReceiveRemoteSDP(sdp: sdp)
             }
         }
         // Answer messages

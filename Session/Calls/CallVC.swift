@@ -4,12 +4,9 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import UIKit
 
-final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelegate {
+final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
-    var webRTCSession: WebRTCSession { return call.webRTCSession }
     var shouldAnswer = false
-    var isMuted = false
-    var isVideoEnabled = false
     var shouldRestartCamera = true
     weak var conversationVC: ConversationVC? = nil
     
@@ -19,14 +16,10 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         return result
     }()
     
-    lazy var videoCapturer: RTCVideoCapturer = {
-        return RTCCameraVideoCapturer(delegate: webRTCSession.localVideoSource)
-    }()
-    
     // MARK: UI Components
     private lazy var localVideoView: RTCMTLVideoView = {
         let result = RTCMTLVideoView()
-        result.isHidden = !isVideoEnabled
+        result.isHidden = !call.isVideoEnabled
         result.contentMode = .scaleAspectFill
         result.set(.width, to: 80)
         result.set(.height, to: 173)
@@ -98,7 +91,7 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
 
     private lazy var switchCameraButton: UIButton = {
         let result = UIButton(type: .custom)
-        result.isEnabled = isVideoEnabled
+        result.isEnabled = call.isVideoEnabled
         let image = UIImage(named: "SwitchCamera")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
@@ -161,13 +154,35 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     init(for call: SessionCall) {
         self.call = call
         super.init(nibName: nil, bundle: nil)
-        self.call.webRTCSession.delegate = self
+        setupStateChangeCallbacks()
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    func setupStateChangeCallbacks() {
+        self.call.remoteVideoStateDidChange = { isEnabled in
+            DispatchQueue.main.async {
+                UIView.animate(withDuration: 0.25) {
+                    self.remoteVideoView.alpha = isEnabled ? 1 : 0
+                }
+            }
+        }
+        self.call.hasConnectedDidChange = {
+            DispatchQueue.main.async {
+                self.callInfoLabel.text = "Connected"
+                self.minimizeButton.isHidden = false
+                UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
+                    self.callInfoLabel.alpha = 0
+                }, completion: { _ in
+                    self.callInfoLabel.isHidden = true
+                    self.callInfoLabel.alpha = 1
+                })
+            }
+        }
         self.call.hasEndedDidChange = {
             self.conversationVC?.showInputAccessoryView()
             self.presentingViewController?.dismiss(animated: true, completion: nil)
         }
-        self.modalPresentationStyle = .overFullScreen
-        self.modalTransitionStyle = .crossDissolve
     }
     
     required init(coder: NSCoder) { preconditionFailure("Use init(for:) instead.") }
@@ -175,10 +190,9 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
-        WebRTCSession.current = webRTCSession
         setUpViewHierarchy()
         if shouldRestartCamera { cameraManager.prepare() }
-        touch(videoCapturer)
+        touch(call.videoCapturer)
         titleLabel.text = self.call.contactName
         self.call.startSessionCall{
             self.callInfoLabel.text = "Ringing..."
@@ -197,12 +211,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
         callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
         callInfoLabel.center(in: view)
         // Remote video view
-        webRTCSession.attachRemoteRenderer(remoteVideoView)
+        call.attachRemoteVideoRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: view)
         // Local video view
-        webRTCSession.attachLocalRenderer(localVideoView)
+        call.attachLocalVideoRenderer(localVideoView)
         view.addSubview(localVideoView)
         localVideoView.pin(.right, to: .right, of: view, withInset: -Values.smallSpacing)
         let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
@@ -252,45 +266,13 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if (isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
+        if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
         shouldRestartCamera = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if (isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
-    }
-    
-    // MARK: Delegate
-    func webRTCIsConnected() {
-        DispatchQueue.main.async {
-            self.callInfoLabel.text = "Connected"
-            self.call.hasConnected = true
-            self.minimizeButton.isHidden = false
-            UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
-                self.callInfoLabel.alpha = 0
-            }, completion: { _ in
-                self.callInfoLabel.isHidden = true
-                self.callInfoLabel.alpha = 1
-            })
-        }
-    }
-    
-    func isRemoteVideoDidChange(isEnabled: Bool) {
-        DispatchQueue.main.async {
-            UIView.animate(withDuration: 0.25) {
-                self.remoteVideoView.alpha = isEnabled ? 1 : 0
-            }
-        }
-    }
-    
-    func dataChannelDidOpen() {
-        // Send initial video status
-        if (isVideoEnabled) {
-            webRTCSession.turnOnVideo()
-        } else {
-            webRTCSession.turnOffVideo()
-        }
+        if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
     }
     
     // MARK: Interaction
@@ -349,13 +331,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     }
     
     @objc private func operateCamera() {
-        if (isVideoEnabled) {
-            webRTCSession.turnOffVideo()
+        if (call.isVideoEnabled) {
             localVideoView.isHidden = true
             cameraManager.stop()
             videoButton.alpha = 0.5
             switchCameraButton.isEnabled = false
-            isVideoEnabled = false
+            call.isVideoEnabled = false
         } else {
             let previewVC = VideoPreviewVC()
             previewVC.delegate = self
@@ -364,13 +345,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     }
     
     func cameraDidConfirmTurningOn() {
-        webRTCSession.turnOnVideo()
         localVideoView.isHidden = false
         cameraManager.prepare()
         cameraManager.start()
         videoButton.alpha = 1.0
         switchCameraButton.isEnabled = true
-        isVideoEnabled = true
+        call.isVideoEnabled = true
     }
     
     @objc private func switchCamera() {
@@ -378,14 +358,12 @@ final class CallVC : UIViewController, WebRTCSessionDelegate, VideoPreviewDelega
     }
     
     @objc private func switchAudio() {
-        if isMuted {
+        if call.isMuted {
             switchAudioButton.backgroundColor = UIColor(hex: 0x1F1F1F)
-            isMuted = false
-            webRTCSession.unmute()
+            call.isMuted = false
         } else {
             switchAudioButton.backgroundColor = Colors.destructive
-            isMuted = true
-            webRTCSession.mute()
+            call.isMuted = true
         }
     }
     

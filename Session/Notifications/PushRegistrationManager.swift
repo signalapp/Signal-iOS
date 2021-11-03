@@ -238,7 +238,14 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         owsAssertDebug(CurrentAppContext().isMainApp)
         owsAssertDebug(type == .voIP)
-        Vibration.shared.startVibration()
+        let payload = payload.dictionaryPayload
+        if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.createNewIncomingCall(caller: caller, uuid: uuid)
+            appDelegate.startPollerIfNeeded()
+            appDelegate.startClosedGroupPoller()
+            appDelegate.startOpenGroupPollersIfNeeded()
+        }
     }
 }
 

@@ -2,12 +2,14 @@ import Foundation
 import WebRTC
 import SessionMessagingKit
 
-public final class SessionCall: NSObject {
+public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Metadata Properties
     let uuid: UUID
     let sessionID: String
     let mode: Mode
     let webRTCSession: WebRTCSession
+    var remoteSDP: RTCSessionDescription? = nil
+    var isWaitingForRemoteSDP = false
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
         return contact?.displayName(for: Contact.Context.regular) ?? self.sessionID
@@ -20,10 +22,40 @@ public final class SessionCall: NSObject {
         }
     }
     
+    // MARK: Control
+    lazy public var videoCapturer: RTCVideoCapturer = {
+        return RTCCameraVideoCapturer(delegate: webRTCSession.localVideoSource)
+    }()
+    
+    var isRemoteVideoEnabled = false {
+        didSet {
+            remoteVideoStateDidChange?(isRemoteVideoEnabled)
+        }
+    }
+    
+    var isMuted = false {
+        willSet {
+            if newValue {
+                webRTCSession.mute()
+            } else {
+                webRTCSession.unmute()
+            }
+        }
+    }
+    var isVideoEnabled = false {
+        willSet {
+            if newValue {
+                webRTCSession.turnOnVideo()
+            } else {
+                webRTCSession.turnOffVideo()
+            }
+        }
+    }
+    
     // MARK: Mode
     enum Mode {
         case offer
-        case answer(sdp: RTCSessionDescription)
+        case answer
     }
     
     // MARK: Call State Properties
@@ -60,6 +92,7 @@ public final class SessionCall: NSObject {
     var hasStartedConnectingDidChange: (() -> Void)?
     var hasConnectedDidChange: (() -> Void)?
     var hasEndedDidChange: (() -> Void)?
+    var remoteVideoStateDidChange: ((Bool) -> Void)?
     
     // MARK: Derived Properties
     var hasStartedConnecting: Bool {
@@ -92,15 +125,22 @@ public final class SessionCall: NSObject {
         self.mode = mode
         self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
         super.init()
-        reportIncomingCallIfNeeded()
+        self.webRTCSession.delegate = self
     }
     
-    func reportIncomingCallIfNeeded() {
-        guard case .answer(_) = mode else { return }
+    func reportIncomingCallIfNeeded(completion: @escaping (Error?) -> Void) {
+        guard case .answer = mode else { return }
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in
-            if let error = error {
-                SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-            }
+            completion(error)
+        }
+    }
+    
+    func didReceiveRemoteSDP(sdp: RTCSessionDescription) {
+        guard remoteSDP == nil else { return }
+        remoteSDP = sdp
+        if isWaitingForRemoteSDP {
+            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            isWaitingForRemoteSDP = false
         }
     }
     
@@ -119,9 +159,13 @@ public final class SessionCall: NSObject {
     }
     
     func answerSessionCall(completion: (() -> Void)?) {
-        guard case let .answer(sdp) = mode else { return }
+        guard case .answer = mode else { return }
         hasStartedConnecting = true
-        webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+        if let sdp = remoteSDP {
+            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+        } else {
+            isWaitingForRemoteSDP = true
+        }
         completion?()
     }
     
@@ -132,5 +176,32 @@ public final class SessionCall: NSObject {
         }
         hasEnded = true
         AppEnvironment.shared.callManager.reportCurrentCallEnded()
+    }
+    
+    // MARK: Renderer
+    func attachRemoteVideoRenderer(_ renderer: RTCVideoRenderer) {
+        webRTCSession.attachRemoteRenderer(renderer)
+    }
+    
+    func attachLocalVideoRenderer(_ renderer: RTCVideoRenderer) {
+        webRTCSession.attachLocalRenderer(renderer)
+    }
+    
+    // MARK: Delegate
+    public func webRTCIsConnected() {
+        self.hasConnected = true
+    }
+    
+    public func isRemoteVideoDidChange(isEnabled: Bool) {
+        isRemoteVideoEnabled = isEnabled
+    }
+    
+    public func dataChannelDidOpen() {
+        // Send initial video status
+        if (isVideoEnabled) {
+            webRTCSession.turnOnVideo()
+        } else {
+            webRTCSession.turnOffVideo()
+        }
     }
 }

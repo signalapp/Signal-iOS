@@ -38,7 +38,7 @@ final class MiniCallView: UIView {
         self.addSubview(background)
         background.pin(to: self)
         // Remote video view
-        callVC.webRTCSession.attachRemoteRenderer(remoteVideoView)
+        callVC.call.attachRemoteVideoRenderer(remoteVideoView)
         self.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: self)

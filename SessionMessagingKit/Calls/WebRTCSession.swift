@@ -251,9 +251,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
         print("[Calls] Peer connection should negotiate.")
-        Storage.write { transaction in
-            self.sendOffer(to: self.contactSessionID, using: transaction).retainUntilComplete()
-        }
+//        Storage.write { transaction in
+//            self.sendOffer(to: self.contactSessionID, using: transaction).retainUntilComplete()
+//        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
