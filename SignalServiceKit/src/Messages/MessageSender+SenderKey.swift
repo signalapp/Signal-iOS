@@ -35,7 +35,7 @@ extension MessageSender {
         }
     }
 
-    private enum SenderKeyError: Error, IsRetryableProvider {
+    private enum SenderKeyError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
         case invalidAuthHeader
         case invalidRecipient
         case deviceUpdate
@@ -59,6 +59,21 @@ extension MessageSender {
                 result = SenderKeyEphemeralError(customLocalizedDescription: localizedDescription)
             }
             return (result as NSError)
+        }
+
+        var localizedDescription: String {
+            // Since this is a retryable error, so it's unlikely to be surfaced to the user. I think the only situation
+            // where it would is it happens to be the last error hit before we run out of resend attempts. In that case,
+            // we should just show a generic error just to be safe.
+            // TODO: This probably isn't the only error like this. Should we have a fallback generic string
+            // for all retryable errors without a description that exhaust retry attempts?
+            switch self {
+            case .recipientSKDMFailed(let error):
+                return error.localizedDescription
+            default:
+                return NSLocalizedString("ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE",
+                                         comment: "Generic notice when message failed to send.")
+            }
         }
     }
 
