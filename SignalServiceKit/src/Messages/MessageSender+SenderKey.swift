@@ -35,7 +35,7 @@ extension MessageSender {
         }
     }
 
-    private enum SenderKeyError: Error, IsRetryableProvider {
+    private enum SenderKeyError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
         case invalidAuthHeader
         case invalidRecipient
         case deviceUpdate
