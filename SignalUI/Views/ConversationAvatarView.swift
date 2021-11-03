@@ -525,7 +525,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             targetAddress = address
         case .thread(let contactThread as TSContactThread):
             targetAddress = (contactThread).contactAddress
-        case .thread(_):
+        case .thread:
             return nil
         case .asset(avatar: _, badge: let badge):
             return badge
@@ -588,7 +588,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         case .asset(let avatar, _):
             return avatar
 
-        case .thread(_):
+        case .thread:
             owsFailDebug("Unrecognized thread subclass: \(self)")
             return nil
         }
@@ -625,7 +625,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         case .asset(let avatar, _):
             return avatar
 
-        case .thread(_):
+        case .thread:
             owsFailDebug("Unrecognized thread subclass: \(self)")
             return nil
         }
