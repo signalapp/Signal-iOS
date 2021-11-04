@@ -15,6 +15,7 @@ NSString *const OWSFrontingHost_GoogleEgypt = @"www.google.com.eg";
 NSString *const OWSFrontingHost_GoogleUAE = @"www.google.ae";
 NSString *const OWSFrontingHost_GoogleOman = @"www.google.com.om";
 NSString *const OWSFrontingHost_GoogleQatar = @"www.google.com.qa";
+NSString *const OWSFrontingHost_GoogleUzbekistan = @"www.google.co.uz";
 NSString *const OWSFrontingHost_Default = @"www.google.com";
 
 @implementation OWSCensorshipConfiguration
@@ -134,6 +135,8 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     } else if ([domain isEqualToString:OWSFrontingHost_GoogleOman]) {
         return self.googlePinningPolicy;
     } else if ([domain isEqualToString:OWSFrontingHost_GoogleUAE]) {
+        return self.googlePinningPolicy;
+    } else if ([domain isEqualToString:OWSFrontingHost_GoogleUzbekistan]) {
         return self.googlePinningPolicy;
     } else {
         OWSLogVerbose(@"domain: %@", domain);
