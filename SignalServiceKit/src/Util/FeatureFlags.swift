@@ -231,7 +231,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupRings = false
 
     @objc
-    public static let canUseNativeWebsocket = build.includes(.qa)
+    public static let canUseNativeWebsocket = false
 
     @objc
     public static var notificationServiceExtension: Bool {
