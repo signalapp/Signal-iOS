@@ -91,7 +91,7 @@ public class ContactCellView: ManualStackView {
         }
     }
 
-    public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .small }
+    public static var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { .thirtySix }
     private var avatarDataSource: ConversationAvatarDataSource? {
         switch configuration?.dataSource {
         case let .groupThread(thread): return .thread(thread)

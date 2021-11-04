@@ -46,27 +46,27 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public struct Configuration: Equatable {
         public enum SizeClass: Equatable {
-            case tiny   // 28x28
-            case small  // 36x36
-            case medium // 56x56
-            case large  // 80x80
-            case xlarge // 88x88
+            case twentyEight
+            case thirtySix
+            case fiftySix
+            case eighty
+            case eightyEight
 
             // Badges are not available when using a custom size class
             case customDiameter(UInt)
 
             public init(avatarDiameter: UInt) {
                 switch avatarDiameter {
-                case Self.tiny.avatarDiameter:
-                    self = .tiny
-                case Self.small.avatarDiameter:
-                    self = .small
-                case Self.medium.avatarDiameter:
-                    self = .medium
-                case Self.large.avatarDiameter:
-                    self = .large
-                case Self.xlarge.avatarDiameter:
-                    self = .xlarge
+                case Self.twentyEight.avatarDiameter:
+                    self = .twentyEight
+                case Self.thirtySix.avatarDiameter:
+                    self = .thirtySix
+                case Self.fiftySix.avatarDiameter:
+                    self = .fiftySix
+                case Self.eighty.avatarDiameter:
+                    self = .eighty
+                case Self.eightyEight.avatarDiameter:
+                    self = .eightyEight
                 default:
                     self = .customDiameter(avatarDiameter)
                 }
@@ -300,7 +300,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         super.layoutSubviews()
 
         switch configuration.sizeClass {
-        case .tiny, .small, .medium, .large, .xlarge:
+        case .twentyEight, .thirtySix, .fiftySix, .eighty, .eightyEight:
             // If we're using a predefined size class, we can layout the avatar and badge based on its parameters
             // Everything is aligned to the top left, and that's okay because of the sizing contract asserted below
             avatarView.frame = CGRect(origin: .zero, size: configuration.sizeClass.avatarSize)
@@ -544,11 +544,11 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
         guard let badgeAssets = primaryBadge?.assets else { return nil }
 
         switch configuration.sizeClass {
-        case .tiny, .small:
+        case .twentyEight, .thirtySix:
             return Theme.isDarkThemeEnabled ? badgeAssets.dark16 : badgeAssets.light16
-        case .medium:
+        case .fiftySix:
             return Theme.isDarkThemeEnabled ? badgeAssets.dark24 : badgeAssets.light24
-        case .large, .xlarge:
+        case .eighty, .eightyEight:
             return Theme.isDarkThemeEnabled ? badgeAssets.dark36 : badgeAssets.light36
         case .customDiameter:
             // We never vend badges if it's not one of the blessed sizes
@@ -648,20 +648,20 @@ extension ConversationAvatarView.Configuration.SizeClass {
 
     public var avatarDiameter: UInt {
         switch self {
-        case .tiny: return 28
-        case .small: return 36
-        case .medium: return 56
-        case .large: return 80
-        case .xlarge: return 88
+        case .twentyEight: return 28
+        case .thirtySix: return 36
+        case .fiftySix: return 56
+        case .eighty: return 80
+        case .eightyEight: return 88
         case .customDiameter(let diameter): return diameter
         }
     }
 
     var badgeDiameter: UInt {
         switch self {
-        case .tiny, .small: return 16
-        case .medium: return 24
-        case .large, .xlarge: return 36
+        case .twentyEight, .thirtySix: return 16
+        case .fiftySix: return 24
+        case .eighty, .eightyEight: return 36
         case .customDiameter: return 0
         }
     }
@@ -669,11 +669,11 @@ extension ConversationAvatarView.Configuration.SizeClass {
     /// The badge offset from its frame origin. Design has specified these points so the badge sits right alongside the circular avatar edge
     var badgeOffset: CGPoint {
         switch self {
-        case .tiny: return CGPoint(x: 14, y: 16)
-        case .small: return CGPoint(x: 20, y: 23)
-        case .medium: return CGPoint(x: 32, y: 38)
-        case .large: return CGPoint(x: 44, y: 52)
-        case .xlarge: return CGPoint(x: 49, y: 56)
+        case .twentyEight: return CGPoint(x: 14, y: 16)
+        case .thirtySix: return CGPoint(x: 20, y: 23)
+        case .fiftySix: return CGPoint(x: 32, y: 38)
+        case .eighty: return CGPoint(x: 44, y: 52)
+        case .eightyEight: return CGPoint(x: 49, y: 56)
         case .customDiameter: return .zero
         }
     }

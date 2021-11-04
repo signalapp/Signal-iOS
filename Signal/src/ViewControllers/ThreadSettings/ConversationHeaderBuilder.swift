@@ -623,7 +623,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
     func buildMainHeader() -> UIView {
         ConversationHeaderBuilder.buildHeader(
             for: thread,
-            sizeClass: .xlarge,
+            sizeClass: .eightyEight,
             options: [.videoCall, .audioCall, .mute, .search, .renderLocalUserAsNoteToSelf],
             delegate: self
         )

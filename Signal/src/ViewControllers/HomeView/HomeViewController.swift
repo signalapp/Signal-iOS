@@ -234,7 +234,7 @@ public extension HomeViewController {
 
     @objc
     func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
-        let avatarView = ConversationAvatarView(sizeClass: .tiny, badged: true)
+        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, badged: true)
         databaseStorage.read { readTx in
             avatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {

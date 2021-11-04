@@ -327,7 +327,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     public static let bubbleSharpCornerRadius: CGFloat = 4
     public static let bubbleWideCornerRadius: CGFloat = 18
-    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.tiny
+    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
 
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
@@ -1736,7 +1736,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
 
         fileprivate let avatarView = ConversationAvatarView(
-            sizeClass: .tiny,
+            sizeClass: .twentyEight,
             badged: true,
             useAutolayout: false)
 

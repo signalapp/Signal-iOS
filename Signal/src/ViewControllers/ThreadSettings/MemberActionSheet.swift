@@ -147,7 +147,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
         section.customHeaderView = ConversationHeaderBuilder.buildHeader(
             for: thread,
-            sizeClass: .large,
+            sizeClass: .eighty,
             options: [.message, .videoCall, .audioCall],
             delegate: self
         )

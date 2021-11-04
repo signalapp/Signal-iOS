@@ -66,6 +66,11 @@ public class SDSDeserialization {
         guard let encoded = encoded else {
             return nil
         }
+        // The only time we ever return nil is if we fail the above guard condition.
+        // Explicitly declaring our expected return type helps the type checker pick the correct specialization
+        // since otherwise it will infer the result of `unarchive(_:name:)` to be Optional<T> and not T.
+        // (This isn't so important since if T conforms to SDSSwiftSerializable then Optional<T> does too, but
+        // it doesn't hurt to be explicit).
         let result: T = try unarchive(encoded, name: name)
         return result
     }

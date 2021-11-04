@@ -12,7 +12,7 @@ public class HomeViewCell: UITableViewCell {
     public static let reuseIdentifier = "HomeViewCell"
 
     private let avatarView = ConversationAvatarView(
-        sizeClass: .medium,
+        sizeClass: .fiftySix,
         localUserDisplayMode: .noteToSelf,
         badged: true,
         useAutolayout: true)

@@ -244,7 +244,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
+        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, badged: true)
         badgedAvatarView.updateWithSneakyTransactionIfNecessary { config in
             if let avatarData = avatarData {
                 // TODO: Badging — Add badge
@@ -252,6 +252,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             } else if let address = tsAccountManager.localAddress {
                 config.dataSource = .address(address)
             } else {
+                owsFailDebug("Expected local address. Unsetting avatar")
                 config.dataSource = nil
             }
         }

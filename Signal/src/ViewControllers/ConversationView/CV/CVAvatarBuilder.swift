@@ -63,11 +63,11 @@ public class CVAvatarBuilder: Dependencies {
             let badgeAssets = badge?.assets
 
             switch ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints) {
-            case .tiny, .small:
+            case .twentyEight, .thirtySix:
                 badgeImage =  Theme.isDarkThemeEnabled ? badgeAssets?.dark16 : badgeAssets?.light16
-            case .medium:
+            case .fiftySix:
                 badgeImage =  Theme.isDarkThemeEnabled ? badgeAssets?.dark24 : badgeAssets?.light24
-            case .large, .xlarge:
+            case .eighty, .eightyEight:
                 badgeImage = Theme.isDarkThemeEnabled ? badgeAssets?.dark36 : badgeAssets?.light36
             case .customDiameter:
                 // We never vend badges if it's not one of the blessed sizes

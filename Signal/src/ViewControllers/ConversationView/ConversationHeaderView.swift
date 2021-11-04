@@ -52,10 +52,10 @@ public class ConversationHeaderView: UIStackView {
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
 
-    private var shouldBadgeAvatar: Bool { avatarSizeClass == .small }
+    private var shouldBadgeAvatar: Bool { avatarSizeClass == .thirtySix }
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         // TODO: Badges — Check with design about landscape view
-        traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .small
+        traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .thirtySix
     }
     private lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,

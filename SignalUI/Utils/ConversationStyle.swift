@@ -70,7 +70,7 @@ public class ConversationStyle: NSObject {
     @objc
     public let fullWidthGutterTrailing: CGFloat
 
-    static public let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.tiny
+    static public let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
     @objc
     static public let selectionViewWidth: CGFloat = 24
     @objc
