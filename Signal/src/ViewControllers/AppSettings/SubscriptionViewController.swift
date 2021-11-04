@@ -30,7 +30,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private lazy var avatarView: ConversationAvatarView = {
-        let newAvatarView = ConversationAvatarView(sizeClass: .xlarge, badged: true)
+        let newAvatarView = ConversationAvatarView(sizeClass: .eightyEight, badged: true)
         databaseStorage.read { readTx in
             newAvatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {
@@ -254,7 +254,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                             textStackView.alignment = .leading
                             textStackView.spacing = 4
 
-                            let localizedBadgeName = subscription.badge.localizedName
+                            let localizedBadgeName = subscription.name
                             let titleLabel = UILabel()
                             titleLabel.text = localizedBadgeName
                             titleLabel.font = .ows_dynamicTypeBody.ows_semibold
@@ -414,6 +414,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
+        //TODO EB DRY this up
         guard !Stripe.isAmountTooSmall(subscriptionAmount, in: currencyCode) else {
             owsFailDebug("Subscription amount is too small per Stripe API")
             return
@@ -424,21 +425,8 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        let request = PKPaymentRequest()
-        request.paymentSummaryItems = [PKPaymentSummaryItem(
-            label: NSLocalizedString(
-                "DONATION_VIEW_DONATION_TO_SIGNAL",
-                comment: "Text describing to the user that they're going to pay a donation to Signal"
-            ),
-            amount: subscriptionAmount,
-            type: .final
-        )]
-        request.merchantIdentifier = "merchant.org.signalfoundation"
-        request.merchantCapabilities = .capability3DS
-        request.countryCode = "US"
-        request.currencyCode = currencyCode
-        request.requiredShippingContactFields = [.emailAddress]
-        request.supportedNetworks = DonationUtilities.supportedNetworks
+        let request = DonationUtilities.newPaymentRequest(for: subscriptionAmount, currencyCode: currencyCode)
+
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
@@ -455,74 +443,47 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
         guard let selectedSubscription = self.selectedSubscription else {
             owsFailDebug("No currently selected subscription")
-            let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
+            let authResult = PKPaymentAuthorizationResult(status: .failure, errors: nil)
             completion(authResult)
             return
         }
-
-        let currencyCode = self.currencyCode
-        var generatedSubscriberID = Data()
-        var generatedClientSecret = ""
-        var generatedPaymentID = ""
-
+        
         // TODO EB cancel chain if Apple Pay times out
-
-        // Generate new subscriber ID
         firstly {
-            return try SubscriptionManager.setupNewSubscriberID()
-
-        // Create Stripe SetupIntent against new subscriberID
-        }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
-
-            generatedSubscriberID = subscriberID
-            DispatchQueue.main.async {
-                SubscriptionManager.subscriberID = subscriberID
-                SubscriptionManager.subscriberCurrencyCode = self.currencyCode
-                self.storageServiceManager.recordPendingLocalAccountUpdates()
-            }
-            return try SubscriptionManager.createPaymentMethod(for: subscriberID)
-
-        // Create new payment method
-        }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
-
-            generatedClientSecret = clientSecret
-            return DonationUtilities.createPaymentMethod(with: payment)
-
-        // Bind payment method to SetupIntent, confirm SetupIntent
-        }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
-
-            generatedPaymentID = paymentID
-            return try DonationUtilities.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
-
-        // Update payment on server
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-
-            return try SubscriptionManager.setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
-
-        // Select subscription level
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-
-            return SubscriptionManager.setSubscription(for: generatedSubscriberID, subscription: selectedSubscription, currency: currencyCode)
-
-        // Report success and dismiss sheet
+            return try SubscriptionManager.setupNewSubscription(subscription: selectedSubscription, payment: payment, currencyCode: self.currencyCode)
         }.done(on: .main) {
-
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)
-
-        // Report failure
+            self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
         }.catch { error in
-
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
             completion(authResult)
             owsFailDebug("Error setting up subscription, \(error)")
-
         }
-
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         controller.dismiss()
+    }
+    
+    func fetchAndRedeemReceipts(newSubscriptionLevel: SubscriptionLevel) {
+        var subscriberID: Data?
+        SDSDatabaseStorage.shared.read { transaction in
+            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+            
+            guard let subscriberID = subscriberID else {
+                owsFailDebug("Did not fetch subscriberID")
+                return
+            }
+            
+            firstly {
+                return try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: newSubscriptionLevel)
+            }.done(on: .main) { credential in
+                Logger.debug("Got presentation \(credential)")
+            }.catch { error in
+                owsFailDebug("Failed to redeem with error \(error)")
+            }
+        }
     }
 
 }

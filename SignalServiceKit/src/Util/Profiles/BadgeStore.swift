@@ -26,7 +26,7 @@ public class ProfileBadge: NSObject, Codable {
         case id, rawCategory, localizedName, localizedDescriptionFormatString, resourcePath, badgeVariant, localization
     }
 
-    init(jsonDictionary: [String: Any]) throws {
+    public init(jsonDictionary: [String: Any]) throws {
         let params = ParamParser(dictionary: jsonDictionary)
 
         id = try params.required(key: "id")

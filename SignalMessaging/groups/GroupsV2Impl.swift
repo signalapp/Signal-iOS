@@ -66,7 +66,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         // zkgroup library.  Instead it's a counter we should bump
         // every time there are breaking changes zkgroup library, e.g.
         // changes to data formats.
-        let zkgroupVersionCounter: Int = 3
+        let zkgroupVersionCounter: Int = 4
 
         let shouldReset = databaseStorage.read { transaction -> Bool in
             guard serverPublicParamsBase64 == self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction) else {

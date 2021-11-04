@@ -214,8 +214,8 @@ PODS:
     - YYImage/Core
   - YYImage/WebP (1.0.4):
     - YYImage/Core
-  - ZKGroup (0.7.3)
-  - ZKGroup/Tests (0.7.3)
+  - ZKGroup (0.8.2)
+  - ZKGroup/Tests (0.8.2)
 
 DEPENDENCIES:
   - AFNetworking/NSURLSession (from `https://github.com/signalapp/AFNetworking.git`, branch `signal/3.2.1`)
@@ -384,7 +384,7 @@ CHECKOUT OPTIONS:
     :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
     :git: https://github.com/signalapp/YYImage
   ZKGroup:
-    :commit: 197c382e8b7c602d6644f74348f5eb1d9d02f2d3
+    :commit: bbd71fd1fb56cbaf5af6e20d3837b210d5bbd5e2
     :git: https://github.com/signalapp/zkgroup
 
 SPEC CHECKSUMS:
@@ -436,7 +436,7 @@ SPEC CHECKSUMS:
   SwiftNIOTransportServices: 896c9a4ac98698d32aa2feea7657ade219ae80bb
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
-  ZKGroup: 81ba58bf87b5614b03d49364db221390bf257dd7
+  ZKGroup: 8f762d76c98c38d4de3c9a3406309e873a856383
 
 PODFILE CHECKSUM: c007b5dc4ba950afe17139fc7ca999084c99b943
 

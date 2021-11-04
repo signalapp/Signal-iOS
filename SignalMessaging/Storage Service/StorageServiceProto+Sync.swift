@@ -745,11 +745,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {
             if subscriberIDData != SubscriptionManager.getSubscriberID(transaction: transaction) {
-                SubscriptionManager.subscriberID = subscriberIDData
+                SubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
             }
 
-            if subscriberCurrencyCode != SubscriptionManager.subscriberCurrencyCode {
-                SubscriptionManager.subscriberCurrencyCode = subscriberCurrencyCode
+            if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+                SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
             }
         }
 

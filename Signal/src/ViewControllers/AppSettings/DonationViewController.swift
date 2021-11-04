@@ -539,21 +539,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        let request = PKPaymentRequest()
-        request.paymentSummaryItems = [PKPaymentSummaryItem(
-            label: NSLocalizedString(
-                "DONATION_VIEW_DONATION_TO_SIGNAL",
-                comment: "Text describing to the user that they're going to pay a donation to Signal"
-            ),
-            amount: donationAmount,
-            type: .final
-        )]
-        request.merchantIdentifier = "merchant.org.signalfoundation"
-        request.merchantCapabilities = .capability3DS
-        request.countryCode = "US"
-        request.currencyCode = currencyCode
-        request.requiredShippingContactFields = [.emailAddress]
-        request.supportedNetworks = DonationUtilities.supportedNetworks
+        let request = DonationUtilities.newPaymentRequest(for: donationAmount, currencyCode: currencyCode)
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
