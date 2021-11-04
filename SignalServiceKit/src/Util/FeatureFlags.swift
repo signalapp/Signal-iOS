@@ -239,7 +239,7 @@ public class FeatureFlags: BaseFlags {
         // however there is a significant bug in iOS 14 where the NSE will not
         // launch properly after a crash so we only support it in iOS 15.
         if #available(iOS 15, *) { return true }
-        return build.includes(.dev)
+        return false
     }
 
     public static func buildFlagMap() -> [String: Any] {
