@@ -122,7 +122,7 @@
 "ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Ett meddelande, klistermärke, reaktion, läskvitto eller media kunde inte levereras till dig från %@. Personen kan ha försökt att skicka det direkt till dig eller i en grupp.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Kassera";
+"ALERT_DISCARD_BUTTON" = "Slänga";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Spara inte";
@@ -209,7 +209,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Rubrik";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Bilagan kunde inte exporteras.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Det gick inte att exportera bilagan.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Det gick inte att spara";
@@ -554,7 +554,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Ljud";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Avvisa";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Neka";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Avsluta samtal";
@@ -1013,10 +1013,10 @@
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Meddela alltid";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Meddela inte om ljudet är avstängt";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Meddela inte om tystad";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Få notiser när du omnämns i chattar med ljudet avstängt?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Få notiser när du omnämns i tystade chattar?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Omnämnanden";
@@ -1025,22 +1025,22 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "meddelande";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stäng av ljudet för denna chatt i…";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta denna chatt i…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Alltid";
 
 /* Button to mute the chat */
-"CONVERSATION_SETTINGS_MUTE_BUTTON" = "ljud av";
+"CONVERSATION_SETTINGS_MUTE_BUTTON" = "tysta";
 
 /* Label for button to mute a thread for eight hours. */
 "CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 timmar";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Ljud av";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Tysta";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Ljud på";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Inte tystad";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 dag";
@@ -1058,16 +1058,16 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Alltid";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Ljudet är avstängt för alltid";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Alltid tystad";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "ljudet avstängt";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "tystad";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "fram tills %@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Ljudet är avstängt till %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Tystad till %@";
 
 /* Format for the section title of the 'mutual groups' section in conversation settings view. Embeds: {{ the number of shared groups }}. */
 "CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_FORMAT" = "%@ grupper gemensamt";
@@ -1118,7 +1118,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Avblockera användare";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Av-tysta";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
@@ -1205,10 +1205,10 @@
 "DATE_YESTERDAY" = "Igår";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Kunde inte kopiera loggar.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Det gick inte att kopiera loggarna.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Kunde inte paketera loggar.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Det gick inte att paketera loggar.";
 
 /* Error indicating that a debug log could not be uploaded. */
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Det gick inte att ladda upp loggar.";
@@ -1217,7 +1217,7 @@
 "DEBUG_LOG_ALERT_MESSAGE" = "Vad vill du göra med länken till din felsökningslogg?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Kunde inte hitta några loggar.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Det gick inte att hitta några loggar.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Öppna en felanmälan";
@@ -1427,7 +1427,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "När det är aktiverat försvinner nya meddelanden som skickas och tas emot i denna chatt när de har setts.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Just nu försvinner meddelanden efter %@";
+"DISAPPEARING_MESSAGES_HINT" = "För närvarande försvinner meddelanden efter %@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "timmar";
@@ -1586,7 +1586,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Samtalsfel.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Kunde inte komma åt kontakter.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Det gick inte att komma åt kontakter.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Det gick inte att vidarebefordra meddelandet.";
@@ -2258,10 +2258,10 @@
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Du accepterade en inbjudan till gruppen från %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Du avböjde en inbjudan till gruppen.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Du nekade en inbjudan till gruppen.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du avböjde en inbjudan till gruppen från %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du nekade en inbjudan till gruppen från %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ återkallade din inbjudan till gruppen.";
@@ -2378,13 +2378,13 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ lades till gruppen.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person avböjde inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person nekade inbjudan till gruppen.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person inbjuden av %@ avböjde inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person inbjuden av %@ nekade inbjudan till gruppen.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ avböjde din inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ nekade din inbjudan till gruppen.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ är nu en administratör";
@@ -2585,7 +2585,7 @@
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Användaren är redan i gruppen.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Kunde inte acceptera inbjudan.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Det gick inte att acceptera inbjudan.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "Blockera grupp";
@@ -2861,7 +2861,7 @@
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missades på grund av pågående samtal på annan enhet.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Avvisades på annan enhet.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Nekades på annan enhet.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Återansluter...";
@@ -3437,7 +3437,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått det högsta antalet enheter som du för närvarande kan länka till med ditt konto. Vänligen ta bort en enhet och försök igen.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Ljudet avstängt";
+"MUTED_BADGE" = "Tystad";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nyligen ändrat sitt profilnamn från %1$@ till %2$@.";
@@ -3770,7 +3770,7 @@
 "OUTGOING_CALL_FORMAT" = "Du ringde %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Avvisa begäran";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Neka begäran";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ i %2$@";
@@ -3779,19 +3779,19 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ kommer att meddelas att du avvisade.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ kommer att meddelas att du nekade.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Avvisa denna begäran?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Neka denna begäran?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Avgift för myntsanering";
 
 /* Error indicating that a payment request could not be cancelled. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Begäran kunde inte avbrytas.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Det gick inte att avbryta begäran.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Begäran kunde inte avvisas.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Det gick inte att neka begäran.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Misslyckades";
@@ -5228,7 +5228,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* A setting controlling whether muted conversations are shown in the badge count */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkludera chattar med avstängt ljud";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inkludera tystade chattar";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Ikonräknare";
@@ -5747,7 +5747,7 @@
 "SETTINGS_SECURITY_TITLE" = "Appsäkerhet";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Att skicka högkvalitativa medier kommer att använda mer data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Att skicka media av hög kvalitet kommer att använda mer data.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Foton och videor";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Ange ett användarnamn";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

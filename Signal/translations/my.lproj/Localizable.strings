@@ -3293,7 +3293,7 @@
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "တောင်းခံစာ သုံးသပ်မယ်";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Reported as spam and blocked.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "áá­á¯ááºáá¼á¬á¸áá®á¸ ááá±á¬á·áááº";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "လက်ခံသည် ";
@@ -3359,7 +3359,7 @@
 "MESSAGE_STATUS_PARTIALLY_SENT" = "အစိတ်အပိုင်းပေးပို့ဖြစ်၊ နှိပ်၍အသေးစိတ် ကြည့်ရှုပါ";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING" = "Send paused";
+"MESSAGE_STATUS_PENDING" = "áá±áá­á¯á·áá¾á¯áá­á¯ áááºááá·áºáá²á·áááº";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING_SHORT" = "Paused";
@@ -4997,7 +4997,7 @@
 "SENT_MEDIA_QUALITY_HIGH" = "မြင့်သော";
 
 /* String describing standard quality sent media */
-"SENT_MEDIA_QUALITY_STANDARD" = "Standard";
+"SENT_MEDIA_QUALITY_STANDARD" = "áá¯á¶áá¾ááº á¡ááá·áºááá·áº";
 
 /* Description for the session refresh alert */
 "SESSION_REFRESH_ALERT_MESSAGE" = "Signal သည်အစမှအဆုံးထိ ကုဒ်ဖြင့် ပြောင်းလဲဝှက်ထား၍ သင်၏ စကားပြောဆိုမှုပိုင်းများကို တစ်ခါတစ်ရံ ပြန်တင်ဆက် ရပါလိမ့်မည်။ ၎င်းလုပ်ခြင်းသည် သင့်စကားပြောဆိုမှု၏ လုံခြုံရေးကို မထိခိုက်စေပါ၊ သို့သော် သင်သည် ဤအဆက်အသွယ်မှ မက်ဆေ့ခ်ျတစ်ခုကို လွဲချော်ပြီး ၎င်းတို့အား ပြန်လည်ပေးပို့ရန် တောင်းဆိုနိုင်သည်။";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "သုံးသူအမည် ရိုက်ထည့်ပေးပါ";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

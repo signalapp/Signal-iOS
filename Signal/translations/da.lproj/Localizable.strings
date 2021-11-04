@@ -20,7 +20,7 @@
 "ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontakt for %@";
 
 /* Accessibility label for media. */
-"ACCESSIBILITY_LABEL_MEDIA" = "Medie";
+"ACCESSIBILITY_LABEL_MEDIA" = "Mediefil";
 
 /* Accessibility label for messages sent by you. */
 "ACCESSIBILITY_LABEL_SENDER_SELF" = "Dig";
@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Forstået";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller et medie kunne ikke leveres til dig fra %@ i denne chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller en mediefil kunne ikke leveres til dig fra %@ i denne chat.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Leveringsproblem";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller et medie kunne ikke leveres til dig fra %@. De kan have forsøgt at sende direkte til dig eller i en gruppe.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "En besked, et klistermærke, en reaktion, en læsekvittering eller en mediefil kunne ikke leveres til dig fra %@. De kan have forsøgt at sende direkte til dig eller i en gruppe.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Kassér";
@@ -272,7 +272,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Vedhæftning er tom";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Vælg medie der skal sendes";
+"ATTACHMENT_HINT" = "Vælg mediefil der skal sendes";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -1766,13 +1766,13 @@
 "FORWARD_MESSAGE_TITLE" = "Videresend til";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Der er ingen mediefiler i chatten";
+"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne chat.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Henter nyere medier...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Indlæser nyere mediefiler...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Henter gamle medier...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Indlæser ældre mediefiler...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Vedhæftning";
@@ -3155,7 +3155,7 @@
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Vælg flere";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Del medie";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Del mediefil";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Gruppeinvitation";
@@ -4052,10 +4052,10 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fejl i forbindelse med indgående besked";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vis medie én gang";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Vis mediefil én gang";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Medie";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Mediefil";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Vis foto én gang";
@@ -4298,7 +4298,7 @@
 "PINS_MEGAPHONE_TOAST_DISABLED" = "Pinkode déaktiveret.";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil medie";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Afspil mediefil";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Du har ikke markeret %@ som verificeret";
@@ -4505,7 +4505,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagerede med %@ på din video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på dit vis-én-gang medie";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på dit vis-én-gang mediefil";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerede med %@ på din talebesked";
@@ -4979,7 +4979,7 @@
 "SEND_INVITE_SUCCESS" = "Du inviterede din ven til at bruge Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Kassere mediet";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Kassér mediet";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_CAMERA" = "Tilbage til kameraet";
@@ -5126,13 +5126,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Nulstil indstillinger for auto-hentning";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalitet af sendte medier";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Kvalitet af sendte mediefiler";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Vælg den kvalitet, du sender billeder og videoer i.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sendte medier";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sendte mediefiler";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Dataforbrug";
@@ -5729,7 +5729,7 @@
 "SETTINGS_SECTION_SOUNDS" = "Lyde";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Ringer";
+"SETTINGS_SECTION_TITLE_CALLING" = "Ringer op";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL" = "Brug Touch ID, Face ID eller din iOS-enheds adgangskode for at oplåse Signal.";
@@ -5747,7 +5747,7 @@
 "SETTINGS_SECURITY_TITLE" = "App-sikkerhed";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Afsendelse af medier i høj kvalitet bruger mere data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Afsendelse af mediefiler i høj kvalitet bruger mere data.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Billeder og video";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Skriv et brugernavn";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

@@ -1451,7 +1451,7 @@
 "DISMISS_BUTTON_TEXT" = "Απόρριψη";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Απόρριψη μενού περιβάλλοντος";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Τοποθεσία παράκαμψης λογοκρισίας";
@@ -4598,7 +4598,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Θα πρέπει να εγγραφείς πριν μπορέσεις να στείλεις ένα μήνυμα.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Υπάρχει ένας λογαριασμός που έχει εγγραφτεί ήδη με αυτό τον αριθμό, ο οποίος είναι διαθέσιμος για μεταφορά.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Η επαλήθευση απέτυχε";
@@ -4640,7 +4640,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά. ";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Αφαίρεση προεπισκόπησης";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Επιλογή νέου διαχειριστή";
@@ -4898,13 +4898,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Αδυναμία ανάκτησης κωδικού σύνδεσης";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Για τη σύνδεση αυτής της συσκευής σε άλλο λογαριασμό, πρέπει πρώτα να επαναφέρεις αυτή τη συσκευή. Είσαι σίγουρος/η πως θέλεις να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κλπ); Αυτή η ενέργεια δεν μπορεί να αντιστραφεί.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Διαγραφή όλων";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Account Does Not Match";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Ο λογαριασμός δεν ταιριάζει";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Αναβάθμισε το Signal σε αυτή τη συσκευή για να το συνδέσεις με το τηλέφωνό σου.";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Συμπλήρωσε ένα όνομα χρήστη";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
