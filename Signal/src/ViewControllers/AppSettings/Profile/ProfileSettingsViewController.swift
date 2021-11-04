@@ -5,6 +5,7 @@
 import Foundation
 import SignalMessaging
 import UIKit
+import SignalUI
 
 @objc
 class ProfileSettingsViewController: OWSTableViewController2 {
@@ -239,21 +240,28 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Avatar
 
+    private let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass = .eightyEight
+
+    private func avatarImage(transaction: SDSAnyReadTransaction) -> UIImage? {
+        if let avatarData = avatarData {
+            return UIImage(data: avatarData)
+        } else {
+            return avatarBuilder.defaultAvatarImageForLocalUser(
+                diameterPoints: avatarSizeClass.avatarDiameter,
+                transaction: transaction)
+        }
+    }
+
     private func avatarCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
 
         cell.selectionStyle = .none
 
         let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, badged: true)
-        badgedAvatarView.updateWithSneakyTransactionIfNecessary { config in
-            if let avatarData = avatarData {
+        databaseStorage.read { readTx in
+            badgedAvatarView.update(readTx) { config in
                 // TODO: Badging — Add badge
-                config.dataSource = .asset(avatar: UIImage(data: avatarData), badge: nil)
-            } else if let address = tsAccountManager.localAddress {
-                config.dataSource = .address(address)
-            } else {
-                owsFailDebug("Expected local address. Unsetting avatar")
-                config.dataSource = nil
+                config.dataSource = .asset(avatar: self.avatarImage(transaction: readTx), badge: nil)
             }
         }
 
