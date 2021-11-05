@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,6 +10,7 @@ extern NSString *const OWSFrontingHost_GoogleEgypt;
 extern NSString *const OWSFrontingHost_GoogleUAE;
 extern NSString *const OWSFrontingHost_GoogleOman;
 extern NSString *const OWSFrontingHost_GoogleQatar;
+extern NSString *const OWSFrontingHost_GoogleUzbekistan;
 
 @interface OWSCensorshipConfiguration : NSObject
 

@@ -341,7 +341,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          frontingDomain:nil
                                             countryCode:@"US"],
             [OWSCountryMetadata countryMetadataWithName:@"Uruguay" tld:@".uy" frontingDomain:nil countryCode:@"UY"],
-            [OWSCountryMetadata countryMetadataWithName:@"Uzbekistan" tld:@".uz" frontingDomain:nil countryCode:@"UZ"],
+            [OWSCountryMetadata countryMetadataWithName:@"Uzbekistan"
+                                                    tld:@".uz"
+                                         frontingDomain:OWSFrontingHost_GoogleUzbekistan
+                                            countryCode:@"UZ"],
             [OWSCountryMetadata countryMetadataWithName:@"Saint Vincent and the Grenadines"
                                                     tld:@".vc"
                                          frontingDomain:nil
