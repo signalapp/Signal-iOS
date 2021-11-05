@@ -4514,7 +4514,7 @@
 "REACTIONS_DETAIL_YOU" = "Você";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Ler";
+"READ_ACTION" = "Lida";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "O utilizador não pode ser selecionado.";
