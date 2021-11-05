@@ -154,7 +154,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
     static let reuseIdentifier = "NewGroupMemberCell"
 
-    private let avatarView = ConversationAvatarView(sizeClass: .customDiameter(minAvatarDiameter))
+    private let avatarView = ConversationAvatarView(sizeClass: .customDiameter(minAvatarDiameter), localUserDisplayMode: .asUser)
     private let textLabel = UILabel(frame: .zero)
 
     fileprivate weak var delegate: NewGroupMemberCellDelegate?

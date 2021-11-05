@@ -75,7 +75,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         var innerViews = [UIView]()
 
-        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.avatarDiameter), useAutolayout: false)
+        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.avatarDiameter), localUserDisplayMode: .asUser, useAutolayout: false)
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             configuration.dataSource = avatarDataSource
         }

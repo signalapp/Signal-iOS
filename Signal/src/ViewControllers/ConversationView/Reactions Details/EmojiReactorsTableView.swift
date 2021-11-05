@@ -69,7 +69,7 @@ extension EmojiReactorsTableView: UITableViewDataSource {
 private class EmojiReactorCell: UITableViewCell {
     static let reuseIdentifier = "EmojiReactorCell"
 
-    let avatarView = ConversationAvatarView(sizeClass: .thirtySix, badged: true)
+    let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser, badged: true)
     let nameLabel = UILabel()
     let emojiLabel = UILabel()
 

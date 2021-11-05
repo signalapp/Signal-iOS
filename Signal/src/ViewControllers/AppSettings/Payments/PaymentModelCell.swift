@@ -8,7 +8,7 @@ import SignalUI
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
-    let contactAvatarView = ConversationAvatarView(sizeClass: .customDiameter(PaymentModelCell.avatarDiameter))
+    let contactAvatarView = ConversationAvatarView(sizeClass: .customDiameter(PaymentModelCell.avatarDiameter), localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
     let statusLabel = UILabel()
     let amountLabel = UILabel()

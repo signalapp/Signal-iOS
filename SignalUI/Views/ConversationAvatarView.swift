@@ -9,7 +9,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public required init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),
-        localUserDisplayMode: LocalUserDisplayMode = .asUser,
+        localUserDisplayMode: LocalUserDisplayMode,
         badged: Bool = false,
         shape: Configuration.Shape = .circular,
         useAutolayout: Bool = true
@@ -224,9 +224,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // All updates are performed on the main thread.
     private var currentModelGeneration: UInt = 0
     private var nextModelGeneration = AtomicUInt(0)
-    private func setNeedsModelUpdate() {
+    @discardableResult
+    private func setNeedsModelUpdate() -> UInt {
         AssertIsOnMainThread()
-        nextModelGeneration.increment()
+        return nextModelGeneration.increment()
     }
 
     // Load avatars in _reverse_ order in which they are enqueued.
@@ -238,8 +239,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private func enqueueAsyncModelUpdate() {
         AssertIsOnMainThread()
-        setNeedsModelUpdate()
-        let generationAtEnqueue = nextModelGeneration.get()
+        let generationAtEnqueue = setNeedsModelUpdate()
         let configurationAtEnqueue = configuration
 
         Self.serialQueue.async { [weak self] in

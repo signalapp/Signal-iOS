@@ -1591,15 +1591,16 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     NSString *filename = [self generateAvatarFilename];
     NSString *avatarPath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
-    NSURL *avatarUrl = [NSURL URLWithString:avatarPath];
+    NSURL *avatarUrl = [NSURL fileURLWithPath:avatarPath];
     if (!avatarUrl) {
         OWSFailDebug(@"Invalid URL for avatarPath %@", avatarPath);
         return nil;
     }
 
-    BOOL success = [avatarData writeToURL:avatarUrl atomically:YES];
-    if (!success) {
-        OWSFailDebug(@"Failed write");
+    NSError *error = nil;
+    BOOL success = [avatarData writeToURL:avatarUrl options:NSDataWritingAtomic error:&error];
+    if (!success || error) {
+        OWSFailDebug(@"Failed write to url %@: %@", avatarUrl, error);
         return nil;
     }
 

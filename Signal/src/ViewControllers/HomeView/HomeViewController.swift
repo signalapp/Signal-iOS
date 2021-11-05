@@ -77,7 +77,7 @@ public extension HomeViewController {
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
-        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize))
+        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize), localUserDisplayMode: .asUser)
         avatarView.update(transaction) { config in
             config.dataSource = .address(address)
         }
@@ -234,7 +234,7 @@ public extension HomeViewController {
 
     @objc
     func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
-        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, badged: true)
+        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser, badged: true)
         databaseStorage.read { readTx in
             avatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {

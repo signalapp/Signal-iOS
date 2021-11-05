@@ -327,7 +327,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     public static let bubbleSharpCornerRadius: CGFloat = 4
     public static let bubbleWideCornerRadius: CGFloat = 18
-    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
 
     public func configureForRendering(componentView: CVComponentView,
                                       cellMeasurement: CVCellMeasurement,
@@ -1239,7 +1238,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         if hasSenderAvatarLayout {
             // Sender avatar in groups.
-            contentMaxWidth -= CGFloat(Self.avatarSizeClass.avatarSize.width) + ConversationStyle.messageStackSpacing
+            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter) + ConversationStyle.messageStackSpacing
         }
 
         owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
@@ -1736,7 +1735,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
 
         fileprivate let avatarView = ConversationAvatarView(
-            sizeClass: .twentyEight,
+            sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
+            localUserDisplayMode: .asUser,
             badged: true,
             useAutolayout: false)
 
@@ -2168,7 +2168,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return nil
             }
 
-            let avatarView = ConversationAvatarView(sizeClass: componentView.avatarView.configuration.sizeClass)
+            let avatarView = ConversationAvatarView(sizeClass: componentView.avatarView.configuration.sizeClass, localUserDisplayMode: .asUser)
             avatarView.updateWithSneakyTransactionIfNecessary { newConfig in
                 newConfig = componentView.avatarView.configuration
             }

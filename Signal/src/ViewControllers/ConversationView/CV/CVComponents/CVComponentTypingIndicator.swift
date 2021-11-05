@@ -155,6 +155,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
         fileprivate let avatarView = ConversationAvatarView(
             sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
+            localUserDisplayMode: .asUser,
             useAutolayout: false)
         fileprivate let bubbleView = ManualLayoutViewWithLayer.pillView(name: "bubbleView")
         fileprivate let typingIndicatorView = TypingIndicatorView()
