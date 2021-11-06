@@ -943,6 +943,16 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
++ (TSRequest *)deleteSubscriptionIDRequest:(NSString *)base64SubscriberID
+{
+    TSRequest *request = [TSRequest
+        requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
+                method:@"DELETE"
+            parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
 + (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID {
     TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/create_payment_method", base64SubscriberID]]
                                               method:@"POST"
@@ -982,6 +992,16 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                                       @"visible" : @(YES),
                                                       @"primary" : @(makePrimary)
                                                     }];
+    return request;
+}
+
++ (TSRequest *)subscriptionGetCurrentSubscriptionLevelRequest:(NSString *)base64SubscriberID
+{
+    TSRequest *request = [TSRequest
+        requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
+                method:@"GET"
+            parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
     return request;
 }
 

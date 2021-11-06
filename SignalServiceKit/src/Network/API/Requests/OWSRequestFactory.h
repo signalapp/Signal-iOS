@@ -203,6 +203,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)subscriptionLevelsRequest;
 + (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID;
++ (TSRequest *)deleteSubscriptionIDRequest:(NSString *)base64SubscriberID;
++ (TSRequest *)subscriptionGetCurrentSubscriptionLevelRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID;
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;

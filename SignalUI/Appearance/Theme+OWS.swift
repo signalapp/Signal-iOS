@@ -33,6 +33,7 @@ public enum ThemeIcon: UInt {
     case settingsLink
     case settingsWallpaper
     case settingsAccount
+    case settingsManage
     case settingsLinkedDevices
     case settingsAppearance
     case settingsChats
@@ -227,6 +228,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "wallpaper-solid-24" : "wallpaper-outline-24"
         case .settingsAccount:
             return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
+        case .settingsManage:
+            return isDarkThemeEnabled ? "manage-solid-24" : "manage-outline-24"
         case .settingsLinkedDevices:
             return "linked-devices-24"
         case .settingsAppearance:

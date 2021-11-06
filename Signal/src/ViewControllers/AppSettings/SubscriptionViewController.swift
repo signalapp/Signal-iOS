@@ -8,8 +8,26 @@ import SignalServiceKit
 import UIKit
 import BonMot
 import PassKit
+import SafariServices
 
 class SubscriptionViewController: OWSTableViewController2 {
+
+    private enum SubscriptionViewState {
+        case loading
+        case subscriptionNotYetSetUp
+        case subscriptionExists
+        case subscriptionUpdating
+    }
+
+    private var subscriptionViewState: SubscriptionViewState {
+        if updatingSubscriptions == true {
+            return .subscriptionUpdating
+        } else if fetchedSubscriptionStatus == false || subscriptions == nil {
+            return .loading
+        } else {
+            return currentSubscription != nil ? .subscriptionExists : .subscriptionNotYetSetUp
+        }
+    }
 
     private var subscriptions: [SubscriptionLevel]? {
         didSet {
@@ -21,6 +39,13 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private var selectedSubscription: SubscriptionLevel?
+
+    private var fetchedSubscriptionStatus = false
+
+    private var updatingSubscriptions = false
+    private var currentSubscription: Subscription?
+    private var persistedSubscriberID: Data?
+    private var persistedSubscriberCurrencyCode: String?
 
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
@@ -48,35 +73,104 @@ class SubscriptionViewController: OWSTableViewController2 {
         set {}
     }
 
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+
     static let bubbleBorderWidth: CGFloat = 1.5
     static let bubbleBorderColor = UIColor(rgbHex: 0xdedede)
     static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
     private static let subscriptionBannerAvatarSize: UInt = 88
 
+    public init(updatingSubscriptionsState: Bool, subscriptions: [SubscriptionLevel]?, currentSubscription: Subscription?, subscriberID: Data?, subscriberCurrencyCode: String?) {
+        updatingSubscriptions = updatingSubscriptionsState
+        self.subscriptions = subscriptions
+        self.currentSubscription = currentSubscription
+        if let currentSubscription = currentSubscription, let subscriptions = subscriptions {
+            fetchedSubscriptionStatus = true
+            for subscription in subscriptions {
+                if subscription.level == currentSubscription.level {
+                    self.selectedSubscription = subscription
+                }
+            }
+        }
+
+        self.persistedSubscriberID = subscriberID
+        self.persistedSubscriberCurrencyCode = subscriberCurrencyCode
+        super.init()
+    }
+
+    public convenience override init() {
+        self.init(updatingSubscriptionsState: false, subscriptions: nil, currentSubscription: nil, subscriberID: nil, subscriberCurrencyCode: nil)
+    }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Fetch available subscriptions
-        firstly {
-            SubscriptionManager.getSubscriptions()
-        }.done(on: .main) { (fetchedSubscriptions: [SubscriptionLevel]) in
-            self.subscriptions = fetchedSubscriptions
-            Logger.debug("successfully fetched subscriptions")
-
-            let badgeUpdatePromises = fetchedSubscriptions.map { return self.profileManager.badgeStore.populateAssetsOnBadge($0.badge) }
+        if subscriptions == nil {
+            // Fetch available subscriptions
             firstly {
-                return Promise.when(fulfilled: badgeUpdatePromises)
-            }.done(on: .main) {
-                self.updateTableContents()
-            }.catch { error in
-                owsFailDebug("Failed to fetch assets for badge \(error)")
-            }
+                SubscriptionManager.getSubscriptions()
+            }.done(on: .main) { (fetchedSubscriptions: [SubscriptionLevel]) in
+                self.subscriptions = fetchedSubscriptions
+                Logger.debug("successfully fetched subscriptions")
 
-        }.catch(on: .main) { error in
-            owsFailDebug("Failed to fetch subscriptions \(error)")
+                let badgeUpdatePromises = fetchedSubscriptions.map { return self.profileManager.badgeStore.populateAssetsOnBadge($0.badge) }
+                firstly {
+                    return Promise.when(fulfilled: badgeUpdatePromises)
+                }.done(on: .main) {
+                    self.updateTableContents()
+                }.catch { error in
+                    owsFailDebug("Failed to fetch assets for badge \(error)")
+                }
+
+            }.catch(on: .main) { error in
+                owsFailDebug("Failed to fetch subscriptions \(error)")
+            }
         }
 
+        fetchCurrentSubscription()
         updateTableContents()
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchCurrentSubscription()
+    }
+
+    func fetchCurrentSubscription() {
+        // Fetch current subscription state
+        SDSDatabaseStorage.shared.read { transaction in
+            let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+            let currencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
+            if let subscripberID = subscriberID, let currencyCode = currencyCode {
+                self.persistedSubscriberID = subscriberID
+                self.persistedSubscriberCurrencyCode = currencyCode
+                firstly {
+                    SubscriptionManager.getCurrentSubscriptionStatus(for: subscripberID)
+                }.done(on: .main) { subscription in
+                    self.fetchedSubscriptionStatus = true
+                    self.currentSubscription = subscription
+                    self.updateTableContents()
+                    self.avatarView.reloadDataIfNecessary()
+                }.catch { error in
+                    owsFailDebug("Failed to fetch subscription \(error)")
+                }
+            } else {
+                self.currentSubscription = nil
+                if self.fetchedSubscriptionStatus {
+                    // Dispatch to next run loop to avoid reentrant db calls
+                    DispatchQueue.main.async {
+                        self.updateTableContents()
+                    }
+                } else {
+                    self.fetchedSubscriptionStatus = true
+                }
+            }
+        }
     }
 
     func updateTableContents() {
@@ -93,7 +187,7 @@ class SubscriptionViewController: OWSTableViewController2 {
             let stackView = UIStackView()
             stackView.axis = .vertical
             stackView.alignment = .center
-            stackView.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 0, right: 19)
+            stackView.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 20, right: 19)
             stackView.isLayoutMarginsRelativeArrangement = true
 
             stackView.addArrangedSubview(avatarView)
@@ -112,235 +206,138 @@ class SubscriptionViewController: OWSTableViewController2 {
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(20, after: titleLabel)
 
-            // Body text
-            let textView = LinkingTextView()
-            let bodyFormat = NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view, embeds {{link to donation read more}}")
-            let readMore = NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body")
-            let body = String(format: bodyFormat, readMore)
+            if subscriptionViewState == .subscriptionNotYetSetUp || subscriptionViewState == .subscriptionUpdating {
+                // Body text
+                let textView = LinkingTextView()
+                let bodyFormat = NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view, embeds {{link to donation read more}}")
+                let readMore = NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body")
+                let body = String(format: bodyFormat, readMore)
 
-            let bodyAttributedString = NSMutableAttributedString(string: body)
-            bodyAttributedString.addAttributesToEntireString([.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor])
-            bodyAttributedString.addAttributes([.link: NSURL()], range: NSRange(location: body.utf16.count - readMore.utf16.count, length: readMore.utf16.count))
+                let bodyAttributedString = NSMutableAttributedString(string: body)
+                bodyAttributedString.addAttributesToEntireString([.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor])
+                bodyAttributedString.addAttributes([.link: NSURL()], range: NSRange(location: body.utf16.count - readMore.utf16.count, length: readMore.utf16.count))
 
-            textView.attributedText = bodyAttributedString
-            textView.linkTextAttributes = [
-                .foregroundColor: Theme.accentBlueColor,
-                .underlineColor: UIColor.clear,
-                .underlineStyle: NSUnderlineStyle.single.rawValue
-            ]
-            textView.textAlignment = .center
-            stackView.addArrangedSubview(textView)
+                textView.attributedText = bodyAttributedString
+                textView.linkTextAttributes = [
+                    .foregroundColor: Theme.accentBlueColor,
+                    .underlineColor: UIColor.clear,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue
+                ]
+                textView.textAlignment = .center
+                stackView.addArrangedSubview(textView)
+
+            }
 
             return stackView
         }()
 
-        // TODO EB Disable currency swapping if a subscription already exists (pull currency code from storage service)
-        if true {// DonationUtilities.isApplePayAvailable {
-            section.add(.init(
-                customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
-                    let cell = self.newCell()
+        // Footer setup
+        bottomFooterStackView.axis = .vertical
+        bottomFooterStackView.alignment = .center
+        bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
+        bottomFooterStackView.layoutMargins = UIEdgeInsets(top: 10, leading: 23, bottom: 10, trailing: 23)
+        bottomFooterStackView.spacing = 16
+        bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
+        bottomFooterStackView.removeAllSubviews()
 
-                    let stackView = UIStackView()
-                    stackView.axis = .horizontal
-                    stackView.alignment = .center
-                    stackView.spacing = 8
-                    stackView.layoutMargins = UIEdgeInsets(top: 20, leading: 0, bottom: 20, trailing: 0)
-                    stackView.isLayoutMarginsRelativeArrangement = true
-                    cell.contentView.addSubview(stackView)
-                    stackView.autoPinEdgesToSuperviewEdges()
+        switch subscriptionViewState {
+        case .loading:
+            buildTableForPendingState(contents: contents, section: section)
+        case .subscriptionNotYetSetUp:
+            buildTableForPendingSubscriptionState(contents: contents, section: section)
+        case .subscriptionExists:
+            buildTableForExistingSubscriptionState(contents: contents, section: section)
+        case .subscriptionUpdating:
+            buildTableForUpdatingSubscriptionState(contents: contents, section: section)
+        }
 
-                    let label = UILabel()
-                    label.font = .ows_dynamicTypeBodyClamped
-                    label.textColor = Theme.primaryTextColor
-                    label.text = NSLocalizedString(
-                        "SUSTAINER_VIEW_CURRENCY",
-                        comment: "Set currency label in sustainer view"
-                    )
-                    stackView.addArrangedSubview(label)
+        UIView.performWithoutAnimation {
+            self.shouldHideBottomFooter = !(self.subscriptionViewState == .subscriptionNotYetSetUp || self.subscriptionViewState == .subscriptionUpdating)
+        }
+    }
 
-                    let picker = OWSButton { [weak self] in
-                        guard let self = self else { return }
-                        let vc = CurrencyPickerViewController(
-                            dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: self.currencyCode)
-                        ) { [weak self] currencyCode in
-                            self?.currencyCode = currencyCode
-                        }
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    }
+    private func buildTableForPendingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
 
-                    picker.setAttributedTitle(NSAttributedString.composed(of: [
-                        self.currencyCode,
-                        Special.noBreakSpace,
-                        NSAttributedString.with(
-                            image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
-                            font: .ows_regularFont(withSize: 17)
-                        ).styled(
-                            with: .color(Self.bubbleBorderColor)
-                        )
-                    ]).styled(
-                        with: .font(.ows_regularFont(withSize: 17)),
-                        .color(Theme.primaryTextColor)
-                    ), for: .normal)
-
-                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor), for: .normal)
-                    picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
-
-                    let pillView = PillView()
-                    pillView.layer.borderWidth = Self.bubbleBorderWidth
-                    pillView.layer.borderColor = Self.bubbleBorderColor.cgColor
-                    pillView.clipsToBounds = true
-                    pillView.addSubview(picker)
-                    picker.autoPinEdgesToSuperviewEdges()
-                    picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
-
-                    stackView.addArrangedSubview(pillView)
-                    pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
-
-                    let leadingSpacer = UIView.hStretchingSpacer()
-                    let trailingSpacer = UIView.hStretchingSpacer()
-                    stackView.insertArrangedSubview(leadingSpacer, at: 0)
-                    stackView.addArrangedSubview(trailingSpacer)
-                    leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
-
-                    return cell
-                },
-                actionBlock: {}
-            ))
-
-            // Subscription levels
-            // TODO EB Can't load subscriptions UI
-            // TODO EB Apple pay not available UI
+        if DonationUtilities.isApplePayAvailable {
 
             if let subscriptions = self.subscriptions {
-                for (index, subscription) in subscriptions.enumerated() {
-                    section.add(.init(
-                        customCellBlock: { [weak self] in
-                            guard let self = self else { return UITableViewCell() }
-                            let cell = self.newSubscriptionCell()
-                            cell.subscriptionID = subscription.level
-
-                            let stackView = UIStackView()
-                            stackView.axis = .horizontal
-                            stackView.alignment = .center
-                            stackView.layoutMargins = UIEdgeInsets(top: index == 0 ? 16 : 28, leading: 34, bottom: 16, trailing: 34)
-                            stackView.isLayoutMarginsRelativeArrangement = true
-                            stackView.spacing = 10
-                            cell.contentView.addSubview(stackView)
-                            stackView.autoPinEdgesToSuperviewEdges()
-
-                            let isSelected = self.selectedSubscription?.level == subscription.level
-
-                            // Background view
-                            let background = UIView()
-                            background.backgroundColor = Theme.backgroundColor
-                            background.layer.borderWidth = Self.bubbleBorderWidth
-                            background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
-                            background.layer.cornerRadius = 12
-                            stackView.addSubview(background)
-                            background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: index == 0 ? 0 : 12, leading: 24, bottom: 0, trailing: 24))
-
-                            let badge = subscription.badge
-                            let imageView = UIImageView()
-                            imageView.setContentHuggingHigh()
-                            if let badgeImage = badge.assets?.universal160 {
-                                imageView.image = badgeImage
-                            }
-                            stackView.addArrangedSubview(imageView)
-                            imageView.autoSetDimensions(to: CGSize(square: 64))
-
-                            let textStackView = UIStackView()
-                            textStackView.axis = .vertical
-                            textStackView.alignment = .leading
-                            textStackView.spacing = 4
-
-                            let localizedBadgeName = subscription.name
-                            let titleLabel = UILabel()
-                            titleLabel.text = localizedBadgeName
-                            titleLabel.font = .ows_dynamicTypeBody.ows_semibold
-                            titleLabel.numberOfLines = 0
-
-                            let descriptionLabel = UILabel()
-                            let descriptionFormat = NSLocalizedString("SUSTAINER_VIEW_BADGE_DESCRIPTION", comment: "Description text for sustainer view badges, embeds {{localized badge name}}")
-                            descriptionLabel.text = String(format: descriptionFormat, localizedBadgeName)
-                            descriptionLabel.font = .ows_dynamicTypeBody2
-                            descriptionLabel.numberOfLines = 0
-
-                            let pricingLabel = UILabel()
-                            if let price = subscription.currency[self.currencyCode] {
-                                let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
-                                let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
-                                pricingLabel.text = String(format: pricingFormat, currencyString)
-                                pricingLabel.font = .ows_dynamicTypeBody2
-                                pricingLabel.numberOfLines = 0
-                            }
-
-                            textStackView.addArrangedSubviews([titleLabel, descriptionLabel, pricingLabel])
-                            stackView.addArrangedSubview(textStackView)
-
-                            return cell
-                        },
-                        actionBlock: {
-                            self.selectedSubscription = subscription
-                            self.updateTableContents()
-                        }
-                    ))
-                }
-            } else {
-                // TODO EB Loading subscription UI / not available
                 section.add(.init(
                     customCellBlock: { [weak self] in
                         guard let self = self else { return UITableViewCell() }
                         let cell = self.newCell()
+
                         let stackView = UIStackView()
-                        stackView.axis = .vertical
+                        stackView.axis = .horizontal
                         stackView.alignment = .center
+                        stackView.spacing = 8
+                        stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
+                        stackView.isLayoutMarginsRelativeArrangement = true
                         cell.contentView.addSubview(stackView)
                         stackView.autoPinEdgesToSuperviewEdges()
 
-                        let activitySpinner: UIActivityIndicatorView
-                        if #available(iOS 13, *) {
-                            activitySpinner = UIActivityIndicatorView(style: .medium)
-                        } else {
-                            activitySpinner = UIActivityIndicatorView(style: .gray)
+                        let label = UILabel()
+                        label.font = .ows_dynamicTypeBodyClamped
+                        label.textColor = Theme.primaryTextColor
+                        label.text = NSLocalizedString(
+                            "SUSTAINER_VIEW_CURRENCY",
+                            comment: "Set currency label in sustainer view"
+                        )
+                        stackView.addArrangedSubview(label)
+
+                        let picker = OWSButton { [weak self] in
+                            guard let self = self else { return }
+                            let vc = CurrencyPickerViewController(
+                                dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: self.currencyCode)
+                            ) { [weak self] currencyCode in
+                                self?.currencyCode = currencyCode
+                            }
+                            self.navigationController?.pushViewController(vc, animated: true)
                         }
 
-                        activitySpinner.startAnimating()
+                        picker.setAttributedTitle(NSAttributedString.composed(of: [
+                            self.currencyCode,
+                            Special.noBreakSpace,
+                            NSAttributedString.with(
+                                image: #imageLiteral(resourceName: "chevron-down-18").withRenderingMode(.alwaysTemplate),
+                                font: .ows_regularFont(withSize: 17)
+                            ).styled(
+                                with: .color(Self.bubbleBorderColor)
+                            )
+                        ]).styled(
+                            with: .font(.ows_regularFont(withSize: 17)),
+                            .color(Theme.primaryTextColor)
+                        ), for: .normal)
 
-                        stackView.addArrangedSubview(activitySpinner)
+                        picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor), for: .normal)
+                        picker.setBackgroundImage(UIImage(color: Self.bubbleBackgroundColor.withAlphaComponent(0.8)), for: .highlighted)
+
+                        let pillView = PillView()
+                        pillView.layer.borderWidth = Self.bubbleBorderWidth
+                        pillView.layer.borderColor = Self.bubbleBorderColor.cgColor
+                        pillView.clipsToBounds = true
+                        pillView.addSubview(picker)
+                        picker.autoPinEdgesToSuperviewEdges()
+                        picker.autoSetDimension(.width, toSize: 74, relation: .greaterThanOrEqual)
+
+                        stackView.addArrangedSubview(pillView)
+                        pillView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
+
+                        let leadingSpacer = UIView.hStretchingSpacer()
+                        let trailingSpacer = UIView.hStretchingSpacer()
+                        stackView.insertArrangedSubview(leadingSpacer, at: 0)
+                        stackView.addArrangedSubview(trailingSpacer)
+                        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
 
                         return cell
                     },
                     actionBlock: {}
                 ))
+
+                buildSubscriptionLevelCells(subscriptions: subscriptions, section: section)
+
             }
 
-            // Footer
-
-            bottomFooterStackView.axis = .vertical
-            bottomFooterStackView.alignment = .center
-            bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
-            bottomFooterStackView.layoutMargins = UIEdgeInsets(top: 10, leading: 23, bottom: 10, trailing: 23)
-            bottomFooterStackView.spacing = 16
-            bottomFooterStackView.isLayoutMarginsRelativeArrangement = true
-            bottomFooterStackView.removeAllSubviews()
-
-            // Apple pay button
-            let buttonType: PKPaymentButtonType
-            if #available(iOS 14, *) {
-                buttonType = .contribute
-            } else {
-                buttonType = .donate
-            }
-
-            let applePayContributeButton = PKPaymentButton(
-                paymentButtonType: buttonType,
-                paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
-            )
-
-            if #available(iOS 12, *) { applePayContributeButton.cornerRadius = 12 }
-            applePayContributeButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
-
+            let applePayContributeButton = newPaymentButton()
             bottomFooterStackView.addArrangedSubview(applePayContributeButton)
             applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
@@ -369,11 +366,387 @@ class SubscriptionViewController: OWSTableViewController2 {
 
             bottomFooterStackView.addArrangedSubview(donateButton)
         }
+    }
 
+    private func buildTableForExistingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
+
+        // My Support header
+        section.add(.init(
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let cell = self.newCell()
+
+                let titleLabel = UILabel()
+                titleLabel.text = NSLocalizedString("SUSTAINER_VIEW_MY_SUPPORT", comment: "Existing subscriber support header")
+                titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+                titleLabel.numberOfLines = 0
+                cell.contentView.addSubview(titleLabel)
+                titleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 24, bottom: 14, trailing: 24))
+                return cell
+            },
+            actionBlock: {}
+        ))
+
+        // Current support level
+        if let currentSubscription = currentSubscription, let subscriptions = subscriptions {
+            let level = currentSubscription.level
+            var subscriptionLevel: SubscriptionLevel?
+            for subscription in subscriptions {
+                if subscription.level == level {
+                    subscriptionLevel = subscription
+                    break
+                }
+            }
+
+            section.add(.init(
+                customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    let cell = self.newCell()
+
+                    let containerStackView = UIStackView()
+                    containerStackView.axis = .vertical
+                    containerStackView.alignment = .center
+                    containerStackView.layoutMargins = UIEdgeInsets(top: 16, leading: 30, bottom: 16, trailing: 30)
+                    containerStackView.isLayoutMarginsRelativeArrangement = true
+                    containerStackView.spacing = 16
+
+                    cell.contentView.addSubview(containerStackView)
+                    containerStackView.autoPinEdgesToSuperviewEdges()
+
+                    // Background view
+                    let background = UIView()
+                    background.backgroundColor = Theme.backgroundColor
+                    background.layer.cornerRadius = 12
+                    containerStackView.addSubview(background)
+                    background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+
+                    let stackView = UIStackView()
+                    stackView.axis = .horizontal
+                    stackView.alignment = .center
+                    stackView.spacing = 10
+                    containerStackView.addArrangedSubview(stackView)
+                    stackView.autoPinWidthToSuperviewMargins()
+
+                    guard let subscription = subscriptionLevel else {
+                        owsFailDebug("Can't find a matching description")
+                        return cell
+                    }
+                    if let subscription = subscriptionLevel {
+                        let imageView = UIImageView()
+                        imageView.setContentHuggingHigh()
+                        if let badgeImage = subscription.badge.assets?.universal160 {
+                            imageView.image = badgeImage
+                        }
+                        stackView.addArrangedSubview(imageView)
+                        imageView.autoSetDimensions(to: CGSize(square: 64))
+                    }
+
+                    let textStackView = UIStackView()
+                    textStackView.axis = .vertical
+                    textStackView.alignment = .leading
+                    textStackView.spacing = 4
+
+                    let localizedBadgeName = subscription.name
+                    let titleLabel = UILabel()
+                    titleLabel.text = localizedBadgeName
+                    titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+                    titleLabel.numberOfLines = 0
+
+                    let pricingLabel = UILabel()
+                    if let price = subscription.currency[self.currencyCode] {
+                        let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
+                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
+                        pricingLabel.text = String(format: pricingFormat, currencyString)
+                        pricingLabel.font = .ows_dynamicTypeBody2
+                        pricingLabel.numberOfLines = 0
+                    }
+
+                    let renewalLabel = UILabel()
+                    let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
+                    let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
+                    let renewalString = self.dateFormatter.string(from: renewalDate)
+                    renewalLabel.text = String(format: renewalFormat, renewalString)
+                    renewalLabel.font = .ows_dynamicTypeBody2
+                    renewalLabel.textColor = .ows_gray45
+                    renewalLabel.numberOfLines = 0
+
+                    textStackView.addArrangedSubviews([titleLabel, pricingLabel, renewalLabel])
+                    stackView.addArrangedSubview(textStackView)
+
+                    let addBoostString = NSLocalizedString("SUSTAINER_VIEW_ADD_BOOST", comment: "Sustainer view Add Boost button title")
+                    let addBoostButton = OWSButton(title: addBoostString) { [weak self] in
+//                        guard let self = self else { return }
+                    }
+                    addBoostButton.dimsWhenHighlighted = true
+                    addBoostButton.layer.cornerRadius = 8
+                    addBoostButton.backgroundColor = .ows_accentBlue
+                    containerStackView.addArrangedSubview(addBoostButton)
+                    addBoostButton.autoSetDimension(.height, toSize: 48)
+                    addBoostButton.autoPinWidthToSuperviewMargins()
+
+                    return cell
+                },
+                actionBlock: {}
+            ))
+        }
+
+        // Management disclosure
+        let managementSection = OWSTableSection()
+        contents.addSection(managementSection)
+        managementSection.add(.disclosureItem(
+            icon: .settingsManage,
+            name: NSLocalizedString("SUBSCRIBER_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button in sustainer view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                if let subscriptions = self.subscriptions, let currentSubscription = self.currentSubscription, let persistedSubscriberID = self.persistedSubscriberID, let persistedSubscriberCurrencyCode = self.persistedSubscriberCurrencyCode {
+                    let managementController = SubscriptionViewController(updatingSubscriptionsState: true, subscriptions: subscriptions, currentSubscription: currentSubscription, subscriberID: persistedSubscriberID, subscriberCurrencyCode: persistedSubscriberCurrencyCode)
+                    self.navigationController?.pushViewController(managementController, animated: true)
+                }
+            }
+        ))
+
+        managementSection.add(.disclosureItem(
+            icon: .settingsBadges,
+            name: NSLocalizedString("SUBSCRIBER_BADGES", comment: "Title for the 'Badges' button in sustainer view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
+            actionBlock: { [weak self] in
+                if let self = self {
+                    let vc = BadgeConfigurationViewController(
+                        availableBadges: {
+                            SDSDatabaseStorage.shared.read { readTx in
+                                // TODO: Use the profile snapshot like everything else does here
+                                self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
+                            } ?? []
+                        }(),
+                        selectedBadgeIndex: nil,
+                        shouldDisplayOnProfile: false,
+                        delegate: self)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        ))
+
+        managementSection.add(.disclosureItem(
+            icon: .settingsHelp,
+            name: NSLocalizedString("SUBSCRIBER_SUBSCRIPTION_FAQ", comment: "Title for the 'Subscription FAQ' button in sustainer view."),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionFAQ"),
+            actionBlock: { [weak self] in
+                let vc = SFSafariViewController(url: SupportConstants.subscriptionFAQURL)
+                self?.present(vc, animated: true, completion: nil)
+            }
+        ))
+
+    }
+
+    private func buildTableForPendingState(contents: OWSTableContents, section: OWSTableSection) {
+        section.add(.init(
+            customCellBlock: { [weak self] in
+                guard let self = self else { return UITableViewCell() }
+                let cell = self.newCell()
+                let stackView = UIStackView()
+                stackView.axis = .vertical
+                stackView.alignment = .center
+                stackView.layoutMargins = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
+                stackView.isLayoutMarginsRelativeArrangement = true
+                cell.contentView.addSubview(stackView)
+                stackView.autoPinEdgesToSuperviewEdges()
+
+                let activitySpinner: UIActivityIndicatorView
+                if #available(iOS 13, *) {
+                    activitySpinner = UIActivityIndicatorView(style: .medium)
+                } else {
+                    activitySpinner = UIActivityIndicatorView(style: .gray)
+                }
+
+                activitySpinner.startAnimating()
+
+                stackView.addArrangedSubview(activitySpinner)
+
+                return cell
+            },
+            actionBlock: {}
+        ))
+    }
+
+    private func buildTableForUpdatingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
+        if let subscriptions = subscriptions {
+            buildSubscriptionLevelCells(subscriptions: subscriptions, section: section)
+        }
+
+        let applePayContributeButton = newPaymentButton()
+        bottomFooterStackView.addArrangedSubview(applePayContributeButton)
+        applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+        applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
+
+        if let currentSubscription = currentSubscription, let selectedSubscription = selectedSubscription {
+            let enabled = currentSubscription.level != selectedSubscription.level
+            applePayContributeButton.isEnabled = enabled
+            applePayContributeButton.isHighlighted = !enabled
+
+        }
+
+        let cancelButtonString = NSLocalizedString("SUSTAINER_VIEW_CANCEL_SUBSCRIPTION", comment: "Sustainer view Cancel Subscription button title")
+        let cancelButton = OWSButton(title: cancelButtonString) { [weak self] in
+            guard let self = self else { return }
+            let title = NSLocalizedString("SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE", comment: "Confirm Cancellation? Action sheet title")
+            let message = NSLocalizedString("SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE", comment: "Confirm Cancellation? Action sheet message")
+            let confirm = NSLocalizedString("SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM", comment: "Confirm Cancellation? Action sheet confirm button")
+            let notNow = NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button")
+            let actionSheet = ActionSheetController(title: title, message: message)
+            actionSheet.addAction(ActionSheetAction(
+                title: confirm,
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.cancelSubscription()
+                }
+            ))
+
+            actionSheet.addAction(ActionSheetAction(
+                title: notNow,
+                style: .cancel,
+                handler: nil
+            ))
+            self.presentActionSheet(actionSheet)
+        }
+        cancelButton.setTitleColor(.ows_accentBlue, for: .normal)
+        cancelButton.dimsWhenHighlighted = true
+        bottomFooterStackView.addArrangedSubview(cancelButton)
+
+    }
+
+    private func buildSubscriptionLevelCells(subscriptions: [SubscriptionLevel], section: OWSTableSection) {
+        for (index, subscription) in subscriptions.enumerated() {
+            section.add(.init(
+                customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    let cell = self.newSubscriptionCell()
+                    cell.subscriptionID = subscription.level
+
+                    let stackView = UIStackView()
+                    stackView.axis = .horizontal
+                    stackView.alignment = .center
+                    stackView.layoutMargins = UIEdgeInsets(top: index == 0 ? 16 : 28, leading: 34, bottom: 16, trailing: 34)
+                    stackView.isLayoutMarginsRelativeArrangement = true
+                    stackView.spacing = 10
+                    cell.contentView.addSubview(stackView)
+                    stackView.autoPinEdgesToSuperviewEdges()
+
+                    let isSelected = self.selectedSubscription?.level == subscription.level
+
+                    // Background view
+                    let background = UIView()
+                    background.backgroundColor = Theme.backgroundColor
+                    background.layer.borderWidth = Self.bubbleBorderWidth
+                    background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
+                    background.layer.cornerRadius = 12
+                    stackView.addSubview(background)
+                    background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: index == 0 ? 0 : 12, leading: 24, bottom: 0, trailing: 24))
+
+                    let badge = subscription.badge
+                    let imageView = UIImageView()
+                    imageView.setContentHuggingHigh()
+                    if let badgeImage = badge.assets?.universal160 {
+                        imageView.image = badgeImage
+                    }
+                    stackView.addArrangedSubview(imageView)
+                    imageView.autoSetDimensions(to: CGSize(square: 64))
+
+                    let textStackView = UIStackView()
+                    textStackView.axis = .vertical
+                    textStackView.alignment = .leading
+                    textStackView.spacing = 4
+
+                    let titleStackView = UIStackView()
+                    titleStackView.axis = .horizontal
+                    titleStackView.distribution = .fill
+                    titleStackView.spacing = 4
+
+                    let localizedBadgeName = subscription.name
+                    let titleLabel = UILabel()
+                    titleLabel.text = localizedBadgeName
+                    titleLabel.font = .ows_dynamicTypeBody.ows_semibold
+                    titleLabel.numberOfLines = 0
+                    titleLabel.setContentHuggingHorizontalHigh()
+                    titleLabel.setCompressionResistanceHorizontalHigh()
+                    titleStackView.addArrangedSubview(titleLabel)
+
+                    let isCurrent = self.subscriptionViewState == .subscriptionUpdating && self.currentSubscription?.level == subscription.level
+                    if isCurrent {
+                        titleStackView.addArrangedSubview(.hStretchingSpacer())
+                        let checkmark = UIImageView(image: UIImage(named: "check-20")?.withRenderingMode(.alwaysTemplate))
+                        checkmark.tintColor = Theme.primaryTextColor
+                        titleStackView.addArrangedSubview(checkmark)
+                        checkmark.setContentHuggingHorizontalLow()
+                        checkmark.setCompressionResistanceHorizontalHigh()
+                    }
+
+                    let descriptionLabel = UILabel()
+                    let descriptionFormat = NSLocalizedString("SUSTAINER_VIEW_BADGE_DESCRIPTION", comment: "Description text for sustainer view badges, embeds {{localized badge name}}")
+                    descriptionLabel.text = String(format: descriptionFormat, subscription.badge.localizedName)
+                    descriptionLabel.font = .ows_dynamicTypeBody2
+                    descriptionLabel.numberOfLines = 0
+
+                    let pricingLabel = UILabel()
+                    if let price = subscription.currency[self.currencyCode] {
+                        let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
+                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
+                        pricingLabel.numberOfLines = 0
+
+                        if !isCurrent {
+                            pricingLabel.text = String(format: pricingFormat, currencyString)
+                            pricingLabel.font = .ows_dynamicTypeBody2
+                        } else {
+                            if let currentSubscription = self.currentSubscription {
+                                let pricingString = String(format: pricingFormat, currencyString)
+
+                                let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING_EXPIRATION", comment: "Expiration text for sustainer view management badges, embeds {{Expiration}}")
+                                let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
+                                let renewalString = String(format: renewalFormat, self.dateFormatter.string(from: renewalDate))
+
+                                let attributedString = NSMutableAttributedString(string: pricingString + renewalString)
+                                attributedString.addAttributesToEntireString([.font: UIFont.ows_dynamicTypeBody2, .foregroundColor: Theme.primaryTextColor])
+                                attributedString.addAttributes([.foregroundColor: UIColor.ows_gray45], range: NSRange(location: pricingString.utf16.count, length: renewalString.utf16.count))
+                                pricingLabel.attributedText = attributedString
+                            }
+                        }
+                    }
+
+                    textStackView.addArrangedSubviews([titleStackView, descriptionLabel, pricingLabel])
+                    stackView.addArrangedSubview(textStackView)
+
+                    return cell
+                },
+                actionBlock: {
+                    self.selectedSubscription = subscription
+                    self.updateTableContents()
+                }
+            ))
+        }
     }
 
     private func openDonateWebsite() {
         UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+    }
+
+    private func cancelSubscription() {
+        guard let persistedSubscriberID = persistedSubscriberID else {
+            owsFailDebug("Asked to cancel subscription but no persisted subscriberID")
+            return
+        }
+        firstly {
+            try SubscriptionManager.cancelSubscription(for: persistedSubscriberID)
+        }.done(on: .main) {
+            if let navController = self.navigationController {
+                self.view.presentToast(
+                    text: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED", comment: "Toast indicating that the subscription has been cancelled"), fromViewController: navController)
+                navController.popViewController(animated: true)
+            }
+
+        }.catch { error in
+            owsFailDebug("Failed to cancel subscription \(error)")
+        }
+
     }
 
     private func newCell() -> UITableViewCell {
@@ -401,9 +774,20 @@ class SubscriptionViewController: OWSTableViewController2 {
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
+    fileprivate func newPaymentButton() -> PKPaymentButton {
+
+        let applePayContributeButton = PKPaymentButton(
+            paymentButtonType: .donate,
+            paymentButtonStyle: Theme.isDarkThemeEnabled ? .white : .black
+        )
+
+        if #available(iOS 12, *) { applePayContributeButton.cornerRadius = 12 }
+        applePayContributeButton.addTarget(self, action: #selector(self.requestApplePayDonation), for: .touchUpInside)
+        return applePayContributeButton
+    }
+
     @objc
     fileprivate func requestApplePayDonation() {
-
         guard let subscription = selectedSubscription else {
             owsFailDebug("No selected subscription, can't invoke Apple Pay donation")
             return
@@ -414,7 +798,50 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        //TODO EB DRY this up
+        if subscriptionViewState == .subscriptionUpdating {
+            var currencyString: String = ""
+            if let selectedSubscription = selectedSubscription, let price = selectedSubscription.currency[self.currencyCode] {
+                currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
+            }
+
+            let title = NSLocalizedString("SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE", comment: "Update Subscription? Action sheet title")
+            let message = String(format: NSLocalizedString("SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE", comment: "Update Subscription? Action sheet message, embeds {{Price}}"), currencyString)
+            let confirm = NSLocalizedString("SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE", comment: "Update Subscription? Action sheet confirm button")
+            let notNow = NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button")
+            let actionSheet = ActionSheetController(title: title, message: message)
+            actionSheet.addAction(ActionSheetAction(
+                title: confirm,
+                style: .default,
+                handler: { [weak self] _ in
+                    if let currencyCode = self?.currencyCode {
+                        self?.presentApplePay(for: subscriptionAmount, currencyCode: currencyCode)
+                    }
+                }
+            ))
+
+            actionSheet.addAction(ActionSheetAction(
+                title: notNow,
+                style: .cancel,
+                handler: nil
+            ))
+            self.presentActionSheet(actionSheet)
+        } else {
+            presentApplePay(for: subscriptionAmount, currencyCode: currencyCode)
+        }
+
+    }
+
+    private func presentApplePay(for amount: NSDecimalNumber, currencyCode: String) {
+        guard let subscription = selectedSubscription else {
+            owsFailDebug("No selected subscription, can't invoke Apple Pay donation")
+            return
+        }
+
+        guard let subscriptionAmount = subscription.currency[currencyCode] else {
+            owsFailDebug("Failed to get amount for current currency code")
+            return
+        }
+
         guard !Stripe.isAmountTooSmall(subscriptionAmount, in: currencyCode) else {
             owsFailDebug("Subscription amount is too small per Stripe API")
             return
@@ -426,7 +853,6 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
         }
 
         let request = DonationUtilities.newPaymentRequest(for: subscriptionAmount, currencyCode: currencyCode)
-
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
@@ -447,45 +873,95 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             completion(authResult)
             return
         }
-        
-        // TODO EB cancel chain if Apple Pay times out
-        firstly {
-            return try SubscriptionManager.setupNewSubscription(subscription: selectedSubscription, payment: payment, currencyCode: self.currencyCode)
-        }.done(on: .main) {
-            let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
-            completion(authResult)
-            self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
-        }.catch { error in
-            let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
-            completion(authResult)
-            owsFailDebug("Error setting up subscription, \(error)")
+
+        if subscriptionViewState == .subscriptionUpdating, let priorSubscriptionLevel = self.subscriptionLevelForSubscription(self.currentSubscription),
+           let subscriberID = self.persistedSubscriberID,
+           let currencyCode = self.persistedSubscriberCurrencyCode {
+
+            firstly {
+                return try SubscriptionManager.updateSubscriptionLevel(for: subscriberID, from: priorSubscriptionLevel, to: selectedSubscription, payment: payment, currencyCode: currencyCode)
+            }.done(on: .main) {
+                let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
+                completion(authResult)
+                self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
+            }.catch { error in
+                let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
+                completion(authResult)
+                owsFailDebug("Error setting up subscription, \(error)")
+            }
+
+        } else {
+            firstly {
+                return try SubscriptionManager.setupNewSubscription(subscription: selectedSubscription, payment: payment, currencyCode: self.currencyCode)
+            }.done(on: .main) {
+                let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
+                completion(authResult)
+                self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
+            }.catch { error in
+                let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
+                completion(authResult)
+                owsFailDebug("Error setting up subscription, \(error)")
+            }
         }
+
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
         controller.dismiss()
     }
-    
-    func fetchAndRedeemReceipts(newSubscriptionLevel: SubscriptionLevel) {
+
+    func fetchAndRedeemReceipts(newSubscriptionLevel: SubscriptionLevel, priorSubscriptionLevel: SubscriptionLevel? = nil) {
         var subscriberID: Data?
         SDSDatabaseStorage.shared.read { transaction in
             subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
-            
+
             guard let subscriberID = subscriberID else {
                 owsFailDebug("Did not fetch subscriberID")
                 return
             }
-            
+
             firstly {
-                return try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: newSubscriptionLevel)
-            }.done(on: .main) { credential in
-                Logger.debug("Got presentation \(credential)")
+                return try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscription: newSubscriptionLevel, priorSubscription: priorSubscriptionLevel)
+            }.done(on: .main) { _ in
+                if self.subscriptionViewState == .subscriptionUpdating {
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    self.fetchCurrentSubscription()
+                }
             }.catch { error in
                 owsFailDebug("Failed to redeem with error \(error)")
             }
         }
     }
 
+    func subscriptionLevelForSubscription( _ subscription: Subscription?) -> SubscriptionLevel? {
+        guard let subscription = subscription else {
+            return nil
+        }
+
+        guard let subscriptionLevels = subscriptions else {
+            return nil
+        }
+
+        for subscriptionLevel in subscriptionLevels {
+            if subscriptionLevel.level == subscription.level {
+                return subscriptionLevel
+            }
+        }
+
+        return nil
+    }
+
+}
+
+extension SubscriptionViewController: BadgeConfigurationDelegate {
+    func updateFeaturedBadge(_ updatedFeaturedBadge: ProfileBadge?) {
+        // TODO
+    }
+
+    func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
+        // TODO
+    }
 }
 
 private class SubscriptionLevelCell: UITableViewCell {

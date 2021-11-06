@@ -10,6 +10,7 @@ import SafariServices
     static let supportURL = URL(string: "https://support.signal.org/")!
     static let debugLogsInfoURL = URL(string: "https://support.signal.org/hc/articles/360007318591")!
     static let supportEmail = "support@signal.org"
+    static let subscriptionFAQURL = URL(string: "https://support.signal.org/hc/articles/4408365318426")!
 }
 
 enum ContactSupportFilter: String, CaseIterable {

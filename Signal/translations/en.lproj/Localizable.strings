@@ -5965,6 +5965,15 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Uninstall";
 
+/* Title for the 'Badges' button in sustainer view. */
+"SUBSCRIBER_BADGES" = "Badges";
+
+/* Title for the 'Manage Subscription' button in sustainer view. */
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'Subscription FAQ' button in sustainer view. */
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
 
@@ -6022,20 +6031,62 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
 
+/* Sustainer view Add Boost button title */
+"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+
+/* Sustainer view Cancel Subscription button title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+
+/* Confirm Cancellation? Action sheet confirm button */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirm";
+
+/* Confirm Cancellation? Action sheet message */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+
+/* Confirm Cancellation? Action sheet title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
+/* Existing subscriber support header */
+"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";
+
+/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Renews %@";
 
 /* Read More tappable text in sustainer view body */
 "SUSTAINER_VIEW_READ_MORE" = "Read More.";
 
+/* Renewal date text for sustainer view level, embeds {{renewal date}} */
+"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+
+/* Toast indicating that the subscription has been cancelled */
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+
+/* Sustainer view Not Now Action sheet button */
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Not Now";
+
 /* Title for the signal sustainer view */
 "SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
+
+/* Sustainer view Update Subscription button title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION" = "Update Subscription";
+
+/* Update Subscription? Action sheet message, embeds {{Price}} */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+
+/* Update Subscription? Action sheet title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+
+/* Update Subscription? Action sheet confirm button */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Update";
 
 /* The body text for the signal sustainer view, embeds {{link to donation read more}} */
 "SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it. %@";
