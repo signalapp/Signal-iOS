@@ -8,20 +8,24 @@ extension AppDelegate {
     // MARK: Call handling
     func createNewIncomingCall(caller: String, uuid: String) {
         let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
-            let callVC = CallVC(for: call)
-            callVC.conversationVC = conversationVC
-            conversationVC.inputAccessoryView?.isHidden = true
-            conversationVC.inputAccessoryView?.alpha = 0
-            presentingVC.present(callVC, animated: true, completion: nil)
-        } else {
-            call.reportIncomingCallIfNeeded{ error in
-                if let error = error {
-                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                    let incomingCallBanner = IncomingCallBanner(for: call)
-                    incomingCallBanner.show()
+        if CurrentAppContext().isMainAppAndActive {
+            guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+            if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
+                DispatchQueue.main.async {
+                    let callVC = CallVC(for: call)
+                    callVC.conversationVC = conversationVC
+                    conversationVC.inputAccessoryView?.isHidden = true
+                    conversationVC.inputAccessoryView?.alpha = 0
+                    presentingVC.present(callVC, animated: true, completion: nil)
                 }
+                return
+            }
+        }
+        call.reportIncomingCallIfNeeded{ error in
+            if let error = error {
+                SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+                let incomingCallBanner = IncomingCallBanner(for: call)
+                incomingCallBanner.show()
             }
         }
     }
@@ -53,8 +57,7 @@ extension AppDelegate {
                 if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
                 if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage(message) }
                 if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
-                WebRTCSession.current?.dropConnection()
-                WebRTCSession.current = nil
+                AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
             }
         }
     }

@@ -1,8 +1,9 @@
 import CallKit
 import SessionMessagingKit
 
-public final class SessionCallManager: NSObject, CXProviderDelegate {
-    private let provider: CXProvider
+public final class SessionCallManager: NSObject {
+    let provider: CXProvider
+    let callController = CXCallController()
     var currentCall: SessionCall?
     
     private static var _sharedProvider: CXProvider?
@@ -43,11 +44,6 @@ public final class SessionCallManager: NSObject, CXProviderDelegate {
         self.provider.setDelegate(self, queue: nil)
     }
     
-    public func providerDidReset(_ provider: CXProvider) {
-        AssertIsOnMainThread()
-        currentCall?.endSessionCall()
-    }
-    
     public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
         self.currentCall = call
@@ -82,8 +78,14 @@ public final class SessionCallManager: NSObject, CXProviderDelegate {
         }
     }
     
-    public func reportCurrentCallEnded() {
+    public func reportCurrentCallEnded(reason: CXCallEndedReason?) {
+        guard let call = currentCall else { return }
+        if let reason = reason {
+            self.provider.reportCall(with: call.uuid, endedAt: nil, reason: reason)
+        }
+        self.currentCall?.webRTCSession.dropConnection()
         self.currentCall = nil
+        WebRTCSession.current = nil
     }
     
     // MARK: Util
@@ -99,4 +101,27 @@ public final class SessionCallManager: NSObject, CXProviderDelegate {
         // Is there any reason to support this?
         callUpdate.supportsDTMF = false
     }
+    
+    internal func showCallModal() {
+        let callModal = CallModal() { [weak self] in
+            self?.showCallVC()
+        }
+        callModal.modalPresentationStyle = .overFullScreen
+        callModal.modalTransitionStyle = .crossDissolve
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        presentingVC.present(callModal, animated: true, completion: nil)
+    }
+    
+    internal func showCallVC() {
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        let callVC = CallVC(for: self.currentCall!)
+        callVC.shouldAnswer = true
+        if let conversationVC = presentingVC as? ConversationVC {
+            callVC.conversationVC = conversationVC
+            conversationVC.inputAccessoryView?.isHidden = true
+            conversationVC.inputAccessoryView?.alpha = 0
+        }
+        presentingVC.present(callVC, animated: true, completion: nil)
+    }
 }
+

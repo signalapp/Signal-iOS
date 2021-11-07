@@ -1,0 +1,47 @@
+import CallKit
+import SessionUtilitiesKit
+
+extension SessionCallManager {
+    public func startCall(_ call: SessionCall, completion: (() -> Void)?) {
+        guard case .offer = call.mode else { return }
+        let handle = CXHandle(type: .generic, value: call.sessionID)
+        let startCallAction = CXStartCallAction(call: call.uuid, handle: handle)
+        
+        startCallAction.isVideo = false
+        
+        let transaction = CXTransaction()
+        transaction.addAction(startCallAction)
+        
+        reportOutgoingCall(call)
+        requestTransaction(transaction)
+        completion?()
+    }
+    
+    public func endCall(_ call: SessionCall, completion: (() -> Void)?) {
+        let endCallAction = CXEndCallAction(call: call.uuid)
+        let transaction = CXTransaction()
+        transaction.addAction(endCallAction)
+
+        requestTransaction(transaction)
+        completion?()
+    }
+    
+    // Not currently in use
+    public func setOnHoldStatus(for call: SessionCall) {
+        let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: true)
+        let transaction = CXTransaction()
+        transaction.addAction(setHeldCallAction)
+
+        requestTransaction(transaction)
+    }
+    
+    private func requestTransaction(_ transaction: CXTransaction) {
+        callController.request(transaction) { error in
+            if let error = error {
+                SNLog("Error requesting transaction: \(error)")
+            } else {
+                SNLog("Requested transaction successfully")
+            }
+        }
+    }
+}

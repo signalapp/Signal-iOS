@@ -194,7 +194,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if shouldRestartCamera { cameraManager.prepare() }
         touch(call.videoCapturer)
         titleLabel.text = self.call.contactName
-        self.call.startSessionCall{
+        AppEnvironment.shared.callManager.startCall(call) {
             self.callInfoLabel.text = "Ringing..."
             self.answerButton.isHidden = true
         }
@@ -319,7 +319,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     @objc private func endCall() {
-        self.call.endSessionCall()
+        AppEnvironment.shared.callManager.endCall(call, completion: nil)
     }
     
     @objc private func minimize() {

@@ -155,8 +155,9 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
     }
     
     @objc private func endCall() {
-        self.call.endSessionCall()
-        self.dismiss()
+        AppEnvironment.shared.callManager.endCall(call) {
+            self.dismiss()
+        }
     }
     
     public func showCallVC(answer: Bool) {

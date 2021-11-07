@@ -11,7 +11,7 @@ extension WebRTCSession {
         print("[Calls] Received remote SDP: \(sdp.sdp).")
         peerConnection.setRemoteDescription(sdp, completionHandler: { [weak self] error in
             if let error = error {
-                SNLog("Couldn't set SDP due to error: \(error).")
+                SNLog("[Calls] Couldn't set SDP due to error: \(error).")
             } else {
                 guard let self = self,
                     sdp.type == .offer, self.peerConnection.localDescription == nil else { return }

@@ -227,8 +227,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         message.kind = .endCall
         print("[Calls] Sending end call message.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
-        dropConnection()
-        WebRTCSession.current = nil
     }
     
     public func dropConnection() {

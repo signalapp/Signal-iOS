@@ -1,6 +1,7 @@
 import Foundation
 import WebRTC
 import SessionMessagingKit
+import PromiseKit
 
 public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Metadata Properties
@@ -147,14 +148,18 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Actions
     func startSessionCall(completion: (() -> Void)?) {
         guard case .offer = mode else { return }
-        AppEnvironment.shared.callManager.reportOutgoingCall(self)
-        Storage.write { transaction in
-            self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction).done {
-                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction).done {
-                    self.hasStartedConnecting = true
-                }.retainUntilComplete()
-            }.retainUntilComplete()
-        }
+        var promise: Promise<Void>!
+        Storage.write(with: { transaction in
+            promise = self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction)
+        }, completion: { [weak self] in
+            let _ = promise.done {
+                Storage.shared.write { transaction in
+                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).done {
+                        self?.hasStartedConnecting = true
+                    }.retainUntilComplete()
+                }
+            }
+        })
         completion?()
     }
     
@@ -175,7 +180,6 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
             self.webRTCSession.endCall(with: self.sessionID, using: transaction)
         }
         hasEnded = true
-        AppEnvironment.shared.callManager.reportCurrentCallEnded()
     }
     
     // MARK: Renderer
