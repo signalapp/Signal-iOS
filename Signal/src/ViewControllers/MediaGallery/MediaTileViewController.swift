@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 fileprivate extension IndexSet {
     func shifted(startingAt index: Int? = nil, by amount: Int) -> IndexSet {
@@ -41,9 +42,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     lazy var footerBar: UIToolbar = {
         let footerBar = UIToolbar()
         let footerItems = [
+            shareButton,
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             deleteButton,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         ]
         footerBar.setItems(footerItems, animated: false)
 
@@ -57,6 +58,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                                            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_button"))
 
         return deleteButton
+    }()
+
+    lazy var shareButton: UIBarButtonItem = {
+        let shareButton = UIBarButtonItem(barButtonSystemItem: .action,
+                                          target: self,
+                                          action: #selector(didPressShare),
+                                          accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share_button"))
+        return shareButton
     }()
 
     // MARK: View Lifecycle Overrides
@@ -134,6 +143,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         footerBar.tintColor = Theme.primaryIconColor
 
         deleteButton.tintColor = Theme.primaryIconColor
+        shareButton.tintColor = Theme.primaryIconColor
 
         collectionView.backgroundColor = Theme.backgroundColor
     }
@@ -231,6 +241,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         if isInBatchSelectMode {
             updateDeleteButton()
+            updateShareButton()
         } else {
             collectionView.deselectItem(at: indexPath, animated: true)
 
@@ -247,6 +258,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         if isInBatchSelectMode {
             updateDeleteButton()
+            updateShareButton()
         }
     }
 
@@ -492,6 +504,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 updateVisibleCells()
                 updateSelectButton()
                 updateDeleteButton()
+                updateShareButton()
             }
         }
     }
@@ -506,6 +519,19 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             self.deleteButton.isEnabled = true
         } else {
             self.deleteButton.isEnabled = false
+        }
+    }
+
+    func updateShareButton() {
+        guard let collectionView = self.collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
+            self.shareButton.isEnabled = true
+        } else {
+            self.shareButton.isEnabled = false
         }
     }
 
@@ -544,6 +570,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         // disabled until at least one item is selected
         self.deleteButton.isEnabled = false
+        self.shareButton.isEnabled = false
 
         // Don't allow the user to leave mid-selection, so they realized they have
         // to cancel (lose) their selection if they leave.
@@ -619,6 +646,29 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
+    }
+
+    @objc
+    func didPressShare(_ sender: Any) {
+        Logger.debug("")
+
+        guard let collectionView = self.collectionView else {
+            owsFailDebug("collectionView was unexpectedly nil")
+            return
+        }
+
+        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
+            owsFailDebug("indexPaths was unexpectedly nil")
+            return
+        }
+
+        let items: [TSAttachmentStream] = indexPaths.compactMap { return self.galleryItem(at: $0)?.attachmentStream }
+        guard items.count == indexPaths.count else {
+            owsFailDebug("trying to delete an item that never loaded")
+            return
+        }
+
+        AttachmentSharing.showShareUI(forAttachments: items, sender: sender)
     }
 
     var footerBarBottomConstraint: NSLayoutConstraint!
