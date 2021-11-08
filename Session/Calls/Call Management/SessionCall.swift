@@ -125,6 +125,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         self.uuid = UUID(uuidString: uuid)!
         self.mode = mode
         self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
+        WebRTCSession.current = self.webRTCSession
         super.init()
         self.webRTCSession.delegate = self
     }

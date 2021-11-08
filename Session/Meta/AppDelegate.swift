@@ -7,25 +7,25 @@ extension AppDelegate {
 
     // MARK: Call handling
     func createNewIncomingCall(caller: String, uuid: String) {
-        let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-        if CurrentAppContext().isMainAppAndActive {
-            guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-            if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
-                DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+            if CurrentAppContext().isMainAppAndActive {
+                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
                     let callVC = CallVC(for: call)
                     callVC.conversationVC = conversationVC
                     conversationVC.inputAccessoryView?.isHidden = true
                     conversationVC.inputAccessoryView?.alpha = 0
                     presentingVC.present(callVC, animated: true, completion: nil)
+                    return
                 }
-                return
             }
-        }
-        call.reportIncomingCallIfNeeded{ error in
-            if let error = error {
-                SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                let incomingCallBanner = IncomingCallBanner(for: call)
-                incomingCallBanner.show()
+            call.reportIncomingCallIfNeeded{ error in
+                if let error = error {
+                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+                    let incomingCallBanner = IncomingCallBanner(for: call)
+                    incomingCallBanner.show()
+                }
             }
         }
     }
