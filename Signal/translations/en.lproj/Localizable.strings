@@ -1777,6 +1777,9 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Attachment";
 
+/* notification title indicating the user generically has a new message */
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "New Message!";
+
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Get started";
 
