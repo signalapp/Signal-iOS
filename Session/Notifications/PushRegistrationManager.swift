@@ -236,15 +236,17 @@ public enum PushRegistrationError: Error {
     }
     
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
+        SNLog("[Calls] Receive new voip notification.")
         owsAssertDebug(CurrentAppContext().isMainApp)
         owsAssertDebug(type == .voIP)
         let payload = payload.dictionaryPayload
         if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String {
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.createNewIncomingCall(caller: caller, uuid: uuid)
-            appDelegate.startPollerIfNeeded()
-            appDelegate.startClosedGroupPoller()
-            appDelegate.startOpenGroupPollersIfNeeded()
+            let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+            call.reportIncomingCallIfNeeded { error in
+                if let error = error {
+                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+                }
+            }
         }
     }
 }

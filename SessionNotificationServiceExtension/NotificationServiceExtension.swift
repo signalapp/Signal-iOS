@@ -220,17 +220,19 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         if #available(iOSApplicationExtension 14.5, *) {
             if let uuid = callMessage.uuid, let caller = callMessage.sender {
                 let payload = ["uuid": uuid, "caller": caller]
-                return CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
+                CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
                     if let error = error {
+                        self.contentHandler!(content)
                         owsFailDebug("Failed to notify main app of call message: \(error)")
                     } else {
+                        self.completeSilenty()
                         Logger.info("Successfully notified main app of call message.")
                     }
-                    self.completeSilenty()
                 }
             }
+        } else {
+            self.contentHandler!(content)
         }
-        self.contentHandler!(content)
     }
 
     private func handleSuccess(for content: UNMutableNotificationContent) {
