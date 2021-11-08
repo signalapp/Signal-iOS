@@ -29,17 +29,19 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
             owsFailDebug("Missing countryCode: \(localNumber).")
             return false
         }
-        let validCountryCodes: [Int] = [
-            // France
-            33,
-            // Switzerland
-            41,
-            // Parts of UK.
-            44,
-            // Germany
-            49
+        let invalidCountryCodes: [Int] = [
+            // Iran
+            98,
+            // Syria
+            963,
+            // Cuba
+            53,
+            // North Korea
+            850,
+            // Ukraine Crimea Region
+            380
         ]
-        return validCountryCodes.contains(nsCountryCode.intValue)
+        return !invalidCountryCodes.contains(nsCountryCode.intValue)
     }
 
     public var canEnablePayments: Bool {
