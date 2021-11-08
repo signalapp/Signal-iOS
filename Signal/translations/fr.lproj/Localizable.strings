@@ -5138,7 +5138,7 @@
 "SETTINGS_DATA_TITLE" = "Utilisations des données";
 
 /* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Timer par défaut pour de nouveaux messages";
+"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Minuterie par défaut pour les nouvelles conversations";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Saisissez un nom d’utilisateur";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

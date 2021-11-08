@@ -4514,7 +4514,7 @@
 "REACTIONS_DETAIL_YOU" = "Você";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Ler";
+"READ_ACTION" = "Lida";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "O utilizador não pode ser selecionado.";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Introduza um nome de utilizador";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

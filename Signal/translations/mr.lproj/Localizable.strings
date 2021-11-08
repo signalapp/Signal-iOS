@@ -1595,7 +1595,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "संदेश फॉर्वर्ड करण्यात अयशस्वी कारण ते आता उपलब्ध नाहीत.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "संदेश फॉर्वर्ड करता आले नाही";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "वापरकर्तानाव प्रविष्ट करा";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */

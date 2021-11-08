@@ -3095,7 +3095,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Skopiuj treść wiadomości";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "U wszystkich";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Usuń wszędzie";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ta wiadomość zostanie usunięta u wszystkich uczestników tej rozmowy, jeśli używają najnowszej wersji Signal. Będą oni mogli zobaczyć, że skasowałeś(aś) wiadomość.";
@@ -3104,7 +3104,7 @@
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Gdzie chcesz usunąć tę wiadomość?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "U mnie";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Usuń u mnie";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Usuń wiadomość";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Wprowadź nazwę użytkownika";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
@@ -6236,7 +6236,7 @@
 "USERNAME_TITLE" = "Nazwa użytkownika";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Nazwa użytkownika musi mieć przynajmniej 4 znaki długości.";
+"USERNAME_TOO_SHORT_ERROR" = "Nazwa użytkownika musi mieć długość przynajmniej 4 znaków.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
 "USERNAME_UNAVAIALBE_ERROR_FORMAT" = "Nazwa %@ jest już zajęta.";

@@ -1,7 +1,7 @@
-NSAppleMusicUsageDescription = "Signal skal bruge Apple Music for at afspille vedhæftede medie filer";
+NSAppleMusicUsageDescription = "Signal skal bruge Apple Music for at afspille vedhæftede mediefiler.";
 NSCameraUsageDescription = "Signal bruger dit kamera til at tage fotos og videoopkald";
 NSContactsUsageDescription = "Signal bruger dine kontakter til at finde brugere, du kender. Vi gemmer ikke dine kontaktpersoner på serveren";
-NSFaceIDUsageDescription = "Signal's skærmlås bruger Face ID";
+NSFaceIDUsageDescription = "Signals skærmlås bruger Face ID";
 NSLocationWhenInUseUsageDescription = "Signal kræver adgang til din placering for at dele din nuværende placering";
 NSMicrophoneUsageDescription = "Signal kræver adgang til din mikrofon, for at foretage og modtage telefonopkald og optage talebeskeder";
 NSPhotoLibraryAddUsageDescription = "Signal gemmer fotos i dit bibliotek";

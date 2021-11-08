@@ -6212,7 +6212,7 @@
 "USERNAME_DESCRIPTION" = "Nutzernamen sind bei Signal optional. Falls du dich dafür entscheidest, einen Nutzernamen zu erstellen, werden andere Nutzer dich über diesen finden und kontaktieren können, ohne deine Rufnummer zu kennen.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Nutzernamen dürfen nur a-z, 0-9 und »_« enthalten";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Nutzernamen dürfen nur die Zeichen a – z, 0 – 9 und »_« enthalten";
 
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "Während der Suche nach dem Nutzernamen ist ein Fehler aufgetreten. Bitte versuche es später erneut.";
@@ -6226,7 +6226,7 @@
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Nutzername eingeben";
 
-/* A prefix appeneded to all usernames when displayed */
+/* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
