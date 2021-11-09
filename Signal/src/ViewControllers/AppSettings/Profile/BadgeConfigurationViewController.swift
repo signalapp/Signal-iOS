@@ -22,6 +22,8 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
             updateNavigation()
         }
     }
+
+    // TODO: Check with design about deselect behavior. Should it be allowed?
     var selectedBadgeIndex: Int? = nil {
         didSet {
             if let badgeIdx = selectedBadgeIndex, !availableBadges.indices.contains(badgeIdx) {

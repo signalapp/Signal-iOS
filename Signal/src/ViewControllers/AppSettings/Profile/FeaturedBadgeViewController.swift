@@ -49,20 +49,22 @@ class FeaturedBadgeViewController: OWSTableViewController2 {
                     title: "Select a Badge",
                     items: [
                         OWSTableItem(customCellBlock: { [weak self] in
-                            let badgeCollectionView: UIView
+                            let cellContent: UIView
                             if let badgeDataSource = self?.badgeDataSource {
-                                badgeCollectionView = BadgeCollectionView(dataSource: badgeDataSource)
+                                let badgeCollectionView = BadgeCollectionView(dataSource: badgeDataSource)
+                                badgeCollectionView.isBadgeSelectionEnabled = true
+                                cellContent = badgeCollectionView
                             } else {
-                                badgeCollectionView = UIView()
+                                cellContent = UIView()
                             }
 
                             let cell = OWSTableItem.newCell()
-                            cell.contentView.addSubview(badgeCollectionView)
-                            badgeCollectionView.autoPinEdgesToSuperviewMargins()
+                            cell.contentView.addSubview(cellContent)
+                            cellContent.autoPinEdgesToSuperviewMargins()
 
                             // Pre-layout the collection view so the UITableView caches the correct resolved
                             // autolayout height.
-                            badgeCollectionView.layoutIfNeeded()
+                            cellContent.layoutIfNeeded()
 
                             return cell
                         }, actionBlock: nil)

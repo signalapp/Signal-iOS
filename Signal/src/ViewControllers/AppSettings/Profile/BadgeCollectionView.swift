@@ -12,6 +12,17 @@ protocol BadgeCollectionDataSource: AnyObject {
 
 class BadgeCollectionView: UICollectionView {
     weak private var badgeDataSource: BadgeCollectionDataSource?
+    public var isBadgeSelectionEnabled: Bool = false {
+        didSet {
+            indexPathsForSelectedItems?.forEach { deselectItem(at: $0, animated: false) }
+            allowsSelection = isBadgeSelectionEnabled
+
+            if isBadgeSelectionEnabled, let selectedIdx = badgeDataSource?.selectedBadgeIndex {
+                let indexPath = IndexPath(item: selectedIdx, section: 0)
+                selectItem(at: indexPath, animated: false, scrollPosition: [])
+            }
+        }
+    }
 
     private let reuseIdentifier = "BadgeCollectionViewCell"
     private let flowLayout: UICollectionViewFlowLayout = {
@@ -27,6 +38,7 @@ class BadgeCollectionView: UICollectionView {
         register(BadgeCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         backgroundColor = .clear
         badgeDataSource = dataSource
+        allowsSelection = false
         self.dataSource = self
         self.delegate = self
     }
@@ -91,9 +103,30 @@ class BadgeCollectionView: UICollectionView {
 }
 
 extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+    // MARK: Selection
+
+    func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+        return isBadgeSelectionEnabled
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        if collectionView.indexPathsForSelectedItems?.contains(indexPath) == true {
+            badgeDataSource?.selectedBadgeIndex = nil
+            collectionView.deselectItem(at: indexPath, animated: false)
+            return false
+        } else {
+            return isBadgeSelectionEnabled
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        badgeDataSource?.selectedBadgeIndex = indexPath.item
+    }
+
+    // MARK: Cell data provider
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView === self, section == 0 {
+        if section == 0 {
             return badgeDataSource?.availableBadges.count ?? 0
         } else {
             return 0
@@ -101,11 +134,6 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard collectionView === self else {
-            owsFailDebug("Incorrect collection view")
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "unknown", for: indexPath)
-        }
-
         let newCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         if let badgeCell = newCell as? BadgeCollectionViewCell,
            let badge = badgeDataSource?.availableBadges[safe: indexPath.item] {
@@ -140,6 +168,22 @@ class BadgeCollectionViewCell: UICollectionViewCell {
         imageView.autoSetDimensions(to: badgeImageViewSize)
         return imageView
     }()
+
+    lazy var badgeSelectionCheck: UIImageView = {
+        let imageView = UIImageView()
+        let imageViewSize = CGSize(square: 24)
+
+        imageView.contentMode = .scaleAspectFit
+        imageView.autoSetDimensions(to: imageViewSize)
+        imageView.setTemplateImageName("check-circle-solid-24", tintColor: .ows_accentBlue)
+        imageView.isHidden = true
+
+        imageView.backgroundColor = .ows_gray02
+        imageView.layer.cornerRadius = imageViewSize.largerAxis / 2
+
+        return imageView
+    }()
+
     let badgeSubtitleView: UILabel = {
         let subtitle = UILabel()
         subtitle.font = .ows_dynamicTypeCaption1Clamped
@@ -150,6 +194,7 @@ class BadgeCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: .zero)
         contentView.addSubview(badgeImageView)
+        contentView.addSubview(badgeSelectionCheck)
         contentView.addSubview(badgeSubtitleView)
 
         badgeImageView.autoPinEdge(toSuperviewEdge: .top)
@@ -160,10 +205,19 @@ class BadgeCollectionViewCell: UICollectionViewCell {
         badgeImageView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
         badgeSubtitleView.autoHCenterInSuperview()
         badgeSubtitleView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+
+        badgeSelectionCheck.autoPinEdge(.top, to: .top, of: badgeImageView)
+        badgeSelectionCheck.autoPinEdge(.trailing, to: .trailing, of: badgeImageView)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var isSelected: Bool {
+        didSet {
+            badgeSelectionCheck.isHidden = !isSelected
+        }
     }
 
     func applyBadge(_ badge: ProfileBadge) {
@@ -175,6 +229,7 @@ class BadgeCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         badgeImageView.image = nil
         badgeSubtitleView.text = nil
+        isSelected = false
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
