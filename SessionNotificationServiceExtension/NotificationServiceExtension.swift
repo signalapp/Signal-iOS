@@ -218,8 +218,8 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
     
     private func handleSuccessForIncomingCall(for content: UNMutableNotificationContent, callMessage: CallMessage) {
         if #available(iOSApplicationExtension 14.5, *) {
-            if let uuid = callMessage.uuid, let caller = callMessage.sender {
-                let payload = ["uuid": uuid, "caller": caller]
+            if let uuid = callMessage.uuid, let caller = callMessage.sender, let timestamp = callMessage.sentTimestamp {
+                let payload = ["uuid": uuid, "caller": caller, "timestamp": timestamp]
                 CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
                     if let error = error {
                         self.contentHandler!(content)

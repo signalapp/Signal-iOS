@@ -240,8 +240,9 @@ public enum PushRegistrationError: Error {
         owsAssertDebug(CurrentAppContext().isMainApp)
         owsAssertDebug(type == .voIP)
         let payload = payload.dictionaryPayload
-        if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String {
+        if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestamp = payload["timestamp"] as? UInt64 {
             let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+            call.callMessageTimestamp = timestamp
             call.reportIncomingCallIfNeeded { error in
                 if let error = error {
                     SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
