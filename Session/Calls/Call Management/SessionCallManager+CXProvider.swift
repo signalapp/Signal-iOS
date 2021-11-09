@@ -9,18 +9,22 @@ extension SessionCallManager: CXProviderDelegate {
     public func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
         AssertIsOnMainThread()
         guard let call = self.currentCall else { return action.fail() }
-        call.startSessionCall(completion: nil)
+        call.startSessionCall()
         action.fulfill()
     }
     
     public func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         AssertIsOnMainThread()
-        guard let _ = self.currentCall else { return action.fail() }
-        let userDefaults = UserDefaults.standard
-        if userDefaults[.hasSeenCallIPExposureWarning] {
-            showCallVC()
+        guard let call = self.currentCall else { return action.fail() }
+        if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
+            call.answerSessionCall()
         } else {
-            showCallModal()
+            let userDefaults = UserDefaults.standard
+            if userDefaults[.hasSeenCallIPExposureWarning] {
+                showCallVC()
+            } else {
+                showCallModal()
+            }
         }
         action.fulfill()
     }

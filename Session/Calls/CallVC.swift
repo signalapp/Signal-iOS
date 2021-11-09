@@ -167,6 +167,15 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 }
             }
         }
+        self.call.hasStartedConnectingDidChange = {
+            DispatchQueue.main.async {
+                self.callInfoLabel.text = "Connecting..."
+                self.answerButton.alpha = 0
+                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
+                    self.answerButton.isHidden = true
+                }, completion: nil)
+            }
+        }
         self.call.hasConnectedDidChange = {
             DispatchQueue.main.async {
                 self.callInfoLabel.text = "Connected"
@@ -180,8 +189,10 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
             }
         }
         self.call.hasEndedDidChange = {
-            self.conversationVC?.showInputAccessoryView()
-            self.presentingViewController?.dismiss(animated: true, completion: nil)
+            DispatchQueue.main.async {
+                self.conversationVC?.showInputAccessoryView()
+                self.presentingViewController?.dismiss(animated: true, completion: nil)
+            }
         }
     }
     
@@ -194,9 +205,16 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if shouldRestartCamera { cameraManager.prepare() }
         touch(call.videoCapturer)
         titleLabel.text = self.call.contactName
-        AppEnvironment.shared.callManager.startCall(call) {
-            self.callInfoLabel.text = "Ringing..."
-            self.answerButton.isHidden = true
+        AppEnvironment.shared.callManager.startCall(call) { error in
+            DispatchQueue.main.async {
+                if let _ = error {
+                    self.callInfoLabel.text = "Can't start a call."
+                    self.endCall()
+                } else {
+                    self.callInfoLabel.text = "Ringing..."
+                    self.answerButton.isHidden = true
+                }
+            }
         }
         if shouldAnswer { answerCall() }
     }
@@ -305,12 +323,13 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     @objc private func answerCall() {
         let userDefaults = UserDefaults.standard
         if userDefaults[.hasSeenCallIPExposureWarning] {
-            self.call.answerSessionCall{
-                self.callInfoLabel.text = "Connecting..."
-                self.answerButton.alpha = 0
-                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                    self.answerButton.isHidden = true
-                }, completion: nil)
+            AppEnvironment.shared.callManager.answerCall(call) { error in
+                DispatchQueue.main.async {
+                    if let _ = error {
+                        self.callInfoLabel.text = "Can't answer the call."
+                        self.endCall()
+                    }
+                }
             }
         } else {
             userDefaults[.hasSeenCallIPExposureWarning] = true
@@ -319,7 +338,12 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     @objc private func endCall() {
-        AppEnvironment.shared.callManager.endCall(call, completion: nil)
+        AppEnvironment.shared.callManager.endCall(call) { error in
+            if let _ = error {
+                self.call.endSessionCall()
+                AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: nil)
+            }
+        }
     }
     
     @objc private func minimize() {

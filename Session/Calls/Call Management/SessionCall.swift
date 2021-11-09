@@ -128,6 +128,11 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         WebRTCSession.current = self.webRTCSession
         super.init()
         self.webRTCSession.delegate = self
+        if AppEnvironment.shared.callManager.currentCall == nil {
+            AppEnvironment.shared.callManager.currentCall = self
+        } else {
+            SNLog("[Calls] A call is ongoing.")
+        }
     }
     
     func reportIncomingCallIfNeeded(completion: @escaping (Error?) -> Void) {
@@ -147,7 +152,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     }
     
     // MARK: Actions
-    func startSessionCall(completion: (() -> Void)?) {
+    func startSessionCall() {
         guard case .offer = mode else { return }
         var promise: Promise<Void>!
         Storage.write(with: { transaction in
@@ -161,10 +166,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                 }
             }
         })
-        completion?()
     }
     
-    func answerSessionCall(completion: (() -> Void)?) {
+    func answerSessionCall() {
         guard case .answer = mode else { return }
         hasStartedConnecting = true
         if let sdp = remoteSDP {
@@ -172,7 +176,6 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         } else {
             isWaitingForRemoteSDP = true
         }
-        completion?()
     }
     
     func endSessionCall() {

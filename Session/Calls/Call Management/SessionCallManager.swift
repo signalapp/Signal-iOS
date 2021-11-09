@@ -4,7 +4,19 @@ import SessionMessagingKit
 public final class SessionCallManager: NSObject {
     let provider: CXProvider
     let callController = CXCallController()
-    var currentCall: SessionCall?
+    var currentCall: SessionCall? = nil {
+        willSet {
+            if (newValue != nil) {
+                DispatchQueue.main.async {
+                    UIApplication.shared.isIdleTimerDisabled = true
+                }
+            } else {
+                DispatchQueue.main.async {
+                    UIApplication.shared.isIdleTimerDisabled = false
+                }
+            }
+        }
+    }
     
     private static var _sharedProvider: CXProvider?
     class func sharedProvider(useSystemCallLog: Bool) -> CXProvider {
@@ -46,12 +58,13 @@ public final class SessionCallManager: NSObject {
     
     public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
-        self.currentCall = call
-        call.hasStartedConnectingDidChange = {
-            self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
-        }
-        call.hasConnectedDidChange = {
-            self.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectedDate)
+        call.stateDidChange = {
+            if call.hasStartedConnecting {
+                self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
+            }
+            if call.hasConnected {
+                self.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectedDate)
+            }
         }
     }
     
@@ -69,11 +82,11 @@ public final class SessionCallManager: NSObject {
         // Report the incoming call to the system
         self.provider.reportNewIncomingCall(with: call.uuid, update: update) { error in
             guard error == nil else {
+                self.currentCall = nil
                 completion(error)
                 Logger.error("failed to report new incoming call, error: \(error!)")
                 return
             }
-            self.currentCall = call
             completion(nil)
         }
     }

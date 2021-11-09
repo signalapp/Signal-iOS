@@ -31,6 +31,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let userDefaults = UserDefaults.standard
         if userDefaults[.hasSeenCallIPExposureWarning] {
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
+            guard AppEnvironment.shared.callManager.currentCall == nil else { return }
             let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
             let callVC = CallVC(for: call)
             callVC.conversationVC = self

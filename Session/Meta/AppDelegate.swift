@@ -17,7 +17,6 @@ extension AppDelegate {
                     conversationVC.inputAccessoryView?.isHidden = true
                     conversationVC.inputAccessoryView?.alpha = 0
                     presentingVC.present(callVC, animated: true, completion: nil)
-                    return
                 }
             }
             call.reportIncomingCallIfNeeded{ error in
