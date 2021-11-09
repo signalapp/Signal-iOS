@@ -26,6 +26,7 @@ class BadgeCollectionView: UICollectionView {
 
     private let reuseIdentifier = "BadgeCollectionViewCell"
     private let flowLayout: UICollectionViewFlowLayout = {
+        // TODO: Swap this out for a custom layout. As best I can tell, flow layout doesn't support left alignment
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
         layout.minimumInteritemSpacing = 2
