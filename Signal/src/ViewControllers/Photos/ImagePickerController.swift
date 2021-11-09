@@ -552,19 +552,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 }
 
 extension ImagePickerGridController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // Ensure we can still scroll the collectionView by allowing other gestures to
-        // take precedence.
-        guard otherGestureRecognizer == selectionPanGesture else {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer == selectionPanGesture else {
             return true
         }
 
-        // Once we've started the selectionPanGesture, don't allow scrolling
-        if otherGestureRecognizer.state == .began || otherGestureRecognizer.state == .changed {
-            return false
-        }
-
-        return true
+        return ![.changed, .began].contains(collectionView.panGestureRecognizer.state)
     }
 }
 
