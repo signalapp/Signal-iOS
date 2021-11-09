@@ -1738,8 +1738,8 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Failed to Verify Safety Number!";
 
-/* Describes the user's featured badge */
-"FEATURED_BADGE_DISCLOSURE_TITLE" = "Featured badge";
+/* The title for the featured badge settings page */
+"FEATURED_BADGE_SETTINGS_TITLE" = "Featured badge";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";

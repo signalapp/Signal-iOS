@@ -16,6 +16,7 @@
 		23B9887F4A95010141FCF725 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E36B9FCE67E9FFDA471A085 /* Pods_SignalUI.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		323C4FE524EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */; };
+		326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */; };
 		327CF66825ACE7DD00DA0A6F /* GetStartedBannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */; };
 		328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */; };
 		329C873526D7045F008513DC /* ConversationLoadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C873326D7045F008513DC /* ConversationLoadPerformanceTest.swift */; };
@@ -1140,6 +1141,7 @@
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameCollisionReviewCell.swift; sourceTree = "<group>"; };
 		323C4FE424EE7B0F00DC94B8 /* LinkPreviewsMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewsMegaphone.swift; sourceTree = "<group>"; };
+		326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedBadgeViewController.swift; sourceTree = "<group>"; };
 		327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetStartedBannerViewController.swift; sourceTree = "<group>"; };
 		328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSwipeToastView.swift; sourceTree = "<group>"; };
 		329C873326D7045F008513DC /* ConversationLoadPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationLoadPerformanceTest.swift; sourceTree = "<group>"; };
@@ -3947,6 +3949,7 @@
 				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 				32E03521273901710081EE11 /* BadgeConfigurationViewController.swift */,
 				32E035232739059C0081EE11 /* BadgeCollectionView.swift */,
+				326DF2602739F4D90017B789 /* FeaturedBadgeViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -5952,6 +5955,7 @@
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
+				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */,
 				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,

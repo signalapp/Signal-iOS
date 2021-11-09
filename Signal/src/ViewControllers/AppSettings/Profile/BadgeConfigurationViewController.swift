@@ -146,11 +146,13 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                         selector: #selector(didTogglePublicDisplaySetting(_:))),
                     .disclosureItem(
                         withText: NSLocalizedString(
-                            "FEATURED_BADGE_DISCLOSURE_TITLE",
-                            comment: "Describes the user's featured badge"),
+                            "FEATURED_BADGE_SETTINGS_TITLE",
+                            comment: "The title for the featured badge settings page"),
                         detailText: selectedBadge?.localizedName ?? "",
-                        actionBlock: {
-                            // Do nothing for now
+                        actionBlock: { [weak self] in
+                            guard let self = self, let navController = self.navigationController else { return }
+                            let featuredBadgeSettings = FeaturedBadgeViewController(badgeDataSource: self)
+                            navController.pushViewController(featuredBadgeSettings, animated: true)
                         })
                 ])
         ])
