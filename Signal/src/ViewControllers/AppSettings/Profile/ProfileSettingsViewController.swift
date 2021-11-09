@@ -123,7 +123,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 icon: .settingsBadges,
                 name: NSLocalizedString(
                     "BADGE_CONFIGURATION_TITLE",
-                    comment: "The title for the badge configuration page."
+                    comment: "The title for the badge configuration page"
                 ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in

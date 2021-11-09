@@ -77,6 +77,7 @@ class BadgeCollectionView: UICollectionView {
         }
     }
 
+    // TODO: This should be replaced once we move to a custom layout
     var _cellSize: CGSize?
     var cellSize: CGSize {
         return _cellSize ?? {
@@ -150,16 +151,12 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        guard collectionView === self, collectionViewLayout === self.flowLayout else {
-            owsFailDebug("Unexpected collection view")
-            return .zero
-        }
-        return cellSize
+        cellSize
     }
 }
 
 class BadgeCollectionViewCell: UICollectionViewCell {
-    let badgeImageViewSize = CGSize.square(64)
+    let badgeImageViewSize = CGSize(square: 64)
     let badgeImageOffset: CGFloat = 8
 
     lazy var badgeImageView: UIImageView = {
