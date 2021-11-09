@@ -4,6 +4,7 @@
 
 import Foundation
 import BonMot
+import UIKit
 
 @objc
 class UsernameViewController: OWSTableViewController2 {

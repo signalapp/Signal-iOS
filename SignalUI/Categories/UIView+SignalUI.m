@@ -7,6 +7,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSMath.h>
+#import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,20 +48,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewMargins
 {
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinEdgeToSuperviewMargin:ALEdgeLeading],
-        [self autoPinEdgeToSuperviewMargin:ALEdgeTrailing],
-    ];
-    return result;
+    return [self autoPinWidthToSuperviewMarginsWithRelation:NSLayoutRelationEqual];
 }
 
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview
 {
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
-        [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
-    ];
-    return result;
+    return [self autoPinWidthToSuperviewWithRelation:NSLayoutRelationEqual];
 }
 
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperviewMargin
@@ -83,20 +76,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview
 {
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-    ];
-    return result;
+    return [self autoPinHeightToSuperviewWithRelation:NSLayoutRelationEqual];
 }
 
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewMargins
 {
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinEdgeToSuperviewMargin:ALEdgeTop],
-        [self autoPinEdgeToSuperviewMargin:ALEdgeBottom],
-    ];
-    return result;
+    return [self autoPinHeightToSuperviewMarginsWithRelation:NSLayoutRelationEqual];
 }
 
 - (NSLayoutConstraint *)autoHCenterInSuperview
