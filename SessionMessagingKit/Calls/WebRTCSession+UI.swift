@@ -10,6 +10,10 @@ extension WebRTCSession {
         remoteVideoTrack?.add(renderer)
     }
     
+    public func removeRemoteRenderer(_ renderer: RTCVideoRenderer) {
+        remoteVideoTrack?.remove(renderer)
+    }
+    
     public func handleLocalFrameCaptured(_ videoFrame: RTCVideoFrame) {
         guard let videoCapturer = delegate?.videoCapturer else { return }
         localVideoSource.capturer(videoCapturer, didCapture: videoFrame)

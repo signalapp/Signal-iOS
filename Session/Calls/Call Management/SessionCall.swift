@@ -9,7 +9,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     let sessionID: String
     let mode: Mode
     let webRTCSession: WebRTCSession
+    let isOutgoing: Bool
     var remoteSDP: RTCSessionDescription? = nil
+    var callMessageTimestamp: UInt64?
     var isWaitingForRemoteSDP = false
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
@@ -57,6 +59,12 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     enum Mode {
         case offer
         case answer
+    }
+    
+    // MARK: End call mode
+    enum EndCallMode {
+        case local
+        case remote
     }
     
     // MARK: Call State Properties
@@ -115,16 +123,20 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         guard let connectedDate = connectedDate else {
             return 0
         }
+        if let endDate = endDate {
+            return endDate.timeIntervalSince(connectedDate)
+        }
 
         return Date().timeIntervalSince(connectedDate)
     }
     
     // MARK: Initialization
-    init(for sessionID: String, uuid: String, mode: Mode) {
+    init(for sessionID: String, uuid: String, mode: Mode, outgoing: Bool = false) {
         self.sessionID = sessionID
         self.uuid = UUID(uuidString: uuid)!
         self.mode = mode
         self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
+        self.isOutgoing = outgoing
         WebRTCSession.current = self.webRTCSession
         super.init()
         self.webRTCSession.delegate = self
@@ -160,8 +172,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         }, completion: { [weak self] in
             let _ = promise.done {
                 Storage.shared.write { transaction in
-                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).done {
+                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).done { timestamp in
                         self?.hasStartedConnecting = true
+                        self?.callMessageTimestamp = timestamp
                     }.retainUntilComplete()
                 }
             }
@@ -186,9 +199,47 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         hasEnded = true
     }
     
+    // MARK: Update call message
+    func updateCallMessage(mode: EndCallMode) {
+        guard let callMessageTimestamp = callMessageTimestamp else { return }
+        Storage.write { transaction in
+            let tsMessage: TSMessage?
+            if self.isOutgoing {
+                tsMessage = TSOutgoingMessage.find(withTimestamp: callMessageTimestamp)
+            } else {
+                tsMessage = TSIncomingMessage.find(withAuthorId: self.sessionID, timestamp: callMessageTimestamp, transaction: transaction)
+            }
+            if let messageToUpdate = tsMessage {
+                var shouldMarkAsRead = false
+                let newMessageBody: String
+                if self.duration > 0 {
+                    let durationString = NSString.formatDurationSeconds(UInt32(self.duration), useShortFormat: true)
+                    newMessageBody = "\(self.isOutgoing ? NSLocalizedString("call_outgoing", comment: "") : NSLocalizedString("call_incoming", comment: "")): \(durationString)"
+                    shouldMarkAsRead = true
+                } else {
+                    switch mode {
+                    case .local:
+                        newMessageBody = self.isOutgoing ? NSLocalizedString("call_cancelled", comment: "") : NSLocalizedString("call_rejected", comment: "")
+                        shouldMarkAsRead = true
+                    case .remote:
+                        newMessageBody = self.isOutgoing ? NSLocalizedString("call_rejected", comment: "") : NSLocalizedString("call_missing", comment: "")
+                    }
+                }
+                messageToUpdate.updateCall(withNewBody: newMessageBody, transaction: transaction)
+                if let incomingMessage = tsMessage as? TSIncomingMessage, shouldMarkAsRead {
+                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                }
+            }
+        }
+    }
+    
     // MARK: Renderer
     func attachRemoteVideoRenderer(_ renderer: RTCVideoRenderer) {
         webRTCSession.attachRemoteRenderer(renderer)
+    }
+    
+    func removeRemoteVideoRenderer(_ renderer: RTCVideoRenderer) {
+        webRTCSession.removeRemoteRenderer(renderer)
     }
     
     func attachLocalVideoRenderer(_ renderer: RTCVideoRenderer) {

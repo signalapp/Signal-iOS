@@ -125,6 +125,7 @@ final class MiniCallView: UIView {
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 0.0
         }, completion: { _ in
+            self.callVC.call.removeRemoteVideoRenderer(self.remoteVideoView)
             MiniCallView.current = nil
             self.removeFromSuperview()
         })

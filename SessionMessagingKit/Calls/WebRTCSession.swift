@@ -128,10 +128,10 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         return promise
     }
     
-    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<UInt64> {
         print("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
-        let (promise, seal) = Promise<Void>.pending()
+        let (promise, seal) = Promise<UInt64>.pending()
         peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
@@ -152,7 +152,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                     let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
                     tsMessage.save(with: transaction)
                     MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
-                        seal.fulfill(())
+                        seal.fulfill(tsMessage.timestamp)
                     }.catch2 { error in
                         seal.reject(error)
                     }

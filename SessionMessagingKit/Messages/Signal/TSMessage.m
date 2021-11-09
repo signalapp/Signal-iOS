@@ -442,6 +442,15 @@ const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
                              }];
 }
 
+- (void)updateCallMessageWithNewBody:(NSString *)newBody transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    if (!_isCallMessage) { return; }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSMessage *message) {
+                                [message setBody:newBody];
+                             }];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

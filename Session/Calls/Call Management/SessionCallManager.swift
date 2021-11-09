@@ -95,6 +95,9 @@ public final class SessionCallManager: NSObject {
         guard let call = currentCall else { return }
         if let reason = reason {
             self.provider.reportCall(with: call.uuid, endedAt: nil, reason: reason)
+            call.updateCallMessage(mode: .remote)
+        } else {
+            call.updateCallMessage(mode: .local)
         }
         self.currentCall?.webRTCSession.dropConnection()
         self.currentCall = nil

@@ -281,13 +281,6 @@ extension MessageReceiver {
                 // TODO: Call in progress, put the new call on hold/reject
                 return
             }
-            handlePreOfferCallMessage?(message)
-        case .offer:
-            print("[Calls] Received offer message.")
-            if getWebRTCSession().uuid != message.uuid! {
-                // TODO: Call in progress, put the new call on hold/reject
-                return
-            }
             let storage = SNMessagingKitConfiguration.shared.storage
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
@@ -295,9 +288,13 @@ extension MessageReceiver {
                 let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
                 tsMessage.save(with: transaction)
             }
-            // Delegate to the main app, which is expected to show a dialog confirming
-            // that the user wants to pick up the call. When they do, the SDP contained
-            // in the offer message will be passed to WebRTCSession.handleRemoteSDP(_:from:).
+            handlePreOfferCallMessage?(message)
+        case .offer:
+            print("[Calls] Received offer message.")
+            if getWebRTCSession().uuid != message.uuid! {
+                // TODO: Call in progress, put the new call on hold/reject
+                return
+            }
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")

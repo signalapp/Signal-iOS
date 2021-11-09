@@ -32,7 +32,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         if userDefaults[.hasSeenCallIPExposureWarning] {
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
             guard AppEnvironment.shared.callManager.currentCall == nil else { return }
-            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer)
+            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer, outgoing: true)
             let callVC = CallVC(for: call)
             callVC.conversationVC = self
             self.inputAccessoryView?.isHidden = true

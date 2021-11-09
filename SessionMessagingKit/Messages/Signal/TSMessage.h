@@ -86,6 +86,8 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 - (void)updateForDeletionWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (void)updateCallMessageWithNewBody:(NSString *)newBody transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END
