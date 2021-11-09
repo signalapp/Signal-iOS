@@ -356,6 +356,15 @@ public class NotificationStrings: NSObject {
 
     @objc
     static public var genericIncomingMessageNotification: String {
+        NSLocalizedString("GENERIC_INCOMING_MESSAGE_NOTIFICATION", comment: "notification title indicating the user generically has a new message")
+    }
+
+    /// This is the fallback message used for push notifications
+    /// when the NSE or main app is unable to process them. We
+    /// don't use it directly in the app, but need to maintain
+    /// a reference to it for string generation.
+    @objc
+    static public var indeterminateIncomingMessageNotification: String {
         NSLocalizedString("APN_Message", comment: "notification body")
     }
 

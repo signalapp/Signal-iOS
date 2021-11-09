@@ -550,12 +550,17 @@ extension ConversationPickerViewController: UISearchBarDelegate {
             guard let self = self else {
                 throw PromiseError.cancelled
             }
+
+            // Make sure the search text hasn't changed since we started searching, otherwise bail.
+            guard searchBar.text == searchText else { throw PromiseError.cancelled }
+
             return self.buildConversationCollection(searchResults: searchResults)
         }.done(on: .main) { [weak self] conversationCollection in
             guard let self = self else { return }
 
             self.conversationCollection = conversationCollection
         }.catch { error in
+            if let error = error as? PromiseError, error == .cancelled { return }
             owsFailDebug("Error: \(error)")
         }
     }
