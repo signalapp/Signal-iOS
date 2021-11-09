@@ -422,24 +422,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Find minScale for .scaleAspectFit-style layout.
-    CGFloat scaleWidth = scrollViewSize.width / mediaSize.width;
-    CGFloat scaleHeight = scrollViewSize.height / mediaSize.height;
-    CGFloat minScale = MIN(scaleWidth, scaleHeight);
-
-    // UIScrollView transforms its content.
-    // Therefore its subviews operate in a different coordinate system.
-    // These constraints should reflect the _transformed_ frame of the mediaView,
-    // so we need to scale by the minScale.
-    CGSize newMediaSize = CGSizeScale(mediaSize, minScale);
-    CGFloat yOffset = MAX(0, (scrollViewSize.height - newMediaSize.height) / 2);
-    CGFloat xOffset = MAX(0, (scrollViewSize.width - newMediaSize.width) / 2);
+    // Center the media view in the scroll view.
+    CGSize mediaViewSize = self.mediaView.frame.size;
+    CGFloat yOffset = MAX(0, (scrollViewSize.height - mediaViewSize.height) / 2);
+    CGFloat xOffset = MAX(0, (scrollViewSize.width - mediaViewSize.width) / 2);
     self.mediaViewTopConstraint.constant = yOffset;
     self.mediaViewBottomConstraint.constant = yOffset;
     self.mediaViewLeadingConstraint.constant = xOffset;
     self.mediaViewTrailingConstraint.constant = xOffset;
 
+    // Find minScale for .scaleAspectFit-style layout.
+    CGFloat scaleWidth = scrollViewSize.width / mediaSize.width;
+    CGFloat scaleHeight = scrollViewSize.height / mediaSize.height;
+    CGFloat minScale = MIN(scaleWidth, scaleHeight);
     CGFloat maxScale = minScale * 8;
+
     self.scrollView.minimumZoomScale = minScale;
     self.scrollView.maximumZoomScale = maxScale;
 
