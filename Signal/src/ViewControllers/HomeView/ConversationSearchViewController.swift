@@ -55,12 +55,14 @@ public class ConversationSearchViewController: UITableViewController {
 
     private var hasThemeChanged = false
 
-    static let matchSnippetStyle = StringStyle(
-        .color(Theme.secondaryTextAndIconColor),
-        .xmlRules([
-            .style(FullTextSearchFinder.matchTag, StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold)))
-        ])
-    )
+    class var matchSnippetStyle: StringStyle {
+        StringStyle(
+            .color(Theme.secondaryTextAndIconColor),
+            .xmlRules([
+                .style(FullTextSearchFinder.matchTag, StringStyle(.font(UIFont.ows_dynamicTypeBody2.ows_semibold)))
+            ])
+        )
+    }
 
     // MARK: View Lifecycle
 
