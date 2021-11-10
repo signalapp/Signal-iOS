@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 public class ToastController: NSObject, ToastViewDelegate {
@@ -118,7 +119,7 @@ class ToastView: UIView {
 
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
-        self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        self.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
 
         if UIAccessibility.isReduceTransparencyEnabled {
             backgroundColor = .ows_blackAlpha80
@@ -132,9 +133,8 @@ class ToastView: UIView {
         darkThemeBackgroundOverlay.autoPinEdgesToSuperviewEdges()
         darkThemeBackgroundOverlay.backgroundColor = UIColor.white.withAlphaComponent(0.10)
 
-        label.textAlignment = .center
-        label.textColor = Theme.darkThemePrimaryColor
-        label.font = UIFont.ows_dynamicTypeBody
+        label.textColor = .ows_white
+        label.font = UIFont.ows_dynamicTypeBody2
         label.numberOfLines = 0
         self.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
