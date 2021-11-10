@@ -141,8 +141,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     open override func applyTheme() {
         super.applyTheme()
 
-        searchBar.searchFieldBackgroundColorOverride =
-            Theme.isDarkThemeEnabled ? .ows_gray75 : UIColor(rgbHex: 0xe0e0e0)
+        searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
     }
 
     open override func viewSafeAreaInsetsDidChange() {

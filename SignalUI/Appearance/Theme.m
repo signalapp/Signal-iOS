@@ -516,6 +516,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return Theme.washColor;
 }
 
++ (UIColor *)searchFieldElevatedBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : [[UIColor alloc] initWithRgbHex:0xe0e0e0];
+}
+
 #pragma mark -
 
 + (UIColor *)toastForegroundColor

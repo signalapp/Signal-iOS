@@ -101,6 +101,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIBarStyle barStyle;
 @property (class, readonly, nonatomic) UIColor *searchFieldBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *searchFieldElevatedBackgroundColor;
 @property (class, readonly, nonatomic) UIBlurEffect *barBlurEffect;
 @property (class, readonly, nonatomic) UIKeyboardAppearance keyboardAppearance;
 @property (class, readonly, nonatomic) UIColor *keyboardBackgroundColor;
