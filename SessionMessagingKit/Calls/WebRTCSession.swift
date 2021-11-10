@@ -94,6 +94,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public static var current: WebRTCSession?
     
     public init(for contactSessionID: String, with uuid: String) {
+        RTCAudioSession.sharedInstance().useManualAudio = true
+        RTCAudioSession.sharedInstance().isAudioEnabled = false
         self.contactSessionID = contactSessionID
         self.uuid = uuid
         super.init()
@@ -259,7 +261,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         print("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
             delegate?.webRTCIsConnected()
-//            configureAudioSession()
+            configureAudioSession()
         }
     }
     
@@ -295,6 +297,17 @@ extension WebRTCSession {
             SNLog("Couldn't set up WebRTC audio session due to error: \(error)")
         }
         audioSession.unlockForConfiguration()
+    }
+    
+    public func audioSessionDidActivate(_ audioSession: AVAudioSession) {
+        RTCAudioSession.sharedInstance().audioSessionDidActivate(audioSession)
+        RTCAudioSession.sharedInstance().isAudioEnabled = true
+        configureAudioSession()
+    }
+    
+    public func audioSessionDidDeactivate(_ audioSession: AVAudioSession) {
+        RTCAudioSession.sharedInstance().audioSessionDidDeactivate(audioSession)
+        RTCAudioSession.sharedInstance().isAudioEnabled = false
     }
     
     public func mute() {

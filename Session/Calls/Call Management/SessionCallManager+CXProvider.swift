@@ -58,5 +58,19 @@ extension SessionCallManager: CXProviderDelegate {
     public func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
         // TODO: handle timeout
     }
+    
+    public func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        print("[CallKit] Audio session did activate.")
+        AssertIsOnMainThread()
+        guard let call = self.currentCall else { return }
+        call.webRTCSession.audioSessionDidActivate(audioSession)
+    }
+    
+    public func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        print("[CallKit] Audio session did deactivate.")
+        AssertIsOnMainThread()
+        guard let call = self.currentCall else { return }
+        call.webRTCSession.audioSessionDidDeactivate(audioSession)
+    }
 }
 
