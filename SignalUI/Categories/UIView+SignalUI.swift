@@ -290,6 +290,62 @@ public extension UIView {
         ]
     }
 
+    @discardableResult @objc
+    func autoPinWidthToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+        // We invert the relation because of the weird grammar switch when talking about
+        // the size of widths to the positioning of edges
+        // "Width less than or equal to superview margin width"
+        // -> "Leading edge greater than or equal to superview leading edge"
+        // -> "Trailing edge less than or equal to superview trailing edge" (then PureLayout re-inverts for whatever reason)
+        let resolvedRelation = relation.inverse
+        return [
+            autoPinEdge(toSuperviewEdge: .leading, withInset: .zero, relation: resolvedRelation),
+            autoPinEdge(toSuperviewEdge: .trailing, withInset: .zero, relation: resolvedRelation),
+        ]
+    }
+
+    @discardableResult @objc
+    func autoPinHeightToSuperview(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+        // We invert the relation because of the weird grammar switch when talking about
+        // the size of height to the positioning of edges
+        // "Height less than or equal to superview margin height"
+        // -> "Top edge greater than or equal to superview top edge"
+        // -> "Bottom edge less than or equal to superview bottom edge" (then PureLayout re-inverts for whatever reason)
+        let resolvedRelation = relation.inverse
+        return [
+            autoPinEdge(toSuperviewEdge: .top, withInset: .zero, relation: resolvedRelation),
+            autoPinEdge(toSuperviewEdge: .bottom, withInset: .zero, relation: resolvedRelation),
+        ]
+    }
+
+    @discardableResult @objc
+    func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+        // We invert the relation because of the weird grammar switch when talking about
+        // the size of widths to the positioning of edges
+        // "Width less than or equal to superview margin width"
+        // -> "Leading edge greater than or equal to superview leading edge"
+        // -> "Trailing edge less than or equal to superview trailing edge" (then PureLayout re-inverts for whatever reason)
+        let resolvedRelation = relation.inverse
+        return [
+            autoPinEdge(toSuperviewMargin: .leading, relation: resolvedRelation),
+            autoPinEdge(toSuperviewMargin: .trailing, relation: resolvedRelation),
+        ]
+    }
+
+    @discardableResult @objc
+    func autoPinHeightToSuperviewMargins(relation: NSLayoutConstraint.Relation) -> [NSLayoutConstraint] {
+        // We invert the relation because of the weird grammar switch when talking about
+        // the size of height to the positioning of edges
+        // "Height less than or equal to superview margin height"
+        // -> "Top edge greater than or equal to superview top edge"
+        // -> "Bottom edge less than or equal to superview bottom edge" (then PureLayout re-inverts for whatever reason)
+        let resolvedRelation = relation.inverse
+        return [
+            autoPinEdge(toSuperviewMargin: .top, relation: resolvedRelation),
+            autoPinEdge(toSuperviewMargin: .bottom, relation: resolvedRelation),
+        ]
+    }
+
     func removeAllSubviews() {
         for subview in subviews {
             subview.removeFromSuperview()
@@ -873,6 +929,19 @@ extension NSTextAlignment: CustomStringConvertible {
             return "natural"
         @unknown default:
             return "unknown"
+        }
+    }
+}
+
+extension NSLayoutConstraint.Relation {
+    var inverse: NSLayoutConstraint.Relation {
+        switch self {
+        case .lessThanOrEqual: return .greaterThanOrEqual
+        case .equal: return .equal
+        case .greaterThanOrEqual: return .lessThanOrEqual
+        @unknown default:
+            owsFailDebug("Unknown case")
+            return .equal
         }
     }
 }

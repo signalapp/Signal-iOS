@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 @objc
 class AppSettingsViewController: OWSTableViewController2 {

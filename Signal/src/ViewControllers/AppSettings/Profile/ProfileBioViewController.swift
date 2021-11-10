@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol ProfileBioViewControllerDelegate: AnyObject {
     func profileBioViewDidComplete(bio: String?,

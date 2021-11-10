@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import UIKit
+import SignalUI
 
 protocol ProfileNameViewControllerDelegate: AnyObject {
     func profileNameViewDidComplete(givenName: String?, familyName: String?)

@@ -59,12 +59,9 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             OWSTableItem(customCellBlock: { [weak self] in
                 self?.avatarCell() ?? UITableViewCell()
             }, actionBlock: nil),
-
             OWSTableItem(customCellBlock: { [weak self] in
-                self?.changeAvatarCell() ?? UITableViewCell()
-            }, actionBlock: { [weak self] in
-                self?.presentAvatarSettingsView()
-            })
+                self?.createChangeAvatarCell() ?? UITableViewCell()
+            }, actionBlock: nil),
         ])
         avatarSection.hasBackground = false
         contents.addSection(avatarSection)
@@ -121,11 +118,36 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
+        if FeatureFlags.configureBadges {
+            mainSection.add(.disclosureItem(
+                icon: .settingsBadges,
+                name: NSLocalizedString(
+                    "BADGE_CONFIGURATION_TITLE",
+                    comment: "The title for the badge configuration page"
+                ),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+                    let vc = BadgeConfigurationViewController(
+                        availableBadges: {
+                            self.databaseStorage.read { readTx in
+                                // TODO: Use the profile snapshot like everything else does here
+                                self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
+                            } ?? []
+                        }(),
+                        selectedBadgeIndex: nil,
+                        shouldDisplayOnProfile: false,
+                        delegate: self)
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
+            ))
+        }
         contents.addSection(mainSection)
 
         self.contents = contents
     }
 
+    @objc
     func presentAvatarSettingsView() {
         let currentAvatarImage: UIImage? = {
             guard let avatarData = avatarData else { return nil }
@@ -271,20 +293,28 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         return cell
     }
 
-    private func changeAvatarCell() -> UITableViewCell {
+    private func createChangeAvatarCell() -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         cell.selectionStyle = .none
 
-        let changeLabel = UILabel()
-        changeLabel.font = .ows_dynamicTypeBody2.ows_semibold
-        changeLabel.textAlignment = .center
-        changeLabel.text = NSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar")
+        let changeButton = UIButton(type: .custom)
+
+        changeButton.setTitle(NSLocalizedString("CHANGE_AVATAR_BUTTON_LABEL", comment: "Button label to allow user to change avatar"), for: .normal)
+        changeButton.titleLabel?.font = .ows_dynamicTypeBody2.ows_semibold
+        changeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
+        changeButton.layer.cornerRadius = 16
 
         // TODO: Badges — Dark theme? Check with design
-        changeLabel.textColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray95
+        changeButton.setTitleColor(Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray95, for: .normal)
+        changeButton.backgroundColor = Theme.tableCellBackgroundColor
 
-        cell.contentView.addSubview(changeLabel)
-        changeLabel.autoPinEdgesToSuperviewMargins()
+        cell.contentView.addSubview(changeButton)
+        changeButton.autoPinHeightToSuperviewMargins()
+        changeButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+        changeButton.autoCenterInSuperview()
+        changeButton.setContentHuggingHigh()
+
+        changeButton.addTarget(self, action: #selector(presentAvatarSettingsView), for: .touchUpInside)
         return cell
     }
 
@@ -339,5 +369,15 @@ extension ProfileSettingsViewController: ProfileNameViewControllerDelegate {
         self.familyName = familyName
 
         updateTableContents()
+    }
+}
+
+extension ProfileSettingsViewController: BadgeConfigurationDelegate {
+    func updateFeaturedBadge(_ updatedFeaturedBadge: ProfileBadge?) {
+        // TODO
+    }
+
+    func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
+        // TODO
     }
 }
