@@ -37,6 +37,7 @@ public final class SessionCallManager: NSObject {
         let localizedName = NSLocalizedString("APPLICATION_NAME", comment: "Name of application")
         let providerConfiguration = CXProviderConfiguration(localizedName: localizedName)
         providerConfiguration.supportsVideo = true
+        providerConfiguration.maximumCallGroups = 1
         providerConfiguration.maximumCallsPerCallGroup = 1
         providerConfiguration.supportedHandleTypes = [.generic]
         let iconMaskImage = #imageLiteral(resourceName: "SessionGreen32")
@@ -76,6 +77,9 @@ public final class SessionCallManager: NSObject {
         update.localizedCallerName = callerName
         update.remoteHandle = CXHandle(type: .generic, value: call.uuid.uuidString)
         update.hasVideo = false
+        update.supportsGrouping = false
+        update.supportsUngrouping = false
+        update.supportsHolding = false
 
         disableUnsupportedFeatures(callUpdate: update)
 
