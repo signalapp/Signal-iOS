@@ -7,6 +7,7 @@ public protocol WebRTCSessionDelegate : AnyObject {
     func webRTCIsConnected()
     func isRemoteVideoDidChange(isEnabled: Bool)
     func dataChannelDidOpen()
+    func didReceiveHangUpSignal()
 }
 
 /// See https://webrtc.org/getting-started/overview for more information.
@@ -110,17 +111,19 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Signaling
-    public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<UInt64> {
         print("[Calls] Sending pre-offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
-        let (promise, seal) = Promise<Void>.pending()
+        let (promise, seal) = Promise<UInt64>.pending()
         DispatchQueue.main.async {
             let message = CallMessage()
             message.uuid = self.uuid
             message.kind = .preOffer
+            let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
+            tsMessage.save(with: transaction)
             MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
                 print("[Calls] Pre-offer message has been sent.")
-                seal.fulfill(())
+                seal.fulfill((tsMessage.timestamp))
             }.catch2 { error in
                 seal.reject(error)
             }
@@ -128,10 +131,10 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         return promise
     }
     
-    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<UInt64> {
+    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
         print("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
-        let (promise, seal) = Promise<UInt64>.pending()
+        let (promise, seal) = Promise<Void>.pending()
         peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
@@ -149,10 +152,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
                     message.uuid = self.uuid
                     message.kind = .offer
                     message.sdps = [ sdp.sdp ]
-                    let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
-                    tsMessage.save(with: transaction)
                     MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
-                        seal.fulfill(tsMessage.timestamp)
+                        seal.fulfill(())
                     }.catch2 { error in
                         seal.reject(error)
                     }
@@ -240,7 +241,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         print("[Calls] Peer connection did add stream.")
-        configureAudioSession()
+//        configureAudioSession()
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
@@ -258,6 +259,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         print("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
             delegate?.webRTCIsConnected()
+//            configureAudioSession()
         }
     }
     
@@ -311,5 +313,9 @@ extension WebRTCSession {
     public func turnOnVideo() {
         localVideoTrack.isEnabled = true
         sendJSON(["video": true])
+    }
+    
+    public func hangUp() {
+        sendJSON(["hangup": true])
     }
 }

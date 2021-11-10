@@ -30,6 +30,9 @@ extension WebRTCSession: RTCDataChannelDelegate {
             if let isRemoteVideoEnabled = json["video"] as? Bool {
                 delegate?.isRemoteVideoDidChange(isEnabled: isRemoteVideoEnabled)
             }
+            if let _ = json["hangup"] {
+                delegate?.didReceiveHangUpSignal()
+            }
         }
     }
 }

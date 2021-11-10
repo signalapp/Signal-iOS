@@ -168,24 +168,21 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Actions
     func startSessionCall() {
         guard case .offer = mode else { return }
-        var promise: Promise<Void>!
+        var promise: Promise<UInt64>!
         Storage.write(with: { transaction in
             promise = self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction)
         }, completion: { [weak self] in
-            let _ = promise.done {
+            let _ = promise.done { timestamp in
+                self?.callMessageTimestamp = timestamp
                 Storage.shared.write { transaction in
-                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).done { timestamp in
-                        self?.hasStartedConnecting = true
-                        self?.callMessageTimestamp = timestamp
-                    }.retainUntilComplete()
+                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
                 }
             }
         })
     }
     
-    func answerSessionCall(action: CXAnswerCallAction) {
+    func answerSessionCall() {
         guard case .answer = mode else { return }
-        answerCallAction = action
         hasStartedConnecting = true
         if let sdp = remoteSDP {
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
@@ -194,8 +191,14 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         }
     }
     
+    func answerSessionCallInBackground(action: CXAnswerCallAction) {
+        answerCallAction = action
+        self.answerSessionCall()
+    }
+    
     func endSessionCall() {
         guard !hasEnded else { return }
+        webRTCSession.hangUp()
         Storage.write { transaction in
             self.webRTCSession.endCall(with: self.sessionID, using: transaction)
         }
@@ -257,6 +260,15 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     public func isRemoteVideoDidChange(isEnabled: Bool) {
         isRemoteVideoEnabled = isEnabled
+    }
+    
+    public func didReceiveHangUpSignal() {
+        DispatchQueue.main.async {
+            if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
+            if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
+            if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
+            AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
+        }
     }
     
     public func dataChannelDidOpen() {

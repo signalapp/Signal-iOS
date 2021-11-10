@@ -68,7 +68,7 @@ extension AppDelegate {
         MessageReceiver.handleEndCallMessage = { message in
             DispatchQueue.main.async {
                 if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
-                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage(message) }
+                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
                 if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
                 AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
             }

@@ -19,7 +19,7 @@ extension SessionCallManager: CXProviderDelegate {
         guard let call = self.currentCall else { return action.fail() }
         if CurrentAppContext().isMainAppAndActive {
             if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
-                call.answerSessionCall(action: action)
+                call.answerSessionCall()
             } else {
                 let userDefaults = UserDefaults.standard
                 if userDefaults[.hasSeenCallIPExposureWarning] {
@@ -28,12 +28,14 @@ extension SessionCallManager: CXProviderDelegate {
                     showCallModal()
                 }
             }
+            action.fulfill()
         } else {
-            call.answerSessionCall(action: action)
+            call.answerSessionCallInBackground(action: action)
         }
     }
     
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+        print("[CallKit] Perform CXEndCallAction")
         AssertIsOnMainThread()
         guard let call = self.currentCall else { return action.fail() }
         call.endSessionCall()

@@ -60,7 +60,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var answerButton: UIButton = {
         let result = UIButton(type: .custom)
-        result.isHidden = call.hasConnected
+        result.isHidden = call.hasStartedConnecting
         let image = UIImage(named: "AnswerCall")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
@@ -145,9 +145,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var callInfoLabel: UILabel = {
         let result = UILabel()
+        result.isHidden = call.hasConnected
         result.textColor = .white
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         result.textAlignment = .center
+        if call.hasStartedConnecting { result.text = "Connecting..." }
         return result
     }()
     
@@ -299,7 +301,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         callInfoLabel.text = "Connecting..."
     }
     
-    func handleEndCallMessage(_ message: CallMessage) {
+    func handleEndCallMessage() {
         print("[Calls] Ending call.")
         callInfoLabel.isHidden = false
         callInfoLabel.text = "Call Ended"
