@@ -345,11 +345,21 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                name: .ThemeDidChange,
                                                object: nil)
 
-        if configuration.dataSource?.isContactAvatar == true {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(otherUsersProfileDidChange(notification:)),
-                                                   name: .otherUsersProfileDidChange,
-                                                   object: nil)
+        guard let dataSource = configuration.dataSource else { return }
+
+        if dataSource.isContactAvatar {
+            if dataSource.contactAddress?.isLocalAddress == true {
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(localUsersProfileDidChange(notification:)),
+                                                       name: .localProfileDidChange,
+                                                       object: nil)
+            } else {
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(otherUsersProfileDidChange(notification:)),
+                                                       name: .otherUsersProfileDidChange,
+                                                       object: nil)
+            }
+
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(handleSignalAccountsChanged(notification:)),
                                                    name: .OWSContactsManagerSignalAccountsDidChange,
@@ -358,7 +368,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                    selector: #selector(skipContactAvatarBlurDidChange(notification:)),
                                                    name: OWSContactsManager.skipContactAvatarBlurDidChange,
                                                    object: nil)
-        } else if configuration.dataSource?.isGroupAvatar == true {
+        } else if dataSource.isGroupAvatar {
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(handleGroupAvatarChanged(notification:)),
                                                    name: .TSGroupThreadAvatarChanged,
@@ -383,6 +393,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
         // but currently this is only a course grained notification.
         updateModel(transaction: nil)
+    }
+
+    @objc
+    private func localUsersProfileDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+        if let sourceAddress = configuration.dataSource?.contactAddress, sourceAddress.isLocalAddress {
+            handleUpdatedAddressNotification(address: sourceAddress)
+        }
     }
 
     @objc
