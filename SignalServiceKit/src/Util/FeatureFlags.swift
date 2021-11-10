@@ -157,7 +157,7 @@ public class FeatureFlags: BaseFlags {
         if paymentsInternalBeta {
             return false
         } else {
-            return false
+            return true
         }
     }
 
