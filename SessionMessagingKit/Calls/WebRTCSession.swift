@@ -243,7 +243,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         print("[Calls] Peer connection did add stream.")
-//        configureAudioSession()
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
@@ -252,9 +251,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
         print("[Calls] Peer connection should negotiate.")
-//        Storage.write { transaction in
-//            self.sendOffer(to: self.contactSessionID, using: transaction).retainUntilComplete()
-//        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange state: RTCIceConnectionState) {
