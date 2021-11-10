@@ -2,6 +2,7 @@ import Foundation
 import WebRTC
 import SessionMessagingKit
 import PromiseKit
+import CallKit
 
 public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Metadata Properties
@@ -13,6 +14,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     var remoteSDP: RTCSessionDescription? = nil
     var callMessageTimestamp: UInt64?
     var isWaitingForRemoteSDP = false
+    var answerCallAction: CXAnswerCallAction? = nil
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
         return contact?.displayName(for: Contact.Context.regular) ?? self.sessionID
@@ -181,8 +183,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         })
     }
     
-    func answerSessionCall() {
+    func answerSessionCall(action: CXAnswerCallAction) {
         guard case .answer = mode else { return }
+        answerCallAction = action
         hasStartedConnecting = true
         if let sdp = remoteSDP {
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
@@ -249,6 +252,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Delegate
     public func webRTCIsConnected() {
         self.hasConnected = true
+        self.answerCallAction?.fulfill()
     }
     
     public func isRemoteVideoDidChange(isEnabled: Bool) {

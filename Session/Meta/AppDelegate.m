@@ -407,6 +407,7 @@ static NSTimeInterval launchStartedAt;
             if (CurrentAppContext().isMainApp) {
                 [SNJobQueue.shared resumePendingJobs];
                 [self syncConfigurationIfNeeded];
+                [self handleAppActivatedWithOngoingCallIfNeeded];
             }
         });
     }

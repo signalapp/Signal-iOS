@@ -4,6 +4,7 @@ import SessionUtilitiesKit
 extension SessionCallManager {
     public func startCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
         guard case .offer = call.mode else { return }
+        guard !call.hasConnected else { return }
         let handle = CXHandle(type: .generic, value: call.sessionID)
         let startCallAction = CXStartCallAction(call: call.uuid, handle: handle)
         

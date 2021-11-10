@@ -49,7 +49,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var minimizeButton: UIButton = {
         let result = UIButton(type: .custom)
-        result.isHidden = true
+        result.isHidden = !call.hasConnected
         let image = UIImage(named: "Minimize")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
@@ -60,6 +60,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var answerButton: UIButton = {
         let result = UIButton(type: .custom)
+        result.isHidden = call.hasConnected
         let image = UIImage(named: "AnswerCall")!.withTint(.white)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
@@ -108,7 +109,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
-        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.backgroundColor = call.isMuted ? Colors.destructive : UIColor(hex: 0x1F1F1F)
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(switchAudio), for: UIControl.Event.touchUpInside)
         return result

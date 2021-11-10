@@ -6,6 +6,20 @@ import UIKit
 extension AppDelegate {
 
     // MARK: Call handling
+    @objc func handleAppActivatedWithOngoingCallIfNeeded() {
+        guard let call = AppEnvironment.shared.callManager.currentCall else { return }
+        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call == call { return }
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+        let callVC = CallVC(for: call)
+        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+            callVC.conversationVC = conversationVC
+            conversationVC.inputAccessoryView?.isHidden = true
+            conversationVC.inputAccessoryView?.alpha = 0
+        }
+        presentingVC.present(callVC, animated: true, completion: nil)
+        
+    }
+    
     @objc func setUpCallHandling() {
         // Pre offer messages
         MessageReceiver.handlePreOfferCallMessage = { message in

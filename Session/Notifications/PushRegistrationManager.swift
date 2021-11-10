@@ -243,6 +243,10 @@ public enum PushRegistrationError: Error {
         if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestamp = payload["timestamp"] as? UInt64 {
             let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
             call.callMessageTimestamp = timestamp
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            appDelegate.startPollerIfNeeded()
+            appDelegate.startClosedGroupPoller()
+            appDelegate.startOpenGroupPollersIfNeeded()
             call.reportIncomingCallIfNeeded { error in
                 if let error = error {
                     SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")

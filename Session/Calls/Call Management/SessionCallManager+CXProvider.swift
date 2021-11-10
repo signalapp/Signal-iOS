@@ -15,18 +15,22 @@ extension SessionCallManager: CXProviderDelegate {
     
     public func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         AssertIsOnMainThread()
+        print("[CallKit] Perform CXAnswerCallAction")
         guard let call = self.currentCall else { return action.fail() }
-        if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
-            call.answerSessionCall()
-        } else {
-            let userDefaults = UserDefaults.standard
-            if userDefaults[.hasSeenCallIPExposureWarning] {
-                showCallVC()
+        if CurrentAppContext().isMainAppAndActive {
+            if let _ = CurrentAppContext().frontmostViewController() as? CallVC {
+                call.answerSessionCall(action: action)
             } else {
-                showCallModal()
+                let userDefaults = UserDefaults.standard
+                if userDefaults[.hasSeenCallIPExposureWarning] {
+                    showCallVC()
+                } else {
+                    showCallModal()
+                }
             }
+        } else {
+            call.answerSessionCall(action: action)
         }
-        action.fulfill()
     }
     
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
@@ -34,6 +38,14 @@ extension SessionCallManager: CXProviderDelegate {
         guard let call = self.currentCall else { return action.fail() }
         call.endSessionCall()
         reportCurrentCallEnded(reason: nil)
+        action.fulfill()
+    }
+    
+    public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        print("[CallKit] Perform CXSetMutedCallAction, isMuted: \(action.isMuted)")
+        AssertIsOnMainThread()
+        guard let call = self.currentCall else { return action.fail() }
+        call.isMuted = action.isMuted
         action.fulfill()
     }
     
