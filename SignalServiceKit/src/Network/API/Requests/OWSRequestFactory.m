@@ -557,7 +557,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSURLComponents *components = [[NSURLComponents alloc] initWithString:textSecureMultiRecipientMessageAPI];
     components.queryItems = @[
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
-        [NSURLQueryItem queryItemWithName:@"online" value:[@(isOnline) stringValue]],
+        [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
     ];
     NSURL *url = [components URL];
 
