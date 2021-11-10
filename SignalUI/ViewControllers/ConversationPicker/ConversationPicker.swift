@@ -138,6 +138,18 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                                                object: nil)
     }
 
+    open override func applyTheme() {
+        super.applyTheme()
+
+        searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
+    }
+
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        searchBar.layoutMargins = cellOuterInsets
+    }
+
     // MARK: - ConversationCollection
 
     private func restoreSelection() {

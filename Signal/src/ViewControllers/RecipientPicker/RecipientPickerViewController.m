@@ -1302,8 +1302,7 @@ const NSUInteger kMinimumSearchLength = 1;
     [super applyTheme];
 
     [self.tableViewController applyThemeToViewController:self];
-    self.searchBar.searchFieldBackgroundColorOverride
-        = Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xe0e0e0];
+    self.searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor;
     self.tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor;
 }
 

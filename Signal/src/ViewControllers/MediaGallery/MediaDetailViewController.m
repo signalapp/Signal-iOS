@@ -457,6 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
     [self updateZoomScaleAndConstraints];
+    [self.view layoutIfNeeded];
 }
 
 - (void)resetMediaFrame
