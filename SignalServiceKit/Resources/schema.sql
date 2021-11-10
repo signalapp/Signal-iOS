@@ -351,6 +351,7 @@ CREATE
             ,"lastMessagingDate" DOUBLE
             ,"bio" TEXT
             ,"bioEmoji" TEXT
+            ,"profileBadgeInfo" BLOB
         )
 ;
 
@@ -1231,4 +1232,17 @@ CREATE
     )
 WHERE
     recordType IS NOT 70
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_ProfileBadgeTable" (
+            "id" TEXT PRIMARY KEY
+            ,"rawCategory" TEXT NOT NULL
+            ,"localizedName" TEXT NOT NULL
+            ,"localizedDescriptionFormatString" TEXT NOT NULL
+            ,"resourcePath" TEXT NOT NULL
+            ,"badgeVariant" TEXT NOT NULL
+            ,"localization" TEXT NOT NULL
+        )
 ;

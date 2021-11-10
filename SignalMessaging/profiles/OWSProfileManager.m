@@ -54,6 +54,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                          bioEmoji:(nullable NSString *)bioEmoji
                          username:(nullable NSString *)username
                        avatarData:(nullable NSData *)avatarData
+                 profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
 {
 
     self = [super init];
@@ -68,6 +69,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     _bioEmoji = bioEmoji;
     _username = username;
     _avatarData = avatarData;
+    _profileBadgeInfo = [badgeArray copy];
 
     return self;
 }
@@ -102,6 +104,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_UserUUIDWhitelistCollection"];
     _whitelistedGroupsStore =
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
+    _badgeStore = [[BadgeStore alloc] init];
 
     OWSSingletonAssert();
 
@@ -360,7 +363,8 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                                      bio:userProfile.bio
                                                 bioEmoji:userProfile.bioEmoji
                                                 username:userProfile.username
-                                              avatarData:avatarData];
+                                              avatarData:avatarData
+                                        profileBadgeInfo:userProfile.profileBadgeInfo];
 }
 
 - (void)updateLocalUsername:(nullable NSString *)username
@@ -1249,14 +1253,15 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                 batched:YES
                                   block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                       OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@",
+                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@, badges: %@",
                                           userProfile.publicAddress,
                                           userProfile.profileKey != nil,
                                           userProfile.avatarUrlPath != nil,
                                           userProfile.avatarFileName != nil,
                                           userProfile.givenName,
                                           userProfile.familyName,
-                                          userProfile.username);
+                                          userProfile.username,
+                                          userProfile.profileBadgeInfo);
                                   }];
     }];
 }
@@ -1576,6 +1581,40 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
 }
 
+- (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData
+{
+    OWSAssertDebug(avatarData.length > 0);
+    if (![avatarData ows_isValidImage]) {
+        OWSFailDebug(@"Invalid avatar format");
+        return nil;
+    }
+
+    NSString *filename = [self generateAvatarFilename];
+    NSString *avatarPath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
+    NSURL *avatarUrl = [NSURL fileURLWithPath:avatarPath];
+    if (!avatarUrl) {
+        OWSFailDebug(@"Invalid URL for avatarPath %@", avatarPath);
+        return nil;
+    }
+
+    NSError *error = nil;
+    BOOL success = [avatarData writeToURL:avatarUrl options:NSDataWritingAtomic error:&error];
+    if (!success || error) {
+        OWSFailDebug(@"Failed write to url %@: %@", avatarUrl, error);
+        return nil;
+    }
+
+    // We were double checking that a UIImage could be instantiated from this file before recording the
+    // avatar to the profile. That behavior is preserved here:
+    UIImage *_Nullable avatarImage = [UIImage imageWithContentsOfFile:avatarUrl.path];
+    if (avatarImage) {
+        return avatarUrl;
+    } else {
+        OWSFailDebug(@"Failed to open avatar image written to disk");
+        return nil;
+    }
+}
+
 - (NSString *)generateAvatarFilename
 {
     return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
@@ -1687,15 +1726,18 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+          optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
+                  profileBadges:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadges
                   lastFetchDate:(NSDate *)lastFetchDate
               userProfileWriter:(UserProfileWriter)userProfileWriter
+                    transaction:(SDSAnyWriteTransaction *)writeTx
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
+    OWSAssertDebug(NSThread.isMainThread == NO);
 
     OWSLogDebug(@"update profile for: %@ -> %@, givenName: %@, familyName: %@, bio: %@, bioEmoji: %@, avatar: %@, "
-                @"avatarData: %d, userProfileWriter: %@",
+                @"avatarFile: %@, userProfileWriter: %@",
         addressParam,
         address,
         givenName,
@@ -1703,93 +1745,62 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         bio,
         bioEmoji,
         avatarUrlPath,
-        optionalDecryptedAvatarData.length > 0,
+        optionalAvatarFileUrl,
         NSStringForUserProfileWriter(userProfileWriter));
 
-    // Ensure decryption, etc. off main thread.
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // If the optional avatar data is present, prepare for
-        // its possible usage by trying to write it to disk
-        // and verifying that it can be read.
-        NSString *_Nullable avatarFileName;
-        UIImage *_Nullable avatarImage = nil;
-        // The avatar won't always be pre-downloaded.
-        // We may have to fill in it below.
-        if (optionalDecryptedAvatarData.length > 0) {
-            OWSAssertDebug(avatarUrlPath.length > 0);
-            
-            NSString *newAvatarFileName = [self generateAvatarFilename];
-            NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:newAvatarFileName];
-            BOOL success = [optionalDecryptedAvatarData writeToFile:filePath atomically:YES];
-            if (!success) {
-                OWSFailDebug(@"Could not write avatar to disk.");
-            } else {
-                avatarFileName = newAvatarFileName;
-                avatarImage = [UIImage imageWithContentsOfFile:filePath];
-            }
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:writeTx];
+    if (!userProfile.profileKey) {
+        [userProfile updateWithUsername:username
+                          isUuidCapable:isUuidCapable
+                          lastFetchDate:lastFetchDate
+                      userProfileWriter:userProfileWriter
+                            transaction:writeTx];
+    } else if (optionalAvatarFileUrl.lastPathComponent) {
+        [userProfile updateWithGivenName:givenName
+                              familyName:familyName
+                                     bio:bio
+                                bioEmoji:bioEmoji
+                                username:username
+                           isUuidCapable:isUuidCapable
+                                  badges:profileBadges
+                           avatarUrlPath:avatarUrlPath
+                          avatarFileName:optionalAvatarFileUrl.lastPathComponent
+                           lastFetchDate:lastFetchDate
+                       userProfileWriter:userProfileWriter
+                             transaction:writeTx
+                              completion:nil];
+    } else {
+        [userProfile updateWithGivenName:givenName
+                              familyName:familyName
+                                     bio:bio
+                                bioEmoji:bioEmoji
+                                username:username
+                           isUuidCapable:isUuidCapable
+                                  badges:profileBadges
+                           avatarUrlPath:avatarUrlPath
+                           lastFetchDate:lastFetchDate
+                       userProfileWriter:userProfileWriter
+                             transaction:writeTx
+                              completion:nil];
+    }
+
+    if (userProfile.profileKey && userProfile.avatarFileName.length > 0) {
+        NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+        if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
+            OWSLogError(@"downloaded file is missing for profile: %@, userProfileWriter: %@",
+                userProfile.address,
+                NSStringForUserProfileWriter(userProfileWriter));
+            [userProfile updateWithAvatarFileName:nil userProfileWriter:userProfileWriter transaction:writeTx];
         }
-        
-        __block OWSUserProfile *userProfile;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
-            
-            if (!userProfile.profileKey) {
-                [userProfile updateWithUsername:username
-                                  isUuidCapable:isUuidCapable
-                                  lastFetchDate:lastFetchDate
-                              userProfileWriter:userProfileWriter
-                                    transaction:transaction];
-                return;
-            }
-            
-            if (avatarImage != nil) {
-                [userProfile updateWithGivenName:givenName
-                                      familyName:familyName
-                                             bio:bio
-                                        bioEmoji:bioEmoji
-                                        username:username
-                                   isUuidCapable:isUuidCapable
-                                   avatarUrlPath:avatarUrlPath
-                                  avatarFileName:avatarFileName
-                                   lastFetchDate:lastFetchDate
-                               userProfileWriter:userProfileWriter
-                                     transaction:transaction
-                                      completion:nil];
-            } else {
-                [userProfile updateWithGivenName:givenName
-                                      familyName:familyName
-                                             bio:bio
-                                        bioEmoji:bioEmoji
-                                        username:username
-                                   isUuidCapable:isUuidCapable
-                                   avatarUrlPath:avatarUrlPath
-                                   lastFetchDate:lastFetchDate
-                               userProfileWriter:userProfileWriter
-                                     transaction:transaction
-                                      completion:nil];
-            }
-            
-            if (userProfile.avatarFileName.length > 0) {
-                NSString *path = [OWSUserProfile profileAvatarFilepathWithFilename:userProfile.avatarFileName];
-                if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-                    OWSLogError(@"downloaded file is missing for profile: %@, userProfileWriter: %@",
-                        userProfile.address,
-                        NSStringForUserProfileWriter(userProfileWriter));
-                    [userProfile updateWithAvatarFileName:nil
-                                        userProfileWriter:userProfileWriter
-                                              transaction:transaction];
-                }
-            }
-        });
-        
-        // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
-        // So if avatarUrlPath is set and avatarFileName is not set, we should to
-        // download this avatar. downloadAvatarForUserProfile will de-bounce
-        // downloads.
-        if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
-            [self downloadAvatarForUserProfile:userProfile];
-        }
-    });
+    }
+
+    // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
+    // So if avatarUrlPath is set and avatarFileName is not set, we should to
+    // download this avatar. downloadAvatarForUserProfile will de-bounce
+    // downloads.
+    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right

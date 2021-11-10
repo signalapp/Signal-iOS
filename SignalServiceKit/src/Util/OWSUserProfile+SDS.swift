@@ -43,6 +43,7 @@ public struct UserProfileRecord: SDSRecord {
     public let lastMessagingDate: Double?
     public let bio: String?
     public let bioEmoji: String?
+    public let profileBadgeInfo: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -61,6 +62,7 @@ public struct UserProfileRecord: SDSRecord {
         case lastMessagingDate
         case bio
         case bioEmoji
+        case profileBadgeInfo
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -100,6 +102,7 @@ public extension UserProfileRecord {
         lastMessagingDate = row[13]
         bio = row[14]
         bioEmoji = row[15]
+        profileBadgeInfo = row[16]
     }
 }
 
@@ -141,6 +144,8 @@ extension OWSUserProfile {
             let lastFetchDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastFetchDateInterval, name: "lastFetchDate")
             let lastMessagingDateInterval: Double? = record.lastMessagingDate
             let lastMessagingDate: Date? = SDSDeserialization.optionalDoubleAsDate(lastMessagingDateInterval, name: "lastMessagingDate")
+            let profileBadgeInfoSerialized: Data? = record.profileBadgeInfo
+            let profileBadgeInfo: [OWSUserProfileBadgeInfo]? = try SDSDeserialization.optionalUnarchive(profileBadgeInfoSerialized, name: "profileBadgeInfo")
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
             let profileName: String? = record.profileName
@@ -158,6 +163,7 @@ extension OWSUserProfile {
                                   isUuidCapable: isUuidCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
+                                  profileBadgeInfo: profileBadgeInfo,
                                   profileKey: profileKey,
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
@@ -228,6 +234,19 @@ extension OWSUserProfile: DeepCopyable {
             //
             // * Implement DeepCopyable for this type (e.g. a model).
             // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let profileBadgeInfo: [OWSUserProfileBadgeInfo]?
+            if let profileBadgeInfoForCopy = modelToCopy.profileBadgeInfo {
+               profileBadgeInfo = try DeepCopies.deepCopy(profileBadgeInfoForCopy)
+            } else {
+               profileBadgeInfo = nil
+            }
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
             let profileKey: OWSAES256Key?
             if let profileKeyForCopy = modelToCopy.profileKey {
                profileKey = try DeepCopies.deepCopy(profileKeyForCopy)
@@ -249,6 +268,7 @@ extension OWSUserProfile: DeepCopyable {
                                   isUuidCapable: isUuidCapable,
                                   lastFetchDate: lastFetchDate,
                                   lastMessagingDate: lastMessagingDate,
+                                  profileBadgeInfo: profileBadgeInfo,
                                   profileKey: profileKey,
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
@@ -282,6 +302,7 @@ extension OWSUserProfileSerializer {
     static var lastMessagingDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastMessagingDate", columnType: .double, isOptional: true) }
     static var bioColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bio", columnType: .unicodeString, isOptional: true) }
     static var bioEmojiColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "bioEmoji", columnType: .unicodeString, isOptional: true) }
+    static var profileBadgeInfoColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileBadgeInfo", columnType: .blob, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -304,7 +325,8 @@ extension OWSUserProfileSerializer {
         lastFetchDateColumn,
         lastMessagingDateColumn,
         bioColumn,
-        bioEmojiColumn
+        bioEmojiColumn,
+        profileBadgeInfoColumn
         ])
     }
 }
@@ -710,8 +732,9 @@ class OWSUserProfileSerializer: SDSSerializer {
         let lastMessagingDate: Double? = archiveOptionalDate(model.lastMessagingDate)
         let bio: String? = model.bio
         let bioEmoji: String? = model.bioEmoji
+        let profileBadgeInfo: Data? = optionalArchive(model.profileBadgeInfo)
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, isUuidCapable: isUuidCapable, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, isUuidCapable: isUuidCapable, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo)
     }
 }
 

@@ -255,10 +255,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
                         cell.selectionStyle = .none
 
                         Self.databaseStorage.read { transaction in
-                            let configuration = ContactCellConfiguration.build(address: address,
-                                                                               localUserDisplayMode: .asUser,
-                                                                               transaction: transaction)
-
+                            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                             if GroupManager.areMigrationsBlocking,
                                membersDoNotSupportGroupsV2.contains(address) {
                                 let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",

@@ -234,6 +234,15 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = false
 
     @objc
+    public static let fetchAndDisplayBadges = false
+
+    @objc
+    public static let configureBadges = false
+
+    @objc
+    public static let subscriptions = false
+
+    @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
         // however there is a significant bug in iOS 14 where the NSE will not

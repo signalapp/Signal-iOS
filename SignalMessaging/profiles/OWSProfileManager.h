@@ -31,6 +31,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly, nullable) NSString *username;
 
 @property (nonatomic, readonly, nullable) NSData *avatarData;
+@property (nonatomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 
 @end
 
@@ -42,6 +43,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
 @property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
+@property (nonatomic, readonly) BadgeStore *badgeStore;
 
 // This property is used by the Swift extension to ensure that
 // only one profile update is in flight at a time.  It should

@@ -12,7 +12,7 @@ class MemberActionSheet: InteractiveSheetViewController {
     private var groupViewHelper: GroupViewHelper?
     private let handleContainer = UIView()
 
-    var avatarView: UIImageView?
+    var avatarView: PrimaryImageView?
     var thread: TSThread { threadViewModel.threadRecord }
     let threadViewModel: ThreadViewModel
     let address: SignalServiceAddress
@@ -147,7 +147,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
         section.customHeaderView = ConversationHeaderBuilder.buildHeader(
             for: thread,
-            avatarSize: 80,
+            sizeClass: .eighty,
             options: [.message, .videoCall, .audioCall],
             delegate: self
         )
@@ -333,7 +333,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
     func tappedAvatar() {
-        guard let avatarView = avatarView, avatarView.image != nil else { return }
+        guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
             AvatarViewController(address: self.address, renderLocalUserAsNoteToSelf: false, readTx: readTx)
         }) else { return }

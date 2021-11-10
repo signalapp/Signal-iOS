@@ -364,9 +364,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 }
 
                 Self.databaseStorage.read { transaction in
-                    let configuration = ContactCellConfiguration.build(address: address,
-                                                                       localUserDisplayMode: .asUser,
-                                                                       transaction: transaction)
+                    let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
                     configuration.accessoryView = self.buildAccessoryView(text: accessoryText,
                                                                           displayUDIndicator: displayUDIndicator,
                                                                           transaction: transaction)

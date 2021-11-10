@@ -77,9 +77,10 @@ public extension HomeViewController {
                                        comment: "Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}.")
         let title = String(format: format, userName, formattedAmount)
 
-        let avatarView = ConversationAvatarView(diameterPoints: Self.paymentsBannerAvatarSize,
-                                                localUserDisplayMode: .asUser)
-        avatarView.configure(address: address, transaction: transaction)
+        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.paymentsBannerAvatarSize), localUserDisplayMode: .asUser)
+        avatarView.update(transaction) { config in
+            config.dataSource = .address(address)
+        }
 
         let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
                                                       displayName: userName)
@@ -166,7 +167,6 @@ public extension HomeViewController {
                                                         : .ows_gray02)
         }
 
-        avatarView.autoSetDimensions(to: .square(CGFloat(Self.paymentsBannerAvatarSize)))
         avatarView.setCompressionResistanceHigh()
         avatarView.setContentHuggingHigh()
 
@@ -231,6 +231,20 @@ public enum ShowAppSettingsMode {
 // MARK: -
 
 public extension HomeViewController {
+
+    @objc
+    func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
+        let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser, badged: true)
+        databaseStorage.read { readTx in
+            avatarView.update(readTx) { config in
+                if let address = tsAccountManager.localAddress(with: readTx) {
+                    config.dataSource = .address(address)
+                    config.applyConfigurationSynchronously()
+                }
+            }
+        }
+        return avatarView
+    }
 
     @objc
     func showAppSettings() {

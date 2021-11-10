@@ -174,7 +174,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             MediaGalleryRecord.self,
             MessageSendLog.Payload.self,
             MessageSendLog.Recipient.self,
-            MessageSendLog.Message.self
+            MessageSendLog.Message.self,
+            ProfileBadge.self
         ]
     }
 

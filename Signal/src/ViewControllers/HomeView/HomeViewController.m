@@ -495,23 +495,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     // Settings button.
-    const NSUInteger kAvatarSize = 28;
-    __block UIImage *_Nullable avatarImage = [OWSProfileManager.shared localProfileAvatarImage];
-    if (avatarImage == nil) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            avatarImage = [self.avatarBuilder avatarImageForLocalUserWithDiameterPoints:kAvatarSize
-                                                                   localUserDisplayMode:LocalUserDisplayModeAsLocalUser
-                                                                            transaction:transaction];
-        }];
-    }
-    OWSAssertDebug(avatarImage);
-
-    UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
+    UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
     [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
-    [avatarButton setImage:avatarImage forState:UIControlStateNormal];
-    [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-    [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+
+    UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
+    [avatarButton addSubview:avatarImageView];
+    [avatarImageView autoPinEdgesToSuperviewEdges];
 
     UIView *avatarWrapper = [UIView containerView];
     [avatarWrapper addSubview:avatarButton];

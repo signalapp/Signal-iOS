@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 struct NewGroupMember {
     let recipient: PickedRecipient
@@ -153,8 +154,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
     static let reuseIdentifier = "NewGroupMemberCell"
 
-    private let avatarView = ConversationAvatarView(diameterPoints: NewGroupMemberCell.minAvatarDiameter,
-                                                    localUserDisplayMode: .asUser)
+    private let avatarView = ConversationAvatarView(sizeClass: .customDiameter(minAvatarDiameter), localUserDisplayMode: .asUser)
     private let textLabel = UILabel(frame: .zero)
 
     fileprivate weak var delegate: NewGroupMemberCellDelegate?
@@ -226,8 +226,9 @@ private class NewGroupMemberCell: UICollectionViewCell {
 
     func configure(member: NewGroupMember) {
         self.member = member
-
-        avatarView.configureWithSneakyTransaction(address: member.address)
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
+            config.dataSource = .address(member.address)
+        }
         textLabel.text = member.shortName
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -47,6 +47,22 @@ public extension SDSSerializer {
     }
 
     // MARK: - Blob
+
+    func optionalArchive<T: SDSSwiftSerializable>(_ value: T?) -> Data? {
+        guard let value = value else {
+            return nil
+        }
+        return requiredArchive(value)
+    }
+
+    func requiredArchive<T: SDSSwiftSerializable>(_ value: T) -> Data {
+        do {
+            return try JSONEncoder().encode(value)
+        } catch {
+            // owsFail() to match NSKeyedArchiver behavior (it throws an ObjC exception)
+            owsFail("Failed to deserialize \(T.self): \(error)")
+        }
+    }
 
     func optionalArchive(_ value: Any?) -> Data? {
         guard let value = value else {

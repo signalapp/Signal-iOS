@@ -67,8 +67,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     // MARK: - Contact Views
 
     private lazy var contactNameLabel = MarqueeLabel()
-    private lazy var contactAvatarView = ConversationAvatarView(diameterPoints: 200,
-                                                                localUserDisplayMode: .asUser)
+    private lazy var contactAvatarView = ConversationAvatarView(sizeClass: .customDiameter(200), localUserDisplayMode: .asUser)
     private lazy var contactAvatarContainerView = UIView.container()
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()
@@ -499,7 +498,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     @objc
     func updateAvatarImage() {
         databaseStorage.read { transaction in
-            contactAvatarView.configure(thread: thread, transaction: transaction)
+            contactAvatarView.update(transaction) { config in
+                config.dataSource = .thread(thread)
+            }
             backgroundAvatarView.image = contactsManagerImpl.avatarImage(forAddress: thread.contactAddress,
                                                                          shouldValidate: true,
                                                                          transaction: transaction)

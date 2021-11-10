@@ -2556,6 +2556,12 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if hasUniversalExpireTimer {
             builder.setUniversalExpireTimer(universalExpireTimer)
         }
+        if let _value = subscriberID {
+            builder.setSubscriberID(_value)
+        }
+        if let _value = subscriberCurrencyCode {
+            builder.setSubscriberCurrencyCode(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2668,6 +2674,26 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setUniversalExpireTimer(_ valueParam: UInt32) {
             proto.universalExpireTimer = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setSubscriberID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.subscriberID = valueParam
+        }
+
+        public mutating func setSubscriberID(_ valueParam: Data) {
+            proto.subscriberID = valueParam
+        }
+
+        @available(swift, obsoleted: 1.0)
+        public mutating func setSubscriberCurrencyCode(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.subscriberCurrencyCode = valueParam
+        }
+
+        public mutating func setSubscriberCurrencyCode(_ valueParam: String) {
+            proto.subscriberCurrencyCode = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2815,6 +2841,26 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
     public var hasUniversalExpireTimer: Bool {
         return true
+    }
+
+    public var subscriberID: Data? {
+        guard hasSubscriberID else {
+            return nil
+        }
+        return proto.subscriberID
+    }
+    public var hasSubscriberID: Bool {
+        return !proto.subscriberID.isEmpty
+    }
+
+    public var subscriberCurrencyCode: String? {
+        guard hasSubscriberCurrencyCode else {
+            return nil
+        }
+        return proto.subscriberCurrencyCode
+    }
+    public var hasSubscriberCurrencyCode: Bool {
+        return !proto.subscriberCurrencyCode.isEmpty
     }
 
     public var hasUnknownFields: Bool {

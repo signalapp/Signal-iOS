@@ -343,3 +343,13 @@ extension MobileCoinPayment: DeepCopyable {
         return try DeepCopies.shallowCopy(self)
     }
 }
+
+// MARK: -
+
+@objc
+extension OWSUserProfileBadgeInfo: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}

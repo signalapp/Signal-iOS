@@ -107,33 +107,22 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
         for (SignalServiceAddress *address in blockedAddresses) {
-            [blockedContactsSection addItem:[OWSTableItem
-                                                itemWithDequeueCellBlock:^(UITableView *tableView) {
-                                                    ContactTableViewCell *cell = [tableView
-                                                        dequeueReusableCellWithIdentifier:ContactTableViewCell
-                                                                                              .reuseIdentifier];
+            OWSTableItem *item = [OWSTableItem itemWithDequeueCellBlock:^UITableViewCell *(UITableView *tableView) {
+                ContactTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ContactTableViewCell.reuseIdentifier];
+                ContactCellConfiguration *config = [[ContactCellConfiguration alloc] initWithAddress:address
+                                                                                localUserDisplayMode:LocalUserDisplayModeAsUser];
+                [weakSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *readTx) {
+                    [cell configureWithConfiguration:config transaction:readTx];
+                }];
+                cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
+                return cell;
+            } actionBlock:^{
+                [BlockListUIUtils showUnblockAddressActionSheet:address fromViewController:weakSelf completionBlock:^(BOOL isBlocked) {
+                    [weakSelf updateTableContents];
+                }];
+            }];
 
-                                                    [BlockListViewController.databaseStorage
-                                                        readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                                            ContactCellConfiguration *configuration =
-                                                                [ContactCellConfiguration
-                                                                         buildForAddress:address
-                                                                    localUserDisplayMode:LocalUserDisplayModeAsUser
-                                                                             transaction:transaction];
-                                                            [cell configureWithConfiguration:configuration
-                                                                                 transaction:transaction];
-                                                        }];
-                                                    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                        BlockListViewController, @"user");
-                                                    return cell;
-                                                }
-                                                actionBlock:^{
-                                                    [BlockListUIUtils showUnblockAddressActionSheet:address
-                                                                                 fromViewController:weakSelf
-                                                                                    completionBlock:^(BOOL isBlocked) {
-                                                                                        [weakSelf updateTableContents];
-                                                                                    }];
-                                                }]];
+            [blockedContactsSection addItem:item];
         }
         [contents addSection:blockedContactsSection];
     }

@@ -119,6 +119,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *bioEmoji;
 @property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isUuidCapable;
+@property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic, nullable) NSDate *lastFetchDate;
 @property (atomic, nullable) NSDate *lastMessagingDate;
 
@@ -153,6 +154,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
                lastMessagingDate:(nullable NSDate *)lastMessagingDate
+                profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)profileBadgeInfo
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -174,6 +176,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _isUuidCapable = isUuidCapable;
     _lastFetchDate = lastFetchDate;
     _lastMessagingDate = lastMessagingDate;
+    _profileBadgeInfo = profileBadgeInfo;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
@@ -536,6 +539,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
     if (changes.isUuidCapable != nil) {
         profile.isUuidCapable = changes.isUuidCapable.value;
+    }
+    if (changes.badges != nil) {
+        profile.profileBadgeInfo = changes.badges;
     }
 
     BOOL canUpdateAvatar = (canModifyStorageServiceProperties || userProfileWriter == UserProfileWriter_Reupload);
@@ -907,6 +913,11 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
 
     return [[OWSFormat formatNameComponents:self.nameComponents] filterStringForDisplay];
+}
+
+- (nullable OWSUserProfileBadgeInfo *)primaryBadge
+{
+    return self.profileBadgeInfo.firstObject;
 }
 
 #pragma mark - Profile Avatars Directory

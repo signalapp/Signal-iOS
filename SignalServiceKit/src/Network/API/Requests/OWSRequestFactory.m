@@ -925,6 +925,66 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                           parameters:parameters];
 }
 
+#pragma mark - Subscriptions
+
++ (TSRequest *)subscriptionLevelsRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/levels"]
+                              method:@"GET"
+                          parameters:@{}];
+}
+
++ (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID
+{
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
+                                              method:@"PUT"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/create_payment_method", base64SubscriberID]]
+                                              method:@"POST"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/default_payment_method/%@", base64SubscriberID, paymentID]]
+                                              method:@"POST"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey  {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/level/%@/%@/%@", base64SubscriberID, level, currency, idempotencyKey]]
+                                              method:@"PUT"
+                                         parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionRecieptCredentialsRequest:(NSString *)base64SubscriberID request:(NSString *)base64ReceiptCredentialRequest {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/receipt_credentials", base64SubscriberID]]
+                                              method:@"POST"
+                                         parameters:@{@"receiptCredentialRequest" : base64ReceiptCredentialRequest}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation makePrimary:(BOOL)makePrimary {
+    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/redeem-receipt"]
+                                              method:@"POST"
+                                         parameters:@{@"receiptCredentialPresentation" : base64ReceiptCredentialPresentation,
+                                                      @"visible" : @(YES),
+                                                      @"primary" : @(makePrimary)
+                                                    }];
+    return request;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -162,9 +162,10 @@ public class GroupMigrationActionSheet: UIView {
         mutating func addMemberRow(address: SignalServiceAddress,
                                    transaction: SDSAnyReadTransaction) {
 
-            let avatarView = ConversationAvatarView(diameterPoints: 28,
-                                                    localUserDisplayMode: .asUser)
-            avatarView.configure(address: address, transaction: transaction)
+            let avatarView = ConversationAvatarView(sizeClass: .customDiameter(28), localUserDisplayMode: .asUser)
+            avatarView.update(transaction) { config in
+                config.dataSource = .address(address)
+            }
 
             let label = buildLabel()
             label.font = .ows_dynamicTypeBody

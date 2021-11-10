@@ -89,9 +89,7 @@ extension NameCollision {
 class NameCollisionCell: UITableViewCell {
     typealias Action = (title: String, action: () -> Void)
 
-    let avatarView = ConversationAvatarView(diameterPoints: 64,
-                                            localUserDisplayMode: .asUser)
-
+    let avatarView = ConversationAvatarView(sizeClass: .customDiameter(64), localUserDisplayMode: .asUser)
     let nameLabel: UILabel = {
         let label = UILabel()
 
@@ -226,7 +224,9 @@ class NameCollisionCell: UITableViewCell {
     func configure(model: NameCollisionCellModel, actions: [NameCollisionCell.Action]) {
         owsAssertDebug(actions.count < 3, "Only supports two actions. Feel free to update this for more.")
 
-        avatarView.configureWithSneakyTransaction(address: model.address)
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
+            config.dataSource = .address(model.address)
+        }
         if model.address.isLocalAddress {
             nameLabel.text = NSLocalizedString(
                 "GROUP_MEMBER_LOCAL_USER",

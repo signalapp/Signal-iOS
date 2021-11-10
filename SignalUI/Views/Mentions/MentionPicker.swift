@@ -274,7 +274,7 @@ extension MentionPicker: UITableViewDelegate, UITableViewDataSource {
 private class MentionableUserCell: UITableViewCell {
     static let reuseIdentifier = "MentionPickerCell"
 
-    static let avatarSize: UInt = 36
+    static let avatarSizeClass: ConversationAvatarView.Configuration.SizeClass = .thirtySix
     static let vSpacing: CGFloat = 10
     static let hSpacing: CGFloat = 12
 
@@ -282,13 +282,16 @@ private class MentionableUserCell: UITableViewCell {
         let cell = MentionableUserCell()
         cell.displayNameLabel.text = LocalizationNotNeeded("size")
         cell.displayNameLabel.sizeToFit()
-        return max(CGFloat(avatarSize), ceil(cell.displayNameLabel.height)) + vSpacing * 2
+        return max(CGFloat(avatarSizeClass.avatarSize.height), ceil(cell.displayNameLabel.height)) + vSpacing * 2
     }
 
     let displayNameLabel = UILabel()
     let usernameLabel = UILabel()
-    let avatarView = ConversationAvatarView(diameterPoints: MentionableUserCell.avatarSize,
-                                            localUserDisplayMode: .asUser)
+    let avatarView = ConversationAvatarView(
+        sizeClass: MentionableUserCell.avatarSizeClass,
+        localUserDisplayMode: .asUser,
+        badged: true,
+        useAutolayout: true)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -347,6 +350,8 @@ private class MentionableUserCell: UITableViewCell {
             usernameLabel.isHidden = true
         }
 
-        avatarView.configureWithSneakyTransaction(address: mentionableUser.address)
+        avatarView.updateWithSneakyTransactionIfNecessary { configuration in
+            configuration.dataSource = .address(mentionableUser.address)
+        }
     }
 }

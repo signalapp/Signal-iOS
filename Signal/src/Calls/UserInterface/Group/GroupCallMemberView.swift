@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import SignalUI
 
 protocol GroupCallMemberViewDelegate: AnyObject {
     func memberView(_: GroupCallMemberView, userRequestedInfoAboutError: GroupCallMemberView.ErrorState)
@@ -252,10 +253,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
     var deferredReconfigTimer: Timer?
     let errorView = GroupCallErrorView()
-    let avatarView = ConversationAvatarView(diameterPoints: 0,
-                                            localUserDisplayMode: .asUser)
     let spinner = UIActivityIndicatorView(style: .whiteLarge)
-    lazy var avatarWidthConstraint = avatarView.autoSetDimension(.width, toSize: CGFloat(avatarDiameter))
+    let avatarView = ConversationAvatarView(localUserDisplayMode: .asUser)
 
     var isCallMinimized: Bool = false {
         didSet {
@@ -326,11 +325,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         deferredReconfigTimer?.invalidate()
 
         let profileImage = databaseStorage.read { transaction -> UIImage? in
-            avatarView.configure(address: device.address,
-                                 diameterPoints: avatarDiameter,
-                                 localUserDisplayMode: .asUser,
-                                 transaction: transaction)
-            avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+            let updatedSize = avatarDiameter
+            avatarView.update(transaction) { config in
+                config.dataSource = .address(device.address)
+                config.sizeClass = .customDiameter(updatedSize)
+            }
 
             return self.contactsManagerImpl.avatarImage(forAddress: device.address,
                                                         shouldValidate: true,
@@ -398,7 +397,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
 
         noVideoView.backgroundColor = .ows_black
         backgroundAvatarView.image = nil
-        avatarView.image = nil
+        avatarView.reset()
 
         [errorView, spinner, muteIndicatorImage].forEach { $0.isHidden = true }
     }
@@ -409,7 +408,10 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
         muteLeadingConstraint.constant = muteInsets
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
-        avatarWidthConstraint.constant = CGFloat(avatarDiameter)
+
+        avatarView.updateWithSneakyTransactionIfNecessary { config in
+            config.sizeClass = .customDiameter(avatarDiameter)
+        }
     }
 
     func cleanupVideoViews() {

@@ -58,7 +58,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     public var showVerificationOnAppear = false
 
     var disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    var avatarView: UIImageView?
+    var avatarView: PrimaryImageView?
 
     var isShowingAllGroupMembers = false
     var isShowingAllMutualGroups = false
@@ -488,7 +488,7 @@ class ConversationSettingsViewController: OWSTableViewController2 {
     }
 
     func presentAvatarViewController() {
-        guard let avatarView = avatarView, avatarView.image != nil else { return }
+        guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
             AvatarViewController(thread: self.thread, renderLocalUserAsNoteToSelf: true, readTx: readTx)
         }) else {

@@ -230,15 +230,19 @@ extension DeviceTransferProtos_Database: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.key.isEmpty {
       try visitor.visitSingularBytesField(value: self.key, fieldNumber: 1)
     }
-    if let v = self._database {
+    try { if let v = self._database {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
-    if let v = self._wal {
+    } }()
+    try { if let v = self._wal {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -280,12 +284,16 @@ extension DeviceTransferProtos_Manifest: SwiftProtobuf.Message, SwiftProtobuf._M
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.grdbSchemaVersion != 0 {
       try visitor.visitSingularUInt64Field(value: self.grdbSchemaVersion, fieldNumber: 1)
     }
-    if let v = self._database {
+    try { if let v = self._database {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }
+    } }()
     if !self.appDefaults.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.appDefaults, fieldNumber: 3)
     }

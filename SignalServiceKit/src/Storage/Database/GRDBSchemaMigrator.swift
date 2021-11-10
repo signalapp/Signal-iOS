@@ -120,6 +120,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addRecordTypeIndex
         case tunedConversationLoadIndices
         case messageDecryptDeduplicationV6
+        case createProfileBadgeTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1458,6 +1459,27 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 if try db.tableExists("MessageDecryptDeduplication") {
                     try db.drop(table: "MessageDecryptDeduplication")
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.createProfileBadgeTable.rawValue) { db in
+            do {
+                try db.alter(table: "model_OWSUserProfile", body: { alteration in
+                    alteration.add(column: "profileBadgeInfo", .blob)
+                })
+
+                try db.create(table: "model_ProfileBadgeTable") { table in
+                    table.column("id", .text).primaryKey()
+                    table.column("rawCategory", .text).notNull()
+                    table.column("localizedName", .text).notNull()
+                    table.column("localizedDescriptionFormatString", .text).notNull()
+                    table.column("resourcePath", .text).notNull()
+
+                    table.column("badgeVariant", .text).notNull()
+                    table.column("localization", .text).notNull()
                 }
             } catch {
                 owsFail("Error: \(error)")

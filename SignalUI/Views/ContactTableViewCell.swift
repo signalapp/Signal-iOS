@@ -50,16 +50,15 @@ open class ContactTableViewCell: UITableViewCell {
     public func configure(address: SignalServiceAddress,
                           localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
-        let content = ConversationContent.forAddress(address, transaction: transaction)
-        let configuration = ContactCellConfiguration(content: content,
+        let configuration = ContactCellConfiguration(address: address,
                                                      localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
     }
 
-    public func configure(thread: TSThread,
+    public func configure(thread: TSContactThread,
                           localUserDisplayMode: LocalUserDisplayMode,
                           transaction: SDSAnyReadTransaction) {
-        let configuration = ContactCellConfiguration(content: .forThread(thread),
+        let configuration = ContactCellConfiguration(address: thread.contactAddress,
                                                      localUserDisplayMode: localUserDisplayMode)
         configure(configuration: configuration, transaction: transaction)
     }

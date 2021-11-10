@@ -5,21 +5,57 @@
 import Foundation
 import PassKit
 
-struct Stripe: Dependencies {
-    static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
+public struct Stripe: Dependencies {
+    public static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
         firstly { () -> Promise<API.PaymentIntent> in
             API.createPaymentIntent(for: amount, in: currencyCode)
         }.then { intent in
             API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
         }
     }
+    
+    public static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
+        firstly(on: .sharedUserInitiated) { () -> Promise<String> in
+            API.createToken(with: payment)
+        }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
+            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
+            return try API.postForm(endpoint: "payment_methods", parameters: parameters)
+        }.map(on: .sharedUserInitiated) { response in
+            guard let json = response.responseBodyJson else {
+                throw OWSAssertionError("Missing responseBodyJson")
+            }
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Failed to decode JSON response")
+            }
+            return try parser.required(key: "id")
+        }
+    }
+    
+    public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String) throws -> Promise<HTTPResponse> {
+        firstly (on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+            let parameters = [
+                "payment_method": paymentIntentID,
+                "client_secret": clientSecret
+            ]
 
-    static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+            let clientSecretTokens: [String]? = clientSecret.components(separatedBy: "_")
+            guard let tokens = clientSecretTokens else {
+                throw OWSAssertionError("Failed to decode clientsecret")
+            }
+            
+            let clientID = tokens[0] + "_" + tokens[1]
+            
+            return try API.postForm(endpoint: "setup_intents/\(clientID)/confirm", parameters: parameters)
+        }
+    }
+    
+
+    public static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
         // Stripe supports a maximum of 8 integral digits.
         integralAmount(amount, in: currencyCode) > 99_999_999
     }
 
-    static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+    public static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
         // Stripe requires different minimums per currency, but they often depend
         // on conversion rates which we don't have access to. It's okay to do a best
         // effort here because stripe will reject the payment anyway, this just allows
@@ -28,7 +64,7 @@ struct Stripe: Dependencies {
         return integralAmount(amount, in: currencyCode) < minimumIntegralAmount
     }
 
-    static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
+    public static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
         let roundedAndScaledAmount: Double
         if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
             roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrEven)
@@ -44,23 +80,25 @@ struct Stripe: Dependencies {
 
 // MARK: - API
 fileprivate extension Stripe {
+    
+    static let publishableKey: String = FeatureFlags.isUsingProductionService
+        ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
+        : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
+
+    static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
+    
+    static let urlSession = OWSURLSession(
+        baseUrl: URL(string: "https://api.stripe.com/v1/")!,
+        securityPolicy: OWSURLSession.defaultSecurityPolicy,
+        configuration: URLSessionConfiguration.ephemeral
+    )
+    
     struct API {
-        static let publishableKey: String = FeatureFlags.isUsingProductionService
-            ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
-            : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
-
-        static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
-
-        static let urlSession = OWSURLSession(
-            baseUrl: URL(string: "https://api.stripe.com/v1/")!,
-            securityPolicy: OWSURLSession.defaultSecurityPolicy,
-            configuration: URLSessionConfiguration.ephemeral
-        )
-
         struct PaymentIntent {
             let id: String
             let clientSecret: String
         }
+        
         static func createPaymentIntent(
             for amount: NSDecimalNumber,
             in currencyCode: Currency.Code
@@ -115,38 +153,9 @@ fileprivate extension Stripe {
                 return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
             }.asVoid()
         }
-
-        static func createToken(with payment: PKPayment) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing responseBodyJson")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try parser.required(key: "id")
-            }
-        }
-
-        static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-                createToken(with: payment)
-            }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
-                let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
-                return try postForm(endpoint: "payment_methods", parameters: parameters)
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing responseBodyJson")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try parser.required(key: "id")
-            }
-        }
-
+        
+        //MARK: Common Stripe integrations
+        
         static func parameters(for payment: PKPayment) -> [String: Any] {
             var parameters = [String: Any]()
             parameters["pk_token"] = String(data: payment.token.paymentData, encoding: .utf8)
@@ -168,9 +177,9 @@ fileprivate extension Stripe {
 
             return parameters
         }
-
-        static func parameters(for contact: PKContact) -> [String: Any] {
-            var parameters = [String: Any]()
+        
+        static func parameters(for contact: PKContact) -> [String: String] {
+            var parameters = [String: String]()
 
             if let name = contact.name {
                 parameters["name"] = OWSFormat.formatNameComponents(name).nilIfEmpty
@@ -194,7 +203,22 @@ fileprivate extension Stripe {
 
             return parameters
         }
+        
+        static func createToken(with payment: PKPayment) -> Promise<String> {
+            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+                return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
+            }.map(on: .sharedUserInitiated) { response in
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing responseBodyJson")
+                }
+                guard let parser = ParamParser(responseObject: json) else {
+                    throw OWSAssertionError("Failed to decode JSON response")
+                }
+                return try parser.required(key: "id")
+            }
+        }
 
+        
         static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
             guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")
@@ -207,13 +231,14 @@ fileprivate extension Stripe {
                 body: formData
             )
         }
+
     }
 }
 
 // MARK: - Currency
 // See https://stripe.com/docs/currencies
 
-extension Stripe {
+public extension Stripe {
     static let supportedCurrencyCodes: [Currency.Code] = [
         "USD",
         "AED",
@@ -351,11 +376,11 @@ extension Stripe {
         "ZAR",
         "ZMW"
     ]
-    static let supportedCurrencyInfos: [Currency.Info] = {
+    public static let supportedCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: supportedCurrencyCodes, ignoreMissingNames: false, shouldSort: true)
     }()
 
-    static let preferredCurrencyCodes: [Currency.Code] = [
+    public static let preferredCurrencyCodes: [Currency.Code] = [
         "USD",
         "AUD",
         "BRL",
@@ -371,11 +396,11 @@ extension Stripe {
         "SEK",
         "CHF"
     ]
-    static let preferredCurrencyInfos: [Currency.Info] = {
+    public static let preferredCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
 
-    static let zeroDecimalCurrencyCodes: [Currency.Code] = [
+    public static let zeroDecimalCurrencyCodes: [Currency.Code] = [
         "BIF",
         "CLP",
         "DJF",
@@ -394,7 +419,7 @@ extension Stripe {
         "XPF"
     ]
 
-    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
+    public static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
         "USD": 50,
         "AED": 200,
         "AUD": 50,
@@ -420,7 +445,7 @@ extension Stripe {
         "SGD": 50
     ]
 
-    static let defaultCurrencyCode: Currency.Code = {
+    public static let defaultCurrencyCode: Currency.Code = {
         if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCurrencyCodes.contains(localeCurrencyCode) {
             return localeCurrencyCode
         }

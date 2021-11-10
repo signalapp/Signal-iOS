@@ -531,6 +531,7 @@ public class ProfileFetcherJob: NSObject {
             let hasBioEmoji = bioEmoji?.count ?? 0 > 0
             let hasUsername = username?.count ?? 0 > 0
             let hasPaymentAddress = paymentAddress != nil
+            let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 
             Logger.info("address: \(address), " +
                         "isVersionedProfile: \(isVersionedProfile), " +
@@ -542,24 +543,56 @@ public class ProfileFetcherJob: NSObject {
                         "hasBioEmoji: \(hasBioEmoji), " +
                         "hasUsername: \(hasUsername), " +
                         "hasPaymentAddress: \(hasPaymentAddress), " +
-                        "profileKey: \(profileKeyDescription)")
+                        "profileKey: \(profileKeyDescription), " +
+                        "badges: \(badges)")
         }
 
         if let profileRequest = fetchedProfile.versionedProfileRequest {
             self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
-        profileManager.updateProfile(for: address,
-                                        givenName: givenName,
-                                        familyName: familyName,
-                                        bio: bio,
-                                        bioEmoji: bioEmoji,
-                                        username: profile.username,
-                                        isUuidCapable: true,
-                                        avatarUrlPath: profile.avatarUrlPath,
-                                        optionalDecryptedAvatarData: optionalAvatarData,
-                                        lastFetch: Date(),
-                                        userProfileWriter: .profileFetch)
+        firstly(on: .global()) { () -> URL? in
+            if let avatarData = optionalAvatarData, avatarData.count > 0 {
+                return self.profileManager.writeAvatarDataToFile(avatarData)
+            } else {
+                return nil
+            }
+        }.done(on: .global()) { (avatarUrl: URL?) in
+            self.databaseStorage.write { writeTx in
+                // First, we add ensure we have a copy of any new badge in our badge store
+                let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
+                let persistedBadgeIds: [String] = badgeModels.compactMap {
+                    do {
+                        try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: writeTx)
+                        return $0.id
+                    } catch {
+                        owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
+                        return nil
+                    }
+                }
+
+                // Then, we update the profile. `profileBadges` will contain the badgeId of badges in the badge store
+                let profileBadgeMetadata = fetchedProfile.profile.badges
+                    .map { $0.0 }
+                    .filter { persistedBadgeIds.contains($0.badgeId) }
+
+                self.profileManager.updateProfile(
+                    for: address,
+                       givenName: givenName,
+                       familyName: familyName,
+                       bio: bio,
+                       bioEmoji: bioEmoji,
+                       username: profile.username,
+                       isUuidCapable: true,
+                       avatarUrlPath: profile.avatarUrlPath,
+                       optionalAvatarFileUrl: avatarUrl,
+                       profileBadges: profileBadgeMetadata,
+                       lastFetch: Date(),
+                       userProfileWriter: .profileFetch,
+                       transaction: writeTx
+                )
+            }
+        }
 
         updateUnidentifiedAccess(address: address,
                                  verifier: profile.unidentifiedAccessVerifier,

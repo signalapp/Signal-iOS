@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 public class CVComponentState: Equatable, Dependencies {
     let messageCellType: CVMessageCellType
@@ -14,7 +15,7 @@ public class CVComponentState: Equatable, Dependencies {
     let senderName: SenderName?
 
     struct SenderAvatar: Equatable {
-        let senderAvatar: UIImage
+        let avatarDataSource: ConversationAvatarDataSource
     }
     let senderAvatar: SenderAvatar?
 
@@ -192,12 +193,12 @@ public class CVComponentState: Equatable, Dependencies {
 
     struct TypingIndicator: Equatable {
         let address: SignalServiceAddress
-        let avatar: UIImage?
+        let avatarDataSource: ConversationAvatarDataSource?
     }
     let typingIndicator: TypingIndicator?
 
     struct ThreadDetails: Equatable {
-        let avatar: UIImage?
+        let avatarDataSource: ConversationAvatarDataSource?
         let isAvatarBlurred: Bool
         let titleText: String
         let bioText: String?
@@ -639,16 +640,18 @@ fileprivate extension CVComponentState.Builder {
                 owsFailDebug("Invalid typingIndicator.")
                 return build()
             }
-            let avatar = { () -> UIImage? in
+            let avatarDataSource = { () -> ConversationAvatarDataSource? in
                 guard thread.isGroupThread else {
                     return nil
                 }
-                return self.avatarBuilder.buildAvatar(forAddress: typingIndicatorInteraction.address,
-                                                      localUserDisplayMode: .asUser,
-                                                      diameterPoints: ConversationStyle.groupMessageAvatarDiameter)
+                return self.avatarBuilder.buildAvatarDataSource(
+                    forAddress: typingIndicatorInteraction.address,
+                    includingBadge: false,
+                    localUserDisplayMode: .asUser,
+                    diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
             }()
             self.typingIndicator = TypingIndicator(address: typingIndicatorInteraction.address,
-                                                   avatar: avatar)
+                                                   avatarDataSource: avatarDataSource)
             return build()
         case .info, .error, .call:
             let currentCallThreadId = viewStateSnapshot.currentCallThreadId
@@ -683,13 +686,16 @@ fileprivate extension CVComponentState.Builder {
               let incomingMessage = interaction as? TSIncomingMessage else {
             return nil
         }
-        guard let avatar = self.avatarBuilder.buildAvatar(forAddress: incomingMessage.authorAddress,
-                                                          localUserDisplayMode: .asUser,
-                                                          diameterPoints: ConversationStyle.groupMessageAvatarDiameter) else {
+        guard let avatarDataSource = self.avatarBuilder.buildAvatarDataSource(
+            forAddress: incomingMessage.authorAddress,
+            includingBadge: true,
+            localUserDisplayMode: .asUser,
+            diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter)
+        ) else {
             owsFailDebug("Could build avatar image")
             return nil
         }
-        return SenderAvatar(senderAvatar: avatar)
+        return SenderAvatar(avatarDataSource: avatarDataSource)
     }
 
     private func tryToBuildFailedOrPendingDownloads() -> FailedOrPendingDownloads? {

@@ -4,11 +4,11 @@
 
 import UIKit
 import SignalServiceKit
+import SignalUI
 
 @objc class GroupTableViewCell: UITableViewCell {
 
-    private let avatarView = ConversationAvatarView(diameterPoints: AvatarBuilder.smallAvatarSizePoints,
-                                                    localUserDisplayMode: .asUser)
+    private let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let accessoryLabel = UILabel()
@@ -61,7 +61,9 @@ import SignalServiceKit
         let groupMembersCount = thread.groupModel.groupMembership.fullMembers.count
         self.subtitleLabel.text = customSubtitle ?? GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
 
-        self.avatarView.configureWithSneakyTransaction(thread: thread)
+        self.avatarView.updateWithSneakyTransactionIfNecessary { config in
+            config.dataSource = .thread(thread)
+        }
 
         if let accessoryMessage = accessoryMessage, !accessoryMessage.isEmpty {
             accessoryLabel.text = accessoryMessage

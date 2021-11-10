@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import UIKit
+import SignalUI
 
 public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
@@ -367,10 +369,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         hInnerStack.reset()
         var hInnerStackSubviews = [UIView]()
 
-        if hasSenderAvatarLayout,
-           let senderAvatar = self.senderAvatar {
+        if hasSenderAvatarLayout, let senderAvatar = self.senderAvatar {
             if hasSenderAvatar {
-                componentView.avatarView.image = senderAvatar.senderAvatar
+                componentView.avatarView.updateWithSneakyTransactionIfNecessary { config in
+                    config.dataSource = senderAvatar.avatarDataSource
+                }
             }
             // Add the view wrapper, not the view.
             hInnerStackSubviews.append(componentView.avatarViewSwipeToReplyWrapper)
@@ -1235,7 +1238,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
         if hasSenderAvatarLayout {
             // Sender avatar in groups.
-            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarDiameter) + ConversationStyle.messageStackSpacing
+            contentMaxWidth -= CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter) + ConversationStyle.messageStackSpacing
         }
 
         owsAssertDebug(conversationStyle.maxMediaMessageWidth <= conversationStyle.maxMessageWidth)
@@ -1257,7 +1260,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if hasSenderAvatarLayout,
            nil != self.senderAvatar {
             // Sender avatar in groups.
-            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarDiameter))
+            let avatarSize = CGSize.square(CGFloat(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
             hInnerStackSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
         // NOTE: The contentStackSize does not have fixed width and may grow
@@ -1731,7 +1734,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         // * Reactions view, which uses a custom layout block.
         fileprivate let hInnerStack = ManualStackView(name: "message.hInnerStack")
 
-        fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
+        fileprivate let avatarView = ConversationAvatarView(
+            sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
+            localUserDisplayMode: .asUser,
+            badged: true,
+            useAutolayout: false)
 
         fileprivate let chatColorView = CVColorOrGradientView()
 
@@ -1941,8 +1948,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
             chatColorView.removeFromSuperview()
             chatColorView.reset()
-
-            avatarView.image = nil
+            avatarView.reset()
 
             if !isDedicatedCellView {
                 swipeToReplyIconView.image = nil
@@ -2162,8 +2168,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return nil
             }
 
-            let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
-            avatarView.image = componentView.avatarView.image
+            let avatarView = ConversationAvatarView(sizeClass: componentView.avatarView.configuration.sizeClass, localUserDisplayMode: .asUser)
+            avatarView.updateWithSneakyTransactionIfNecessary { newConfig in
+                newConfig = componentView.avatarView.configuration
+            }
             avatarView.frame = componentView.avatarView.bounds
             let isRTL = CurrentAppContext().isRTL
             let horizontalEdgeAlignment: ContextMenuTargetedPreviewAccessory.AccessoryAlignment.Edge = isRTL ? .trailing : .leading

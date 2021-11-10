@@ -578,6 +578,12 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setUniversalExpireTimer(configuration.isEnabled ? configuration.durationSeconds : 0)
 
+        if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
+           let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+            builder.setSubscriberID(subscriberID)
+            builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
+        }
+
         return try builder.build()
     }
 
@@ -735,6 +741,16 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
         if localExpireToken != remoteExpireToken {
             localConfiguration.applyToken(remoteExpireToken, transaction: transaction)
+        }
+
+        if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {
+            if subscriberIDData != SubscriptionManager.getSubscriberID(transaction: transaction) {
+                SubscriptionManager.setSubscriberID(subscriberIDData, transaction: transaction)
+            }
+
+            if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
+                SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
+            }
         }
 
         return mergeState

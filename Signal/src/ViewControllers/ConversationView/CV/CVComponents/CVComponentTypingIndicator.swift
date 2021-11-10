@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalUI
+import UIKit
 
 public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
@@ -57,9 +59,11 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
         var outerViews = [UIView]()
 
-        if let avatarImage = typingIndicator.avatar {
+        if let avatarDataSource = typingIndicator.avatarDataSource {
             let avatarView = componentView.avatarView
-            avatarView.image = avatarImage
+            avatarView.updateWithSneakyTransactionIfNecessary { config in
+                config.dataSource = avatarDataSource
+            }
             outerViews.append(avatarView)
         }
 
@@ -113,8 +117,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         var outerSubviewInfos = [ManualStackSubviewInfo]()
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
-        if typingIndicator.avatar != nil {
-            let avatarSize: CGSize = .square(CGFloat(ConversationStyle.groupMessageAvatarDiameter))
+        if typingIndicator.avatarDataSource != nil {
+            let avatarSize: CGSize = ConversationStyle.groupMessageAvatarSizeClass.avatarSize
             outerSubviewInfos.append(avatarSize.asManualSubviewInfo(hasFixedSize: true))
         }
 
@@ -149,7 +153,10 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         fileprivate let outerStackView = ManualStackView(name: "Typing indicator outer")
         fileprivate let innerStackView = ManualStackView(name: "Typing indicator inner")
 
-        fileprivate let avatarView = AvatarImageView(shouldDeactivateConstraints: true)
+        fileprivate let avatarView = ConversationAvatarView(
+            sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
+            localUserDisplayMode: .asUser,
+            useAutolayout: false)
         fileprivate let bubbleView = ManualLayoutViewWithLayer.pillView(name: "bubbleView")
         fileprivate let typingIndicatorView = TypingIndicatorView()
 
@@ -175,8 +182,7 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
             outerStackView.reset()
             innerStackView.reset()
             bubbleView.reset()
-
-            avatarView.image = nil
+            avatarView.reset()
 
             typingIndicatorView.reset()
             typingIndicatorView.removeFromSuperview()

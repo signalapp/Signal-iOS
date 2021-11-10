@@ -192,10 +192,7 @@ extension RecipientPickerViewController {
                     }
 
                     Self.databaseStorage.read { transaction in
-                        let configuration = ContactCellConfiguration.build(address: address,
-                                                                           localUserDisplayMode: .noteToSelf,
-                                                                           transaction: transaction)
-
+                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
                         if let delegate = self.delegate {
                             if let accessoryView = delegate.recipientPicker?(self,
                                                                              accessoryViewForRecipient: recipient,

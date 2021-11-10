@@ -150,9 +150,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     let cell = ContactTableViewCell(style: .default, reuseIdentifier: nil)
 
                     Self.databaseStorage.read { transaction in
-                        let configuration = ContactCellConfiguration.build(address: address,
-                                                                           localUserDisplayMode: .asLocalUser,
-                                                                           transaction: transaction)
+                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
                         configuration.allowUserInteraction = true
 
                         if canApproveMemberRequests {
@@ -322,9 +320,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
                     cell.selectionStyle = canRevokeInvites ? .default : .none
 
                     Self.databaseStorage.read { transaction in
-                        let configuration = ContactCellConfiguration.build(address: inviterAddress,
-                                                                           localUserDisplayMode: .asUser,
-                                                                           transaction: transaction)
+                        let configuration = ContactCellConfiguration(address: inviterAddress, localUserDisplayMode: .asUser)
                         let inviterName = Self.contactsManager.displayName(for: inviterAddress,
                                                                            transaction: transaction)
                         if invitedAddresses.count > 1 {
