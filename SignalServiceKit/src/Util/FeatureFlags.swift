@@ -157,7 +157,7 @@ public class FeatureFlags: BaseFlags {
         if paymentsInternalBeta {
             return false
         } else {
-            return true
+            return false
         }
     }
 
@@ -234,13 +234,13 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = false
 
     @objc
-    public static let fetchAndDisplayBadges = false
+    public static let fetchAndDisplayBadges = true
 
     @objc
-    public static let configureBadges = false
+    public static let configureBadges = true
 
     @objc
-    public static let subscriptions = false
+    public static let subscriptions = true
 
     @objc
     public static var notificationServiceExtension: Bool {
