@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension SSKMessageDecryptJobRecord {
+public extension OWSReceiptCredentialRedemptionJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchMessageDecryptJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> SSKMessageDecryptJobRecord? {
+    class func anyFetchReceiptCredentialRedemptionJobRecord(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSReceiptCredentialRedemptionJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? SSKMessageDecryptJobRecord else {
+        guard let instance = object as? OWSReceiptCredentialRedemptionJobRecord else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension SSKMessageDecryptJobRecord {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateMessageDecryptJobRecord(transaction: SDSAnyWriteTransaction, block: (SSKMessageDecryptJobRecord) -> Void) {
+    func anyUpdateReceiptCredentialRedemptionJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSReceiptCredentialRedemptionJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? SSKMessageDecryptJobRecord else {
+            guard let instance = object as? OWSReceiptCredentialRedemptionJobRecord else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension SSKMessageDecryptJobRecord {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
+class OWSReceiptCredentialRedemptionJobRecordSerializer: SDSSerializer {
 
-    private let model: SSKMessageDecryptJobRecord
-    public required init(model: SSKMessageDecryptJobRecord) {
+    private let model: OWSReceiptCredentialRedemptionJobRecord
+    public required init(model: OWSReceiptCredentialRedemptionJobRecord) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .messageDecryptJobRecord
+        let recordType: SDSRecordType = .receiptCredentialRedemptionJobRecord
         let uniqueId: String = model.uniqueId
 
         // Properties
@@ -66,24 +66,25 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
         let attachmentIdMap: Data? = nil
         let contactThreadId: String? = nil
-        let envelopeData: Data? = model.envelopeData
+        let envelopeData: Data? = nil
         let invisibleMessage: Data? = nil
         let messageId: String? = nil
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
         let attachmentId: String? = nil
         let isMediaMessage: Bool? = nil
-        let serverDeliveryTimestamp: UInt64? = model.serverDeliveryTimestamp
+        let serverDeliveryTimestamp: UInt64? = nil
         let exclusiveProcessIdentifier: String? = model.exclusiveProcessIdentifier
         let isHighPriority: Bool? = nil
-        let receiptCredentailRequest: Data? = nil
-        let receiptCredentailRequestContext: Data? = nil
-        let priorSubscriptionLevel: UInt? = nil
-        let subscriberID: Data? = nil
-        let targetSubscriptionLevel: UInt? = nil
-        let boostPaymentIntentID: String? = nil
-        let isBoost: Bool? = nil
+        let receiptCredentailRequest: Data? = model.receiptCredentailRequest
+        let receiptCredentailRequestContext: Data? = model.receiptCredentailRequestContext
+        let priorSubscriptionLevel: UInt? = model.priorSubscriptionLevel
+        let subscriberID: Data? = model.subscriberID
+        let targetSubscriptionLevel: UInt? = model.targetSubscriptionLevel
+        let boostPaymentIntentID: String? = model.boostPaymentIntentID
+        let isBoost: Bool? = model.isBoost
 
         return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost)
     }
 }
+                                                               

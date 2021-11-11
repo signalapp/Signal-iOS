@@ -243,6 +243,13 @@ CREATE
             ,"serverDeliveryTimestamp" INTEGER
             ,"exclusiveProcessIdentifier" TEXT
             ,"isHighPriority" BOOLEAN
+            ,"receiptCredentailRequest" BLOB
+            ,"receiptCredentailRequestContext" BLOB
+            ,"priorSubscriptionLevel" INTEGER
+            ,"subscriberID" BLOB
+            ,"targetSubscriptionLevel" INTEGER
+            ,"boostPaymentIntentID" TEXT
+            ,"isBoost" BOOLEAN
         )
 ;
 

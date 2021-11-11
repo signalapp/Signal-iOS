@@ -63,11 +63,16 @@ public struct Subscription {
     }
 }
 
+@objc
 public class SubscriptionManager: NSObject {
 
+    public static let subscriptionJobQueue = SubscriptionReceiptCredentialJobQueue()
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
     private static let subscriberIDKey = "subscriberID"
     private static let subscriberCurrencyCodeKey = "subscriberCurrencyCode"
+    private static let lastSubscriptionExpirationKey = "subscriptionExpiration"
+    private static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
+    private static let pendingRecieptCredentialPresentationKey = "pendingReceiptCredentialPresentation"
 
     // MARK: Subscription levels
 
@@ -107,6 +112,8 @@ public class SubscriptionManager: NSObject {
             return []
         }
     }
+
+    // MARK: Current subscription status
 
     public class func getCurrentSubscriptionStatus(for subscriberID: Data) -> Promise<Subscription?> {
         let subscriberIDString = subscriberID.asBase64Url
@@ -170,10 +177,34 @@ public class SubscriptionManager: NSObject {
                                   transaction: transaction)
     }
 
+    public static func getPendingRecieptCredentialPresentation(transaction: SDSAnyReadTransaction) -> Data? {
+        guard let receiptCredentialPresentation = subscriptionKVS.getObject(
+            forKey: pendingRecieptCredentialPresentationKey,
+            transaction: transaction
+        ) as? Data else {
+            return nil
+        }
+        return receiptCredentialPresentation
+    }
+
+    public static func setPendingRecieptCredentialPresentation(_ serializedPresentation: Data?, transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setObject(serializedPresentation,
+                                  key: pendingRecieptCredentialPresentationKey,
+                                  transaction: transaction)
+    }
+
     private class func setupNewSubscriberID() throws -> Promise<Data> {
 
         let newSubscriberID = generateSubscriberID()
-        let request = OWSRequestFactory.setSubscriptionIDRequest(newSubscriberID.asBase64Url)
+        return firstly {
+            try self.postSubscriberID(subscriberID: newSubscriberID)
+        }.map(on: .global()) { _ in
+            return newSubscriberID
+        }
+    }
+
+    private class func postSubscriberID(subscriberID: Data) throws -> Promise<Void> {
+        let request = OWSRequestFactory.setSubscriptionIDRequest(subscriberID.asBase64Url)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
@@ -182,8 +213,6 @@ public class SubscriptionManager: NSObject {
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
             }
-
-            return newSubscriberID
         }
     }
 
@@ -354,34 +383,53 @@ public class SubscriptionManager: NSObject {
     }
 
     public class func requestAndRedeemRecieptsIfNecessary(for subscriberID: Data,
-                                                          subscription: SubscriptionLevel,
-                                                          priorSubscription: SubscriptionLevel? = nil) throws -> Promise<Void> {
-        return firstly {
-            return try requestReceiptCredentialPresentation(for: subscriberID, subscription: subscription)
-        }.then(on: .sharedUserInitiated) { presentation -> Promise<Void> in
-            try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
+                                                          subscriptionLevel: UInt,
+                                                          priorSubscriptionLevel: UInt = 0) throws {
+
+        let request = try generateSubscriptionRequest()
+
+        SDSDatabaseStorage.shared.asyncWrite { transaction in
+            self.subscriptionJobQueue.add(isBoost: false,
+                                          receiptCredentialRequestContext: request.context.serialize().asData,
+                                          receiptCredentailRequest: request.request.serialize().asData,
+                                          subscriberID: subscriberID,
+                                          targetSubscriptionLevel: subscriptionLevel,
+                                          priorSubscriptionLevel: priorSubscriptionLevel,
+                                          boostPaymentIntentID: String(),
+                                          transaction: transaction)
         }
     }
 
-    private class func requestReceiptCredentialPresentation(for subscriberID: Data,
-                                                            subscription: SubscriptionLevel,
-                                                            priorSubscription: SubscriptionLevel? = nil) throws -> Promise<ReceiptCredentialPresentation> {
+    public class func generateSubscriptionRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
         let clientOperations = try clientZKReceiptOperations()
         let receiptSerial = try generateReceiptSerial()
 
         let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
-        let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest().serialize().asData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionRecieptCredentialsRequest(subscriberID.asBase64Url, request: receiptCredentialRequest)
+        let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest()
+        return (receiptCredentialRequestContext, receiptCredentialRequest)
+    }
+
+    public class func requestReceiptCredentialPresentation(for subscriberID: Data,
+                                                           context: ReceiptCredentialRequestContext,
+                                                           request: ReceiptCredentialRequest,
+                                                           targetSubscriptionLevel: UInt,
+                                                           priorSubscriptionLevel: UInt = 0) throws -> Promise<ReceiptCredentialPresentation> {
+        let clientOperations = try clientZKReceiptOperations()
+        let encodedReceiptCredentialRequest = request.serialize().asData.base64EncodedString()
+        let request = OWSRequestFactory.subscriptionRecieptCredentialsRequest(subscriberID.asBase64Url, request: encodedReceiptCredentialRequest)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
+
             if statusCode == 200 {
                 Logger.debug("Got valid receipt response")
             } else if statusCode == 204 {
                 Logger.debug("User has no active subscriptions")
+            } else if statusCode == 400 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
+                throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
             } else {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
+                throw OWSRetryableSubscriptionError()
             }
 
             guard let json = response.responseBodyJson as? [String: Any] else {
@@ -392,57 +440,60 @@ public class SubscriptionManager: NSObject {
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
-            do {
-                let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
-                guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
-                    throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
-                }
-
-                let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
-                let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: receiptCredentialRequestContext, receiptCredentialResponse: receiptCredentialResponse)
-
-                // Validate that receipt credential level matches requested level, or prior subscription level
-                let level = try receiptCredential.getReceiptLevel()
-                var receiptCredentialHasValidLevel = (level == subscription.level)
-
-                if !receiptCredentialHasValidLevel, let priorSubscription = priorSubscription {
-                    receiptCredentialHasValidLevel = (level == priorSubscription.level)
-                }
-
-                guard receiptCredentialHasValidLevel else {
-                    throw OWSAssertionError("Unexpected receipt credential level")
-                }
-
-                // Validate receipt credential expiration % 86400 == 0, per server spec
-                let expiration = try receiptCredential.getReceiptExpirationTime()
-                guard expiration % 86400 == 0 else {
-                    throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
-                }
-
-                // Validate expiration is less than 60 days from now
-                let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
-                guard TimeInterval(expiration) < maximumValidExpirationDate else {
-                    throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
-                }
-
-                let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
-
-                return receiptCredentialPresentation
-            } catch {
-                throw OWSAssertionError("Missing clientID key")
+            let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
+            guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
+                throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
             }
+
+            let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
+            let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: context, receiptCredentialResponse: receiptCredentialResponse)
+
+            // Validate that receipt credential level matches requested level, or prior subscription level
+            let level = try receiptCredential.getReceiptLevel()
+            var receiptCredentialHasValidLevel = (level == targetSubscriptionLevel)
+
+            if !receiptCredentialHasValidLevel && priorSubscriptionLevel != 0 {
+                receiptCredentialHasValidLevel = (level == priorSubscriptionLevel)
+            }
+
+            guard receiptCredentialHasValidLevel else {
+                throw OWSAssertionError("Unexpected receipt credential level")
+            }
+
+            // Validate receipt credential expiration % 86400 == 0, per server spec
+            let expiration = try receiptCredential.getReceiptExpirationTime()
+            guard expiration % 86400 == 0 else {
+                throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
+            }
+
+            // Validate expiration is less than 60 days from now
+            let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
+            guard TimeInterval(expiration) < maximumValidExpirationDate else {
+                throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
+            }
+
+            let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
+
+            return receiptCredentialPresentation
         }
     }
 
-    private class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = true) throws -> Promise<Void> {
-        let receiptCredentialPresentationString = receiptCredentialPresentation.serialize().asData.base64EncodedString()
+    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = true) throws -> Promise<Void> {
+        let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
+
+        // Persist pending receipt credential
+        SDSDatabaseStorage.shared.write { transaction in
+            self.setPendingRecieptCredentialPresentation(receiptCredentialPresentationData, transaction: transaction)
+        }
+
+        let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
         let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(receiptCredentialPresentationString, makePrimary: makePrimary)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
+                throw OWSRetryableSubscriptionError()
             }
         }
     }
@@ -457,6 +508,100 @@ public class SubscriptionManager: NSObject {
         let params = try GroupsV2Protos.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
     }
+
+    // 3 day heartbeat interval
+    private static let heartbeatInterval: TimeInterval = 3 * 24 * 60 * 60
+
+    // MARK: Heartbeat
+    @objc
+    public class func performSubscriptionKeepAliveIfNecessary() {
+
+        // Kick job queue
+        subscriptionJobQueue.runAnyQueuedRetry()
+
+        Logger.debug("Checking for subscription heartbeat")
+
+        // Fetch subscriberID / subscriber currencyCode
+        var lastKeepAliveHeartbeat: Date?
+        var lastSubscriptionExpiration: Date?
+        var subscriberID: Data?
+        var currencyCode: String?
+        SDSDatabaseStorage.shared.read { transaction in
+            lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
+            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
+            subscriberID = self.getSubscriberID(transaction: transaction)
+            currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
+        }
+
+        var performHeartbeat: Bool = true
+        if let lastKeepAliveHeartbeat = lastKeepAliveHeartbeat, Date().timeIntervalSince(lastKeepAliveHeartbeat) < heartbeatInterval {
+            performHeartbeat = false
+        }
+
+        guard performHeartbeat else {
+            Logger.debug("Not performing subscription heartbeat, last heartbeat within allowed interval")
+            return
+        }
+
+        Logger.debug("Performing subscription heartbeat")
+
+        guard let subscriberID = subscriberID, currencyCode != nil else {
+            Logger.debug("Subscription Keepalive: No subscription + currency code found")
+            self.updateSubscriptionHeartbeatDate()
+            return
+        }
+
+        firstly(on: .sharedBackground) {
+            // Post subscriberID, if it exists
+            try self.postSubscriberID(subscriberID: subscriberID)
+        }.then(on: .sharedBackground) {
+            // Fetch current subscription
+            self.getCurrentSubscriptionStatus(for: subscriberID)
+        }.done(on: .sharedBackground) { subscription in
+            guard let subscription = subscription else {
+                Logger.debug("No current subscription for this subscriberID")
+                self.updateSubscriptionHeartbeatDate()
+                return
+            }
+
+            if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
+                // Re-kick
+                try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
+            }
+
+            // Save last expiration
+            SDSDatabaseStorage.shared.write { transaction in
+                self.subscriptionKVS.setDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod),
+                                                                          key: self.lastSubscriptionExpirationKey,
+                                                                          transaction: transaction)
+            }
+
+            // Save heartbeat
+            self.updateSubscriptionHeartbeatDate()
+
+        }.catch(on: .sharedBackground) { error in
+            owsFailDebug("Failed subscription heartbeat with error \(error)")
+        }
+    }
+
+    private static func updateSubscriptionHeartbeatDate() {
+        SDSDatabaseStorage.shared.write { transaction in
+            // Update keepalive
+            self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction)
+        }
+    }
+}
+
+@objc
+public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryableProvider {
+    @objc
+    public static var asNSError: NSError {
+        OWSRetryableSubscriptionError() as Error as NSError
+    }
+
+    // MARK: - IsRetryableProvider
+
+    public var isRetryableProvider: Bool { true }
 }
 
 extension SubscriptionManager {

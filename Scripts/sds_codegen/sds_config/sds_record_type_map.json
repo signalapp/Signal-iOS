@@ -32,6 +32,7 @@
     "OWSMessageDecryptJob": 8, 
     "OWSOutgoingPaymentMessage": 68, 
     "OWSReaction": 62, 
+    "OWSReceiptCredentialRedemptionJobRecord": 71, 
     "OWSRecipientIdentity": 38, 
     "OWSRecoverableDecryptionPlaceholder": 70, 
     "OWSResaveCollectionDBMigration": 49, 

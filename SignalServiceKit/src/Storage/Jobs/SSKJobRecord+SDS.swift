@@ -45,6 +45,13 @@ public struct JobRecordRecord: SDSRecord {
     public let serverDeliveryTimestamp: UInt64?
     public let exclusiveProcessIdentifier: String?
     public let isHighPriority: Bool?
+    public let receiptCredentailRequest: Data?
+    public let receiptCredentailRequestContext: Data?
+    public let priorSubscriptionLevel: UInt?
+    public let subscriberID: Data?
+    public let targetSubscriptionLevel: UInt?
+    public let boostPaymentIntentID: String?
+    public let isBoost: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -65,6 +72,13 @@ public struct JobRecordRecord: SDSRecord {
         case serverDeliveryTimestamp
         case exclusiveProcessIdentifier
         case isHighPriority
+        case receiptCredentailRequest
+        case receiptCredentailRequestContext
+        case priorSubscriptionLevel
+        case subscriberID
+        case targetSubscriptionLevel
+        case boostPaymentIntentID
+        case isBoost
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -106,6 +120,13 @@ public extension JobRecordRecord {
         serverDeliveryTimestamp = row[15]
         exclusiveProcessIdentifier = row[16]
         isHighPriority = row[17]
+        receiptCredentailRequest = row[18]
+        receiptCredentailRequestContext = row[19]
+        priorSubscriptionLevel = row[20]
+        subscriberID = row[21]
+        targetSubscriptionLevel = row[22]
+        boostPaymentIntentID = row[23]
+        isBoost = row[24]
     }
 }
 
@@ -191,6 +212,37 @@ extension SSKJobRecord {
                                                  sortId: sortId,
                                                  status: status,
                                                  attachmentId: attachmentId)
+
+        case .receiptCredentialRedemptionJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: String? = record.exclusiveProcessIdentifier
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let boostPaymentIntentID: String = try SDSDeserialization.required(record.boostPaymentIntentID, name: "boostPaymentIntentID")
+            let isBoost: Bool = try SDSDeserialization.required(record.isBoost, name: "isBoost")
+            let priorSubscriptionLevel: UInt = try SDSDeserialization.required(record.priorSubscriptionLevel, name: "priorSubscriptionLevel")
+            let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
+            let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
+            let subscriberID: Data = try SDSDeserialization.required(record.subscriberID, name: "subscriberID")
+            let targetSubscriptionLevel: UInt = try SDSDeserialization.required(record.targetSubscriptionLevel, name: "targetSubscriptionLevel")
+
+            return OWSReceiptCredentialRedemptionJobRecord(grdbId: recordId,
+                                                           uniqueId: uniqueId,
+                                                           exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                                           failureCount: failureCount,
+                                                           label: label,
+                                                           sortId: sortId,
+                                                           status: status,
+                                                           boostPaymentIntentID: boostPaymentIntentID,
+                                                           isBoost: isBoost,
+                                                           priorSubscriptionLevel: priorSubscriptionLevel,
+                                                           receiptCredentailRequest: receiptCredentailRequest,
+                                                           receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                                           subscriberID: subscriberID,
+                                                           targetSubscriptionLevel: targetSubscriptionLevel)
 
         case .sessionResetJobRecord:
 
@@ -303,6 +355,9 @@ extension SSKJobRecord: SDSModel {
         case let model as OWSSessionResetJobRecord:
             assert(type(of: model) == OWSSessionResetJobRecord.self)
             return OWSSessionResetJobRecordSerializer(model: model)
+        case let model as OWSReceiptCredentialRedemptionJobRecord:
+            assert(type(of: model) == OWSReceiptCredentialRedemptionJobRecord.self)
+            return OWSReceiptCredentialRedemptionJobRecordSerializer(model: model)
         case let model as OWSIncomingGroupSyncJobRecord:
             assert(type(of: model) == OWSIncomingGroupSyncJobRecord.self)
             return OWSIncomingGroupSyncJobRecordSerializer(model: model)
@@ -426,6 +481,38 @@ extension SSKJobRecord: DeepCopyable {
                                             contactThreadId: contactThreadId)
         }
 
+        if let modelToCopy = self as? OWSReceiptCredentialRedemptionJobRecord {
+            assert(type(of: modelToCopy) == OWSReceiptCredentialRedemptionJobRecord.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: String? = modelToCopy.exclusiveProcessIdentifier
+            let failureCount: UInt = modelToCopy.failureCount
+            let label: String = modelToCopy.label
+            let sortId: UInt64 = modelToCopy.sortId
+            let status: SSKJobRecordStatus = modelToCopy.status
+            let boostPaymentIntentID: String = modelToCopy.boostPaymentIntentID
+            let isBoost: Bool = modelToCopy.isBoost
+            let priorSubscriptionLevel: UInt = modelToCopy.priorSubscriptionLevel
+            let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
+            let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
+            let subscriberID: Data = modelToCopy.subscriberID
+            let targetSubscriptionLevel: UInt = modelToCopy.targetSubscriptionLevel
+
+            return OWSReceiptCredentialRedemptionJobRecord(grdbId: id,
+                                                           uniqueId: uniqueId,
+                                                           exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                                           failureCount: failureCount,
+                                                           label: label,
+                                                           sortId: sortId,
+                                                           status: status,
+                                                           boostPaymentIntentID: boostPaymentIntentID,
+                                                           isBoost: isBoost,
+                                                           priorSubscriptionLevel: priorSubscriptionLevel,
+                                                           receiptCredentailRequest: receiptCredentailRequest,
+                                                           receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                                           subscriberID: subscriberID,
+                                                           targetSubscriptionLevel: targetSubscriptionLevel)
+        }
+
         if let modelToCopy = self as? OWSIncomingGroupSyncJobRecord {
             assert(type(of: modelToCopy) == OWSIncomingGroupSyncJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
@@ -535,6 +622,13 @@ extension SSKJobRecordSerializer {
     static var serverDeliveryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "serverDeliveryTimestamp", columnType: .int64, isOptional: true) }
     static var exclusiveProcessIdentifierColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "exclusiveProcessIdentifier", columnType: .unicodeString, isOptional: true) }
     static var isHighPriorityColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isHighPriority", columnType: .int, isOptional: true) }
+    static var receiptCredentailRequestColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receiptCredentailRequest", columnType: .blob, isOptional: true) }
+    static var receiptCredentailRequestContextColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receiptCredentailRequestContext", columnType: .blob, isOptional: true) }
+    static var priorSubscriptionLevelColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "priorSubscriptionLevel", columnType: .int64, isOptional: true) }
+    static var subscriberIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "subscriberID", columnType: .blob, isOptional: true) }
+    static var targetSubscriptionLevelColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "targetSubscriptionLevel", columnType: .int64, isOptional: true) }
+    static var boostPaymentIntentIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "boostPaymentIntentID", columnType: .unicodeString, isOptional: true) }
+    static var isBoostColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isBoost", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -559,7 +653,14 @@ extension SSKJobRecordSerializer {
         isMediaMessageColumn,
         serverDeliveryTimestampColumn,
         exclusiveProcessIdentifierColumn,
-        isHighPriorityColumn
+        isHighPriorityColumn,
+        receiptCredentailRequestColumn,
+        receiptCredentailRequestContextColumn,
+        priorSubscriptionLevelColumn,
+        subscriberIDColumn,
+        targetSubscriptionLevelColumn,
+        boostPaymentIntentIDColumn,
+        isBoostColumn
         ])
     }
 }
@@ -963,8 +1064,15 @@ class SSKJobRecordSerializer: SDSSerializer {
         let serverDeliveryTimestamp: UInt64? = nil
         let exclusiveProcessIdentifier: String? = model.exclusiveProcessIdentifier
         let isHighPriority: Bool? = nil
+        let receiptCredentailRequest: Data? = nil
+        let receiptCredentailRequestContext: Data? = nil
+        let priorSubscriptionLevel: UInt? = nil
+        let subscriberID: Data? = nil
+        let targetSubscriptionLevel: UInt? = nil
+        let boostPaymentIntentID: String? = nil
+        let isBoost: Bool? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost)
     }
 }
 
