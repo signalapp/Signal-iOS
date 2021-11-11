@@ -264,23 +264,9 @@ extension MessageReceiver {
     // MARK: - Call Messages
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
-        func getWebRTCSession() -> WebRTCSession {
-            let result: WebRTCSession
-            if let current = WebRTCSession.current {
-                result = current
-            } else {
-                WebRTCSession.current = WebRTCSession(for: message.sender!, with: message.uuid!)
-                result = WebRTCSession.current!
-            }
-            return result
-        }
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
-            if getWebRTCSession().uuid != message.uuid! {
-                // TODO: Call in progress, put the new call on hold/reject
-                return
-            }
             let storage = SNMessagingKitConfiguration.shared.storage
             let transaction = transaction as! YapDatabaseReadWriteTransaction
             if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
@@ -288,7 +274,7 @@ extension MessageReceiver {
                 let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
                 tsMessage.save(with: transaction)
             }
-            handlePreOfferCallMessage?(message)
+            handlePreOfferCallMessage?(message, transaction)
         case .offer:
             print("[Calls] Received offer message.")
             if WebRTCSession.current?.uuid != message.uuid! {
@@ -298,13 +284,13 @@ extension MessageReceiver {
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
-            guard WebRTCSession.current?.uuid == message.uuid! else { return }
+            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
             let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-            getWebRTCSession().handleRemoteSDP(sdp, from: message.sender!)
+            currentWebRTCSession.handleRemoteSDP(sdp, from: message.sender!)
             handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):
-            guard WebRTCSession.current?.uuid == message.uuid! else { return }
+            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
             var candidates: [RTCIceCandidate] = []
             let sdps = message.sdps!
             for i in 0..<sdps.count {
@@ -314,7 +300,7 @@ extension MessageReceiver {
                 let candidate = RTCIceCandidate(sdp: sdp, sdpMLineIndex: Int32(sdpMLineIndex), sdpMid: sdpMid)
                 candidates.append(candidate)
             }
-            getWebRTCSession().handleICECandidates(candidates)
+            currentWebRTCSession.handleICECandidates(candidates)
         case .endCall:
             print("[Calls] Received end call message.")
             guard WebRTCSession.current?.uuid == message.uuid! else { return }

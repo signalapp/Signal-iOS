@@ -57,6 +57,7 @@ public final class SessionCallManager: NSObject {
         self.provider.setDelegate(self, queue: nil)
     }
     
+    // MARK: Report calls
     public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
         call.stateDidChange = {
@@ -120,6 +121,18 @@ public final class SessionCallManager: NSObject {
 
         // Is there any reason to support this?
         callUpdate.supportsDTMF = false
+    }
+    
+    public func handleIncomingCallOfferInBusyState(offerMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
+        guard let caller = offerMessage.sender, let thread = TSContactThread.fetch(for: caller, using: transaction) else { return }
+        let message = CallMessage()
+        message.uuid = offerMessage.uuid
+        message.kind = .endCall
+        print("[Calls] Sending end call message.")
+        MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+        if let tsMessage = TSIncomingMessage.find(withAuthorId: caller, timestamp: offerMessage.sentTimestamp!, transaction: transaction) {
+            tsMessage.updateCall(withNewBody: NSLocalizedString("call_missing", comment: ""), transaction: transaction)
+        }
     }
     
     internal func showCallModal() {

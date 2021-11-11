@@ -22,8 +22,13 @@ extension AppDelegate {
     
     @objc func setUpCallHandling() {
         // Pre offer messages
-        MessageReceiver.handlePreOfferCallMessage = { message in
+        MessageReceiver.handlePreOfferCallMessage = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
+            let callManager = AppEnvironment.shared.callManager
+            guard callManager.currentCall == nil else {
+                callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
+                return
+            }
             DispatchQueue.main.async {
                 if let caller = message.sender, let uuid = message.uuid {
                     let call = SessionCall(for: caller, uuid: uuid, mode: .answer)

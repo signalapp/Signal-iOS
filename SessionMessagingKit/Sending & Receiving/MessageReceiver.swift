@@ -2,7 +2,7 @@ import SessionUtilitiesKit
 
 public enum MessageReceiver {
     private static var lastEncryptionKeyPairRequest: [String:Date] = [:]
-    public static var handlePreOfferCallMessage: ((CallMessage) -> Void)?
+    public static var handlePreOfferCallMessage: ((CallMessage, YapDatabaseReadWriteTransaction) -> Void)?
     public static var handleOfferCallMessage: ((CallMessage) -> Void)?
     public static var handleAnswerCallMessage: ((CallMessage) -> Void)?
     public static var handleEndCallMessage: ((CallMessage) -> Void)?
