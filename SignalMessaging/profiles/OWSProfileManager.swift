@@ -69,6 +69,10 @@ public extension OWSProfileManager {
             profileBioEmoji = pendingUpdate.profileBioEmoji
             profileAvatarData = pendingUpdate.profileAvatarData
             userProfileWriter = pendingUpdate.userProfileWriter
+
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
+            }
         } else {
             let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
             profileGivenName = profileSnapshot.givenName
@@ -77,6 +81,10 @@ public extension OWSProfileManager {
             profileBioEmoji = profileSnapshot.bioEmoji
             profileAvatarData = profileSnapshot.avatarData
             userProfileWriter = .reupload
+
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
+            }
         }
         assert(profileGivenName != nil)
         return OWSProfileManager.updateLocalProfilePromise(profileGivenName: profileGivenName,
