@@ -302,7 +302,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         cell.contentView.addSubview(hStackView)
         hStackView.autoPinEdgesToSuperviewMargins()
 
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
 
         let avatarImageView = ConversationAvatarView(
             sizeClass: .customDiameter(64),
