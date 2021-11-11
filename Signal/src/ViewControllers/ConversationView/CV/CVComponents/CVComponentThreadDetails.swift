@@ -75,7 +75,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         var innerViews = [UIView]()
 
-        let avatarView = ConversationAvatarView(sizeClass: .customDiameter(Self.avatarDiameter), localUserDisplayMode: .asUser, useAutolayout: false)
+        let avatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser, useAutolayout: false)
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             configuration.dataSource = avatarDataSource
         }
@@ -94,7 +94,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                                                                 comment: "Indicator that a blurred avatar can be revealed by tapping."),
                                                         font: UIFont.ows_dynamicTypeSubheadlineClamped,
                                                         textColor: .ows_white)
-            let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: avatarDiameter - 12)
+            let maxWidth = CGFloat(avatarSizeClass.avatarDiameter) - 12
+            let unblurAvatarLabelSize = CVText.measureLabel(config: unblurAvatarLabelConfig, maxWidth: maxWidth)
             unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
             let unblurAvatarLabel = CVLabel()
             unblurAvatarLabelConfig.applyForRendering(label: unblurAvatarLabel)
@@ -219,8 +220,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
-    private static let avatarDiameter: UInt = 112
-    private var avatarDiameter: CGFloat { CGFloat(Self.avatarDiameter) }
+    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.customDiameter(112)
+    private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { Self.avatarSizeClass }
 
     static func buildComponentState(thread: TSThread,
                                     transaction: SDSAnyReadTransaction,
@@ -253,7 +254,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(forAddress: contactThread.contactAddress,
                                                                    includingBadge: false,
                                                                    localUserDisplayMode: .noteToSelf,
-                                                                   diameterPoints: avatarDiameter)
+                                                                   diameterPoints: avatarSizeClass.avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurContactAvatar(contactThread: contactThread,
                                                                           transaction: transaction)
@@ -397,7 +398,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         // If we need to reload this cell to reflect changes to any of the
         // state captured here, we need update the didThreadDetailsChange().        
 
-        let avatarDataSource = avatarBuilder.buildAvatarDataSource(forGroupThread: groupThread, diameterPoints: avatarDiameter)
+        let avatarDataSource = avatarBuilder.buildAvatarDataSource(
+            forGroupThread: groupThread,
+            diameterPoints: avatarSizeClass.avatarDiameter)
 
         let isAvatarBlurred = contactsManagerImpl.shouldBlurGroupAvatar(groupThread: groupThread,
                                                                         transaction: transaction)
@@ -454,7 +457,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let maxContentWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
                                             innerStackConfig.layoutMargins.totalWidth)
 
-        innerSubviewInfos.append(CGSize(square: avatarDiameter).asManualSubviewInfo)
+        innerSubviewInfos.append(avatarSizeClass.avatarSize.asManualSubviewInfo)
         innerSubviewInfos.append(CGSize(square: 1).asManualSubviewInfo)
 
         let titleSize = CVText.measureLabel(config: titleLabelConfig, maxWidth: maxContentWidth)

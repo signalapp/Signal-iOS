@@ -279,7 +279,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser, badged: true)
+        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
             badgedAvatarView.update(readTx) { config in
                 // TODO: Badging — Add badge

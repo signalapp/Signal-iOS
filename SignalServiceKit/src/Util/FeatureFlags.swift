@@ -234,13 +234,13 @@ public class FeatureFlags: BaseFlags {
     public static let canUseNativeWebsocket = false
 
     @objc
-    public static let fetchAndDisplayBadges = false
+    public static let fetchAndDisplayBadges = build.includes(.qa)
 
     @objc
-    public static let configureBadges = false
+    public static let configureBadges = build.includes(.qa)
 
     @objc
-    public static let subscriptions = false
+    public static let subscriptions = build.includes(.qa)
 
     @objc
     public static var notificationServiceExtension: Bool {

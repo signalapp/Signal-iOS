@@ -52,15 +52,12 @@ public class ConversationHeaderView: UIStackView {
     private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
 
-    private var shouldBadgeAvatar: Bool { avatarSizeClass == .thirtySix }
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
-        // TODO: Badges — Check with design about landscape view
         traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .thirtySix
     }
     private lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
-        localUserDisplayMode: .noteToSelf,
-        badged: shouldBadgeAvatar)
+        localUserDisplayMode: .noteToSelf)
 
     public required init() {
         titleLabel = UILabel()
@@ -145,7 +142,6 @@ public class ConversationHeaderView: UIStackView {
         super.traitCollectionDidChange(previousTraitCollection)
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.sizeClass = avatarSizeClass
-            config.addBadgeIfApplicable = shouldBadgeAvatar
         }
     }
 

@@ -1737,7 +1737,6 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         fileprivate let avatarView = ConversationAvatarView(
             sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
             localUserDisplayMode: .asUser,
-            badged: true,
             useAutolayout: false)
 
         fileprivate let chatColorView = CVColorOrGradientView()

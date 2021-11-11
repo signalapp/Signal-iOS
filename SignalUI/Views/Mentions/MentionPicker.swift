@@ -290,7 +290,6 @@ private class MentionableUserCell: UITableViewCell {
     let avatarView = ConversationAvatarView(
         sizeClass: MentionableUserCell.avatarSizeClass,
         localUserDisplayMode: .asUser,
-        badged: true,
         useAutolayout: true)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

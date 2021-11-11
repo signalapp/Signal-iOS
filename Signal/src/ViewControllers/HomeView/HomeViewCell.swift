@@ -14,7 +14,6 @@ public class HomeViewCell: UITableViewCell {
     private let avatarView = ConversationAvatarView(
         sizeClass: .fiftySix,
         localUserDisplayMode: .noteToSelf,
-        badged: true,
         useAutolayout: true)
 
     private let nameLabel = CVLabel()

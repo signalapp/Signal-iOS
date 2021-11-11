@@ -234,7 +234,7 @@ extension GroupCallMemberSheet: CallObserver {
 private class GroupCallMemberCell: UITableViewCell {
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    let avatarView = ConversationAvatarView(sizeClass: .customDiameter(36), localUserDisplayMode: .asUser)
+    let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()

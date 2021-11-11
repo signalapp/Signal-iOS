@@ -290,7 +290,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
             return 112
         } else if width > 102 {
             return 96
-        } else if width > 36 {
+        } else if width > 48 {
             return UInt(width) - 36
         } else {
             return 16

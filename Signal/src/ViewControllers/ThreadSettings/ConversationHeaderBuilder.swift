@@ -438,8 +438,7 @@ struct ConversationHeaderBuilder: Dependencies {
     func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
         let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
-            localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser,
-            badged: true)
+            localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser)
 
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)

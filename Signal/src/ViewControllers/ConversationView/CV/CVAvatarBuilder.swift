@@ -59,19 +59,11 @@ public class CVAvatarBuilder: Dependencies {
                 }
             }()
 
+            let sizeClass = ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints)
             let badge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
-            let badgeAssets = badge?.assets
-
-            switch ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints) {
-            case .twentyEight, .thirtySix:
-                badgeImage =  Theme.isDarkThemeEnabled ? badgeAssets?.dark16 : badgeAssets?.light16
-            case .fiftySix:
-                badgeImage =  Theme.isDarkThemeEnabled ? badgeAssets?.dark24 : badgeAssets?.light24
-            case .eighty, .eightyEight:
-                badgeImage = Theme.isDarkThemeEnabled ? badgeAssets?.dark36 : badgeAssets?.light36
-            case .customDiameter:
-                // We never vend badges if it's not one of the blessed sizes
-                owsFailDebug("Cannot place badge on arbitrarily sized avatar")
+            if let badgeAssets = badge?.assets {
+                badgeImage = sizeClass.fetchImageFromBadgeAssets(badgeAssets)
+            } else {
                 badgeImage = nil
             }
         } else {

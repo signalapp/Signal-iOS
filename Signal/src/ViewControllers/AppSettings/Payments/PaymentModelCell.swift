@@ -8,7 +8,7 @@ import SignalUI
 public class PaymentModelCell: UITableViewCell {
     static let reuseIdentifier = "PaymentModelCell"
 
-    let contactAvatarView = ConversationAvatarView(sizeClass: .customDiameter(PaymentModelCell.avatarDiameter), localUserDisplayMode: .asUser)
+    let contactAvatarView = ConversationAvatarView(sizeClass: avatarSizeClass, localUserDisplayMode: .asUser)
     let nameLabel = UILabel()
     let statusLabel = UILabel()
     let amountLabel = UILabel()
@@ -45,12 +45,12 @@ public class PaymentModelCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static var avatarDiameter: UInt = 36
+    private static var avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.thirtySix
 
     private static var hStackSpacing: CGFloat = 12
 
     public static var separatorInsetLeading: CGFloat {
-        CGFloat(avatarDiameter) + hStackSpacing
+        CGFloat(avatarSizeClass.avatarDiameter) + hStackSpacing
     }
 
     func configure(paymentItem: PaymentsHistoryItem) {
@@ -81,7 +81,8 @@ public class PaymentModelCell: UITableViewCell {
                             paymentItem.isOutgoingTransfer ||
                             paymentItem.isDefragmentation)
 
-            avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: Self.avatarDiameter)
+            let avatarSize = Self.avatarSizeClass.avatarDiameter
+            avatarView = PaymentsViewUtils.buildUnidentifiedTransactionAvatar(avatarSize: avatarSize)
         }
         if paymentModel.isUnread {
             let avatarWrapper = UIView.container()

@@ -104,7 +104,6 @@ public class ContactCellView: ManualStackView {
     private let avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .asUser,
-        badged: true,
         useAutolayout: false)
 
     @objc
