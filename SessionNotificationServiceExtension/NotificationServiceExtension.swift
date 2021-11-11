@@ -92,6 +92,9 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         }
                     case let callMessage as CallMessage:
                         MessageReceiver.handleCallMessage(callMessage, using: transaction)
+                        if !SSKPreferences.areCallsEnabled {
+                            return self.completeSilenty()
+                        }
                         notificationContent.userInfo = userInfo
                         notificationContent.badge = 1
                         notificationContent.title = "Session"

@@ -25,8 +25,8 @@ extension AppDelegate {
         MessageReceiver.handlePreOfferCallMessage = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
             let callManager = AppEnvironment.shared.callManager
-            guard callManager.currentCall == nil else {
-                callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
+            guard callManager.currentCall == nil || !SSKPreferences.areCallsEnabled else {
+                callManager.handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: message, using: transaction)
                 return
             }
             DispatchQueue.main.async {

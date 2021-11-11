@@ -267,12 +267,14 @@ extension MessageReceiver {
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
-            let storage = SNMessagingKitConfiguration.shared.storage
             let transaction = transaction as! YapDatabaseReadWriteTransaction
-            if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
-                let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
-                let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
-                tsMessage.save(with: transaction)
+            if SSKPreferences.areCallsEnabled {
+                let storage = SNMessagingKitConfiguration.shared.storage
+                if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
+                    let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
+                    let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
+                    tsMessage.save(with: transaction)
+                }
             }
             handlePreOfferCallMessage?(message, transaction)
         case .offer:

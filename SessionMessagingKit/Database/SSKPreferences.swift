@@ -24,6 +24,19 @@ public class SSKPreferences: NSObject {
             setBool(newValue, key: areLinkPreviewsEnabledKey)
         }
     }
+    
+    // MARK: -
+    private static let areCallsEnabledKey = "areCallsEnabled"
+
+    @objc
+    public static var areCallsEnabled: Bool {
+        get {
+            return getBool(key: areCallsEnabledKey, defaultValue: false)
+        }
+        set {
+            setBool(newValue, key: areCallsEnabledKey)
+        }
+    }
 
     // MARK: -
 

@@ -1,11 +1,15 @@
 
+@objc
 final class CallModal : Modal {
     private let onCallEnabled: () -> Void
 
     // MARK: Lifecycle
+    @objc
     init(onCallEnabled: @escaping () -> Void) {
         self.onCallEnabled = onCallEnabled
         super.init(nibName: nil, bundle: nil)
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {
@@ -59,6 +63,7 @@ final class CallModal : Modal {
 
     // MARK: Interaction
     @objc private func enable() {
+        SSKPreferences.areCallsEnabled = true
         presentingViewController?.dismiss(animated: true, completion: nil)
         onCallEnabled()
     }

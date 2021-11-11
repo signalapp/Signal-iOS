@@ -197,6 +197,25 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     linkPreviewsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_LINK_PREVIEWS_FOOTER", @"Footer for setting for enabling & disabling link previews.");
     [contents addSection:linkPreviewsSection];
+    
+    OWSTableSection *callsSection = [OWSTableSection new];
+    [callsSection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_CALLS",
+                                                     @"Setting for enabling & disabling voice & video calls.")
+                    accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"calls"]
+                    isOnBlock:^{
+                        return [SSKPreferences areCallsEnabled];
+                    }
+                    isEnabledBlock:^{
+                        return YES;
+                    }
+                    target:weakSelf
+                    selector:@selector(didToggleCallsEnabled:)]];
+    callsSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_CALLS_HEADER", @"Header for setting for enabling & disabling voice & video calls.");
+    callsSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_CALLS_FOOTER", @"Footer for setting for enabling & disabling voice & video calls.");
+    [contents addSection:callsSection];
 
     self.contents = contents;
 }
@@ -258,6 +277,22 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
     SSKPreferences.areLinkPreviewsEnabled = enabled;
+}
+
+- (void)didToggleCallsEnabled:(UISwitch *)sender
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    BOOL enabled = sender.isOn;
+    if (enabled && ![userDefaults boolForKey:@"hasSeenCallIPExposureWarning"]) {
+        [userDefaults setBool:YES forKey:@"hasSeenCallIPExposureWarning"];
+        CallModal *modal = [[CallModal alloc] initOnCallEnabled:^{
+            OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+        }];
+        [self presentViewController:modal animated:YES completion:nil];
+    } else {
+        OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
+        SSKPreferences.areCallsEnabled = enabled;
+    }
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

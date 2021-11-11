@@ -309,8 +309,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
                 settingsButton.accessibilityLabel = "Settings button"
                 settingsButton.isAccessibilityElement = true
                 rightBarButtonItems.append(settingsButton)
-                let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
-                rightBarButtonItems.append(callButton)
+                if SSKPreferences.areCallsEnabled || !UserDefaults.standard[.hasSeenCallIPExposureWarning] {
+                    let callButton = UIBarButtonItem(image: UIImage(named: "Phone")!, style: .plain, target: self, action: #selector(startCall))
+                    rightBarButtonItems.append(callButton)
+                }
             } else {
                 let settingsButton = UIBarButtonItem(image: UIImage(named: "Gear"), style: .plain, target: self, action: #selector(openSettings))
                 settingsButton.accessibilityLabel = "Settings button"

@@ -314,29 +314,14 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
     }
     
-    internal func showCallModal() {
-        let callModal = CallModal() { [weak self] in
-            self?.answerCall()
-        }
-        callModal.modalPresentationStyle = .overFullScreen
-        callModal.modalTransitionStyle = .crossDissolve
-        present(callModal, animated: true, completion: nil)
-    }
-    
     @objc private func answerCall() {
-        let userDefaults = UserDefaults.standard
-        if userDefaults[.hasSeenCallIPExposureWarning] {
-            AppEnvironment.shared.callManager.answerCall(call) { error in
-                DispatchQueue.main.async {
-                    if let _ = error {
-                        self.callInfoLabel.text = "Can't answer the call."
-                        self.endCall()
-                    }
+        AppEnvironment.shared.callManager.answerCall(call) { error in
+            DispatchQueue.main.async {
+                if let _ = error {
+                    self.callInfoLabel.text = "Can't answer the call."
+                    self.endCall()
                 }
             }
-        } else {
-            userDefaults[.hasSeenCallIPExposureWarning] = true
-            showCallModal()
         }
     }
     

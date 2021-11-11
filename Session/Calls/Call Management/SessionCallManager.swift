@@ -123,7 +123,7 @@ public final class SessionCallManager: NSObject {
         callUpdate.supportsDTMF = false
     }
     
-    public func handleIncomingCallOfferInBusyState(offerMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
+    public func handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
         guard let caller = offerMessage.sender, let thread = TSContactThread.fetch(for: caller, using: transaction) else { return }
         let message = CallMessage()
         message.uuid = offerMessage.uuid
@@ -133,28 +133,6 @@ public final class SessionCallManager: NSObject {
         if let tsMessage = TSIncomingMessage.find(withAuthorId: caller, timestamp: offerMessage.sentTimestamp!, transaction: transaction) {
             tsMessage.updateCall(withNewBody: NSLocalizedString("call_missing", comment: ""), transaction: transaction)
         }
-    }
-    
-    internal func showCallModal() {
-        let callModal = CallModal() { [weak self] in
-            self?.showCallVC()
-        }
-        callModal.modalPresentationStyle = .overFullScreen
-        callModal.modalTransitionStyle = .crossDissolve
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-        presentingVC.present(callModal, animated: true, completion: nil)
-    }
-    
-    internal func showCallVC() {
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-        let callVC = CallVC(for: self.currentCall!)
-        callVC.shouldAnswer = true
-        if let conversationVC = presentingVC as? ConversationVC {
-            callVC.conversationVC = conversationVC
-            conversationVC.inputAccessoryView?.isHidden = true
-            conversationVC.inputAccessoryView?.alpha = 0
-        }
-        presentingVC.present(callVC, animated: true, completion: nil)
     }
 }
 

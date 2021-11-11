@@ -29,7 +29,10 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     // MARK: Call
     @objc func startCall(_ sender: Any?) {
         let userDefaults = UserDefaults.standard
-        if userDefaults[.hasSeenCallIPExposureWarning] {
+        if !SSKPreferences.areCallsEnabled && !userDefaults[.hasSeenCallIPExposureWarning] {
+            userDefaults[.hasSeenCallIPExposureWarning] = true
+            showCallModal()
+        } else if SSKPreferences.areCallsEnabled {
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
             guard AppEnvironment.shared.callManager.currentCall == nil else { return }
             let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer, outgoing: true)
@@ -38,9 +41,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.inputAccessoryView?.isHidden = true
             self.inputAccessoryView?.alpha = 0
             present(callVC, animated: true, completion: nil)
-        } else {
-            userDefaults[.hasSeenCallIPExposureWarning] = true
-            showCallModal()
         }
     }
     
@@ -48,8 +48,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let callModal = CallModal() { [weak self] in
             self?.startCall(nil)
         }
-        callModal.modalPresentationStyle = .overFullScreen
-        callModal.modalTransitionStyle = .crossDissolve
         present(callModal, animated: true, completion: nil)
     }
     
