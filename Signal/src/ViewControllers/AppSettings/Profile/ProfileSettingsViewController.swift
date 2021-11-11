@@ -61,7 +61,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }, actionBlock: nil),
             OWSTableItem(customCellBlock: { [weak self] in
                 self?.createChangeAvatarCell() ?? UITableViewCell()
-            }, actionBlock: nil),
+            }, actionBlock: nil)
         ])
         avatarSection.hasBackground = false
         contents.addSection(avatarSection)
