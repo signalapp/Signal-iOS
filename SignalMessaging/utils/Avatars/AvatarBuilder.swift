@@ -94,6 +94,12 @@ public class AvatarBuilder: NSObject {
             name: .OWSContactsManagerContactsDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localUsersProfileDidChange(notification:)),
+            name: .localProfileDidChange,
+            object: nil
+        )
     }
 
     @objc
@@ -106,6 +112,14 @@ public class AvatarBuilder: NSObject {
 
     @objc
     func otherUsersProfileDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        requestToImageCache.removeAllObjects()
+        requestToContentCache.removeAllObjects()
+    }
+
+    @objc
+    func localUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
 
         requestToImageCache.removeAllObjects()

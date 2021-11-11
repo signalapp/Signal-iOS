@@ -17,6 +17,7 @@ class GroupCallVideoGrid: UICollectionView {
 
         call.addObserverAndSyncState(observer: self)
         layout.delegate = self
+        backgroundColor = .clear
 
         register(GroupCallVideoGridCell.self, forCellWithReuseIdentifier: GroupCallVideoGridCell.reuseIdentifier)
         dataSource = self

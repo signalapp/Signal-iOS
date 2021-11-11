@@ -3,12 +3,14 @@
 //
 
 import Foundation
+import SignalUI
 
 class GroupCallSwipeToastView: UIView {
 
     private let imageView: UIImageView = {
         let view = UIImageView()
         view.setTemplateImageName("arrow-up-20", tintColor: .ows_white)
+        view.autoSetDimensions(to: .square(20))
         return view
     }()
 
@@ -18,6 +20,7 @@ class GroupCallSwipeToastView: UIView {
         label.textColor = .ows_gray05
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
+        label.setCompressionResistanceHigh()
         return label
     }()
 
