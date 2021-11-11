@@ -153,13 +153,14 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         dismiss()
         guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
         let callVC = CallVC(for: self.call)
-        callVC.shouldAnswer = answer
         if let conversationVC = presentingVC as? ConversationVC {
             callVC.conversationVC = conversationVC
             conversationVC.inputAccessoryView?.isHidden = true
             conversationVC.inputAccessoryView?.alpha = 0
         }
-        presentingVC.present(callVC, animated: true, completion: nil)
+        presentingVC.present(callVC, animated: true) {
+            if answer { self.call.answerSessionCall() }
+        }
     }
     
     public func show() {

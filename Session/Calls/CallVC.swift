@@ -6,7 +6,6 @@ import UIKit
 
 final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
-    var shouldAnswer = false
     var shouldRestartCamera = true
     weak var conversationVC: ConversationVC? = nil
     
@@ -218,7 +217,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 }
             }
         }
-        if shouldAnswer { answerCall() }
     }
     
     func setUpViewHierarchy() {

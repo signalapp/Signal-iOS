@@ -23,13 +23,14 @@ extension SessionCallManager: CXProviderDelegate {
             } else {
                 guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                 let callVC = CallVC(for: self.currentCall!)
-                callVC.shouldAnswer = true
                 if let conversationVC = presentingVC as? ConversationVC {
                     callVC.conversationVC = conversationVC
                     conversationVC.inputAccessoryView?.isHidden = true
                     conversationVC.inputAccessoryView?.alpha = 0
                 }
-                presentingVC.present(callVC, animated: true, completion: nil)
+                presentingVC.present(callVC, animated: true) {
+                    call.answerSessionCall()
+                }
             }
             action.fulfill()
         } else {
