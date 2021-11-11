@@ -38,8 +38,8 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
             53,
             // North Korea
             850,
-            // Ukraine Crimea Region
-            380
+            // Russia
+            7
         ]
         return !invalidCountryCodes.contains(nsCountryCode.intValue)
     }
