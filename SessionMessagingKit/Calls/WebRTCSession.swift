@@ -35,7 +35,8 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     /// remote peer, maintain and monitor the connection, and close the connection once it's no longer needed.
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
-        configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServers) ]
+        configuration.iceServers = [ RTCIceServer(urlStrings: ["stun:freyr.getsession.org:5349"]), RTCIceServer(urlStrings: ["turn:freyr.getsession.org"], username: "session", credential: "session") ]
+//        configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServers) ]
         configuration.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)

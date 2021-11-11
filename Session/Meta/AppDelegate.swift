@@ -57,7 +57,7 @@ extension AppDelegate {
         // Offer messages
         MessageReceiver.handleOfferCallMessage = { message in
             DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid == call.uuid.uuidString else { return }
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
                 let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
                 call.didReceiveRemoteSDP(sdp: sdp)
             }
@@ -65,7 +65,7 @@ extension AppDelegate {
         // Answer messages
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid == call.uuid.uuidString else { return }
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
                 AppEnvironment.shared.callManager.invalidateTimeoutTimer()
                 call.hasStartedConnecting = true
                 let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])

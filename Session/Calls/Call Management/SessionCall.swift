@@ -6,7 +6,8 @@ import CallKit
 
 public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Metadata Properties
-    let uuid: UUID
+    let uuid: String
+    let callID: UUID // This is for CallKit
     let sessionID: String
     let mode: Mode
     let webRTCSession: WebRTCSession
@@ -137,7 +138,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Initialization
     init(for sessionID: String, uuid: String, mode: Mode, outgoing: Bool = false) {
         self.sessionID = sessionID
-        self.uuid = UUID(uuidString: uuid)!
+        self.uuid = uuid
+        self.callID = UUID()
         self.mode = mode
         self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
         self.isOutgoing = outgoing

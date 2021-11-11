@@ -63,10 +63,10 @@ public final class SessionCallManager: NSObject {
         AssertIsOnMainThread()
         call.stateDidChange = {
             if call.hasStartedConnecting {
-                self.provider.reportOutgoingCall(with: call.uuid, startedConnectingAt: call.connectingDate)
+                self.provider.reportOutgoingCall(with: call.callID, startedConnectingAt: call.connectingDate)
             }
             if call.hasConnected {
-                self.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectedDate)
+                self.provider.reportOutgoingCall(with: call.callID, connectedAt: call.connectedDate)
             }
         }
         callTimeOutTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
@@ -84,7 +84,7 @@ public final class SessionCallManager: NSObject {
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
         update.localizedCallerName = callerName
-        update.remoteHandle = CXHandle(type: .generic, value: call.uuid.uuidString)
+        update.remoteHandle = CXHandle(type: .generic, value: call.callID.uuidString)
         update.hasVideo = false
         update.supportsGrouping = false
         update.supportsUngrouping = false
@@ -93,7 +93,7 @@ public final class SessionCallManager: NSObject {
         disableUnsupportedFeatures(callUpdate: update)
 
         // Report the incoming call to the system
-        self.provider.reportNewIncomingCall(with: call.uuid, update: update) { error in
+        self.provider.reportNewIncomingCall(with: call.callID, update: update) { error in
             guard error == nil else {
                 self.currentCall = nil
                 completion(error)
@@ -107,7 +107,7 @@ public final class SessionCallManager: NSObject {
     public func reportCurrentCallEnded(reason: CXCallEndedReason?) {
         guard let call = currentCall else { return }
         if let reason = reason {
-            self.provider.reportCall(with: call.uuid, endedAt: nil, reason: reason)
+            self.provider.reportCall(with: call.callID, endedAt: nil, reason: reason)
             if reason == .unanswered {
                 call.updateCallMessage(mode: .unanswered)
             } else {

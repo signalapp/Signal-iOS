@@ -6,7 +6,7 @@ extension SessionCallManager {
         guard case .offer = call.mode else { return }
         guard !call.hasConnected else { return }
         let handle = CXHandle(type: .generic, value: call.sessionID)
-        let startCallAction = CXStartCallAction(call: call.uuid, handle: handle)
+        let startCallAction = CXStartCallAction(call: call.callID, handle: handle)
         
         startCallAction.isVideo = false
         
@@ -18,7 +18,7 @@ extension SessionCallManager {
     }
     
     public func answerCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
-        let answerCallAction = CXAnswerCallAction(call: call.uuid)
+        let answerCallAction = CXAnswerCallAction(call: call.callID)
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
 
@@ -26,7 +26,7 @@ extension SessionCallManager {
     }
     
     public func endCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
-        let endCallAction = CXEndCallAction(call: call.uuid)
+        let endCallAction = CXEndCallAction(call: call.callID)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
 
@@ -35,7 +35,7 @@ extension SessionCallManager {
     
     // Not currently in use
     public func setOnHoldStatus(for call: SessionCall) {
-        let setHeldCallAction = CXSetHeldCallAction(call: call.uuid, onHold: true)
+        let setHeldCallAction = CXSetHeldCallAction(call: call.callID, onHold: true)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
 
