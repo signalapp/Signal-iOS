@@ -42,7 +42,11 @@ extension SessionCallManager: CXProviderDelegate {
         AssertIsOnMainThread()
         guard let call = self.currentCall else { return action.fail() }
         call.endSessionCall()
-        reportCurrentCallEnded(reason: nil)
+        if call.didTimeout {
+            reportCurrentCallEnded(reason: .unanswered)
+        } else {
+            reportCurrentCallEnded(reason: nil)
+        }
         action.fulfill()
     }
     

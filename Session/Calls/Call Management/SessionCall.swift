@@ -66,6 +66,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     enum EndCallMode {
         case local
         case remote
+        case unanswered
     }
     
     // MARK: Call State Properties
@@ -119,6 +120,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         get { return endDate != nil }
         set { endDate = newValue ? Date() : nil }
     }
+    
+    var didTimeout = false
 
     var duration: TimeInterval {
         guard let connectedDate = connectedDate else {
@@ -226,10 +229,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                         newMessageBody = self.isOutgoing ? NSLocalizedString("call_cancelled", comment: "") : NSLocalizedString("call_rejected", comment: "")
                         shouldMarkAsRead = true
                     case .remote:
-                        if self.hasStartedConnecting {
-                            
-                        }
                         newMessageBody = self.isOutgoing ? NSLocalizedString("call_rejected", comment: "") : NSLocalizedString("call_missing", comment: "")
+                    case .unanswered:
+                        newMessageBody = NSLocalizedString("call_timeout", comment: "")
                     }
                 }
                 messageToUpdate.updateCall(withNewBody: newMessageBody, transaction: transaction)

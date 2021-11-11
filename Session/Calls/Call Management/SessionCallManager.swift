@@ -4,6 +4,7 @@ import SessionMessagingKit
 public final class SessionCallManager: NSObject {
     let provider: CXProvider
     let callController = CXCallController()
+    var callTimeOutTimer: Timer? = nil
     var currentCall: SessionCall? = nil {
         willSet {
             if (newValue != nil) {
@@ -68,6 +69,13 @@ public final class SessionCallManager: NSObject {
                 self.provider.reportOutgoingCall(with: call.uuid, connectedAt: call.connectedDate)
             }
         }
+        callTimeOutTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+            guard let currentCall = self.currentCall else { return }
+            currentCall.didTimeout = true
+            self.endCall(currentCall) { error in
+                self.callTimeOutTimer = nil
+            }
+        }
     }
     
     public func reportIncomingCall(_ call: SessionCall, callerName: String, completion: @escaping (Error?) -> Void) {
@@ -100,7 +108,11 @@ public final class SessionCallManager: NSObject {
         guard let call = currentCall else { return }
         if let reason = reason {
             self.provider.reportCall(with: call.uuid, endedAt: nil, reason: reason)
-            call.updateCallMessage(mode: .remote)
+            if reason == .unanswered {
+                call.updateCallMessage(mode: .unanswered)
+            } else {
+                call.updateCallMessage(mode: .remote)
+            }
         } else {
             call.updateCallMessage(mode: .local)
         }
@@ -133,6 +145,11 @@ public final class SessionCallManager: NSObject {
         if let tsMessage = TSIncomingMessage.find(withAuthorId: caller, timestamp: offerMessage.sentTimestamp!, transaction: transaction) {
             tsMessage.updateCall(withNewBody: NSLocalizedString("call_missing", comment: ""), transaction: transaction)
         }
+    }
+    
+    public func invalidateTimeoutTimer() {
+        callTimeOutTimer?.invalidate()
+        callTimeOutTimer = nil
     }
 }
 

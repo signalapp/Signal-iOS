@@ -586,6 +586,7 @@
 "call_missing" = "Missing Call";
 "call_rejected" = "Rejected Call";
 "call_cancelled" = "Cancelled Call";
+"call_timeout" = "No answer";
 "voice_call" = "Voice Call";
 "video_call" = "Video Call";
 "APN_Message" = "You've got a new message";
