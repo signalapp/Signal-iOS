@@ -92,11 +92,11 @@ extension ProfileBadge {
         case xhdpi
         case xxhdpi
 
-        var intendedScale: Float {
+        var intendedScale: Int {
             switch self {
-            case .mdpi: return 1.0
-            case .xhdpi: return 2.0
-            case .xxhdpi: return 3.0
+            case .mdpi: return 1
+            case .xhdpi: return 2
+            case .xxhdpi: return 3
             }
         }
 
@@ -215,7 +215,10 @@ public class BadgeStore: NSObject {
         } else if let cachedAssets = assetCache[badge.resourcePath] {
             badge.assets = cachedAssets
         } else {
-            badge.assets = BadgeAssets(remoteSourceUrl: badge.remoteAssetUrl, localAssetDirectory: badge.localAssetDir)
+            badge.assets = BadgeAssets(
+                scale: badge.badgeVariant.intendedScale,
+                remoteSourceUrl: badge.remoteAssetUrl,
+                localAssetDirectory: badge.localAssetDir)
             assetCache[badge.resourcePath] = badge.assets
         }
         owsAssertDebug(badge.assets != nil)
