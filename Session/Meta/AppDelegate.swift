@@ -25,7 +25,7 @@ extension AppDelegate {
         MessageReceiver.handlePreOfferCallMessage = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
             let callManager = AppEnvironment.shared.callManager
-            guard callManager.currentCall == nil || !SSKPreferences.areCallsEnabled else {
+            guard callManager.currentCall == nil && SSKPreferences.areCallsEnabled else {
                 callManager.handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: message, using: transaction)
                 return
             }
@@ -65,6 +65,10 @@ extension AppDelegate {
         // Answer messages
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid == call.uuid.uuidString else { return }
+                call.hasStartedConnecting = true
+                let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
+                call.didReceiveRemoteSDP(sdp: sdp)
                 guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
                 callVC.handleAnswerMessage(message)
             }

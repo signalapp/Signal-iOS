@@ -287,8 +287,6 @@ extension MessageReceiver {
         case .answer:
             print("[Calls] Received answer message.")
             guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
-            let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-            currentWebRTCSession.handleRemoteSDP(sdp, from: message.sender!)
             handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):

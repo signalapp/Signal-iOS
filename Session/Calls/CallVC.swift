@@ -193,8 +193,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
         self.call.hasEndedDidChange = {
             DispatchQueue.main.async {
-                self.conversationVC?.showInputAccessoryView()
-                self.presentingViewController?.dismiss(animated: true, completion: nil)
+                self.handleEndCallMessage()
             }
         }
     }
@@ -330,6 +329,10 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
             if let _ = error {
                 self.call.endSessionCall()
                 AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: nil)
+            }
+            DispatchQueue.main.async {
+                self.conversationVC?.showInputAccessoryView()
+                self.presentingViewController?.dismiss(animated: true, completion: nil)
             }
         }
     }

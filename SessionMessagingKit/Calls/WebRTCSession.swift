@@ -41,15 +41,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
     }()
     
-    internal lazy var mediaConstraints: RTCMediaConstraints = {
-        let mandatory: [String:String] = [
-            kRTCMediaConstraintsOfferToReceiveAudio : kRTCMediaConstraintsValueTrue,
-            kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue,
-        ]
-        let optional: [String:String] = [:]
-        return RTCMediaConstraints(mandatoryConstraints: mandatory, optionalConstraints: optional)
-    }()
-    
     // Audio
     internal lazy var audioSource: RTCAudioSource = {
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
@@ -110,6 +101,16 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
             dataChannel.delegate = self
             self.localDataChannel = dataChannel
         }
+        
+        // Network reachability
+        NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { _ in
+            print("[Calls] Reachability did change.")
+            if self.peerConnection.signalingState == .stable {
+                Storage.write { transaction in
+                    self.sendOffer(to: self.contactSessionID, using: transaction, isRestartingICEConnection: true).retainUntilComplete()
+                }
+            }
+        }
     }
     
     // MARK: Signaling
@@ -133,11 +134,11 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         return promise
     }
     
-    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction, isRestartingICEConnection: Bool = false) -> Promise<Void> {
         print("[Calls] Sending offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.offer(for: mediaConstraints) { [weak self] sdp, error in
+        peerConnection.offer(for: mediaConstraints(isRestartingICEConnection)) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
@@ -169,7 +170,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         print("[Calls] Sending answer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection.answer(for: mediaConstraints) { [weak self] sdp, error in
+        peerConnection.answer(for: mediaConstraints(false)) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
             } else {
@@ -234,6 +235,16 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func dropConnection() {
         peerConnection.close()
+    }
+    
+    private func mediaConstraints(_ isRestartingICEConnection: Bool) -> RTCMediaConstraints {
+        var mandatory: [String:String] = [
+            kRTCMediaConstraintsOfferToReceiveAudio : kRTCMediaConstraintsValueTrue,
+            kRTCMediaConstraintsOfferToReceiveVideo : kRTCMediaConstraintsValueTrue,
+        ]
+        if isRestartingICEConnection { mandatory[kRTCMediaConstraintsIceRestart] = kRTCMediaConstraintsValueTrue }
+        let optional: [String:String] = [:]
+        return RTCMediaConstraints(mandatoryConstraints: mandatory, optionalConstraints: optional)
     }
     
     // MARK: Peer connection delegate

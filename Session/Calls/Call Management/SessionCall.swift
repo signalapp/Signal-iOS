@@ -13,7 +13,6 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     let isOutgoing: Bool
     var remoteSDP: RTCSessionDescription? = nil
     var callMessageTimestamp: UInt64?
-    var isWaitingForRemoteSDP = false
     var answerCallAction: CXAnswerCallAction? = nil
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
@@ -157,11 +156,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     }
     
     func didReceiveRemoteSDP(sdp: RTCSessionDescription) {
-        guard remoteSDP == nil else { return }
         remoteSDP = sdp
-        if isWaitingForRemoteSDP {
+        if hasStartedConnecting {
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
-            isWaitingForRemoteSDP = false
         }
     }
     
@@ -186,8 +183,6 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         hasStartedConnecting = true
         if let sdp = remoteSDP {
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
-        } else {
-            isWaitingForRemoteSDP = true
         }
     }
     
@@ -222,12 +217,18 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                     let durationString = NSString.formatDurationSeconds(UInt32(self.duration), useShortFormat: true)
                     newMessageBody = "\(self.isOutgoing ? NSLocalizedString("call_outgoing", comment: "") : NSLocalizedString("call_incoming", comment: "")): \(durationString)"
                     shouldMarkAsRead = true
+                } else if self.hasStartedConnecting {
+                    newMessageBody = NSLocalizedString("call_cancelled", comment: "")
+                    shouldMarkAsRead = true
                 } else {
                     switch mode {
                     case .local:
                         newMessageBody = self.isOutgoing ? NSLocalizedString("call_cancelled", comment: "") : NSLocalizedString("call_rejected", comment: "")
                         shouldMarkAsRead = true
                     case .remote:
+                        if self.hasStartedConnecting {
+                            
+                        }
                         newMessageBody = self.isOutgoing ? NSLocalizedString("call_rejected", comment: "") : NSLocalizedString("call_missing", comment: "")
                     }
                 }
@@ -254,6 +255,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Delegate
     public func webRTCIsConnected() {
+        guard !self.hasConnected else { return }
         self.hasConnected = true
         self.answerCallAction?.fulfill()
     }
@@ -263,6 +265,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     }
     
     public func didReceiveHangUpSignal() {
+        self.hasEnded = true
         DispatchQueue.main.async {
             if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
             if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
