@@ -744,7 +744,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                   @"%d), avatarUrlPathDidChange: %d (%d -> %d), "
                                                   @"avatarFileNameDidChange: %d (%d -> %d), %@, %@.",
                                            profile.address,
-                                           profile.address.isLocalAddress,
+                                           [OWSUserProfile isLocalProfileAddress:profile.address],
                                            profileKeyDidChange,
                                            profileKeyBefore != nil,
                                            profile.profileKey != nil,
