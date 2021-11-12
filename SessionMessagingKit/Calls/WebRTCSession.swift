@@ -18,17 +18,11 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
     
-    private let defaultICEServers = [
-        "stun:stun.l.google.com:19302",
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302",
-        "stun:stun3.l.google.com:19302",
-        "stun:stun4.l.google.com:19302"
-    ]
-    
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
-        return RTCPeerConnectionFactory()
+        let videoEncoderFactory = RTCDefaultVideoEncoderFactory()
+        let videoDecoderFactory = RTCDefaultVideoDecoderFactory()
+        return RTCPeerConnectionFactory(encoderFactory: videoEncoderFactory, decoderFactory: videoDecoderFactory)
     }()
     
     /// Represents a WebRTC connection between the user and a remote peer. Provides methods to connect to a
@@ -36,7 +30,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
         configuration.iceServers = [ RTCIceServer(urlStrings: ["stun:freyr.getsession.org:5349"]), RTCIceServer(urlStrings: ["turn:freyr.getsession.org"], username: "session", credential: "session") ]
-//        configuration.iceServers = [ RTCIceServer(urlStrings: defaultICEServers) ]
         configuration.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
@@ -68,8 +61,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }()
     
     // Data Channel
-    internal var localDataChannel: RTCDataChannel?
-    internal var remoteDataChannel: RTCDataChannel?
+    internal var dataChannel: RTCDataChannel?
     
     // MARK: Error
     public enum Error : LocalizedError {
@@ -100,7 +92,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         // Data channel
         if let dataChannel = createDataChannel() {
             dataChannel.delegate = self
-            self.localDataChannel = dataChannel
+            self.dataChannel = dataChannel
         }
         
         // Network reachability
@@ -287,8 +279,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("[Calls] Data channel opened.")
-        self.remoteDataChannel = dataChannel
-        delegate?.dataChannelDidOpen()
     }
 }
 

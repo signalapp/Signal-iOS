@@ -35,7 +35,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         } else if SSKPreferences.areCallsEnabled {
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
             guard AppEnvironment.shared.callManager.currentCall == nil else { return }
-            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString, mode: .offer, outgoing: true)
+            let call = SessionCall(for: contactSessionID, uuid: UUID().uuidString.lowercased(), mode: .offer, outgoing: true)
             let callVC = CallVC(for: call)
             callVC.conversationVC = self
             self.inputAccessoryView?.isHidden = true
