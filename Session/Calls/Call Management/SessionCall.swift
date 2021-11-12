@@ -161,6 +161,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     }
     
     func didReceiveRemoteSDP(sdp: RTCSessionDescription) {
+        print("[Calls] Did receive remote sdp.")
         remoteSDP = sdp
         if hasStartedConnecting {
             webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally

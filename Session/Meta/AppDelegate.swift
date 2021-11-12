@@ -22,17 +22,24 @@ extension AppDelegate {
     
     @objc func setUpCallHandling() {
         // Pre offer messages
-        MessageReceiver.handlePreOfferCallMessage = { (message, transaction) in
+        MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
             let callManager = AppEnvironment.shared.callManager
+            // Ignore pre offer message afte the same call instance has been generated
+            if let currentCall = callManager.currentCall, currentCall.uuid == message.uuid! { return }
             guard callManager.currentCall == nil && SSKPreferences.areCallsEnabled else {
                 callManager.handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: message, using: transaction)
                 return
             }
-            DispatchQueue.main.async {
-                if let caller = message.sender, let uuid = message.uuid {
-                    let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-                    call.callMessageTimestamp = message.sentTimestamp
+            // Create incoming call message
+            let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+            let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
+            tsMessage.save(with: transaction)
+            // Handle UI
+            if let caller = message.sender, let uuid = message.uuid {
+                let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
+                call.callMessageTimestamp = message.sentTimestamp
+                DispatchQueue.main.async {
                     if CurrentAppContext().isMainAppAndActive {
                         guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
                         if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
@@ -51,7 +58,6 @@ extension AppDelegate {
                         }
                     }
                 }
-                
             }
         }
         // Offer messages

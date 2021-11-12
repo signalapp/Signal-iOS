@@ -268,21 +268,11 @@ extension MessageReceiver {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
             let transaction = transaction as! YapDatabaseReadWriteTransaction
-            if SSKPreferences.areCallsEnabled {
-                let storage = SNMessagingKitConfiguration.shared.storage
-                if let threadID = storage.getOrCreateThread(for: message.sender!, groupPublicKey: message.groupPublicKey, openGroupID: nil, using: transaction),
-                    let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
-                    let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
-                    tsMessage.save(with: transaction)
-                }
-            }
-            handlePreOfferCallMessage?(message, transaction)
+            handleNewCallOfferMessageIfNeeded?(message, transaction)
         case .offer:
             print("[Calls] Received offer message.")
-            if WebRTCSession.current?.uuid != message.uuid! {
-                // TODO: Call in progress, put the new call on hold/reject
-                return
-            }
+            let transaction = transaction as! YapDatabaseReadWriteTransaction
+            handleNewCallOfferMessageIfNeeded?(message, transaction)
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
