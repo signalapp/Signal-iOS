@@ -436,14 +436,16 @@ public class HomeViewCell: UITableViewCell {
         updateTypingIndicatorState()
 
         var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
-        if let messageStatusToken = cellContentToken.configs.messageStatusToken {
+        if let messageStatusToken = configs.messageStatusToken {
             let statusIndicator = configureStatusIndicatorView(token: messageStatusToken)
             bottomRowStackSubviews.append(statusIndicator)
         }
 
         // If there are unread messages, show the "unread badge."
-        if let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
-            let unreadBadge = configureUnreadBadge(unreadBadgeMeasurements: unreadBadgeMeasurements)
+        if let unreadIndicatorLabelConfig = configs.unreadIndicatorLabelConfig,
+           let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
+            let unreadBadge = configureUnreadBadge(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
+                                                   unreadBadgeMeasurements: unreadBadgeMeasurements)
             bottomRowStackSubviews.append(unreadBadge)
         }
 
@@ -665,13 +667,12 @@ public class HomeViewCell: UITableViewCell {
                                           unreadLabelSize.width + minMargin),
                                height: unreadBadgeHeight)
 
-        return HVUnreadBadgeMeasurements(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
-                                         badgeSize: badgeSize,
+        return HVUnreadBadgeMeasurements(badgeSize: badgeSize,
                                          unreadLabelSize: unreadLabelSize)
     }
 
-    private func configureUnreadBadge(unreadBadgeMeasurements measurements: HVUnreadBadgeMeasurements) -> UIView {
-        let unreadIndicatorLabelConfig = measurements.unreadIndicatorLabelConfig
+    private func configureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig,
+                                      unreadBadgeMeasurements measurements: HVUnreadBadgeMeasurements) -> UIView {
 
         let unreadLabel = self.unreadLabel
         unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
@@ -991,7 +992,6 @@ private struct HVCellConfigs {
 // MARK: -
 
 private struct HVUnreadBadgeMeasurements {
-    let unreadIndicatorLabelConfig: CVLabelConfig
     let badgeSize: CGSize
     let unreadLabelSize: CGSize
 }
