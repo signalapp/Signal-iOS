@@ -4,6 +4,7 @@
 
 import UIKit
 import SignalMessaging
+import SignalUI
 
 @objc
 public class HomeViewCell: UITableViewCell {
@@ -58,11 +59,27 @@ public class HomeViewCell: UITableViewCell {
     private struct ReuseToken {
         let hasMuteIndicator: Bool
         let hasMessageStatusToken: Bool
+        let hasUnreadBadge: Bool
     }
 
     private var reuseToken: ReuseToken?
 
     // MARK: - Configuration
+
+    fileprivate enum UnreadMode {
+        case none
+        case unreadWithCount(count: UInt)
+        case unreadWithoutCount
+
+        var hasUnreadStyle: Bool {
+            switch self {
+            case .none:
+                return false
+            case .unreadWithoutCount, .unreadWithCount:
+                return true
+            }
+        }
+    }
 
     // Compare with HVCellContentToken:
     //
@@ -84,7 +101,23 @@ public class HomeViewCell: UITableViewCell {
             overrideSnippet != nil
         }
         fileprivate var hasUnreadStyle: Bool {
-            thread.hasUnreadMessages && overrideSnippet == nil
+            unreadMode.hasUnreadStyle
+        }
+        fileprivate var unreadMode: UnreadMode {
+            guard !hasOverrideSnippet else {
+                // If we're using the conversation list cell to render search results,
+                // don't show "unread badge" or "message status" indicator.
+                return .none
+            }
+            guard thread.hasUnreadMessages else {
+                return .none
+            }
+            let unreadCount = thread.unreadCount
+            if unreadCount > 0 {
+                return .unreadWithCount(count: unreadCount)
+            } else {
+                return .unreadWithoutCount
+            }
         }
 
         init(thread: ThreadViewModel,
@@ -107,7 +140,7 @@ public class HomeViewCell: UITableViewCell {
     // MARK: - View Constants
 
     private static var unreadFont: UIFont {
-        UIFont.ows_dynamicTypeCaption1Clamped.ows_semibold
+        UIFont.ows_dynamicTypeCaption1Clamped
     }
 
     private static var dateTimeFont: UIFont {
@@ -244,15 +277,27 @@ public class HomeViewCell: UITableViewCell {
         var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
             bottomRowWrapperSize.asManualSubviewInfo()
         ]
+
         if let messageStatusToken = configs.messageStatusToken {
             let statusIndicatorSize = messageStatusToken.image.size
             // The status indicator should vertically align with the
             // first line of the snippet.
-            let locationOffset = CGPoint(x: 0,
-                                         y: snippetLineHeight * -0.5)
+            let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
             bottomRowStackSubviewInfos.append(statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true,
                                                                                       locationOffset: locationOffset))
         }
+
+        var unreadBadgeMeasurements: HVUnreadBadgeMeasurements?
+        if let unreadMeasurements = measureUnreadBadge(unreadIndicatorLabelConfig: configs.unreadIndicatorLabelConfig) {
+            unreadBadgeMeasurements = unreadMeasurements
+            let unreadBadgeSize = unreadMeasurements.badgeSize
+            // The unread indicator should vertically align with the
+            // first line of the snippet.
+            let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
+            bottomRowStackSubviewInfos.append(unreadBadgeSize.asManualSubviewInfo(hasFixedSize: true,
+                                                                                  locationOffset: locationOffset))
+        }
+
         let bottomRowStackMeasurement = ManualStackView.measure(config: bottomRowStackConfig,
                                                                 subviewInfos: bottomRowStackSubviewInfos)
         let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
@@ -275,7 +320,8 @@ public class HomeViewCell: UITableViewCell {
                                   bottomRowStackMeasurement: bottomRowStackMeasurement,
                                   vStackMeasurement: vStackMeasurement,
                                   outerHStackMeasurement: outerHStackMeasurement,
-                                  snippetLineHeight: snippetLineHeight)
+                                  snippetLineHeight: snippetLineHeight,
+                                  unreadBadgeMeasurements: unreadBadgeMeasurements)
     }
 
     func configure(cellContentToken: HVCellContentToken) {
@@ -328,49 +374,6 @@ public class HomeViewCell: UITableViewCell {
                                                selector: #selector(typingIndicatorStateDidChange),
                                                name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
                                                object: nil)
-
-        // Avatar
-
-        let avatarSize: CGSize = .square(CGFloat(HomeViewCell.avatarSize))
-
-        // Unread Indicator
-
-        // If there are unread messages, show the "unread badge."
-        if let unreadIndicatorLabelConfig = configs.unreadIndicatorLabelConfig {
-            let unreadLabel = self.unreadLabel
-            unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
-            unreadLabel.removeFromSuperview()
-            let unreadLabelSize = unreadLabel.sizeThatFits(.square(.greatestFiniteMagnitude))
-
-            let unreadBadge = self.unreadBadge
-            unreadBadge.backgroundColor = .ows_accentBlue
-            unreadBadge.addSubview(unreadLabel) { view in
-                // Center within badge.
-                unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5,
-                                           size: unreadLabelSize)
-            }
-
-            let unreadBadgeHeight = ceil(unreadLabel.font.lineHeight * 1.5)
-            unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2
-            unreadBadge.layer.borderColor = Theme.backgroundColor.cgColor
-            unreadBadge.layer.borderWidth = 2
-            // This is a bit arbitrary, but it should scale with the size of dynamic text
-            let minMargin = CeilEven(unreadBadgeHeight * 0.5)
-            // Pill should be at least circular; can be wider.
-            let unreadBadgeSize = CGSize(width: max(unreadBadgeHeight,
-                                                    unreadLabelSize.width + minMargin),
-                                         height: unreadBadgeHeight)
-            avatarStack.addSubview(unreadBadge) { view in
-                unreadBadge.frame = CGRect(origin: CGPoint(x: view.width - unreadBadgeSize.width + 6,
-                                                           y: (view.height - avatarSize.height) * 0.5),
-                                           size: unreadBadgeSize)
-            }
-            // The unread badge should appear on top of the avatar, but it is added
-            // to the view hierarchy first (in the "configure" below where we leverage
-            // existing measurement/arrangements).  We solve that by nudging the zPosition
-            // of the unread badge.
-            unreadBadge.layer.zPosition = +1
-        }
 
         // The top row contains:
         //
@@ -430,6 +433,7 @@ public class HomeViewCell: UITableViewCell {
                                                     width: typingIndicatorSize.width,
                                                     height: typingIndicatorSize.height)
         }
+        updateTypingIndicatorState()
 
         var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
         if let messageStatusToken = cellContentToken.configs.messageStatusToken {
@@ -437,14 +441,21 @@ public class HomeViewCell: UITableViewCell {
             bottomRowStackSubviews.append(statusIndicator)
         }
 
-        updateTypingIndicatorState()
+        // If there are unread messages, show the "unread badge."
+        if let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
+            let unreadBadge = configureUnreadBadge(unreadBadgeMeasurements: unreadBadgeMeasurements)
+            bottomRowStackSubviews.append(unreadBadge)
+        }
 
         let avatarStackSubviews = [ avatarView ]
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
+        // It is only safe to reuse the bottom row wrapper if its subview list
+        // hasn't changed.
         let newReuseToken = ReuseToken(hasMuteIndicator: shouldShowMuteIndicator,
-                                       hasMessageStatusToken: cellContentToken.configs.messageStatusToken != nil)
+                                       hasMessageStatusToken: configs.messageStatusToken != nil,
+                                       hasUnreadBadge: measurements.unreadBadgeMeasurements != nil)
 
         avatarStack.configure(config: avatarStackConfig,
                               measurement: avatarStackMeasurement,
@@ -463,10 +474,11 @@ public class HomeViewCell: UITableViewCell {
                                   subviews: topRowStackSubviews)
         }
 
-        // bottomRowStack can only be configured for reuse if
-        // its subview list hasn't changed.
+        // It is only safe to reuse bottomRowStack if the same subset of subviews
+        // are in use.
         if let oldReuseToken = self.reuseToken,
-           oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken {
+           oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken,
+           oldReuseToken.hasUnreadBadge == newReuseToken.hasUnreadBadge {
             bottomRowStack.configureForReuse(config: bottomRowStackConfig,
                                              measurement: bottomRowStackMeasurement)
         } else {
@@ -614,24 +626,69 @@ public class HomeViewCell: UITableViewCell {
     // MARK: - Unread Indicator
 
     private static func buildUnreadIndicatorLabelConfig(configuration: Configuration) -> CVLabelConfig? {
-        guard !configuration.hasOverrideSnippet else {
+        let text: String
+        switch configuration.unreadMode {
+        case .none:
             // If we're using the conversation list cell to render search results,
             // don't show "unread badge" or "message status" indicator.
+            //
+            // Or there might simply be no unread messages / the thread is not
+            // marked as unread.
             return nil
+        case .unreadWithoutCount:
+            text = ""
+        case .unreadWithCount(let unreadCount):
+            text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
         }
-        guard configuration.hasUnreadStyle else {
-            return nil
-        }
-
-        let thread = configuration.thread
-        let unreadCount = thread.unreadCount
-        let text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
         return CVLabelConfig(text: text,
                              font: unreadFont,
                              textColor: .ows_white,
                              numberOfLines: 1,
                              lineBreakMode: .byTruncatingTail,
                              textAlignment: .center)
+    }
+
+    private static func measureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig?) -> HVUnreadBadgeMeasurements? {
+
+        guard let unreadIndicatorLabelConfig = unreadIndicatorLabelConfig else {
+            return nil
+        }
+
+        let unreadLabelSize = CVText.measureLabel(config: unreadIndicatorLabelConfig,
+                                                  maxWidth: .greatestFiniteMagnitude)
+
+        let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.35)
+        // This is a bit arbitrary, but it should scale with the size of dynamic text
+        let minMargin = CeilEven(unreadBadgeHeight * 0.5)
+        // Pill should be at least circular; can be wider.
+        let badgeSize = CGSize(width: max(unreadBadgeHeight,
+                                          unreadLabelSize.width + minMargin),
+                               height: unreadBadgeHeight)
+
+        return HVUnreadBadgeMeasurements(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
+                                         badgeSize: badgeSize,
+                                         unreadLabelSize: unreadLabelSize)
+    }
+
+    private func configureUnreadBadge(unreadBadgeMeasurements measurements: HVUnreadBadgeMeasurements) -> UIView {
+        let unreadIndicatorLabelConfig = measurements.unreadIndicatorLabelConfig
+
+        let unreadLabel = self.unreadLabel
+        unreadIndicatorLabelConfig.applyForRendering(label: unreadLabel)
+        unreadLabel.removeFromSuperview()
+        let unreadLabelSize = measurements.unreadLabelSize
+
+        let unreadBadge = self.unreadBadge
+        unreadBadge.backgroundColor = .ows_accentBlue
+        unreadBadge.addSubview(unreadLabel) { view in
+            // Center within badge.
+            unreadLabel.frame = CGRect(origin: (view.frame.size - unreadLabelSize).asPoint * 0.5,
+                                       size: unreadLabelSize)
+        }
+
+        let unreadBadgeHeight = measurements.badgeSize.height
+        unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2
+        return unreadBadge
     }
 
     // MARK: - Label Configs
@@ -750,7 +807,8 @@ public class HomeViewCell: UITableViewCell {
         let thread = configuration.thread
         var text: String = ""
         if let labelDate = configuration.overrideDate ?? thread.homeViewInfo?.lastMessageDate {
-            text = DateUtil.formatDateShort(labelDate)
+            text = DateUtil.formatMessageTimestampForCVC(labelDate.ows_millisecondsSince1970,
+                                                         shouldUseLongFormat: false)
         }
         if configuration.hasUnreadStyle {
             return CVLabelConfig(text: text,
@@ -932,6 +990,14 @@ private struct HVCellConfigs {
 
 // MARK: -
 
+private struct HVUnreadBadgeMeasurements {
+    let unreadIndicatorLabelConfig: CVLabelConfig
+    let badgeSize: CGSize
+    let unreadLabelSize: CGSize
+}
+
+// MARK: -
+
 private struct HVCellMeasurements {
     let avatarStackMeasurement: ManualStackView.Measurement
     let topRowStackMeasurement: ManualStackView.Measurement
@@ -939,6 +1005,7 @@ private struct HVCellMeasurements {
     let vStackMeasurement: ManualStackView.Measurement
     let outerHStackMeasurement: ManualStackView.Measurement
     let snippetLineHeight: CGFloat
+    let unreadBadgeMeasurements: HVUnreadBadgeMeasurements?
 }
 
 // MARK: -
