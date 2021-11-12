@@ -58,12 +58,14 @@ class DebugUIProfile: DebugUIPage {
                 }.catch { _ in
                     owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
                 }
+            },
+            OWSTableItem(title: "Re-upload Profile") {
+                Self.profileManagerImpl.reuploadLocalProfile()
             }
         ].compactMap { $0 }
 
         return OWSTableSection(title: "Profile", items: sectionItems)
     }
-
 }
 
 #endif

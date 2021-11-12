@@ -59,6 +59,7 @@ public extension OWSProfileManager {
         let profileBio: String?
         let profileBioEmoji: String?
         let profileAvatarData: Data?
+        let userProfileWriter: UserProfileWriter
         if let pendingUpdate = (Self.databaseStorage.read { transaction in
             return Self.currentPendingProfileUpdate(transaction: transaction)
         }) {
@@ -67,6 +68,11 @@ public extension OWSProfileManager {
             profileBio = pendingUpdate.profileBio
             profileBioEmoji = pendingUpdate.profileBioEmoji
             profileAvatarData = pendingUpdate.profileAvatarData
+            userProfileWriter = pendingUpdate.userProfileWriter
+
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading currentPendingProfileUpdate: \(profileAvatarData?.count ?? 0 > 0).")
+            }
         } else {
             let profileSnapshot = localProfileSnapshot(shouldIncludeAvatar: true)
             profileGivenName = profileSnapshot.givenName
@@ -74,6 +80,11 @@ public extension OWSProfileManager {
             profileBio = profileSnapshot.bio
             profileBioEmoji = profileSnapshot.bioEmoji
             profileAvatarData = profileSnapshot.avatarData
+            userProfileWriter = .reupload
+
+            if DebugFlags.internalLogging {
+                Logger.info("Re-uploading localProfileSnapshot: \(profileAvatarData?.count ?? 0 > 0).")
+            }
         }
         assert(profileGivenName != nil)
         return OWSProfileManager.updateLocalProfilePromise(profileGivenName: profileGivenName,
@@ -82,7 +93,7 @@ public extension OWSProfileManager {
                                                            profileBioEmoji: profileBioEmoji,
                                                            profileAvatarData: profileAvatarData,
                                                            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
-                                                           userProfileWriter: .reupload)
+                                                           userProfileWriter: userProfileWriter)
     }
 
     @objc
