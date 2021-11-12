@@ -116,19 +116,19 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var videoButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "VideoCall")!.withTint(.white)
+        let image = UIImage(named: "VideoCall")?.withRenderingMode(.alwaysTemplate)
         result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
+        result.tintColor = .white
         result.backgroundColor = UIColor(hex: 0x1F1F1F)
         result.layer.cornerRadius = 30
-        result.alpha = 0.5
         result.addTarget(self, action: #selector(operateCamera), for: UIControl.Event.touchUpInside)
         return result
     }()
     
     private lazy var operationPanel: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [videoButton, switchAudioButton, switchCameraButton])
+        let result = UIStackView(arrangedSubviews: [switchCameraButton, videoButton, switchAudioButton])
         result.axis = .horizontal
         result.spacing = Values.veryLargeSpacing
         return result
@@ -347,7 +347,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if (call.isVideoEnabled) {
             localVideoView.isHidden = true
             cameraManager.stop()
-            videoButton.alpha = 0.5
+            videoButton.tintColor = .white
+            videoButton.backgroundColor = UIColor(hex: 0x1F1F1F)
             switchCameraButton.isEnabled = false
             call.isVideoEnabled = false
         } else {
@@ -361,7 +362,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         localVideoView.isHidden = false
         cameraManager.prepare()
         cameraManager.start()
-        videoButton.alpha = 1.0
+        videoButton.tintColor = UIColor(hex: 0x1F1F1F)
+        videoButton.backgroundColor = .white
         switchCameraButton.isEnabled = true
         call.isVideoEnabled = true
     }
