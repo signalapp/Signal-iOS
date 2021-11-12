@@ -70,15 +70,6 @@ public class HomeViewCell: UITableViewCell {
         case none
         case unreadWithCount(count: UInt)
         case unreadWithoutCount
-
-        var hasUnreadStyle: Bool {
-            switch self {
-            case .none:
-                return false
-            case .unreadWithoutCount, .unreadWithCount:
-                return true
-            }
-        }
     }
 
     // Compare with HVCellContentToken:
@@ -99,9 +90,6 @@ public class HomeViewCell: UITableViewCell {
 
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
-        }
-        fileprivate var hasUnreadStyle: Bool {
-            unreadMode.hasUnreadStyle
         }
         fileprivate var unreadMode: UnreadMode {
             guard !hasOverrideSnippet else {
@@ -217,7 +205,6 @@ public class HomeViewCell: UITableViewCell {
             lastReloadDate: configuration.lastReloadDate,
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
-            hasUnreadStyle: configuration.hasUnreadStyle,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: messageStatusToken,
             unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
@@ -811,17 +798,10 @@ public class HomeViewCell: UITableViewCell {
             text = DateUtil.formatMessageTimestampForCVC(labelDate.ows_millisecondsSince1970,
                                                          shouldUseLongFormat: false)
         }
-        if configuration.hasUnreadStyle {
-            return CVLabelConfig(text: text,
-                                 font: dateTimeFont.ows_semibold,
-                                 textColor: Theme.primaryTextColor,
-                                 textAlignment: .trailing)
-        } else {
-            return CVLabelConfig(text: text,
-                                 font: dateTimeFont,
-                                 textColor: snippetColor,
-                                 textAlignment: .trailing)
-        }
+        return CVLabelConfig(text: text,
+                             font: dateTimeFont,
+                             textColor: snippetColor,
+                             textAlignment: .trailing)
     }
 
     private static func nameLabelConfig(configuration: Configuration) -> CVLabelConfig {
@@ -973,7 +953,6 @@ private struct HVCellConfigs {
     let lastReloadDate: Date?
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
-    let hasUnreadStyle: Bool
     let hasOverrideSnippet: Bool
     let messageStatusToken: HVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
@@ -1045,7 +1024,6 @@ class HVCellContentToken {
     fileprivate var thread: TSThread { configs.thread }
     fileprivate var isBlocked: Bool { configs.isBlocked }
     fileprivate var shouldShowMuteIndicator: Bool { configs.shouldShowMuteIndicator }
-    fileprivate var hasUnreadStyle: Bool { configs.hasUnreadStyle }
     fileprivate var hasOverrideSnippet: Bool { configs.hasOverrideSnippet }
 
     fileprivate var shouldLoadAvatarAsync: Bool {
