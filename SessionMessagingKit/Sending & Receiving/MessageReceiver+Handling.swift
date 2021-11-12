@@ -286,11 +286,7 @@ extension MessageReceiver {
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
-            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else {
-                let currentWebRTCSession = WebRTCSession.current
-                print("[Calls] \(currentWebRTCSession == nil), \(currentWebRTCSession?.uuid) \(message.uuid)")
-                return
-            }
+            guard let currentWebRTCSession = WebRTCSession.current, currentWebRTCSession.uuid == message.uuid! else { return }
             handleAnswerCallMessage?(message)
         case .provisionalAnswer: break // TODO: Implement
         case let .iceCandidates(sdpMLineIndexes, sdpMids):

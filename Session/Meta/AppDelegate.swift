@@ -65,11 +65,7 @@ extension AppDelegate {
         // Answer messages
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else {
-                    let call = AppEnvironment.shared.callManager.currentCall
-                    print("[Calls] \(call == nil), \(message.uuid!), \(call?.uuid)")
-                    return
-                }
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
                 AppEnvironment.shared.callManager.invalidateTimeoutTimer()
                 call.hasStartedConnecting = true
                 let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
