@@ -9,7 +9,6 @@ public extension OWSProfileManager {
 
     // The main entry point for updating the local profile. It will:
     //
-    // * Update local state optimistically.
     // * Enqueue a service update.
     // * Attempt that service update.
     //
