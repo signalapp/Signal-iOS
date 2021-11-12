@@ -86,9 +86,6 @@ public final class SessionCallManager: NSObject {
         update.localizedCallerName = callerName
         update.remoteHandle = CXHandle(type: .generic, value: call.callID.uuidString)
         update.hasVideo = false
-        update.supportsGrouping = false
-        update.supportsUngrouping = false
-        update.supportsHolding = false
 
         disableUnsupportedFeatures(callUpdate: update)
 
