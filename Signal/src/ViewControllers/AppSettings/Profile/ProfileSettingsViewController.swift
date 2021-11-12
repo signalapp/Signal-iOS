@@ -61,7 +61,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
             }, actionBlock: nil),
             OWSTableItem(customCellBlock: { [weak self] in
                 self?.createChangeAvatarCell() ?? UITableViewCell()
-            }, actionBlock: nil),
+            }, actionBlock: nil)
         ])
         avatarSection.hasBackground = false
         contents.addSection(avatarSection)
@@ -279,7 +279,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser, badged: true)
+        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
             badgedAvatarView.update(readTx) { config in
                 // TODO: Badging — Add badge

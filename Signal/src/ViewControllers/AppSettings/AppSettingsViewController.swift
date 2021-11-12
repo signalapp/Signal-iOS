@@ -302,29 +302,19 @@ class AppSettingsViewController: OWSTableViewController2 {
         cell.contentView.addSubview(hStackView)
         hStackView.autoPinEdgesToSuperviewMargins()
 
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
 
-        let avatarDiameter: UInt = 64
-        let avatarImageView = AvatarImageView()
-        avatarImageView.contentMode = .scaleAspectFit
-        if let avatarData = snapshot.avatarData {
-            avatarImageView.image = UIImage(data: avatarData)
-        } else {
-            let avatar = Self.avatarBuilder.avatarImageForLocalUserWithSneakyTransaction(diameterPoints: avatarDiameter,
-                                                                                         localUserDisplayMode: .asUser)
-            avatarImageView.image = avatar
+        let avatarImageView = ConversationAvatarView(
+            sizeClass: .customDiameter(64),
+            localUserDisplayMode: .asUser)
+
+        if let localAddress = tsAccountManager.localAddress {
+            avatarImageView.updateWithSneakyTransactionIfNecessary { config in
+                config.dataSource = .address(localAddress)
+            }
         }
-        avatarImageView.clipsToBounds = true
-        avatarImageView.layer.cornerRadius = CGFloat(avatarDiameter) / 2
-        avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(avatarDiameter)))
 
-        let avatarContainer = UIView()
-        avatarContainer.addSubview(avatarImageView)
-        avatarImageView.autoPinWidthToSuperview()
-        avatarImageView.autoVCenterInSuperview()
-        avatarContainer.autoSetDimension(.height, toSize: CGFloat(avatarDiameter), relation: .greaterThanOrEqual)
-
-        hStackView.addArrangedSubview(avatarContainer)
+        hStackView.addArrangedSubview(avatarImageView)
 
         let vStackView = UIStackView()
         vStackView.axis = .vertical

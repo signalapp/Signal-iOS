@@ -55,7 +55,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private lazy var avatarView: ConversationAvatarView = {
-        let newAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser, badged: true)
+        let newAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
             newAvatarView.update(readTx) { config in
                 if let address = tsAccountManager.localAddress(with: readTx) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import SignalUI
 class FeaturedBadgeViewController: OWSTableViewController2 {
     private weak var badgeDataSource: BadgeCollectionDataSource?
     private lazy var avatarView: UIView = {
-        let avatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser, badged: true)
+        let avatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             // TODO Fix
             config.dataSource = .address(tsAccountManager.localAddress!)
