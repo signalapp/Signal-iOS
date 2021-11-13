@@ -714,8 +714,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            }
                                        }
 
+                                       BOOL isUpdatingDatabaseInstance = self != profile;
                                        if (shouldReupload && self.tsAccountManager.isPrimaryDevice
-                                           && CurrentAppContext().isMainApp) {
+                                           && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
                                            // shouldReuploadProtectedProfileName has side effects,
                                            // so only invoke it if shouldReupload is true.
                                            if (OWSUserProfile.shouldReuploadProtectedProfileName) {
