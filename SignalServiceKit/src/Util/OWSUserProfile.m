@@ -714,8 +714,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            }
                                        }
 
+                                       BOOL isUpdatingDatabaseInstance = self != profile;
                                        if (shouldReupload && self.tsAccountManager.isPrimaryDevice
-                                           && CurrentAppContext().isMainApp) {
+                                           && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
                                            // shouldReuploadProtectedProfileName has side effects,
                                            // so only invoke it if shouldReupload is true.
                                            if (OWSUserProfile.shouldReuploadProtectedProfileName) {
@@ -744,7 +745,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                   @"%d), avatarUrlPathDidChange: %d (%d -> %d), "
                                                   @"avatarFileNameDidChange: %d (%d -> %d), %@, %@.",
                                            profile.address,
-                                           profile.address.isLocalAddress,
+                                           [OWSUserProfile isLocalProfileAddress:profile.address],
                                            profileKeyDidChange,
                                            profileKeyBefore != nil,
                                            profile.profileKey != nil,

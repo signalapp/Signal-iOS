@@ -9,7 +9,6 @@ public extension OWSProfileManager {
 
     // The main entry point for updating the local profile. It will:
     //
-    // * Update local state optimistically.
     // * Enqueue a service update.
     // * Attempt that service update.
     //
@@ -302,14 +301,7 @@ extension OWSProfileManager {
         let promise = firstly {
             writeProfileAvatarToDisk(attempt: attempt)
         }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
-            // Optimistically update local profile state.
-            databaseStorage.write { transaction in
-                self.updateLocalProfile(with: attempt,
-                                        userProfileWriter: userProfileWriter,
-                                        transaction: transaction)
-            }
-
-            Logger.info("Versioned profile update.")
+            Logger.info("Versioned profile update, avatarUrlPath: \(attempt.avatarUrlPath?.nilIfEmpty != nil), avatarFilename: \(attempt.avatarFilename?.nilIfEmpty != nil)")
             return updateProfileOnServiceVersioned(attempt: attempt)
         }.done(on: DispatchQueue.global()) { _ in
             self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in

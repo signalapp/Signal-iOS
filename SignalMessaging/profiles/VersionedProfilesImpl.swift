@@ -43,7 +43,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                      profileAvatarData: Data?,
                                      unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
 
-        return DispatchQueue.global().async(.promise) {
+        firstly(on: .global()) {
             guard let localUuid = self.tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
@@ -54,7 +54,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
             let profileKey: OWSAES256Key = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
             return (localUuid, profileKey)
-        }.then(on: DispatchQueue.global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<HTTPResponse> in
+        }.then(on: .global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<HTTPResponse> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
             let zkgUuid = try localUuid.asZKGUuid()
             let commitment = try localProfileKey.getCommitment(uuid: zkgUuid)
