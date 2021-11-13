@@ -220,7 +220,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                       textAlignment: .center)
     }
 
-    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.customDiameter(112)
+    private static let avatarSizeClass = ConversationAvatarView.Configuration.SizeClass.oneHundredTwelve
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass { Self.avatarSizeClass }
 
     static func buildComponentState(thread: TSThread,
@@ -252,7 +252,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                                             avatarBuilder: CVAvatarBuilder) -> CVComponentState.ThreadDetails {
 
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(forAddress: contactThread.contactAddress,
-                                                                   includingBadge: false,
+                                                                   includingBadge: true,
                                                                    localUserDisplayMode: .noteToSelf,
                                                                    diameterPoints: avatarSizeClass.avatarDiameter)
 

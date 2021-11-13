@@ -38,6 +38,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public struct Configuration: Equatable {
         public enum SizeClass: Equatable {
+            case twentyFour
             case twentyEight
             case thirtySix
             case forty
@@ -46,6 +47,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             case sixtyFour
             case eighty
             case eightyEight
+            case oneHundredTwelve
 
             // Badge sprites may have artifacts from scaling to custom size classes
             // Stick to explicit size classes when you can
@@ -53,6 +55,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
             public init(avatarDiameter: UInt) {
                 switch avatarDiameter {
+                case Self.twentyFour.avatarDiameter:
+                    self = .twentyFour
                 case Self.twentyEight.avatarDiameter:
                     self = .twentyEight
                 case Self.thirtySix.avatarDiameter:
@@ -69,6 +73,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                     self = .eighty
                 case Self.eightyEight.avatarDiameter:
                     self = .eightyEight
+                case Self.oneHundredTwelve.avatarDiameter:
+                    self = .oneHundredTwelve
                 default:
                     self = .customDiameter(avatarDiameter)
                 }
@@ -526,6 +532,11 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             Logger.warn("Ignoring badge request. Badge flag currently disabled")
             return nil
         }
+        guard configuration.sizeClass.badgeDiameter >= 16 else {
+            // We never want to show a badge <= 16pts
+            Logger.warn("Skipping badge request for badge with diameter of \(configuration.sizeClass.badgeDiameter)")
+            return nil
+        }
 
         let targetAddress: SignalServiceAddress
         switch self {
@@ -652,6 +663,7 @@ extension ConversationAvatarView.Configuration.SizeClass {
 
     public var avatarDiameter: UInt {
         switch self {
+        case .twentyFour: return 24
         case .twentyEight: return 28
         case .thirtySix: return 36
         case .forty: return 40
@@ -660,6 +672,7 @@ extension ConversationAvatarView.Configuration.SizeClass {
         case .sixtyFour: return 64
         case .eighty: return 80
         case .eightyEight: return 88
+        case .oneHundredTwelve: return 112
         case .customDiameter(let diameter): return diameter
         }
     }
@@ -669,13 +682,13 @@ extension ConversationAvatarView.Configuration.SizeClass {
         // But it turns out we need these badges displayed in more places than originally thought
         // Now we lerp between the explicit size classes that design has provided for us
         switch avatarDiameter {
-        case 0..<28: return CGFloat(avatarDiameter).inverseLerp(0, 28) * 16
-        case 28...36: return 16
-        case 36..<40: return CGFloat(avatarDiameter).inverseLerp(36, 40) * 24
+        case ..<24: return 0
+        case 24...36: return 16
+        case 36..<40: return CGFloat(avatarDiameter).inverseLerp(36, 40).lerp(16, 24)
         case 40...64: return 24
-        case 64..<80: return CGFloat(avatarDiameter).inverseLerp(64, 80) * 36
-        case 80...88: return 36
-        case 88...: return (CGFloat(avatarDiameter) / 88.0) * 36
+        case 64..<80: return CGFloat(avatarDiameter).inverseLerp(64, 80).lerp(24, 36)
+        case 80...112: return 36
+        case 112...: return (CGFloat(avatarDiameter) / 112) * 36
         default: return 0
         }
     }
@@ -683,6 +696,7 @@ extension ConversationAvatarView.Configuration.SizeClass {
     /// The badge offset from its frame origin. Design has specified these points so the badge sits right alongside the circular avatar edge
     var badgeOffset: CGPoint {
         switch self {
+        case .twentyFour: return CGPoint(x: 10, y: 12)
         case .twentyEight: return CGPoint(x: 14, y: 16)
         case .thirtySix: return CGPoint(x: 20, y: 23)
         case .forty: return CGPoint(x: 20, y: 22)
@@ -691,10 +705,10 @@ extension ConversationAvatarView.Configuration.SizeClass {
         case .sixtyFour: return CGPoint(x: 40, y: 46)
         case .eighty: return CGPoint(x: 44, y: 52)
         case .eightyEight: return CGPoint(x: 49, y: 56)
+        case .oneHundredTwelve: return CGPoint(x: 74, y: 80)
         case .customDiameter:
             // Design hand-selected the above offsets for each size class
             // For anything in between, let's just stick the badge at the bottom left of the frame for now
-            // TODO: We can probably do better here, check with design
             let avatarFrame = CGRect(origin: .zero, size: avatarSize)
             let offsetVector = CGVector(dx: -badgeSize.width, dy: -badgeSize.height)
             return avatarFrame.bottomRight.offsetBy(offsetVector)
@@ -702,9 +716,11 @@ extension ConversationAvatarView.Configuration.SizeClass {
     }
 
     public func fetchImageFromBadgeAssets(_ badgeAssets: BadgeAssets) -> UIImage? {
-        // We're okay with downscaling badges for now.
+        // Never show a badge less than 16 points
+        // Otherwise, err on the side of downscaling over upscaling
         switch badgeDiameter {
-        case 0...16: return Theme.isDarkThemeEnabled ? badgeAssets.dark16 : badgeAssets.light16
+        case ..<16: return nil
+        case 16: return Theme.isDarkThemeEnabled ? badgeAssets.dark16 : badgeAssets.light16
         case 16...24: return Theme.isDarkThemeEnabled ? badgeAssets.dark24 : badgeAssets.light24
         case 24...: return Theme.isDarkThemeEnabled ? badgeAssets.dark36 : badgeAssets.light36
         default: return nil

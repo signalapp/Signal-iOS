@@ -646,7 +646,7 @@ fileprivate extension CVComponentState.Builder {
                 }
                 return self.avatarBuilder.buildAvatarDataSource(
                     forAddress: typingIndicatorInteraction.address,
-                    includingBadge: false,
+                    includingBadge: true,
                     localUserDisplayMode: .asUser,
                     diameterPoints: UInt(ConversationStyle.groupMessageAvatarSizeClass.avatarDiameter))
             }()
