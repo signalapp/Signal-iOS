@@ -31,6 +31,7 @@ public class BadgeAssets: NSObject {
         case dark16
         case dark24
         case dark36
+        case universal64
         case universal112
         case universal160
 
@@ -39,6 +40,7 @@ public class BadgeAssets: NSObject {
             case .light16, .dark16: return CGSize(width: 16, height: 16)
             case .light24, .dark24: return CGSize(width: 24, height: 24)
             case .light36, .dark36: return CGSize(width: 36, height: 36)
+            case .universal64: return CGSize(width: 64, height: 64)
             case .universal112: return CGSize(width: 112, height: 112)
             case .universal160: return CGSize(width: 160, height: 160)
             }
@@ -155,6 +157,7 @@ extension BadgeAssets {
     @objc public var dark16: UIImage? { imageForVariant(.dark16) }
     @objc public var dark24: UIImage? { imageForVariant(.dark24) }
     @objc public var dark36: UIImage? { imageForVariant(.dark36) }
+    @objc public var universal64: UIImage? { imageForVariant(.universal64) }
     @objc public var universal112: UIImage? { imageForVariant(.universal112) }
     @objc public var universal160: UIImage? { imageForVariant(.universal160) }
 
@@ -205,8 +208,9 @@ private class DefaultSpriteSheetParser {
         .dark16: [CGPoint(x: 189, y: 39), CGPoint(x: 373, y: 75), CGPoint(x: 557, y: 111)],
         .dark24: [CGPoint(x: 207, y: 39), CGPoint(x: 407, y: 75), CGPoint(x: 607, y: 111)],
         .dark36: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
-        .universal112: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
-        .universal160: [CGPoint(x: 223, y: 1), CGPoint(x: 457, y: 1), CGPoint(x: 681, y: 1)]
+        .universal64: [CGPoint(x: 163, y: 97), CGPoint(x: 323, y: 193), CGPoint(x: 483, y: 289)],
+        .universal112: [CGPoint(x: 233, y: 1), CGPoint(x: 457, y: 1), CGPoint(x: 681, y: 1)],
+        .universal160: [CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1)]
     ]
 
     func copySprite(variant: BadgeAssets.Variant) -> CGImage? {
