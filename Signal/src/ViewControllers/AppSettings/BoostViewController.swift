@@ -8,6 +8,47 @@ import BonMot
 import SignalServiceKit
 import SignalMessaging
 import Lottie
+import SignalUI
+
+class BoostSheetView: InteractiveSheetViewController {
+    let boostVC = BoostViewController()
+    let handleContainer = UIView()
+    override var interactiveScrollViews: [UIScrollView] { [boostVC.tableView] }
+    override var minHeight: CGFloat { min(660, CurrentAppContext().frame.height) }
+    override var renderExternalHandle: Bool { false }
+
+    // MARK: -
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+
+        // We add the handle directly to the content view,
+        // so that it doesn't scroll with the table.
+        handleContainer.backgroundColor = boostVC.tableBackgroundColor
+        contentView.addSubview(handleContainer)
+        handleContainer.autoPinWidthToSuperview()
+        handleContainer.autoPinEdge(toSuperviewEdge: .top)
+
+        let handle = UIView()
+        handle.backgroundColor = boostVC.separatorColor
+        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
+        handle.layer.cornerRadius = 5 / 2
+        handleContainer.addSubview(handle)
+        handle.autoPinHeightToSuperview(withMargin: 12)
+        handle.autoHCenterInSuperview()
+
+        contentView.addSubview(boostVC.view)
+        boostVC.view.autoPinWidthToSuperview()
+        boostVC.view.autoPinEdge(toSuperviewEdge: .bottom)
+        boostVC.view.autoPinEdge(.top, to: .bottom, of: handleContainer)
+        addChild(boostVC)
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        handleContainer.backgroundColor = boostVC.tableBackgroundColor
+    }
+}
 
 class BoostViewController: OWSTableViewController2 {
     private var currencyCode = Stripe.defaultCurrencyCode {
@@ -274,7 +315,11 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                     ) { [weak self] currencyCode in
                         self?.currencyCode = currencyCode
                     }
-                    self.navigationController?.pushViewController(vc, animated: true)
+                    if let navController = self.navigationController {
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    } else {
+                        self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                    }
                 }
 
                 picker.setAttributedTitle(NSAttributedString.composed(of: [

@@ -188,14 +188,22 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
 
     // MARK: - Events
 
+    func dismissPicker() {
+        if navigationController?.viewControllers.count == 1 {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
     @objc
     func didTapCancel() {
-        navigationController?.popViewController(animated: true)
+        dismissPicker()
     }
 
     private func didSelectCurrency(_ currencyCode: String) {
         completion(currencyCode)
-        navigationController?.popViewController(animated: true)
+        dismissPicker()
     }
 
     // MARK: -

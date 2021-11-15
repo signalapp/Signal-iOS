@@ -475,7 +475,8 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     let addBoostString = NSLocalizedString("SUSTAINER_VIEW_ADD_BOOST", comment: "Sustainer view Add Boost button title")
                     let addBoostButton = OWSButton(title: addBoostString) { [weak self] in
-//                        guard let self = self else { return }
+                        guard let self = self else { return }
+                        self.present(BoostSheetView(), animated: true)
                     }
                     addBoostButton.dimsWhenHighlighted = true
                     addBoostButton.layer.cornerRadius = 8
