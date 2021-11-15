@@ -497,7 +497,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         capabilities[@"storage"] = @(YES);
     }
 
-    if (RemoteConfig.changePhoneNumberCapability) {
+    if (RemoteConfig.changePhoneNumberCapability || (isSecondaryDevice && SSKFeatureFlags.canChangePhoneNumber)) {
         capabilities[@"changeNumber"] = @(YES);
     }
 
