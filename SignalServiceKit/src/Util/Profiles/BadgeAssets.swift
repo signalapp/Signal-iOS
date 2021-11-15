@@ -8,6 +8,7 @@ import CoreServices
 
 @objc
 public class BadgeAssets: NSObject {
+    private let scale: Int
     private let remoteSourceUrl: URL
     private let localAssetDirectory: URL
 
@@ -30,6 +31,7 @@ public class BadgeAssets: NSObject {
         case dark16
         case dark24
         case dark36
+        case universal112
         case universal160
 
         var pointSize: CGSize {
@@ -37,12 +39,14 @@ public class BadgeAssets: NSObject {
             case .light16, .dark16: return CGSize(width: 16, height: 16)
             case .light24, .dark24: return CGSize(width: 24, height: 24)
             case .light36, .dark36: return CGSize(width: 36, height: 36)
+            case .universal112: return CGSize(width: 112, height: 112)
             case .universal160: return CGSize(width: 160, height: 160)
             }
         }
     }
 
-    required init(remoteSourceUrl: URL, localAssetDirectory: URL) {
+    required init(scale: Int, remoteSourceUrl: URL, localAssetDirectory: URL) {
+        self.scale = scale
         self.remoteSourceUrl = remoteSourceUrl
         self.localAssetDirectory = localAssetDirectory
     }
@@ -126,7 +130,7 @@ public class BadgeAssets: NSObject {
             throw OWSAssertionError("Couldn't load image")
         }
 
-        let spriteParser = try DefaultSpriteSheetParser(spritesheet: rawImage)
+        let spriteParser = DefaultSpriteSheetParser(spritesheet: rawImage, scale: scale)
 
         try Variant.allCases.forEach { variant in
             let destinationUrl = fileUrlForVariant(variant)
@@ -151,6 +155,7 @@ extension BadgeAssets {
     @objc public var dark16: UIImage? { imageForVariant(.dark16) }
     @objc public var dark24: UIImage? { imageForVariant(.dark24) }
     @objc public var dark36: UIImage? { imageForVariant(.dark36) }
+    @objc public var universal112: UIImage? { imageForVariant(.universal112) }
     @objc public var universal160: UIImage? { imageForVariant(.universal160) }
 
     private func imageForVariant(_ variant: Variant) -> UIImage? {
@@ -183,17 +188,9 @@ private class DefaultSpriteSheetParser {
     let scale: Int
     let spritesheet: CGImage
 
-    init(spritesheet: CGImage) throws {
+    init(spritesheet: CGImage, scale: Int) {
+        self.scale = scale
         self.spritesheet = spritesheet
-
-        // API contract specifies spritesheets have a constant format. Sheets will always be the same
-        // size with sprites in the same location. If this ever changes we'll want to be more intelligent here.
-        switch (spritesheet.width, spritesheet.height) {
-        case (232, 162): scale = 1
-        case (456, 322): scale = 2
-        case (680, 482): scale = 3
-        default: throw OWSAssertionError("Invalid spritesheet")
-        }
     }
 
     // I've tried various ways of representing these origin points. These could be computed by
@@ -202,13 +199,14 @@ private class DefaultSpriteSheetParser {
     // Since these sprites should never change, I've just hardcoded each origin into a dictionary
     // mapping spriteType -> [1x, 2x, 3x] origins
     static let spriteOrigins: [BadgeAssets.Variant: [CGPoint]] = [
-        .universal160: [CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1)],
         .light16: [CGPoint(x: 163, y: 1), CGPoint(x: 323, y: 1), CGPoint(x: 483, y: 1)],
         .light24: [CGPoint(x: 163, y: 19), CGPoint(x: 323, y: 35), CGPoint(x: 483, y: 51)],
         .light36: [CGPoint(x: 189, y: 1), CGPoint(x: 373, y: 1), CGPoint(x: 557, y: 1)],
         .dark16: [CGPoint(x: 189, y: 39), CGPoint(x: 373, y: 75), CGPoint(x: 557, y: 111)],
         .dark24: [CGPoint(x: 207, y: 39), CGPoint(x: 407, y: 75), CGPoint(x: 607, y: 111)],
-        .dark36: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)]
+        .dark36: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
+        .universal112: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
+        .universal160: [CGPoint(x: 223, y: 1), CGPoint(x: 457, y: 1), CGPoint(x: 681, y: 1)]
     ]
 
     func copySprite(variant: BadgeAssets.Variant) -> CGImage? {
