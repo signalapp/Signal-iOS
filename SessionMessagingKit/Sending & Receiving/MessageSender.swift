@@ -116,8 +116,6 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        // Ignore future self-sends
-        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         message.sender = userPublicKey
         switch destination {
         case .contact(let publicKey): message.recipient = publicKey
@@ -268,8 +266,6 @@ public final class MessageSender : NSObject {
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
             message.sentTimestamp = NSDate.millisecondTimestamp()
         }
-        // Ignore future self-sends
-        Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
         message.sender = storage.getUserPublicKey()
         switch destination {
         case .contact(_): preconditionFailure()
