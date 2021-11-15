@@ -761,16 +761,27 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             }
         }
 
-        if let localE164 = self.e164?.strippedOrNil,
-           PhoneNumber.resemblesE164(localE164) {
-            if localAddress.phoneNumber != localE164 {
-                Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != localE164: \(localE164)")
+        if let serviceLocalE164 = self.e164?.strippedOrNil,
+           PhoneNumber.resemblesE164(serviceLocalE164) {
+            // If the local phone number doesn't match the "local phone number" in the storage service...
+            if localAddress.phoneNumber != serviceLocalE164 {
+                Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != serviceLocalE164: \(serviceLocalE164)")
                 if tsAccountManager.isPrimaryDevice {
-                    // Primary needs to update the local phone number on the storage service.
-                    Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                    transaction.addAsyncCompletionOffMain {
+                        // Consult "whoami" service endpoint; the service is the source of truth
+                        // for the local phone number.  This ensures that the primary will always
+                        // reflect the latest value.
+                        ChangePhoneNumber.updateLocalPhoneNumber()
+
+                        // The primary should always reflect the latest value.
+                        // If local db state dosn't agree with the storage service state,
+                        // the primary needs to update the storage service.
+                        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                    }
                 } else {
+                    // Linked devices should always take changes from the storage service.
                     if let uuid = localAddress.uuid {
-                        tsAccountManager.updateLocalPhoneNumber(localE164,
+                        tsAccountManager.updateLocalPhoneNumber(serviceLocalE164,
                                                                 uuid: uuid,
                                                                 shouldUpdateStorageService: false,
                                                                 transaction: transaction)
@@ -778,6 +789,13 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                         owsFailDebug("Missing uuid.")
                     }
                 }
+            }
+        } else {
+            // If no "local phone number" has been written to the storage
+            // service yet, do so now.
+            transaction.addAsyncCompletionOffMain {
+                // Primary needs to update the local phone number on the storage service.
+                Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
 
