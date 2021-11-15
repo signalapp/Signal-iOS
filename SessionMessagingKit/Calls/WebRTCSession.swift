@@ -261,7 +261,6 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         print("[Calls] ICE connection state changed to: \(state).")
         if state == .connected {
             delegate?.webRTCIsConnected()
-            configureAudioSession()
         }
     }
     
@@ -283,13 +282,13 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
 }
 
 extension WebRTCSession {
-    private func configureAudioSession() {
+    public func configureAudioSession(outputAudioPort: AVAudioSession.PortOverride = .none) {
         let audioSession = RTCAudioSession.sharedInstance()
         audioSession.lockForConfiguration()
         do {
             try audioSession.setCategory(AVAudioSession.Category.playAndRecord.rawValue)
             try audioSession.setMode(AVAudioSession.Mode.voiceChat.rawValue)
-            try audioSession.overrideOutputAudioPort(.speaker)
+            try audioSession.overrideOutputAudioPort(outputAudioPort)
             try audioSession.setActive(true)
         } catch let error {
             SNLog("Couldn't set up WebRTC audio session due to error: \(error)")

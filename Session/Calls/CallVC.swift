@@ -3,6 +3,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 import UIKit
+import MediaPlayer
 
 final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
@@ -127,8 +128,21 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         return result
     }()
     
+    private lazy var volumeView: MPVolumeView = {
+        let result = MPVolumeView()
+        let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+        result.showsRouteButton = true
+        result.setRouteButtonImage(image, for: UIControl.State.normal)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        result.tintColor = .white
+        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.layer.cornerRadius = 30
+        return result
+    }()
+    
     private lazy var operationPanel: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [switchCameraButton, videoButton, switchAudioButton])
+        let result = UIStackView(arrangedSubviews: [switchCameraButton, videoButton, switchAudioButton, volumeView])
         result.axis = .horizontal
         result.spacing = Values.veryLargeSpacing
         return result

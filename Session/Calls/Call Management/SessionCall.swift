@@ -10,6 +10,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     let callID: UUID // This is for CallKit
     let sessionID: String
     let mode: Mode
+    var audioMode: AudioMode
     let webRTCSession: WebRTCSession
     let isOutgoing: Bool
     var remoteSDP: RTCSessionDescription? = nil
@@ -68,6 +69,14 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         case local
         case remote
         case unanswered
+    }
+    
+    // MARK: Audio I/O mode
+    enum AudioMode {
+        case earpiece
+        case speaker
+        case headphone
+        case bluetooth
     }
     
     // MARK: Call State Properties
@@ -141,6 +150,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         self.uuid = uuid
         self.callID = UUID()
         self.mode = mode
+        self.audioMode = .earpiece
         self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
         self.isOutgoing = outgoing
         WebRTCSession.current = self.webRTCSession
@@ -256,6 +266,16 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     func attachLocalVideoRenderer(_ renderer: RTCVideoRenderer) {
         webRTCSession.attachLocalRenderer(renderer)
+    }
+    
+    // MARK: Audio I/O swithcing
+    func switchAudioMode(mode: AudioMode) {
+        audioMode = mode
+        if mode == .speaker {
+            webRTCSession.configureAudioSession(outputAudioPort: .speaker)
+        } else {
+            webRTCSession.configureAudioSession()
+        }
     }
     
     // MARK: Delegate
