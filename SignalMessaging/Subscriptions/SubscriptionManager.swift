@@ -74,6 +74,8 @@ public class SubscriptionManager: NSObject {
     private static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
     private static let pendingRecieptCredentialPresentationKey = "pendingReceiptCredentialPresentation"
 
+    public static var terminateTransactionIfPossible = false
+
     // MARK: Subscription levels
 
     public class func getSubscriptions() -> Promise<[SubscriptionLevel]> {
@@ -231,6 +233,9 @@ public class SubscriptionManager: NSObject {
 
         // Create Stripe SetupIntent against new subscriberID
         }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             generatedSubscriberID = subscriberID
 
@@ -244,23 +249,35 @@ public class SubscriptionManager: NSObject {
 
         // Create new payment method
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             generatedClientSecret = clientSecret
             return Stripe.createPaymentMethod(with: payment)
 
         // Bind payment method to SetupIntent, confirm SetupIntent
         }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             generatedPaymentID = paymentID
             return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
 
         // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             return try setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
 
         // Select subscription level
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             return setSubscription(for: generatedSubscriberID, subscription: subscription, currency: currencyCode)
 
@@ -279,23 +296,35 @@ public class SubscriptionManager: NSObject {
             try createPaymentMethod(for: subscriberID)
             // Create new payment method
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             generatedClientSecret = clientSecret
             return Stripe.createPaymentMethod(with: payment)
 
             // Bind payment method to SetupIntent, confirm SetupIntent
         }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             generatedPaymentID = paymentID
             return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
 
             // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             return try setDefaultPaymentMethod(for: subscriberID, paymentID: generatedPaymentID)
 
             // Select subscription level
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+            guard !self.terminateTransactionIfPossible else {
+                throw OWSGenericError("Transaction chain cancelled")
+            }
 
             return setSubscription(for: subscriberID, subscription: subscription, currency: currencyCode)
             // Report success and dismiss sheet

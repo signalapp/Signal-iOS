@@ -859,6 +859,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
+        SubscriptionManager.terminateTransactionIfPossible = false
         paymentController.present { presented in
             if !presented { owsFailDebug("Failed to present payment controller") }
         }
@@ -886,10 +887,12 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             }.done(on: .main) {
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
             }.catch { error in
                 let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 owsFailDebug("Error setting up subscription, \(error)")
             }
 
@@ -899,10 +902,12 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             }.done(on: .main) {
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
             }.catch { error in
                 let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 owsFailDebug("Error setting up subscription, \(error)")
             }
         }
@@ -910,7 +915,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-        // TODO EB This will be called before payment auth completes in the user cancellation case
+        SubscriptionManager.terminateTransactionIfPossible = true
         controller.dismiss()
     }
 
