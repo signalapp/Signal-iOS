@@ -4,6 +4,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 
 extension SignalRecipient {
 
@@ -193,6 +194,8 @@ extension SignalRecipient {
 
             let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
             let oldAddress = SignalServiceAddress(uuidString: oldUuid, phoneNumber: oldPhoneNumber)
+            owsAssertDebug(newAddress.uuid != oldAddress.uuid)
+            owsAssertDebug(newAddress.phoneNumber != oldAddress.phoneNumber)
 
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(for: newAddress,
@@ -217,16 +220,19 @@ extension SignalRecipient {
             owsFailDebug("Missing or invalid UUID")
         }
 
-        // Evacuate caches again once the transaction completes, in case
-        // some kind of race occured.
-        transaction.addAsyncCompletion(queue: .main) {
+        transaction.addAsyncCompletion(queue: .global()) {
+            // Evacuate caches again once the transaction completes, in case
+            // some kind of race occured.
             ModelReadCaches.shared.evacuateAllCaches()
 
             let oldAddress = SignalServiceAddress(uuidString: oldUuid, phoneNumber: oldPhoneNumber)
 
-            ProfileFetcherJob.clearProfileState(address: oldAddress, transaction: transaction.asAnyWrite)
+            Self.databaseStorage.write { _ in
+                ProfileFetcherJob.clearProfileState(address: oldAddress, transaction: transaction.asAnyWrite)
+            }
 
             Self.udManager.setUnidentifiedAccessMode(.unknown, address: oldAddress)
+
             if !CurrentAppContext().isRunningTests {
                 ProfileFetcherJob.fetchProfile(address: oldAddress, ignoreThrottling: true)
             }

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 public class ConversationInternalViewController: OWSTableViewController2 {
@@ -84,6 +85,11 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                                                      transaction: transaction)
                 section.add(.label(withText: String(format: "Payments Enabled: %@",
                                                     arePaymentsEnabled ? "Yes" : "No")))
+
+                section.add(.actionItem(withText: "Fetch Profile") {
+                    ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
+                })
+
             } else if let groupThread = thread as? TSGroupThread {
                 section.add(.copyableItem(label: "Group id",
                                           value: groupThread.groupId.hexadecimalString,

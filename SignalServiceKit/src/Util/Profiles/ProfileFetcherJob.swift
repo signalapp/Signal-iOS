@@ -646,12 +646,6 @@ public class ProfileFetcherJob: NSObject {
                transaction: transaction
         )
 
-        transaction.addAsyncCompletionOffMain {
-            updateUnidentifiedAccess(address: address,
-                                     verifier: nil,
-                                     hasUnrestrictedAccess: false)
-        }
-
         GroupManager.setUserCapabilities(address: address,
                                          hasGroupsV2Capability: false,
                                          hasGroupsV2MigrationCapability: false,
