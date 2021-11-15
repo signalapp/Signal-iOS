@@ -223,6 +223,9 @@ extension SignalRecipient {
             ModelReadCaches.shared.evacuateAllCaches()
 
             let oldAddress = SignalServiceAddress(uuidString: oldUuid, phoneNumber: oldPhoneNumber)
+
+            ProfileFetcherJob.clearProfileState(address: oldAddress, transaction: transaction.asAnyWrite)
+
             Self.udManager.setUnidentifiedAccessMode(.unknown, address: oldAddress)
             if !CurrentAppContext().isRunningTests {
                 ProfileFetcherJob.fetchProfile(address: oldAddress, ignoreThrottling: true)

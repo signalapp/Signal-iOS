@@ -594,9 +594,9 @@ public class ProfileFetcherJob: NSObject {
             }
         }
 
-        updateUnidentifiedAccess(address: address,
-                                 verifier: profile.unidentifiedAccessVerifier,
-                                 hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
+        Self.updateUnidentifiedAccess(address: address,
+                                      verifier: profile.unidentifiedAccessVerifier,
+                                      hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
         if address.isLocalAddress,
            DebugFlags.groupsV2memberStatusIndicators {
@@ -626,7 +626,47 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func updateUnidentifiedAccess(address: SignalServiceAddress, verifier: Data?, hasUnrestrictedAccess: Bool) {
+    public static func clearProfileState(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+
+        // TODO: We could immediately discard profile state for this address as well.
+
+        self.profileManager.updateProfile(
+            for: address,
+               givenName: nil,
+               familyName: nil,
+               bio: nil,
+               bioEmoji: nil,
+               username: nil,
+               isUuidCapable: true,
+               avatarUrlPath: nil,
+               optionalAvatarFileUrl: nil,
+               profileBadges: nil,
+               lastFetch: Date.distantPast,
+               userProfileWriter: .profileFetch,
+               transaction: transaction
+        )
+
+        transaction.addAsyncCompletionOffMain {
+            updateUnidentifiedAccess(address: address,
+                                     verifier: nil,
+                                     hasUnrestrictedAccess: false)
+        }
+
+        GroupManager.setUserCapabilities(address: address,
+                                         hasGroupsV2Capability: false,
+                                         hasGroupsV2MigrationCapability: false,
+                                         hasAnnouncementOnlyGroupsCapability: false,
+                                         hasSenderKeyCapability: false,
+                                         transaction: transaction)
+
+        self.paymentsHelper.setArePaymentsEnabled(for: address,
+                                                     hasPaymentsEnabled: false,
+                                                     transaction: transaction)
+    }
+
+    private static func updateUnidentifiedAccess(address: SignalServiceAddress,
+                                                 verifier: Data?,
+                                                 hasUnrestrictedAccess: Bool) {
         guard let verifier = verifier else {
             // If there is no verifier, at least one of this user's devices
             // do not support UD.
