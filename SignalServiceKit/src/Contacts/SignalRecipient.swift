@@ -193,18 +193,24 @@ extension SignalRecipient {
             owsAssertDebug(SignalServiceAddress(uuid: newUuid).phoneNumber == newPhoneNumber)
 
             let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
-            let oldAddress = SignalServiceAddress(uuidString: oldUuid, phoneNumber: oldPhoneNumber)
-            owsAssertDebug(newAddress.uuid != oldAddress.uuid)
-            owsAssertDebug(newAddress.phoneNumber != oldAddress.phoneNumber)
 
             if !newAddress.isLocalAddress {
                 self.versionedProfiles.clearProfileKeyCredential(for: newAddress,
                                                                     transaction: transaction.asAnyWrite)
 
-                // Remove old address from profile whitelist.
-                profileManager.removeUser(fromProfileWhitelist: oldAddress,
-                                          userProfileWriter: .changePhoneNumber,
-                                          transaction: transaction.asAnyWrite)
+                if let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty {
+                    // The "obsolete" address is the address the old phone number.
+                    // It is _NOT_ the old (uuid, phone number) pair for this uuid.
+                    let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
+                    owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
+                    owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
+
+                    // Remove old address from profile whitelist.
+                    profileManager.removeUser(fromProfileWhitelist: obsoleteAddress,
+                                              userProfileWriter: .changePhoneNumber,
+                                              transaction: transaction.asAnyWrite)
+                }
+
                 // Ensure new address reflect's old address' profile whitelist state.
                 if isWhitelisted {
                     profileManager.addUser(toProfileWhitelist: newAddress,
@@ -225,16 +231,26 @@ extension SignalRecipient {
             // some kind of race occured.
             ModelReadCaches.shared.evacuateAllCaches()
 
-            let oldAddress = SignalServiceAddress(uuidString: oldUuid, phoneNumber: oldPhoneNumber)
+            if let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty {
+                // The "obsolete" address is the address the old phone number.
+                // It is _NOT_ the old (uuid, phone number) pair for this uuid.
+                let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
+                if let newUuidString = recipientUUID,
+                    let newUuid = UUID(uuidString: newUuidString) {
+                    let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
+                    owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
+                    owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
+                }
 
-            Self.databaseStorage.write { _ in
-                ProfileFetcherJob.clearProfileState(address: oldAddress, transaction: transaction.asAnyWrite)
-            }
+                Self.databaseStorage.write { _ in
+                    ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction.asAnyWrite)
+                }
 
-            Self.udManager.setUnidentifiedAccessMode(.unknown, address: oldAddress)
+                Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
 
-            if !CurrentAppContext().isRunningTests {
-                ProfileFetcherJob.fetchProfile(address: oldAddress, ignoreThrottling: true)
+                if !CurrentAppContext().isRunningTests {
+                    ProfileFetcherJob.fetchProfile(address: obsoleteAddress, ignoreThrottling: true)
+                }
             }
 
             if let newUuidString = recipientUUID,

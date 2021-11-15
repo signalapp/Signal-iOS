@@ -30,10 +30,11 @@ public class ConversationInternalViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         let contents = OWSTableContents()
-        let section = OWSTableSection()
-
         let thread = self.thread
+
+        let infoSection = OWSTableSection()
         self.databaseStorage.read { transaction in
+            let section = infoSection
             let isThreadInProfileWhitelist = Self.profileManager.isThread(inProfileWhitelist: thread,
                                                                           transaction: transaction)
             section.add(.label(withText: String(format: "Whitelisted: %@",
@@ -86,10 +87,6 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 section.add(.label(withText: String(format: "Payments Enabled: %@",
                                                     arePaymentsEnabled ? "Yes" : "No")))
 
-                section.add(.actionItem(withText: "Fetch Profile") {
-                    ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
-                })
-
             } else if let groupThread = thread as? TSGroupThread {
                 section.add(.copyableItem(label: "Group id",
                                           value: groupThread.groupId.hexadecimalString,
@@ -102,8 +99,19 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                       value: thread.uniqueId,
                                       accessibilityIdentifier: "thread.uniqueId"))
         }
+        contents.addSection(infoSection)
 
-        contents.addSection(section)
+        if let contactThread = thread as? TSContactThread {
+            let address = contactThread.contactAddress
+            let actionSection = OWSTableSection()
+            let section = actionSection
+
+            section.add(.actionItem(withText: "Fetch Profile") {
+                ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
+            })
+
+            contents.addSection(actionSection)
+        }
 
         self.contents = contents
     }
