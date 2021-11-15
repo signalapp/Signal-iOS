@@ -191,6 +191,12 @@ extension SignalRecipient {
 
             // Verify the mapping change worked as expected.
             owsAssertDebug(SignalServiceAddress(uuid: newUuid).phoneNumber == newPhoneNumber)
+            if let newPhoneNumber = newPhoneNumber {
+                owsAssertDebug(SignalServiceAddress(phoneNumber: newPhoneNumber).uuid == newUuid)
+            }
+            if let oldPhoneNumber = oldPhoneNumber {
+                owsAssertDebug(SignalServiceAddress(phoneNumber: oldPhoneNumber).uuid == nil)
+            }
 
             let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
 
@@ -236,7 +242,7 @@ extension SignalRecipient {
                 // It is _NOT_ the old (uuid, phone number) pair for this uuid.
                 let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
                 if let newUuidString = recipientUUID,
-                    let newUuid = UUID(uuidString: newUuidString) {
+                   let newUuid = UUID(uuidString: newUuidString) {
                     let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
                     owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
                     owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)

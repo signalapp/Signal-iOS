@@ -448,7 +448,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             } else {
                 OWSLogWarn(@"Learned uuid (%@) changed from old phoneNumber (%@) to new phoneNumber (%@)",
                     address.uuidString,
-                    existingInstance.recipientPhoneNumber,
+                    uuidInstance.recipientPhoneNumber,
                     address.phoneNumber);
             }
 
