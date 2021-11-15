@@ -335,8 +335,6 @@ extension TSAccountManager {
             guard let json = error.httpResponseJson as? [String: Any] else {
                 return OWSAssertionError("Invalid response.")
             }
-            // TODO:
-            Logger.verbose("json: \(json)")
 
             // Check if we received KBS credentials, if so pass them on.
             // This should only ever be returned if the user was using registration lock v2
@@ -347,9 +345,6 @@ extension TSAccountManager {
                 owsFailDebug("Remote attestation auth could not be parsed: \(json).")
                 return OWSAssertionError("Invalid response.")
             }
-
-            // TODO:
-            Logger.flush()
 
             return RegistrationMissing2FAPinError(remoteAttestationAuth: auth)
         default:
