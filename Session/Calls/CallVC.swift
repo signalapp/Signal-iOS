@@ -131,6 +131,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     private lazy var volumeView: MPVolumeView = {
         let result = MPVolumeView()
         let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+        result.showsVolumeSlider = false
         result.showsRouteButton = true
         result.setRouteButtonImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)

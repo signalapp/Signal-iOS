@@ -33,6 +33,7 @@ final class MiniCallView: UIView {
     private func setUpViewHierarchy() {
         self.set(.width, to: 80)
         self.set(.height, to: 173)
+        self.layer.masksToBounds = true
         // Background
         let background = getBackgroudView()
         self.addSubview(background)
