@@ -47,14 +47,8 @@ public struct Stripe: Dependencies {
                 "client_secret": clientSecret
             ]
 
-            let clientSecretTokens: [String]? = clientSecret.components(separatedBy: "_")
-            guard let tokens = clientSecretTokens else {
-                throw OWSAssertionError("Failed to decode clientsecret")
-            }
-
-            let clientID = tokens[0] + "_" + tokens[1]
-
-            return try API.postForm(endpoint: "setup_intents/\(clientID)/confirm", parameters: parameters)
+            let setupIntentId = try API.id(for: clientSecret)
+            return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: parameters)
         }
     }
 
@@ -106,9 +100,18 @@ fileprivate extension Stripe {
             let id: String
             let clientSecret: String
 
-            init(clientSecret: String) {
-                self.id = clientSecret.components(separatedBy: "_secret_")[0]
+            init(clientSecret: String) throws {
+                self.id = try API.id(for: clientSecret)
                 self.clientSecret = clientSecret
+            }
+        }
+
+        static func id(for clientSecret: String) throws -> String {
+            let components = clientSecret.components(separatedBy: "_secret_")
+            if components.count >= 2, !components[0].isEmpty {
+                return components[0]
+            } else {
+                throw OWSAssertionError("Invalid client secret")
             }
         }
 
@@ -145,7 +148,7 @@ fileprivate extension Stripe {
                 guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
-                return PaymentIntent(
+                return try PaymentIntent(
                     clientSecret: try parser.required(key: "client_secret")
                 )
             }
@@ -184,7 +187,7 @@ fileprivate extension Stripe {
                 guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
-                return PaymentIntent(
+                return try PaymentIntent(
                     clientSecret: try parser.required(key: "clientSecret")
                 )
             }

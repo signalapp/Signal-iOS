@@ -466,7 +466,7 @@ extension SubscriptionManager {
         }.then { intentId in
             try createBoostReceiptCredentialsPresentation(for: intentId)
         }.then { presentation in
-            try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation, makePrimary: false)
+            try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
         }
     }
 
