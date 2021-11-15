@@ -6,6 +6,7 @@ import Foundation
 import SignalServiceKit
 import UIKit
 import SignalMessaging
+import SignalUI
 
 class ChangePhoneNumberConfirmViewController: OWSViewController {
 
@@ -137,10 +138,6 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
     private func didTapContinue(_ sender: UIButton) {
         AssertIsOnMainThread()
 
-//        let vc = ChangePhoneNumberProgressViewController(changePhoneNumberController: changePhoneNumberController,
-//                                                         oldPhoneNumber: oldPhoneNumber,
-//                                                         newPhoneNumber: newPhoneNumber)
-//        self.navigationController?.pushViewController(vc, animated: true)
         tryToChangePhoneNumber()
     }
 
@@ -151,30 +148,7 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
 
         changePhoneNumberController.requestVerification(fromViewController: self,
                                                         isSMS: true) { [weak self] _, _ in
-            guard let self = self else { return }
-
-            self.hideProgressUI()
-
-            // TODO:
-//            // If the onboarding controller is not transitioning away from us, retake first responder
-//            guard !willDismiss else { return }
-//            self.phoneNumberTextField.becomeFirstResponder()
-//
-//            if let error = error, error.httpStatusCode == 413 {
-//                // If we're not handed a retry-after date directly from the server, either
-//                // use the existing date we already have or construct a new date 5 min from now
-//                let retryAfterDate = error.httpRetryAfterDate ?? {
-//                    if case let .rateLimit(existingRetryAfter) = self.phoneNumberError {
-//                        return existingRetryAfter
-//                    } else {
-//                        return Date(timeIntervalSinceNow: 300)
-//                    }
-//                }()
-//                self.phoneNumberError = .rateLimit(expiration: retryAfterDate)
-//
-//                // TODO: Once notification work is complete, uncomment this.
-//                // self.notificationPresenter.notifyUserOfIncompleteRegistration(on: retryAfterDate)
-//            }
+            self?.hideProgressUI()
         }
     }
 
@@ -204,7 +178,6 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         let progressStack = UIStackView(arrangedSubviews: [progressView])
         progressStack.axis = .vertical
         progressStack.alignment = .center
-//        progressStack
         progressUI.addSubview(progressStack)
         progressStack.autoVCenterInSuperview()
         progressStack.autoPinEdge(toSuperviewSafeArea: .leading)
@@ -213,26 +186,5 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         progressView.startAnimating {
 //            overlayView.alpha = 1
         }
-
-//        TSAccountManager.unregisterTextSecure {
-//            // We don't need to stop animating here because "resetAppData" exits the app.
-//            SignalApp.resetAppDataWithUI()
-//        } failure: { error in
-//            owsFailDebug("Failed to unregister \(error)")
-//
-//            progressView.stopAnimating(success: false) {
-//                overlayView.alpha = 0
-//            } completion: {
-//                overlayView.removeFromSuperview()
-//                progressView.removeFromSuperview()
-//
-//                OWSActionSheets.showActionSheet(
-//                    title: NSLocalizedString(
-//                        "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED",
-//                        comment: "Title for the action sheet when delete failed on the 'delete account confirmation' view controller."
-//                    )
-//                )
-//            }
-//        }
     }
 }

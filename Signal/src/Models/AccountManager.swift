@@ -206,38 +206,6 @@ public class AccountManager: NSObject {
         }.then(on: .global()) {
             // Try to take the change from the service.
             ChangePhoneNumber.updateLocalPhoneNumberPromise()
-
-            // TODO: We need to persist, clear and recover using the "attempt in flight" state.
-            // TODO: We need to store the outcome in tsAccountManager.
-            // TODO: We need to store the outcome in storage service.
-
-//            private func changePhoneNumberRequest(newPhoneNumber: String, verificationCode: String, registrationLock: String?) -> Promise<Void> {
-//        }.then { response -> Promise<Void> in
-//            // TODO:
-//            assert(response.uuid != nil)
-//            self.tsAccountManager.uuidAwaitingVerification = response.uuid
-//
-////            self.databaseStorage.write { transaction in
-////                if !self.tsAccountManager.isReregistering {
-////                    // For new users, read receipts are on by default.
-////                    self.receiptManager.setAreReadReceiptsEnabled(true,
-////                                                                  transaction: transaction)
-////
-////                    // New users also have the onboarding banner cards enabled
-////                    GetStartedBannerViewController.enableAllCards(writeTx: transaction)
-////                }
-////
-////                // If the user previously had a PIN, but we don't have record of it,
-////                // mark them as pending restoration during onboarding. Reg lock users
-////                // will have already restored their PIN by this point.
-////                if response.hasPreviouslyUsedKBS, !KeyBackupService.hasMasterKey {
-////                    KeyBackupService.recordPendingRestoration(transaction: transaction)
-////                }
-////            }
-//
-//            return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
-//        }.then {
-//            self.createPreKeys()
         }.done { localPhoneNumber in
             owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
 
@@ -247,24 +215,6 @@ public class AccountManager: NSObject {
             }
 
             self.profileManager.fetchLocalUsersProfile()
-//        }.then { _ -> Promise<Void> in
-//            return self.syncPushTokens().recover { (error) -> Promise<Void> in
-//                switch error {
-//                case PushRegistrationError.pushNotSupported(let description):
-//                    // This can happen with:
-//                    // - simulators, none of which support receiving push notifications
-//                    // - on iOS11 devices which have disabled "Allow Notifications" and disabled "Enable Background Refresh" in the system settings.
-//                    Logger.info("Recovered push registration error. Registering for manual message fetcher because push not supported: \(description)")
-//                    self.tsAccountManager.setIsManualMessageFetchEnabled(true)
-//                    return self.accountServiceClient.updatePrimaryDeviceAccountAttributes()
-//                default:
-//                    throw error
-//                }
-//            }
-//        }.done {
-//            self.completeRegistration()
-//        }.then { _ -> Promise<Void> in
-//            self.performInitialStorageServiceRestore()
         }
     }
 
@@ -277,29 +227,6 @@ public class AccountManager: NSObject {
                                                      success: future.resolve,
                                                      failure: future.reject)
         }
-        // TODO: Handle reglock.
-//        }.map(on: .global()) { responseObject throws -> RegistrationResponse in
-//            guard let responseObject = responseObject else {
-//                throw OWSAssertionError("Missing responseObject.")
-//            }
-//            guard let params = ParamParser(responseObject: responseObject) else {
-//                throw OWSAssertionError("Missing or invalid params.")
-//            }
-//
-//            var registrationResponse = RegistrationResponse()
-//
-//            // TODO UUID: this UUID param should be non-optional when the production service is updated
-//            if let uuidString: String = try params.optional(key: "uuid") {
-//                guard let uuid = UUID(uuidString: uuidString) else {
-//                    throw OWSAssertionError("Missing or invalid uuid.")
-//                }
-//                registrationResponse.uuid = uuid
-//            }
-//
-//            registrationResponse.hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
-//
-//            return registrationResponse
-//        }
     }
 
     func performInitialStorageServiceRestore() -> Promise<Void> {
