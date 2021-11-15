@@ -305,22 +305,29 @@ public class KeyBackupService: NSObject {
     ) -> Promise<String> {
         Logger.info("Checking for KBS backup in enclave: \(enclave.name)")
 
-        return firstly { () -> Promise<RemoteAttestation> in
-            // We only do remote attestation once.
-            RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
-        }.then(on: .global()) { remoteAttestation -> Promise<String> in
-            owsAssertDebug(auth.username == remoteAttestation.auth.username)
-            owsAssertDebug(auth.password == remoteAttestation.auth.password)
+        return firstly { () -> Promise<Token> in
+            // First, get the KBS token.
+            return firstly { () -> Promise<RemoteAttestation> in
+                // We do separate remote attestation for each request.
+                RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
+            }.then(on: .global()) { remoteAttestation -> Promise<Token> in
+                owsAssertDebug(auth.username == remoteAttestation.auth.username)
+                owsAssertDebug(auth.password == remoteAttestation.auth.password)
 
-            return firstly { () -> Promise<Token> in
                 // An interpolation of fetchBackupId() that ignores any existing token.
                 //
                 // We need to use tokens for the destination number's KBS
                 // without affecting the current local number's KBS state.
                 // Therefore we use fetchNewToken() which will ignore/not affect
                 // any "current" tokens.
-                fetchNewToken(for: remoteAttestation)
-            }.then(on: .global()) { (token: Token) -> Promise<String> in
+                return fetchNewToken(for: remoteAttestation)
+            }
+        }.then(on: .global()) { (token: Token) -> Promise<String> in
+            // Second, get the "registration lock token."
+            return firstly { () -> Promise<RemoteAttestation> in
+                // We do separate remote attestation for each request.
+                RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
+            }.then(on: .global()) { remoteAttestation -> Promise<String> in
                 let (encryptionKey, accessKey) = try deriveEncryptionKeyAndAccessKey(
                     pin: pin,
                     backupId: token.backupId
