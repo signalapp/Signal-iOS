@@ -908,23 +908,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"POST" parameters:@{}];
 }
 
-#pragma mark - Donations
-
-+ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount
-                              inCurrencyCode:(NSString *)currencyCode
-                             withDescription:(nullable NSString *)description
-{
-    NSMutableDictionary *parameters =
-        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
-    if (description) {
-        parameters[@"description"] = description;
-    }
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/authorize-apple-pay"]
-                              method:@"POST"
-                          parameters:parameters];
-}
-
 #pragma mark - Subscriptions
 
 + (TSRequest *)subscriptionLevelsRequest
@@ -1001,6 +984,45 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
                 method:@"GET"
             parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)boostSuggestedAmountsRequest
+{
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/amounts"]
+                                            method:@"GET"
+                                        parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
+                                   inCurrencyCode:(NSString *)currencyCode
+                                  withDescription:(nullable NSString *)description
+{
+    NSMutableDictionary *parameters =
+        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
+    if (description) {
+        parameters[@"description"] = description;
+    }
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/create"]
+                                            method:@"POST"
+                                        parameters:parameters];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
+                                               andRequest:(NSString *)base64ReceiptCredentialRequest
+{
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/receipt_credentials"]
+                                            method:@"POST"
+                                        parameters:@{
+                                            @"paymentIntentId" : paymentIntentId,
+                                            @"receiptCredentialRequest" : base64ReceiptCredentialRequest
+                                        }];
     request.shouldHaveAuthorizationHeaders = NO;
     return request;
 }

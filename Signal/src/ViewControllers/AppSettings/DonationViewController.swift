@@ -561,7 +561,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
             completion(.init(status: .failure, errors: [OWSAssertionError("Missing donation amount")]))
             return
         }
-        Stripe.donate(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
+        SubscriptionManager.boost(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
             completion(.init(status: .success, errors: nil))
             self?.state = .donatedSuccessfully
             ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.donateMegaphone)

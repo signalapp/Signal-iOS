@@ -434,9 +434,9 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    private class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation) throws -> Promise<Void> {
+    private class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = true) throws -> Promise<Void> {
         let receiptCredentialPresentationString = receiptCredentialPresentation.serialize().asData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(receiptCredentialPresentationString, makePrimary: true)
+        let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(receiptCredentialPresentationString, makePrimary: makePrimary)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
@@ -456,5 +456,80 @@ public class SubscriptionManager: NSObject {
     private class func clientZKReceiptOperations() throws -> ClientZkReceiptOperations {
         let params = try GroupsV2Protos.serverPublicParams()
         return ClientZkReceiptOperations(serverPublicParams: params)
+    }
+}
+
+extension SubscriptionManager {
+    public class func boost(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
+        firstly {
+            Stripe.donate(amount: amount, in: currencyCode, for: payment)
+        }.then { intentId in
+            try createBoostReceiptCredentialsPresentation(for: intentId)
+        }.then { presentation in
+            try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation, makePrimary: false)
+        }
+    }
+
+    static func createBoostReceiptCredentialsPresentation(for intentId: String) throws -> Promise<ReceiptCredentialPresentation> {
+        let clientOperations = try clientZKReceiptOperations()
+        let receiptSerial = try generateReceiptSerial()
+
+        let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
+        let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest().serialize().asData.base64EncodedString()
+        let request = OWSRequestFactory.boostRecieptCredentials(withPaymentIntentId: intentId, andRequest: receiptCredentialRequest)
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            let statusCode = response.responseStatusCode
+            if statusCode == 200 {
+                Logger.debug("Got valid receipt response")
+            } else if statusCode == 204 {
+                Logger.debug("No receipt could be found for this payment intent")
+            } else {
+                throw OWSAssertionError("Got bad response code \(statusCode).")
+            }
+
+            guard let json = response.responseBodyJson as? [String: Any] else {
+                throw OWSAssertionError("Unable to parse response body.")
+            }
+
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            do {
+                let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
+                guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
+                    throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
+                }
+
+                let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
+                let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: receiptCredentialRequestContext, receiptCredentialResponse: receiptCredentialResponse)
+
+                // Validate that receipt credential level matches boost level
+                let level = try receiptCredential.getReceiptLevel()
+                guard level == 1 else {
+                    throw OWSAssertionError("Unexpected receipt credential level")
+                }
+
+                // Validate receipt credential expiration % 86400 == 0, per server spec
+                let expiration = try receiptCredential.getReceiptExpirationTime()
+                guard expiration % 86400 == 0 else {
+                    throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
+                }
+
+                // Validate expiration is less than 60 days from now
+                let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
+                guard TimeInterval(expiration) < maximumValidExpirationDate else {
+                    throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
+                }
+
+                let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
+
+                return receiptCredentialPresentation
+            } catch {
+                throw OWSAssertionError("Missing clientID key")
+            }
+        }
     }
 }
