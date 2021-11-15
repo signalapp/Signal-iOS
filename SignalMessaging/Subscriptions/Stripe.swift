@@ -40,12 +40,15 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String) throws -> Promise<HTTPResponse> {
+    public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String, payment: PKPayment) throws -> Promise<HTTPResponse> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            let parameters = [
+            var parameters = [
                 "payment_method": paymentIntentID,
                 "client_secret": clientSecret
             ]
+            if let email = payment.shippingContact?.emailAddress {
+                parameters["receipt_email"] = email
+            }
 
             let setupIntentId = try API.id(for: clientSecret)
             return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: parameters)

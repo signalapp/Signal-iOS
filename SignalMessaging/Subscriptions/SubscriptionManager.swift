@@ -263,7 +263,7 @@ public class SubscriptionManager: NSObject {
             }
 
             generatedPaymentID = paymentID
-            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
+            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret, payment: payment)
 
         // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -310,7 +310,7 @@ public class SubscriptionManager: NSObject {
             }
 
             generatedPaymentID = paymentID
-            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret)
+            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret, payment: payment)
 
             // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -544,6 +544,11 @@ public class SubscriptionManager: NSObject {
     // MARK: Heartbeat
     @objc
     public class func performSubscriptionKeepAliveIfNecessary() {
+
+        guard tsAccountManager.isPrimaryDevice else {
+            Logger.debug("Bailing out of heartbeat, this is not the primary device")
+            return
+        }
 
         // Kick job queue
         subscriptionJobQueue.runAnyQueuedRetry()
