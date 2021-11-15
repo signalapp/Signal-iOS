@@ -1005,6 +1005,45 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
++ (TSRequest *)boostSuggestedAmountsRequest
+{
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/amounts"]
+                                            method:@"GET"
+                                        parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
+                                   inCurrencyCode:(NSString *)currencyCode
+                                  withDescription:(nullable NSString *)description
+{
+    NSMutableDictionary *parameters =
+        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
+    if (description) {
+        parameters[@"description"] = description;
+    }
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/create"]
+                                            method:@"POST"
+                                        parameters:parameters];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
++ (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
+                                               andRequest:(NSString *)base64ReceiptCredentialRequest
+{
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/receipt_credentials"]
+                                            method:@"POST"
+                                        parameters:@{
+                                            @"paymentIntentId" : paymentIntentId,
+                                            @"receiptCredentialRequest" : base64ReceiptCredentialRequest
+                                        }];
+    request.shouldHaveAuthorizationHeaders = NO;
+    return request;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -4,6 +4,7 @@
 
 import Foundation
 import PassKit
+import SignalServiceKit
 
 public struct Stripe: Dependencies {
     public static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
@@ -13,7 +14,15 @@ public struct Stripe: Dependencies {
             API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
         }
     }
-    
+
+    public static func boost(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<String> {
+        firstly { () -> Promise<API.PaymentIntent> in
+            API.createBoostPaymentIntent(for: amount, in: currencyCode)
+        }.then { intent in
+            API.confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
+        }
+    }
+
     public static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
             API.createToken(with: payment)
@@ -30,25 +39,18 @@ public struct Stripe: Dependencies {
             return try parser.required(key: "id")
         }
     }
-    
+
     public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String) throws -> Promise<HTTPResponse> {
-        firstly (on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let parameters = [
                 "payment_method": paymentIntentID,
                 "client_secret": clientSecret
             ]
 
-            let clientSecretTokens: [String]? = clientSecret.components(separatedBy: "_")
-            guard let tokens = clientSecretTokens else {
-                throw OWSAssertionError("Failed to decode clientsecret")
-            }
-            
-            let clientID = tokens[0] + "_" + tokens[1]
-            
-            return try API.postForm(endpoint: "setup_intents/\(clientID)/confirm", parameters: parameters)
+            let setupIntentId = try API.id(for: clientSecret)
+            return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: parameters)
         }
     }
-    
 
     public static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
         // Stripe supports a maximum of 8 integral digits.
@@ -80,25 +82,39 @@ public struct Stripe: Dependencies {
 
 // MARK: - API
 fileprivate extension Stripe {
-    
+
     static let publishableKey: String = FeatureFlags.isUsingProductionService
         ? "pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D"
         : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
 
     static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
-    
+
     static let urlSession = OWSURLSession(
         baseUrl: URL(string: "https://api.stripe.com/v1/")!,
         securityPolicy: OWSURLSession.defaultSecurityPolicy,
         configuration: URLSessionConfiguration.ephemeral
     )
-    
+
     struct API {
         struct PaymentIntent {
             let id: String
             let clientSecret: String
+
+            init(clientSecret: String) throws {
+                self.id = try API.id(for: clientSecret)
+                self.clientSecret = clientSecret
+            }
         }
-        
+
+        static func id(for clientSecret: String) throws -> String {
+            let components = clientSecret.components(separatedBy: "_secret_")
+            if components.count >= 2, !components[0].isEmpty {
+                return components[0]
+            } else {
+                throw OWSAssertionError("Invalid client secret")
+            }
+        }
+
         static func createPaymentIntent(
             for amount: NSDecimalNumber,
             in currencyCode: Currency.Code
@@ -119,10 +135,10 @@ fileprivate extension Stripe {
                 // The description is never translated as it's populated into an
                 // english only receipt by Stripe.
                 let request = OWSRequestFactory.createPaymentIntent(
-                    withAmount: integralAmount(amount, in: currencyCode),
-                    inCurrencyCode: currencyCode,
-                    withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
-                )
+                        withAmount: integralAmount(amount, in: currencyCode),
+                        inCurrencyCode: currencyCode,
+                        withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
+                    )
 
                 return networkManager.makePromise(request: request)
             }.map(on: .sharedUserInitiated) { response in
@@ -132,9 +148,47 @@ fileprivate extension Stripe {
                 guard let parser = ParamParser(responseObject: json) else {
                     throw OWSAssertionError("Failed to decode JSON response")
                 }
-                return PaymentIntent(
-                    id: try parser.required(key: "id"),
+                return try PaymentIntent(
                     clientSecret: try parser.required(key: "client_secret")
+                )
+            }
+        }
+
+        static func createBoostPaymentIntent(
+            for amount: NSDecimalNumber,
+            in currencyCode: Currency.Code
+        ) -> Promise<(PaymentIntent)> {
+            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+                guard !isAmountTooSmall(amount, in: currencyCode) else {
+                    throw OWSAssertionError("Amount too small")
+                }
+
+                guard !isAmountTooLarge(amount, in: currencyCode) else {
+                    throw OWSAssertionError("Amount too large")
+                }
+
+                guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
+                    throw OWSAssertionError("Unexpected currency code")
+                }
+
+                // The description is never translated as it's populated into an
+                // english only receipt by Stripe.
+                let request = OWSRequestFactory.boostCreatePaymentIntent(
+                        withAmount: integralAmount(amount, in: currencyCode),
+                        inCurrencyCode: currencyCode,
+                        withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
+                    )
+
+                return networkManager.makePromise(request: request)
+            }.map(on: .sharedUserInitiated) { response in
+                guard let json = response.responseBodyJson else {
+                    throw OWSAssertionError("Missing or invalid JSON")
+                }
+                guard let parser = ParamParser(responseObject: json) else {
+                    throw OWSAssertionError("Failed to decode JSON response")
+                }
+                return try PaymentIntent(
+                    clientSecret: try parser.required(key: "clientSecret")
                 )
             }
         }
@@ -153,9 +207,9 @@ fileprivate extension Stripe {
                 return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
             }.asVoid()
         }
-        
-        //MARK: Common Stripe integrations
-        
+
+        // MARK: Common Stripe integrations
+
         static func parameters(for payment: PKPayment) -> [String: Any] {
             var parameters = [String: Any]()
             parameters["pk_token"] = String(data: payment.token.paymentData, encoding: .utf8)
@@ -177,7 +231,7 @@ fileprivate extension Stripe {
 
             return parameters
         }
-        
+
         static func parameters(for contact: PKContact) -> [String: String] {
             var parameters = [String: String]()
 
@@ -203,7 +257,7 @@ fileprivate extension Stripe {
 
             return parameters
         }
-        
+
         static func createToken(with payment: PKPayment) -> Promise<String> {
             firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
@@ -218,7 +272,6 @@ fileprivate extension Stripe {
             }
         }
 
-        
         static func postForm(endpoint: String, parameters: [String: Any]) throws -> Promise<HTTPResponse> {
             guard let formData = AFQueryStringFromParameters(parameters).data(using: .utf8) else {
                 throw OWSAssertionError("Failed to generate post body data")

@@ -210,6 +210,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
 + (TSRequest *)subscriptionRecieptCredentialsRequest:(NSString *)base64SubscriberID request:(NSString *)base64ReceiptCredentialRequest;
 + (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation makePrimary:(BOOL)makePrimary;
++ (TSRequest *)boostSuggestedAmountsRequest;
++ (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
+                                   inCurrencyCode:(NSString *)currencyCode
+                                  withDescription:(nullable NSString *)description;
++ (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
+                                               andRequest:(NSString *)base64ReceiptCredentialRequest;
 
 #pragma mark - Spam
 

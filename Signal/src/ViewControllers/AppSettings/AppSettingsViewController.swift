@@ -244,11 +244,11 @@ class AppSettingsViewController: OWSTableViewController2 {
             ))
 
             section4.add(.disclosureItem(
-                icon: .settingsDonate,
+                icon: .settingsBoost,
                 name: NSLocalizedString("SETTINGS_SIGNAL_BOOST", comment: "Title for the 'signal boost' link in settings."),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "signal boost"),
                 actionBlock: { [weak self] in
-                    let vc = DonationViewController()
+                    let vc = BoostViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
                 }
             ))
