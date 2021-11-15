@@ -47,6 +47,7 @@ public enum ThemeIcon: UInt {
     case settingsAbout
     case settingsPayments
     case settingsBadges
+    case settingsBoost
 
     case stickerButton
     case cameraButton
@@ -256,6 +257,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "payments-solid-24" : "payments-outline-24"
         case .settingsBadges:
             return isDarkThemeEnabled ? "badge-solid-24" : "badge-outline-24"
+        case .settingsBoost:
+            return isDarkThemeEnabled ? "boost-solid-24" : "boost-outline-24"
 
         // Input Toolbar
         case .stickerButton:

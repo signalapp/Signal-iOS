@@ -462,7 +462,7 @@ public class SubscriptionManager: NSObject {
 extension SubscriptionManager {
     public class func boost(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
         firstly {
-            Stripe.donate(amount: amount, in: currencyCode, for: payment)
+            Stripe.boost(amount: amount, in: currencyCode, for: payment)
         }.then { intentId in
             try createBoostReceiptCredentialsPresentation(for: intentId)
         }.then { presentation in
@@ -470,7 +470,30 @@ extension SubscriptionManager {
         }
     }
 
-    static func createBoostReceiptCredentialsPresentation(for intentId: String) throws -> Promise<ReceiptCredentialPresentation> {
+    public class func getSuggestedBoostAmounts() -> Promise<[Currency.Code: DonationUtilities.Presets.Preset]> {
+        firstly {
+            networkManager.makePromise(request: OWSRequestFactory.boostSuggestedAmountsRequest())
+        }.map { response in
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
+            }
+
+            guard let amounts = response.responseBodyJson as? [String: [UInt]] else {
+                throw OWSAssertionError("Got unexpected response JSON for boost amounts")
+            }
+
+            var presets = [Currency.Code: DonationUtilities.Presets.Preset]()
+            for (key, values) in amounts {
+                presets[key] = .init(
+                    symbol: DonationUtilities.Presets.presets[key]?.symbol ?? .currencyCode,
+                    amounts: values
+                )
+            }
+            return presets
+        }
+    }
+
+    private static func createBoostReceiptCredentialsPresentation(for intentId: String) throws -> Promise<ReceiptCredentialPresentation> {
         let clientOperations = try clientZKReceiptOperations()
         let receiptSerial = try generateReceiptSerial()
 

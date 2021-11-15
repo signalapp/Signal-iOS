@@ -6,27 +6,40 @@ import Foundation
 import PassKit
 import BonMot
 import SignalServiceKit
+import SignalMessaging
+import Lottie
 
-/* From BonMot 6.0.0: If you're targeting iOS 15 or higher, you may want to check out [AttributedString](https://developer.apple.com/documentation/foundation/attributedstring) instead.
- If you're an existing user of BonMot using Xcode 13, you may want to add the following `typealias` somewhere in your project to avoid a conflict with `Foundation.StringStyle`: */
-typealias StringStyle = BonMot.StringStyle
-
-class DonationViewController: OWSTableViewController2 {
+class BoostViewController: OWSTableViewController2 {
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
             guard oldValue != currencyCode else { return }
-            customValueTextField.setCurrencyCode(currencyCode)
+            customValueTextField.setCurrencyCode(currencyCode, symbol: presets[currencyCode]?.symbol)
             state = nil
             updateTableContents()
         }
     }
     private let customValueTextField = CustomValueTextField()
+    private let headerAnimationView: AnimationView = {
+        let animationView = AnimationView(name: "boost_badge")
+        animationView.loopMode = .playOnce
+        animationView.backgroundBehavior = .forceFinish
+        animationView.contentMode = .scaleAspectFit
+        animationView.autoSetDimensions(to: CGSize(square: 112))
+        return animationView
+    }()
 
     private var donationAmount: NSDecimalNumber? {
         switch state {
         case .presetSelected(let amount): return NSDecimalNumber(value: amount)
         case .customValueSelected: return customValueTextField.decimalNumber
         default: return nil
+        }
+    }
+
+    private var presets = DonationUtilities.Presets.presets {
+        didSet {
+            customValueTextField.setCurrencyCode(currencyCode, symbol: presets[currencyCode]?.symbol)
+            updateTableContents()
         }
     }
 
@@ -54,9 +67,15 @@ class DonationViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
 
+        SubscriptionManager.getSuggestedBoostAmounts().done { [weak self] in
+            self?.presets = $0
+        }.catch { _ in
+            owsFailDebug("Failed to request suggested amounts for boost, falling back to defaults.")
+        }
+
         customValueTextField.placeholder = NSLocalizedString(
-            "DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
-            comment: "Default text for the custom amount field of the donation view."
+            "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
+            comment: "Default text for the custom amount field of the boost view."
         )
         customValueTextField.delegate = self
         customValueTextField.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "custom_amount_text_field")
@@ -134,154 +153,83 @@ class DonationViewController: OWSTableViewController2 {
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 28, right: 16)
 
-            let imageView = UIImageView()
-            imageView.image = #imageLiteral(resourceName: "character-loving")
-            imageView.contentMode = .scaleAspectFit
-            imageView.autoSetDimension(.height, toSize: 144)
-            stackView.addArrangedSubview(imageView)
+            let animationProgress = headerAnimationView.currentProgress
+            stackView.addArrangedSubview(headerAnimationView)
+            if animationProgress < 1 {
+                headerAnimationView.play(fromProgress: animationProgress, toProgress: 1)
+            }
 
-            let label = UILabel()
-            label.textAlignment = .center
-            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-            label.text = NSLocalizedString(
-                "DONATION_VIEW_TITLE",
+            let titleLabel = UILabel()
+            titleLabel.textAlignment = .center
+            titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+            titleLabel.text = NSLocalizedString(
+                "BOOST_VIEW_TITLE",
                 comment: "Title for the donate to signal view"
             )
-            label.numberOfLines = 0
-            label.lineBreakMode = .byWordWrapping
-            stackView.addArrangedSubview(label)
+            titleLabel.numberOfLines = 0
+            titleLabel.lineBreakMode = .byWordWrapping
+            stackView.addArrangedSubview(titleLabel)
+            stackView.setCustomSpacing(20, after: titleLabel)
+
+            let bodyTextView = LinkingTextView()
+            bodyTextView.attributedText = .composed(of: [
+                NSLocalizedString("BOOST_VIEW_BODY", comment: "The body text for the donate to signal view"),
+                " ",
+                CommonStrings.learnMore.styled(with: .link(URL(string: "https://signal.org")!)) // TODO: Real link
+            ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+
+            bodyTextView.linkTextAttributes = [
+                .foregroundColor: Theme.accentBlueColor,
+                .underlineColor: UIColor.clear,
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            bodyTextView.textAlignment = .center
+            stackView.addArrangedSubview(bodyTextView)
 
             return stackView
         }()
 
-        if case .donatedSuccessfully = state {
+        addApplePayItemsIfAvailable(to: section)
+
+        // If ApplePay isn't available, show just a link to the website
+        if !DonationUtilities.isApplePayAvailable {
             section.add(.init(
                 customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
                     let cell = self.newCell()
 
-                    let backgroundView = UIView()
-                    backgroundView.backgroundColor = Self.bubbleBackgroundColor
-                    backgroundView.layer.cornerRadius = 12
-                    cell.insertSubview(backgroundView, belowSubview: cell.contentView)
-                    backgroundView.autoPinEdgesToSuperviewMargins()
+                    let donateButton = OWSFlatButton()
+                    donateButton.setBackgroundColors(upColor: Theme.accentBlueColor)
+                    donateButton.setTitleColor(.ows_white)
+                    donateButton.setAttributedTitle(NSAttributedString.composed(of: [
+                        NSLocalizedString(
+                            "SETTINGS_DONATE",
+                            comment: "Title for the 'donate to signal' link in settings."
+                        ),
+                        Special.noBreakSpace,
+                        NSAttributedString.with(
+                            image: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
+                            font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold
+                        )
+                    ]).styled(
+                        with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_semibold),
+                        .color(.ows_white)
+                    ))
+                    donateButton.layer.cornerRadius = 24
+                    donateButton.clipsToBounds = true
+                    donateButton.setPressedBlock { [weak self] in
+                        self?.openDonateWebsite()
+                    }
 
-                    cell.contentView.layoutMargins = UIEdgeInsets(
-                        hMargin: Self.cellHInnerMargin,
-                        vMargin: 38
-                    )
-
-                    let label = UILabel()
-                    label.textAlignment = .center
-                    label.font = .ows_dynamicTypeBody
-                    label.textColor = Theme.primaryTextColor
-                    label.text = NSLocalizedString(
-                        "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT",
-                        comment: "Thank you message on the donate to signal view"
-                    )
-                    label.numberOfLines = 0
-                    label.lineBreakMode = .byWordWrapping
-
-                    cell.contentView.addSubview(label)
-                    label.autoPinEdgesToSuperviewMargins()
+                    cell.contentView.addSubview(donateButton)
+                    donateButton.autoPinEdgesToSuperviewMargins()
+                    donateButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
 
                     return cell
                 },
                 actionBlock: {}
             ))
-        } else {
-            addApplePayItemsIfAvailable(to: section)
-
-            // If ApplePay isn't available, show just a link to the website
-            if !DonationUtilities.isApplePayAvailable {
-                section.add(.init(
-                    customCellBlock: { [weak self] in
-                        guard let self = self else { return UITableViewCell() }
-                        let cell = self.newCell()
-
-                        let donateButton = OWSFlatButton()
-                        donateButton.setBackgroundColors(upColor: Theme.accentBlueColor)
-                        donateButton.setTitleColor(.ows_white)
-                        donateButton.setAttributedTitle(NSAttributedString.composed(of: [
-                            NSLocalizedString(
-                                "SETTINGS_DONATE",
-                                comment: "Title for the 'donate to signal' link in settings."
-                            ),
-                            Special.noBreakSpace,
-                            NSAttributedString.with(
-                                image: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
-                                font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-                            )
-                        ]).styled(
-                            with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_semibold),
-                            .color(.ows_white)
-                        ))
-                        donateButton.layer.cornerRadius = 12
-                        donateButton.clipsToBounds = true
-                        donateButton.setPressedBlock { [weak self] in
-                            self?.openDonateWebsite()
-                        }
-
-                        cell.contentView.addSubview(donateButton)
-                        donateButton.autoPinEdgesToSuperviewMargins()
-                        donateButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-
-                        return cell
-                    },
-                    actionBlock: {}
-                ))
-            }
         }
-
-        let whySection = OWSTableSection()
-        whySection.hasBackground = false
-        contents.addSection(whySection)
-
-        whySection.add(.init(
-            customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
-                let cell = self.newCell()
-
-                let label = UILabel()
-                label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-                label.textColor = Theme.primaryTextColor
-                label.text = NSLocalizedString(
-                    "DONATION_VIEW_WHY_DONATE_TITLE",
-                    comment: "The title of the 'Why Donate' section of the donate to signal view"
-                )
-                label.numberOfLines = 0
-                label.lineBreakMode = .byWordWrapping
-
-                cell.contentView.addSubview(label)
-                label.autoPinEdgesToSuperviewMargins()
-
-                return cell
-            },
-            actionBlock: {}
-        ))
-
-        whySection.add(.init(
-            customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
-                let cell = self.newCell()
-
-                let label = UILabel()
-                label.font = .ows_dynamicTypeBody
-                label.textColor = Theme.primaryTextColor
-                label.text = NSLocalizedString(
-                    "DONATION_VIEW_WHY_DONATE_BODY",
-                    comment: "The body of the 'Why Donate' section of the donate to signal view"
-                )
-                label.numberOfLines = 0
-                label.lineBreakMode = .byWordWrapping
-
-                cell.contentView.addSubview(label)
-                label.autoPinEdgesToSuperviewMargins()
-
-                return cell
-            },
-            actionBlock: {}
-        ))
     }
 
     private func openDonateWebsite() {
@@ -291,7 +239,7 @@ class DonationViewController: OWSTableViewController2 {
 
 // MARK: - ApplePay
 
-extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
+extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
     func addApplePayItemsIfAvailable(to section: OWSTableSection) {
         guard DonationUtilities.isApplePayAvailable else { return }
@@ -314,7 +262,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                 label.font = .ows_dynamicTypeBodyClamped
                 label.textColor = Theme.primaryTextColor
                 label.text = NSLocalizedString(
-                    "DONATION_VIEW_AMOUNT_LABEL",
+                    "BOOST_VIEW_AMOUNT_LABEL",
                     comment: "Donation amount label for the donate to signal view"
                 )
                 stackView.addArrangedSubview(label)
@@ -370,7 +318,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
         // Preset donation options
 
-        if let preset = DonationUtilities.Presets.presets[currencyCode] {
+        if let preset = presets[currencyCode] {
             section.add(.init(
                 customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
@@ -385,7 +333,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
                     self.presetButtons.removeAll()
 
-                    for amounts in preset.amounts.chunked(by: 3) {
+                    for (row, amounts) in preset.amounts.chunked(by: 3).enumerated() {
                         let hStack = UIStackView()
                         hStack.axis = .horizontal
                         hStack.distribution = .fillEqually
@@ -393,18 +341,48 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
                         vStack.addArrangedSubview(hStack)
 
-                        for amount in amounts {
+                        for (index, amount) in amounts.enumerated() {
                             let button = OWSFlatButton()
                             hStack.addArrangedSubview(button)
                             button.setBackgroundColors(
                                 upColor: Self.bubbleBackgroundColor,
                                 downColor: Self.bubbleBackgroundColor.withAlphaComponent(0.8)
                             )
-                            button.layer.cornerRadius = 12
+                            button.layer.cornerRadius = 24
                             button.clipsToBounds = true
                             button.layer.borderWidth = Self.bubbleBorderWidth
+
+                            func playEmojiAnimation(parentView: UIView?) {
+                                guard let parentView = parentView else { return }
+                                let animationNames = [
+                                    "boost_smile",
+                                    "boost_clap",
+                                    "boost_heart_eyes",
+                                    "boost_fire",
+                                    "boost_shock",
+                                    "boost_rockets"
+                                ]
+
+                                guard let selectedAnimation = animationNames[safe: (row * 3) + index] else {
+                                    return owsFailDebug("Missing animation for preset")
+                                }
+
+                                let animationView = AnimationView(name: selectedAnimation)
+                                animationView.loopMode = .playOnce
+                                animationView.contentMode = .scaleAspectFit
+                                animationView.backgroundBehavior = .forceFinish
+                                parentView.addSubview(animationView)
+                                animationView.autoPinEdge(.bottom, to: .top, of: button, withOffset: 20)
+                                animationView.autoPinEdge(.leading, to: .leading, of: button)
+                                animationView.autoMatch(.width, to: .width, of: button)
+                                animationView.play { _ in
+                                    animationView.removeFromSuperview()
+                                }
+                            }
+
                             button.setPressedBlock { [weak self] in
                                 self?.state = .presetSelected(amount: amount)
+                                playEmojiAnimation(parentView: self?.view)
                             }
 
                             button.setTitle(
@@ -437,7 +415,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                 let cell = self.newCell()
 
                 customValueTextField.backgroundColor = Self.bubbleBackgroundColor
-                customValueTextField.layer.cornerRadius = 12
+                customValueTextField.layer.cornerRadius = 24
                 customValueTextField.layer.borderWidth = Self.bubbleBorderWidth
                 customValueTextField.layer.borderColor = Self.bubbleBorderColor.cgColor
 
@@ -488,8 +466,8 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
                 donateButton.setTitleColor(Theme.accentBlueColor)
                 donateButton.setAttributedTitle(NSAttributedString.composed(of: [
                     NSLocalizedString(
-                        "DONATION_VIEW_OTHER_WAYS",
-                        comment: "Text explaining there are other ways to donate on the donation view."
+                        "BOOST_VIEW_OTHER_WAYS",
+                        comment: "Text explaining there are other ways to donate on the boost view."
                     ),
                     Special.noBreakSpace,
                     NSAttributedString.with(
@@ -517,7 +495,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
     func requestApplePayDonation() {
         guard let donationAmount = donationAmount else {
             presentToast(text: NSLocalizedString(
-                "DONATION_VIEW_SELECT_AN_AMOUNT",
+                "BOOST_VIEW_SELECT_AN_AMOUNT",
                 comment: "Error text notifying the user they must select an amount on the donate to signal view"
             ), extraVInset: view.height - tableView.frame.maxY)
             return
@@ -525,7 +503,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
         guard !Stripe.isAmountTooSmall(donationAmount, in: currencyCode) else {
             presentToast(text: NSLocalizedString(
-                "DONATION_VIEW_SELECT_A_LARGER_AMOUNT",
+                "BOOST_VIEW_SELECT_A_LARGER_AMOUNT",
                 comment: "Error text notifying the user they must select a large amount on the donate to signal view"
             ), extraVInset: view.height - tableView.frame.maxY)
             return
@@ -533,7 +511,7 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
 
         guard !Stripe.isAmountTooLarge(donationAmount, in: currencyCode) else {
             presentToast(text: NSLocalizedString(
-                "DONATION_VIEW_SELECT_A_SMALLER_AMOUNT",
+                "BOOST_VIEW_SELECT_A_SMALLER_AMOUNT",
                 comment: "Error text notifying the user they must select a smaller amount on the donate to signal view"
             ), extraVInset: view.height - tableView.frame.maxY)
             return
@@ -561,10 +539,10 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
             completion(.init(status: .failure, errors: [OWSAssertionError("Missing donation amount")]))
             return
         }
-        Stripe.donate(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
+        SubscriptionManager.boost(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
             completion(.init(status: .success, errors: nil))
             self?.state = .donatedSuccessfully
-            ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.donateMegaphone)
+            // TODO: Present thanks sheet.
         }.catch { error in
             owsFailDebugUnlessNetworkFailure(error)
             completion(.init(status: .failure, errors: [error]))
@@ -663,16 +641,16 @@ private class CustomValueTextField: UIView {
         get { placeholderLabel.text }
     }
 
-    private lazy var symbol: DonationUtilities.Symbol = DonationUtilities.Presets.presets[currencyCode]?.symbol ?? .currencyCode
+    private lazy var symbol: DonationUtilities.Symbol = .currencyCode
     private lazy var currencyCode = Stripe.defaultCurrencyCode
 
-    func setCurrencyCode(_ currencyCode: Currency.Code) {
-        self.symbol = DonationUtilities.Presets.symbol(for: currencyCode)
+    func setCurrencyCode(_ currencyCode: Currency.Code, symbol: DonationUtilities.Symbol? = nil) {
+        self.symbol = symbol ?? .currencyCode
         self.currencyCode = currencyCode
 
         symbolLabel.removeFromSuperview()
 
-        switch symbol {
+        switch self.symbol {
         case .before(let symbol):
             symbolLabel.text = symbol
             stackView.insertArrangedSubview(symbolLabel, at: 0)
@@ -757,7 +735,7 @@ extension CustomValueTextField: UITextFieldDelegate {
     }
 }
 
-extension DonationViewController: CustomValueTextFieldDelegate {
+extension BoostViewController: CustomValueTextFieldDelegate {
     fileprivate func customValueTextFieldStateDidChange(_ textField: CustomValueTextField) {
         state = .customValueSelected
     }
