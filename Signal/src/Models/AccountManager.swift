@@ -535,7 +535,7 @@ public class AccountManager: NSObject {
             return Promise.value(existingUuid)
         }
 
-        return accountServiceClient.getAccountWhoAmI().map(on: DispatchQueue.global()) { whoAmIResponse in
+        return accountServiceClient.getAccountWhoAmI().map(on: .global()) { whoAmIResponse in
             let uuid = whoAmIResponse.uuid
 
             // It's possible this method could be called multiple times, so we check

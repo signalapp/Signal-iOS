@@ -34,6 +34,7 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
+#if DEBUG
         guard let oldPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: oldE164),
               PhoneNumberValidator().isValidForRegistration(phoneNumber: oldPhoneNumber) else {
                   owsFailDebug("Invalid oldE164.")
@@ -46,7 +47,6 @@ class ChangePhoneNumberController: Dependencies {
         }
         self.oldCountryState = oldCountryState
 
-#if DEBUG
         var testE164s: [String]
         if Platform.isSimulator {
             testE164s = [
