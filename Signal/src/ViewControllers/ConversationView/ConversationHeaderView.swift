@@ -53,7 +53,7 @@ public class ConversationHeaderView: UIStackView {
     private let subtitleLabel: UILabel
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
-        traitCollection.verticalSizeClass == .compact ? .customDiameter(24) : .thirtySix
+        traitCollection.verticalSizeClass == .compact ? .twentyFour : .thirtySix
     }
     private lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,

@@ -305,7 +305,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
 
         let avatarImageView = ConversationAvatarView(
-            sizeClass: .customDiameter(64),
+            sizeClass: .sixtyFour,
             localUserDisplayMode: .asUser)
 
         if let localAddress = tsAccountManager.localAddress {
