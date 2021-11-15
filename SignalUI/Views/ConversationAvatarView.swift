@@ -185,6 +185,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         AssertIsOnMainThread()
 
         guard nextModelGeneration.get() > currentModelGeneration else { return }
+        Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
             updateViewContent(avatarImage: nil, badgeImage: nil)
             return
@@ -241,7 +242,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         let configurationAtEnqueue = configuration
 
         Self.serialQueue.async { [weak self] in
-            guard let self = self, self.nextModelGeneration.get() == generationAtEnqueue else { return }
+            guard let self = self, self.nextModelGeneration.get() == generationAtEnqueue else {
+                Logger.info("Model generation updated while performing async model update. Dropping results.")
+                return
+            }
 
             let (updatedAvatar, updatedBadge) = Self.databaseStorage.read { transaction -> (UIImage?, UIImage?) in
                 let avatarImage = configurationAtEnqueue.dataSource?.buildImage(configuration: configurationAtEnqueue, transaction: transaction)
@@ -250,8 +254,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             }
 
             DispatchQueue.main.async {
-                // Drop stale loads
-                guard self.nextModelGeneration.get() == generationAtEnqueue else { return }
+                guard self.nextModelGeneration.get() == generationAtEnqueue else {
+                    Logger.info("Model generation updated while performing async model update. Dropping results.")
+                    return
+                }
                 self.updateViewContent(avatarImage: updatedAvatar, badgeImage: updatedBadge)
             }
         }
@@ -462,9 +468,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: - <CVView>
 
     public func reset() {
-        badgeView.image = nil
-        avatarView.image = nil
         configuration.dataSource = nil
+        reloadDataIfNecessary()
     }
 
     // MARK: - <PrimaryImageView>
@@ -474,7 +479,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
 // MARK: -
 
-public enum ConversationAvatarDataSource: Equatable, Dependencies {
+public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringConvertible {
     case thread(TSThread)
     case address(SignalServiceAddress)
     case asset(avatar: UIImage?, badge: UIImage?)
@@ -628,6 +633,14 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies {
             thread.anyReload(transaction: transaction)
         case .asset, .address:
             break
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .address(let address): return "[Address: \(address)]"
+        case .thread(let thread): return "[Thread \(type(of: thread)):\(thread.uniqueId)]"
+        case .asset(let avatar, let badge): return "[AvatarImage: \(avatar), BadgeImage: \(badge)]"
         }
     }
 }
