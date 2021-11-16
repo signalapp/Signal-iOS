@@ -20,6 +20,7 @@ enum ContactSupportFilter: String, CaseIterable {
     case something_not_working = "Something Not Working"
     case other = "Other"
     case payments = "Payments"
+    case sustainers = "Sustainer & Signal Boost"
 
     var localizedString: String {
         switch self {
@@ -52,6 +53,11 @@ enum ContactSupportFilter: String, CaseIterable {
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS",
                 comment: "The localized representation of the 'payments' support filter."
+            )
+        case .sustainers:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_SUSTAINERS",
+                comment: "The localized representation of the 'Sustainers & Signal Boost' support filter."
             )
         }
     }
@@ -87,6 +93,11 @@ enum ContactSupportFilter: String, CaseIterable {
             return NSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT",
                 comment: "A brief localized representation of the 'payments' support filter."
+            )
+        case .sustainers:
+            return NSLocalizedString(
+                "CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT",
+                comment: "A brief localized representation of the 'Sustainers & Signal Boost' support filter."
             )
         }
     }

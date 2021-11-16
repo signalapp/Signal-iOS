@@ -601,6 +601,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
         let request = DonationUtilities.newPaymentRequest(for: donationAmount, currencyCode: currencyCode)
 
+        SubscriptionManager.terminateTransactionIfPossible = false
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
         paymentController.present { presented in
@@ -609,6 +610,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
+        SubscriptionManager.terminateTransactionIfPossible = true
         controller.dismiss()
     }
 
@@ -622,16 +624,39 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
+        enum BoostError: Error { case timeout, assertion }
+
         firstly {
             Stripe.boost(amount: donationAmount, in: currencyCode, for: payment)
         }.done { intentId in
             completion(.init(status: .success, errors: nil))
+            SubscriptionManager.terminateTransactionIfPossible = false
+
+            do {
+                try SubscriptionManager.createAndRedeemBoostReceipt(for: intentId)
+            } catch {
+
+            }
 
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-                SubscriptionManager.createAndRedeemBoostReceipt(for: intentId).done { [weak self] in
+                Promise.race(
+                    NotificationCenter.default.observe(
+                        once: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+                        object: nil
+                    ),
+                    NotificationCenter.default.observe(
+                        once: SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+                        object: nil
+                    )
+                ).timeout(seconds: 30) {
+                    return BoostError.timeout
+                }.done { notification in
                     modal.dismiss {}
 
-                    guard let self = self else { return }
+                    if notification.name == SubscriptionManager.SubscriptionJobQueueDidFailJobNotification {
+                        throw BoostError.assertion
+                    }
+
                     self.state = .donatedSuccessfully
 
                     guard let boostBadge = self.boostBadge else {
@@ -650,13 +675,65 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                     }
                 }.catch { error in
                     modal.dismiss {}
-                    owsFailDebugUnlessNetworkFailure(error)
+                    guard let error = error as? BoostError else {
+                        return owsFailDebug("Unexpected error \(error)")
+                    }
+
+                    switch error {
+                    case .timeout:
+                        self.presentStillProcessingSheet()
+                    case .assertion:
+                        self.presentBadgeCantBeAddedSheet()
+                    }
                 }
             }
         }.catch { error in
+            SubscriptionManager.terminateTransactionIfPossible = false
             owsFailDebugUnlessNetworkFailure(error)
             completion(.init(status: .failure, errors: [error]))
         }
+    }
+
+    func presentStillProcessingSheet() {
+        let title = NSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
+        let message = NSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        self.navigationController?.topViewController?.presentActionSheet(actionSheet)
+    }
+
+    func presentBadgeCantBeAddedSheet() {
+        let title = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+        let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
+            style: .default,
+            handler: { [weak self] _ in
+                let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                                                            comment: "Title for the fallback support sheet if user cannot send email")
+                let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                                                              comment: "Description for the fallback support sheet if user cannot send email")
+                guard ComposeSupportEmailOperation.canSendEmails else {
+                    let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
+                                                              message: localizedSheetMessage)
+                    let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                    fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                    self?.presentActionSheet(fallbackSheet)
+                    return
+                }
+                let supportVC = ContactSupportViewController()
+                let navVC = OWSNavigationController(rootViewController: supportVC)
+                self?.presentFormSheet(navVC, animated: true)
+            }
+        ))
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
+            style: .cancel,
+            handler: nil
+        ))
+        self.navigationController?.topViewController?.presentActionSheet(actionSheet)
     }
 }
 

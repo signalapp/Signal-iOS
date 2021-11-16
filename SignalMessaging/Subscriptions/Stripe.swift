@@ -195,6 +195,11 @@ fileprivate extension Stripe {
             firstly(on: .sharedUserInitiated) { () -> Promise<String> in
                 createPaymentMethod(with: payment)
             }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
+
+                guard !SubscriptionManager.terminateTransactionIfPossible else {
+                    throw OWSGenericError("Boost transaction chain cancelled")
+                }
+
                 var parameters = [
                     "payment_method": paymentMethodId,
                     "client_secret": clientSecret

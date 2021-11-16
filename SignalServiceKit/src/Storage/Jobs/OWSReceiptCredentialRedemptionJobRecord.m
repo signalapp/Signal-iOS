@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReceiptCredentialRedemptionJobRecord.h"
@@ -23,7 +23,7 @@
         _targetSubscriptionLevel = targetSubscriptionLevel;
         _priorSubscriptionLevel = priorSubscriptionLevel;
         _isBoost = isBoost;
-        _boostPaymentIntentID = _boostPaymentIntentID;
+        _boostPaymentIntentID = boostPaymentIntentID;
     }
     return self;
 }

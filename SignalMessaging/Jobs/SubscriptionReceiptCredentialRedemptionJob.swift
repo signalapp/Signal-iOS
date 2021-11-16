@@ -124,6 +124,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
         // We already have a receiptCredentialPresentation, lets redeem it
         if let serializedPresentation = serializedPresentation {
+            Logger.info("[Subscriptions] Durable job redeeming persisted receipt credential presentation")
 
             var presentation: ReceiptCredentialPresentation?
             do {
@@ -143,7 +144,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             }.then(on: .global()) {
                 self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
             }.done(on: .global()) {
-                Logger.debug("Presentation completed successfully")
+                Logger.info("[Subscriptions] Successfully redeemed persisted receipt credential presentation")
                 self.didSucceed()
             }.catch(on: .global()) { error in
                 self.reportError(error)
@@ -151,18 +152,26 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         } else {
             // We do not have a receiptCredentialPresentation, lets go through the full flow
 
-            firstly(on: .global()) {
-                return try SubscriptionManager.requestReceiptCredentialPresentation(for: self.subscriberID,
-                                                                                       context: context,
-                                                                                       request: request,
-                                                                                       targetSubscriptionLevel: self.targetSubscriptionLevel,
-                                                                                       priorSubscriptionLevel: self.priorSubscriptionLevel)
+            let isBoost = self.isBoost
+
+            firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
+                if isBoost {
+                    Logger.info("[Subscriptions] Durable job requesting receipt for boost")
+                    return try SubscriptionManager.requestBoostReceiptCredentialPresentation(for: self.boostPaymentIntentID, context: context, request: request)
+                } else {
+                    Logger.info("[Subscriptions] Durable job requesting receipt for subscription")
+                    return try SubscriptionManager.requestReceiptCredentialPresentation(for: self.subscriberID,
+                                                                                           context: context,
+                                                                                           request: request,
+                                                                                           targetSubscriptionLevel: self.targetSubscriptionLevel,
+                                                                                           priorSubscriptionLevel: self.priorSubscriptionLevel)
+                }
             }.then { newReceiptCredentialPresentation in
                 return try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: newReceiptCredentialPresentation)
             }.then(on: .global()) {
                 self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
             }.done(on: .global()) {
-                Logger.debug("Presentation completed successfully")
+                Logger.info("[Subscriptions] Successfully got receipt credential and redeemed receipt credential presentation")
                 self.didSucceed()
             }.catch(on: .global()) { error in
                 self.reportError(error)
@@ -173,7 +182,9 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func didSucceed() {
         self.databaseStorage.write { transaction in
             SubscriptionManager.setPendingRecieptCredentialPresentation(nil, transaction: transaction)
-            SubscriptionManager.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
+            if !self.isBoost {
+                SubscriptionManager.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
+            }
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             NotificationCenter.default.postNotificationNameAsync(SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification, object: nil)
         }
@@ -196,7 +207,9 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         Logger.error("failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
             SubscriptionManager.setPendingRecieptCredentialPresentation(nil, transaction: transaction)
-            SubscriptionManager.setLastReceiptRedemptionFailed(failed: true, transaction: transaction)
+            if !self.isBoost {
+                SubscriptionManager.setLastReceiptRedemptionFailed(failed: true, transaction: transaction)
+            }
             NotificationCenter.default.postNotificationNameAsync(SubscriptionManager.SubscriptionJobQueueDidFailJobNotification, object: nil)
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
         }
