@@ -52,12 +52,40 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     @objc
     func didTapDone() {
-        saveVisibilityChanges()
-        dismiss(animated: true)
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            self.saveVisibilityChanges().ensure {
+                modal.dismiss {
+                    self.dismiss(animated: true)
+                }
+            }.catch { error in
+                owsFailDebug("Unexpectedly failed to save badge visibility \(error)")
+            }
+        }
     }
 
-    func saveVisibilityChanges() {
-        // TODO: Save visibilty changes from state in `shouldMakeVisibleAndPrimary` on profile.
+    @discardableResult
+    func saveVisibilityChanges() -> Promise<Void> {
+        guard shouldMakeVisibleAndPrimary else { return Promise.value(()) }
+
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+
+        var allBadges = snapshot.profileBadgeInfo ?? []
+        guard let newlyFeaturedBadge = allBadges.first(where: { $0.badgeId == self.badge.id }) else {
+            return Promise(error: OWSAssertionError("Invalid badge"))
+        }
+
+        let nonPrimaryBadges = allBadges.filter { $0.badgeId != newlyFeaturedBadge.badgeId }
+        allBadges = [newlyFeaturedBadge] + nonPrimaryBadges
+
+        return OWSProfileManager.updateLocalProfilePromise(
+            profileGivenName: snapshot.givenName,
+            profileFamilyName: snapshot.familyName,
+            profileBio: snapshot.bio,
+            profileBioEmoji: snapshot.bioEmoji,
+            profileAvatarData: snapshot.avatarData,
+            visibleBadgeIds: allBadges.map { $0.badgeId },
+            userProfileWriter: .localUser
+        )
     }
 
     var titleText: String {

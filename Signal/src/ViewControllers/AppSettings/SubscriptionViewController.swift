@@ -880,6 +880,47 @@ class SubscriptionViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    func presentBadgeCantBeAddedSheet() {
+        let title = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+        let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
+            style: .default,
+            handler: { [weak self] _ in
+                let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                                                            comment: "Title for the fallback support sheet if user cannot send email")
+                let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                                                              comment: "Description for the fallback support sheet if user cannot send email")
+                guard ComposeSupportEmailOperation.canSendEmails else {
+                    let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
+                                                              message: localizedSheetMessage)
+                    let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                    fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                    self?.presentActionSheet(fallbackSheet)
+                    return
+                }
+                let supportVC = ContactSupportViewController()
+                let navVC = OWSNavigationController(rootViewController: supportVC)
+                self?.presentFormSheet(navVC, animated: true)
+            }
+        ))
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
+            style: .cancel,
+            handler: nil
+        ))
+        self.navigationController?.topViewController?.presentActionSheet(actionSheet)
+    }
+
+    func presentStillProcessingSheet() {
+        let title = NSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
+        let message = NSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        self.navigationController?.topViewController?.presentActionSheet(actionSheet)
+    }
 }
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
@@ -1041,6 +1082,30 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             owsFailDebug("Failed to redeem receipts \(error)")
         }
 
+        let backdropView = UIView()
+        backdropView.backgroundColor = Theme.backdropColor
+        backdropView.alpha = 0
+        view.addSubview(backdropView)
+        backdropView.autoPinEdgesToSuperviewEdges()
+
+        let progressViewContainer = UIView()
+        progressViewContainer.backgroundColor = Theme.backgroundColor
+        progressViewContainer.layer.cornerRadius = 12
+        backdropView.addSubview(progressViewContainer)
+        progressViewContainer.autoCenterInSuperview()
+
+        let progressView = AnimatedProgressView(loadingText: NSLocalizedString("SUSTAINER_VIEW_PROCESSING_PAYMENT", comment: "Loading indicator on the sustainer view"))
+        view.addSubview(progressView)
+        progressView.autoCenterInSuperview()
+        progressViewContainer.autoMatch(.width, to: .width, of: progressView, withOffset: 32)
+        progressViewContainer.autoMatch(.height, to: .height, of: progressView, withOffset: 32)
+
+        progressView.startAnimating {
+            backdropView.alpha = 1
+        }
+
+        enum SubscriptionError: Error { case timeout, assertion }
+
         Promise.race(
             NotificationCenter.default.observe(
                 once: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
@@ -1050,25 +1115,57 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 once: SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
                 object: nil
             )
-        ).done { notification in
-            if self.subscriptionViewState == .subscriptionUpdating {
-                self.navigationController?.popViewController(animated: true)
-            } else {
-                self.fetchCurrentSubscription()
-            }
-
+        ).timeout(seconds: 30) {
+            return SubscriptionError.timeout
+        }.done { notification in
             if notification.name == SubscriptionManager.SubscriptionJobQueueDidFailJobNotification {
-                throw OWSAssertionError("Subscription redemption failed.")
+                throw SubscriptionError.assertion
             }
 
-            // Only show the badge sheet if redemption succeeds.
+            progressView.stopAnimating(success: true) {
+                backdropView.alpha = 0
+            } completion: {
+                backdropView.removeFromSuperview()
+                progressView.removeFromSuperview()
 
-            if let selectedSubscription = self.selectedSubscription {
-                self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: selectedSubscription.badge), animated: true)
-            } else {
-                owsFailDebug("Missing selected subscription after redemption.")
+                if self.subscriptionViewState == .subscriptionUpdating {
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    self.fetchCurrentSubscription()
+                }
+
+                // Only show the badge sheet if redemption succeeds.
+                if let selectedSubscription = self.selectedSubscription {
+                    self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: selectedSubscription.badge), animated: true)
+                } else {
+                    owsFailDebug("Missing selected subscription after redemption.")
+                }
             }
-        }.cauterize()
+        }.catch { error in
+            progressView.stopAnimating(success: false) {
+                backdropView.alpha = 0
+            } completion: {
+                backdropView.removeFromSuperview()
+                progressView.removeFromSuperview()
+
+                if self.subscriptionViewState == .subscriptionUpdating {
+                    self.navigationController?.popViewController(animated: true)
+                } else {
+                    self.fetchCurrentSubscription()
+                }
+
+                guard let error = error as? SubscriptionError else {
+                    return owsFailDebug("Unexpected error \(error)")
+                }
+
+                switch error {
+                case .timeout:
+                    self.presentStillProcessingSheet()
+                case .assertion:
+                    self.presentBadgeCantBeAddedSheet()
+                }
+            }
+        }
     }
 
     func subscriptionLevelForSubscription( _ subscription: Subscription?) -> SubscriptionLevel? {
@@ -1105,37 +1202,7 @@ extension SubscriptionViewController: UITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == statusLabel {
-            let title = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
-            let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
-            let actionSheet = ActionSheetController(title: title, message: message)
-            actionSheet.addAction(ActionSheetAction(
-                title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
-                style: .default,
-                handler: { [weak self] _ in
-                    let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
-                                                                comment: "Title for the fallback support sheet if user cannot send email")
-                    let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
-                                                                  comment: "Description for the fallback support sheet if user cannot send email")
-                    guard ComposeSupportEmailOperation.canSendEmails else {
-                        let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
-                                                                  message: localizedSheetMessage)
-                        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
-                        fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
-                        self?.presentActionSheet(fallbackSheet)
-                        return
-                    }
-                    let supportVC = ContactSupportViewController()
-                    let navVC = OWSNavigationController(rootViewController: supportVC)
-                    self?.presentFormSheet(navVC, animated: true)
-                }
-            ))
-
-            actionSheet.addAction(ActionSheetAction(
-                title: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
-                style: .cancel,
-                handler: nil
-            ))
-            self.presentActionSheet(actionSheet)
+            presentBadgeCantBeAddedSheet()
         }
         return false
     }

@@ -530,7 +530,7 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = true) throws -> Promise<Void> {
+    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = false) throws -> Promise<Void> {
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
         // Persist pending receipt credential
