@@ -382,6 +382,9 @@
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
 
+/* Text prompting the user to boost */
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal Boost";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
 

@@ -162,31 +162,69 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
             return cell
         }, actionBlock: nil))
 
-        let subscribeButtonSection = OWSTableSection()
-        subscribeButtonSection.hasBackground = false
-        contents.addSection(subscribeButtonSection)
-        subscribeButtonSection.add(.init(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.newCell()
-            cell.selectionStyle = .none
-            guard let self = self else { return cell }
+        switch focusedBadge.rawCategory.lowercased() {
+        case "donor":
+            if DonationUtilities.isApplePayAvailable {
+                if focusedBadge.id == Self.boostBadgeId {
+                    let boostButtonSection = OWSTableSection()
+                    boostButtonSection.hasBackground = false
+                    contents.addSection(boostButtonSection)
+                    boostButtonSection.add(.init(customCellBlock: { [weak self] in
+                        let cell = OWSTableItem.newCell()
+                        cell.selectionStyle = .none
+                        guard let self = self else { return cell }
 
-            let subscribeButton = OWSFlatButton.button(
-                title: NSLocalizedString(
-                    "BADGE_DETAILS_BECOME_A_SUSTAINER",
-                    comment: "Text prompting the user to become a signal sustainer"),
-                font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                titleColor: .white,
-                backgroundColor: .ows_accentBlue,
-                target: self,
-                selector: #selector(self.didTapSubscribe)
-            )
-            subscribeButton.autoSetHeightUsingFont()
-            subscribeButton.cornerRadius = 8
-            cell.contentView.addSubview(subscribeButton)
-            subscribeButton.autoPinEdgesToSuperviewMargins()
+                        let boostButton = OWSFlatButton.button(
+                            title: NSLocalizedString(
+                                "BADGE_DETAILS_GIVE_A_BOOST",
+                                comment: "Text prompting the user to boost"),
+                            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                            titleColor: .white,
+                            backgroundColor: .ows_accentBlue,
+                            target: self,
+                            selector: #selector(self.didTapBoost)
+                        )
+                        boostButton.autoSetHeightUsingFont()
+                        boostButton.cornerRadius = 8
+                        cell.contentView.addSubview(boostButton)
+                        boostButton.autoPinEdgesToSuperviewMargins()
 
-            return cell
-        }, actionBlock: nil))
+                        return cell
+                    }, actionBlock: nil))
+                } else {
+                    let subscribeButtonSection = OWSTableSection()
+                    subscribeButtonSection.hasBackground = false
+                    contents.addSection(subscribeButtonSection)
+                    subscribeButtonSection.add(.init(customCellBlock: { [weak self] in
+                        let cell = OWSTableItem.newCell()
+                        cell.selectionStyle = .none
+                        guard let self = self else { return cell }
+
+                        let subscribeButton = OWSFlatButton.button(
+                            title: NSLocalizedString(
+                                "BADGE_DETAILS_BECOME_A_SUSTAINER",
+                                comment: "Text prompting the user to become a signal sustainer"),
+                            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                            titleColor: .white,
+                            backgroundColor: .ows_accentBlue,
+                            target: self,
+                            selector: #selector(self.didTapSubscribe)
+                        )
+                        subscribeButton.autoSetHeightUsingFont()
+                        subscribeButton.cornerRadius = 8
+                        cell.contentView.addSubview(subscribeButton)
+                        subscribeButton.autoPinEdgesToSuperviewMargins()
+
+                        return cell
+                    }, actionBlock: nil))
+                }
+            } else {
+                // TODO: Show generic donation link
+            }
+        default:
+            break
+        }
+
     }
 
     @objc
@@ -197,6 +235,13 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
             viewControllers += [SubscriptionViewController()]
             navigationController.setViewControllers(viewControllers, animated: false)
             CurrentAppContext().frontmostViewController()?.presentFormSheet(navigationController, animated: true)
+        }
+    }
+
+    @objc
+    func didTapBoost() {
+        dismiss(animated: true) {
+            CurrentAppContext().frontmostViewController()?.present(BoostSheetView(), animated: true)
         }
     }
 }
