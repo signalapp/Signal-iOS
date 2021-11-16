@@ -14,7 +14,8 @@ class BoostSheetView: InteractiveSheetViewController {
     let boostVC = BoostViewController()
     let handleContainer = UIView()
     override var interactiveScrollViews: [UIScrollView] { [boostVC.tableView] }
-    override var minHeight: CGFloat { min(660, CurrentAppContext().frame.height) }
+    override var minHeight: CGFloat { min(680, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
+    override var maximizedHeight: CGFloat { minHeight }
     override var renderExternalHandle: Bool { false }
 
     // MARK: -

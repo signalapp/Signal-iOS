@@ -865,6 +865,7 @@
 		8880178F2741E5DB00346E9A /* boost_smile.json in Resources */ = {isa = PBXBuildFile; fileRef = 888017892741E5DB00346E9A /* boost_smile.json */; };
 		888017902741E5DB00346E9A /* boost_fire.json in Resources */ = {isa = PBXBuildFile; fileRef = 8880178A2741E5DB00346E9A /* boost_fire.json */; };
 		888017922741F33B00346E9A /* BoostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888017912741F33B00346E9A /* BoostViewController.swift */; };
+		8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8880179327430DDB00346E9A /* BadgeThanksSheet.swift */; };
 		888B6D4225B16F3500E2A662 /* SharingSuggestionsMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4125B16F3400E2A662 /* SharingSuggestionsMegaphone.swift */; };
 		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
@@ -2068,6 +2069,7 @@
 		888017892741E5DB00346E9A /* boost_smile.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_smile.json; sourceTree = "<group>"; };
 		8880178A2741E5DB00346E9A /* boost_fire.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_fire.json; sourceTree = "<group>"; };
 		888017912741F33B00346E9A /* BoostViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoostViewController.swift; sourceTree = "<group>"; };
+		8880179327430DDB00346E9A /* BadgeThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeThanksSheet.swift; sourceTree = "<group>"; };
 		888A27E324B3E97E0045D639 /* pt_BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pt_BR; path = translations/pt_BR.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A27E424B3E97E0045D639 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = translations/ko.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		888A27E524B3E97E0045D639 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = translations/ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -2555,6 +2557,7 @@
 				887B6DCA25F6C3F500E677D4 /* Account */,
 				887B6DCB25F6C40500E677D4 /* Appearance */,
 				888017912741F33B00346E9A /* BoostViewController.swift */,
+				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
 				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
 				3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */,
 				887B6DCC25F6C41500E677D4 /* Data Usage */,
@@ -6020,6 +6023,7 @@
 				34955A73260A366600F3789A /* OnboardingDroppedYdbViewController.swift in Sources */,
 				34A4D8852677DF6B00A794E7 /* ConversationViewController+ConversationInputToolbarDelegate.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
+				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */,

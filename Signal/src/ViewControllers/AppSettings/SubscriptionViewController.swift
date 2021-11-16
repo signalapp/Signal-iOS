@@ -10,6 +10,7 @@ import BonMot
 import PassKit
 import SafariServices
 import Lottie
+import SignalCoreKit
 
 class SubscriptionViewController: OWSTableViewController2 {
 
@@ -1026,14 +1027,10 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
     }
 
     func fetchAndRedeemReceipts(newSubscriptionLevel: SubscriptionLevel, priorSubscriptionLevel: SubscriptionLevel? = nil) {
-        var subscriberID: Data?
-        SDSDatabaseStorage.shared.read { transaction in
-            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
-        }
-
-        guard let subscriberID = subscriberID else {
-            owsFailDebug("Did not fetch subscriberID")
-            return
+        guard let subscriberID = databaseStorage.read(
+            block: { SubscriptionManager.getSubscriberID(transaction: $0) }
+        ) else {
+            return owsFailDebug("Did not fetch subscriberID")
         }
 
         do {
@@ -1044,11 +1041,34 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             owsFailDebug("Failed to redeem receipts \(error)")
         }
 
-        if self.subscriptionViewState == .subscriptionUpdating {
-            self.navigationController?.popViewController(animated: true)
-        } else {
-            self.fetchCurrentSubscription()
-        }
+        Promise.race(
+            NotificationCenter.default.observe(
+                once: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+                object: nil
+            ),
+            NotificationCenter.default.observe(
+                once: SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+                object: nil
+            )
+        ).done { notification in
+            if self.subscriptionViewState == .subscriptionUpdating {
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                self.fetchCurrentSubscription()
+            }
+
+            if notification.name == SubscriptionManager.SubscriptionJobQueueDidFailJobNotification {
+                throw OWSAssertionError("Subscription redemption failed.")
+            }
+
+            // Only show the badge sheet if redemption succeeds.
+
+            if let selectedSubscription = self.selectedSubscription {
+                self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: selectedSubscription.badge), animated: true)
+            } else {
+                owsFailDebug("Missing selected subscription after redemption.")
+            }
+        }.cauterize()
     }
 
     func subscriptionLevelForSubscription( _ subscription: Subscription?) -> SubscriptionLevel? {

@@ -379,6 +379,24 @@
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Badges";
 
+/* Title for boost on the thank you sheet. */
+"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+
+/* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+
+/* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+
+/* Title for subscription on the thank you sheet. */
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+
+/* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
+"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+
+/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Close banner";
 
