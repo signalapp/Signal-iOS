@@ -32,6 +32,11 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
         owsAssertDebug(navigationController != nil)
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateAvatarView()
+    }
+
     // MARK: - TableContents
 
     func updateTableContents() {
