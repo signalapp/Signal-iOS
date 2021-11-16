@@ -9,6 +9,7 @@ import UIKit
 import BonMot
 import PassKit
 import SafariServices
+import Lottie
 
 class SubscriptionViewController: OWSTableViewController2 {
 
@@ -65,6 +66,33 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
         return newAvatarView
     }()
+
+    private lazy var redemptionLoadingSpinner: AnimationView = {
+        let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
+        loadingAnimationView.loopMode = .loop
+        loadingAnimationView.contentMode = .scaleAspectFit
+        loadingAnimationView.play()
+        return loadingAnimationView
+    }()
+
+    private lazy var statusLabel: LinkingTextView = LinkingTextView()
+
+    private var subscriptionRedemptionPending: Bool {
+        var hasPendingJobs = false
+        SDSDatabaseStorage.shared.read { transaction in
+            hasPendingJobs = SubscriptionManager.subscriptionJobQueue.hasPendingJobs(transaction: transaction)
+        }
+        hasPendingJobs = hasPendingJobs || SubscriptionManager.subscriptionJobQueue.runningOperations.get().count != 0
+        return hasPendingJobs
+    }
+
+    private var subscriptionRedemptionFailed: Bool {
+        var redemptionFailed = false
+        SDSDatabaseStorage.shared.read { transaction in
+            redemptionFailed = SubscriptionManager.lastReceiptRedemptionFailed(transaction: transaction)
+        }
+        return redemptionFailed
+    }
 
     private let bottomFooterStackView = UIStackView()
 
@@ -134,11 +162,27 @@ class SubscriptionViewController: OWSTableViewController2 {
 
         fetchCurrentSubscription()
         updateTableContents()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(subscriptionRedemptionJobStateDidChange),
+            name: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(subscriptionRedemptionJobStateDidChange),
+            name: SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+            object: nil)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchCurrentSubscription()
+    }
+
+    @objc
+    func subscriptionRedemptionJobStateDidChange(notification: NSNotification) {
+        updateTableContents()
     }
 
     func fetchCurrentSubscription() {
@@ -373,6 +417,9 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private func buildTableForExistingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
 
+        let subscriptionPending = subscriptionRedemptionPending
+        let subscriptionFailed = subscriptionRedemptionFailed
+
         // My Support header
         section.add(.init(
             customCellBlock: { [weak self] in
@@ -437,11 +484,24 @@ class SubscriptionViewController: OWSTableViewController2 {
                     if let subscription = subscriptionLevel {
                         let imageView = UIImageView()
                         imageView.setContentHuggingHigh()
+
                         if let badgeImage = subscription.badge.assets?.universal160 {
                             imageView.image = badgeImage
                         }
+
                         stackView.addArrangedSubview(imageView)
                         imageView.autoSetDimensions(to: CGSize(square: 64))
+
+                        if subscriptionPending {
+                            stackView.addSubview(self.redemptionLoadingSpinner)
+                            self.redemptionLoadingSpinner.autoPin(toEdgesOf: imageView, withInset: UIEdgeInsets(hMargin: 14, vMargin: 14))
+                            let progress = self.redemptionLoadingSpinner.currentProgress
+                            self.redemptionLoadingSpinner.play(fromProgress: progress, toProgress: 1)
+                        } else {
+                            self.redemptionLoadingSpinner.removeFromSuperview()
+                        }
+
+                        imageView.alpha = subscriptionPending || subscriptionFailed ? 0.5 : 1
                     }
 
                     let textStackView = UIStackView()
@@ -464,16 +524,35 @@ class SubscriptionViewController: OWSTableViewController2 {
                         pricingLabel.numberOfLines = 0
                     }
 
-                    let renewalLabel = UILabel()
-                    let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
-                    let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
-                    let renewalString = self.dateFormatter.string(from: renewalDate)
-                    renewalLabel.text = String(format: renewalFormat, renewalString)
-                    renewalLabel.font = .ows_dynamicTypeBody2
-                    renewalLabel.textColor = .ows_gray45
-                    renewalLabel.numberOfLines = 0
+                    var statusText: NSMutableAttributedString?
+                    if subscriptionPending {
+                        let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                    } else if subscriptionFailed {
+                        let helpFormat = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
+                        let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
+                        let text = String(format: helpFormat, contactSupport)
+                        let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
+                        statusText = attributedText
+                    } else {
+                        let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
+                        let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
+                        let renewalString = self.dateFormatter.string(from: renewalDate)
+                        let text = String(format: renewalFormat, renewalString)
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                    }
 
-                    textStackView.addArrangedSubviews([titleLabel, pricingLabel, renewalLabel])
+                    self.statusLabel.attributedText = statusText
+                    self.statusLabel.linkTextAttributes = [
+                        .foregroundColor: Theme.accentBlueColor,
+                        .underlineColor: UIColor.clear,
+                        .underlineStyle: NSUnderlineStyle.single.rawValue
+                    ]
+
+                    self.statusLabel.delegate = self
+
+                    textStackView.addArrangedSubviews([titleLabel, pricingLabel, self.statusLabel])
                     stackView.addArrangedSubview(textStackView)
 
                     let addBoostString = NSLocalizedString("SUSTAINER_VIEW_ADD_BOOST", comment: "Sustainer view Add Boost button title")
@@ -488,6 +567,11 @@ class SubscriptionViewController: OWSTableViewController2 {
                     addBoostButton.autoSetDimension(.height, toSize: 48)
                     addBoostButton.autoPinWidthToSuperviewMargins()
 
+                    if subscriptionPending || subscriptionFailed {
+                        addBoostButton.isHighlighted = true
+                        addBoostButton.isUserInteractionEnabled = false
+                    }
+
                     return cell
                 },
                 actionBlock: {}
@@ -497,38 +581,65 @@ class SubscriptionViewController: OWSTableViewController2 {
         // Management disclosure
         let managementSection = OWSTableSection()
         contents.addSection(managementSection)
-        managementSection.add(.disclosureItem(
-            icon: .settingsManage,
-            name: NSLocalizedString("SUBSCRIBER_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button in sustainer view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
-            actionBlock: { [weak self] in
-                guard let self = self else { return }
-                if let subscriptions = self.subscriptions, let currentSubscription = self.currentSubscription, let persistedSubscriberID = self.persistedSubscriberID, let persistedSubscriberCurrencyCode = self.persistedSubscriberCurrencyCode {
-                    let managementController = SubscriptionViewController(updatingSubscriptionsState: true, subscriptions: subscriptions, currentSubscription: currentSubscription, subscriberID: persistedSubscriberID, subscriberCurrencyCode: persistedSubscriberCurrencyCode)
-                    self.navigationController?.pushViewController(managementController, animated: true)
-                }
-            }
-        ))
 
-        managementSection.add(.disclosureItem(
-            icon: .settingsBadges,
-            name: NSLocalizedString("SUBSCRIBER_BADGES", comment: "Title for the 'Badges' button in sustainer view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
-            actionBlock: { [weak self] in
-                if let self = self {
-                    let vc = BadgeConfigurationViewController(
-                        availableBadges: {
-                            SDSDatabaseStorage.shared.read { readTx in
-                                self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
-                            } ?? []
-                        }(),
-                        selectedBadgeIndex: nil,
-                        shouldDisplayOnProfile: false,
-                        delegate: self)
-                    self.navigationController?.pushViewController(vc, animated: true)
+        if subscriptionPending {
+            managementSection.add(.item(icon: .settingsManage,
+                                        tintColor: .ows_gray40,
+                                        name: NSLocalizedString("SUBSCRIBER_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button in sustainer view."),
+                                        maxNameLines: 0,
+                                        textColor: .ows_gray40,
+                                        accessoryText: nil,
+                                        accessoryType: .none,
+                                        accessoryImage: nil,
+                                        accessoryView: nil,
+                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
+                                        actionBlock: nil))
+
+            managementSection.add(.item(icon: .settingsBadges,
+                                        tintColor: .ows_gray40,
+                                        name: NSLocalizedString("SUBSCRIBER_BADGES", comment: "Title for the 'Badges' button in sustainer view."),
+                                        maxNameLines: 0,
+                                        textColor: .ows_gray40,
+                                        accessoryText: nil,
+                                        accessoryType: .none,
+                                        accessoryImage: nil,
+                                        accessoryView: nil,
+                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
+                                        actionBlock: nil))
+        } else {
+            managementSection.add(.disclosureItem(
+                icon: .settingsManage,
+                name: NSLocalizedString("SUBSCRIBER_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button in sustainer view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
+                actionBlock: { [weak self] in
+                    guard let self = self else { return }
+                    if let subscriptions = self.subscriptions, let currentSubscription = self.currentSubscription, let persistedSubscriberID = self.persistedSubscriberID, let persistedSubscriberCurrencyCode = self.persistedSubscriberCurrencyCode {
+                        let managementController = SubscriptionViewController(updatingSubscriptionsState: true, subscriptions: subscriptions, currentSubscription: currentSubscription, subscriberID: persistedSubscriberID, subscriberCurrencyCode: persistedSubscriberCurrencyCode)
+                        self.navigationController?.pushViewController(managementController, animated: true)
+                    }
                 }
-            }
-        ))
+            ))
+
+            managementSection.add(.disclosureItem(
+                icon: .settingsBadges,
+                name: NSLocalizedString("SUBSCRIBER_BADGES", comment: "Title for the 'Badges' button in sustainer view."),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
+                actionBlock: { [weak self] in
+                    if let self = self {
+                        let vc = BadgeConfigurationViewController(
+                            availableBadges: {
+                                SDSDatabaseStorage.shared.read { readTx in
+                                    self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
+                                } ?? []
+                            }(),
+                            selectedBadgeIndex: nil,
+                            shouldDisplayOnProfile: false,
+                            delegate: self)
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+            ))
+        }
 
         managementSection.add(.disclosureItem(
             icon: .settingsHelp,
@@ -703,7 +814,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                             if let currentSubscription = self.currentSubscription {
                                 let pricingString = String(format: pricingFormat, currencyString)
 
-                                let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING_EXPIRATION", comment: "Expiration text for sustainer view management badges, embeds {{Expiration}}")
+                                let renewalFormat = currentSubscription.cancelAtEndOfPeriod ? NSLocalizedString("SUSTAINER_VIEW_PRICING_EXPIRATION", comment: "Renewal text for sustainer view management badges, embeds {{Expiration}}") : NSLocalizedString("SUSTAINER_VIEW_PRICING_RENEWAL", comment: "Expiration text for sustainer view management badges, embeds {{Expiration}}")
                                 let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
                                 let renewalString = String(format: renewalFormat, self.dateFormatter.string(from: renewalDate))
 
@@ -972,6 +1083,46 @@ extension SubscriptionViewController: BadgeConfigurationDelegate {
 
     func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
         // TODO
+    }
+}
+
+extension SubscriptionViewController: UITextViewDelegate {
+
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if textView == statusLabel {
+            let title = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+            let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
+            let actionSheet = ActionSheetController(title: title, message: message)
+            actionSheet.addAction(ActionSheetAction(
+                title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
+                style: .default,
+                handler: { [weak self] _ in
+                    let localizedSheetTitle = NSLocalizedString("EMAIL_SIGNAL_TITLE",
+                                                                comment: "Title for the fallback support sheet if user cannot send email")
+                    let localizedSheetMessage = NSLocalizedString("EMAIL_SIGNAL_MESSAGE",
+                                                                  comment: "Description for the fallback support sheet if user cannot send email")
+                    guard ComposeSupportEmailOperation.canSendEmails else {
+                        let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
+                                                                  message: localizedSheetMessage)
+                        let buttonTitle = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+                        fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
+                        self?.presentActionSheet(fallbackSheet)
+                        return
+                    }
+                    let supportVC = ContactSupportViewController()
+                    let navVC = OWSNavigationController(rootViewController: supportVC)
+                    self?.presentFormSheet(navVC, animated: true)
+                }
+            ))
+
+            actionSheet.addAction(ActionSheetAction(
+                title: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
+                style: .cancel,
+                handler: nil
+            ))
+            self.presentActionSheet(actionSheet)
+        }
+        return false
     }
 }
 

@@ -111,6 +111,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)setHLayoutMargins:(CGFloat)value;
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
+- (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view withInset:(UIEdgeInsets)inset;
 
 - (void)traverseViewHierarchyUpwardWithVisitor:(UIViewVisitorBlock)visitor;
 

@@ -6073,6 +6073,18 @@
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
 
+/* Couldn't add badge text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+
+/* Action sheet message for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+
+/* Action sheet title for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+
+/* Contact support link */
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
@@ -6082,8 +6094,14 @@
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";
 
+/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+
+/* Status text while processing a badge redemption */
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Read More tappable text in sustainer view body */
 "SUSTAINER_VIEW_READ_MORE" = "Read More.";
