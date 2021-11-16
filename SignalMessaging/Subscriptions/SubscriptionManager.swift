@@ -662,10 +662,8 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 }
 
 extension SubscriptionManager {
-    public class func boost(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
+    public class func createAndRedeemBoostReceipt(for intentId: String) -> Promise<Void> {
         firstly {
-            Stripe.boost(amount: amount, in: currencyCode, for: payment)
-        }.then { intentId in
             try createBoostReceiptCredentialsPresentation(for: intentId)
         }.then { presentation in
             try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
@@ -755,6 +753,39 @@ extension SubscriptionManager {
             } catch {
                 throw OWSAssertionError("Missing clientID key")
             }
+        }
+    }
+
+    public class func getBoostBadge() -> Promise<ProfileBadge> {
+        let request = OWSRequestFactory.boostBadgesRequest()
+
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+
+            guard let json = response.responseBodyJson as? [String: Any] else {
+                throw OWSAssertionError("Missing or invalid JSON.")
+            }
+
+            guard let rootParser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            let levels: [String: Any] = try rootParser.required(key: "levels")
+
+            guard let levelsParser = ParamParser(responseObject: levels) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            let boostLevel: [String: Any] = try levelsParser.required(key: "1")
+
+            guard let levelParser = ParamParser(responseObject: boostLevel) else {
+                throw OWSAssertionError("Missing or invalid response.")
+            }
+
+            let badgeJson: [String: Any] = try levelParser.required(key: "badge")
+
+            return try ProfileBadge(jsonDictionary: badgeJson)
         }
     }
 }

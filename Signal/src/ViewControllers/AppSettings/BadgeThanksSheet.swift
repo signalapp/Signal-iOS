@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -116,8 +116,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
         handleContainer.addSubview(handle)
         handle.autoPinHeightToSuperview(withMargin: 12)
         handle.autoHCenterInSuperview()
-
-
 
         if newBadgeIsBoost && hasAnySustainerBadge {
             shouldMakeVisibleAndPrimary = false

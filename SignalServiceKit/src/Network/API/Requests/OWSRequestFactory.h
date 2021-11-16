@@ -217,6 +217,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                   withDescription:(nullable NSString *)description;
 + (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest;
++ (TSRequest *)boostBadgesRequest;
 
 #pragma mark - Spam
 
