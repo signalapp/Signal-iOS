@@ -27,7 +27,8 @@ public struct Stripe: Dependencies {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
             API.createToken(with: payment)
         }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
-            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
+
+            let parameters: [String: Any] = ["card": ["token": tokenId], "billing_details": ["email": payment.shippingContact?.emailAddress ?? ""], "type": "card"]
             return try API.postForm(endpoint: "payment_methods", parameters: parameters)
         }.map(on: .sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
@@ -42,16 +43,11 @@ public struct Stripe: Dependencies {
 
     public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String, payment: PKPayment) throws -> Promise<HTTPResponse> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            let parameters = [
+            let setupIntentId = try API.id(for: clientSecret)
+            return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: [
                 "payment_method": paymentIntentID,
                 "client_secret": clientSecret
-            ]
-//            if let email = payment.shippingContact?.emailAddress {
-//                parameters["receipt_email"] = email
-//            }
-
-            let setupIntentId = try API.id(for: clientSecret)
-            return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: parameters)
+            ])
         }
     }
 
@@ -178,8 +174,7 @@ fileprivate extension Stripe {
                 // english only receipt by Stripe.
                 let request = OWSRequestFactory.boostCreatePaymentIntent(
                         withAmount: integralAmount(amount, in: currencyCode),
-                        inCurrencyCode: currencyCode,
-                        withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
+                        inCurrencyCode: currencyCode
                     )
 
                 return networkManager.makePromise(request: request)

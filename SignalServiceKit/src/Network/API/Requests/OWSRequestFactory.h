@@ -213,8 +213,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 + (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation makePrimary:(BOOL)makePrimary;
 + (TSRequest *)boostSuggestedAmountsRequest;
 + (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
-                                   inCurrencyCode:(NSString *)currencyCode
-                                  withDescription:(nullable NSString *)description;
+                                   inCurrencyCode:(NSString *)currencyCode;
 + (TSRequest *)boostRecieptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest;
 + (TSRequest *)boostBadgesRequest;

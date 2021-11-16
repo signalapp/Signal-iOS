@@ -1020,17 +1020,10 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 + (TSRequest *)boostCreatePaymentIntentWithAmount:(NSUInteger)amount
                                    inCurrencyCode:(NSString *)currencyCode
-                                  withDescription:(nullable NSString *)description
 {
-    NSMutableDictionary *parameters =
-        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
-    if (description) {
-        parameters[@"description"] = description;
-    }
-
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/create"]
                                             method:@"POST"
-                                        parameters:parameters];
+                                        parameters:@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) }];
     request.shouldHaveAuthorizationHeaders = NO;
     return request;
 }
