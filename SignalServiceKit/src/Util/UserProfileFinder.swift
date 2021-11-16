@@ -13,34 +13,46 @@ public class AnyUserProfileFinder: NSObject {
 public extension AnyUserProfileFinder {
     @objc(userProfileForAddress:transaction:)
     func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        let profile: OWSUserProfile?
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.userProfile(for: address, transaction: transaction)
+            profile = grdbAdapter.userProfile(for: address, transaction: transaction)
         }
+        profile?.loadBadgeContent(with: transaction)
+        return profile
     }
 
     @objc(userProfileForUUID:transaction:)
     func userProfileForUUID(_ uuid: UUID, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        let profile: OWSUserProfile?
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.userProfileForUUID(uuid, transaction: transaction)
+            profile = grdbAdapter.userProfileForUUID(uuid, transaction: transaction)
         }
+        profile?.loadBadgeContent(with: transaction)
+        return profile
     }
 
     @objc(userProfileForPhoneNumber:transaction:)
     func userProfileForPhoneNumber(_ phoneNumber: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        let profile: OWSUserProfile?
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.userProfileForPhoneNumber(phoneNumber, transaction: transaction)
+            profile = grdbAdapter.userProfileForPhoneNumber(phoneNumber, transaction: transaction)
         }
+        profile?.loadBadgeContent(with: transaction)
+        return profile
     }
 
     @objc
     func userProfile(forUsername username: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        let profile: OWSUserProfile?
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
+            profile = grdbAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
         }
+        profile?.loadBadgeContent(with: transaction)
+        return profile
     }
 
     @objc

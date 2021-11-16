@@ -93,12 +93,12 @@ public class SignalServiceProfile: NSObject {
            let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             self.badges = badgeArray.compactMap {
                 do {
-                    let expiration: TimeInterval? = try params.optional(key: "expiration")
+                    let badgeParams = ParamParser(dictionary: $0)
+                    let isVisible: Bool? = try badgeParams.optional(key: "visible")
+                    let expiration: TimeInterval? = try badgeParams.optional(key: "expiration")
                     let expirationMills = expiration.flatMap { UInt64($0 * 1000) }
 
-                    let isVisible: Bool? = try params.optional(key: "visible")
                     let badge = try ProfileBadge(jsonDictionary: $0)
-
                     let badgeMetadata: OWSUserProfileBadgeInfo
                     if let expirationMills = expirationMills, let isVisible = isVisible {
                         badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id, expiration: expirationMills, isVisible: isVisible)

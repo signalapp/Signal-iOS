@@ -811,6 +811,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                          bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
                                    paymentAddress:(nullable ProfileValue *)paymentAddress
+                                  visibleBadgeIds:(nullable NSArray<NSString *> *)visibleBadgeIds
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment
 {
@@ -840,6 +841,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (paymentAddress != nil) {
         OWSAssertDebug(paymentAddress.hasValidBase64Length);
         parameters[@"paymentAddress"] = paymentAddress.encryptedBase64;
+    }
+    if (visibleBadgeIds != nil) {
+        parameters[@"badgeIds"] = visibleBadgeIds;
     }
 
     NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];

@@ -1,32 +1,32 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalUI
 
 protocol BadgeConfigurationDelegate: AnyObject {
-    func updateFeaturedBadge(_: ProfileBadge?)
+    func updateFeaturedBadge(_: OWSUserProfileBadgeInfo)
     func shouldDisplayBadgesPublicly(_: Bool)
 }
 
 class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
-    let availableBadges: [ProfileBadge]
+    let availableBadges: [OWSUserProfileBadgeInfo]
     private let initialDisplaySetting: Bool
-    private let initialBadgeIndex: Int?
+    private let avatarImage: UIImage?
 
     private var displayBadgeOnProfile: Bool {
         didSet {
             updateNavigation()
+            updateTableContents()
         }
     }
 
-    // TODO: Check with design about deselect behavior. Should it be allowed?
-    var selectedBadgeIndex: Int? = nil {
+    var selectedBadgeIndex: Int = 0 {
         didSet {
-            if let badgeIdx = selectedBadgeIndex, !availableBadges.indices.contains(badgeIdx) {
+            if !availableBadges.indices.contains(selectedBadgeIndex) {
                 owsFailDebug("Invalid badge index")
                 selectedBadgeIndex = oldValue
             } else {
@@ -35,23 +35,23 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
             }
         }
     }
-    private var selectedBadge: ProfileBadge? { selectedBadgeIndex.flatMap { availableBadges[safe: $0] } }
-    private var hasUnsavedChanges: Bool {
-        displayBadgeOnProfile != initialDisplaySetting || selectedBadgeIndex != initialBadgeIndex
+
+    private var selectedPrimaryBadge: OWSUserProfileBadgeInfo? {
+        displayBadgeOnProfile ? availableBadges[safe: selectedBadgeIndex] : nil
     }
 
-    init(availableBadges: [ProfileBadge], selectedBadgeIndex: Int?, shouldDisplayOnProfile: Bool, delegate: BadgeConfigurationDelegate) {
+    private var hasUnsavedChanges: Bool {
+        displayBadgeOnProfile != initialDisplaySetting || selectedBadgeIndex != 0
+    }
+
+    init(availableBadges: [OWSUserProfileBadgeInfo], shouldDisplayOnProfile: Bool, avatarImage: UIImage? = nil, delegate: BadgeConfigurationDelegate) {
         self.availableBadges = availableBadges
         self.initialDisplaySetting = shouldDisplayOnProfile
-        self.initialBadgeIndex = selectedBadgeIndex
-        if let idx = selectedBadgeIndex {
-            owsAssertDebug(availableBadges.indices.contains(idx))
-        }
+        owsAssertDebug(availableBadges.indices.contains(selectedBadgeIndex))
 
         self.displayBadgeOnProfile = self.initialDisplaySetting
-        self.selectedBadgeIndex = self.initialBadgeIndex
-
         self.badgeConfigDelegate = delegate
+        self.avatarImage = avatarImage
         super.init()
     }
 
@@ -99,8 +99,8 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
     @objc
     func didTapDone() {
-        if selectedBadgeIndex != initialBadgeIndex {
-            badgeConfigDelegate?.updateFeaturedBadge(selectedBadge)
+        if selectedBadgeIndex != 0, let selectedPrimaryBadge = selectedPrimaryBadge {
+            badgeConfigDelegate?.updateFeaturedBadge(selectedPrimaryBadge)
         }
         if displayBadgeOnProfile != initialDisplaySetting {
             badgeConfigDelegate?.shouldDisplayBadgesPublicly(displayBadgeOnProfile)
@@ -146,14 +146,20 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                         isOn: { [weak self] in self?.displayBadgeOnProfile ?? false },
                         target: self,
                         selector: #selector(didTogglePublicDisplaySetting(_:))),
-                    .disclosureItem(
-                        withText: NSLocalizedString(
+
+                    .item(
+                        name: NSLocalizedString(
                             "FEATURED_BADGE_SETTINGS_TITLE",
                             comment: "The title for the featured badge settings page"),
-                        detailText: selectedBadge?.localizedName ?? "",
+                        textColor: displayBadgeOnProfile ? nil : .ows_gray45,
+                        accessoryText: selectedPrimaryBadge?.badge?.localizedName,
+                        accessoryType: .disclosureIndicator,
+                        accessibilityIdentifier: "badge_configuration_row",
                         actionBlock: { [weak self] in
                             guard let self = self, let navController = self.navigationController else { return }
-                            let featuredBadgeSettings = FeaturedBadgeViewController(badgeDataSource: self)
+                            guard self.displayBadgeOnProfile else { return }
+
+                            let featuredBadgeSettings = FeaturedBadgeViewController(avatarImage: self.avatarImage, badgeDataSource: self)
                             navController.pushViewController(featuredBadgeSettings, animated: true)
                         })
                 ])

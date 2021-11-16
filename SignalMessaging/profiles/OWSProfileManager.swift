@@ -20,6 +20,7 @@ public extension OWSProfileManager {
                                          profileBio: String?,
                                          profileBioEmoji: String?,
                                          profileAvatarData: Data?,
+                                         visibleBadgeIds: [String]?,
                                          unsavedRotatedProfileKey: OWSAES256Key? = nil,
                                          userProfileWriter: UserProfileWriter) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
@@ -30,6 +31,7 @@ public extension OWSProfileManager {
                                         profileBio: profileBio,
                                         profileBioEmoji: profileBioEmoji,
                                         profileAvatarData: profileAvatarData,
+                                        visibleBadgeIds: visibleBadgeIds,
                                         unsavedRotatedProfileKey: unsavedRotatedProfileKey,
                                         userProfileWriter: userProfileWriter)
         }.then(on: .main) { update in
@@ -58,6 +60,7 @@ public extension OWSProfileManager {
         let profileBio: String?
         let profileBioEmoji: String?
         let profileAvatarData: Data?
+        let visibleBadgeIds: [String]?
         let userProfileWriter: UserProfileWriter
         if let pendingUpdate = (Self.databaseStorage.read { transaction in
             return Self.currentPendingProfileUpdate(transaction: transaction)
@@ -67,6 +70,7 @@ public extension OWSProfileManager {
             profileBio = pendingUpdate.profileBio
             profileBioEmoji = pendingUpdate.profileBioEmoji
             profileAvatarData = pendingUpdate.profileAvatarData
+            visibleBadgeIds = pendingUpdate.visibleBadgeIds
             userProfileWriter = pendingUpdate.userProfileWriter
 
             if DebugFlags.internalLogging {
@@ -79,6 +83,7 @@ public extension OWSProfileManager {
             profileBio = profileSnapshot.bio
             profileBioEmoji = profileSnapshot.bioEmoji
             profileAvatarData = profileSnapshot.avatarData
+            visibleBadgeIds = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? true }.map { $0.badgeId } ?? []
             userProfileWriter = .reupload
 
             if DebugFlags.internalLogging {
@@ -91,6 +96,7 @@ public extension OWSProfileManager {
                                                            profileBio: profileBio,
                                                            profileBioEmoji: profileBioEmoji,
                                                            profileAvatarData: profileAvatarData,
+                                                           visibleBadgeIds: visibleBadgeIds,
                                                            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
                                                            userProfileWriter: userProfileWriter)
     }
@@ -221,6 +227,7 @@ public extension OWSProfileManager {
                                          profileBio: String?,
                                          profileBioEmoji: String?,
                                          profileAvatarData: Data?,
+                                         visibleBadgeIds: [String]?,
                                          userProfileWriter: UserProfileWriter) -> AnyPromise {
         return AnyPromise(updateLocalProfilePromise(
             profileGivenName: profileGivenName,
@@ -228,6 +235,7 @@ public extension OWSProfileManager {
             profileBio: profileBio,
             profileBioEmoji: profileBioEmoji,
             profileAvatarData: profileAvatarData,
+            visibleBadgeIds: visibleBadgeIds,
             userProfileWriter: userProfileWriter
         ))
     }
@@ -409,13 +417,15 @@ extension OWSProfileManager {
                         "profileGivenName?: \(attempt.update.profileGivenName != nil), " +
                         "profileFamilyName?: \(attempt.update.profileFamilyName != nil), " +
                         "profileBio?: \(attempt.update.profileBio != nil), " +
-                        "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil).")
+                        "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil) " +
+                        "visibleBadges?: \(attempt.update.visibleBadgeIds != nil).")
         return firstly(on: .global()) {
             Self.versionedProfilesImpl.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
                                                             profileFamilyName: attempt.update.profileFamilyName,
                                                             profileBio: attempt.update.profileBio,
                                                             profileBioEmoji: attempt.update.profileBioEmoji,
                                                             profileAvatarData: attempt.update.profileAvatarData,
+                                                            visibleBadgeIds: attempt.update.visibleBadgeIds,
                                                             unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
         }.map(on: .global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
@@ -445,6 +455,7 @@ extension OWSProfileManager {
                                             profileBio: String?,
                                             profileBioEmoji: String?,
                                             profileAvatarData: Data?,
+                                            visibleBadgeIds: [String]?,
                                             unsavedRotatedProfileKey: OWSAES256Key?,
                                             userProfileWriter: UserProfileWriter) -> PendingProfileUpdate {
         Logger.verbose("")
@@ -457,6 +468,7 @@ extension OWSProfileManager {
                                           profileBio: profileBio,
                                           profileBioEmoji: profileBioEmoji,
                                           profileAvatarData: profileAvatarData,
+                                          visibleBadgeIds: visibleBadgeIds,
                                           unsavedRotatedProfileKey: unsavedRotatedProfileKey,
                                           userProfileWriter: userProfileWriter)
         databaseStorage.write { transaction in
@@ -513,6 +525,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
     // If nil, we are clearing the profile avatar.
     let profileAvatarData: Data?
 
+    let visibleBadgeIds: [String]?
+
     let unsavedRotatedProfileKey: OWSAES256Key?
 
     var hasGivenName: Bool {
@@ -536,6 +550,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
          profileBio: String?,
          profileBioEmoji: String?,
          profileAvatarData: Data?,
+         visibleBadgeIds: [String]?,
          unsavedRotatedProfileKey: OWSAES256Key?,
          userProfileWriter: UserProfileWriter) {
 
@@ -545,6 +560,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBio = profileBio
         self.profileBioEmoji = profileBioEmoji
         self.profileAvatarData = profileAvatarData
+        self.visibleBadgeIds = visibleBadgeIds
         self.unsavedRotatedProfileKey = unsavedRotatedProfileKey
         self.userProfileWriter = userProfileWriter
     }
@@ -563,6 +579,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         aCoder.encode(profileBio, forKey: "profileBio")
         aCoder.encode(profileBioEmoji, forKey: "profileBioEmoji")
         aCoder.encode(profileAvatarData, forKey: "profileAvatarData")
+        aCoder.encode(visibleBadgeIds, forKey: "visibleBadgeIds")
         aCoder.encode(unsavedRotatedProfileKey, forKey: "unsavedRotatedProfileKey")
         aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: "userProfileWriter")
     }
@@ -580,6 +597,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBio = aDecoder.decodeObject(forKey: "profileBio") as? String
         self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
+        self.visibleBadgeIds = aDecoder.decodeObject(forKey: "visiboleBadgeIds") as? [String]
         self.unsavedRotatedProfileKey = aDecoder.decodeObject(forKey: "unsavedRotatedProfileKey") as? OWSAES256Key
         if aDecoder.containsValue(forKey: "userProfileWriter"),
            let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: "userProfileWriter"))) {

@@ -343,6 +343,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
                 profileBio: nil,
                 profileBioEmoji: nil,
                 profileAvatarData: avatarData,
+                visibleBadgeIds: nil,
                 userProfileWriter: .registration)
         }.recover { error in
             owsFailDebug("Error: \(error)")

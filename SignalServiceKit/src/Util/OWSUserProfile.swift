@@ -7,11 +7,12 @@ import Mantle
 
 @objc
 public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
-    let badgeId: String
+    public let badgeId: String
+    public var badge: ProfileBadge?    // nil until a call to `loadBadge()` or `fetchBadgeContent(transaction:)`
 
     // These properties are only valid for the current user
-    let expiration: UInt64?
-    let isVisible: Bool?
+    public let expiration: UInt64?
+    public let isVisible: Bool?
 
     init(badgeId: String) {
         self.badgeId = badgeId
@@ -30,9 +31,16 @@ public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
         case badgeId, expiration, isVisible
     }
 
+    @objc public func loadBadge(transaction: SDSAnyReadTransaction) {
+        badge = profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
+    }
+
     @objc
     public func fetchBadgeContent(transaction: SDSAnyReadTransaction) -> ProfileBadge? {
-        profileManager.badgeStore.fetchBadgeWithId(badgeId, readTx: transaction)
+        return badge ?? {
+            loadBadge(transaction: transaction)
+            return badge
+        }()
     }
 
     override public var description: String {
@@ -66,6 +74,11 @@ public extension OWSUserProfile {
     @nonobjc
     private static let bioComponentCache = LRUCache<String, String>(maxSize: 256)
     private static let unfairLock = UnfairLock()
+
+    var visibleBadges: [OWSUserProfileBadgeInfo] {
+        let allBadges = profileBadgeInfo ?? []
+        return allBadges.filter { $0.isVisible ?? true }
+    }
 
     private static func filterBioComponentForDisplay(_ input: String?,
                                                      maxLengthGlyphs: Int,

@@ -20,7 +20,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var username: String?
     private var bio: String?
     private var bioEmoji: String?
-    private var primaryBadge: ProfileBadge?
+    private var allBadges: [OWSUserProfileBadgeInfo] = []
+    private var displayBadgesOnProfile: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,9 +39,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         username = snapshot.username
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
-        // TODO: Badging
-        primaryBadge = nil
-
+        allBadges = snapshot.profileBadgeInfo ?? []
+        displayBadgesOnProfile = allBadges.allSatisfy { badge in
+            badge.isVisible ?? {
+                owsFailDebug("Local user badges should always have a non-nil visibility flag")
+                return true
+            }()
+        }
         updateTableContents()
     }
 
@@ -118,7 +123,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        if FeatureFlags.configureBadges {
+        if FeatureFlags.configureBadges, !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
                 icon: .settingsBadges,
                 name: NSLocalizedString(
@@ -128,15 +133,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
+
+                    let avatarImage = self.databaseStorage.read { self.avatarImage(transaction: $0) }
+
                     let vc = BadgeConfigurationViewController(
-                        availableBadges: {
-                            self.databaseStorage.read { readTx in
-                                // TODO: Use the profile snapshot like everything else does here
-                                self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
-                            } ?? []
-                        }(),
-                        selectedBadgeIndex: nil,
-                        shouldDisplayOnProfile: false,
+                        availableBadges: self.allBadges,
+                        shouldDisplayOnProfile: self.displayBadgesOnProfile,
+                        avatarImage: avatarImage,
                         delegate: self)
                     self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
@@ -204,6 +207,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let normalizedFamilyName = self.normalizedFamilyName
         let normalizedBio = self.normalizedBio
         let normalizedBioEmoji = self.normalizedBioEmoji
+        let visibleBadgeIds = displayBadgesOnProfile ? self.allBadges.map { $0.badgeId } : []
 
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
@@ -221,6 +225,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                                                             profileBio: normalizedBio,
                                                             profileBioEmoji: normalizedBioEmoji,
                                                             profileAvatarData: avatarData,
+                                                            visibleBadgeIds: visibleBadgeIds,
                                                             userProfileWriter: .localUser)
             }.done(on: .main) { _ in
                 modalActivityIndicator.dismiss { [weak self] in
@@ -279,11 +284,18 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
+        let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
+        let badgedAvatarView = ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
+            let primaryBadge = allBadges.first
+            let badgeAssets = primaryBadge?.badge?.assets
+            let badgeImage = badgeAssets.flatMap { sizeClass.fetchImageFromBadgeAssets($0) }
+
             badgedAvatarView.update(readTx) { config in
-                // TODO: Badging — Add badge
-                config.dataSource = .asset(avatar: self.avatarImage(transaction: readTx), badge: nil)
+                config.dataSource = .asset(
+                    avatar: self.avatarImage(transaction: readTx),
+                    badge: self.displayBadgesOnProfile ? badgeImage : nil
+                )
             }
         }
 
@@ -373,11 +385,26 @@ extension ProfileSettingsViewController: ProfileNameViewControllerDelegate {
 }
 
 extension ProfileSettingsViewController: BadgeConfigurationDelegate {
-    func updateFeaturedBadge(_ updatedFeaturedBadge: ProfileBadge?) {
-        // TODO
+    func updateFeaturedBadge(_ updatedFeaturedBadge: OWSUserProfileBadgeInfo) {
+        guard allBadges.contains(where: { $0.badgeId == updatedFeaturedBadge.badgeId}) else {
+            owsFailDebug("Invalid badge")
+            return
+        }
+
+        if updatedFeaturedBadge.badgeId != allBadges.first?.badgeId {
+            hasUnsavedChanges = true
+
+            let nonPrimaryBadges = allBadges.filter { $0.badgeId != updatedFeaturedBadge.badgeId }
+            allBadges = [updatedFeaturedBadge] + nonPrimaryBadges
+            updateTableContents()
+        }
     }
 
     func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
-        // TODO
+        if displayBadgesOnProfile != shouldDisplayPublicly {
+            hasUnsavedChanges = true
+            displayBadgesOnProfile = shouldDisplayPublicly
+            updateTableContents()
+        }
     }
 }

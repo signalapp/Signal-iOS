@@ -282,6 +282,13 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     return [self.userProfileFinder userProfileForAddress:self.localProfileAddress transaction:transaction] != nil;
 }
 
+- (void)loadBadgeContentWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    for (OWSUserProfileBadgeInfo *badgeInfo in self.profileBadgeInfo) {
+        [badgeInfo loadBadgeWithTransaction:transaction];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     if (self = [super initWithCoder:coder]) {
@@ -624,6 +631,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     OWSUserProfile *_Nullable latestInstance = [OWSUserProfile anyFetchWithUniqueId:self.uniqueId
                                                                         transaction:transaction];
+    [latestInstance loadBadgeContentWithTransaction:transaction];
+
     __block OWSUserProfile *_Nullable updatedInstance;
     if (latestInstance != nil) {
         [self
@@ -787,6 +796,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
         didChange = YES;
     }
 
+    [self loadBadgeContentWithTransaction:transaction];
+    [updatedInstance loadBadgeContentWithTransaction:transaction];
+
     if (completion) {
         [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                                            block:completion];
@@ -947,7 +959,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
 - (nullable OWSUserProfileBadgeInfo *)primaryBadge
 {
-    return self.profileBadgeInfo.firstObject;
+    return self.visibleBadges.firstObject;
 }
 
 #pragma mark - Profile Avatars Directory
