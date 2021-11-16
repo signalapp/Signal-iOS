@@ -41,6 +41,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                      profileBio: String?,
                                      profileBioEmoji: String?,
                                      profileAvatarData: Data?,
+                                     visibleBadgeIds: [String]?,
                                      unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
 
         firstly(on: .global()) {
@@ -147,6 +148,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                                        bioEmoji: bioEmojiValue,
                                                                        hasAvatar: hasAvatar,
                                                                        paymentAddress: paymentAddressValue,
+                                                                       visibleBadgeIds: visibleBadgeIds,
                                                                        version: profileKeyVersionString,
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)

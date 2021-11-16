@@ -1013,6 +1013,7 @@ public extension DebugUIScreenshots {
                 profileBio: nil,
                 profileBioEmoji: nil,
                 profileAvatarData: avatarData,
+                visibleBadgeIds: nil,
                 userProfileWriter: .debugging
             ).asVoid()
         }.catch(on: .global()) { error in

@@ -627,12 +627,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                 actionBlock: { [weak self] in
                     if let self = self {
                         let vc = BadgeConfigurationViewController(
-                            availableBadges: {
-                                SDSDatabaseStorage.shared.read { readTx in
-                                    self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
-                                } ?? []
-                            }(),
-                            selectedBadgeIndex: nil,
+                            availableBadges: self.profileManagerImpl.localUserProfile().profileBadgeInfo ?? [],
                             shouldDisplayOnProfile: false,
                             delegate: self)
                         self.navigationController?.pushViewController(vc, animated: true)
@@ -1077,7 +1072,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 }
 
 extension SubscriptionViewController: BadgeConfigurationDelegate {
-    func updateFeaturedBadge(_ updatedFeaturedBadge: ProfileBadge?) {
+    func updateFeaturedBadge(_ updatedFeaturedBadge: OWSUserProfileBadgeInfo) {
         // TODO
     }
 

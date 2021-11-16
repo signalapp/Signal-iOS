@@ -112,6 +112,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
                                         transaction:(SDSAnyReadTransaction *)transaction;
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)loadBadgeContentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // For use by the OWSUserProfile extension only.
 - (void)applyChanges:(UserProfileChanges *)changes

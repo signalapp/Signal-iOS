@@ -6,8 +6,8 @@ import SignalUI
 import UIKit
 
 protocol BadgeCollectionDataSource: AnyObject {
-    var availableBadges: [ProfileBadge] { get }
-    var selectedBadgeIndex: Int? { get set }
+    var availableBadges: [OWSUserProfileBadgeInfo] { get }
+    var selectedBadgeIndex: Int { get set }
 }
 
 class BadgeCollectionView: UICollectionView {
@@ -112,13 +112,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     }
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        if collectionView.indexPathsForSelectedItems?.contains(indexPath) == true {
-            badgeDataSource?.selectedBadgeIndex = nil
-            collectionView.deselectItem(at: indexPath, animated: false)
-            return false
-        } else {
-            return isBadgeSelectionEnabled
-        }
+        return isBadgeSelectionEnabled
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -218,9 +212,9 @@ class BadgeCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func applyBadge(_ badge: ProfileBadge) {
-        badgeImageView.image = badge.assets?.universal160
-        badgeSubtitleView.text = badge.localizedName
+    func applyBadge(_ profileBadge: OWSUserProfileBadgeInfo) {
+        badgeImageView.image = profileBadge.badge?.assets?.universal160
+        badgeSubtitleView.text = profileBadge.badge?.localizedName
     }
 
     override func prepareForReuse() {

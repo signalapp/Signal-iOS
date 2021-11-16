@@ -182,6 +182,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                          bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
                                    paymentAddress:(nullable ProfileValue *)paymentAddress
+                                  visibleBadgeIds:(nullable NSArray<NSString *> *)visibleBadgeIds
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment;
 
