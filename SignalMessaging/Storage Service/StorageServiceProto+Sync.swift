@@ -524,7 +524,10 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         }
 
         if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction) {
+            Logger.info("profileAvatarUrlPath: yes")
             builder.setAvatarURL(profileAvatarUrlPath)
+        } else {
+            Logger.info("profileAvatarUrlPath: no")
         }
 
         if let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
