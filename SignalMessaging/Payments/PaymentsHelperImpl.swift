@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
@@ -21,27 +22,59 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         guard let localNumber = Self.tsAccountManager.localNumber else {
             return false
         }
-        guard let phoneNumber = PhoneNumber(fromE164: localNumber) else {
-            owsFailDebug("Could not parse phone number: \(localNumber).")
+        let paymentsDisabledRegions = RemoteConfig.paymentsDisabledRegions
+        if paymentsDisabledRegions.isEmpty {
+            return Self.isValidPhoneNumberForPayments_fixedWhitelist(localNumber)
+        } else {
+            return Self.isValidPhoneNumberForPayments_remoteConfigBlacklist(localNumber,
+                                                                            paymentsDisabledRegions: paymentsDisabledRegions)
+             }
+    }
+
+    private static func isValidPhoneNumberForPayments_fixedWhitelist(_ e164: String) -> Bool {
+        guard let phoneNumber = PhoneNumber(fromE164: e164) else {
+            owsFailDebug("Could not parse phone number: \(e164).")
             return false
         }
         guard let nsCountryCode = phoneNumber.getCountryCode() else {
-            owsFailDebug("Missing countryCode: \(localNumber).")
+            owsFailDebug("Missing countryCode: \(e164).")
             return false
         }
-        let invalidCountryCodes: [Int] = [
-            // Iran
-            98,
-            // Syria
-            963,
-            // Cuba
-            53,
-            // North Korea
-            850,
-            // Russia
-            7
+        let validCountryCodes: [Int] = [
+            // France
+            33,
+            // Switzerland
+            41,
+            // Parts of UK.
+            44,
+            // Germany
+            49
         ]
-        return !invalidCountryCodes.contains(nsCountryCode.intValue)
+        return validCountryCodes.contains(nsCountryCode.intValue)
+    }
+
+    internal static func isValidPhoneNumberForPayments_remoteConfigBlacklist(_ e164: String,
+                                                                             paymentsDisabledRegions: [String]) -> Bool {
+        guard !paymentsDisabledRegions.isEmpty else {
+            owsFailDebug("Missing paymentsDisabledRegions.")
+            return false
+        }
+        let e164Prefix = "+"
+        guard e164.hasPrefix(e164Prefix) else {
+            owsFailDebug("Invalid e164: \(e164).")
+            return false
+        }
+        let e164WithoutPrefix = e164.substring(from: e164Prefix.count)
+        guard !e164WithoutPrefix.isEmpty else {
+            owsFailDebug("Invalid e164: \(e164).")
+            return false
+        }
+        for regionPrefix in paymentsDisabledRegions {
+            if e164WithoutPrefix.hasPrefix(regionPrefix) {
+                return false
+            }
+        }
+        return true
     }
 
     public var canEnablePayments: Bool {

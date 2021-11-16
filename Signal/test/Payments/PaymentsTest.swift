@@ -76,4 +76,25 @@ class PaymentsTest: SignalBaseTest {
                                                         publicAddressData: publicAddressData,
                                                         signatureData: fakeSignatureData))
     }
+
+    func test_parsePaymentsDisabledRegions() {
+        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: ""))
+        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: "    "))
+        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: "a"))
+
+        XCTAssertEqual(["1"], RemoteConfig.parsePaymentsDisabledRegions(valueList: "1"))
+        XCTAssertEqual(["1"], RemoteConfig.parsePaymentsDisabledRegions(valueList: " 1a "))
+        XCTAssertEqual(["1", "2345", "67", "89"], RemoteConfig.parsePaymentsDisabledRegions(valueList: "1,2 345, +6 7,, ,89"))
+    }
+
+    func test_isValidPhoneNumberForPayments_remoteConfigBlacklist() {
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+523456",
+                                                                                             paymentsDisabledRegions: ["1", "234"]))
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+123456",
+                                                                                              paymentsDisabledRegions: ["1", "234"]))
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+233333333",
+                                                                                             paymentsDisabledRegions: ["1", "234"]))
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+234333333",
+                                                                                             paymentsDisabledRegions: ["1", "234"]))
+    }
 }

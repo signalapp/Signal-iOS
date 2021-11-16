@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class RemoteConfig: BaseFlags {
@@ -14,6 +15,7 @@ public class RemoteConfig: BaseFlags {
     private let researchMegaphone: Bool
     private let donateMegaphone: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
+    private let paymentsDisabledRegions: [String]
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
@@ -22,6 +24,7 @@ public class RemoteConfig: BaseFlags {
         self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
         self.donateMegaphone = Self.isCountryCodeBucketEnabled(.donateMegaphone, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
+        self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
     }
 
     @objc
@@ -160,6 +163,11 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.standardMediaQualityLevel
     }
 
+    public static var paymentsDisabledRegions: [String] {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.paymentsDisabledRegions
+    }
+
     private static func determineStandardMediaQualityLevel(valueFlags: [String: AnyObject]) -> ImageQualityLevel? {
         guard let stringValue = Self.countryCodeValue(.standardMediaQualityLevel, valueFlags: valueFlags),
               let uintValue = UInt(stringValue),
@@ -167,6 +175,35 @@ public class RemoteConfig: BaseFlags {
             return nil
         }
         return defaultMediaQuality
+    }
+
+    static func parsePaymentsDisabledRegions(valueFlags: [String: AnyObject]) -> [String] {
+        let flag: Flags.SupportedValuesFlags = .paymentsDisabledRegions
+        let rawFlag = flag.rawFlag
+        guard let valueList = valueFlags[rawFlag] as? String else { return [] }
+        return parsePaymentsDisabledRegions(valueList: valueList)
+    }
+
+    internal static func parsePaymentsDisabledRegions(valueList: String) -> [String] {
+        // The value should always be a comma-separated list of e164 prefixes
+        // without leading +, e.g.: "1,2 345,2 567,4".
+        // Note that values might have whitespace which needs to be stripped.
+        let disabledPrefixList = valueList
+            .components(separatedBy: ",")
+            .reduce(into: [String]()) { result, value in
+                let validCharacterSet = CharacterSet(charactersIn: "0123456789")
+                let filteredValue = value.components(separatedBy: validCharacterSet.inverted).joined()
+                guard !filteredValue.isEmpty else {
+                    if CurrentAppContext().isRunningTests {
+                        Logger.warn("Invalid value: \(valueList)")
+                    } else {
+                        owsFailDebug("Invalid value: \(valueList)")
+                    }
+                    return
+                }
+                result.append(filteredValue)
+        }
+        return disabledPrefixList
     }
 
     @objc
@@ -414,6 +451,7 @@ private struct Flags {
         case standardMediaQualityLevel
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
+        case paymentsDisabledRegions
     }
 }
 
@@ -434,6 +472,7 @@ private extension FlagType {
         case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
         case "researchMegaphone": return "research.megaphone.1"
         case "cdsSyncInterval": return "cds.syncInterval.seconds"
+        case "paymentsDisabledRegions": return "global.payments.disabledRegions"
         default: return Flags.prefix + rawValue
         }
     }
