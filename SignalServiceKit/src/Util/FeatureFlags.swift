@@ -243,7 +243,7 @@ public class FeatureFlags: BaseFlags {
     public static let subscriptions = build.includes(.qa)
 
     @objc
-    public static let canChangePhoneNumber = build.includes(.dev)
+    public static let canChangePhoneNumber = build.includes(.qa)
 
     @objc
     public static var notificationServiceExtension: Bool {
