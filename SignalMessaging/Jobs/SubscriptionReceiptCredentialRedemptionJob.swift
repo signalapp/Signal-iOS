@@ -140,6 +140,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
             firstly(on: .global()) {
                 return try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
+            }.then(on: .global()) {
+                self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
             }.done(on: .global()) {
                 Logger.debug("Presentation completed successfully")
                 self.didSucceed()
@@ -157,6 +159,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                                                                                        priorSubscriptionLevel: self.priorSubscriptionLevel)
             }.then { newReceiptCredentialPresentation in
                 return try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: newReceiptCredentialPresentation)
+            }.then(on: .global()) {
+                self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
             }.done(on: .global()) {
                 Logger.debug("Presentation completed successfully")
                 self.didSucceed()
