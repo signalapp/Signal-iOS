@@ -8,16 +8,23 @@ import UIKit
 protocol BadgeCollectionDataSource: AnyObject {
     var availableBadges: [OWSUserProfileBadgeInfo] { get }
     var selectedBadgeIndex: Int { get set }
+    func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
 }
 
 class BadgeCollectionView: UICollectionView {
     weak private var badgeDataSource: BadgeCollectionDataSource?
-    public var isBadgeSelectionEnabled: Bool = false {
+
+    enum SelectionMode: Equatable {
+        case none
+        case feature
+        case detailsSheet(shortOwnerName: String)
+    }
+    public var badgeSelctionMode: SelectionMode = .none {
         didSet {
             indexPathsForSelectedItems?.forEach { deselectItem(at: $0, animated: false) }
-            allowsSelection = isBadgeSelectionEnabled
+            allowsSelection = badgeSelctionMode != .none
 
-            if isBadgeSelectionEnabled, let selectedIdx = badgeDataSource?.selectedBadgeIndex {
+            if case .feature = badgeSelctionMode, let selectedIdx = badgeDataSource?.selectedBadgeIndex {
                 let indexPath = IndexPath(item: selectedIdx, section: 0)
                 selectItem(at: indexPath, animated: false, scrollPosition: [])
             }
@@ -108,15 +115,36 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     // MARK: Selection
 
     func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return isBadgeSelectionEnabled
+        return badgeSelctionMode != .none
     }
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return isBadgeSelectionEnabled
+        return badgeSelctionMode != .none
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        badgeDataSource?.selectedBadgeIndex = indexPath.item
+        switch badgeSelctionMode {
+        case .none:
+            owsFailDebug("This should never happen")
+        case .feature:
+            badgeDataSource?.selectedBadgeIndex = indexPath.item
+        case .detailsSheet(let shortOwnerName):
+            collectionView.deselectItem(at: indexPath, animated: false)
+
+            guard let dataSource = badgeDataSource else { return }
+
+            let badgeInfo = dataSource.availableBadges[indexPath.item]
+            databaseStorage.read { badgeInfo.loadBadge(transaction: $0) }
+            guard let badge = badgeInfo.badge else {
+                return owsFailDebug("Unexpectedly missing badge")
+            }
+
+            let detailsSheet = BadgeDetailsSheet(
+                focusedBadge: badge,
+                owner: .local(shortName: shortOwnerName)
+            )
+            dataSource.present(detailsSheet, animated: true, completion: nil)
+        }
     }
 
     // MARK: Cell data provider

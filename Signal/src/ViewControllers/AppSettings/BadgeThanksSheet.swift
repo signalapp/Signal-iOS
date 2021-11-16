@@ -91,7 +91,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         updateTableContents()
     }
 
@@ -104,7 +104,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         // We add the handle directly to the content view,
         // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = tableViewController.tableBackgroundColor
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         contentView.addSubview(handleContainer)
         handleContainer.autoPinWidthToSuperview()
         handleContainer.autoPinEdge(toSuperviewEdge: .top)
