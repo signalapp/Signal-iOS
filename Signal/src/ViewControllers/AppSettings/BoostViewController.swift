@@ -14,7 +14,8 @@ class BoostSheetView: InteractiveSheetViewController {
     let boostVC = BoostViewController()
     let handleContainer = UIView()
     override var interactiveScrollViews: [UIScrollView] { [boostVC.tableView] }
-    override var minHeight: CGFloat { min(660, CurrentAppContext().frame.height) }
+    override var minHeight: CGFloat { min(680, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
+    override var maximizedHeight: CGFloat { minHeight }
     override var renderExternalHandle: Bool { false }
 
     // MARK: -
@@ -54,7 +55,7 @@ class BoostViewController: OWSTableViewController2 {
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
             guard oldValue != currencyCode else { return }
-            customValueTextField.setCurrencyCode(currencyCode, symbol: presets[currencyCode]?.symbol)
+            customValueTextField.setCurrencyCode(currencyCode, symbol: presets?[currencyCode]?.symbol)
             state = nil
             updateTableContents()
         }
@@ -77,23 +78,24 @@ class BoostViewController: OWSTableViewController2 {
         }
     }
 
-    private var presets = DonationUtilities.Presets.presets {
+    private var presets: [Currency.Code: DonationUtilities.Presets.Preset]? {
         didSet {
-            customValueTextField.setCurrencyCode(currencyCode, symbol: presets[currencyCode]?.symbol)
-            updateTableContents()
+            customValueTextField.setCurrencyCode(currencyCode, symbol: presets?[currencyCode]?.symbol)
         }
     }
+    private var boostBadge: ProfileBadge?
 
     enum State: Equatable {
+        case loading
         case presetSelected(amount: UInt)
         case customValueSelected
         case donatedSuccessfully
     }
-    private var state: State? {
+    private var state: State? = .loading {
         didSet {
             guard oldValue != state else { return }
             if oldValue == .customValueSelected { clearCustomTextField() }
-            if state == .donatedSuccessfully { updateTableContents() }
+            if state == .donatedSuccessfully || oldValue == .loading { updateTableContents() }
             updatePresetButtonSelection()
         }
     }
@@ -108,10 +110,18 @@ class BoostViewController: OWSTableViewController2 {
 
         super.viewDidLoad()
 
-        SubscriptionManager.getSuggestedBoostAmounts().done { [weak self] in
-            self?.presets = $0
-        }.catch { _ in
-            owsFailDebug("Failed to request suggested amounts for boost, falling back to defaults.")
+        firstly(on: .global()) {
+            Promise.when(fulfilled: SubscriptionManager.getBoostBadge(), SubscriptionManager.getSuggestedBoostAmounts())
+        }.then(on: .main) { [weak self] (boostBadge, presets) -> Promise<Void> in
+            guard let self = self else { return Promise.value(()) }
+
+            self.presets = presets
+            self.boostBadge = boostBadge
+            self.state = nil
+
+            return self.profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
+        }.catch { error in
+            owsFailDebug("Failed to fetch boost info \(error)")
         }
 
         customValueTextField.placeholder = NSLocalizedString(
@@ -177,6 +187,7 @@ class BoostViewController: OWSTableViewController2 {
     }
 
     func updateTableContents() {
+
         let contents = OWSTableContents()
         defer {
             self.contents = contents
@@ -229,6 +240,36 @@ class BoostViewController: OWSTableViewController2 {
 
             return stackView
         }()
+
+        if state == .loading {
+            section.add(.init(
+                customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    let cell = self.newCell()
+                    let stackView = UIStackView()
+                    stackView.axis = .vertical
+                    stackView.alignment = .center
+                    stackView.layoutMargins = UIEdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0)
+                    stackView.isLayoutMarginsRelativeArrangement = true
+                    cell.contentView.addSubview(stackView)
+                    stackView.autoPinEdgesToSuperviewEdges()
+
+                    let activitySpinner: UIActivityIndicatorView
+                    if #available(iOS 13, *) {
+                        activitySpinner = UIActivityIndicatorView(style: .medium)
+                    } else {
+                        activitySpinner = UIActivityIndicatorView(style: .gray)
+                    }
+
+                    activitySpinner.startAnimating()
+
+                    stackView.addArrangedSubview(activitySpinner)
+
+                    return cell
+                },
+                actionBlock: {}
+            ))
+        }
 
         addApplePayItemsIfAvailable(to: section)
 
@@ -283,7 +324,7 @@ class BoostViewController: OWSTableViewController2 {
 extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
     func addApplePayItemsIfAvailable(to section: OWSTableSection) {
-        guard DonationUtilities.isApplePayAvailable else { return }
+        guard DonationUtilities.isApplePayAvailable, state != .loading else { return }
 
         // Currency Picker
 
@@ -363,7 +404,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
         // Preset donation options
 
-        if let preset = presets[currencyCode] {
+        if let preset = presets?[currencyCode] {
             section.add(.init(
                 customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
@@ -584,10 +625,38 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             completion(.init(status: .failure, errors: [OWSAssertionError("Missing donation amount")]))
             return
         }
-        SubscriptionManager.boost(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
+
+        firstly {
+            Stripe.boost(amount: donationAmount, in: currencyCode, for: payment)
+        }.done { intentId in
             completion(.init(status: .success, errors: nil))
-            self?.state = .donatedSuccessfully
-            // TODO: Present thanks sheet.
+
+            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+                SubscriptionManager.createAndRedeemBoostReceipt(for: intentId).done { [weak self] in
+                    modal.dismiss {}
+
+                    guard let self = self else { return }
+                    self.state = .donatedSuccessfully
+
+                    guard let boostBadge = self.boostBadge else {
+                        return owsFailDebug("Missing boost badge!")
+                    }
+
+                    // We're presented in a sheet context, so we must dismiss the sheet and then present
+                    // the thank you sheet.
+                    if self.parent is BoostSheetView {
+                        let presentingVC = self.parent?.presentingViewController
+                        self.parent?.dismiss(animated: true) {
+                            presentingVC?.present(BadgeThanksSheet(badge: boostBadge), animated: true)
+                        }
+                    } else {
+                        self.present(BadgeThanksSheet(badge: boostBadge), animated: true)
+                    }
+                }.catch { error in
+                    modal.dismiss {}
+                    owsFailDebugUnlessNetworkFailure(error)
+                }
+            }
         }.catch { error in
             owsFailDebugUnlessNetworkFailure(error)
             completion(.init(status: .failure, errors: [error]))

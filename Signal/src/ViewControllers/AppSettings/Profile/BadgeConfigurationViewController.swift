@@ -124,9 +124,18 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
                         "BADGE_CONFIGURATION_BADGE_SECTION_TITLE",
                         comment: "Section header for badge view section in the badge configuration page"),
                     items: [
-                        OWSTableItem(customCellBlock: {
-                            let collectionView = BadgeCollectionView(dataSource: self)
+                        OWSTableItem(customCellBlock: { [weak self] in
                             let cell = OWSTableItem.newCell()
+                            guard let self = self else { return cell }
+                            let collectionView = BadgeCollectionView(dataSource: self)
+
+                            if let localAddress = self.tsAccountManager.localAddress {
+                                let localShortName = self.databaseStorage.read { self.contactsManager.shortDisplayName(for: localAddress, transaction: $0) }
+                                collectionView.badgeSelctionMode = .detailsSheet(shortOwnerName: localShortName)
+                            } else {
+                                owsFailDebug("Unexpectedly missing local address")
+                            }
+
                             cell.contentView.addSubview(collectionView)
                             collectionView.autoPinEdgesToSuperviewMargins()
 

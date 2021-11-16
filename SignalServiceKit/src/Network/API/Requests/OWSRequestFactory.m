@@ -1048,6 +1048,13 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
++ (TSRequest *)boostBadgesRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/badges"]
+                              method:@"GET"
+                          parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
