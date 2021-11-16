@@ -21,7 +21,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     private var bio: String?
     private var bioEmoji: String?
     private var allBadges: [OWSUserProfileBadgeInfo] = []
-    private var displayBadgesOnProfile: Bool!
+    private var displayBadgesOnProfile: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,13 +40,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
         allBadges = snapshot.profileBadgeInfo ?? []
-        displayBadgesOnProfile = allBadges.allSatisfy({ badge in
+        displayBadgesOnProfile = allBadges.allSatisfy { badge in
             badge.isVisible ?? {
                 owsFailDebug("Local user badges should always have a non-nil visibility flag")
                 return true
             }()
-        })
-
+        }
         updateTableContents()
     }
 
@@ -285,16 +284,17 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         cell.selectionStyle = .none
 
-        let badgedAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
+        let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
+        let badgedAvatarView = ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
             let primaryBadge = allBadges.first
             let badgeAssets = primaryBadge?.badge?.assets
-            let badgeAsset = Theme.isDarkThemeEnabled ? badgeAssets?.dark36 : badgeAssets?.light36
+            let badgeImage = badgeAssets.flatMap { sizeClass.fetchImageFromBadgeAssets($0) }
 
             badgedAvatarView.update(readTx) { config in
                 config.dataSource = .asset(
                     avatar: self.avatarImage(transaction: readTx),
-                    badge: self.displayBadgesOnProfile ? badgeAsset : nil
+                    badge: self.displayBadgesOnProfile ? badgeImage : nil
                 )
             }
         }
