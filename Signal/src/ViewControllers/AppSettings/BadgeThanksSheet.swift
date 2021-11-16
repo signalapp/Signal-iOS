@@ -65,13 +65,19 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     @discardableResult
     func saveVisibilityChanges() -> Promise<Void> {
-        guard shouldMakeVisibleAndPrimary else { return Promise.value(()) }
-
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
 
         let allBadges = snapshot.profileBadgeInfo ?? []
         let nonPrimaryBadgeIds = allBadges.filter { $0.badgeId != self.badge.id }.map { $0.badgeId }
-        let visibleBadgeIds = [self.badge.id] + nonPrimaryBadgeIds
+
+        let visibleBadgeIds: [String]
+        if shouldMakeVisibleAndPrimary {
+            visibleBadgeIds = [self.badge.id] + nonPrimaryBadgeIds
+        } else if !nonPrimaryBadgeIds.isEmpty {
+            visibleBadgeIds = nonPrimaryBadgeIds + [self.badge.id]
+        } else {
+            visibleBadgeIds = []
+        }
 
         return OWSProfileManager.updateLocalProfilePromise(
             profileGivenName: snapshot.givenName,
