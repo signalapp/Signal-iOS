@@ -75,7 +75,6 @@ public extension OWSUserProfile {
     private static let bioComponentCache = LRUCache<String, String>(maxSize: 256)
     private static let unfairLock = UnfairLock()
 
-    @objc
     var visibleBadges: [OWSUserProfileBadgeInfo] {
         let allBadges = profileBadgeInfo ?? []
         return allBadges.filter { $0.isVisible ?? true }
