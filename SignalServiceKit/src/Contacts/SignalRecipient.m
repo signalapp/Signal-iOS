@@ -410,7 +410,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
             shouldUpdate = YES;
 
-            OWSAssertDebug(phoneNumberInstance.recipientUUID != nil);
             [phoneNumberInstance changePhoneNumber:nil transaction:transaction.unwrapGrdbWrite];
             [phoneNumberInstance anyOverwritingUpdateWithTransaction:transaction];
             [uuidInstance changePhoneNumber:address.phoneNumber transaction:transaction.unwrapGrdbWrite];
@@ -425,6 +424,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             // clear the phone number from this instance and create a new instance.
             [phoneNumberInstance changePhoneNumber:nil transaction:transaction.unwrapGrdbWrite];
             [phoneNumberInstance anyOverwritingUpdateWithTransaction:transaction];
+            // phoneNumberInstance is no longer associated with the phone number.
+            // We will create a "newInstance" for the new uuid, phone number below.
         } else {
             if (address.uuidString) {
                 OWSLogWarn(
@@ -442,6 +443,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         }
     } else if (uuidInstance) {
         if (address.phoneNumber) {
+            // We need to update the phone number on uuidInstance.
+
             if (uuidInstance.recipientPhoneNumber == nil) {
                 OWSLogWarn(
                     @"Learned uuid (%@) is associated with phoneNumber (%@).", address.uuidString, address.phoneNumber);
@@ -454,6 +457,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
             shouldUpdate = YES;
             [uuidInstance changePhoneNumber:address.phoneNumber transaction:transaction.unwrapGrdbWrite];
+        } else {
+            // No work is necessary.
         }
 
         existingInstance = uuidInstance;
