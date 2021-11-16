@@ -990,9 +990,10 @@
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
-		F05243B4273361F7009A1EB1 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05243B2273361F7009A1EB1 /* SubscriptionManager.swift */; };
-		F05243B5273361F7009A1EB1 /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05243B3273361F7009A1EB1 /* DonationUtilities.swift */; };
-		F05243B7273365B0009A1EB1 /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05243B6273365B0009A1EB1 /* Stripe.swift */; };
+		F00385FF273F6388000B5ABD /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FC273F6388000B5ABD /* SubscriptionManager.swift */; };
+		F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
+		F0038601273F6388000B5ABD /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
+		F026749627405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F026749527405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
 		F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */; };
@@ -2294,9 +2295,10 @@
 		E27EBB962FA58BAC64DD64A3 /* Pods-SignalUITests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.app store release.xcconfig"; sourceTree = "<group>"; };
 		E434E65F6E6E989A106307BA /* Pods-SignalTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCaptureDismiss.swift; sourceTree = "<group>"; };
-		F05243B2273361F7009A1EB1 /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
-		F05243B3273361F7009A1EB1 /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
-		F05243B6273365B0009A1EB1 /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
+		F00385FC273F6388000B5ABD /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
+		F00385FD273F6388000B5ABD /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
+		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
+		F026749527405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
 		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
 		F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuConfiguration.swift; sourceTree = "<group>"; };
@@ -3609,13 +3611,14 @@
 				3461293F1FD1D74B00532771 /* environment */,
 				34BB3C5723C6644B001651FC /* groups */,
 				453518951FC63DBF00210559 /* Info.plist */,
+				F026749427405BF4005853DC /* Jobs */,
 				88D23D0823CEBF4400B0E74B /* Notifications */,
-				F05243B1273361F7009A1EB1 /* Subscriptions */,
 				3474C56526111605006723D2 /* Payments */,
 				346129B01FD1F7E800532771 /* profiles */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
+				F00385FB273F6388000B5ABD /* Subscriptions */,
 				34480B471FD0A60200BC14EF /* utils */,
 			);
 			path = SignalMessaging;
@@ -4486,14 +4489,22 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		F05243B1273361F7009A1EB1 /* Subscriptions */ = {
+		F00385FB273F6388000B5ABD /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
-				F05243B2273361F7009A1EB1 /* SubscriptionManager.swift */,
-				F05243B6273365B0009A1EB1 /* Stripe.swift */,
-				F05243B3273361F7009A1EB1 /* DonationUtilities.swift */,
+				F00385FC273F6388000B5ABD /* SubscriptionManager.swift */,
+				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
+				F00385FE273F6388000B5ABD /* Stripe.swift */,
 			);
 			path = Subscriptions;
+			sourceTree = "<group>";
+		};
+		F026749427405BF4005853DC /* Jobs */ = {
+			isa = PBXGroup;
+			children = (
+				F026749527405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift */,
+			);
+			path = Jobs;
 			sourceTree = "<group>";
 		};
 		F0B872B4269CF01E00D26481 /* Context Menus */ = {
@@ -5777,13 +5788,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F05243B4273361F7009A1EB1 /* SubscriptionManager.swift in Sources */,
+				F00385FF273F6388000B5ABD /* SubscriptionManager.swift in Sources */,
 				88D23D0C23CEBF4400B0E74B /* AppNotifications.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				342FFE832721D4B6000AC89F /* ContactsManagerCache.swift in Sources */,
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
+				F026749627405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
-				F05243B5273361F7009A1EB1 /* DonationUtilities.swift in Sources */,
+				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */,
 				4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
@@ -5803,7 +5815,7 @@
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				3402AABF271DA2720084CBAE /* VoiceMessageModels.swift in Sources */,
-				F05243B7273365B0009A1EB1 /* Stripe.swift in Sources */,
+				F0038601273F6388000B5ABD /* Stripe.swift in Sources */,
 				3478506B1FD9B78A007B8332 /* NoopCallMessageHandler.swift in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,

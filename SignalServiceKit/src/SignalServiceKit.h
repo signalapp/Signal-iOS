@@ -43,6 +43,7 @@
 #import <SignalServiceKit/OWSOutgoingResendRequest.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSReaction.h>
+#import <SignalServiceKit/OWSReceiptCredentialRedemptionJobRecord.h>
 #import <SignalServiceKit/OWSReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRecoverableDecryptionPlaceholder.h>

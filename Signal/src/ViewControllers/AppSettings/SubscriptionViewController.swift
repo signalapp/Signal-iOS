@@ -143,32 +143,35 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     func fetchCurrentSubscription() {
         // Fetch current subscription state
+        var subscriberID: Data?
+        var currencyCode: String?
         SDSDatabaseStorage.shared.read { transaction in
-            let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
-            let currencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
-            if let subscripberID = subscriberID, let currencyCode = currencyCode {
-                self.persistedSubscriberID = subscriberID
-                self.persistedSubscriberCurrencyCode = currencyCode
-                firstly {
-                    SubscriptionManager.getCurrentSubscriptionStatus(for: subscripberID)
-                }.done(on: .main) { subscription in
-                    self.fetchedSubscriptionStatus = true
-                    self.currentSubscription = subscription
+            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+            currencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
+        }
+
+        if let subscripberID = subscriberID, let currencyCode = currencyCode {
+            self.persistedSubscriberID = subscriberID
+            self.persistedSubscriberCurrencyCode = currencyCode
+            firstly {
+                SubscriptionManager.getCurrentSubscriptionStatus(for: subscripberID)
+            }.done(on: .main) { subscription in
+                self.fetchedSubscriptionStatus = true
+                self.currentSubscription = subscription
+                self.updateTableContents()
+                self.avatarView.reloadDataIfNecessary()
+            }.catch { error in
+                owsFailDebug("Failed to fetch subscription \(error)")
+            }
+        } else {
+            self.currentSubscription = nil
+            if self.fetchedSubscriptionStatus {
+                // Dispatch to next run loop to avoid reentrant db calls
+                DispatchQueue.main.async {
                     self.updateTableContents()
-                    self.avatarView.reloadDataIfNecessary()
-                }.catch { error in
-                    owsFailDebug("Failed to fetch subscription \(error)")
                 }
             } else {
-                self.currentSubscription = nil
-                if self.fetchedSubscriptionStatus {
-                    // Dispatch to next run loop to avoid reentrant db calls
-                    DispatchQueue.main.async {
-                        self.updateTableContents()
-                    }
-                } else {
-                    self.fetchedSubscriptionStatus = true
-                }
+                self.fetchedSubscriptionStatus = true
             }
         }
     }
@@ -516,7 +519,6 @@ class SubscriptionViewController: OWSTableViewController2 {
                     let vc = BadgeConfigurationViewController(
                         availableBadges: {
                             SDSDatabaseStorage.shared.read { readTx in
-                                // TODO: Use the profile snapshot like everything else does here
                                 self.profileManagerImpl.localUserProfile().profileBadgeInfo?.compactMap { $0.fetchBadgeContent(transaction: readTx) }
                             } ?? []
                         }(),
@@ -857,6 +859,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self
+        SubscriptionManager.terminateTransactionIfPossible = false
         paymentController.present { presented in
             if !presented { owsFailDebug("Failed to present payment controller") }
         }
@@ -884,10 +887,12 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             }.done(on: .main) {
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
             }.catch { error in
                 let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 owsFailDebug("Error setting up subscription, \(error)")
             }
 
@@ -897,10 +902,12 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             }.done(on: .main) {
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 self.fetchAndRedeemReceipts(newSubscriptionLevel: selectedSubscription)
             }.catch { error in
                 let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
                 completion(authResult)
+                SubscriptionManager.terminateTransactionIfPossible = false
                 owsFailDebug("Error setting up subscription, \(error)")
             }
         }
@@ -908,6 +915,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
     }
 
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
+        SubscriptionManager.terminateTransactionIfPossible = true
         controller.dismiss()
     }
 
@@ -915,23 +923,25 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
         var subscriberID: Data?
         SDSDatabaseStorage.shared.read { transaction in
             subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+        }
 
-            guard let subscriberID = subscriberID else {
-                owsFailDebug("Did not fetch subscriberID")
-                return
-            }
+        guard let subscriberID = subscriberID else {
+            owsFailDebug("Did not fetch subscriberID")
+            return
+        }
 
-            firstly {
-                return try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscription: newSubscriptionLevel, priorSubscription: priorSubscriptionLevel)
-            }.done(on: .main) { _ in
-                if self.subscriptionViewState == .subscriptionUpdating {
-                    self.navigationController?.popViewController(animated: true)
-                } else {
-                    self.fetchCurrentSubscription()
-                }
-            }.catch { error in
-                owsFailDebug("Failed to redeem with error \(error)")
-            }
+        do {
+            try SubscriptionManager.requestAndRedeemRecieptsIfNecessary(for: subscriberID,
+                                                                           subscriptionLevel: newSubscriptionLevel.level,
+                                                                           priorSubscriptionLevel: priorSubscriptionLevel?.level ?? 0)
+        } catch {
+            owsFailDebug("Failed to redeem receipts \(error)")
+        }
+
+        if self.subscriptionViewState == .subscriptionUpdating {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            self.fetchCurrentSubscription()
         }
     }
 
