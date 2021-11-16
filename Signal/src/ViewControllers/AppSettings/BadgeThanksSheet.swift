@@ -69,13 +69,9 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
 
-        var allBadges = snapshot.profileBadgeInfo ?? []
-        guard let newlyFeaturedBadge = allBadges.first(where: { $0.badgeId == self.badge.id }) else {
-            return Promise(error: OWSAssertionError("Invalid badge"))
-        }
-
-        let nonPrimaryBadges = allBadges.filter { $0.badgeId != newlyFeaturedBadge.badgeId }
-        allBadges = [newlyFeaturedBadge] + nonPrimaryBadges
+        let allBadges = snapshot.profileBadgeInfo ?? []
+        let nonPrimaryBadgeIds = allBadges.filter { $0.badgeId != self.badge.id }.map { $0.badgeId }
+        let visibleBadgeIds = [self.badge.id] + nonPrimaryBadgeIds
 
         return OWSProfileManager.updateLocalProfilePromise(
             profileGivenName: snapshot.givenName,
@@ -83,7 +79,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             profileBio: snapshot.bio,
             profileBioEmoji: snapshot.bioEmoji,
             profileAvatarData: snapshot.avatarData,
-            visibleBadgeIds: allBadges.map { $0.badgeId },
+            visibleBadgeIds: visibleBadgeIds,
             userProfileWriter: .localUser
         )
     }
