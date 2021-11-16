@@ -67,12 +67,15 @@ public struct Subscription {
 public class SubscriptionManager: NSObject {
 
     public static let subscriptionJobQueue = SubscriptionReceiptCredentialJobQueue()
+    public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
+    public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
     private static let subscriberIDKey = "subscriberID"
     private static let subscriberCurrencyCodeKey = "subscriberCurrencyCode"
     private static let lastSubscriptionExpirationKey = "subscriptionExpiration"
     private static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
     private static let pendingRecieptCredentialPresentationKey = "pendingReceiptCredentialPresentation"
+    private static let lastSubscriptionReceiptRedemptionFailedKey = "lastSubscriptionReceiptRedemptionFailedKey"
 
     public static var terminateTransactionIfPossible = false
 
@@ -193,6 +196,14 @@ public class SubscriptionManager: NSObject {
         subscriptionKVS.setObject(serializedPresentation,
                                   key: pendingRecieptCredentialPresentationKey,
                                   transaction: transaction)
+    }
+
+    public static func setLastReceiptRedemptionFailed(failed: Bool, transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setBool(failed, key: lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
+    }
+
+    public static func lastReceiptRedemptionFailed(transaction: SDSAnyReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction) ?? false
     }
 
     private class func setupNewSubscriberID() throws -> Promise<Data> {
@@ -414,10 +425,22 @@ public class SubscriptionManager: NSObject {
     public class func requestAndRedeemRecieptsIfNecessary(for subscriberID: Data,
                                                           subscriptionLevel: UInt,
                                                           priorSubscriptionLevel: UInt = 0) throws {
-
         let request = try generateSubscriptionRequest()
 
+        // Remove prior operations if one exists (allow prior job to complete)
+        for redemptionJob in subscriptionJobQueue.runningOperations.get() {
+            redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
+        }
+
+        subscriptionJobQueue.runningOperations.removeAll()
+
+        // Reset failure state
+        SDSDatabaseStorage.shared.write { transaction in
+            self.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
+        }
+
         SDSDatabaseStorage.shared.asyncWrite { transaction in
+
             self.subscriptionJobQueue.add(isBoost: false,
                                           receiptCredentialRequestContext: request.context.serialize().asData,
                                           receiptCredentailRequest: request.request.serialize().asData,

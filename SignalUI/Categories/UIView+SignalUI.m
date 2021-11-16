@@ -426,6 +426,18 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     ];
 }
 
+- (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view withInset:(UIEdgeInsets)inset
+{
+    OWSAssertDebug(view);
+
+    return @[
+        [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view withOffset:-inset.top],
+        [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view withOffset:inset.bottom],
+        [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:view withOffset:inset.left],
+        [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:view withOffset:-inset.right],
+    ];
+}
+
 #pragma mark - Debugging
 
 - (void)addBorderWithColor:(UIColor *)color
