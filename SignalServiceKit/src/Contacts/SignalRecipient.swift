@@ -18,20 +18,21 @@ extension SignalRecipient {
     @objc
     func changePhoneNumber(_ newPhoneNumber: String?, transaction: GRDBWriteTransaction) {
 
-        let oldPhoneNumber = recipientPhoneNumber
-        let oldUuid = recipientUUID
-        Logger.info("uuid: \(String(describing: self.recipientUUID)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber)) ")
+        let newPhoneNumber = newPhoneNumber?.nilIfEmpty
+        let oldPhoneNumber = recipientPhoneNumber?.nilIfEmpty
+        let oldUuid: UUID? = UUID(uuidString: recipientUUID?.nilIfEmpty ?? "")
 
         let isWhitelisted = profileManager.isUser(inProfileWhitelist: self.address,
                                                   transaction: transaction.asAnyRead)
 
         if newPhoneNumber == nil && recipientUUID == nil {
-            owsFailDebug("Unexpectedly tried to clear out the phone number on a recipient with no UUID")
+            Logger.warn("Clearing out the phone number on a recipient with no UUID. uuid: \(String(describing: self.recipientUUID)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber)) ")
             // Fill in a random UUID, so we can complete the change and maintain a common
             // association for all the records and not leave them dangling. This should
             // in general never happen.
             recipientUUID = UUID().uuidString
-            Logger.info("uuid: \(String(describing: self.recipientUUID)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber)) ")
+        } else {
+            Logger.info("uuid: \(String(describing: self.recipientUUID)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber))")
         }
 
         recipientPhoneNumber = newPhoneNumber
@@ -184,8 +185,18 @@ extension SignalRecipient {
 
         // Update SignalServiceAddressCache with the new uuid <-> phone number mapping
         let recipientUUID = self.recipientUUID
+
         if let newUuidString = recipientUUID,
             let newUuid = UUID(uuidString: newUuidString) {
+
+            // If we're removing the phone number from a phone-number-only
+            // recipient (e.g. assigning a mock uuid), remove any old mapping
+            // from the SignalServiceAddressCache.
+            if newPhoneNumber == nil,
+               let oldPhoneNumber = oldPhoneNumber,
+               oldUuid == nil {
+                Self.signalServiceAddressCache.removeMapping(phoneNumber: oldPhoneNumber)
+            }
 
             Self.signalServiceAddressCache.updateMapping(uuid: newUuid, phoneNumber: newPhoneNumber)
 
@@ -232,41 +243,45 @@ extension SignalRecipient {
             owsFailDebug("Missing or invalid UUID")
         }
 
-        transaction.addAsyncCompletion(queue: .global()) {
-            // Evacuate caches again once the transaction completes, in case
-            // some kind of race occured.
-            ModelReadCaches.shared.evacuateAllCaches()
+        if let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty {
+            // The "obsolete" address is the address the old phone number.
+            // It is _NOT_ the old (uuid, phone number) pair for this uuid.
+            let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
+            if let newUuidString = recipientUUID,
+               let newUuid = UUID(uuidString: newUuidString) {
+                let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
+                owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
+                owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
+            }
 
-            if let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty {
-                // The "obsolete" address is the address the old phone number.
-                // It is _NOT_ the old (uuid, phone number) pair for this uuid.
-                let obsoleteAddress = SignalServiceAddress(uuidString: nil, phoneNumber: oldPhoneNumber)
-                if let newUuidString = recipientUUID,
-                   let newUuid = UUID(uuidString: newUuidString) {
-                    let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
-                    owsAssertDebug(newAddress.uuid != obsoleteAddress.uuid)
-                    owsAssertDebug(newAddress.phoneNumber != obsoleteAddress.phoneNumber)
-                }
+            ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction.asAnyWrite)
 
-                Self.databaseStorage.write { _ in
-                    ProfileFetcherJob.clearProfileState(address: obsoleteAddress, transaction: transaction.asAnyWrite)
-                }
-
+            transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: obsoleteAddress)
 
                 if !CurrentAppContext().isRunningTests {
                     ProfileFetcherJob.fetchProfile(address: obsoleteAddress, ignoreThrottling: true)
                 }
             }
+        }
 
-            if let newUuidString = recipientUUID,
-                let newUuid = UUID(uuidString: newUuidString) {
-                let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
+        if let newUuidString = recipientUUID,
+            let newUuid = UUID(uuidString: newUuidString) {
+            let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
+
+            transaction.addAsyncCompletion(queue: .global()) {
                 Self.udManager.setUnidentifiedAccessMode(.unknown, address: newAddress)
+
                 if !CurrentAppContext().isRunningTests {
                     ProfileFetcherJob.fetchProfile(address: newAddress, ignoreThrottling: true)
                 }
             }
+        }
+
+        transaction.addAsyncCompletion(queue: .global()) {
+            // Evacuate caches again once the transaction completes, in case
+            // some kind of race occured.
+            ModelReadCaches.shared.evacuateAllCaches()
         }
     }
 

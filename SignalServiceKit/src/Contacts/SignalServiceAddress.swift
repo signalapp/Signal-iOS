@@ -525,7 +525,25 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     @objc
+    func removeMapping(phoneNumber: String) {
+
+        Logger.info("phoneNumber: \(phoneNumber)")
+
+        Self.unfairLock.withLock {
+            // If we previously had a UUID, disassociate it from the phone number.
+            if let oldUuid = phoneNumberToUUIDCache[phoneNumber] {
+                uuidToPhoneNumberCache[oldUuid] = nil
+            }
+
+            phoneNumberToHashValueCache[phoneNumber] = nil
+            phoneNumberToUUIDCache[phoneNumber] = nil
+        }
+    }
+
+    @objc
     func updateMapping(uuid: UUID, phoneNumber: String?) {
+
+        Logger.info("phoneNumber: \(phoneNumber), uuid: \(uuid)")
         Self.unfairLock.withLock {
             // Maintain the existing hash value for the given UUID, or create
             // a new hash if one is yet to exist.
