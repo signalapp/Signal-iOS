@@ -1,15 +1,18 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKJobRecord.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
+
 @interface OWSReceiptCredentialRedemptionJobRecord : SSKJobRecord
 
 @property (nonatomic, readonly) NSData *receiptCredentailRequestContext;
 @property (nonatomic, readonly) NSData *receiptCredentailRequest;
+@property (nonatomic, readonly, nullable) NSData *receiptCredentialPresentation;
 @property (nonatomic, readonly) NSData *subscriberID;
 @property (nonatomic, readonly) NSUInteger targetSubscriptionLevel;
 @property (nonatomic, readonly) NSUInteger priorSubscriptionLevel;
@@ -55,13 +58,17 @@ NS_ASSUME_NONNULL_BEGIN
           priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
+   receiptCredentialPresentation:(nullable NSData *)receiptCredentialPresentation
                     subscriberID:(NSData *)subscriberID
          targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:boostPaymentIntentID:isBoost:priorSubscriptionLevel:receiptCredentailRequest:receiptCredentailRequestContext:subscriberID:targetSubscriptionLevel:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:boostPaymentIntentID:isBoost:priorSubscriptionLevel:receiptCredentailRequest:receiptCredentailRequestContext:receiptCredentialPresentation:subscriberID:targetSubscriptionLevel:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)updateWithReceiptCredentialPresentation:(NSData *)receiptCredentialPresentation
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

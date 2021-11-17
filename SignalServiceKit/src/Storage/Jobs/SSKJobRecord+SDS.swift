@@ -52,6 +52,7 @@ public struct JobRecordRecord: SDSRecord {
     public let targetSubscriptionLevel: UInt?
     public let boostPaymentIntentID: String?
     public let isBoost: Bool?
+    public let receiptCredentialPresentation: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -79,6 +80,7 @@ public struct JobRecordRecord: SDSRecord {
         case targetSubscriptionLevel
         case boostPaymentIntentID
         case isBoost
+        case receiptCredentialPresentation
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -127,6 +129,7 @@ public extension JobRecordRecord {
         targetSubscriptionLevel = row[22]
         boostPaymentIntentID = row[23]
         isBoost = row[24]
+        receiptCredentialPresentation = row[25]
     }
 }
 
@@ -226,6 +229,7 @@ extension SSKJobRecord {
             let priorSubscriptionLevel: UInt = try SDSDeserialization.required(record.priorSubscriptionLevel, name: "priorSubscriptionLevel")
             let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
             let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
+            let receiptCredentialPresentation: Data? = SDSDeserialization.optionalData(record.receiptCredentialPresentation, name: "receiptCredentialPresentation")
             let subscriberID: Data = try SDSDeserialization.required(record.subscriberID, name: "subscriberID")
             let targetSubscriptionLevel: UInt = try SDSDeserialization.required(record.targetSubscriptionLevel, name: "targetSubscriptionLevel")
 
@@ -241,6 +245,7 @@ extension SSKJobRecord {
                                                            priorSubscriptionLevel: priorSubscriptionLevel,
                                                            receiptCredentailRequest: receiptCredentailRequest,
                                                            receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                                           receiptCredentialPresentation: receiptCredentialPresentation,
                                                            subscriberID: subscriberID,
                                                            targetSubscriptionLevel: targetSubscriptionLevel)
 
@@ -494,6 +499,7 @@ extension SSKJobRecord: DeepCopyable {
             let priorSubscriptionLevel: UInt = modelToCopy.priorSubscriptionLevel
             let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
             let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
+            let receiptCredentialPresentation: Data? = modelToCopy.receiptCredentialPresentation
             let subscriberID: Data = modelToCopy.subscriberID
             let targetSubscriptionLevel: UInt = modelToCopy.targetSubscriptionLevel
 
@@ -509,6 +515,7 @@ extension SSKJobRecord: DeepCopyable {
                                                            priorSubscriptionLevel: priorSubscriptionLevel,
                                                            receiptCredentailRequest: receiptCredentailRequest,
                                                            receiptCredentailRequestContext: receiptCredentailRequestContext,
+                                                           receiptCredentialPresentation: receiptCredentialPresentation,
                                                            subscriberID: subscriberID,
                                                            targetSubscriptionLevel: targetSubscriptionLevel)
         }
@@ -629,6 +636,7 @@ extension SSKJobRecordSerializer {
     static var targetSubscriptionLevelColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "targetSubscriptionLevel", columnType: .int64, isOptional: true) }
     static var boostPaymentIntentIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "boostPaymentIntentID", columnType: .unicodeString, isOptional: true) }
     static var isBoostColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isBoost", columnType: .int, isOptional: true) }
+    static var receiptCredentialPresentationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "receiptCredentialPresentation", columnType: .blob, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -660,7 +668,8 @@ extension SSKJobRecordSerializer {
         subscriberIDColumn,
         targetSubscriptionLevelColumn,
         boostPaymentIntentIDColumn,
-        isBoostColumn
+        isBoostColumn,
+        receiptCredentialPresentationColumn
         ])
     }
 }
@@ -1071,8 +1080,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let targetSubscriptionLevel: UInt? = nil
         let boostPaymentIntentID: String? = nil
         let isBoost: Bool? = nil
+        let receiptCredentialPresentation: Data? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation)
     }
 }
 

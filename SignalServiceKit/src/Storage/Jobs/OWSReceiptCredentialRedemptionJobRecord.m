@@ -3,6 +3,13 @@
 //
 
 #import "OWSReceiptCredentialRedemptionJobRecord.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+@interface OWSReceiptCredentialRedemptionJobRecord ()
+
+@property (nonatomic, nullable) NSData *receiptCredentialPresentation;
+
+@end
 
 @implementation OWSReceiptCredentialRedemptionJobRecord
 
@@ -52,6 +59,7 @@
           priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
+   receiptCredentialPresentation:(nullable NSData *)receiptCredentialPresentation
                     subscriberID:(NSData *)subscriberID
          targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
 {
@@ -72,6 +80,7 @@
     _priorSubscriptionLevel = priorSubscriptionLevel;
     _receiptCredentailRequest = receiptCredentailRequest;
     _receiptCredentailRequestContext = receiptCredentailRequestContext;
+    _receiptCredentialPresentation = receiptCredentialPresentation;
     _subscriberID = subscriberID;
     _targetSubscriptionLevel = targetSubscriptionLevel;
 
@@ -81,5 +90,17 @@
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)updateWithReceiptCredentialPresentation:(NSData *)receiptCredentialPresentation
+                                    transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self
+        anyUpdateReceiptCredentialRedemptionJobRecordWithTransaction:transaction
+                                                               block:^(
+                                                                   OWSReceiptCredentialRedemptionJobRecord *jobRecord) {
+                                                                   jobRecord.receiptCredentialPresentation
+                                                                       = receiptCredentialPresentation;
+                                                               }];
+}
 
 @end

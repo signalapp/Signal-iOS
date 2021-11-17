@@ -11,15 +11,25 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
 
     // Add optional paymentIntentID / isBoost
 
-    public func add(isBoost: Bool, receiptCredentialRequestContext: Data, receiptCredentailRequest: Data, subscriberID: Data, targetSubscriptionLevel: UInt, priorSubscriptionLevel: UInt, boostPaymentIntentID: String, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSReceiptCredentialRedemptionJobRecord(receiptCredentialRequestContext: receiptCredentialRequestContext,
-                                                                receiptCredentailRequest: receiptCredentailRequest,
-                                                                subscriberID: subscriberID,
-                                                                targetSubscriptionLevel: targetSubscriptionLevel,
-                                                                priorSubscriptionLevel: priorSubscriptionLevel,
-                                                                isBoost: isBoost,
-                                                                boostPaymentIntentID: boostPaymentIntentID,
-                                                                label: self.jobRecordLabel)
+    public func add(
+        isBoost: Bool,
+        receiptCredentialRequestContext: Data,
+        receiptCredentailRequest: Data,
+        subscriberID: Data,
+        targetSubscriptionLevel: UInt,
+        priorSubscriptionLevel: UInt,
+        boostPaymentIntentID: String,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
+            receiptCredentialRequestContext: receiptCredentialRequestContext,
+            receiptCredentailRequest: receiptCredentailRequest,
+            subscriberID: subscriberID,
+            targetSubscriptionLevel: targetSubscriptionLevel,
+            priorSubscriptionLevel: priorSubscriptionLevel,
+            isBoost: isBoost,
+            boostPaymentIntentID: boostPaymentIntentID,
+            label: self.jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 
@@ -65,7 +75,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     }
 
     public func buildOperation(jobRecord: OWSReceiptCredentialRedemptionJobRecord, transaction: SDSAnyReadTransaction) throws -> SubscriptionReceiptCredentailRedemptionOperation {
-        return SubscriptionReceiptCredentailRedemptionOperation(jobRecord)
+        return try SubscriptionReceiptCredentailRedemptionOperation(jobRecord)
     }
 }
 
@@ -83,110 +93,92 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
     let isBoost: Bool
     let subscriberID: Data
-    var receiptCredentialRequestContext: ReceiptCredentialRequestContext?
-    var receiptCredentialRequest: ReceiptCredentialRequest?
+    var receiptCredentialRequestContext: ReceiptCredentialRequestContext
+    var receiptCredentialRequest: ReceiptCredentialRequest
+    var receiptCredentialPresentation: ReceiptCredentialPresentation?
     let targetSubscriptionLevel: UInt
     let priorSubscriptionLevel: UInt
     let boostPaymentIntentID: String
 
-    @objc public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) {
+    @objc public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
         self.isBoost = jobRecord.isBoost
         self.subscriberID = jobRecord.subscriberID
         self.targetSubscriptionLevel = jobRecord.targetSubscriptionLevel
         self.priorSubscriptionLevel = jobRecord.priorSubscriptionLevel
         self.boostPaymentIntentID = jobRecord.boostPaymentIntentID
-
-        do {
-            self.receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentailRequestContext))
-            self.receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentailRequest))
-        } catch {
-            owsFailDebug("Failed to reconstitute request context, credential request \(error)")
-            self.receiptCredentialRequestContext = nil
-            self.receiptCredentialRequest = nil
+        self.receiptCredentialRequestContext = try ReceiptCredentialRequestContext(
+            contents: [UInt8](jobRecord.receiptCredentailRequestContext))
+        self.receiptCredentialRequest = try ReceiptCredentialRequest(
+            contents: [UInt8](jobRecord.receiptCredentailRequest))
+        if let receiptCredentialPresentation = jobRecord.receiptCredentialPresentation {
+            self.receiptCredentialPresentation = try ReceiptCredentialPresentation(
+                contents: [UInt8](receiptCredentialPresentation))
         }
     }
 
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
-        guard let context = receiptCredentialRequestContext, let request = receiptCredentialRequest else {
-            let error = OWSAssertionError("Can't run an operation with invalid context and request")
-            didFail(error: error)
-            return
-        }
-
-        // First check to see if we have an existing presentation
-        var serializedPresentation: Data?
-        self.databaseStorage.read { transaction in
-            serializedPresentation = SubscriptionManager.getPendingRecieptCredentialPresentation(transaction: transaction)
-        }
-
-        // We already have a receiptCredentialPresentation, lets redeem it
-        if let serializedPresentation = serializedPresentation {
-            Logger.info("[Subscriptions] Durable job redeeming persisted receipt credential presentation")
-
-            var presentation: ReceiptCredentialPresentation?
-            do {
-                presentation = try ReceiptCredentialPresentation(contents: [UInt8](serializedPresentation))
-            } catch {
-                let error = OWSAssertionError("Failed to redeem persisted display credential")
-                didFail(error: error)
-                return
+        firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
+            // We already have a receiptCredentialPresentation, lets use it
+            if let receiptCredentialPresentation = self.receiptCredentialPresentation {
+                Logger.info("[Subscriptions] Using persisted receipt credential presentation")
+                return Promise.value(receiptCredentialPresentation)
             }
 
-            guard let presentation = presentation else {
-                return
-            }
+            Logger.info("[Subscriptions] Creating new receipt credential presentation")
 
-            firstly(on: .global()) {
-                return try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
-            }.then(on: .global()) {
-                self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
-            }.done(on: .global()) {
-                Logger.info("[Subscriptions] Successfully redeemed persisted receipt credential presentation")
-                self.didSucceed()
-            }.catch(on: .global()) { error in
-                self.reportError(error)
-            }
-        } else {
-            // We do not have a receiptCredentialPresentation, lets go through the full flow
-
-            let isBoost = self.isBoost
-
-            firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
-                if isBoost {
+            // Create a new receipt credential presentation
+            return firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
+                if self.isBoost {
                     Logger.info("[Subscriptions] Durable job requesting receipt for boost")
-                    return try SubscriptionManager.requestBoostReceiptCredentialPresentation(for: self.boostPaymentIntentID, context: context, request: request)
+                    return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
+                        for: self.boostPaymentIntentID,
+                           context: self.receiptCredentialRequestContext,
+                           request: self.receiptCredentialRequest
+                    )
                 } else {
                     Logger.info("[Subscriptions] Durable job requesting receipt for subscription")
-                    return try SubscriptionManager.requestReceiptCredentialPresentation(for: self.subscriberID,
-                                                                                           context: context,
-                                                                                           request: request,
-                                                                                           targetSubscriptionLevel: self.targetSubscriptionLevel,
-                                                                                           priorSubscriptionLevel: self.priorSubscriptionLevel)
+                    return try SubscriptionManager.requestReceiptCredentialPresentation(
+                        for: self.subscriberID,
+                           context: self.receiptCredentialRequestContext,
+                           request: self.receiptCredentialRequest,
+                           targetSubscriptionLevel: self.targetSubscriptionLevel,
+                           priorSubscriptionLevel: self.priorSubscriptionLevel
+                    )
                 }
-            }.then { newReceiptCredentialPresentation in
-                return try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: newReceiptCredentialPresentation)
-            }.then(on: .global()) {
-                self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
-            }.done(on: .global()) {
-                Logger.info("[Subscriptions] Successfully got receipt credential and redeemed receipt credential presentation")
-                self.didSucceed()
-            }.catch(on: .global()) { error in
-                self.reportError(error)
+            }.then(on: .global()) { newReceiptCredentialPresentation in
+                // Store the receipt credential presentation, in case the job fails.
+                self.databaseStorage.writePromise { transaction in
+                    self.jobRecord.update(
+                        withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
+                        transaction: transaction
+                    )
+                }.map { _ in newReceiptCredentialPresentation }
             }
+        }.then(on: .global()) { newReceiptCredentialPresentation in
+            return try SubscriptionManager.redeemReceiptCredentialPresentation(
+                receiptCredentialPresentation: newReceiptCredentialPresentation
+            )
+        }.done(on: .global()) {
+            Logger.info("[Subscriptions] Successfully redeemed receipt credential presentation")
+            self.didSucceed()
+        }.catch(on: .global()) { error in
+            self.reportError(error)
         }
     }
 
     override public func didSucceed() {
         self.databaseStorage.write { transaction in
-            SubscriptionManager.setPendingRecieptCredentialPresentation(nil, transaction: transaction)
             if !self.isBoost {
                 SubscriptionManager.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
             }
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
-            NotificationCenter.default.postNotificationNameAsync(SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(
+                SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+                object: nil
+            )
         }
     }
 
@@ -206,11 +198,13 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func didFail(error: Error) {
         Logger.error("failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
-            SubscriptionManager.setPendingRecieptCredentialPresentation(nil, transaction: transaction)
             if !self.isBoost {
                 SubscriptionManager.setLastReceiptRedemptionFailed(failed: true, transaction: transaction)
             }
-            NotificationCenter.default.postNotificationNameAsync(SubscriptionManager.SubscriptionJobQueueDidFailJobNotification, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(
+                SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
+                object: nil
+            )
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
         }
     }

@@ -250,6 +250,7 @@ CREATE
             ,"targetSubscriptionLevel" INTEGER
             ,"boostPaymentIntentID" TEXT
             ,"isBoost" BOOLEAN
+            ,"receiptCredentialPresentation" BLOB
         )
 ;
 

@@ -137,6 +137,7 @@
     "JobRecordRecord.priorSubscriptionLevel": 18, 
     "JobRecordRecord.receiptCredentailRequest": 16, 
     "JobRecordRecord.receiptCredentailRequestContext": 17, 
+    "JobRecordRecord.receiptCredentialPresentation": 23, 
     "JobRecordRecord.removeMessageAfterSending": 9, 
     "JobRecordRecord.serverDeliveryTimestamp": 13, 
     "JobRecordRecord.status": 3, 

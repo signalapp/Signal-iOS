@@ -74,7 +74,6 @@ public class SubscriptionManager: NSObject {
     private static let subscriberCurrencyCodeKey = "subscriberCurrencyCode"
     private static let lastSubscriptionExpirationKey = "subscriptionExpiration"
     private static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
-    private static let pendingRecieptCredentialPresentationKey = "pendingReceiptCredentialPresentation"
     private static let lastSubscriptionReceiptRedemptionFailedKey = "lastSubscriptionReceiptRedemptionFailedKey"
 
     public static var terminateTransactionIfPossible = false
@@ -179,22 +178,6 @@ public class SubscriptionManager: NSObject {
     public static func setSubscriberCurrencyCode(_ currencyCode: String?, transaction: SDSAnyWriteTransaction) {
         subscriptionKVS.setObject(currencyCode,
                                   key: subscriberCurrencyCodeKey,
-                                  transaction: transaction)
-    }
-
-    public static func getPendingRecieptCredentialPresentation(transaction: SDSAnyReadTransaction) -> Data? {
-        guard let receiptCredentialPresentation = subscriptionKVS.getObject(
-            forKey: pendingRecieptCredentialPresentationKey,
-            transaction: transaction
-        ) as? Data else {
-            return nil
-        }
-        return receiptCredentialPresentation
-    }
-
-    public static func setPendingRecieptCredentialPresentation(_ serializedPresentation: Data?, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setObject(serializedPresentation,
-                                  key: pendingRecieptCredentialPresentationKey,
                                   transaction: transaction)
     }
 
@@ -534,20 +517,20 @@ public class SubscriptionManager: NSObject {
     public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = false) throws -> Promise<Void> {
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
-        // Persist pending receipt credential
-        SDSDatabaseStorage.shared.write { transaction in
-            self.setPendingRecieptCredentialPresentation(receiptCredentialPresentationData, transaction: transaction)
-        }
-
         let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
-        let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(receiptCredentialPresentationString, makePrimary: makePrimary)
-        return firstly {
+        let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(
+            receiptCredentialPresentationString,
+            makePrimary: makePrimary
+        )
+        return firstly(on: .global()) {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 throw OWSRetryableSubscriptionError()
             }
+        }.then(on: .global()) {
+            self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
         }
     }
 

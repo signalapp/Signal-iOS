@@ -122,6 +122,7 @@ public class GRDBSchemaMigrator: NSObject {
         case messageDecryptDeduplicationV6
         case createProfileBadgeTable
         case createSubscriptionDurableJob
+        case addReceiptPresentationToSubscriptionDurableJob
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -165,7 +166,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 28
+    public static let grdbSchemaVersionLatest: UInt = 29
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1497,6 +1498,16 @@ public class GRDBSchemaMigrator: NSObject {
                     table.add(column: "targetSubscriptionLevel", .integer)
                     table.add(column: "boostPaymentIntentID", .text)
                     table.add(column: "isBoost", .boolean)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addReceiptPresentationToSubscriptionDurableJob.rawValue) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "receiptCredentialPresentation", .blob)
                 }
             } catch {
                 owsFail("Error: \(error)")
