@@ -627,10 +627,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in
                     if let self = self {
-                        let vc = BadgeConfigurationViewController(
-                            availableBadges: self.profileManagerImpl.localUserProfile().profileBadgeInfo ?? [],
-                            shouldDisplayOnProfile: false,
-                            delegate: self)
+                        let vc = BadgeConfigurationViewController(fetchingDataFromLocalProfileWithDelegate: self)
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 }
@@ -1189,12 +1186,54 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 }
 
 extension SubscriptionViewController: BadgeConfigurationDelegate {
-    func updateFeaturedBadge(_ updatedFeaturedBadge: OWSUserProfileBadgeInfo) {
-        // TODO
+    func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
+        if !self.reachabilityManager.isReachable {
+            OWSActionSheets.showErrorAlert(
+                message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
+                                           comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."))
+            return
+        }
+
+        firstly { () -> Promise<Void> in
+            let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
+            let allBadges = snapshot.profileBadgeInfo ?? []
+            let oldVisibleBadgeIds = allBadges.filter { $0.isVisible ?? true }.map { $0.badgeId }
+            let newVisibleBadgeIds: [String]
+
+            switch setting {
+            case .doNotDisplayPublicly:
+                newVisibleBadgeIds = []
+            case .display(featuredBadge: let newFeaturedBadge):
+                guard allBadges.contains(where: { $0.badgeId == newFeaturedBadge.badgeId }) else {
+                    throw OWSAssertionError("Invalid badge")
+                }
+                newVisibleBadgeIds = [newFeaturedBadge.badgeId] + oldVisibleBadgeIds.filter { $0 != newFeaturedBadge.badgeId }
+            }
+
+            if oldVisibleBadgeIds != newVisibleBadgeIds {
+                Logger.info("Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
+                vc.showDismissalActivity = true
+                return OWSProfileManager.updateLocalProfilePromise(
+                    profileGivenName: snapshot.givenName,
+                    profileFamilyName: snapshot.familyName,
+                    profileBio: snapshot.bio,
+                    profileBioEmoji: snapshot.bioEmoji,
+                    profileAvatarData: snapshot.avatarData,
+                    visibleBadgeIds: newVisibleBadgeIds,
+                    userProfileWriter: .localUser)
+            } else {
+                return Promise.value(())
+            }
+        }.done {
+            self.navigationController?.popViewController(animated: true)
+        }.catch { error in
+            owsFailDebug("Failed to update profile: \(error)")
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
-    func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
-        // TODO
+    func badgeConfirmationDidCancel(_: BadgeConfigurationViewController) {
+        self.navigationController?.popViewController(animated: true)
     }
 }
 

@@ -385,26 +385,35 @@ extension ProfileSettingsViewController: ProfileNameViewControllerDelegate {
 }
 
 extension ProfileSettingsViewController: BadgeConfigurationDelegate {
-    func updateFeaturedBadge(_ updatedFeaturedBadge: OWSUserProfileBadgeInfo) {
-        guard allBadges.contains(where: { $0.badgeId == updatedFeaturedBadge.badgeId}) else {
-            owsFailDebug("Invalid badge")
-            return
+    func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
+        switch setting {
+        case .doNotDisplayPublicly:
+            if displayBadgesOnProfile {
+                Logger.info("Configured to disable public badge visibility")
+                hasUnsavedChanges = true
+                displayBadgesOnProfile = false
+                updateTableContents()
+            }
+        case .display(featuredBadge: let newFeaturedBadge):
+            guard allBadges.contains(where: { $0.badgeId == newFeaturedBadge.badgeId }) else {
+                owsFailDebug("Invalid badge")
+                return
+            }
+
+            if !displayBadgesOnProfile || newFeaturedBadge.badgeId != allBadges.first?.badgeId {
+                Logger.info("Configured to show badges publicly featuring: \(newFeaturedBadge.badgeId)")
+                hasUnsavedChanges = true
+
+                let nonPrimaryBadges = allBadges.filter { $0.badgeId != newFeaturedBadge.badgeId }
+                allBadges = [newFeaturedBadge] + nonPrimaryBadges
+                updateTableContents()
+            }
         }
 
-        if updatedFeaturedBadge.badgeId != allBadges.first?.badgeId {
-            hasUnsavedChanges = true
-
-            let nonPrimaryBadges = allBadges.filter { $0.badgeId != updatedFeaturedBadge.badgeId }
-            allBadges = [updatedFeaturedBadge] + nonPrimaryBadges
-            updateTableContents()
-        }
+        vc.dismiss(animated: true)
     }
 
-    func shouldDisplayBadgesPublicly(_ shouldDisplayPublicly: Bool) {
-        if displayBadgesOnProfile != shouldDisplayPublicly {
-            hasUnsavedChanges = true
-            displayBadgesOnProfile = shouldDisplayPublicly
-            updateTableContents()
-        }
+    func badgeConfirmationDidCancel(_ vc: BadgeConfigurationViewController) {
+        vc.dismiss(animated: true)
     }
 }
