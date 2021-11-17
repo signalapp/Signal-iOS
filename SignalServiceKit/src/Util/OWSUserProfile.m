@@ -49,7 +49,7 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_GroupState:
             return YES;
         case UserProfileWriter_Reupload:
-            return NO;
+            return YES;
         case UserProfileWriter_AvatarDownload:
             return NO;
         case UserProfileWriter_MetadataUpdate:
@@ -676,33 +676,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                                                       equalTo:profile.avatarFileName];
 
                                    if (isLocalUserProfile) {
-                                       BOOL isUpdatingDatabaseInstance = self != profile;
-                                       BOOL storageServiceContentDidChange = (profileKeyDidChange || givenNameDidChange
-                                           || familyNameDidChange || avatarUrlPathDidChange);
-                                       if (isUpdatingDatabaseInstance && storageServiceContentDidChange
-                                           && self.tsAccountManager.isRegisteredAndReady
-                                           && CurrentAppContext().isMainApp) {
-
-                                           OWSLogInfo(@"Storage service content did change.");
-
-                                           BOOL shouldUpdateStorageService
-                                               = (shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)
-                                                   || userProfileWriter == UserProfileWriter_Reupload);
-                                           if (shouldUpdateStorageService
-                                               && userProfileWriter == UserProfileWriter_ProfileFetch) {
-                                               OWSFailDebug(
-                                                   @"Should not update storage service to reflect profile fetches.");
-                                               shouldUpdateStorageService = NO;
-                                           }
-
-                                           if (shouldUpdateStorageService) {
-                                               [transaction addAsyncCompletionOffMain:^{
-                                                   [SSKEnvironment.shared
-                                                           .storageServiceManager recordPendingLocalAccountUpdates];
-                                               }];
-                                           }
-                                       }
-
                                        BOOL shouldReupload = NO;
 
                                        BOOL hasValidProfileNameBefore = givenNameBefore.length > 0;
@@ -758,6 +731,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            }
                                        }
 
+                                       BOOL isUpdatingDatabaseInstance = self != profile;
                                        if (shouldReupload && self.tsAccountManager.isPrimaryDevice
                                            && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
                                            // shouldReuploadProtectedProfileName has side effects,
@@ -859,7 +833,13 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
-    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)
+    BOOL shouldUpdateStorageService = shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter);
+    if (shouldUpdateStorageService && userProfileWriter == UserProfileWriter_ProfileFetch) {
+        OWSFailDebug(@"Should not update storage service to reflect profile fetches.");
+        shouldUpdateStorageService = NO;
+    }
+
+    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageService
         && (!onlyAvatarChanged || isLocalUserProfile)) {
         [transaction addAsyncCompletionOffMain:^{
             [self.storageServiceManager
