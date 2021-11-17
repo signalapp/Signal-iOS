@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalUI
 
 @objc
 public protocol SendPaymentMemoViewDelegate {
