@@ -278,7 +278,10 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         TSThread *thread1 = (TSThread *)object1;
         TSThread *thread2 = (TSThread *)object2;
         if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
-            
+            if (thread1.isPinned != thread2.isPinned) {
+                if (thread1.isPinned) { return NSOrderedDescending; }
+                if (thread2.isPinned) { return NSOrderedAscending; }
+            }
             TSInteraction *_Nullable lastInteractionForInbox1 =
                 [thread1 lastInteractionForInboxWithTransaction:transaction];
             NSDate *lastInteractionForInboxDate1 = lastInteractionForInbox1 ? lastInteractionForInbox1.receivedAtDate : thread1.creationDate;
