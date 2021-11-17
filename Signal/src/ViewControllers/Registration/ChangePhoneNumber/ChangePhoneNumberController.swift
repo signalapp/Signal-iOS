@@ -24,6 +24,7 @@ class ChangePhoneNumberController: Dependencies {
     }
 
     private func prepopulateIfNecessary() {
+#if DEBUG
         guard DebugFlags.internalLogging else {
             return
         }
@@ -34,7 +35,6 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
-#if DEBUG
         guard let oldPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: oldE164),
               PhoneNumberValidator().isValidForRegistration(phoneNumber: oldPhoneNumber) else {
                   owsFailDebug("Invalid oldE164.")
@@ -47,21 +47,13 @@ class ChangePhoneNumberController: Dependencies {
         }
         self.oldCountryState = oldCountryState
 
-        var testE164s: [String]
-        if Platform.isSimulator {
-            testE164s = [
-                "+447897025383",
-                "+447897014056"
-            ]
-        } else {
-            testE164s = [
-                "+447897013389",
-                "+447897016764"
-            ]
-        }
-        owsAssertDebug(testE164s.contains(oldE164))
-
-        testE164s = testE164s.filter { $0 != oldE164 }.shuffled()
+        var testE164s = [
+            "+447897025383",
+            "+447897014056",
+            "+447897013389",
+            "+447897016764"
+        ]
+        testE164s = testE164s.filter { $0 != oldE164 }
         guard let newE164 = testE164s.first else {
             owsFailDebug("Missing newE164.")
             return

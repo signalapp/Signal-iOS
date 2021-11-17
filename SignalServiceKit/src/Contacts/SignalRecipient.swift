@@ -206,7 +206,10 @@ extension SignalRecipient {
                 owsAssertDebug(SignalServiceAddress(phoneNumber: newPhoneNumber).uuid == newUuid)
             }
             if let oldPhoneNumber = oldPhoneNumber {
-                owsAssertDebug(SignalServiceAddress(phoneNumber: oldPhoneNumber).uuid == nil)
+                // SignalServiceAddressCache's mapping may have already been updated,
+                // So the uuid for the oldPhoneNumber may already be associated with
+                // a new uuid.
+                owsAssertDebug(SignalServiceAddress(phoneNumber: oldPhoneNumber).uuid != newUuid)
             }
 
             let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
