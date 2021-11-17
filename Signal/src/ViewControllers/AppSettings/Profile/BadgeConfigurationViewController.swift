@@ -16,7 +16,7 @@ protocol BadgeConfigurationDelegate: AnyObject {
     func badgeConfirmationDidCancel(_: BadgeConfigurationViewController)
 }
 
-class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
+class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource, OWSNavigationView {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
     let availableBadges: [OWSUserProfileBadgeInfo]
@@ -95,12 +95,13 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     // MARK: - Navigation Bar
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
+        if navigationController?.viewControllers.count == 1 {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel),
+                accessibilityIdentifier: "cancel_button")
+        }
 
         if hasUnsavedChanges, showDismissalActivity {
             let indicatorStyle: UIActivityIndicatorView.Style
@@ -217,5 +218,14 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     @objc
     func didTogglePublicDisplaySetting(_ sender: UISwitch) {
         displayBadgeOnProfile = sender.isOn
+    }
+
+    func shouldCancelNavigationBack() -> Bool {
+        if hasUnsavedChanges {
+            didTapCancel()
+            return true
+        } else {
+            return false
+        }
     }
 }
