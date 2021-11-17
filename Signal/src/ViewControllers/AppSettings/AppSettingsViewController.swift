@@ -51,6 +51,19 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    private lazy var hasCurrentSubscription: Bool = {
+        var subscriberID: Data?
+        SDSDatabaseStorage.shared.read { transaction in
+            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
+        }
+
+        guard subscriberID != nil else {
+            return false
+        }
+
+        return true
+    }()
+
     func updateTableContents() {
         let contents = OWSTableContents()
 
@@ -233,25 +246,41 @@ class AppSettingsViewController: OWSTableViewController2 {
             }
         ))
         if FeatureFlags.subscriptions {
-            section4.add(.disclosureItem(
-                icon: .settingsDonate,
-                name: NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"),
-                actionBlock: { [weak self] in
-                    let vc = SubscriptionViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
+            if DonationUtilities.isApplePayAvailable {
+                section4.add(.disclosureItem(
+                    icon: .settingsDonate,
+                    name: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"),
+                    actionBlock: { [weak self] in
+                        let vc = SubscriptionViewController()
+                        self?.navigationController?.pushViewController(vc, animated: true)
+                    }
+                ))
 
-            section4.add(.disclosureItem(
-                icon: .settingsBoost,
-                name: NSLocalizedString("SETTINGS_SIGNAL_BOOST", comment: "Title for the 'signal boost' link in settings."),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "signal boost"),
-                actionBlock: { [weak self] in
-                    let vc = BoostViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
+                section4.add(.disclosureItem(
+                    icon: .settingsBoost,
+                    name: NSLocalizedString("SETTINGS_SIGNAL_BOOST", comment: "Title for the 'signal boost' link in settings."),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "signal boost"),
+                    actionBlock: { [weak self] in
+                        let vc = BoostViewController()
+                        self?.navigationController?.pushViewController(vc, animated: true)
+                    }
+                ))
+            } else {
+                section4.add(.item(icon: .settingsDonate,
+                                   tintColor: Theme.primaryIconColor,
+                                   name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
+                                   maxNameLines: 0,
+                                   textColor: Theme.primaryTextColor,
+                                   accessoryText: nil,
+                                   accessoryType: .none,
+                                   accessoryImage: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
+                                   accessoryView: nil,
+                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
+                                   actionBlock: { () in
+                    UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
+                }))
+            }
 
         } else {
             section4.add(.disclosureItem(

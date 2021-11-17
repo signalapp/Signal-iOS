@@ -538,7 +538,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                         statusText = attributedText
                     } else {
                         let renewalFormat = NSLocalizedString("SUSTAINER_VIEW_RENEWAL", comment: "Renewal date text for sustainer view level, embeds {{renewal date}}")
-                        let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
+                        let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                         let renewalString = self.dateFormatter.string(from: renewalDate)
                         let text = String(format: renewalFormat, renewalString)
                         statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
@@ -689,8 +689,6 @@ class SubscriptionViewController: OWSTableViewController2 {
         if let currentSubscription = currentSubscription, let selectedSubscription = selectedSubscription {
             let enabled = currentSubscription.level != selectedSubscription.level
             applePayContributeButton.isEnabled = enabled
-            applePayContributeButton.isHighlighted = !enabled
-
         }
 
         let cancelButtonString = NSLocalizedString("SUSTAINER_VIEW_CANCEL_SUBSCRIPTION", comment: "Sustainer view Cancel Subscription button title")

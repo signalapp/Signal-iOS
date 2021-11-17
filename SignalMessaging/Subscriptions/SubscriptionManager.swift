@@ -207,7 +207,7 @@ public class SubscriptionManager: NSObject {
     }
 
     private class func setupNewSubscriberID() throws -> Promise<Data> {
-
+        Logger.info("[Subscriptions] Setting up new subscriber ID")
         let newSubscriberID = generateSubscriberID()
         return firstly {
             try self.postSubscriberID(subscriberID: newSubscriberID)
@@ -234,6 +234,7 @@ public class SubscriptionManager: NSObject {
     }
 
     public class func setupNewSubscription(subscription: SubscriptionLevel, payment: PKPayment, currencyCode: String) throws -> Promise<Void> {
+        Logger.info("[Subscriptions] Setting up new subscription")
 
         var generatedSubscriberID = Data()
         var generatedClientSecret = ""
@@ -301,6 +302,8 @@ public class SubscriptionManager: NSObject {
                                               to subscription: SubscriptionLevel,
                                               payment: PKPayment,
                                               currencyCode: String) throws -> Promise<Void> {
+        Logger.info("[Subscriptions] Updating subscription level")
+
         var generatedClientSecret = ""
         var generatedPaymentID = ""
         return firstly {
@@ -345,21 +348,19 @@ public class SubscriptionManager: NSObject {
 
     public class func cancelSubscription(for subscriberID: Data) throws -> Promise<Void> {
 
-        // TODO EB Should we delete regardless of success of delete call?
-        SDSDatabaseStorage.shared.write { transaction in
-            self.setSubscriberID(nil, transaction: transaction)
-            self.setSubscriberCurrencyCode(nil, transaction: transaction)
-            self.storageServiceManager.recordPendingLocalAccountUpdates()
-        }
-
         let request = OWSRequestFactory.deleteSubscriptionIDRequest(subscriberID.asBase64Url)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
-
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
+            } else {
+                SDSDatabaseStorage.shared.write { transaction in
+                    self.setSubscriberID(nil, transaction: transaction)
+                    self.setSubscriberCurrencyCode(nil, transaction: transaction)
+                    self.storageServiceManager.recordPendingLocalAccountUpdates()
+                }
             }
         }
     }
@@ -425,14 +426,14 @@ public class SubscriptionManager: NSObject {
     public class func requestAndRedeemRecieptsIfNecessary(for subscriberID: Data,
                                                           subscriptionLevel: UInt,
                                                           priorSubscriptionLevel: UInt = 0) throws {
-        let request = try generateSubscriptionRequest()
+        let request = try generateRecieptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
         for redemptionJob in subscriptionJobQueue.runningOperations.get() {
-            redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
+            if !redemptionJob.isBoost {
+                redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
+            }
         }
-
-        subscriptionJobQueue.runningOperations.removeAll()
 
         // Reset failure state
         SDSDatabaseStorage.shared.write { transaction in
@@ -452,7 +453,7 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func generateSubscriptionRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
+    public class func generateRecieptRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
         let clientOperations = try clientZKReceiptOperations()
         let receiptSerial = try generateReceiptSerial()
 
@@ -569,14 +570,14 @@ public class SubscriptionManager: NSObject {
     public class func performSubscriptionKeepAliveIfNecessary() {
 
         guard tsAccountManager.isPrimaryDevice else {
-            Logger.debug("Bailing out of heartbeat, this is not the primary device")
+            Logger.info("[Subscriptions] Bailing out of heartbeat, this is not the primary device")
             return
         }
 
         // Kick job queue
         subscriptionJobQueue.runAnyQueuedRetry()
 
-        Logger.debug("Checking for subscription heartbeat")
+        Logger.info("[Subscriptions] Checking for subscription heartbeat")
 
         // Fetch subscriberID / subscriber currencyCode
         var lastKeepAliveHeartbeat: Date?
@@ -596,14 +597,14 @@ public class SubscriptionManager: NSObject {
         }
 
         guard performHeartbeat else {
-            Logger.debug("Not performing subscription heartbeat, last heartbeat within allowed interval")
+            Logger.info("[Subscriptions] Not performing subscription heartbeat, last heartbeat within allowed interval")
             return
         }
 
         Logger.debug("Performing subscription heartbeat")
 
         guard let subscriberID = subscriberID, currencyCode != nil else {
-            Logger.debug("Subscription Keepalive: No subscription + currency code found")
+            Logger.info("[Subscriptions] No subscription + currency code found")
             self.updateSubscriptionHeartbeatDate()
             return
         }
@@ -616,13 +617,14 @@ public class SubscriptionManager: NSObject {
             self.getCurrentSubscriptionStatus(for: subscriberID)
         }.done(on: .sharedBackground) { subscription in
             guard let subscription = subscription else {
-                Logger.debug("No current subscription for this subscriberID")
+                Logger.info("[Subscriptions] No current subscription for this subscriberID")
                 self.updateSubscriptionHeartbeatDate()
                 return
             }
 
             if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
                 // Re-kick
+                Logger.info("[Subscriptions] Triggering receipt redemption job during heartbeat")
                 try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
             }
 
@@ -662,11 +664,26 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 }
 
 extension SubscriptionManager {
-    public class func createAndRedeemBoostReceipt(for intentId: String) -> Promise<Void> {
-        firstly {
-            try createBoostReceiptCredentialsPresentation(for: intentId)
-        }.then { presentation in
-            try redeemReceiptCredentialPresentation(receiptCredentialPresentation: presentation)
+    public class func createAndRedeemBoostReceipt(for intentId: String) throws {
+        let request = try generateRecieptRequest()
+
+        // Remove prior operations if one exists (allow prior job to complete)
+        for redemptionJob in subscriptionJobQueue.runningOperations.get() {
+            if redemptionJob.isBoost {
+                redemptionJob.reportError(OWSAssertionError("Job did not complete before next subscription run"))
+            }
+        }
+
+        SDSDatabaseStorage.shared.asyncWrite { transaction in
+
+            self.subscriptionJobQueue.add(isBoost: true,
+                                          receiptCredentialRequestContext: request.context.serialize().asData,
+                                          receiptCredentailRequest: request.request.serialize().asData,
+                                          subscriberID: Data(),
+                                          targetSubscriptionLevel: 0,
+                                          priorSubscriptionLevel: 0,
+                                          boostPaymentIntentID: intentId,
+                                          transaction: transaction)
         }
     }
 
@@ -693,12 +710,11 @@ extension SubscriptionManager {
         }
     }
 
-    private static func createBoostReceiptCredentialsPresentation(for intentId: String) throws -> Promise<ReceiptCredentialPresentation> {
-        let clientOperations = try clientZKReceiptOperations()
-        let receiptSerial = try generateReceiptSerial()
+    public static func requestBoostReceiptCredentialPresentation(for intentId: String, context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) throws -> Promise<ReceiptCredentialPresentation> {
 
-        let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
-        let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest().serialize().asData.base64EncodedString()
+        let clientOperations = try clientZKReceiptOperations()
+        let receiptCredentialRequest = request.serialize().asData.base64EncodedString()
+
         let request = OWSRequestFactory.boostRecieptCredentials(withPaymentIntentId: intentId, andRequest: receiptCredentialRequest)
         return firstly {
             networkManager.makePromise(request: request)
@@ -727,7 +743,7 @@ extension SubscriptionManager {
                 }
 
                 let receiptCredentialResponse = try ReceiptCredentialResponse(contents: [UInt8](receiptCredentialResponseData))
-                let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: receiptCredentialRequestContext, receiptCredentialResponse: receiptCredentialResponse)
+                let receiptCredential = try clientOperations.receiveReceiptCredential(receiptCredentialRequestContext: context, receiptCredentialResponse: receiptCredentialResponse)
 
                 // Validate that receipt credential level matches boost level
                 let level = try receiptCredential.getReceiptLevel()
