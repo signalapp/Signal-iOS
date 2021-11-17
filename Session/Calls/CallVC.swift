@@ -367,6 +367,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
             switchCameraButton.isEnabled = false
             call.isVideoEnabled = false
         } else {
+            guard requestCameraPermissionIfNeeded() else { return }
             let previewVC = VideoPreviewVC()
             previewVC.delegate = self
             present(previewVC, animated: true, completion: nil)
