@@ -51,7 +51,8 @@ class ChangePhoneNumberController: Dependencies {
             "+447897025383",
             "+447897014056",
             "+447897013389",
-            "+447897016764"
+            "+447897016764",
+            "+447897016072"
         ]
         testE164s = testE164s.filter { $0 != oldE164 }
         guard let newE164 = testE164s.first else {
