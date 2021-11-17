@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import ContactsUI
+import SignalUI
 
 @objc
 public enum ConversationSettingsPresentationMode: UInt {
@@ -32,7 +33,7 @@ public protocol ConversationSettingsViewDelegate: AnyObject {
 
 // TODO: We should describe which state updates & when it is committed.
 @objc
-class ConversationSettingsViewController: OWSTableViewController2 {
+class ConversationSettingsViewController: OWSTableViewController2, BadgeCollectionDataSource {
 
     @objc
     public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
@@ -921,6 +922,15 @@ class ConversationSettingsViewController: OWSTableViewController2 {
             updateTableContents()
         }
     }
+
+    // MARK: - BadgeCollectionDataSource
+
+    // These are updated when building the table contents
+    // Selected badge index is unused, but a protocol requirement.
+    // TODO: Adjust ConversationBadgeDataSource to remove requirement for a readwrite selectedBadgeIndex
+    // when selection behavior is non-mutating
+    var availableBadges: [OWSUserProfileBadgeInfo] = []
+    var selectedBadgeIndex = 0
 }
 
 // MARK: -

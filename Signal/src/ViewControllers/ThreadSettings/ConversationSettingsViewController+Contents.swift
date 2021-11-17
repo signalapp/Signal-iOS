@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SignalUI
 
 extension ConversationSettingsViewController {
 
@@ -70,6 +71,8 @@ extension ConversationSettingsViewController {
         } else if isContactThread, hasGroupThreads, !isNoteToSelf {
             contents.addSection(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
+
+        addBadgesItemIfNecessary(to: contents)
 
         if !isNoteToSelf {
             contents.addSection(buildBlockAndLeaveSection())
@@ -151,6 +154,41 @@ extension ConversationSettingsViewController {
         ))
 
         contents.addSection(section)
+    }
+
+    private func addBadgesItemIfNecessary(to contents: OWSTableContents) {
+        guard !thread.isNoteToSelf, isContactThread else { return }
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
+
+        let (visibleBadges, shortName) = databaseStorage.read { readTx -> ([OWSUserProfileBadgeInfo], String) in
+            let profile = OWSUserProfile.getFor(contactAddress, transaction: readTx)
+            let shortName = contactsManager.shortDisplayName(for: contactAddress, transaction: readTx)
+            return (profile?.visibleBadges ?? [], shortName)
+        }
+        guard !visibleBadges.isEmpty else { return }
+
+        availableBadges = visibleBadges
+        contents.addSection(.init(
+            title: NSLocalizedString("CONVERSATION_SETTINGS_BADGES_HEADER", comment: "Header title for a contact's badges in conversation settings"),
+            items: [
+                OWSTableItem(customCellBlock: { [weak self] in
+                    let cell = OWSTableItem.newCell()
+                    guard let self = self else { return cell }
+                    let collectionView = BadgeCollectionView(dataSource: self)
+                    collectionView.badgeSelctionMode = .detailsSheet(shortOwnerName: shortName)
+
+                    cell.contentView.addSubview(collectionView)
+                    collectionView.autoPinEdgesToSuperviewMargins()
+
+                    // Pre-layout the collection view so the UITableView caches the correct resolved
+                    // autolayout height.
+                    collectionView.layoutIfNeeded()
+
+                    return cell
+                }, actionBlock: nil)
+            ],
+            footerTitle: NSLocalizedString("CONVERSATION_SETTINGS_BADGES_FOOTER", comment: "Footer string for a contact's badges in conversation settings"))
+        )
     }
 
     private func addSafetyNumberItemIfNecessary(to section: OWSTableSection) {

@@ -418,6 +418,14 @@ public extension OWSTableContents {
 public extension OWSTableSection {
 
     convenience init(title: String? = nil,
+                     items: [OWSTableItem] = [],
+                     footerTitle: String? = nil) {
+
+        self.init(title: title, items: items)
+        self.footerTitle = footerTitle
+    }
+
+    convenience init(title: String? = nil,
                      header: UIView? = nil,
                      items: [OWSTableItem] = [],
                      footer: UIView? = nil) {
