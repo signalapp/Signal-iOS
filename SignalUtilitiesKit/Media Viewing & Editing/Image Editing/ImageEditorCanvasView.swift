@@ -166,7 +166,7 @@ public class ImageEditorCanvasView: UIView {
         // of code simplicity.  We could modify the image layer's
         // transform to handle the normalization, which would
         // have perf benefits.
-        return srcImage.normalized()
+        return srcImage
     }
 
     // MARK: - Content
