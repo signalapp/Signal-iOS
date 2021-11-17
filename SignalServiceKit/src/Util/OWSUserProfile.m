@@ -699,7 +699,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                isNullableObject:[changes.avatarFileName.value ows_nilIfEmpty]
                                                         equalTo:[profile.avatarFileName ows_nilIfEmpty]];
                                            if (givenNameDoesNotMatch || familyNameDoesNotMatch
-                                               || avatarUrlPathDoesNotMatch || avatarFileNameDoesNotMatch) {
+                                               || avatarUrlPathDoesNotMatch) {
                                                OWSLogWarn(@"Re-uploading profile to reflect profile state: %@, %@, "
                                                           @"isLocalUserProfile: %d, givenName: %d -> %d (%d), "
                                                           @"familyName: %d -> %d (%d), avatarUrlPath: %d -> %d (%d), "
