@@ -834,8 +834,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
     BOOL shouldUpdateStorageService = shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter);
-    if (shouldUpdateStorageService && userProfileWriter == UserProfileWriter_ProfileFetch) {
-        OWSFailDebug(@"Should not update storage service to reflect profile fetches.");
+    if (isLocalUserProfile && userProfileWriter == UserProfileWriter_ProfileFetch) {
+        // Never update local profile on storage service to reflect profile fetches.
         shouldUpdateStorageService = NO;
     }
 
