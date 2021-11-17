@@ -4,13 +4,19 @@
 
 import Foundation
 import SignalUI
+import UIKit
 
-protocol BadgeConfigurationDelegate: AnyObject {
-    func updateFeaturedBadge(_: OWSUserProfileBadgeInfo)
-    func shouldDisplayBadgesPublicly(_: Bool)
+enum BadgeConfiguration {
+    case doNotDisplayPublicly
+    case display(featuredBadge: OWSUserProfileBadgeInfo)
 }
 
-class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
+protocol BadgeConfigurationDelegate: AnyObject {
+    func badgeConfiguration(_: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration)
+    func badgeConfirmationDidCancel(_: BadgeConfigurationViewController)
+}
+
+class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource, OWSNavigationView {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
     let availableBadges: [OWSUserProfileBadgeInfo]
@@ -41,7 +47,32 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     }
 
     private var hasUnsavedChanges: Bool {
-        displayBadgeOnProfile != initialDisplaySetting || selectedBadgeIndex != 0
+        if displayBadgeOnProfile, selectedBadgeIndex != 0 {
+            return true
+        } else {
+            return displayBadgeOnProfile != initialDisplaySetting
+        }
+    }
+
+    public var showDismissalActivity = false {
+        didSet {
+            updateNavigation()
+        }
+    }
+
+    convenience init(fetchingDataFromLocalProfileWithDelegate delegate: BadgeConfigurationDelegate) {
+        let snapshot = Self.profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let allBadges = snapshot.profileBadgeInfo ?? []
+        let shouldDisplayOnProfile = allBadges.allSatisfy { badge in
+            if let isVisible = badge.isVisible {
+                return isVisible
+            } else {
+                owsFailDebug("Expecting visibility for local profile badge settings")
+                return true
+            }
+        }
+
+        self.init(availableBadges: allBadges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }
 
     init(availableBadges: [OWSUserProfileBadgeInfo], shouldDisplayOnProfile: Bool, avatarImage: UIImage? = nil, delegate: BadgeConfigurationDelegate) {
@@ -64,21 +95,31 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     // MARK: - Navigation Bar
 
     private func updateNavigation() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(didTapCancel),
-            accessibilityIdentifier: "cancel_button"
-        )
+        if navigationController?.viewControllers.count == 1 {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel),
+                accessibilityIdentifier: "cancel_button")
+        }
 
-        if hasUnsavedChanges {
+        if hasUnsavedChanges, showDismissalActivity {
+            let indicatorStyle: UIActivityIndicatorView.Style
+            if #available(iOS 13, *) {
+                indicatorStyle = .medium
+            } else {
+                indicatorStyle = Theme.isDarkThemeEnabled ? .white : .gray
+            }
+            let spinner = UIActivityIndicatorView(style: indicatorStyle)
+            spinner.startAnimating()
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: spinner)
+        } else if hasUnsavedChanges, !showDismissalActivity {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
                 title: CommonStrings.setButton,
                 style: .done,
                 target: self,
                 action: #selector(didTapDone),
-                accessibilityIdentifier: "set_button"
-            )
+                accessibilityIdentifier: "set_button")
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -86,26 +127,25 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
 
     @objc
     func didTapCancel() {
-        let dismissBlock: () -> Void = { [weak self] in
-            self?.dismiss(animated: true)
+        let requestDismissal: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            self.badgeConfigDelegate?.badgeConfirmationDidCancel(self)
         }
 
         if hasUnsavedChanges {
-            OWSActionSheets.showPendingChangesActionSheet(discardAction: dismissBlock)
+            OWSActionSheets.showPendingChangesActionSheet(discardAction: requestDismissal)
         } else {
-            dismissBlock()
+            requestDismissal()
         }
     }
 
     @objc
     func didTapDone() {
-        if selectedBadgeIndex != 0, let selectedPrimaryBadge = selectedPrimaryBadge {
-            badgeConfigDelegate?.updateFeaturedBadge(selectedPrimaryBadge)
+        if displayBadgeOnProfile, let selectedPrimaryBadge = selectedPrimaryBadge {
+            badgeConfigDelegate?.badgeConfiguration(self, didCompleteWithBadgeSetting: .display(featuredBadge: selectedPrimaryBadge))
+        } else {
+            badgeConfigDelegate?.badgeConfiguration(self, didCompleteWithBadgeSetting: .doNotDisplayPublicly)
         }
-        if displayBadgeOnProfile != initialDisplaySetting {
-            badgeConfigDelegate?.shouldDisplayBadgesPublicly(displayBadgeOnProfile)
-        }
-        dismiss(animated: true)
     }
 
     override var isModalInPresentation: Bool {
@@ -178,5 +218,14 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     @objc
     func didTogglePublicDisplaySetting(_ sender: UISwitch) {
         displayBadgeOnProfile = sender.isOn
+    }
+
+    func shouldCancelNavigationBack() -> Bool {
+        if hasUnsavedChanges {
+            didTapCancel()
+            return true
+        } else {
+            return false
+        }
     }
 }

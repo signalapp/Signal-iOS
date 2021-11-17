@@ -550,6 +550,11 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
             return badge
         }
 
+        if targetAddress.isLocalAddress, configuration.localUserDisplayMode == .noteToSelf {
+            // We never want to show badges on Note To Self
+            return nil
+        }
+
         let primaryBadge: ProfileBadge? = performWithTransaction(transaction) {
             let userProfile: OWSUserProfile?
             if targetAddress.isLocalAddress {
