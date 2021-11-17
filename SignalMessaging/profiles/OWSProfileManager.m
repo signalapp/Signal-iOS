@@ -345,6 +345,11 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return [self loadProfileAvatarDataWithFilename:filename];
 }
 
+- (BOOL)localProfileHasVisibleBadge
+{
+    return self.localUserProfile.visibleBadges.count > 0;
+}
+
 - (nullable NSString *)localUsername
 {
     return self.localUserProfile.username;

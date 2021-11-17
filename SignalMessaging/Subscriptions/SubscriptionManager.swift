@@ -514,13 +514,12 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation, makePrimary: Bool = false) throws -> Promise<Void> {
+    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation) throws -> Promise<Void> {
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
         let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
         let request = OWSRequestFactory.subscriptionRedeemRecieptCredential(
-            receiptCredentialPresentationString,
-            makePrimary: makePrimary
+            receiptCredentialPresentationString
         )
         return firstly(on: .global()) {
             networkManager.makePromise(request: request)

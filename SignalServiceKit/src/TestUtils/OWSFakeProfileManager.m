@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localGivenName;
 @property (nonatomic, nullable) NSString *localFamilyName;
 @property (nonatomic, nullable) NSString *localFullName;
+@property (nonatomic) BOOL localProfileHasVisibleBadge;
 @property (nonatomic, nullable) NSString *localUsername;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
 

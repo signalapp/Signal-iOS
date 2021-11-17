@@ -31,8 +31,8 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
     private lazy var profileSnapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
     private lazy var hasAnySustainerBadge = profileSnapshot.profileBadgeInfo?.first { $0.badgeId != Self.boostBadgeId } != nil
-    private lazy var newBadgeIsBoost = badge.id == Self.boostBadgeId
     private lazy var visibleBadges = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? false } ?? []
+    private var hasVisibleBadges: Bool { visibleBadges.count > 0 }
 
     required init(badge: ProfileBadge) {
         owsAssertDebug(badge.assets != nil)
@@ -72,14 +72,20 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         let allBadges = snapshot.profileBadgeInfo ?? []
         let nonPrimaryBadgeIds = allBadges.filter { $0.badgeId != self.badge.id }.map { $0.badgeId }
+        let currentlyVisibleBadgeIds = allBadges.filter { $0.isVisible ?? false }.map { $0.badgeId }
 
         let visibleBadgeIds: [String]
         if shouldMakeVisibleAndPrimary {
             visibleBadgeIds = [self.badge.id] + nonPrimaryBadgeIds
-        } else if !nonPrimaryBadgeIds.isEmpty {
+        } else if !currentlyVisibleBadgeIds.isEmpty {
             visibleBadgeIds = nonPrimaryBadgeIds + [self.badge.id]
         } else {
             visibleBadgeIds = []
+        }
+
+        guard visibleBadgeIds != currentlyVisibleBadgeIds else {
+            // No change, we can skip the profile update.
+            return Promise.value(())
         }
 
         return OWSProfileManager.updateLocalProfilePromise(
@@ -139,7 +145,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
         handle.autoPinHeightToSuperview(withMargin: 12)
         handle.autoHCenterInSuperview()
 
-        if newBadgeIsBoost && hasAnySustainerBadge {
+        if isBoost && hasAnySustainerBadge {
             shouldMakeVisibleAndPrimary = false
         } else if !isPrimaryBadge {
             shouldMakeVisibleAndPrimary = true
@@ -231,20 +237,20 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             let switchSection = OWSTableSection()
             contents.addSection(switchSection)
             switchSection.add(.switch(
-                withText: visibleBadges.isEmpty
+                withText: hasVisibleBadges
                 ? NSLocalizedString(
-                    "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL",
-                    comment: "Label prompting the user to display the new badge on their profile on the badge thank you sheet."
-                )
-                : NSLocalizedString(
                     "BADGE_THANKS_MAKE_FEATURED",
                     comment: "Label prompting the user to feature the new badge on their profile on the badge thank you sheet."
+                )
+                : NSLocalizedString(
+                    "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL",
+                    comment: "Label prompting the user to display the new badge on their profile on the badge thank you sheet."
                 ),
                 isOn: { self.shouldMakeVisibleAndPrimary },
                 target: self,
                 selector: #selector(didToggleDisplayOnProfile)
             ))
-            if !visibleBadges.isEmpty {
+            if hasVisibleBadges {
                 switchSection.footerTitle = NSLocalizedString(
                     "BADGE_THANKS_TOGGLE_FOOTER",
                     comment: "Footer explaining that only one badge can be featured at a time on the thank you sheet."
