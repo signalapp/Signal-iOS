@@ -1197,17 +1197,19 @@ extension SubscriptionViewController: BadgeConfigurationDelegate {
         firstly { () -> Promise<Void> in
             let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
             let allBadges = snapshot.profileBadgeInfo ?? []
-            let oldVisibleBadgeIds = allBadges.filter { $0.isVisible ?? true }.map { $0.badgeId }
-            let newVisibleBadgeIds: [String]
+            let oldVisibleBadges = allBadges.filter { $0.isVisible ?? true }
+            let oldVisibleBadgeIds = oldVisibleBadges.map { $0.badgeId }
 
+            let newVisibleBadgeIds: [String]
             switch setting {
             case .doNotDisplayPublicly:
                 newVisibleBadgeIds = []
             case .display(featuredBadge: let newFeaturedBadge):
-                guard allBadges.contains(where: { $0.badgeId == newFeaturedBadge.badgeId }) else {
+                let allBadgeIds = allBadges.map { $0.badgeId }
+                guard allBadgeIds.contains(newFeaturedBadge.badgeId) else {
                     throw OWSAssertionError("Invalid badge")
                 }
-                newVisibleBadgeIds = [newFeaturedBadge.badgeId] + oldVisibleBadgeIds.filter { $0 != newFeaturedBadge.badgeId }
+                newVisibleBadgeIds = [newFeaturedBadge.badgeId] + allBadgeIds.filter { $0 != newFeaturedBadge.badgeId }
             }
 
             if oldVisibleBadgeIds != newVisibleBadgeIds {

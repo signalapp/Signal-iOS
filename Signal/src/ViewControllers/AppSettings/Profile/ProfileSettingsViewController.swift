@@ -403,6 +403,7 @@ extension ProfileSettingsViewController: BadgeConfigurationDelegate {
             if !displayBadgesOnProfile || newFeaturedBadge.badgeId != allBadges.first?.badgeId {
                 Logger.info("Configured to show badges publicly featuring: \(newFeaturedBadge.badgeId)")
                 hasUnsavedChanges = true
+                displayBadgesOnProfile = true
 
                 let nonPrimaryBadges = allBadges.filter { $0.badgeId != newFeaturedBadge.badgeId }
                 allBadges = [newFeaturedBadge] + nonPrimaryBadges
