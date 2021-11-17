@@ -158,7 +158,9 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
             Self.paymentsEvents.paymentsStateDidChange()
 
-            Self.profileManager.reuploadLocalProfile()
+            if updateStorageService {
+                Self.profileManager.reuploadLocalProfile()
+            }
 
             if updateStorageService {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
