@@ -219,6 +219,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             // by ignoring the next "unmute" request from
             // CallKit after the call is answered.
             self.ignoreFirstUnuteAfterRemoteAnswer = call.individualCall.isMuted
+
+            // Enable audio for remotely accepted calls after the session is configured.
+            self.audioSession.isRTCAudioEnabled = true
         }
     }
 
@@ -478,6 +481,16 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         Logger.debug("Received \(#function) didActivate")
 
         _ = self.audioSession.startAudioActivity(self.audioActivity)
+
+        guard let call = self.callManager.callService.currentCall else {
+            owsFailDebug("No current call for AudioSession")
+            return
+        }
+
+        if call.individualCall.direction == .incoming {
+            // Only enable audio upon activation for locally accepted calls.
+            self.audioSession.isRTCAudioEnabled = true
+        }
     }
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {

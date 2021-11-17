@@ -122,19 +122,21 @@ import CallKit
         }
         call.individualCall.callRecord = callRecord
 
+        // It's key that we configure the AVAudioSession for a call *before* we fulfill the
+        // CXAnswerCallAction.
+        //
+        // Otherwise CallKit has been seen not to activate the audio session.
+        // That is, `provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession)`
+        // was sometimes not called.`
+        //
+        // That is why we connect here, rather than waiting for a racy async response from
+        // CallManager, confirming that the call has connected. It is also safer to do the
+        // audio session configuration before WebRTC starts operating on the audio resources
+        // via CallManager.accept().
+        handleConnected(call: call)
+
         do {
             try callManager.accept(callId: callId)
-
-            // It's key that we configure the AVAudioSession for a call *before* we fulfill the
-            // CXAnswerCallAction.
-            //
-            // Otherwise CallKit has been seen not to activate the audio session.
-            // That is, `provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession)`
-            // was sometimes not called.`
-            //
-            // That is why we connect here, rather than waiting for a racy async response from CallManager,
-            // confirming that the call has connected.
-            handleConnected(call: call)
         } catch {
             self.handleFailedCall(failedCall: call, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         }
@@ -582,8 +584,10 @@ import CallKit
             // nothing further to do - already handled in handleAcceptCall().
 
         case .connectedRemote:
-            callUIAdapter.recipientAcceptedCall(call)
+            // Set the audio session configuration before audio is enabled in WebRTC
+            // via recipientAcceptedCall().
             handleConnected(call: call)
+            callUIAdapter.recipientAcceptedCall(call)
 
         case .endedLocalHangup:
             Logger.debug("")
@@ -1270,10 +1274,6 @@ import CallKit
         ensureAudioState(call: call)
 
         callService.callManager.setLocalVideoEnabled(enabled: callService.shouldHaveLocalVideoTrack, call: call)
-
-        // After state changes and the resulting AudioSession changes, enable audio
-        // via WebRTC to flow.
-        audioSession.isRTCAudioEnabled = true
     }
 
     /**
