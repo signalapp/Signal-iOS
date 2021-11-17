@@ -207,7 +207,7 @@ class BoostViewController: OWSTableViewController2 {
 
             let animationProgress = headerAnimationView.currentProgress
             stackView.addArrangedSubview(headerAnimationView)
-            if animationProgress < 1 {
+            if animationProgress < 1, state != .loading {
                 headerAnimationView.play(fromProgress: animationProgress, toProgress: 1)
             }
 
