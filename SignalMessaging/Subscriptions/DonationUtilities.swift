@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ import SignalCoreKit
 
 public class DonationUtilities: NSObject {
     public static var isApplePayAvailable: Bool {
-        PKPaymentAuthorizationController.canMakePayments(usingNetworks: supportedNetworks)
+        PKPaymentAuthorizationController.canMakePayments()
     }
 
     public static let supportedNetworks: [PKPaymentNetwork] = [
@@ -19,13 +19,13 @@ public class DonationUtilities: NSObject {
         .JCB,
         .interac
     ]
-    
+
     public enum Symbol: Equatable {
         case before(String)
         case after(String)
         case currencyCode
     }
-    
+
     public struct Presets {
         public struct Preset {
             public let symbol: Symbol
@@ -53,13 +53,13 @@ public class DonationUtilities: NSObject {
             presets[code]?.symbol ?? .currencyCode
         }
     }
-    
-    private static let currencyFormatter: NumberFormatter = { 
+
+    private static let currencyFormatter: NumberFormatter = {
         let currencyFormatter = NumberFormatter()
         currencyFormatter.numberStyle = .decimal
         return currencyFormatter
     }()
-    
+
     public static func formatCurrency(_ value: NSDecimalNumber, currencyCode: Currency.Code, includeSymbol: Bool = true) -> String {
         let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
 
@@ -71,10 +71,10 @@ public class DonationUtilities: NSObject {
         } else {
             decimalPlaces = 2
         }
-        
+
         currencyFormatter.minimumFractionDigits = decimalPlaces
         currencyFormatter.maximumFractionDigits = decimalPlaces
-        
+
         let valueString = currencyFormatter.string(from: value) ?? value.stringValue
 
         guard includeSymbol else { return valueString }
@@ -85,7 +85,7 @@ public class DonationUtilities: NSObject {
         case .currencyCode: return currencyCode + " " + valueString
         }
     }
-    
+
     public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String) -> PKPaymentRequest {
         let request = PKPaymentRequest()
         request.paymentSummaryItems = [PKPaymentSummaryItem(
