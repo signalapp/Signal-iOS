@@ -159,6 +159,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
             Self.paymentsEvents.paymentsStateDidChange()
 
             if updateStorageService {
+                Logger.info("Re-uploading local profile due to payments state change.")
                 Self.profileManager.reuploadLocalProfile()
             }
 

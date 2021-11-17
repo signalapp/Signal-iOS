@@ -94,6 +94,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             if self.tsAccountManager.isRegisteredAndReady {
+                Logger.info("Re-uploading local profile due to zkgroup update.")
                 firstly {
                     self.reuploadLocalProfilePromise()
                 }.catch { error in

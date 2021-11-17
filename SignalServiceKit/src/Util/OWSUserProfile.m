@@ -734,7 +734,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                         equalTo:[profile.avatarFileName ows_nilIfEmpty]];
                                            if (givenNameDoesNotMatch || familyNameDoesNotMatch
                                                || avatarUrlPathDoesNotMatch) {
-                                               OWSLogWarn(@"Re-uploading profile to reflect profile state: %@, %@, "
+                                               OWSLogWarn(@"Local profile state from database and profile fetch "
+                                                          @"differ: %@, %@, "
                                                           @"isLocalUserProfile: %d, givenName: %d -> %d (%d), "
                                                           @"familyName: %d -> %d (%d), avatarUrlPath: %d -> %d (%d), "
                                                           @"avatarFileName: %d -> %d (%d).",
@@ -766,6 +767,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            } else if (profile.avatarUrlPath != nil && profile.avatarFileName == nil) {
                                                OWSLogWarn(@"Skipping re-upload; profile avatar not downloaded.");
                                            } else {
+                                               OWSLogInfo(@"Re-uploading local profile to update profile credential.");
                                                [transaction addAsyncCompletionOffMain:^{
                                                    [self.profileManager reuploadLocalProfile];
                                                }];
