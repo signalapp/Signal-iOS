@@ -37,8 +37,11 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     required init(badge: ProfileBadge) {
         owsAssertDebug(badge.assets != nil)
         self.badge = badge
+
         super.init()
-        createContent()
+
+        tableViewController.shouldDeferInitialLoad = false
+        updateTableContents()
     }
 
     public required init() {
@@ -116,18 +119,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        updateTableContents()
-    }
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
-        updateTableContents()
-    }
-
-    private func createContent() {
         addChild(tableViewController)
-        tableViewController.shouldDeferInitialLoad = false
 
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
@@ -165,16 +157,17 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     }
 
     private var previousMinimizedHeight: CGFloat?
-    private var previousSafeAreaInsets: UIEdgeInsets?
     private func updateViewState() {
-        if previousSafeAreaInsets != tableViewController.view.safeAreaInsets {
-            updateTableContents()
-            previousSafeAreaInsets = tableViewController.view.safeAreaInsets
-        }
         if minimizedHeight != previousMinimizedHeight {
             heightConstraint?.constant = minimizedHeight
             previousMinimizedHeight = minimizedHeight
         }
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
+        updateTableContents()
     }
 
     private func updateTableContents() {
@@ -183,6 +176,7 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
+        headerSection.customHeaderHeight = 1
         contents.addSection(headerSection)
 
         headerSection.add(.init(customCellBlock: { [weak self] in
@@ -203,8 +197,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
             titleLabel.text = self.titleText
-            titleLabel.setCompressionResistanceVerticalHigh()
-            titleLabel.setContentHuggingVerticalHigh()
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(12, after: titleLabel)
 
@@ -214,8 +206,6 @@ class BadgeThanksSheet: InteractiveSheetViewController {
             bodyLabel.textAlignment = .center
             bodyLabel.numberOfLines = 0
             bodyLabel.text = self.bodyText
-            bodyLabel.setCompressionResistanceVerticalHigh()
-            bodyLabel.setContentHuggingVerticalHigh()
             stackView.addArrangedSubview(bodyLabel)
             stackView.setCustomSpacing(30, after: bodyLabel)
 
