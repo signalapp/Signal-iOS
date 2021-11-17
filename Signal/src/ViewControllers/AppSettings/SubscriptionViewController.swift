@@ -77,6 +77,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }()
 
     private lazy var statusLabel: LinkingTextView = LinkingTextView()
+    private lazy var descriptionTextView = LinkingTextView()
 
     private var subscriptionRedemptionPending: Bool {
         var hasPendingJobs = false
@@ -255,25 +256,9 @@ class SubscriptionViewController: OWSTableViewController2 {
             stackView.setCustomSpacing(20, after: titleLabel)
 
             if subscriptionViewState == .subscriptionNotYetSetUp || subscriptionViewState == .subscriptionUpdating {
-                // Body text
-                let textView = LinkingTextView()
-                let bodyFormat = NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view, embeds {{link to donation read more}}")
-                let readMore = NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body")
-                let body = String(format: bodyFormat, readMore)
-
-                let bodyAttributedString = NSMutableAttributedString(string: body)
-                bodyAttributedString.addAttributesToEntireString([.font: UIFont.ows_dynamicTypeBody, .foregroundColor: Theme.primaryTextColor])
-                bodyAttributedString.addAttributes([.link: NSURL()], range: NSRange(location: body.utf16.count - readMore.utf16.count, length: readMore.utf16.count))
-
-                textView.attributedText = bodyAttributedString
-                textView.linkTextAttributes = [
-                    .foregroundColor: Theme.accentBlueColor,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
-                textView.textAlignment = .center
-                stackView.addArrangedSubview(textView)
-
+                descriptionTextView.attributedText = .composed(of: [NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view"), " ", NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body").styled(with: .link(SupportConstants.subscriptionFAQURL))]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+                descriptionTextView.textAlignment = .center
+                stackView.addArrangedSubview(descriptionTextView)
             }
 
             return stackView

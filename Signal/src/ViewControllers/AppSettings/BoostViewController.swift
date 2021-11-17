@@ -227,7 +227,7 @@ class BoostViewController: OWSTableViewController2 {
             bodyTextView.attributedText = .composed(of: [
                 NSLocalizedString("BOOST_VIEW_BODY", comment: "The body text for the donate to signal view"),
                 " ",
-                CommonStrings.learnMore.styled(with: .link(URL(string: "https://signal.org")!)) // TODO: Real link
+                CommonStrings.learnMore.styled(with: .link(SupportConstants.subscriptionFAQURL))
             ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
 
             bodyTextView.linkTextAttributes = [
