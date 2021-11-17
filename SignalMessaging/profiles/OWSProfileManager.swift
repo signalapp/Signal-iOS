@@ -136,7 +136,7 @@ public extension OWSProfileManager {
         intersectingGroupIds: Set<Data>
     ) -> Promise<Void> {
         guard tsAccountManager.isRegisteredPrimaryDevice else {
-            return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectely false"))
+            return Promise(error: OWSAssertionError("tsAccountManager.isRegistered was unexpectedly false"))
         }
 
         Logger.info("Beginning profile key rotation.")

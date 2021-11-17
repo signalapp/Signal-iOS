@@ -61,6 +61,12 @@ class DebugUIProfile: DebugUIPage {
             },
             OWSTableItem(title: "Re-upload Profile") {
                 Self.profileManagerImpl.reuploadLocalProfile()
+            },
+            OWSTableItem(title: "Log Local Profile") {
+                Self.profileManagerImpl.logLocalProfile()
+            },
+            OWSTableItem(title: "Fetch Local Profile") {
+                ProfileFetcherJob.fetchProfile(address: TSAccountManager.localAddress!, ignoreThrottling: true)
             }
         ].compactMap { $0 }
 

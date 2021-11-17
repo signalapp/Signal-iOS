@@ -1375,7 +1375,11 @@ class StorageServiceOperation: OWSOperation {
         state: inout State,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard contactRecord.serviceAddress?.isLocalAddress == false else {
+        guard let serviceAddress = contactRecord.serviceAddress else {
+            Logger.warn("Contact record is missing address.")
+            return
+        }
+        guard !serviceAddress.isLocalAddress else {
             owsFailDebug("Unexpectedly merging contact record for local user. Only account record should exist for the local user.")
             return
         }
