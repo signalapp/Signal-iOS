@@ -6169,8 +6169,8 @@
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Update";
 
-/* The body text for the signal sustainer view, embeds {{link to donation read more}} */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it. %@";
+/* The body text for the signal sustainer view */
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Off";
