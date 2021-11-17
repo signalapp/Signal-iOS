@@ -62,11 +62,13 @@ public class AccountManager: NSObject {
                 guard !self.tsAccountManager.isRegistered else {
                     throw OWSAssertionError("requesting account verification when already registered")
                 }
+
+                self.tsAccountManager.phoneNumberAwaitingVerification = e164
+                
             case .changePhoneNumber:
+                // Don't set phoneNumberAwaitingVerification in the "change phone number" flow.
                 break
             }
-
-            self.tsAccountManager.phoneNumberAwaitingVerification = e164
 
             return self.getPreauthChallenge(e164: e164)
         }.then { (preauthChallenge: String?) -> Promise<Void> in
