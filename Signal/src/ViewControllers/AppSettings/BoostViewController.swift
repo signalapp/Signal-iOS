@@ -356,11 +356,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                     ) { [weak self] currencyCode in
                         self?.currencyCode = currencyCode
                     }
-                    if let navController = self.navigationController {
-                        self.navigationController?.pushViewController(vc, animated: true)
-                    } else {
-                        self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                    }
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
 
                 picker.setAttributedTitle(NSAttributedString.composed(of: [
