@@ -2475,6 +2475,7 @@ public class GroupManager: NSObject {
             // for the local user (which should last forever) we'll abort above.
             // Group v2 actions will use tryToEnsureProfileKeyCredentials()
             // and we want to set them up to succeed.
+            Logger.info("Re-uploading local profile to update profile credential.")
             return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }

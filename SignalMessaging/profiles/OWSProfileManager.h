@@ -155,6 +155,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #ifdef DEBUG
 + (void)discardAllProfileKeysWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)logLocalProfile;
 #endif
 
 @end

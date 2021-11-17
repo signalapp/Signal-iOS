@@ -183,14 +183,18 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"Local user profile (%@). avatarUrlPath: %@, avatarFileName: %@, hasAvatarFileOnDisk: %d",
+        OWSLogInfo(
+            @"Local user profile (%@). address: %@, avatarUrlPath: %@, avatarFileName: %@, hasAvatarFileOnDisk: %d",
             label,
+            localUserProfile.address,
             localUserProfile.avatarUrlPath,
             localUserProfile.avatarFileName,
             hasAvatarFileOnDisk);
     } else {
-        OWSLogInfo(@"Local user profile (%@). avatarUrlPath: %d, avatarFileName: %d, hasAvatarFileOnDisk: %d",
+        OWSLogInfo(
+            @"Local user profile (%@). address: %@, avatarUrlPath: %d, avatarFileName: %d, hasAvatarFileOnDisk: %d",
             label,
+            localUserProfile.address,
             localUserProfile.avatarUrlPath.length > 0,
             localUserProfile.avatarFileName.length > 0,
             hasAvatarFileOnDisk);
@@ -350,6 +354,13 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
 }
+
+#ifdef DEBUG
+- (void)logLocalProfile
+{
+    OWSLogVerbose(@"Local profile: %@", self.localUserProfile.dictionaryValue);
+}
+#endif
 
 - (OWSProfileSnapshot *)profileSnapshotForUserProfile:(OWSUserProfile *)userProfile
                                   shouldIncludeAvatar:(BOOL)shouldIncludeAvatar

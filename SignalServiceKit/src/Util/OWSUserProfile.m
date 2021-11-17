@@ -49,7 +49,7 @@ BOOL shouldUpdateStorageServiceForUserProfileWriter(UserProfileWriter userProfil
         case UserProfileWriter_GroupState:
             return YES;
         case UserProfileWriter_Reupload:
-            return NO;
+            return YES;
         case UserProfileWriter_AvatarDownload:
             return NO;
         case UserProfileWriter_MetadataUpdate:
@@ -183,12 +183,19 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _recipientUUID = recipientUUID;
     _username = username;
 
+    [self verifyAddress];
+    
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)verifyAddress
+{
+    OWSAssertDebug(!self.address.isLocalAddress);
+}
 
 + (NSString *)collection
 {
@@ -700,7 +707,8 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                         equalTo:[profile.avatarFileName ows_nilIfEmpty]];
                                            if (givenNameDoesNotMatch || familyNameDoesNotMatch
                                                || avatarUrlPathDoesNotMatch) {
-                                               OWSLogWarn(@"Re-uploading profile to reflect profile state: %@, %@, "
+                                               OWSLogWarn(@"Local profile state from database and profile fetch "
+                                                          @"differ: %@, %@, "
                                                           @"isLocalUserProfile: %d, givenName: %d -> %d (%d), "
                                                           @"familyName: %d -> %d (%d), avatarUrlPath: %d -> %d (%d), "
                                                           @"avatarFileName: %d -> %d (%d).",
@@ -728,7 +736,12 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                            && CurrentAppContext().isMainApp && isUpdatingDatabaseInstance) {
                                            // shouldReuploadProtectedProfileName has side effects,
                                            // so only invoke it if shouldReupload is true.
-                                           if (OWSUserProfile.shouldReuploadProtectedProfileName) {
+                                           if (!OWSUserProfile.shouldReuploadProtectedProfileName) {
+                                               OWSLogVerbose(@"Skipping re-upload.");
+                                           } else if (profile.avatarUrlPath != nil && profile.avatarFileName == nil) {
+                                               OWSLogWarn(@"Skipping re-upload; profile avatar not downloaded.");
+                                           } else {
+                                               OWSLogInfo(@"Re-uploading local profile to update profile credential.");
                                                [transaction addAsyncCompletionOffMain:^{
                                                    [self.profileManager reuploadLocalProfile];
                                                }];
@@ -800,8 +813,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     [updatedInstance loadBadgeContentWithTransaction:transaction];
 
     if (completion) {
-        [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                                           block:completion];
+        [transaction addAsyncCompletionOffMain:completion];
     }
 
     if (!didChange) {
@@ -821,11 +833,19 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
-    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter)
+    BOOL shouldUpdateStorageService = shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter);
+    if (shouldUpdateStorageService && userProfileWriter == UserProfileWriter_ProfileFetch) {
+        OWSFailDebug(@"Should not update storage service to reflect profile fetches.");
+        shouldUpdateStorageService = NO;
+    }
+
+    if (self.tsAccountManager.isRegisteredAndReady && shouldUpdateStorageService
         && (!onlyAvatarChanged || isLocalUserProfile)) {
-        [self.storageServiceManager
-            recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
-                                                                           : self.address ]];
+        [transaction addAsyncCompletionOffMain:^{
+            [self.storageServiceManager
+                recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
+                                                                               : self.address ]];
+        }];
     }
 
     [transaction
@@ -1078,6 +1098,9 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
+    if ([self isLocalProfileAddress:address]) {
+        return;
+    }
     if (address.uuid == nil || address.phoneNumber == nil) {
         OWSFailDebug(@"Address missing UUID or phone number.");
         return;
