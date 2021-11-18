@@ -78,6 +78,7 @@ extension AppDelegate {
             DispatchQueue.main.async {
                 guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
                 if message.sender! == getUserHexEncodedPublicKey() {
+                    guard !call.hasStartedConnecting else { return }
                     self.dismissAllCallUI()
                     AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .answeredElsewhere)
                 } else {
