@@ -160,18 +160,18 @@ extension OWSURLSession {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        Logger.verbose("Making request: \(request.logDescription)")
+        Logger.verbose("Making request: \(rawRequest.description)")
 
         return firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
             urlSession.uploadTaskPromise(request: request, data: requestBody)
         }.map(on: .global()) { (response: HTTPResponse) -> HTTPResponse in
-            Logger.info("Success: \(request.logDescription)")
+            Logger.info("Success: \(rawRequest.description)")
             return response
         }.ensure(on: .global()) {
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
         }.recover(on: .global()) { error -> Promise<HTTPResponse> in
-            Logger.warn("Failure: \(request.logDescription), error: \(error)")
+            Logger.warn("Failure: \(rawRequest.description), error: \(error)")
             throw error
         }
     }
@@ -182,19 +182,4 @@ extension OWSURLSession {
 @objc
 public extension TSRequest {
     var canUseAuth: Bool { !isUDRequest }
-}
-
-// MARK: -
-
-public extension URLRequest {
-    var logDescription: String {
-        var splits = [String]()
-        if let httpMethod = self.httpMethod {
-            splits.append(httpMethod)
-        }
-        if let url = self.url {
-            splits.append(url.absoluteString)
-        }
-        return splits.joined(separator: ": ")
-    }
 }

@@ -126,7 +126,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"{ %@: %@ }", self.HTTPMethod, self.URL];
+    if (self.shouldRedactUrlInLogs) {
+        return [NSString stringWithFormat:@"{ %@: [REDACTED] }", self.HTTPMethod];
+    } else {
+        return [NSString stringWithFormat:@"{ %@: %@ }", self.HTTPMethod, self.URL];
+    }
 }
 
 @end

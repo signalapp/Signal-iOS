@@ -103,12 +103,12 @@ public class SocketManager: NSObject {
             owsAssertDebug(!request.isUDRequest)
             owsAssertDebug(request.shouldHaveAuthorizationHeaders)
             if request.isUDRequest || !request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(String(describing: request.url)), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
+                Logger.info("request: \(request.description), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
             }
         case .unidentified:
             owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
             if !request.isUDRequest && request.shouldHaveAuthorizationHeaders {
-                Logger.info("request: \(String(describing: request.url)), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
+                Logger.info("request: \(request.description), isUDRequest: \(request.isUDRequest), shouldHaveAuthorizationHeaders: \(request.shouldHaveAuthorizationHeaders)")
             }
         }
 
