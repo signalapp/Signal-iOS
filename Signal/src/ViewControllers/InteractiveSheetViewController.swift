@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 public class InteractiveSheetViewController: OWSViewController {
     public let contentView = UIView()

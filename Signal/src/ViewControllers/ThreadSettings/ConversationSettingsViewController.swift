@@ -337,9 +337,14 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: - Actions
 
-    func tappedAvatar() {
+    func didTapAvatar() {
         guard avatarView != nil else { return }
         presentAvatarViewController()
+    }
+
+    func didTapBadge() {
+        guard avatarView != nil else { return }
+        presentPrimaryBadgeSheet()
     }
 
     func showVerificationView() {
@@ -497,6 +502,15 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         }
 
         present(vc, animated: true)
+    }
+
+    func presentPrimaryBadgeSheet() {
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
+        guard let primaryBadge = availableBadges.first?.badge else { return }
+        let contactShortName = databaseStorage.read { contactsManager.shortDisplayName(for: contactAddress, transaction: $0) }
+
+        let badgeSheet = BadgeDetailsSheet(focusedBadge: primaryBadge, owner: .remote(shortName: contactShortName))
+        present(badgeSheet, animated: true, completion: nil)
     }
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {

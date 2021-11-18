@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalUI
 import UIKit
 
 struct ConversationHeaderBuilder: Dependencies {
@@ -232,12 +233,6 @@ struct ConversationHeaderBuilder: Dependencies {
         avatarWrapper.addSubview(avatarView)
         avatarView.autoPinEdgesToSuperviewEdges()
 
-        let avatarButton = OWSButton { [weak delegate] in
-            delegate?.tappedAvatar()
-        }
-        avatarWrapper.addSubview(avatarButton)
-        avatarButton.autoPinEdgesToSuperviewEdges()
-
         subviews.append(avatarWrapper)
         subviews.append(UIView.spacer(withHeight: 8))
         subviews.append(buildThreadNameLabel())
@@ -443,6 +438,7 @@ struct ConversationHeaderBuilder: Dependencies {
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)
         }
+        avatarView.interactionDelegate = delegate
 
         // Track the most recent avatar view.
         delegate.avatarView = avatarView
@@ -524,7 +520,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
 // MARK: -
 
-protocol ConversationHeaderDelegate: UIViewController, Dependencies {
+protocol ConversationHeaderDelegate: UIViewController, Dependencies, ConversationAvatarViewDelegate {
     var tableViewController: OWSTableViewController2 { get }
 
     var thread: TSThread { get }
@@ -537,7 +533,6 @@ protocol ConversationHeaderDelegate: UIViewController, Dependencies {
     var isBlockedByMigration: Bool { get }
     var canEditConversationAttributes: Bool { get }
 
-    func tappedAvatar()
     func updateTableContents(shouldReload: Bool)
     func tappedConversationSearch()
 

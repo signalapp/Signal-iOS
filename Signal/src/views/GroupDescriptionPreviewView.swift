@@ -4,6 +4,7 @@
 
 import Foundation
 import BonMot
+import SignalUI
 
 class GroupDescriptionPreviewView: ManualLayoutView {
     private let textView = LinkingTextView()
