@@ -105,10 +105,10 @@ public final class SessionCallManager: NSObject {
         guard let call = currentCall else { return }
         if let reason = reason {
             self.provider.reportCall(with: call.callID, endedAt: nil, reason: reason)
+            if reason == .answeredElsewhere { return }
             switch (reason) {
             case .unanswered: call.updateCallMessage(mode: .unanswered)
             case .declinedElsewhere: call.updateCallMessage(mode: .local)
-            case .answeredElsewhere: break
             default: call.updateCallMessage(mode: .remote)
             }
         } else {

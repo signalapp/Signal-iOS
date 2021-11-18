@@ -19,10 +19,32 @@ extension AppDelegate {
         presentingVC.present(callVC, animated: true, completion: nil)
     }
     
-    @objc func dismissAllCallUI() {
+    private func dismissAllCallUI() {
         if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
         if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
         if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
+    }
+    
+    private func showCallUIForCall(_ call: SessionCall) {
+        DispatchQueue.main.async {
+            if CurrentAppContext().isMainAppAndActive {
+                guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
+                if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+                    let callVC = CallVC(for: call)
+                    callVC.conversationVC = conversationVC
+                    conversationVC.inputAccessoryView?.isHidden = true
+                    conversationVC.inputAccessoryView?.alpha = 0
+                    presentingVC.present(callVC, animated: true, completion: nil)
+                }
+            }
+            call.reportIncomingCallIfNeeded{ error in
+                if let error = error {
+                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
+                    let incomingCallBanner = IncomingCallBanner(for: call)
+                    incomingCallBanner.show()
+                }
+            }
+        }
     }
     
     @objc func setUpCallHandling() {
@@ -30,7 +52,7 @@ extension AppDelegate {
         MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
             let callManager = AppEnvironment.shared.callManager
-            // Ignore pre offer message afte the same call instance has been generated
+            // Ignore pre offer message after the same call instance has been generated
             if let currentCall = callManager.currentCall, currentCall.uuid == message.uuid! { return }
             guard callManager.currentCall == nil && SSKPreferences.areCallsEnabled else {
                 callManager.handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: message, using: transaction)
@@ -44,25 +66,7 @@ extension AppDelegate {
             if let caller = message.sender, let uuid = message.uuid {
                 let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
                 call.callMessageTimestamp = message.sentTimestamp
-                DispatchQueue.main.async {
-                    if CurrentAppContext().isMainAppAndActive {
-                        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // TODO: Handle more gracefully
-                        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == caller {
-                            let callVC = CallVC(for: call)
-                            callVC.conversationVC = conversationVC
-                            conversationVC.inputAccessoryView?.isHidden = true
-                            conversationVC.inputAccessoryView?.alpha = 0
-                            presentingVC.present(callVC, animated: true, completion: nil)
-                        }
-                    }
-                    call.reportIncomingCallIfNeeded{ error in
-                        if let error = error {
-                            SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                            let incomingCallBanner = IncomingCallBanner(for: call)
-                            incomingCallBanner.show()
-                        }
-                    }
-                }
+                self.showCallUIForCall(call)
             }
         }
         // Offer messages

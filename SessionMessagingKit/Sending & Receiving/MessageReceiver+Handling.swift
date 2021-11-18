@@ -271,8 +271,6 @@ extension MessageReceiver {
             handleNewCallOfferMessageIfNeeded?(message, transaction)
         case .offer:
             print("[Calls] Received offer message.")
-            let transaction = transaction as! YapDatabaseReadWriteTransaction
-            handleNewCallOfferMessageIfNeeded?(message, transaction)
             handleOfferCallMessage?(message)
         case .answer:
             print("[Calls] Received answer message.")
