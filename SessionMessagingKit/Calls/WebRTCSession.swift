@@ -18,6 +18,13 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
     
+    private lazy var defaultICEServer: TurnServerInfo? = {
+        let url = Bundle.main.url(forResource: "Session-Turn-Server", withExtension: nil)!
+        let data = try! Data(contentsOf: url)
+        let json = try! JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as! JSON
+        return TurnServerInfo(attributes: json)
+    }()
+    
     internal lazy var factory: RTCPeerConnectionFactory = {
         RTCInitializeSSL()
         let videoEncoderFactory = RTCDefaultVideoEncoderFactory()
@@ -30,6 +37,9 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     internal lazy var peerConnection: RTCPeerConnection = {
         let configuration = RTCConfiguration()
         configuration.iceServers = [ RTCIceServer(urlStrings: ["stun:freyr.getsession.org:5349"]), RTCIceServer(urlStrings: ["turn:freyr.getsession.org"], username: "session", credential: "session") ]
+        if let defaultICEServer = defaultICEServer {
+            configuration.iceServers.append(RTCIceServer(urlStrings: defaultICEServer.urls, username: defaultICEServer.username, credential: defaultICEServer.password))
+        }
         configuration.sdpSemantics = .unifiedPlan
         let constraints = RTCMediaConstraints(mandatoryConstraints: [:], optionalConstraints: [:])
         return factory.peerConnection(with: configuration, constraints: constraints, delegate: self)
