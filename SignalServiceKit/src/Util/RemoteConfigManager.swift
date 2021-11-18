@@ -13,7 +13,7 @@ public class RemoteConfig: BaseFlags {
     private let isEnabledFlags: [String: Bool]
     private let valueFlags: [String: AnyObject]
     private let researchMegaphone: Bool
-    private let donateMegaphone: Bool
+    private let subscriptionMegaphone: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: [String]
 
@@ -22,7 +22,7 @@ public class RemoteConfig: BaseFlags {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
         self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
-        self.donateMegaphone = Self.isCountryCodeBucketEnabled(.donateMegaphone, valueFlags: valueFlags)
+        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.subscriptionMegaphone, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
     }
@@ -133,14 +133,14 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var donateMegaphone: Bool {
+    public static var subscriptionMegaphone: Bool {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
-        return remoteConfig.donateMegaphone
+        return DebugFlags.forceSubscriptionMegaphone || remoteConfig.subscriptionMegaphone
     }
 
     @objc
-    public static var donateMegaphoneSnoozeInterval: TimeInterval {
-        interval(.donateMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
+    public static var subscriptionMegaphoneSnoozeInterval: TimeInterval {
+        interval(.subscriptionMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
     }
 
     @objc
@@ -445,13 +445,13 @@ private struct Flags {
         case researchMegaphone
         case cdsSyncInterval
         case automaticSessionResetAttemptInterval
-        case donateMegaphone
-        case donateMegaphoneSnoozeInterval
         case reactiveProfileKeyAttemptInterval
         case standardMediaQualityLevel
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
+        case subscriptionMegaphone
+        case subscriptionMegaphoneSnoozeInterval
     }
 }
 

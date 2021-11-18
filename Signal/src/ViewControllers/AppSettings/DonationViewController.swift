@@ -564,7 +564,6 @@ extension DonationViewController: PKPaymentAuthorizationControllerDelegate {
         Stripe.donate(amount: donationAmount, in: currencyCode, for: payment).done { [weak self] in
             completion(.init(status: .success, errors: nil))
             self?.state = .donatedSuccessfully
-            ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.donateMegaphone)
         }.catch { error in
             owsFailDebugUnlessNetworkFailure(error)
             completion(.init(status: .failure, errors: [error]))

@@ -15,9 +15,9 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
     case groupsV2AndMentionsSplash2
     case groupCallsMegaphone
     case sharingSuggestions
-    case donateMegaphone
     case chatColors
     case avatarBuilder
+    case subscriptionMegaphone
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
@@ -72,13 +72,20 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return RemoteConfig.groupCalling
         case .sharingSuggestions:
             return true
-        case .donateMegaphone:
-            return RemoteConfig.donateMegaphone
         case .chatColors:
             return true
         case .avatarBuilder:
             return profileManager.localProfileAvatarData() == nil
+        case .subscriptionMegaphone:
+            return RemoteConfig.subscriptionMegaphone && !localUserHasSubscription(transaction: transaction)
         }
+    }
+
+    // TODO: We should probably expose this to SSK in a better way,
+    // but for now this is the only place we need it.
+    func localUserHasSubscription(transaction: GRDBReadTransaction) -> Bool {
+        let keyValueStore = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
+        return keyValueStore.hasValue(forKey: "subscriberID", transaction: transaction.asAnyRead)
     }
 
     // Some upgrades stop running after a certain date. This lets
@@ -99,7 +106,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         switch self {
         case .introducingPins,
              .researchMegaphone1,
-             .donateMegaphone:
+             .subscriptionMegaphone:
             return false
         default:
             return true
@@ -118,7 +125,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return 2 * kHourInterval
         case .pinReminder:
             return 8 * kHourInterval
-        case .donateMegaphone:
+        case .subscriptionMegaphone:
             return 5 * kDayInterval
         default:
             return 0
@@ -154,7 +161,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return .medium
         case .sharingSuggestions:
             return .medium
-        case .donateMegaphone:
+        case .subscriptionMegaphone:
             return .low
         case .chatColors:
             return .low
@@ -184,7 +191,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return false
         case .contactPermissionReminder:
             return false
-        case .donateMegaphone:
+        case .subscriptionMegaphone:
             return false
         default:
             return true
@@ -197,8 +204,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return kDayInterval * 30
         case .contactPermissionReminder:
             return kDayInterval * 30
-        case .donateMegaphone:
-            return RemoteConfig.donateMegaphoneSnoozeInterval
+        case .subscriptionMegaphone:
+            return RemoteConfig.subscriptionMegaphoneSnoozeInterval
         default:
             return kDayInterval * 2
         }
@@ -212,7 +219,7 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
             return true
         case .sharingSuggestions:
             return true
-        case .donateMegaphone:
+        case .subscriptionMegaphone:
             return true
         default:
             return false

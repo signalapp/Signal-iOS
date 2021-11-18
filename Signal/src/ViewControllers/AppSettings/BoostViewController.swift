@@ -25,7 +25,7 @@ class BoostSheetView: InteractiveSheetViewController {
 
         // We add the handle directly to the content view,
         // so that it doesn't scroll with the table.
-        handleContainer.backgroundColor = boostVC.tableBackgroundColor
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         contentView.addSubview(handleContainer)
         handleContainer.autoPinWidthToSuperview()
         handleContainer.autoPinEdge(toSuperviewEdge: .top)
@@ -47,7 +47,7 @@ class BoostSheetView: InteractiveSheetViewController {
 
     override func themeDidChange() {
         super.themeDidChange()
-        handleContainer.backgroundColor = boostVC.tableBackgroundColor
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
     }
 }
 

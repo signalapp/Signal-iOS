@@ -7,6 +7,7 @@ import Mantle
 
 @objc
 public class OWSUserProfileBadgeInfo: NSObject, SDSSwiftSerializable {
+    @objc
     public let badgeId: String
     public var badge: ProfileBadge?    // nil until a call to `loadBadge()` or `fetchBadgeContent(transaction:)`
 

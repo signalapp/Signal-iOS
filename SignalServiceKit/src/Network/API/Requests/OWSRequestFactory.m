@@ -944,6 +944,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"PUT"
                                          parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -954,6 +955,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                 method:@"DELETE"
             parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -962,6 +964,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"POST"
                                          parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -970,6 +973,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"POST"
                                          parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -978,6 +982,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"PUT"
                                          parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -986,6 +991,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                               method:@"POST"
                                          parameters:@{@"receiptCredentialRequest" : base64ReceiptCredentialRequest}];
     request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
     return request;
 }
 
@@ -1007,6 +1013,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
                 method:@"GET"
             parameters:@{}];
+    request.shouldRedactUrlInLogs = YES;
     request.shouldHaveAuthorizationHeaders = NO;
     return request;
 }

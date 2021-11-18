@@ -180,6 +180,20 @@ class SubscriptionViewController: OWSTableViewController2 {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchCurrentSubscription()
+
+        // If we're the root view, add a cancel button
+        if navigationController?.viewControllers.first == self {
+            navigationItem.leftBarButtonItem = .init(
+                barButtonSystemItem: .done,
+                target: self,
+                action: #selector(didTapDone)
+            )
+        }
+    }
+
+    @objc
+    func didTapDone() {
+        self.dismiss(animated: true)
     }
 
     @objc
@@ -1085,6 +1099,8 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 } else {
                     self.fetchCurrentSubscription()
                 }
+
+                ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.subscriptionMegaphone)
 
                 // Only show the badge sheet if redemption succeeds.
                 if let selectedSubscription = self.selectedSubscription {

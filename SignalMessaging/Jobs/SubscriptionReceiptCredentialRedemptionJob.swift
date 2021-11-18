@@ -39,7 +39,9 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
     }
-    public static let maxRetries: UInt = 10
+    // per OWSOperation.retryIntervalForExponentialBackoff(failureCount:),
+    // 110 retries will yield ~24 hours of retry.
+    public static let maxRetries: UInt = 110
     public let requiresInternet: Bool = true
     public var isEnabled: Bool { CurrentAppContext().isMainApp }
     public var runningOperations = AtomicArray<SubscriptionReceiptCredentailRedemptionOperation>()

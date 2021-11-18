@@ -13,6 +13,7 @@ static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.
 
 @property (nonatomic) BOOL isUDRequest;
 @property (nonatomic) BOOL shouldHaveAuthorizationHeaders;
+@property (nonatomic) BOOL shouldRedactUrlInLogs;
 @property (atomic, nullable) NSString *authUsername;
 @property (atomic, nullable) NSString *authPassword;
 
