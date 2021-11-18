@@ -496,9 +496,11 @@ public class SignalServiceAddressCache: NSObject {
                 // If we previously had a UUID, disassociate it from the phone number.
                 if let oldUuid = phoneNumberToUUIDCache[phoneNumber],
                    oldUuid != uuid {
-                    uuidToHashValueCache[oldUuid] = nil
+                    if uuidToHashValueCache[oldUuid] == hash {
+                        owsFailDebug("Unexpectedly using hash for old uuid.")
+                        uuidToHashValueCache[oldUuid] = nil
+                    }
                     uuidToPhoneNumberCache[oldUuid] = nil
-
                 }
 
                 uuidToPhoneNumberCache[uuid] = phoneNumber
@@ -576,7 +578,10 @@ public class SignalServiceAddressCache: NSObject {
             if let phoneNumber = phoneNumber,
                let oldUuid = phoneNumberToUUIDCache[phoneNumber],
                oldUuid != uuid {
-                uuidToHashValueCache[oldUuid] = nil
+                if uuidToHashValueCache[oldUuid] == hash {
+                    owsFailDebug("Unexpectedly using hash for old uuid.")
+                    uuidToHashValueCache[oldUuid] = nil
+                }
                 uuidToPhoneNumberCache[oldUuid] = nil
             }
 
