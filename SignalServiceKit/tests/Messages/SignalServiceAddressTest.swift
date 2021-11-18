@@ -151,6 +151,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         return "+\(Self.mockPhoneNumberCounter.increment())"
     }
 
+    // A new address "takes" a uuid component a pre-existing address.
     func test_mappingChanges1a() {
         let uuid1 = UUID()
         let uuid2 = UUID()
@@ -181,6 +182,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
+    // A new address "takes" a uuid component a pre-existing address.
     func test_mappingChanges1b() {
         let uuid1 = UUID()
         let uuid2 = UUID()
@@ -211,6 +213,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
+    // A new address "takes" a phone number component a pre-existing address.
     func test_mappingChanges2a() {
         let uuid1 = UUID()
         let uuid2 = UUID()
@@ -241,6 +244,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
+    // A new address "takes" a phone number component a pre-existing address.
     func test_mappingChanges2b() {
         let uuid1 = UUID()
         let uuid2 = UUID()
@@ -271,6 +275,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 
+    // A new address "combines" 2 pre-existing addresses.
     func test_mappingChanges3a() {
         let uuid1 = UUID()
         let phoneNumber1 = mockPhoneNumber()
@@ -286,6 +291,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
     }
 
+    // A new address "combines" 2 pre-existing addresses.
     func test_mappingChanges3b() {
         let uuid1 = UUID()
         let phoneNumber1 = mockPhoneNumber()
@@ -299,5 +305,125 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
         XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+    }
+
+    // A new address "takes" 1 component each from 2 pre-existing addresses.
+    func test_mappingChanges4a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component each from 2 pre-existing addresses.
+    func test_mappingChanges4b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
+    func test_mappingChanges5a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
+    func test_mappingChanges5b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
+    func test_mappingChanges6a() {
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
+    func test_mappingChanges6b() {
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        // Associate uuid1, phoneNumber2
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
     }
 }
