@@ -462,6 +462,7 @@ public class SubscriptionManager: NSObject {
                 Logger.debug("Got valid receipt response")
             } else if statusCode == 204 {
                 Logger.debug("User has no active subscriptions")
+                throw OWSRetryableSubscriptionError()
             } else if statusCode == 400 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
                 throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
             } else {
@@ -702,12 +703,16 @@ extension SubscriptionManager {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
+
             if statusCode == 200 {
                 Logger.debug("Got valid receipt response")
             } else if statusCode == 204 {
                 Logger.debug("No receipt could be found for this payment intent")
+                throw OWSRetryableSubscriptionError()
+            } else if [400, 402, 409].contains(statusCode) {
+                throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
             } else {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
+                throw OWSRetryableSubscriptionError()
             }
 
             guard let json = response.responseBodyJson as? [String: Any] else {
