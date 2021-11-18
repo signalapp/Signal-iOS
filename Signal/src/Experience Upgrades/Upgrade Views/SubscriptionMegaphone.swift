@@ -4,25 +4,25 @@
 
 import Foundation
 
-class DonateMegaphone: MegaphoneView {
+class SubscriptionMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        titleText = NSLocalizedString("DONATION_MEGAPHONE_TITLE", comment: "Title for donation megaphone")
-        bodyText = NSLocalizedString("DONATION_MEGAPHONE_BODY", comment: "Body for donation megaphone")
-        imageName = "donation-megaphone"
+        titleText = NSLocalizedString("SUBSCRIPTION_MEGAPHONE_TITLE", comment: "Title for subscription megaphone")
+        bodyText = NSLocalizedString("SUBSCRIPTION_MEGAPHONE_BODY", comment: "Body for subscription megaphone")
+        imageName = "subscription-megaphone"
 
         setButtons(
             primary: Button(title: NSLocalizedString(
-                "DONATION_MEGAPHONE_ACTION",
-                comment: "Action text for donation megaphone"
+                "SUBSCRIPTION_MEGAPHONE_ACTION",
+                comment: "Action text for subscription megaphone"
             )) {
-                let vc = OWSNavigationController(rootViewController: DonationViewController())
+                let vc = OWSNavigationController(rootViewController: SubscriptionViewController())
                 fromViewController.present(vc, animated: true)
             },
             secondary: Button(title: NSLocalizedString(
-                "DONATION_MEGAPHONE_CANCEL",
-                comment: "Cancel text for donation megaphone"
+                "SUBSCRIPTION_MEGAPHONE_CANCEL",
+                comment: "Cancel text for subscription megaphone"
             )) { [weak self] in
                 self?.markAsSnoozed()
                 self?.dismiss()

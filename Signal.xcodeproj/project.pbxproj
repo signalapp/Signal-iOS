@@ -948,7 +948,7 @@
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88FBE9502649E7EB005F6C80 /* DonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FBE94F2649E7EB005F6C80 /* DonationViewController.swift */; };
-		88FBE954264B6849005F6C80 /* DonateMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FBE953264B6848005F6C80 /* DonateMegaphone.swift */; };
+		88FBE954264B6849005F6C80 /* SubscriptionMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FBE953264B6848005F6C80 /* SubscriptionMegaphone.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -2223,7 +2223,7 @@
 		88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewController.swift; sourceTree = "<group>"; };
 		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88FBE94F2649E7EB005F6C80 /* DonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewController.swift; sourceTree = "<group>"; };
-		88FBE953264B6848005F6C80 /* DonateMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateMegaphone.swift; sourceTree = "<group>"; };
+		88FBE953264B6848005F6C80 /* SubscriptionMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionMegaphone.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -4109,7 +4109,7 @@
 			children = (
 				34E93F932667F92100CE6FA5 /* ChatColorsMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
-				88FBE953264B6848005F6C80 /* DonateMegaphone.swift */,
+				88FBE953264B6848005F6C80 /* SubscriptionMegaphone.swift */,
 				88CB461F25843527001900F2 /* GroupCallsMegaphone.swift */,
 				347C3850252DF83D00F3D941 /* GroupsV2AndMentionsSplash.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
@@ -5992,7 +5992,7 @@
 				345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */,
 				88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */,
 				8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */,
-				88FBE954264B6849005F6C80 /* DonateMegaphone.swift in Sources */,
+				88FBE954264B6849005F6C80 /* SubscriptionMegaphone.swift in Sources */,
 				3426A36A255D9D7C0036407F /* ConversationViewController+Selection.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
 				45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */,

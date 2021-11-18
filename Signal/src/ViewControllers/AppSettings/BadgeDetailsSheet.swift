@@ -240,11 +240,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
     @objc
     func didTapSubscribe() {
         dismiss(animated: true) {
-            let navigationController = AppSettingsViewController.inModalNavigationController()
-            var viewControllers = navigationController.viewControllers
-            viewControllers += [SubscriptionViewController()]
-            navigationController.setViewControllers(viewControllers, animated: false)
-            CurrentAppContext().frontmostViewController()?.presentFormSheet(navigationController, animated: true)
+            CurrentAppContext().frontmostViewController()?.present(SubscriptionViewController(), animated: true)
         }
     }
 

@@ -1528,18 +1528,6 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
 
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Donate";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal is powered by people like you. Show your support today!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "No Thanks";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Donate to Signal";
-
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
 
@@ -6036,6 +6024,18 @@
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "No Thanks";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
