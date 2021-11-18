@@ -356,8 +356,21 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
 
         let hash2 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
         // Associate uuid1, phoneNumber1
         let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should be hash continuity for the uuid, not the phone number.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -374,8 +387,21 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
 
         let hash2 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
         // Associate uuid1, phoneNumber1
         let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1).hash
+
+        // There should be hash continuity for the uuid, not the phone number.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -395,8 +421,25 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -420,8 +463,25 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -443,8 +503,23 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -464,8 +539,23 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -485,8 +575,23 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid2.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
@@ -506,8 +611,23 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
         // Associate uuid1, phoneNumber2
         let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+
+        // There should be hash continuity for uuid2.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
