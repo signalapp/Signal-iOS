@@ -316,9 +316,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         changeButton.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         changeButton.layer.cornerRadius = 16
 
-        // TODO: Badges — Dark theme? Check with design
         changeButton.setTitleColor(Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray95, for: .normal)
-        changeButton.backgroundColor = Theme.tableCellBackgroundColor
+        changeButton.backgroundColor = self.cellBackgroundColor
 
         cell.contentView.addSubview(changeButton)
         changeButton.autoPinHeightToSuperviewMargins()
