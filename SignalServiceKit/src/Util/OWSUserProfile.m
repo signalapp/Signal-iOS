@@ -183,19 +183,12 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _recipientUUID = recipientUUID;
     _username = username;
 
-    [self verifyAddress];
-    
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)verifyAddress
-{
-    OWSAssertDebug(!self.address.isLocalAddress);
-}
 
 + (NSString *)collection
 {
