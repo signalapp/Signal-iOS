@@ -258,6 +258,14 @@ class SubscriptionViewController: OWSTableViewController2 {
             if subscriptionViewState == .subscriptionNotYetSetUp || subscriptionViewState == .subscriptionUpdating {
                 descriptionTextView.attributedText = .composed(of: [NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view"), " ", NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body").styled(with: .link(SupportConstants.subscriptionFAQURL))]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
                 descriptionTextView.textAlignment = .center
+
+                descriptionTextView.linkTextAttributes = [
+                    .foregroundColor: Theme.accentBlueColor,
+                    .underlineColor: UIColor.clear,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue
+                ]
+
+                descriptionTextView.delegate = self
                 stackView.addArrangedSubview(descriptionTextView)
             }
 
@@ -873,6 +881,11 @@ class SubscriptionViewController: OWSTableViewController2 {
         actionSheet.addAction(OWSActionSheets.okayAction)
         self.navigationController?.topViewController?.presentActionSheet(actionSheet)
     }
+
+    func presentReadMoreSheet() {
+        let readMoreSheet = SubscriptionReadMoreSheet()
+        self.present(readMoreSheet, animated: true)
+    }
 }
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
@@ -1199,6 +1212,8 @@ extension SubscriptionViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == statusLabel {
             presentBadgeCantBeAddedSheet()
+        } else if textView == descriptionTextView {
+            presentReadMoreSheet()
         }
         return false
     }
@@ -1206,4 +1221,116 @@ extension SubscriptionViewController: UITextViewDelegate {
 
 private class SubscriptionLevelCell: UITableViewCell {
     public var subscriptionID: UInt = 0
+}
+
+private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
+    let contentScrollView = UIScrollView()
+    let stackView = UIStackView()
+    let handleContainer = UIView()
+    override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
+    override var minHeight: CGFloat { min(740, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)) }
+    override var maximizedHeight: CGFloat { minHeight }
+    override var renderExternalHandle: Bool { false }
+
+    // MARK: -
+
+    override public func viewDidLoad() {
+        super.viewDidLoad()
+        contentView.backgroundColor = Theme.tableView2PresentedBackgroundColor
+
+        // We add the handle directly to the content view,
+        // so that it doesn't scroll with the table.
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
+        contentView.addSubview(handleContainer)
+        handleContainer.autoPinWidthToSuperview()
+        handleContainer.autoPinEdge(toSuperviewEdge: .top)
+
+        let handle = UIView()
+        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        handle.autoSetDimensions(to: CGSize(width: 36, height: 5))
+        handle.layer.cornerRadius = 5 / 2
+        handleContainer.addSubview(handle)
+        handle.autoPinHeightToSuperview(withMargin: 12)
+        handle.autoHCenterInSuperview()
+
+        contentView.addSubview(contentScrollView)
+
+        stackView.axis = .vertical
+        stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        contentScrollView.addSubview(stackView)
+        stackView.autoPinHeightToSuperview()
+        stackView.autoPinWidth(toWidthOf: view)
+
+        contentScrollView.autoPinWidthToSuperview()
+        contentScrollView.autoPinEdge(toSuperviewEdge: .bottom)
+        contentScrollView.autoPinEdge(.top, to: .bottom, of: handleContainer)
+
+        buildContents()
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
+        contentView.backgroundColor = Theme.tableView2PresentedBackgroundColor
+
+    }
+
+    private func buildContents() {
+
+        // Header image
+        let image = UIImage(named: "sustainer-heart")
+        let imageView = UIImageView(image: image)
+        imageView.contentMode = .scaleAspectFit
+        stackView.addArrangedSubview(imageView)
+        stackView.setCustomSpacing(12, after: imageView)
+
+        // Header label
+        let titleLabel = UILabel()
+        titleLabel.textAlignment = .natural
+        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel.text = NSLocalizedString(
+            "SUSTAINER_READ_MORE_TITLE",
+            comment: "Title for the signal sustainer read more view"
+        )
+        titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
+        stackView.addArrangedSubview(titleLabel)
+        stackView.setCustomSpacing(12, after: titleLabel)
+
+        let firstDescriptionBlock = UILabel()
+        firstDescriptionBlock.textAlignment = .natural
+        firstDescriptionBlock.font = .ows_dynamicTypeBody
+        firstDescriptionBlock.text = NSLocalizedString(
+            "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE",
+            comment: "First block of description text in read more sheet"
+        )
+        firstDescriptionBlock.numberOfLines = 0
+        firstDescriptionBlock.lineBreakMode = .byWordWrapping
+        stackView.addArrangedSubview(firstDescriptionBlock)
+        stackView.setCustomSpacing(32, after: firstDescriptionBlock)
+
+        let titleLabel2 = UILabel()
+        titleLabel2.textAlignment = .natural
+        titleLabel2.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
+        titleLabel2.text = NSLocalizedString(
+            "SUSTAINER_READ_MORE_WHY_CONTRIBUTE",
+            comment: "Why Contribute title for the signal sustainer read more view"
+        )
+        titleLabel2.numberOfLines = 0
+        titleLabel2.lineBreakMode = .byWordWrapping
+        stackView.addArrangedSubview(titleLabel2)
+        stackView.setCustomSpacing(12, after: titleLabel2)
+
+        let secondDescriptionBlock = UILabel()
+        secondDescriptionBlock.textAlignment = .natural
+        secondDescriptionBlock.font = .ows_dynamicTypeBody
+        secondDescriptionBlock.text = NSLocalizedString(
+            "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO",
+            comment: "Second block of description text in read more sheet"
+        )
+        secondDescriptionBlock.numberOfLines = 0
+        secondDescriptionBlock.lineBreakMode = .byWordWrapping
+        stackView.addArrangedSubview(secondDescriptionBlock)
+    }
 }
