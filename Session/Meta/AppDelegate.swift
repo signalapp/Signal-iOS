@@ -17,7 +17,12 @@ extension AppDelegate {
             conversationVC.inputAccessoryView?.alpha = 0
         }
         presentingVC.present(callVC, animated: true, completion: nil)
-        
+    }
+    
+    @objc func dismissAllCallUI() {
+        if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
+        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
+        if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
     }
     
     @objc func setUpCallHandling() {
@@ -72,21 +77,29 @@ extension AppDelegate {
         MessageReceiver.handleAnswerCallMessage = { message in
             DispatchQueue.main.async {
                 guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                AppEnvironment.shared.callManager.invalidateTimeoutTimer()
-                call.hasStartedConnecting = true
-                let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-                call.didReceiveRemoteSDP(sdp: sdp)
-                guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
-                callVC.handleAnswerMessage(message)
+                if message.sender! == getUserHexEncodedPublicKey() {
+                    self.dismissAllCallUI()
+                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .answeredElsewhere)
+                } else {
+                    AppEnvironment.shared.callManager.invalidateTimeoutTimer()
+                    call.hasStartedConnecting = true
+                    let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
+                    call.didReceiveRemoteSDP(sdp: sdp)
+                    guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
+                    callVC.handleAnswerMessage(message)
+                }
             }
         }
         // End call messages
         MessageReceiver.handleEndCallMessage = { message in
             DispatchQueue.main.async {
-                if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
-                if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
-                if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
-                AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
+                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
+                self.dismissAllCallUI()
+                if message.sender! == getUserHexEncodedPublicKey() {
+                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .declinedElsewhere)
+                } else {
+                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
+                }
             }
         }
     }

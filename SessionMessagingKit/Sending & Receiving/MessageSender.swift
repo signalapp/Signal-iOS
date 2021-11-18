@@ -135,8 +135,8 @@ public final class MessageSender : NSObject {
         // • a sync message
         // • a closed group control message of type `new`
         // • an unsend request
-        let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) { if case .new = $0.kind { return true } else { return false } } ?? false
-        guard !isSelfSend || message is ConfigurationMessage || isSyncMessage || isNewClosedGroupControlMessage || message is UnsendRequest else {
+        // • a call message of type `answer` or `endCall`
+        guard !isSelfSend || isSyncMessage || shouldSyncMessage(message) else {
             storage.write(with: { transaction in
                 MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
@@ -378,5 +378,24 @@ public final class MessageSender : NSObject {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         tsMessage.update(sendingError: error, transaction: transaction)
         MessageInvalidator.invalidate(tsMessage, with: transaction)
+    }
+    
+    // MARK: Utils
+    private static func shouldSyncMessage(_ message: Message) -> Bool {
+        let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) {
+            if case .new = $0.kind {
+                return true
+            } else {
+                return false
+            } } ?? false
+        let isCallControlMessage = given(message as? CallMessage) {
+            if case .answer = $0.kind {
+                return true
+            } else if case .endCall = $0.kind {
+                return true
+            } else {
+                return false
+            } } ?? false
+        return isNewClosedGroupControlMessage || isCallControlMessage || message is ConfigurationMessage || message is UnsendRequest
     }
 }
