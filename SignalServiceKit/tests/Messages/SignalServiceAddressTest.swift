@@ -158,9 +158,17 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
         // uuid1, phoneNumber1 -> phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+        let hash2 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+        // There should be hash continuity for uuid1, since the uuid remains the same.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -170,7 +178,15 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
 
         // uuid2, phoneNumber1
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+        let hash3 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        // There should not be hash continuity for uuid2, since the uuid has changed.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -189,9 +205,17 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
         // uuid1, phoneNumber1 -> phoneNumber2
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+        let hash2 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+        // There should be hash continuity for uuid1, since the uuid remains the same.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -201,7 +225,15 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
 
         // uuid2, phoneNumber1
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1)
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+        // There should not be hash continuity for uuid2, since the uuid has changed.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -220,9 +252,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
         // uuid1 -> uuid2, phoneNumber1
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertNil(SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -232,7 +264,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
 
         // uuid1, phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -251,9 +283,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
         // uuid1 -> uuid2, phoneNumber1
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertNil(SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -263,7 +295,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
 
         // uuid1, phoneNumber2
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -280,10 +312,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let uuid1 = UUID()
         let phoneNumber1 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
         // Associate uuid1, phoneNumber1
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -296,10 +328,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let uuid1 = UUID()
         let phoneNumber1 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
         // Associate uuid1, phoneNumber1
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -314,10 +346,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -336,10 +368,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -357,10 +389,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let uuid2 = UUID()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -376,10 +408,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let uuid2 = UUID()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
@@ -395,10 +427,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
 
         XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
@@ -414,10 +446,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         let phoneNumber1 = mockPhoneNumber()
         let phoneNumber2 = mockPhoneNumber()
 
-        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high)
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high)
+        _ = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
         // Associate uuid1, phoneNumber2
-        _ = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high)
+        Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
 
         XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)

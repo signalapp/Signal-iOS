@@ -468,8 +468,11 @@ public class SignalServiceAddressCache: NSObject {
                 // If we already have a hash for the UUID, use it.
                 if let uuid = uuid, let uuidHash = uuidToHashValueCache[uuid] {
                     return uuidHash
-                // Otherwise, if we already have a hash for the phone number, use it.
+                // Otherwise, if we already have a hash for the phone number, use it
+                // unless we are moving a phone number from one uuid to another.
                 } else if let phoneNumber = phoneNumber,
+                          (phoneNumberToUUIDCache[phoneNumber] == nil ||
+                           phoneNumberToUUIDCache[phoneNumber] == uuid),
                             let phoneNumberHash = phoneNumberToHashValueCache[phoneNumber] {
                     return phoneNumberHash
 
@@ -541,13 +544,16 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     @objc
-    func updateMapping(uuid: UUID, phoneNumber: String?) {
+    @discardableResult
+    func updateMapping(uuid: UUID, phoneNumber: String?) -> SignalServiceAddress {
 
-        Logger.info("phoneNumber: \(phoneNumber), uuid: \(uuid)")
+        Logger.info("phoneNumber: \(String(describing: phoneNumber)), uuid: \(uuid)")
+
         Self.unfairLock.withLock {
             // Maintain the existing hash value for the given UUID, or create
             // a new hash if one is yet to exist.
             let hashValue: Int = {
+                // If we already have a hash for the UUID, use it.
                 if let oldUUIDHashValue = uuidToHashValueCache[uuid] {
                     return oldUUIDHashValue
                 } else if let oldPhoneNumber = uuidToPhoneNumberCache[uuid],
@@ -596,5 +602,7 @@ public class SignalServiceAddressCache: NSObject {
         if AppReadiness.isAppReady {
             Self.bulkProfileFetch.fetchProfile(uuid: uuid)
         }
+
+        return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 }
