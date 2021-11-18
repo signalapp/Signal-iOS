@@ -39,6 +39,13 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
                 return badge.localizedDescriptionFormatString.replacingOccurrences(of: "{short_name}", with: shortName)
             }
         }
+
+        var isLocal: Bool {
+            switch self {
+            case .local(_): return true
+            case .remote(_): return false
+            }
+        }
     }
     private let owner: Owner
     private let focusedBadge: ProfileBadge
@@ -163,7 +170,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
         }, actionBlock: nil))
 
         // Don't show actions for the local user's badges.
-        guard owner != .local else { return }
+        guard !owner.isLocal else { return }
 
         switch focusedBadge.rawCategory.lowercased() {
         case "donor":
