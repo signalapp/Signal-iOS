@@ -487,6 +487,13 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Delete other profiles"
                                      actionBlock:^{ [DebugUIStress deleteOtherProfiles]; }]];
 
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [items addObject:[OWSTableItem
+                             itemWithTitle:@"Log groups for contact"
+                               actionBlock:^{ [DebugUIStress logGroupsForAddress:contactThread.contactAddress]; }]];
+    }
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

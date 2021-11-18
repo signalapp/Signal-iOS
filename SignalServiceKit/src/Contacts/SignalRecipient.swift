@@ -55,38 +55,6 @@ extension SignalRecipient {
 
         let arguments: StatementArguments = [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
 
-        if let newUuid = newUuid?.nilIfEmpty,
-           let localUuid = tsAccountManager.localUuid,
-           localUuid.uuidString != newUuid,
-           let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty,
-           let newPhoneNumber = newPhoneNumber?.nilIfEmpty {
-            let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
-                .changePhoneNumberUuid: newUuid,
-                .changePhoneNumberOld: oldPhoneNumber,
-                .changePhoneNumberNew: newPhoneNumber
-            ]
-
-            func insertPhoneNumberChangeInteraction(_ thread: TSThread) {
-                let infoMessage = TSInfoMessage(thread: thread,
-                                                messageType: .phoneNumberChange,
-                                                infoMessageUserInfo: infoMessageUserInfo)
-                infoMessage.anyInsert(transaction: transaction.asAnyWrite)
-            }
-
-            let uuidAddress = SignalServiceAddress(uuidString: newUuid)
-
-            TSGroupThread.enumerateGroupThreads(
-                with: uuidAddress,
-                transaction: transaction.asAnyRead
-            ) { thread, _ in
-                insertPhoneNumberChangeInteraction(thread)
-            }
-
-            let contactThread = TSContactThread.getOrCreateThread(withContactAddress: uuidAddress,
-                                                                  transaction: transaction.asAnyWrite)
-            insertPhoneNumberChangeInteraction(contactThread)
-        }
-
         // Update TSThread
         do {
             let sql = """
@@ -185,6 +153,39 @@ extension SignalRecipient {
                 sql: sql,
                 arguments: [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
             )
+        }
+
+        if let newUuid = newUuid?.nilIfEmpty,
+           let localUuid = tsAccountManager.localUuid,
+           localUuid.uuidString != newUuid,
+           let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty,
+           let newPhoneNumber = newPhoneNumber?.nilIfEmpty {
+            let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
+                .changePhoneNumberUuid: newUuid,
+                .changePhoneNumberOld: oldPhoneNumber,
+                .changePhoneNumberNew: newPhoneNumber
+            ]
+
+            func insertPhoneNumberChangeInteraction(_ thread: TSThread) {
+                let infoMessage = TSInfoMessage(thread: thread,
+                                                messageType: .phoneNumberChange,
+                                                infoMessageUserInfo: infoMessageUserInfo)
+                infoMessage.anyInsert(transaction: transaction.asAnyWrite)
+            }
+
+            // We need to use the newPhoneNumber; we've just updated TSThread and TSGroupMember.
+            let newAddress = SignalServiceAddress(uuidString: newUuid, phoneNumber: newPhoneNumber)
+
+            TSGroupThread.enumerateGroupThreads(
+                with: newAddress,
+                transaction: transaction.asAnyRead
+            ) { thread, _ in
+                insertPhoneNumberChangeInteraction(thread)
+            }
+
+            let contactThread = TSContactThread.getOrCreateThread(withContactAddress: newAddress,
+                                                                  transaction: transaction.asAnyWrite)
+            insertPhoneNumberChangeInteraction(contactThread)
         }
 
         // TODO: we may need to do more here, this is just bear bones to make sure we
