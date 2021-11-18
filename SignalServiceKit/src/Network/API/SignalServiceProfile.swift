@@ -89,7 +89,7 @@ public class SignalServiceProfile: NSObject {
 
         self.credential = try params.optionalBase64EncodedData(key: "credential")
 
-        if FeatureFlags.fetchAndDisplayBadges,
+        if RemoteConfig.donorBadgeDisplay,
            let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
             self.badges = badgeArray.compactMap {
                 do {

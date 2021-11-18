@@ -17,7 +17,7 @@ class BadgeCollectionView: UICollectionView {
     enum SelectionMode: Equatable {
         case none
         case feature
-        case detailsSheet(shortOwnerName: String)
+        case detailsSheet(owner: BadgeDetailsSheet.Owner)
     }
     public var badgeSelctionMode: SelectionMode = .none {
         didSet {
@@ -128,7 +128,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
             owsFailDebug("This should never happen")
         case .feature:
             badgeDataSource?.selectedBadgeIndex = indexPath.item
-        case .detailsSheet(let shortOwnerName):
+        case .detailsSheet(let owner):
             collectionView.deselectItem(at: indexPath, animated: false)
 
             guard let dataSource = badgeDataSource else { return }
@@ -141,7 +141,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
 
             let detailsSheet = BadgeDetailsSheet(
                 focusedBadge: badge,
-                owner: .local(shortName: shortOwnerName)
+                owner: owner
             )
             dataSource.present(detailsSheet, animated: true, completion: nil)
         }

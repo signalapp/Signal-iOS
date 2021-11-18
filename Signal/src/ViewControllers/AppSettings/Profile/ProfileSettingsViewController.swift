@@ -123,7 +123,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        if FeatureFlags.configureBadges, !allBadges.isEmpty {
+        if RemoteConfig.donorBadgeDisplay, !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
                 icon: .settingsBadges,
                 name: NSLocalizedString(

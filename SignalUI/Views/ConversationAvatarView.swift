@@ -528,7 +528,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
     // TODO: Badges — Should this be async?
     fileprivate func fetchBadge(configuration: ConversationAvatarView.Configuration, transaction: SDSAnyReadTransaction?) -> UIImage? {
         guard configuration.addBadgeIfApplicable else { return nil }
-        guard FeatureFlags.fetchAndDisplayBadges else {
+        guard RemoteConfig.donorBadgeDisplay else {
             Logger.warn("Ignoring badge request. Badge flag currently disabled")
             return nil
         }

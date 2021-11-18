@@ -989,13 +989,15 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     return request;
 }
 
-+ (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation makePrimary:(BOOL)makePrimary {
-    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/redeem-receipt"]
-                                              method:@"POST"
-                                         parameters:@{@"receiptCredentialPresentation" : base64ReceiptCredentialPresentation,
-                                                      @"visible" : @(YES),
-                                                      @"primary" : @(makePrimary)
-                                                    }];
++ (TSRequest *)subscriptionRedeemRecieptCredential:(NSString *)base64ReceiptCredentialPresentation
+{
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/redeem-receipt"]
+                                            method:@"POST"
+                                        parameters:@{
+                                            @"receiptCredentialPresentation" : base64ReceiptCredentialPresentation,
+                                            @"visible" : @(self.profileManager.localProfileHasVisibleBadge),
+                                            @"primary" : @(NO)
+                                        }];
     return request;
 }
 

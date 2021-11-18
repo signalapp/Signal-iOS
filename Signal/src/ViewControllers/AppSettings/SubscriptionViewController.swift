@@ -374,30 +374,6 @@ class SubscriptionViewController: OWSTableViewController2 {
             bottomFooterStackView.addArrangedSubview(applePayContributeButton)
             applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
-
-            // Other ways to donate
-
-            let donateButton = OWSFlatButton()
-            donateButton.setTitleColor(Theme.accentBlueColor)
-            donateButton.setAttributedTitle(NSAttributedString.composed(of: [
-                NSLocalizedString(
-                    "DONATION_VIEW_OTHER_WAYS",
-                    comment: "Text explaining there are other ways to donate on the donation view."
-                ),
-                Special.noBreakSpace,
-                NSAttributedString.with(
-                    image: #imageLiteral(resourceName: "open-20").withRenderingMode(.alwaysTemplate),
-                    font: .ows_dynamicTypeBodyClamped
-                )
-            ]).styled(
-                with: .font(.ows_dynamicTypeBodyClamped),
-                .color(Theme.accentBlueColor)
-            ))
-            donateButton.setPressedBlock { [weak self] in
-                self?.openDonateWebsite()
-            }
-
-            bottomFooterStackView.addArrangedSubview(donateButton)
         }
     }
 
@@ -813,10 +789,6 @@ class SubscriptionViewController: OWSTableViewController2 {
                 }
             ))
         }
-    }
-
-    private func openDonateWebsite() {
-        UIApplication.shared.open(URL(string: "https://signal.org/donate")!, options: [:], completionHandler: nil)
     }
 
     private func cancelSubscription() {
