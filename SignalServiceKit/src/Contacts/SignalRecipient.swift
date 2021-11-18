@@ -65,13 +65,26 @@ extension SignalRecipient {
                 .changePhoneNumberOld: oldPhoneNumber,
                 .changePhoneNumberNew: newPhoneNumber
             ]
+
+            func insertPhoneNumberChangeInteraction(_ thread: TSThread) {
+                let infoMessage = TSInfoMessage(thread: thread,
+                                                messageType: .phoneNumberChange,
+                                                infoMessageUserInfo: infoMessageUserInfo)
+                infoMessage.anyInsert(transaction: transaction.asAnyWrite)
+            }
+
             let uuidAddress = SignalServiceAddress(uuidString: newUuid)
+
+            TSGroupThread.enumerateGroupThreads(
+                with: uuidAddress,
+                transaction: transaction.asAnyRead
+            ) { thread, _ in
+                insertPhoneNumberChangeInteraction(thread)
+            }
+
             let contactThread = TSContactThread.getOrCreateThread(withContactAddress: uuidAddress,
                                                                   transaction: transaction.asAnyWrite)
-            let infoMessage = TSInfoMessage(thread: contactThread,
-                                            messageType: .phoneNumberChange,
-                                            infoMessageUserInfo: infoMessageUserInfo)
-            infoMessage.anyInsert(transaction: transaction.asAnyWrite)
+            insertPhoneNumberChangeInteraction(contactThread)
         }
 
         // Update TSThread
