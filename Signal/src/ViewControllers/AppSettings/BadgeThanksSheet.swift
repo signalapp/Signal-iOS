@@ -76,9 +76,15 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         let visibleBadgeIds: [String]
         if shouldMakeVisibleAndPrimary {
-            visibleBadgeIds = [self.badge.id] + nonPrimaryBadgeIds
+            visibleBadgeIds = [badge.id] + nonPrimaryBadgeIds
         } else if !currentlyVisibleBadgeIds.isEmpty {
-            visibleBadgeIds = nonPrimaryBadgeIds + [self.badge.id]
+            if currentlyVisibleBadgeIds.contains(badge.id) && currentlyVisibleBadgeIds.first != badge.id {
+                // We don't need to make any change, this saves us a profile update
+                visibleBadgeIds = currentlyVisibleBadgeIds
+            } else {
+                // Put the new badge at the end
+                visibleBadgeIds = nonPrimaryBadgeIds + [badge.id]
+            }
         } else {
             visibleBadgeIds = []
         }
@@ -147,10 +153,8 @@ class BadgeThanksSheet: InteractiveSheetViewController {
 
         if isBoost && hasAnySustainerBadge {
             shouldMakeVisibleAndPrimary = false
-        } else if !isPrimaryBadge {
-            shouldMakeVisibleAndPrimary = true
         } else {
-            shouldMakeVisibleAndPrimary = false
+            shouldMakeVisibleAndPrimary = true
         }
 
         updateViewState()
