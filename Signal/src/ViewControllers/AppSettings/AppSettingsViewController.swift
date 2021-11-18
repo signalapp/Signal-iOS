@@ -245,7 +245,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.showInviteFlow()
             }
         ))
-        if FeatureFlags.subscriptions {
+        if RemoteConfig.donorBadgeAcquisition {
             if DonationUtilities.isApplePayAvailable {
                 section4.add(.disclosureItem(
                     icon: .settingsDonate,

@@ -189,6 +189,16 @@ public class RemoteConfig: BaseFlags {
         interval(.messageSendLogEntryLifetime, defaultInterval: 2 * kWeekInterval)
     }
 
+    @objc
+    public static var donorBadgeDisplay: Bool {
+        DebugFlags.forceDonorBadgeDisplay || isEnabled(.donorBadgeDisplay)
+    }
+
+    @objc
+    public static var donorBadgeAcquisition: Bool {
+        DebugFlags.forceDonorBadgeAcquisition || isEnabled(.donorBadgeAcquisition)
+    }
+
     // MARK: -
 
     private static func interval(
@@ -376,6 +386,8 @@ private struct Flags {
         case viewedReceiptSending
         case senderKeyKillSwitch
         case messageResendKillSwitch
+        case donorBadgeDisplay
+        case donorBadgeAcquisition
     }
 
     // Values defined in this array remain set once they are
