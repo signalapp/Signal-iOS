@@ -87,6 +87,8 @@ public protocol GroupsV2: AnyObject {
     func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
 
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
+
+    func clearTemporalCredentials(transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -640,6 +642,10 @@ public class MockGroupsV2: NSObject, GroupsV2Swift {
     }
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
+        owsFail("Not implemented.")
+    }
+
+    public func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 

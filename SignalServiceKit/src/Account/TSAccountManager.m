@@ -561,6 +561,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         // Discard sender certificates whenever local phone number changes.
         [self.udManager removeSenderCertificatesWithTransaction:transaction];
 
+        [self.versionedProfiles clearProfileKeyCredentialsWithTransaction:transaction];
+
+        [self.groupsV2 clearTemporalCredentialsWithTransaction:transaction];
+
         [self loadAccountStateWithTransaction:transaction];
 
         self.phoneNumberAwaitingVerification = nil;
@@ -775,6 +779,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             [self.senderKeyStore resetSenderKeyStoreWithTransaction:transaction];
 
             [self.udManager removeSenderCertificatesWithTransaction:transaction];
+
+            [self.versionedProfiles clearProfileKeyCredentialsWithTransaction:transaction];
+
+            [self.groupsV2 clearTemporalCredentialsWithTransaction:transaction];
 
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey

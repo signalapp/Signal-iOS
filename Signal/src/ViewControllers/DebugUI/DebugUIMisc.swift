@@ -49,6 +49,18 @@ public extension DebugUIMisc {
             }
         }
     }
+
+    static func clearProfileKeyCredentials() {
+        Self.databaseStorage.write { transaction in
+            Self.versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
+        }
+    }
+
+    static func clearTemporalCredentials() {
+        Self.databaseStorage.write { transaction in
+            Self.groupsV2.clearTemporalCredentials(transaction: transaction)
+        }
+    }
 }
 
 #endif

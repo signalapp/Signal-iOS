@@ -210,6 +210,12 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Log ContactThreads"
                                      actionBlock:^() { [DebugUIMisc logContactThreads]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Profile Key Credentials"
+                                     actionBlock:^() { [DebugUIMisc clearProfileKeyCredentials]; }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Temporal Credentials"
+                                     actionBlock:^() { [DebugUIMisc clearTemporalCredentials]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
