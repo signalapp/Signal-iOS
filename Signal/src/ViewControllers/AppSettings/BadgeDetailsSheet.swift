@@ -162,6 +162,9 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
             return cell
         }, actionBlock: nil))
 
+        // Don't show actions for the local user's badges.
+        guard owner != .local else { return }
+
         switch focusedBadge.rawCategory.lowercased() {
         case "donor":
             if DonationUtilities.isApplePayAvailable {
