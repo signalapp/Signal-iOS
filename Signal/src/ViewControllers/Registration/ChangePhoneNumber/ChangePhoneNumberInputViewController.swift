@@ -46,7 +46,6 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
             target: self,
             action: #selector(didTapContinue)
         )
-        doneItem.isEnabled = canContinue
         navigationItem.rightBarButtonItem = doneItem
     }
 
@@ -94,6 +93,32 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
                           accessoryView: valueViews.phoneNumberTextField,
                           accessibilityIdentifier: valueViews.accessibilityIdentifier_CountryCode))
 
+        // The purpose of the example phone number is to indicate to the user that they should enter
+        // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
+        func tryToFormatPhoneNumber(_ phoneNumber: String) -> String? {
+            guard let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber,
+                                                                                       withSpecifiedCountryCodeString: valueViews.countryCode).nilIfEmpty else {
+                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+                return nil
+            }
+            // Remove the "country calling code".
+            guard formatted.hasPrefix(valueViews.callingCode) else {
+                owsFailDebug("Example phone number missing calling code. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+                return nil
+            }
+            guard let formattedWithoutCallingCode = formatted.substring(from: valueViews.callingCode.count).nilIfEmpty else {
+                owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
+                return nil
+            }
+            return formattedWithoutCallingCode
+        }
+        if let examplePhoneNumber = phoneNumberUtil.examplePhoneNumber(forCountryCode: valueViews.countryCode),
+           let formattedPhoneNumber = tryToFormatPhoneNumber(examplePhoneNumber) {
+            let exampleFormat = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT",
+                                                      comment: "Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }}")
+            section.footerTitle = String(format: exampleFormat, formattedPhoneNumber)
+        }
+
         return section
     }
 
@@ -107,41 +132,40 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    private var canContinue: Bool {
-        tryToParse(showErrors: false) != nil
-    }
-
     private struct PhoneNumbers {
         let oldPhoneNumber: PhoneNumber
         let newPhoneNumber: PhoneNumber
     }
 
-    private func tryToParse(showErrors: Bool) -> PhoneNumbers? {
-        // TODO: Show separate errors for old and new phone numbers.
-
-        func tryToParse(_ valueViews: ChangePhoneNumberValueViews) -> PhoneNumber? {
+    private func tryToParse() -> PhoneNumbers? {
+        func tryToParse(_ valueViews: ChangePhoneNumberValueViews,
+                        isOldValue: Bool) -> PhoneNumber? {
             switch valueViews.tryToParse() {
             case .noNumber:
-                if showErrors {
-                    showNoPhoneNumberAlert()
-                }
+                showInvalidPhoneNumberAlert(isOldValue: isOldValue)
                 return nil
             case .invalidNumber:
-                if showErrors {
-                    showInvalidPhoneNumberAlert()
-                }
+                showInvalidPhoneNumberAlert(isOldValue: isOldValue)
                 return nil
-                //        case .rateLimit:
-                //            return
             case .validNumber(let phoneNumber):
                 return phoneNumber
             }
         }
 
-        guard let oldPhoneNumber = tryToParse(oldValueViews) else {
+        guard let oldPhoneNumber = tryToParse(oldValueViews, isOldValue: true) else {
             return nil
         }
-        guard let newPhoneNumber = tryToParse(newValueViews) else {
+        guard let newPhoneNumber = tryToParse(newValueViews, isOldValue: false) else {
+            return nil
+        }
+
+        guard oldPhoneNumber.toE164() == tsAccountManager.localNumber else {
+            showIncorrectOldPhoneNumberAlert()
+            return nil
+        }
+
+        guard oldPhoneNumber.toE164() != newPhoneNumber.toE164() else {
+            showIdenticalPhoneNumbersAlert()
             return nil
         }
 
@@ -154,9 +178,7 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
     private func tryToContinue() {
         AssertIsOnMainThread()
 
-        // TODO: Show separate errors for old and new phone numbers.
-
-        guard let phoneNumbers = tryToParse(showErrors: true) else {
+        guard let phoneNumbers = tryToParse() else {
             return
         }
 
@@ -169,24 +191,29 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
-    private func showNoPhoneNumberAlert() {
-        OWSActionSheets.showActionSheet(
-            title: NSLocalizedString(
-                "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE",
-                comment: "Title of alert indicating that users needs to enter a phone number to register."),
-            message: NSLocalizedString(
-                "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE",
-                comment: "Message of alert indicating that users needs to enter a phone number to register."))
+    private func showInvalidPhoneNumberAlert(isOldValue: Bool) {
+        let message = (isOldValue
+                       ? NSLocalizedString(
+                        "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD",
+                        comment: "Error indicating that the user's old phone number is not valid.")
+                       : NSLocalizedString(
+                        "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW",
+                        comment: "Error indicating that the user's new phone number is not valid."))
+        OWSActionSheets.showActionSheet(title: nil, message: message)
     }
 
-    private func showInvalidPhoneNumberAlert() {
-        OWSActionSheets.showActionSheet(
-            title: NSLocalizedString(
-                "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
-                comment: "Title of alert indicating that users needs to enter a valid phone number to register."),
-            message: NSLocalizedString(
-                "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
-                comment: "Message of alert indicating that users needs to enter a valid phone number to register."))
+    private func showIncorrectOldPhoneNumberAlert() {
+        let message = NSLocalizedString(
+                        "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE",
+                        comment: "Error indicating that the user's old phone number was not entered correctly.")
+        OWSActionSheets.showActionSheet(title: nil, message: message)
+    }
+
+    private func showIdenticalPhoneNumbersAlert() {
+        let message = NSLocalizedString(
+                        "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE",
+                        comment: "Error indicating that the user's old and new phone numbers are identical.")
+        OWSActionSheets.showActionSheet(title: nil, message: message)
     }
 
     // MARK: - Events
