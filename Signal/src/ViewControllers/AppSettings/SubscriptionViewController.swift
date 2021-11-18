@@ -427,7 +427,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     // Background view
                     let background = UIView()
-                    background.backgroundColor = Theme.backgroundColor
+                    background.backgroundColor = self.cellBackgroundColor
                     background.layer.cornerRadius = 12
                     containerStackView.addSubview(background)
                     background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
@@ -524,7 +524,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     }
                     addBoostButton.dimsWhenHighlighted = true
                     addBoostButton.layer.cornerRadius = 8
-                    addBoostButton.backgroundColor = .ows_accentBlue
+                    addBoostButton.backgroundColor = Theme.accentBlueColor
                     containerStackView.addArrangedSubview(addBoostButton)
                     addBoostButton.autoSetDimension(.height, toSize: 48)
                     addBoostButton.autoPinWidthToSuperviewMargins()
@@ -675,7 +675,7 @@ class SubscriptionViewController: OWSTableViewController2 {
             ))
             self.presentActionSheet(actionSheet)
         }
-        cancelButton.setTitleColor(.ows_accentBlue, for: .normal)
+        cancelButton.setTitleColor(Theme.accentBlueColor, for: .normal)
         cancelButton.dimsWhenHighlighted = true
         bottomFooterStackView.addArrangedSubview(cancelButton)
 
@@ -702,7 +702,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     // Background view
                     let background = UIView()
-                    background.backgroundColor = Theme.backgroundColor
+                    background.backgroundColor = self.cellBackgroundColor
                     background.layer.borderWidth = Self.bubbleBorderWidth
                     background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
                     background.layer.cornerRadius = 12
