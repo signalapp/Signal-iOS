@@ -261,13 +261,17 @@ extension MessageSender {
 
             return firstly { () -> Promise<SenderKeySendResult> in
                 Logger.info("Sending sender key message with timestamp \(message.timestamp) to \(senderKeyRecipients)")
+
+                let senderCertificate = Self.senderCertificate(forSenderKeyRecipients: senderKeyRecipients,
+                                                               senderCertificates: senderCertificates)
+
                 return self.sendSenderKeyRequest(
                     message: message,
                     plaintext: plaintextContent,
                     thread: thread,
                     addresses: senderKeyRecipients,
                     udAccessMap: udAccessMap,
-                    senderCertificate: senderCertificates.uuidOnlyCert)
+                    senderCertificate: senderCertificate)
             }.done(on: self.senderKeyQueue) { (sendResult: SenderKeySendResult) in
                 Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successAddresses). Unregistered: \(sendResult.unregisteredAddresses)")
 
@@ -314,6 +318,31 @@ extension MessageSender {
                 // actual error doesn't matter.
                 throw OWSGenericError("Failed to send to at least one SenderKey participant")
             }
+        }
+    }
+
+    private static func senderCertificate(forSenderKeyRecipients senderKeyRecipients: [SignalServiceAddress],
+                                          senderCertificates: SenderCertificates) -> SenderCertificate {
+        let phoneNumberSharingMode = udManager.phoneNumberSharingMode
+        switch phoneNumberSharingMode {
+        case .everybody:
+            return senderCertificates.defaultCert
+        case .contactsOnly:
+            let areAllSystemContacts: Bool = databaseStorage.read { transaction in
+                for address in senderKeyRecipients {
+                    if !Self.contactsManager.isSystemContact(address: address, transaction: transaction) {
+                        return false
+                    }
+                }
+                return true
+            }
+            if areAllSystemContacts {
+                return senderCertificates.defaultCert
+            } else {
+                return senderCertificates.uuidOnlyCert
+            }
+        case .nobody:
+            return senderCertificates.uuidOnlyCert
         }
     }
 
