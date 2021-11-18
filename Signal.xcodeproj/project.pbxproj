@@ -1979,6 +1979,8 @@
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
 		8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallRemoteVideoManager.swift; sourceTree = "<group>"; };
 		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
+		881A05FA2745DDD20020E0C8 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		881A05FE2745DE100020E0C8 /* yue */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = yue; path = translations/yue.lproj/Localizable.strings; sourceTree = "<group>"; };
 		881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeDetailsSheet.swift; sourceTree = "<group>"; };
 		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
 		881FF30623B5B1520023B620 /* Signal-AppStore.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Signal-AppStore.entitlements"; sourceTree = "<group>"; };
@@ -4940,6 +4942,7 @@
 				es_ES,
 				tk,
 				ps,
+				yue,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -6556,6 +6559,7 @@
 				88E1EACB26BB285700AD0C2D /* gu */,
 				88E1EACC26BB286F00AD0C2D /* kn */,
 				34067EAF271621CD000407C3 /* ps */,
+				881A05FA2745DDD20020E0C8 /* yue */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -6637,6 +6641,7 @@
 				88928A4A263F0DCD009C9B30 /* es_ES */,
 				88E1EACD26BB28A400AD0C2D /* zh_HK */,
 				34067EB0271621CD000407C3 /* ps */,
+				881A05FE2745DE100020E0C8 /* yue */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

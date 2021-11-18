@@ -373,6 +373,36 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Retour";
 
+/* Section header for badge view section in the badge configuration page */
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+
+/* The title for the badge configuration page */
+"BADGE_CONFIGURATION_TITLE" = "Badges";
+
+/* Text prompting the user to become a signal sustainer */
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+
+/* Text prompting the user to boost */
+"BADGE_DETAILS_GIVE_A_BOOST" = "Donnez un coup de pouce à Signal";
+
+/* Title for boost on the thank you sheet. */
+"BADGE_THANKS_BOOST_TITLE" = "Merci pour le coup de pouce !";
+
+/* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afficher sur le profil";
+
+/* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+
+/* Title for subscription on the thank you sheet. */
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+
+/* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
+"BADGE_THANKS_TOGGLE_FOOTER" = "Si vous avez plus d’un badge, vous pouvez en choisir un que les autres pourront voir sur votre profil.";
+
+/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fermer la bannière";
 
@@ -447,6 +477,30 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nouveau : Rendez les visages flous ou dessinez n’importe où pour les rendre flous.";
+
+/* Donation amount label for the donate to signal view */
+"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+
+/* The body text for the donate to signal view */
+"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* Default text for the custom amount field of the boost view. */
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Saisissez un montant personnalisé";
+
+/* Text explaining there are other ways to donate on the boost view. */
+"BOOST_VIEW_OTHER_WAYS" = "Plus d’options de paiement";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Sélectionnez un don d’un montant supérieur";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Sélectionnez un don d’un montant inférieur";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "Sélectionnez le montant du don";
+
+/* Title for the donate to signal view */
+"BOOST_VIEW_TITLE" = "Donnez un coup de pouce à Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Ajouter";
@@ -597,6 +651,9 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Sélectionner un pays";
+
+/* Button label to allow user to change avatar */
+"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Voici un aperçu de la couleur de la conversation.";
@@ -847,6 +904,12 @@
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Quelque chose ne fonctionne pas";
 
+/* The localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+
+/* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal n’a pas réussi à terminer votre demande d’assistance.";
 
@@ -957,6 +1020,12 @@
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "son";
+
+/* Footer string for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+
+/* Header title for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Vous ne recevrez plus ni message ni mise à jour de cet utilisateur.";
@@ -1453,6 +1522,9 @@
 /* Dismiss context menu accessibility label */
 "DISMISS_CONTEXT_MENU" = "Fermer le menu contextuel";
 
+/* Title for switch to enable sharing of badges publicly */
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Afficher les badges sur le profil";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
 
@@ -1726,6 +1798,12 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Échec de confirmation du numéro de sécurité.";
 
+/* Section header directing user to select a badge */
+"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+
+/* The title for the featured badge settings page */
+"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marquer comme confirmé";
 
@@ -1776,6 +1854,9 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Fichier joint";
+
+/* notification title indicating the user generically has a new message */
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nouveau message";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Commençons";
@@ -5104,6 +5185,9 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Tous droits réservés Messagerie Signal\nSous licence GPLv3";
 
+/* Title for the 'Subscription' link in settings. */
+"SETTINGS_CURRENT_SUBSCRIPTION" = "Abonnement";
+
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Utilisations des données";
 
@@ -5761,6 +5845,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autorisez iOS à accéder aux contacts et aux conversations pour utiliser des fonctionnalités comme les suggestions de partage et les notifications.";
 
+/* Title for the 'signal boost' link in settings. */
+"SETTINGS_SIGNAL_BOOST" = "Encourager Signal";
+
+/* Title for the 'become a sustainer' link in settings. */
+"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocage de l’inscription";
 
@@ -5938,6 +6028,15 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Désinstaller";
 
+/* Title for the 'Badges' button in sustainer view. */
+"SUBSCRIBER_BADGES" = "Badges";
+
+/* Title for the 'Manage Subscription' button in sustainer view. */
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'Subscription FAQ' button in sustainer view. */
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Abonnement";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ correspond. Vous pouvez marquer ce contact comme confirmé.";
 
@@ -5994,6 +6093,90 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Chargement";
+
+/* Action sheet title for Still Processing Badge sheet */
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+
+/* Sustainer view Add Boost button title */
+"SUSTAINER_VIEW_ADD_BOOST" = "Ajouter un Boost Signal";
+
+/* Description text for sustainer view badges, embeds {{localized badge name}} */
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+
+/* Sustainer view Cancel Subscription button title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Annuler l’abonnement";
+
+/* Confirm Cancellation? Action sheet confirm button */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmer";
+
+/* Confirm Cancellation? Action sheet message */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vous ne serez plus facturé. Votre badge sera supprimé de votre profil à la fin de votre période de facturation.";
+
+/* Confirm Cancellation? Action sheet title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmer l’annulation ?";
+
+/* Couldn't add badge text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+
+/* Action sheet message for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+
+/* Action sheet title for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+
+/* Contact support link */
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+
+/* Set currency label in sustainer view */
+"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+
+/* Existing subscriber support header */
+"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Pricing text for sustainer view badges, embeds {{price}} */
+"SUSTAINER_VIEW_PRICING" = "%@/month";
+
+/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+
+/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+
+/* Loading indicator on the sustainer view */
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+
+/* Status text while processing a badge redemption */
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+
+/* Read More tappable text in sustainer view body */
+"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+
+/* Renewal date text for sustainer view level, embeds {{renewal date}} */
+"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+
+/* Action sheet message for Still Processing Badge sheet */
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+
+/* Toast indicating that the subscription has been cancelled */
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+
+/* Sustainer view Not Now Action sheet button */
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Pas maintenant";
+
+/* Title for the signal sustainer view */
+"SUSTAINER_VIEW_TITLE" = "Signal est propulsé par des personnes telles que vous.";
+
+/* Update Subscription? Action sheet message, embeds {{Price}} */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+
+/* Update Subscription? Action sheet title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+
+/* Update Subscription? Action sheet confirm button */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Mise à jour";
+
+/* The body text for the signal sustainer view */
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Désactivé";

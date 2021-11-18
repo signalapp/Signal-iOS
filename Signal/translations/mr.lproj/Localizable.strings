@@ -56,7 +56,7 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "सदस्य जोडा";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "सदस्ये जोडा";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "सदस्य जोडा";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "\"%2$@\" मध्ये सदस्य जोडायचे?";
@@ -71,7 +71,7 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "नवीन जोडा सदस्य";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "सदस्ये जोडा";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "सदस्य जोडा";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "या गटासोबत आपल्याला आपली प्रोफाईल सामायिक करायला आवडेल का?";
@@ -80,7 +80,7 @@
 "ADD_TO_CONTACTS_OFFER" = "हा वापरकर्ता आपल्याला आपल्या संपर्कांमध्ये जोडण्यास आवडेल का?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "आणखी एक गटात जोडा";
+"ADD_TO_GROUP" = "आणखी एका गटात जोडा";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "गटात जोडा";
@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "कळले";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "या चॅटमध्ये %@ कडील संदेश, स्टिकर, प्रतिक्रिया, वाचल्याची पावती किंवा मिडिया तुम्हाला वितरित करता आला नाही.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "डिलिव्हरी समस्या";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "संदेश, स्टिकर, प्रतिक्रिया, वाचल्याची पावती किंवा मिडिया तुम्हाला %@ मधून वितरित करता आला नाही. त्यांनी तो तुम्हाला थेट किंवा एका ग्रूपमध्ये पाठवण्याचा प्रयत्न केलेला असू शकतो.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "टाकून द्या";
@@ -373,6 +373,36 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "मागे";
 
+/* Section header for badge view section in the badge configuration page */
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+
+/* The title for the badge configuration page */
+"BADGE_CONFIGURATION_TITLE" = "बॅजेस्";
+
+/* Text prompting the user to become a signal sustainer */
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+
+/* Text prompting the user to boost */
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
+
+/* Title for boost on the thank you sheet. */
+"BADGE_THANKS_BOOST_TITLE" = "बूस्ट साठी धन्यवाद !";
+
+/* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "प्रोफाइलवर दाखवा";
+
+/* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+
+/* Title for subscription on the thank you sheet. */
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+
+/* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
+"BADGE_THANKS_TOGGLE_FOOTER" = "जेव्हा तुमच्याकडे एकापेक्षा जास्त बॅज असतील, तेव्हा तुम्ही तुमच्या प्रोफाईलवर इतरांना पाहण्यासाठी एक निवडू शकता.";
+
+/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "बॅनर बंद करा";
 
@@ -448,6 +478,30 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "नवीन: चेहरे अस्पष्ट करा किंवा अस्पष्ट करण्यासाठी कुठेही रेखाटा";
 
+/* Donation amount label for the donate to signal view */
+"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+
+/* The body text for the donate to signal view */
+"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* Default text for the custom amount field of the boost view. */
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "कस्टम रक्कम प्रविष्ट करा";
+
+/* Text explaining there are other ways to donate on the boost view. */
+"BOOST_VIEW_OTHER_WAYS" = "अधिक पेमेंट पर्याय";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "देणगी देण्यासाठी मोठी रक्कम निवडा";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "देणगी देण्यासाठी छोटी रक्कम निवडा";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "देणगी देण्यासाठी एक रक्कम निवडा";
+
+/* Title for the donate to signal view */
+"BOOST_VIEW_TITLE" = "Signal ला बूस्ट करा";
+
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "जोडा";
 
@@ -494,7 +548,7 @@
 "BUTTON_START" = "चालू करा";
 
 /* Label for the 'submit' button. */
-"BUTTON_SUBMIT" = "प्रविष्ट करा";
+"BUTTON_SUBMIT" = "सादर करा";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "बघा";
@@ -598,6 +652,9 @@
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "देश निवडा";
 
+/* Button label to allow user to change avatar */
+"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
 
@@ -605,7 +662,7 @@
 "CHAT_COLOR_INCOMING_MESSAGE_1" = "चॅटच्या रंगाचे हे एक पुनरावलोकन आहे.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "अजून एक बुडबुडा";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "अजून एक बबल";
 
 /* The outgoing bubble text when setting a chat color. */
 "CHAT_COLOR_OUTGOING_MESSAGE" = "रंग फक्त आपल्याला दृश्यमान आहे.";
@@ -847,6 +904,12 @@
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "काहीतरी कार्य करत नाही";
 
+/* The localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+
+/* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "आपली समर्थन विनंती पूर्ण करण्यात Signal अक्षम होता.";
 
@@ -957,6 +1020,12 @@
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ऑडिओ";
+
+/* Footer string for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+
+/* Header title for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "बॅजेस्";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "या वापरकर्त्याकडून आपल्याला यापुढे संदेश किंवा अद्यतने प्राप्त होणार नाहीत.";
@@ -1451,7 +1520,10 @@
 "DISMISS_BUTTON_TEXT" = "रद्द करा";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "संदर्भ मेन्यु बरखास्त करा";
+
+/* Title for switch to enable sharing of badges publicly */
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "बॅज प्रोफाइलवर दाखवा";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "सेंसॉरशिप सर्कंवेंशन स्थान";
@@ -1589,10 +1661,10 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "संपर्क अॅक्सेस करू शकले नाही.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "संदेश अग्रेषित करू शकलो नाही.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "संदेश अग्रेषित करू शकलो नाही कारण तो आता या पुढे उपलव्ध नाही";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "संदेश फॉर्वर्ड करण्यात अयशस्वी कारण ते आता उपलब्ध नाहीत.";
@@ -1652,10 +1724,10 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "संलग्न डाऊनलोड अयशस्वी.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@ कडील संदेश वितरित करता आला नाही";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "संदेश वितरित करता आला नाही";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "डूप्लिकेट संदेश प्राप्त झाले.";
@@ -1691,10 +1763,10 @@
 "ERROR_NETWORK_FAILURE" = "नेटवर्क त्रुटी";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "support@signal.org; %@ ला, तुमच्या डिव्हाइसमधून डिबग/दुरुस्ती लॉग्जसह ही त्रुटी रिपोर्ट करून Signal सुधारण्यात कृपया आमची मदत करा";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: एक त्रुटी आली";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "आपला डिव्हाईस आता लिंक केलेला नाही. पुढील संदेश पाठविण्यासाठी कृपया पुन्हा-लिंक करा.";
@@ -1725,6 +1797,12 @@
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "सुरक्षितता नंबर सत्यापित करण्यात अयशस्वी!";
+
+/* Section header directing user to select a badge */
+"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+
+/* The title for the featured badge settings page */
+"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "सत्यापित म्हणून चिन्हांकित करा";
@@ -1763,7 +1841,7 @@
 "FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "संदेश जोडा";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "ला अग्रेषित";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "आपल्याकडे या चॅटमध्ये कुठलीही मिडिया नाही.";
@@ -1776,6 +1854,9 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "संलग्न";
+
+/* notification title indicating the user generically has a new message */
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "नवीन संदेश!";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "सुरू करा";
@@ -4010,7 +4091,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "विनंत्या पहा";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%@ “ नाकारले आहे.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "“%@“ ला नाकारले.";
 
 /* Format for 'revoke invalid 1 invite' item. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "अवैध आमंत्रण रद्द करा";
@@ -4373,7 +4454,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "काहीतरी नवीन काम करत आहे";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "याबद्दल";
+"PROFILE_BIO_VIEW_TITLE" = "आपल्याबद्दल";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "(%@) बद्दल";
@@ -4388,7 +4469,7 @@
 "PROFILE_NAME_VIEW_TITLE" = "आपले नाव";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
-"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "याबद्दल";
+"PROFILE_SETTINGS_BIO_PLACEHOLDER" = "आपल्याबद्दल";
 
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "नाव";
@@ -4598,7 +4679,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "संदेश पाठविण्यापूर्वी आपल्याला नोंदणी करणे आवश्यक आहे.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = " यापूर्वी या नंबरवर नोंदणी झालेले खाते होते जे आता हस्तांतरणासाठी उपलब्ध आहे.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "सत्यापन अयशस्वी";
@@ -4640,7 +4721,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "जो फोन नंबर आपण नोंदवण्याचा प्रयत्न करत आहात तो आधीपासून इतर सर्व्हर वर नोंदवलेला आहे, कृपया तिथून नोंदणी काढा आणि पुन्हा प्रयत्न करा.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "पूर्वावलोकन हटवा";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "नवीन प्रशासक निवडा";
@@ -5104,6 +5185,9 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "कॉपीराईट Signal संदेशक\nGPLv3 अतंर्गत परवानाकृत";
 
+/* Title for the 'Subscription' link in settings. */
+"SETTINGS_CURRENT_SUBSCRIPTION" = "सब्स्क्रिप्शन";
+
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "डेटा वापर";
 
@@ -5126,13 +5210,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "स्वयं-डाउनलोड सेटिंग रीसेट करा";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "माध्यम गुणवत्ता पाठवली";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "तुम्ही छायाचित्रे व व्हिडियोज ज्या गुणवत्तेत पाठवता ती निवडा.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "मिडिया पाठवला";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "डेटा वापर";
@@ -5195,7 +5279,7 @@
 "SETTINGS_LINK_PREVIEWS" = "लिंक पुनरावलोकन उत्पन्न करा";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "आपण संदेशसाठी पाठवलेल्या वेबसाईट वरून लिंक पुनरावलोकन थेट मिळवू शकता.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "तुम्ही पाठवलेल्या संदेशांसाठी थेट कोणत्याही वेबसाइटवरून लिंक पूर्वावलोकने प्राप्त करू शकता.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "कधीही नाही";
@@ -5252,7 +5336,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "सक्रिय करा";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "MobileCoin पाठवण्यासाठी आणि प्राप्त करण्यासाठी आपण Signal चा वापर करू शकता. सर्व पेमेंट MobileCoin आणि MobileCoin वॉलेट च्या वापराच्या अटींच्या अधीन आहेत. हे बिटा वैशिष्ट्य असल्यामुळे आपल्याला काही समस्या उद्भवू शकतात किंवा आपण गमावलेले बॅलंस पुन्हा प्राप्त केले जाऊ शकत नाही.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "MobileCoin पाठवण्यासाठी आणि प्राप्त करण्यासाठी आपण Signal चा वापर करू शकता. सर्व पेमेंट MobileCoin आणि MobileCoin वॉलेट च्या वापराच्या अटींच्या अधीन आहेत. हे बीटा वैशिष्ट्य असल्यामुळे आपल्याला काही समस्या उद्भवू शकतात किंवा आपण गमावलेले बॅलंस पुन्हा प्राप्त केले जाऊ शकत नाही.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "सक्रिय करा";
@@ -5342,7 +5426,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "MobileCoin बद्दल";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "MobileCoin आपल्या वॉलेट पत्त्यावर पाठवण्यासाठी आपण Signal मध्ये वापरासाठी फंड जोडू शकता.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "तुम्ही तुमच्या वॉलेट पत्त्यावर MobileCoin पाठवून Signal मध्ये वापरासाठी निधी जोडू शकता.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "फंड जोडत आहे";
@@ -5402,7 +5486,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "पेमेंट पुन्हा सक्रिय करा";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "सादर करत आहे पेमेंट (बिटा)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "सादर करत आहे पेमेंट (बीटा)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "आपण आपल्या Signal PIN ची पुष्टी केल्यास, आपण Signal पुन्हा स्थापित केल्यावर आपला बॅलंस स्वयंचलितपणे पुनर्स्थापित होईल. आपण आपला बॅलंस रिकव्हरी फ्रेझ वापरून देखील पुनर्स्थापित करू शकता, जी 24-शब्द फ्रेझ आपल्यासाठी ऐकमेव आहे. ती लिहून ठेवा आणि त्यास एका सुरक्षित जागेवर ठेवा. ";
@@ -5567,7 +5651,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "आपण Signal वॉलेट पत्त्यावर स्थानांतरित करू शकत नाही. समर्थित ऐक्सचेंजवरील आपल्या खात्याचा वॉलेट पत्ता प्रविष्ट करा.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ऐक्सचेंजने पुरवलेल्या वॉलेट पत्त्यावर स्थानांतरण पूर्ण करून आपण MobileCoin स्थानांतरित करू शकता. वॉलेट पत्ता हे अंक आणि अक्षरांची स्ट्रिंग आहे साधारणपणे QR कोडच्या खाली.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "ऐक्सचेंजने पुरवलेल्या वॉलेट पत्त्यावर स्थानांतरण पूर्ण करून आपण MobileCoin स्थानांतरित करू शकता. वॉलेट पत्ता हे अंक आणि अक्षरांची स्ट्रिंग आहे, जो साधारणपणे QR कोडच्या खाली असेल.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "आपण स्थानांतरित करत असलेला वॉलेट पत्ता तपासा आणि पुन्हा प्रयत्न करा.";
@@ -5636,7 +5720,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "रिकव्हरी फ्रेझ";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "पेमेंट (बिटा)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "पेमेंट (बीटा)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "आपला वॉलेट पत्ता";
@@ -5753,13 +5837,19 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "फोटो आणि व्हिडिओ";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = "iOS बरोबर संपर्क शेअर करा";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "सूचना शेअर करणे या सारख्या वैशिष्ट्यांसाठी Signal संपर्क व चॅट्सना, iOS ॲक्सेस/ प्राप्त करण्याची अनुमती द्या.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "सूचना शेअर करणे आणि अधिसूचना या सारख्या वैशिष्ट्यांसाठी iOS ला Signal संपर्क व चॅट ॲक्सेस करू द्या.";
+
+/* Title for the 'signal boost' link in settings. */
+"SETTINGS_SIGNAL_BOOST" = "Signal बूस्ट";
+
+/* Title for the 'become a sustainer' link in settings. */
+"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "नोंदणी लॉक";
@@ -5938,6 +6028,15 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "अस्थापना";
 
+/* Title for the 'Badges' button in sustainer view. */
+"SUBSCRIBER_BADGES" = "बॅजेस्";
+
+/* Title for the 'Manage Subscription' button in sustainer view. */
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'Subscription FAQ' button in sustainer view. */
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "सब्स्क्रिप्शन बद्दल वारंवार विचारले जाणारे प्रश्न";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ जुळवण्यांसोबत आपला सुरक्षितता नंबर. आपण हा संपर्क सत्यापित म्हणून चिन्हांकित करू शकता.";
 
@@ -5994,6 +6093,90 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "लोड करत आहे";
+
+/* Action sheet title for Still Processing Badge sheet */
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+
+/* Sustainer view Add Boost button title */
+"SUSTAINER_VIEW_ADD_BOOST" = "Signal बूस्ट जोडा";
+
+/* Description text for sustainer view badges, embeds {{localized badge name}} */
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+
+/* Sustainer view Cancel Subscription button title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "सब्स्क्रिप्शन रद्द करा";
+
+/* Confirm Cancellation? Action sheet confirm button */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "पुष्टी करा";
+
+/* Confirm Cancellation? Action sheet message */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "तुमच्याकडून पुन्हा शुल्क आकारले जाणार नाही. तुमचा बिलिंग कालावधी संपल्यावर तुमचा बॅज तुमच्या प्रोफाइलमधून काढून टाकला जाईल.";
+
+/* Confirm Cancellation? Action sheet title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "रद्द करण्याची पुष्टी करायची ?";
+
+/* Couldn't add badge text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+
+/* Action sheet message for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+
+/* Action sheet title for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+
+/* Contact support link */
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+
+/* Set currency label in sustainer view */
+"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+
+/* Existing subscriber support header */
+"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Pricing text for sustainer view badges, embeds {{price}} */
+"SUSTAINER_VIEW_PRICING" = "%@/month";
+
+/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+
+/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+
+/* Loading indicator on the sustainer view */
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+
+/* Status text while processing a badge redemption */
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+
+/* Read More tappable text in sustainer view body */
+"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+
+/* Renewal date text for sustainer view level, embeds {{renewal date}} */
+"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+
+/* Action sheet message for Still Processing Badge sheet */
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+
+/* Toast indicating that the subscription has been cancelled */
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+
+/* Sustainer view Not Now Action sheet button */
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "आता नाही";
+
+/* Title for the signal sustainer view */
+"SUSTAINER_VIEW_TITLE" = "Signal आपल्यासारख्या लोकांद्वारा समर्थित आहे.";
+
+/* Update Subscription? Action sheet message, embeds {{Price}} */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+
+/* Update Subscription? Action sheet title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+
+/* Update Subscription? Action sheet confirm button */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "अद्यतन";
+
+/* The body text for the signal sustainer view */
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "बंद";

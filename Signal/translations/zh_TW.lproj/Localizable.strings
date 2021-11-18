@@ -373,6 +373,36 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "返回";
 
+/* Section header for badge view section in the badge configuration page */
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+
+/* The title for the badge configuration page */
+"BADGE_CONFIGURATION_TITLE" = "徽章";
+
+/* Text prompting the user to become a signal sustainer */
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為贊助人";
+
+/* Text prompting the user to boost */
+"BADGE_DETAILS_GIVE_A_BOOST" = "推廣 Signal";
+
+/* Title for boost on the thank you sheet. */
+"BADGE_THANKS_BOOST_TITLE" = "謝謝你的推廣!";
+
+/* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "在個人資訊中展示";
+
+/* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+
+/* Title for subscription on the thank you sheet. */
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+
+/* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
+"BADGE_THANKS_TOGGLE_FOOTER" = "當你擁有多個徽章時，你可以選擇一個讓其他人在你的個人資料中看到。";
+
+/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "關閉橫幅";
 
@@ -447,6 +477,30 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "新功能：模糊臉部或在任何地方使之模糊。";
+
+/* Donation amount label for the donate to signal view */
+"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+
+/* The body text for the donate to signal view */
+"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* Default text for the custom amount field of the boost view. */
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
+
+/* Text explaining there are other ways to donate on the boost view. */
+"BOOST_VIEW_OTHER_WAYS" = "更多付款方式";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "選擇更大的金額贊助";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "選擇小金額贊助";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "選擇要贊助的金額";
+
+/* Title for the donate to signal view */
+"BOOST_VIEW_TITLE" = "推廣 Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "新增";
@@ -597,6 +651,9 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "選擇國家";
+
+/* Button label to allow user to change avatar */
+"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "這是聊天顏色的預覽。";
@@ -847,6 +904,12 @@
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "操作異常";
 
+/* The localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "維護者和Signal加速";
+
+/* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "維護者和Signal加速";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal 無法完成你的支援請求。";
 
@@ -957,6 +1020,12 @@
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "聲音";
+
+/* Footer string for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+
+/* Header title for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "徽章";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "你將不再收到該用戶的訊息或更新。";
@@ -1453,6 +1522,9 @@
 /* Dismiss context menu accessibility label */
 "DISMISS_CONTEXT_MENU" = "關閉快顯選單";
 
+/* Title for switch to enable sharing of badges publicly */
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "在個人資料上顯示徽章";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "審查規避地點";
 
@@ -1466,7 +1538,7 @@
 "DONATION_MEGAPHONE_CANCEL" = "在心中";
 
 /* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "捐贈 Signal";
+"DONATION_MEGAPHONE_TITLE" = "贊助 Signal";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "捐款金額";
@@ -1478,16 +1550,16 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "捐款給Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "其他捐贈方式";
+"DONATION_VIEW_OTHER_WAYS" = "其他贊助方式";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "選擇更大的金額捐贈";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "選擇更大的金額贊助";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "選擇少量捐款";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "選擇小金額贊助";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "選擇要捐贈的金額";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "選擇要贊助的金額";
 
 /* Thank you message on the donate to signal view */
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "謝謝你的支持！";
@@ -1499,7 +1571,7 @@
 "DONATION_VIEW_WHY_DONATE_BODY" = "Signal的團隊致力於開發開源隱私技術，以保護自由表達並實現安全的全球通訊。 你的貢獻幫助了這一事業。 無廣告。 沒有追踪器。 不開玩笑。\n\n你的捐款有助於支付應用程式的開發，伺服器和寬頻的費用，該應用程式被世界各地數以百萬計的人用於私密和即時通訊。";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "為什麼要捐贈？";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "為什麼要贊助？";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "你可以在 iOS 設定中允許取用。";
@@ -1726,6 +1798,12 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "驗證安全碼失敗！";
 
+/* Section header directing user to select a badge */
+"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+
+/* The title for the featured badge settings page */
+"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "標記為已驗證";
 
@@ -1776,6 +1854,9 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附檔";
+
+/* notification title indicating the user generically has a new message */
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "新訊息！";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "開始使用";
@@ -5104,6 +5185,9 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "版權Signal Messenger\n根據GPLv3版權";
 
+/* Title for the 'Subscription' link in settings. */
+"SETTINGS_CURRENT_SUBSCRIPTION" = "訂閱";
+
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "數據使用量";
 
@@ -5171,7 +5255,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "為你發起的所有新聊天設定預設的訊息銷毀計時器。";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "捐贈 Signal";
+"SETTINGS_DONATE" = "贊助 Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "幫助";
@@ -5761,6 +5845,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "允許 iOS 連結 Signal 聯絡人和聊天以獲取共享建議和通知等功能。";
 
+/* Title for the 'signal boost' link in settings. */
+"SETTINGS_SIGNAL_BOOST" = "Signal 推廣";
+
+/* Title for the 'become a sustainer' link in settings. */
+"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
 
@@ -5938,6 +6028,15 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "移除";
 
+/* Title for the 'Badges' button in sustainer view. */
+"SUBSCRIBER_BADGES" = "徽章";
+
+/* Title for the 'Manage Subscription' button in sustainer view. */
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'Subscription FAQ' button in sustainer view. */
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "訂閱 問與答";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你與 %@的安全碼相符合。你可以將此聯絡人標記為已驗證。";
 
@@ -5994,6 +6093,90 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "讀取中";
+
+/* Action sheet title for Still Processing Badge sheet */
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+
+/* Sustainer view Add Boost button title */
+"SUSTAINER_VIEW_ADD_BOOST" = "加強 Signal 的推廣";
+
+/* Description text for sustainer view badges, embeds {{localized badge name}} */
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+
+/* Sustainer view Cancel Subscription button title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "取消訂閱";
+
+/* Confirm Cancellation? Action sheet confirm button */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "確認";
+
+/* Confirm Cancellation? Action sheet message */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "不會再向你收費。 在結算週期結束時，你的徽章將從你的個人資料中刪除。";
+
+/* Confirm Cancellation? Action sheet title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "確認取消?";
+
+/* Couldn't add badge text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+
+/* Action sheet message for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+
+/* Action sheet title for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+
+/* Contact support link */
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+
+/* Set currency label in sustainer view */
+"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+
+/* Existing subscriber support header */
+"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Pricing text for sustainer view badges, embeds {{price}} */
+"SUSTAINER_VIEW_PRICING" = "%@/month";
+
+/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+
+/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+
+/* Loading indicator on the sustainer view */
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+
+/* Status text while processing a badge redemption */
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+
+/* Read More tappable text in sustainer view body */
+"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+
+/* Renewal date text for sustainer view level, embeds {{renewal date}} */
+"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+
+/* Action sheet message for Still Processing Badge sheet */
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+
+/* Toast indicating that the subscription has been cancelled */
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+
+/* Sustainer view Not Now Action sheet button */
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "現在不要";
+
+/* Title for the signal sustainer view */
+"SUSTAINER_VIEW_TITLE" = "Signal 由像你這樣的人提供動力。";
+
+/* Update Subscription? Action sheet message, embeds {{Price}} */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+
+/* Update Subscription? Action sheet title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+
+/* Update Subscription? Action sheet confirm button */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "更新";
+
+/* The body text for the signal sustainer view */
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "關";

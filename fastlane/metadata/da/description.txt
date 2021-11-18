@@ -12,7 +12,7 @@ Millioner af mennesker bruger Signal hver dag til gratis og øjeblikkelig kommun
 
 • Hvisk i skyggerne - Skift til det mørke tema, hvis du ikke vil blive blændet af skærmens lysskær.
 
-• Velkendt lyd - Vælg tilpassede varsler til hver kontaktperson, eller deaktiver lyde helt. Simon & Garfunkel skrev en hit-sang om den i 1964, og du kan opleve lyden af tavshed, ved at vælge “Ingen” som meddelelse-ringetone.
+• Velkendt lyd - Vælg tilpassede notifikationer for hver kontakt, eller deaktiver lyde helt. Simon & Garfunkel skrev en hit-sang om den i 1964, og du kan opleve lyden af tavshed, ved at vælge “Ingen” som notifikations-ringetone.
 
 • Billedtagende - Brug de indbyggede billedredigeringsfunktioner til at tegne, beskære og vende dine udgående billeder. Der er endda et tekstværktøj, så du kan tilføje flere ord til de 1.000, som dit billede allerede er værd.
 

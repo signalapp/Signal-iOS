@@ -373,6 +373,36 @@
 /* return to the previous screen */
 "BACK_BUTTON" = "Terug";
 
+/* Section header for badge view section in the badge configuration page */
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+
+/* The title for the badge configuration page */
+"BADGE_CONFIGURATION_TITLE" = "Badges";
+
+/* Text prompting the user to become a signal sustainer */
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Wordt een ondersteuner";
+
+/* Text prompting the user to boost */
+"BADGE_DETAILS_GIVE_A_BOOST" = "Help Signal met een eenmalige bijdrage";
+
+/* Title for boost on the thank you sheet. */
+"BADGE_THANKS_BOOST_TITLE" = "Bedankt voor je bijdrage!";
+
+/* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Op profiel weergeven";
+
+/* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
+"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+
+/* Title for subscription on the thank you sheet. */
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+
+/* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
+"BADGE_THANKS_TOGGLE_FOOTER" = "Als je meerdere badges hebt dan kun je er één kiezen om voor anderen op je profiel weer te geven.";
+
+/* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Banier sluiten";
 
@@ -447,6 +477,30 @@
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nieuw: Vervaag gezichten of teken om andere dingen te vervagen.";
+
+/* Donation amount label for the donate to signal view */
+"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+
+/* The body text for the donate to signal view */
+"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* Default text for the custom amount field of the boost view. */
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Vul een zelfgekozen bedrag in";
+
+/* Text explaining there are other ways to donate on the boost view. */
+"BOOST_VIEW_OTHER_WAYS" = "Meer overschrijvingsopties";
+
+/* Error text notifying the user they must select a large amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Kies een groter bedrag";
+
+/* Error text notifying the user they must select a smaller amount on the donate to signal view */
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Kies een kleiner bedrag";
+
+/* Error text notifying the user they must select an amount on the donate to signal view */
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "Kies een bedrag";
+
+/* Title for the donate to signal view */
+"BOOST_VIEW_TITLE" = "Help Signal met een eenmalige bijdrage";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Toevoegen";
@@ -560,7 +614,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Gesprek beëindigen";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Dempen";
+"CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ zal van jou een gespreksverzoek ontvangen. Je kunt bellen vanaf het moment dat je gespreksverzoek is geaccepteerd.";
@@ -597,6 +651,9 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selecteer land";
+
+/* Button label to allow user to change avatar */
+"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Hier zie je een voorbeeld van de gesprekskleur.";
@@ -847,6 +904,12 @@
 /* A brief localized representation of the 'something not working' support filter. */
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Er werkt iets niet";
 
+/* The localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Signal donateurs";
+
+/* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Signal donateurs";
+
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal kon je ondersteuningsverzoek niet voltooien.";
 
@@ -958,6 +1021,12 @@
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
 
+/* Footer string for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+
+/* Header title for a contact's badges in conversation settings */
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Je zult niet langer berichten of meldingen van deze persoon ontvangen.";
 
@@ -1058,10 +1127,10 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Voor altijd";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Voor altijd gedempt";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Voor onbepaalde tijd gedempt";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Gedempt";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Meldingen niet langer dempen";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "tot %@";
@@ -1118,7 +1187,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Persoon deblokkeren";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Meldingen niet langer dempen";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "Video";
@@ -1453,6 +1522,9 @@
 /* Dismiss context menu accessibility label */
 "DISMISS_CONTEXT_MENU" = "Contextmenu sluiten";
 
+/* Title for switch to enable sharing of badges publicly */
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Maak badges zichtbaar op mijn profiel";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censuuromzeilingslocatie";
 
@@ -1726,6 +1798,12 @@
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifiëren van veiligheidsnummer mislukt!";
 
+/* Section header directing user to select a badge */
+"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+
+/* The title for the featured badge settings page */
+"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Als geverifieerd markeren";
 
@@ -1776,6 +1854,9 @@
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Bijlage";
+
+/* notification title indicating the user generically has a new message */
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nieuw bericht!";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Maak een begin";
@@ -1976,7 +2057,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ en %2$@ zijn in deze groepsoproep aanwezig";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Je hebt de verbinding met de oproep verloren. Ga na dat je internetverbinding werkt en probeer het opnieuw.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Je hebt de verbinding met de oproep verloren. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Text describing the local user as a participant in a group call. */
 "GROUP_CALL_YOU" = "Jij";
@@ -3437,7 +3518,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Je hebt het maximum aantal apparaten gekoppeld. Verwijder een apparaat en probeer het opnieuw.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Gedempt";
+"MUTED_BADGE" = "Microfoon is gedempt";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recentelijk zijn of haar profielnaam naar %2$@ gewijzigd.";
@@ -3473,7 +3554,7 @@
 "NEW_GROUP_CREATION_FAILED" = "De nieuwe groep kon niet worden aangemaakt.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Een nieuwe groep kon niet worden aangemaakt. Ga na dat je internet verbinding werkt, en probeer het opnieuw.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Een nieuwe groep kon niet worden aangemaakt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Indicates that a group member does not support New Groups. */
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ondersteunt nieuwe-stijl groepen niet";
@@ -3848,7 +3929,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Overschrijving is nog niet bevestigd";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De overschrijving kan niet worden voltooid. Ga na dat je apparaat verbonden is met internet en probeer het opnieuw.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De overschrijving kan niet worden voltooid. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Netwerkkosten";
@@ -4367,7 +4448,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Spreek vrijuit";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik heb even pauze";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Ik neem even een pauze";
 
 /* The 'Working on something new' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Ik werk aan iets nieuws";
@@ -4583,10 +4664,10 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Je kunt Signal niet gebruiken tot je de code verifieert die we je hebben gestuurd.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Om verder te kunnen, ga na dat je apparaat internetverbinding heeft en probeer het opnieuw.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Om verder te kunnen, ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Alert title for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Ga na dat je netwerkverbinding werkt.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Ga na dat de netwerkverbinding werkt.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Deze opmaak van een telefoonnummer wordt niet ondersteund, neem contact op met support.";
@@ -5104,6 +5185,9 @@
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Auteursrecht Signal-berichtenapp\nGelicentieerd onder de GPLv3";
 
+/* Title for the 'Subscription' link in settings. */
+"SETTINGS_CURRENT_SUBSCRIPTION" = "Maandelijkse donatie";
+
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Dataverbruik";
 
@@ -5279,10 +5363,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Overschrijvingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet omzetten naar een andere valuta maar je kunt niet langer overschrijvingen verzenden of ontvangen of krediet toevoegen.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan overschrijvingen niet uitschakelen omdat je krediet niet beschikbaar is. Ga na dat je apparaat internetverbinding heeft en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan overschrijvingen niet uitschakelen omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de overschrijving niet uitvoeren omdat je krediet niet beschikbaar is. Ga na dat je apparaat internetverbinding heeft en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de overschrijving niet uitvoeren omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Overschrijvingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet omzetten naar een andere valuta maar je kunt niet langer overschrijvingen verzenden of ontvangen of krediet toevoegen.";
@@ -5761,6 +5845,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Als je gebruik wilt maken van functionaliteiten zoals dingen uit andere apps direct doorsturen naar een Signal-contactpersoon en doorsturen van meldingen, dan is het nodig om iOS je Signal-contactpersonen te laten lezen.";
 
+/* Title for the 'signal boost' link in settings. */
+"SETTINGS_SIGNAL_BOOST" = "Eenmalige donatie";
+
+/* Title for the 'become a sustainer' link in settings. */
+"SETTINGS_SUBSCRIPTION" = "Wordt een Signal-ondersteuner";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
 
@@ -5938,6 +6028,15 @@
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Deïnstalleer";
 
+/* Title for the 'Badges' button in sustainer view. */
+"SUBSCRIBER_BADGES" = "Badges";
+
+/* Title for the 'Manage Subscription' button in sustainer view. */
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+
+/* Title for the 'Subscription FAQ' button in sustainer view. */
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Informatie over maandelijkse donaties";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %@ komt overeen. Je kunt deze contactpersoon markeren als geverifieerd.";
 
@@ -5994,6 +6093,90 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Aan het laden";
+
+/* Action sheet title for Still Processing Badge sheet */
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+
+/* Sustainer view Add Boost button title */
+"SUSTAINER_VIEW_ADD_BOOST" = "Geef Signal een oppepper";
+
+/* Description text for sustainer view badges, embeds {{localized badge name}} */
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+
+/* Sustainer view Cancel Subscription button title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donatie annuleren";
+
+/* Confirm Cancellation? Action sheet confirm button */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Bevestigen";
+
+/* Confirm Cancellation? Action sheet message */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Er zal niet opnieuw geld worden afgeschreven. Je badge zal worden verwijderd van je profiel wanneer je laatste betalingsperiode is afgelopen.";
+
+/* Confirm Cancellation? Action sheet title */
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Maandelijkse donatie annuleren?";
+
+/* Couldn't add badge text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+
+/* Action sheet message for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+
+/* Action sheet title for Couldn't Add Badge sheet */
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+
+/* Contact support link */
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Neem contact op met de ondersteuning.";
+
+/* Set currency label in sustainer view */
+"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+
+/* Existing subscriber support header */
+"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Pricing text for sustainer view badges, embeds {{price}} */
+"SUSTAINER_VIEW_PRICING" = "%@/month";
+
+/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+
+/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+
+/* Loading indicator on the sustainer view */
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+
+/* Status text while processing a badge redemption */
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+
+/* Read More tappable text in sustainer view body */
+"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+
+/* Renewal date text for sustainer view level, embeds {{renewal date}} */
+"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+
+/* Action sheet message for Still Processing Badge sheet */
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Je overschrijving wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding.";
+
+/* Toast indicating that the subscription has been cancelled */
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+
+/* Sustainer view Not Now Action sheet button */
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Niet nu";
+
+/* Title for the signal sustainer view */
+"SUSTAINER_VIEW_TITLE" = "Signal wordt onder andere gefinancierd door donaties van mensen zoals jij.";
+
+/* Update Subscription? Action sheet message, embeds {{Price}} */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+
+/* Update Subscription? Action sheet title */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+
+/* Update Subscription? Action sheet confirm button */
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Bijwerken";
+
+/* The body text for the signal sustainer view */
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Uit";
@@ -6185,7 +6368,7 @@
 "UPDATE_GROUP_FAILED" = "De groep kan niet worden bijgewerkt.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet aangepast worden. Ga na dat je internet verbinding werkt, en probeer het opnieuw.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet aangepast worden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Pincode aanmaken";

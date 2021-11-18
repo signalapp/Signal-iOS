@@ -1,1 +1,5 @@
-• Vi har lavet adskillige forbedringer af meddelelsernes pålidelighed for at sikre, at du ser nye beskeder med det samme
+With no data to sell and no ads, we rely on your contributions to power Signal:
+• You can now help sustain Signal by contributing a small donation each month using Apple Pay. Sustainers earn fun badges they can display on their profile to help spread awareness. 
+• Give Signal a boost using Apple Pay. Boosts are a quick one-time donation that let’s you say thanks and keep Signal going. Boosts come with their own unique badge.
+
+This release also includes numerous bug fixes.
