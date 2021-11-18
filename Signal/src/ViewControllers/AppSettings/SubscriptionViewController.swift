@@ -111,7 +111,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }()
 
     static let bubbleBorderWidth: CGFloat = 1.5
-    static let bubbleBorderColor = UIColor(rgbHex: 0xdedede)
+    static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
     static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
     private static let subscriptionBannerAvatarSize: UInt = 88
 
@@ -500,7 +500,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     titleLabel.numberOfLines = 0
 
                     let pricingLabel = UILabel()
-                    if let price = subscription.currency[self.currencyCode] {
+                    if let persistedCurrencyCode = self.persistedSubscriberCurrencyCode, let price = subscription.currency[persistedCurrencyCode] {
                         let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
                         let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
                         pricingLabel.text = String(format: pricingFormat, currencyString)
@@ -759,7 +759,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                     titleLabel.setCompressionResistanceHorizontalHigh()
                     titleStackView.addArrangedSubview(titleLabel)
 
-                    let isCurrent = self.subscriptionViewState == .subscriptionUpdating && self.currentSubscription?.level == subscription.level
+                    let isUpdating = self.subscriptionViewState == .subscriptionUpdating
+                    let isCurrent = isUpdating && self.currentSubscription?.level == subscription.level
                     if isCurrent {
                         titleStackView.addArrangedSubview(.hStretchingSpacer())
                         let checkmark = UIImageView(image: UIImage(named: "check-20")?.withRenderingMode(.alwaysTemplate))
@@ -776,7 +777,9 @@ class SubscriptionViewController: OWSTableViewController2 {
                     descriptionLabel.numberOfLines = 0
 
                     let pricingLabel = UILabel()
-                    if let price = subscription.currency[self.currencyCode] {
+
+                    let currencyCode = isUpdating ? self.persistedSubscriberCurrencyCode ?? self.currencyCode : self.currencyCode
+                    if let price = subscription.currency[currencyCode] {
                         let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
                         let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
                         pricingLabel.numberOfLines = 0
@@ -789,7 +792,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                                 let pricingString = String(format: pricingFormat, currencyString)
 
                                 let renewalFormat = currentSubscription.cancelAtEndOfPeriod ? NSLocalizedString("SUSTAINER_VIEW_PRICING_EXPIRATION", comment: "Renewal text for sustainer view management badges, embeds {{Expiration}}") : NSLocalizedString("SUSTAINER_VIEW_PRICING_RENEWAL", comment: "Expiration text for sustainer view management badges, embeds {{Expiration}}")
-                                let renewalDate = Date(timeIntervalSince1970: currentSubscription.billingCycleAnchor)
+                                let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                                 let renewalString = String(format: renewalFormat, self.dateFormatter.string(from: renewalDate))
 
                                 let attributedString = NSMutableAttributedString(string: pricingString + renewalString)
@@ -923,15 +926,15 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard let subscriptionAmount = subscription.currency[currencyCode] else {
+        guard let currencyCode = self.persistedSubscriberCurrencyCode, let subscriptionAmount = subscription.currency[currencyCode] else {
             owsFailDebug("Failed to get amount for current currency code")
             return
         }
 
         if subscriptionViewState == .subscriptionUpdating {
             var currencyString: String = ""
-            if let selectedSubscription = selectedSubscription, let price = selectedSubscription.currency[self.currencyCode] {
-                currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
+            if let selectedSubscription = selectedSubscription, let currencyCode = self.persistedSubscriberCurrencyCode, let price = selectedSubscription.currency[currencyCode] {
+                currencyString = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
             }
 
             let title = NSLocalizedString("SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE", comment: "Update Subscription? Action sheet title")
@@ -943,7 +946,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 title: confirm,
                 style: .default,
                 handler: { [weak self] _ in
-                    if let currencyCode = self?.currencyCode {
+                    if let currencyCode = self?.persistedSubscriberCurrencyCode {
                         self?.presentApplePay(for: subscriptionAmount, currencyCode: currencyCode)
                     }
                 }
