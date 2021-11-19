@@ -69,6 +69,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         case local
         case remote
         case unanswered
+        case answeredElsewhere
     }
     
     // MARK: Audio I/O mode
@@ -245,6 +246,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                         newMessageBody = self.isOutgoing ? NSLocalizedString("call_rejected", comment: "") : NSLocalizedString("call_missing", comment: "")
                     case .unanswered:
                         newMessageBody = NSLocalizedString("call_timeout", comment: "")
+                    case .answeredElsewhere:
+                        newMessageBody = messageToUpdate.body!
+                        shouldMarkAsRead = true
                     }
                 }
                 messageToUpdate.updateCall(withNewBody: newMessageBody, transaction: transaction)

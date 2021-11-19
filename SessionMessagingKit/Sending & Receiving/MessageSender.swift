@@ -132,13 +132,13 @@ public final class MessageSender : NSObject {
         guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
         // Stop here if this is a self-send, unless it's:
         // • a configuration message
-        // • a sync message (visible message or expiration timer update message)
+        // • a sync message
         // • a closed group control message of type `new`
         // • an unsend request
         // • a call message of type `answer` or `endCall`
-        guard !isSelfSend || shouldSyncMessage(message) else {
+        guard !isSelfSend || isSyncMessage || shouldSyncMessage(message) else {
             storage.write(with: { transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
+                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
                 seal.fulfill(())
             }, completion: { })
             return promise
@@ -396,6 +396,6 @@ public final class MessageSender : NSObject {
             } else {
                 return false
             } } ?? false
-        return isNewClosedGroupControlMessage || isCallControlMessage || message is ConfigurationMessage || message is UnsendRequest || message is VisibleMessage || message is ExpirationTimerUpdate
+        return isNewClosedGroupControlMessage || isCallControlMessage || message is ConfigurationMessage || message is UnsendRequest
     }
 }
