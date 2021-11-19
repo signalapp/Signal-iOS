@@ -239,6 +239,41 @@ public extension OWSProfileManager {
             userProfileWriter: userProfileWriter
         ))
     }
+
+    class func updateStorageServiceIfNecessary() {
+        guard CurrentAppContext().isMainApp,
+              !CurrentAppContext().isRunningTests,
+              tsAccountManager.isRegisteredAndReady,
+              tsAccountManager.isRegisteredPrimaryDevice else {
+                  return
+              }
+
+        let hasUpdated = databaseStorage.read { transaction in
+            storageServiceStore.getBool(Self.hasUpdatedStorageServiceKey,
+                                        defaultValue: false,
+                                        transaction: transaction)
+        }
+
+        guard !hasUpdated else {
+            return
+        }
+
+        if profileManager.localProfileAvatarData() != nil {
+            Logger.info("Scheduling a backup.")
+
+            // Schedule a backup.
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+
+        databaseStorage.write { transaction in
+            storageServiceStore.setBool(true,
+                                        key: Self.hasUpdatedStorageServiceKey,
+                                        transaction: transaction)
+        }
+    }
+
+    private static let storageServiceStore = SDSKeyValueStore(collection: "OWSProfileManager.storageServiceStore")
+    private static let hasUpdatedStorageServiceKey = "hasUpdatedStorageServiceKey"
 }
 
 // MARK: -
