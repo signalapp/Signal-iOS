@@ -791,12 +791,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                 }
             }
         } else {
-            // If no "local phone number" has been written to the storage
-            // service yet, do so now.
-            transaction.addAsyncCompletionOffMain {
-                // Primary needs to update the local phone number on the storage service.
-                Self.storageServiceManager.recordPendingLocalAccountUpdates()
-            }
+            // If no "local phone number" has been written to the storage service yet, do so now.
+            mergeState = .needsUpdate
         }
 
         return mergeState
