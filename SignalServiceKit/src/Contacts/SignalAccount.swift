@@ -28,13 +28,7 @@ extension SignalAccount {
 
     @objc
     public var addressComponentsDescription: String {
-        var splits = [String]()
-        if let uuid = self.recipientUUID?.nilIfEmpty {
-            splits.append("uuid: " + uuid)
-        }
-        if let phoneNumber = self.recipientPhoneNumber?.nilIfEmpty {
-            splits.append("phoneNumber: " + phoneNumber)
-        }
-        return "[" + splits.joined(separator: ",") + "]"
+        SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
+                                                          phoneNumber: recipientPhoneNumber)
     }
 }

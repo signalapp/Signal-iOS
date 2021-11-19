@@ -155,37 +155,56 @@ extension SignalRecipient {
             )
         }
 
-        if let newUuid = newUuid?.nilIfEmpty,
+        if let newUuidString = newUuid?.nilIfEmpty,
+           let newUuid = UUID(uuidString: newUuidString),
            let localUuid = tsAccountManager.localUuid,
-           localUuid.uuidString != newUuid,
+           localUuid != newUuid,
            let oldPhoneNumber = oldPhoneNumber?.nilIfEmpty,
            let newPhoneNumber = newPhoneNumber?.nilIfEmpty {
             let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
-                .changePhoneNumberUuid: newUuid,
+                .changePhoneNumberUuid: newUuidString,
                 .changePhoneNumberOld: oldPhoneNumber,
                 .changePhoneNumberNew: newPhoneNumber
             ]
 
             func insertPhoneNumberChangeInteraction(_ thread: TSThread) {
+                guard thread.shouldThreadBeVisible else {
+                    // Skip if thread is soft deleted or otherwise not user visible.
+                    return
+                }
+                let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread,
+                                                                                  transaction: transaction.asAnyRead)
+                guard !threadAssociatedData.isArchived else {
+                    // Skip if thread is archived.
+                    return
+                }
                 let infoMessage = TSInfoMessage(thread: thread,
                                                 messageType: .phoneNumberChange,
                                                 infoMessageUserInfo: infoMessageUserInfo)
+                infoMessage.wasRead = true
                 infoMessage.anyInsert(transaction: transaction.asAnyWrite)
             }
 
             // We need to use the newPhoneNumber; we've just updated TSThread and TSGroupMember.
-            let newAddress = SignalServiceAddress(uuidString: newUuid, phoneNumber: newPhoneNumber)
+            let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
 
             TSGroupThread.enumerateGroupThreads(
                 with: newAddress,
                 transaction: transaction.asAnyRead
             ) { thread, _ in
+                guard thread.groupMembership.isFullMember(newUuid) else {
+                    // Only insert "change phone number" interactions for
+                    // full members.
+                    return
+                }
                 insertPhoneNumberChangeInteraction(thread)
             }
 
-            let contactThread = TSContactThread.getOrCreateThread(withContactAddress: newAddress,
-                                                                  transaction: transaction.asAnyWrite)
-            insertPhoneNumberChangeInteraction(contactThread)
+            // Only insert "change phone number" interaction in 1:1 thread if it already exists.
+            if let thread = TSContactThread.getWithContactAddress(newAddress,
+                                                                  transaction: transaction.asAnyRead) {
+                insertPhoneNumberChangeInteraction(thread)
+            }
         }
 
         // TODO: we may need to do more here, this is just bear bones to make sure we
@@ -304,17 +323,7 @@ extension SignalRecipient {
 
     @objc
     public var addressComponentsDescription: String {
-        var splits = [String]()
-        if let uuid = self.recipientUUID?.nilIfEmpty {
-            splits.append("uuid: " + uuid)
-        }
-        if let phoneNumber = self.recipientPhoneNumber?.nilIfEmpty {
-            splits.append("phoneNumber: " + phoneNumber)
-        }
-        if let uuid = self.recipientUUID?.nilIfEmpty,
-           tsAccountManager.localUuid?.uuidString == uuid {
-            splits.append("*local address")
-        }
-        return "[" + splits.joined(separator: ", ") + "]"
+        SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
+                                                          phoneNumber: recipientPhoneNumber)
     }
 }

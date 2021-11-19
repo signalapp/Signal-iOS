@@ -380,6 +380,22 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         owsAssertDebug(uuid == self.uuid)
         backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: uuid))
     }
+    
+    public static func addressComponentsDescription(uuidString: String?,
+                                                    phoneNumber: String?) -> String {
+        var splits = [String]()
+        if let uuid = uuidString?.nilIfEmpty {
+            splits.append("uuid: " + uuid)
+        }
+        if let phoneNumber = phoneNumber?.nilIfEmpty {
+            splits.append("phoneNumber: " + phoneNumber)
+        }
+        if let uuid = uuidString?.nilIfEmpty,
+           tsAccountManager.localUuid?.uuidString == uuid {
+            splits.append("*local address")
+        }
+        return "[" + splits.joined(separator: ", ") + "]"
+    }
 }
 
 // MARK: -
