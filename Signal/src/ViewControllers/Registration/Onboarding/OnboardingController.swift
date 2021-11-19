@@ -175,10 +175,13 @@ public class OnboardingController: NSObject {
 
     fileprivate func nextViewController(milestone: OnboardingMilestone) -> UIViewController {
         Logger.info("milestone: \(milestone)")
+
         switch milestone {
         case .verifiedPhoneNumber, .verifiedLinkedDevice:
             if SSKPreferences.didDropYdb() {
                 return OnboardingDroppedYdbViewController(onboardingController: self)
+            } else if tsAccountManager.isReregistering {
+                return RegistrationPhoneNumberViewController(onboardingController: self)
             } else {
                 return OnboardingSplashViewController(onboardingController: self)
             }
@@ -581,10 +584,14 @@ public class OnboardingController: NSObject {
     }
 
     public func submitVerification(fromViewController: UIViewController,
-                                   checkForAvailableTransfer: Bool = true,
+                                   checkForAvailableTransfer checkForAvailableTransferParam: Bool? = nil,
                                    showModal: Bool = true,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
+
+        // Don't bother checking for available transfers if we're re-registering.
+        let checkForAvailableTransferDefault = !tsAccountManager.isReregistering
+        let checkForAvailableTransfer = checkForAvailableTransferParam ?? checkForAvailableTransferDefault
 
         // If we have credentials for KBS auth or we're trying to verify
         // after registering, we need to restore our keys from KBS.
@@ -618,7 +625,9 @@ public class OnboardingController: NSObject {
                     self.databaseStorage.write { transaction in
                         self.ows2FAManager.markRegistrationLockV2Enabled(transaction: transaction)
                     }
-                    self.submitVerification(fromViewController: fromViewController, completion: completion)
+                    self.submitVerification(fromViewController: fromViewController,
+                                            checkForAvailableTransfer: checkForAvailableTransferParam,
+                                            completion: completion)
                 }
             }.catch { error in
                 guard let error = error as? KeyBackupService.KBSError else {
