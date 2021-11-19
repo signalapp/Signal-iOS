@@ -121,6 +121,7 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         if (TSAccountManager.shared.isRegistered) {
             [self rotateLocalProfileKeyIfNecessary];
             [OWSProfileManager updateProfileOnServiceIfNecessary];
+            [OWSProfileManager updateStorageServiceIfNecessary];
         }
     });
 
