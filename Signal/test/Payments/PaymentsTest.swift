@@ -94,7 +94,7 @@ class PaymentsTest: SignalBaseTest {
                                                                                               paymentsDisabledRegions: ["1", "234"]))
         XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+233333333",
                                                                                              paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+234333333",
-                                                                                             paymentsDisabledRegions: ["1", "234"]))
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlacklist("+234333333",
+                                                                                              paymentsDisabledRegions: ["1", "234"]))
     }
 }
