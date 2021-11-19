@@ -11,11 +11,11 @@ public class FakeAccountServiceClient: AccountServiceClient {
 
     // MARK: - Public
 
-    public override func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+    public override func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 
-    public override func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+    public override func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 
@@ -35,7 +35,7 @@ public class FakeAccountServiceClient: AccountServiceClient {
         return Promise { $0.resolve() }
     }
 
-    public override func getUuid() -> Promise<UUID> {
-        return Promise { $0.resolve(UUID()) }
+    public override func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
+        return Promise { $0.resolve(WhoAmIResponse(uuid: UUID(), e164: nil)) }
     }
 }

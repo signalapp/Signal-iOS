@@ -62,7 +62,7 @@ extension OWS2FAManager {
             }
             return token
         }.then { token -> Promise<HTTPResponse> in
-            let request = OWSRequestFactory.enableRegistrationLockV2Request(withToken: token)
+            let request = OWSRequestFactory.enableRegistrationLockV2Request(token: token)
             return self.networkManager.makePromise(request: request)
         }.done { _ in
             self.databaseStorage.write { transaction in

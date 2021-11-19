@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 #if DEBUG
 
@@ -279,6 +280,18 @@ public extension DebugUIStress {
                 }
                 Logger.verbose("Deleting: \(profile.address)")
                 profile.anyRemove(transaction: transaction)
+            }
+        }
+    }
+
+    class func logGroupsForAddress(_ address: SignalServiceAddress) {
+        Self.databaseStorage.read { transaction in
+            TSGroupThread.enumerateGroupThreads(
+                with: address,
+                transaction: transaction
+            ) { thread, _ in
+                let displayName = Self.contactsManager.displayName(for: thread, transaction: transaction)
+                Logger.verbose("Group[\(thread.groupId.hexadecimalString)]: \(displayName)")
             }
         }
     }

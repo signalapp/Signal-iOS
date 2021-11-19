@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
+public class RegistrationPhoneNumberViewController: OnboardingBaseViewController {
 
     // MARK: - Properties
 
@@ -381,7 +381,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             return nil
         }
 
-        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
+        let countryState = RegistrationCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
         onboardingController.update(countryState: countryState)
         return phoneNumberWithoutCallingCode
     }
@@ -561,7 +561,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         }
 
         if Self.tsAccountManager.isReregistering {
-            self.requestVerification(with: OnboardingPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
+            self.requestVerification(with: RegistrationPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
             return
         }
 
@@ -578,7 +578,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             guard let self = self else { return }
 
             if shouldContinue {
-                self.requestVerification(with: OnboardingPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
+                self.requestVerification(with: RegistrationPhoneNumber(e164: localNumber.toE164(), userInput: phoneNumberText))
             } else {
                 // User wants to edit, retake first responder
                 self.phoneNumberTextField.becomeFirstResponder()
@@ -586,7 +586,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         }
     }
 
-    private func requestVerification(with phoneNumber: OnboardingPhoneNumber) {
+    private func requestVerification(with phoneNumber: RegistrationPhoneNumber) {
         self.onboardingController.update(phoneNumber: phoneNumber)
 
         self.verificationAnimation(shouldPlay: true)
@@ -629,7 +629,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
 // MARK: -
 
-extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
+extension RegistrationPhoneNumberViewController: UITextFieldDelegate {
     public func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
@@ -661,23 +661,9 @@ extension OnboardingPhoneNumberViewController: UITextFieldDelegate {
 
 // MARK: -
 
-extension OnboardingPhoneNumberViewController: CountryCodeViewControllerDelegate {
-    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
-        guard countryCode.count > 0 else {
-            owsFailDebug("Invalid country code.")
-            return
-        }
-        guard countryName.count > 0 else {
-            owsFailDebug("Invalid country name.")
-            return
-        }
-        guard callingCode.count > 0 else {
-            owsFailDebug("Invalid calling code.")
-            return
-        }
-
-        let countryState = OnboardingCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
-
+extension RegistrationPhoneNumberViewController: CountryCodeViewControllerDelegate {
+    public func countryCodeViewController(_ vc: CountryCodeViewController,
+                                          didSelectCountry countryState: RegistrationCountryState) {
         onboardingController.update(countryState: countryState)
         updateViewState(animated: false)
     }

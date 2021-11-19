@@ -118,7 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
-        
+        ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
+
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
                                                                              launchJobs:launchJobs
@@ -181,7 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                             spamChallengeResolver:spamChallengeResolver
                                                                    senderKeyStore:senderKeyStore
                                                                   phoneNumberUtil:phoneNumberUtil
-                                                                 webSocketFactory:webSocketFactory]];
+                                                                 webSocketFactory:webSocketFactory
+                                                                changePhoneNumber:changePhoneNumber]];
 
         appSpecificSingletonBlock();
 

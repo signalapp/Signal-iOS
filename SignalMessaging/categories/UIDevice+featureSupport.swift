@@ -115,7 +115,7 @@ public extension UIDevice {
         return windowSize.largerAxis == screenSize.largerAxis && windowSize.smallerAxis == screenSize.smallerAxis
     }
 
-    var defaultSupportedOrienations: UIInterfaceOrientationMask {
+    var defaultSupportedOrientations: UIInterfaceOrientationMask {
         return isIPad ? .all : .allButUpsideDown
     }
 

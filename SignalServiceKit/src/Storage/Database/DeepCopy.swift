@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public protocol DeepCopyable {
     func deepCopy() throws -> AnyObject
@@ -59,7 +60,7 @@ public class DeepCopies {
         return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ (key, value) in
             let keyCopy: String = try DeepCopies.deepCopy(key.rawValue as String)
             let valueCopy: AnyObject
-            if let objectToCopy = value as? DeepCopyable {
+            if let objectToCopy = NSObject.asDeepCopyable(value) {
                 valueCopy = try objectToCopy.deepCopy()
             } else {
                 Logger.verbose("Could not copy: \(value)")
@@ -107,7 +108,7 @@ extension Dictionary where Key: DeepCopyable, Value: DeepCopyable {
 extension NSOrderedSet {
     public func deepCopy() throws -> NSOrderedSet {
         let copiedElements: [AnyObject] = try self.array.map { (element: Any) throws -> AnyObject in
-            guard let objectToCopy = element as? DeepCopyable else {
+            guard let objectToCopy = NSObject.asDeepCopyable(element) else {
                 Logger.verbose("Could not copy: \(element)")
                 throw OWSAssertionError("Could not copy: \(type(of: element))")
             }
@@ -351,5 +352,21 @@ extension OWSUserProfileBadgeInfo: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+// NOTE: We do not get compile-time type safety with NSOrderedSet.
+extension NSObject {
+    public static func asDeepCopyable(_ value: Any) -> DeepCopyable? {
+        if let string = value as? String {
+            return string
+        }
+        guard let deepCopyable = value as? DeepCopyable else {
+            owsFailDebug("Could not copy: \(value)")
+            return nil
+        }
+        return deepCopyable
     }
 }

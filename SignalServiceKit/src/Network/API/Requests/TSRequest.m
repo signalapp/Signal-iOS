@@ -5,7 +5,6 @@
 #import "TSRequest.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -21,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(URL);
     self = [super initWithURL:URL
                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-              timeoutInterval:textSecureHTTPTimeOut];
+              timeoutInterval:OWSRequestFactory.textSecureHTTPTimeOut];
     if (!self) {
         return nil;
     }
@@ -58,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self = [super initWithURL:URL
                   cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-              timeoutInterval:textSecureHTTPTimeOut];
+              timeoutInterval:OWSRequestFactory.textSecureHTTPTimeOut];
     if (!self) {
         return nil;
     }

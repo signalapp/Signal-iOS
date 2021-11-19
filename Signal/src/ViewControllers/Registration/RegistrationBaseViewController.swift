@@ -5,19 +5,7 @@
 import UIKit
 
 @objc
-public class OnboardingBaseViewController: OWSViewController {
-
-    // Unlike a delegate, we can and should retain a strong reference to the OnboardingController.
-    let onboardingController: OnboardingController
-
-    @objc
-    public init(onboardingController: OnboardingController) {
-        self.onboardingController = onboardingController
-
-        super.init()
-
-        self.shouldUseTheme = false
-    }
+public class RegistrationBaseViewController: OWSViewController {
 
     // MARK: - Factory Methods
 
@@ -43,7 +31,8 @@ public class OnboardingBaseViewController: OWSViewController {
         return explanationLabel
     }
 
-    var primaryLayoutMargins: UIEdgeInsets {
+    @objc
+    public var primaryLayoutMargins: UIEdgeInsets {
         switch traitCollection.horizontalSizeClass {
         case .unspecified, .compact:
             return UIEdgeInsets(top: 32, leading: 32, bottom: 32, trailing: 32)
@@ -55,12 +44,16 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func primaryButton(title: String, selector: Selector) -> OWSFlatButton {
+        primaryButton(title: title, target: self, selector: selector)
+    }
+
+    func primaryButton(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
             font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
-            target: self,
+            target: target,
             selector: selector)
         button.button.layer.cornerRadius = 14
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 14)
@@ -68,21 +61,21 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
+        linkButton(title: title, target: self, selector: selector)
+    }
+
+    func linkButton(title: String, target: Any, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton.button(
             title: title,
             font: UIFont.ows_dynamicTypeSubheadlineClamped,
             titleColor: Theme.accentBlueColor,
             backgroundColor: .clear,
-            target: self,
+            target: target,
             selector: selector)
         button.enableMultilineLabel()
         button.button.layer.cornerRadius = 8
         button.contentEdgeInsets = UIEdgeInsets(hMargin: 4, vMargin: 8)
         return button
-    }
-
-    func shouldShowBackButton() -> Bool {
-        return onboardingController.isOnboardingModeOverriden
     }
 
     public class func horizontallyWrap(primaryButton: UIView) -> UIView {
@@ -108,38 +101,40 @@ public class OnboardingBaseViewController: OWSViewController {
         super.viewDidLoad()
 
         primaryView.layoutMargins = primaryLayoutMargins
-
-        if shouldShowBackButton() {
-            let backButton = UIButton()
-            let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-            backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryTextAndIconColor)
-            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
-
-            view.addSubview(backButton)
-            backButton.autoSetDimensions(to: CGSize(square: 40))
-            backButton.autoPinEdge(toSuperviewMargin: .leading)
-            backButton.autoPinEdge(toSuperviewMargin: .top)
-        }
     }
 
     @objc func navigateBack() {
         navigationController?.popViewController(animated: true)
     }
 
+    @objc
+    public var shouldHideBackButton = true
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        self.navigationController?.isNavigationBarHidden = true
-        // Disable "back" gesture.
-        self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
+        if shouldHideBackButton {
+            Self.hideBackButton(self)
+        }
     }
 
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.navigationController?.isNavigationBarHidden = true
+        if shouldHideBackButton {
+            Self.hideBackButton(self)
+        }
+    }
+
+    public static func hideBackButton(_ vc: UIViewController) {
+        vc.navigationController?.isNavigationBarHidden = true
         // Disable "back" gesture.
-        self.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
+        vc.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
+    }
+
+    public static func restoreBackButton(_ vc: UIViewController) {
+        vc.navigationController?.isNavigationBarHidden = false
+        vc.navigationController?.navigationItem.backBarButtonItem?.isEnabled = true
     }
 
     // The margins for `primaryView` will update to reflect the current traitCollection.
@@ -152,7 +147,9 @@ public class OnboardingBaseViewController: OWSViewController {
     // If not for iOS10, we could get rid of primaryView, and manipulate the layoutMargins on
     // self.view directly, however on iOS10, UIKit VC presentation machinery resets the
     // layoutMargins *after* this method is called.
-    let primaryView = UIView()
+    @objc
+    public let primaryView = UIView()
+
     override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         primaryView.layoutMargins = primaryLayoutMargins

@@ -310,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIDevice.currentDevice.defaultSupportedOrienations;
+    return UIDevice.currentDevice.defaultSupportedOrientations;
 }
 
 @end

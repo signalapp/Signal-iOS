@@ -22,6 +22,8 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 
 @end
 
+#pragma mark -
+
 @implementation TSContactThread
 
 #pragma mark - Dependencies

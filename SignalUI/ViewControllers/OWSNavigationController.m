@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.visibleViewController) {
         return self.visibleViewController.supportedInterfaceOrientations;
     } else {
-        return UIDevice.currentDevice.defaultSupportedOrienations;
+        return UIDevice.currentDevice.defaultSupportedOrientations;
     }
 }
 

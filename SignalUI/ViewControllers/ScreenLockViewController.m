@@ -160,7 +160,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIDevice.currentDevice.defaultSupportedOrienations;
+    return UIDevice.currentDevice.defaultSupportedOrientations;
 }
 
 @end

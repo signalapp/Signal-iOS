@@ -42,7 +42,15 @@ public extension TSGroupMember {
         }
         return members
     }
+
+    @objc
+    var addressComponentsDescription: String {
+        SignalServiceAddress.addressComponentsDescription(uuidString: uuidString,
+                                                          phoneNumber: phoneNumber)
+    }
 }
+
+// MARK: -
 
 public extension TSGroupThread {
     @objc(groupThreadsWithAddress:transaction:)

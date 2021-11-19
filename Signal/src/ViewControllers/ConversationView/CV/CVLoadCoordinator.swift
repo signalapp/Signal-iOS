@@ -162,6 +162,10 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(autoChatColorsDidChange),
                                                name: ChatColors.autoChatColorsDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(phoneNumberDidChange),
+                                               name: SignalRecipient.phoneNumberDidChange,
+                                               object: nil)
         callService.addObserver(observer: self, syncStateImmediately: false)
     }
 
@@ -223,7 +227,34 @@ public class CVLoadCoordinator: NSObject {
             }
         } else {
             // TODO: In groups, we could reload if any group member's profile changed.
-            //       Ideally we would only reload cells that use that member's profile state.            
+            //       Ideally we would only reload cells that use that member's profile state.
+        }
+    }
+
+    @objc
+    func phoneNumberDidChange(notification: Notification) {
+        AssertIsOnMainThread()
+
+        var notificationAddressKeys = Set<String>()
+        if let phoneNumber = notification.userInfo?[SignalRecipient.notificationKeyPhoneNumber] as? String {
+            notificationAddressKeys.insert(phoneNumber)
+        }
+        if let uuid = notification.userInfo?[SignalRecipient.notificationKeyUUID] as? String {
+            notificationAddressKeys.insert(uuid)
+        }
+
+        var threadAddressKeys = Set<String>()
+        for address in thread.recipientAddresses {
+            if let uuidString = address.uuidString {
+                threadAddressKeys.insert(uuidString)
+            }
+            if let phoneNumber = address.phoneNumber {
+                threadAddressKeys.insert(phoneNumber)
+            }
+        }
+        let shouldReload = !notificationAddressKeys.intersection(threadAddressKeys).isEmpty
+        if shouldReload {
+            enqueueReloadWithoutCaches()
         }
     }
 

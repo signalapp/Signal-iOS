@@ -13,15 +13,15 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
-    func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
+    func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
+    func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<UInt32>
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
     func requestUDSenderCertificate(uuidOnly: Bool) -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
-    func getAccountUuid() -> Promise<UUID>
+    func getAccountWhoAmI() -> Promise<WhoAmIResponse>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
     func getRemoteConfig() -> Promise<[String: RemoteConfigItem]>
 
@@ -47,15 +47,15 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(recipientId: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        let request = OWSRequestFactory.requestPreauthChallengeRequest(recipientId: recipientId,
+    public func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+        let request = OWSRequestFactory.requestPreauthChallengeRequest(e164: e164,
                                                                        pushToken: pushToken,
                                                                        isVoipToken: isVoipToken)
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        let request = OWSRequestFactory.requestVerificationCodeRequest(withPhoneNumber: recipientId,
+    public func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+        let request = OWSRequestFactory.requestVerificationCodeRequest(e164: e164,
                                                                        preauthChallenge: preauthChallenge,
                                                                        captchaToken: captchaToken,
                                                                        transport: transport)
@@ -122,7 +122,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func getAccountUuid() -> Promise<UUID> {
+    public func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
         let request = OWSRequestFactory.accountWhoAmIRequest()
 
         return firstly {
@@ -141,7 +141,9 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
                 throw OWSAssertionError("Missing or invalid uuid.")
             }
 
-            return uuid
+            let e164: String? = try parser.optional(key: "number")
+
+            return WhoAmIResponse(uuid: uuid, e164: e164)
         }
     }
 
@@ -242,4 +244,11 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest()
         return self.networkManager.makePromise(request: request).asVoid()
     }
+}
+
+// MARK: -
+
+public struct WhoAmIResponse {
+    public let uuid: UUID
+    public let e164: String?
 }

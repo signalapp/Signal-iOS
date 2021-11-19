@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
@@ -738,6 +739,12 @@ extension CVComponentSystemMessage {
                 return Theme.iconImage(.info16)
             case .profileUpdate:
                 return Theme.iconImage(.profile16)
+            case .phoneNumberChange:
+                let offerTypeString = "phone"
+                let directionString = "incoming"
+                let themeString = Theme.isDarkThemeEnabled ? "solid" : "outline"
+                let imageName = "\(offerTypeString)-\(directionString)-\(themeString)-16"
+                return UIImage(named: imageName)
             }
         } else if let call = interaction as? TSCall {
 
@@ -771,7 +778,6 @@ extension CVComponentSystemMessage {
             }
 
             let themeString = Theme.isDarkThemeEnabled ? "solid" : "outline"
-
             let imageName = "\(offerTypeString)-\(directionString)-\(themeString)-16"
             return UIImage(named: imageName)
         } else if nil != interaction as? OWSGroupCallMessage {
@@ -1110,6 +1116,20 @@ extension CVComponentSystemMessage {
                           accessibilityIdentifier: "update_contact",
                           action: .cvc_didTapUpdateSystemContact(address: profileChangeAddress,
                                                                  newNameComponents: profileChangeNewNameComponents))
+
+        case .phoneNumberChange:
+            guard let uuidString = infoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String,
+                  let uuid = UUID(uuidString: uuidString),
+                  let phoneNumberOld = infoMessage.infoMessageUserInfo?[.changePhoneNumberOld] as? String,
+                        let phoneNumberNew = infoMessage.infoMessageUserInfo?[.changePhoneNumberNew] as? String else {
+                owsFailDebug("Invalid info message.")
+                return nil
+            }
+            return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
+                          accessibilityIdentifier: "update_contact",
+                          action: .cvc_didTapPhoneNumberChange(uuid: uuid,
+                                                               phoneNumberOld: phoneNumberOld,
+                                                               phoneNumberNew: phoneNumberNew))
         }
     }
 

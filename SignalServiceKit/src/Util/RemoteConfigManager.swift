@@ -236,6 +236,25 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.forceDonorBadgeAcquisition || isEnabled(.donorBadgeAcquisition)
     }
 
+    @objc
+    public static var changePhoneNumberCapability: Bool {
+        if changePhoneNumberUI {
+            return true
+        }
+        if DebugFlags.forceChangePhoneNumberCapability.get() {
+            return true
+        }
+        return isEnabled(.changePhoneNumberCapability) && FeatureFlags.canChangePhoneNumber
+    }
+
+    @objc
+    public static var changePhoneNumberUI: Bool {
+        if DebugFlags.forceChangePhoneNumberUI.get() {
+            return true
+        }
+        return isEnabled(.changePhoneNumberUI) && FeatureFlags.canChangePhoneNumber
+    }
+
     // MARK: -
 
     private static func interval(
@@ -425,6 +444,8 @@ private struct Flags {
         case messageResendKillSwitch
         case donorBadgeDisplay
         case donorBadgeAcquisition
+        case changePhoneNumberCapability
+        case changePhoneNumberUI
     }
 
     // Values defined in this array remain set once they are

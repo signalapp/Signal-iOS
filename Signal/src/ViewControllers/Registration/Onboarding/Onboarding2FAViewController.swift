@@ -343,7 +343,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             return
         }
 
-        let vc = OnboardingPinAttemptsExhaustedViewController(onboardingController: onboardingController)
+        let vc = RegistrationPinAttemptsExhaustedViewController(delegate: onboardingController)
         navigationController.pushViewController(vc, animated: true)
     }
 

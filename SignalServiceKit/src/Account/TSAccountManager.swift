@@ -254,9 +254,9 @@ extension TSAccountManager {
     }
 
     @objc
-    open func verifyAccount(request: TSRequest,
-                            success: @escaping (Any?) -> Void,
-                            failure: @escaping (Error) -> Void) {
+    open func verifyRegistration(request: TSRequest,
+                                 success: @escaping (Any?) -> Void,
+                                 failure: @escaping (Error) -> Void) {
         firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
@@ -274,67 +274,82 @@ extension TSAccountManager {
                 failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
             }
         }.catch(on: .global()) { error in
-            Logger.warn("Error: \(error)")
+            failure(Self.processRegistrationError(error))
+        }
+    }
 
-            let statusCode = error.httpStatusCode ?? 0
+    @objc
+    open func verifyChangePhoneNumber(request: TSRequest,
+                                      success: @escaping () -> Void,
+                                      failure: @escaping (Error) -> Void) {
+        firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            let statusCode = response.responseStatusCode
 
             switch statusCode {
-            case 403:
-                let message = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
-                                                comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
-                failure(OWSError(error: .userError,
-                                 description: message,
-                                 isRetryable: false))
-            case 409:
-                let message = NSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
-                                                comment: "Error message indicating that device transfer from another device might be possible.")
-                failure(OWSError(error: .registrationTransferAvailable,
-                                 description: message,
-                                 isRetryable: false))
-            case 413:
-                // In the case of the "rate limiting" error, we want to show the
-                // "recovery suggestion", not the error's "description."
-                let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
-                failure(OWSError(error: .userError,
-                                 description: recoverySuggestion,
-                                 isRetryable: false))
-            case 423:
-                let localizedMessage = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
-                                                         comment: "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.")
-                Logger.error("2FA PIN required: \(error)")
-
-                var userError: Error = OWSError(error: .registrationMissing2FAPIN,
-                                                description: localizedMessage,
-                                                isRetryable: false)
-
-                guard let json = error.httpResponseJson as? [String: Any] else {
-                    failure(OWSAssertionError("Invalid response."))
-                    return
-                }
-
-                // Check if we received KBS credentials, if so pass them on.
-                // This should only ever be returned if the user was using registration lock v2
-                guard let backupCredentials = json["backupCredentials"] as? [String: Any] else {
-                    failure(OWSAssertionError("Invalid response."))
-                    return
-                }
-                guard let auth = RemoteAttestation.parseAuthParams(backupCredentials) else {
-                    owsFailDebug("Remote attestation auth could not be parsed: \(json).")
-                    failure(OWSAssertionError("Invalid response."))
-                    return
-                }
-
-                userError = OWSError(error: .registrationMissing2FAPIN,
-                                     description: localizedMessage,
-                                     isRetryable: false,
-                                     userInfo: [
-                                        TSRemoteAttestationAuthErrorKey: auth
-                                     ])
-                failure(userError)
+            case 200, 204:
+                Logger.info("Verification code accepted.")
+                success()
             default:
-                owsFailDebugUnlessNetworkFailure(error)
-                failure(error)
+                Logger.warn("Unexpected status while verifying code: \(statusCode)")
+                failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
             }
+        }.catch(on: .global()) { error in
+            failure(Self.processRegistrationError(error))
+        }
+    }
+
+    private static func processRegistrationError(_ error: Error) -> Error {
+        Logger.warn("Error: \(error)")
+
+        let statusCode = error.httpStatusCode ?? 0
+
+        switch statusCode {
+        case 403:
+            let message = NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION",
+                                            comment: "Error message indicating that registration failed due to a missing or incorrect verification code.")
+            return OWSError(error: .userError,
+                            description: message,
+                            isRetryable: false)
+        case 409:
+            let message = NSLocalizedString("REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION",
+                                            comment: "Error message indicating that device transfer from another device might be possible.")
+            return OWSError(error: .registrationTransferAvailable,
+                            description: message,
+                            isRetryable: false)
+        case 413:
+            // In the case of the "rate limiting" error, we want to show the
+            // "recovery suggestion", not the error's "description."
+            let recoverySuggestion = NSLocalizedString("REGISTER_RATE_LIMITING_BODY", comment: "")
+            return OWSError(error: .userError,
+                            description: recoverySuggestion,
+                            isRetryable: false)
+        case 423:
+            Logger.error("2FA PIN required: \(error)")
+
+            if let httpResponseHeaders = error.httpResponseHeaders {
+                Logger.verbose("httpResponseHeaders: \(httpResponseHeaders.headers)")
+            }
+
+            guard let json = error.httpResponseJson as? [String: Any] else {
+                return OWSAssertionError("Invalid response.")
+            }
+
+            // Check if we received KBS credentials, if so pass them on.
+            // This should only ever be returned if the user was using registration lock v2
+            guard let backupCredentials = json["backupCredentials"] as? [String: Any] else {
+                return OWSAssertionError("Invalid response.")
+            }
+            guard let auth = RemoteAttestation.parseAuthParams(backupCredentials) else {
+                owsFailDebug("Remote attestation auth could not be parsed: \(json).")
+                return OWSAssertionError("Invalid response.")
+            }
+
+            return RegistrationMissing2FAPinError(remoteAttestationAuth: auth)
+        default:
+            owsFailDebugUnlessNetworkFailure(error)
+            return error
         }
     }
 }
@@ -372,4 +387,33 @@ public extension TSAccountManager {
         NotificationCenter.default.postNotificationNameAsync(.registrationStateDidChange,
                                                              object: nil)
     }
+}
+
+// MARK: -
+
+@objc
+public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvider, UserErrorDescriptionProvider {
+
+    @objc
+    public let remoteAttestationAuth: RemoteAttestationAuth
+
+    required init(remoteAttestationAuth: RemoteAttestationAuth) {
+        self.remoteAttestationAuth = remoteAttestationAuth
+    }
+
+    // NSError bridging: the error code within the given domain.
+    public var errorUserInfo: [String: Any] {
+        var result = [String: Any]()
+        result[NSLocalizedDescriptionKey] = localizedDescription
+        return result
+    }
+
+    public var localizedDescription: String {
+        NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
+                                                     comment: "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.")
+    }
+
+    // MARK: - IsRetryableProvider
+
+    public var isRetryableProvider: Bool { false }
 }

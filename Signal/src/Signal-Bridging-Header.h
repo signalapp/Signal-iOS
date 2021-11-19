@@ -15,6 +15,7 @@
 #import "ConversationViewController.h"
 #import "DebugContactsUtils.h"
 #import "DebugUIMessages.h"
+#import "DebugUIMisc.h"
 #import "DebugUIPage.h"
 #import "DebugUIScreenshots.h"
 #import "DebugUIStress.h"

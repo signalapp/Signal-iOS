@@ -7,7 +7,6 @@
 #import "OWSError.h"
 #import "OWSHTTPSecurityPolicy.h"
 #import "TSAccountManager.h"
-#import "TSConstants.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -77,7 +76,7 @@ NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidCha
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(localNumberDidChange:)
-                                                 name:kNSNotificationName_LocalNumberDidChange
+                                                 name:NSNotificationNameLocalNumberDidChange
                                                object:nil];
 }
 

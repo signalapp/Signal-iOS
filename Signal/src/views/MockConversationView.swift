@@ -401,6 +401,8 @@ extension MockConversationView: CVComponentDelegate {
     func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
                                        newNameComponents: PersonNameComponents) {}
 
+    func cvc_didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {}
+
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {}
 
     func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}

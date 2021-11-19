@@ -5,6 +5,7 @@
 import Foundation
 import QuickLook
 import PassKit
+import SignalServiceKit
 
 extension ConversationViewController: CVComponentDelegate {
 
@@ -683,6 +684,38 @@ extension ConversationViewController: CVComponentDelegate {
                                                                                    editImmediately: true,
                                                                                    addToExisting: nil,
                                                                                    updatedNameComponents: newNameComponents) else {
+            owsFailDebug("Could not build contact view.")
+            return
+        }
+        contactViewController.delegate = self
+        navigationController?.pushViewController(contactViewController, animated: true)
+    }
+
+    public func cvc_didTapPhoneNumberChange(uuid: UUID,
+                                            phoneNumberOld: String,
+                                            phoneNumberNew: String) {
+        AssertIsOnMainThread()
+
+        guard contactsManagerImpl.supportsContactEditing else {
+            owsFailDebug("Contact editing unexpectedly unsupported")
+            return
+        }
+
+        var existingContact: CNContact?
+        databaseStorage.read { transaction in
+            if let contact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld,
+                                                         transaction: transaction),
+               let cnContactId = contact.cnContactId,
+               let cnContact = contactsManager.cnContact(withId: cnContactId) {
+                existingContact = cnContact
+            }
+        }
+
+        let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumberNew)
+        guard let contactViewController = contactsViewHelper.contactViewController(for: address,
+                                                                                   editImmediately: true,
+                                                                                   addToExisting: existingContact,
+                                                                                   updatedNameComponents: nil) else {
             owsFailDebug("Could not build contact view.")
             return
         }

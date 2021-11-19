@@ -4,6 +4,7 @@
 
 import Foundation
 import SwiftProtobuf
+import SignalServiceKit
 
 // MARK: - Contact Record
 
@@ -576,10 +577,14 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setUnknownFields(unknownFields)
         }
 
-        let configuration = OWSDisappearingMessagesConfiguration
+        let dmConfiguration = OWSDisappearingMessagesConfiguration
             .fetchOrBuildDefaultUniversalConfiguration(with: transaction)
+        builder.setUniversalExpireTimer(dmConfiguration.isEnabled ? dmConfiguration.durationSeconds : 0)
 
-        builder.setUniversalExpireTimer(configuration.isEnabled ? configuration.durationSeconds : 0)
+        if let localPhoneNumber = localAddress.phoneNumber?.strippedOrNil,
+           PhoneNumber.resemblesE164(localPhoneNumber) {
+            builder.setE164(localPhoneNumber)
+        }
 
         if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
            let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
@@ -754,6 +759,40 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
                 SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
             }
+        }
+
+        if let serviceLocalE164 = self.e164?.strippedOrNil,
+           PhoneNumber.resemblesE164(serviceLocalE164) {
+            // If the local phone number doesn't match the "local phone number" in the storage service...
+            if localAddress.phoneNumber != serviceLocalE164 {
+                Logger.warn("localAddress.phoneNumber: \(String(describing: localAddress.phoneNumber)) != serviceLocalE164: \(serviceLocalE164)")
+                if tsAccountManager.isPrimaryDevice {
+                    transaction.addAsyncCompletionOffMain {
+                        // Consult "whoami" service endpoint; the service is the source of truth
+                        // for the local phone number.  This ensures that the primary will always
+                        // reflect the latest value.
+                        ChangePhoneNumber.updateLocalPhoneNumber()
+
+                        // The primary should always reflect the latest value.
+                        // If local db state dosn't agree with the storage service state,
+                        // the primary needs to update the storage service.
+                        Self.storageServiceManager.recordPendingLocalAccountUpdates()
+                    }
+                } else {
+                    // Linked devices should always take changes from the storage service.
+                    if let uuid = localAddress.uuid {
+                        tsAccountManager.updateLocalPhoneNumber(serviceLocalE164,
+                                                                uuid: uuid,
+                                                                shouldUpdateStorageService: false,
+                                                                transaction: transaction)
+                    } else {
+                        owsFailDebug("Missing uuid.")
+                    }
+                }
+            }
+        } else {
+            // If no "local phone number" has been written to the storage service yet, do so now.
+            mergeState = .needsUpdate
         }
 
         return mergeState

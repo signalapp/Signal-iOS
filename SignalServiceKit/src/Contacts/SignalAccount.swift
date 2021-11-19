@@ -25,4 +25,10 @@ extension SignalAccount {
         }
         return contactAvatarJpegData
     }
+
+    @objc
+    public var addressComponentsDescription: String {
+        SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
+                                                          phoneNumber: recipientPhoneNumber)
+    }
 }

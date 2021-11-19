@@ -1004,6 +1004,9 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
                                        newNameComponents: PersonNameComponents) {}
 
+    // TODO:
+    func cvc_didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {}
+
     func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {
         guard let renderItem = renderItem else {
             owsFailDebug("Missing renderItem.")

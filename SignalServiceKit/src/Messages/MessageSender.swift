@@ -1127,7 +1127,10 @@ extension MessageSender {
     }
 }
 
+// MARK: -
+
 extension MessageSender {
+
     @objc(encryptedMessageForMessageSend:deviceId:transaction:error:)
     private func encryptedMessage(for messageSend: OWSMessageSend,
                                   deviceId: Int32,

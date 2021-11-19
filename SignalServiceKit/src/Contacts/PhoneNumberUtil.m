@@ -67,7 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // search term -> country codes
-+ (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm {
++ (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm
+{
     searchTerm = [searchTerm stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     NSArray *countryCodes = NSLocale.ISOCountryCodes;

@@ -11,6 +11,7 @@ extern NSNotificationName const WarmCachesNotification;
 @class BlockingManager;
 @class BulkProfileFetch;
 @class BulkUUIDLookup;
+@class ChangePhoneNumber;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
@@ -120,7 +121,8 @@ extern NSNotificationName const WarmCachesNotification;
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
-                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory NS_DESIGNATED_INITIALIZER;
+                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory
+                      changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -186,6 +188,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic, readonly) id<WebSocketFactory> webSocketFactoryRef;
+@property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

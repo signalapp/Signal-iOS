@@ -143,4 +143,497 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2b.phoneNumber, phoneNumber2)
         }
     }
+
+    private static var mockPhoneNumberCounter = AtomicUInt(13333333333)
+
+    private func mockPhoneNumber() -> String {
+        // e.g. "+13213214321"
+        return "+\(Self.mockPhoneNumberCounter.increment())"
+    }
+
+    // A new address "takes" a uuid component a pre-existing address.
+    func test_mappingChanges1a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // uuid1, phoneNumber1 -> phoneNumber2
+        let hash2 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1, since the uuid remains the same.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+
+        // uuid2, phoneNumber1
+        let hash3 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity for uuid2, since the uuid has changed.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" a uuid component a pre-existing address.
+    func test_mappingChanges1b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // uuid1, phoneNumber1 -> phoneNumber2
+        let hash2 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1, since the uuid remains the same.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+
+        // uuid2, phoneNumber1
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+
+        // There should not be hash continuity for uuid2, since the uuid has changed.
+        XCTAssertEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash3, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" a phone number component a pre-existing address.
+    func test_mappingChanges2a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // uuid1 -> uuid2, phoneNumber1
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+
+        // uuid1, phoneNumber2
+        let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" a phone number component a pre-existing address.
+    func test_mappingChanges2b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // uuid1 -> uuid2, phoneNumber1
+        let hash2 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+
+        // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+
+        // uuid1, phoneNumber2
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "combines" 2 pre-existing addresses.
+    func test_mappingChanges3a() {
+        let uuid1 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // Associate uuid1, phoneNumber1
+        let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should be hash continuity for the uuid, not the phone number.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+    }
+
+    // A new address "combines" 2 pre-existing addresses.
+    func test_mappingChanges3b() {
+        let uuid1 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        // Associate uuid1, phoneNumber1
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1).hash
+
+        // There should be hash continuity for the uuid, not the phone number.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+    }
+
+    // A new address "takes" 1 component each from 2 pre-existing addresses.
+    func test_mappingChanges4a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component each from 2 pre-existing addresses.
+    func test_mappingChanges4b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
+    func test_mappingChanges5a() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing uuid.
+    func test_mappingChanges5b() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+
+        // There should be hash continuity for uuid1.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(uuid: uuid1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertNil(SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertEqual(uuid1, SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
+    func test_mappingChanges6a() {
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
+
+        // There should be hash continuity for uuid2.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    // A new address "takes" 1 component from a pre-existing address for a pre-existing phone number.
+    func test_mappingChanges6b() {
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash1 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1, trustLevel: .high).hash
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+
+        let hash2 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash
+
+        // There should not be hash continuity; the two addresses have nothing in common.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        // Associate uuid1, phoneNumber2
+        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+
+        // There should be hash continuity for uuid2.
+        XCTAssertNotEqual(hash1, hash2)
+        XCTAssertNotEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
+        XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
+        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
+
+        XCTAssertEqual(uuid2, SignalServiceAddress(phoneNumber: phoneNumber1).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
+        XCTAssertEqual(uuid2, SignalServiceAddress(uuid: uuid2).uuid)
+        XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
+        XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
+        XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
 }

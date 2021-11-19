@@ -44,7 +44,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let footerItems = [
             shareButton,
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            deleteButton,
+            deleteButton
         ]
         footerBar.setItems(footerItems, animated: false)
 
@@ -151,7 +151,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: Orientation
 
     override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return UIDevice.current.defaultSupportedOrienations
+        return UIDevice.current.defaultSupportedOrientations
     }
 
     // MARK: UICollectionViewDelegate

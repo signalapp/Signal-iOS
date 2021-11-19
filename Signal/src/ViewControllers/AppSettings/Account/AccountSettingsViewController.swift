@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 @objc
 class AccountSettingsViewController: OWSTableViewController2 {
@@ -95,7 +96,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
             let advancedSection = OWSTableSection()
             advancedSection.add(.disclosureItem(
-                withText:NSLocalizedString(
+                withText: NSLocalizedString(
                     "SETTINGS_ADVANCED_PIN_SETTINGS",
                     comment: "Label for the 'advanced pin settings' button."
                 ),
@@ -132,6 +133,23 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 }
             ))
         } else if tsAccountManager.isRegisteredPrimaryDevice {
+            let shouldShowChangePhoneNumber: Bool = {
+                guard RemoteConfig.changePhoneNumberUI else {
+                    return false
+                }
+                return Self.databaseStorage.read { transaction in
+                    ChangePhoneNumber.localUserSupportsChangePhoneNumber(transaction: transaction)
+                }
+            }()
+            if shouldShowChangePhoneNumber {
+                accountSection.add(.actionItem(
+                    withText: NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_BUTTON", comment: "Label for button in settings views to change phone number"),
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "change_phone_number"),
+                    actionBlock: { [weak self] in
+                        self?.changePhoneNumber()
+                    }
+                ))
+            }
             accountSection.add(.actionItem(
                 withText: NSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
                 textColor: .ows_accentRed,
@@ -188,6 +206,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
         ) { _ in
             SignalApp.resetAppDataWithUI()
         }
+    }
+
+    private func changePhoneNumber() {
+        let changePhoneNumberController = ChangePhoneNumberController(delegate: self)
+        let vc = changePhoneNumberController.firstViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     // MARK: - PINs
@@ -322,4 +346,10 @@ class AccountSettingsViewController: OWSTableViewController2 {
         }
         navigationController?.pushViewController(vc, animated: true)
     }
+}
+
+// MARK: -
+
+extension AccountSettingsViewController: ChangePhoneNumberViewDelegate {
+    var changePhoneNumberViewFromViewController: UIViewController { self }
 }

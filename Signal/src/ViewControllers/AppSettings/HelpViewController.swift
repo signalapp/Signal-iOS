@@ -85,7 +85,8 @@ final class HelpViewController: OWSTableViewController2 {
         aboutSection.add(.disclosureItem(
             withText: NSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
             actionBlock: { [weak self] in
-                let vc = SFSafariViewController(url: URL(string: kLegalTermsUrlString)!)
+                let url = TSConstants.legalTermsUrl
+                let vc = SFSafariViewController(url: url)
                 self?.present(vc, animated: true, completion: nil)
             }
         ))

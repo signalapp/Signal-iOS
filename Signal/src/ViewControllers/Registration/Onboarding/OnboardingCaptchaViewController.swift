@@ -1,0 +1,51 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import SignalCoreKit
+
+@objc
+public class OnboardingCaptchaViewController: OnboardingBaseViewController {
+
+    let viewModel = RegistrationCaptchaViewModel()
+
+    override public func loadView() {
+        viewModel.viewController = self
+
+        view = UIView()
+        view.addSubview(primaryView)
+        primaryView.autoPinEdgesToSuperviewEdges()
+
+        viewModel.createViews(vc: self)
+    }
+
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.captchaView.loadCaptcha()
+    }
+}
+
+// MARK: -
+
+extension OnboardingCaptchaViewController: RegistrationCaptchaViewController {
+
+    func requestCaptchaVerification(captchaToken: String) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        onboardingController.update(captchaToken: captchaToken)
+
+        let viewModel = self.viewModel
+        let progressView = viewModel.addProgressView()
+
+        onboardingController.requestVerification(fromViewController: self, isSMS: true) { [weak self] willDismiss, _ in
+            if !willDismiss {
+                // There's nothing left to do here. If onboardingController isn't taking us anywhere, let's
+                // just pop back to the phone number verification controller
+                self?.navigationController?.popViewController(animated: true)
+            }
+            viewModel.removeProgressView(progressView)
+        }
+    }
+}

@@ -3,7 +3,6 @@
 //
 
 #import "OWSUnknownProtocolVersionMessage.h"
-#import "ContactsManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -23,11 +22,6 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 #pragma mark -
 
 @implementation OWSUnknownProtocolVersionMessage
-
-- (id<ContactsManagerProtocol>)contactsManager
-{
-    return SSKEnvironment.shared.contactsManager;
-}
 
 - (instancetype)initWithThread:(TSThread *)thread
                         sender:(nullable SignalServiceAddress *)sender

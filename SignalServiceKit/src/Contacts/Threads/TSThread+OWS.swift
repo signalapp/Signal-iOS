@@ -203,3 +203,13 @@ extension TSThread {
         return MessageBody(text: messageDraft, ranges: ranges)
     }
 }
+
+// MARK: - Drafts
+
+extension TSContactThread {
+    @objc
+    public var addressComponentsDescription: String {
+        SignalServiceAddress.addressComponentsDescription(uuidString: contactUUID,
+                                                          phoneNumber: contactPhoneNumber)
+    }
+}

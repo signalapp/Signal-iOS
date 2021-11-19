@@ -2,13 +2,11 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSConstants.h>
-
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSNotificationName const NSNotificationNameRegistrationStateDidChange;
 extern NSString *const TSRemoteAttestationAuthErrorKey;
-extern NSString *const kNSNotificationName_LocalNumberDidChange;
+extern NSNotificationName const NSNotificationNameLocalNumberDidChange;
 
 @class AnyPromise;
 @class SDSAnyReadTransaction;
@@ -152,6 +150,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (nullable NSString *)reregistrationPhoneNumber;
 - (nullable NSUUID *)reregistrationUUID;
 @property (nonatomic, readonly) BOOL isReregistering;
+
+#pragma mark - Change Phone Number
+
+- (void)updateLocalPhoneNumber:(NSString *)phoneNumber
+                          uuid:(NSUUID *)uuid
+    shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
+                   transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateLocalPhoneNumber(_:uuid:shouldUpdateStorageService:transaction:));
 
 #pragma mark - Manual Message Fetch
 

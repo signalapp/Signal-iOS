@@ -442,7 +442,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
     }
 
     func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
-        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrienations
+        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrientations
     }
 
     // MARK: - Helpers

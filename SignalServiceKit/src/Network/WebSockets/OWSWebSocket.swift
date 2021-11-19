@@ -250,6 +250,10 @@ public class OWSWebSocket: NSObject {
                                                name: .registrationStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(localNumberDidChange),
+                                               name: .localNumberDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(isCensorshipCircumventionActiveDidChange),
                                                name: .isCensorshipCircumventionActiveDidChange,
                                                object: nil)
@@ -1058,6 +1062,17 @@ public class OWSWebSocket: NSObject {
         }
 
         applyDesiredSocketState()
+    }
+
+    @objc
+    private func localNumberDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        if verboseLogging {
+            Logger.info("\(logPrefix) \(NSStringForOWSRegistrationState(tsAccountManager.registrationState()))")
+        }
+
+        cycleSocket()
     }
 
     @objc

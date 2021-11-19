@@ -1,0 +1,342 @@
+//
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+import SignalServiceKit
+import UIKit
+import SignalMessaging
+import SignalUI
+
+protocol ChangePhoneNumberViewDelegate: AnyObject {
+    var changePhoneNumberViewFromViewController: UIViewController { get }
+}
+
+// MARK: -
+
+class ChangePhoneNumberController: Dependencies {
+    public weak var delegate: ChangePhoneNumberViewDelegate?
+
+    public init(delegate: ChangePhoneNumberViewDelegate) {
+        self.delegate = delegate
+
+        prepopulateIfNecessary()
+    }
+
+    private func prepopulateIfNecessary() {
+#if DEBUG
+        guard DebugFlags.internalLogging else {
+            return
+        }
+
+        guard tsAccountManager.isRegisteredAndReady,
+              let oldE164 = tsAccountManager.localNumber?.strippedOrNil else {
+            owsFailDebug("Missing localNumber.")
+            return
+        }
+
+        guard let oldPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: oldE164),
+              PhoneNumberValidator().isValidForRegistration(phoneNumber: oldPhoneNumber) else {
+                  owsFailDebug("Invalid oldE164.")
+                  return
+              }
+        self.oldPhoneNumber = RegistrationPhoneNumber(e164: oldPhoneNumber.toE164(), userInput: oldE164)
+        guard let oldCountryState = RegistrationCountryState.countryState(forE164: oldE164) else {
+            owsFailDebug("Missing oldCountryState.")
+            return
+        }
+        self.oldCountryState = oldCountryState
+
+        var testE164s = [
+            "+447897025383",
+            "+447897014056",
+            "+447897013389",
+            "+447897016764",
+            "+447897016072"
+        ]
+        testE164s = testE164s.filter { $0 != oldE164 }
+        guard let newE164 = testE164s.first else {
+            owsFailDebug("Missing newE164.")
+            return
+        }
+
+        guard let newPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: newE164),
+              PhoneNumberValidator().isValidForRegistration(phoneNumber: newPhoneNumber) else {
+                  owsFailDebug("Invalid newE164.")
+                  return
+              }
+        self.newPhoneNumber = RegistrationPhoneNumber(e164: newPhoneNumber.toE164(), userInput: newE164)
+        guard let newCountryState = RegistrationCountryState.countryState(forE164: newE164) else {
+            owsFailDebug("Missing newCountryState.")
+            return
+        }
+        self.newCountryState = newCountryState
+#endif
+    }
+
+// MARK: -
+
+    public func cancelFlow(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        guard let fromViewController = delegate?.changePhoneNumberViewFromViewController else {
+            owsFailDebug("Missing fromViewController.")
+            return
+        }
+
+        navigationController.popToViewController(fromViewController, animated: true)
+    }
+
+    public func requestVerification(fromViewController: UIViewController,
+                                    isSMS: Bool,
+                                    completion: RegistrationHelper.VerificationCompletion?) {
+        AssertIsOnMainThread()
+
+        let countryState = self.newCountryState
+        guard let phoneNumber = newPhoneNumber else {
+            owsFailDebug("Missing newPhoneNumber.")
+            if let completion = completion {
+                DispatchQueue.main.async {
+                    completion(false, OWSAssertionError("Missing newPhoneNumber."))
+                }
+            }
+            return
+        }
+
+        RegistrationHelper.requestChangePhoneNumberVerification(delegate: self,
+                                                                fromViewController: fromViewController,
+                                                                phoneNumber: phoneNumber,
+                                                                countryState: countryState,
+                                                                captchaToken: captchaToken,
+                                                                isSMS: isSMS,
+                                                                completion: completion)
+    }
+
+    // MARK: - Verification
+
+    public enum VerificationOutcome: Equatable {
+        case success
+        case invalidPhoneNumber
+        case invalidVerificationCode
+        case invalid2FAPin
+        case invalidV2RegistrationLockPin(remainingAttempts: UInt32)
+        case exhaustedV2RegistrationLockAttempts
+        case cancelled
+        case assertionError
+    }
+
+    public func submitVerification(fromViewController: UIViewController,
+                                   completion : @escaping (VerificationOutcome) -> Void) {
+        AssertIsOnMainThread()
+
+        guard let newPhoneNumber = self.newPhoneNumber else {
+            return completion(.invalidPhoneNumber)
+        }
+        guard let verificationCode = self.verificationCode?.nilIfEmpty else {
+            return completion(.invalidVerificationCode)
+        }
+        let registrationLockToken: String? = self.registrationLockToken
+
+        let promise = Self.accountManager.requestChangePhoneNumber(newPhoneNumber: newPhoneNumber.e164,
+                                                                   verificationCode: verificationCode,
+                                                                   registrationLock: registrationLockToken)
+
+        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
+                                                     canCancel: false) { modal in
+            promise.done {
+                modal.dismiss {
+                    self.verificationDidComplete()
+                }
+            }.catch { error in
+                modal.dismiss(completion: {
+                    Logger.warn("Error: \(error)")
+
+                    self.verificationFailed(
+                        fromViewController: fromViewController,
+                        error: error,
+                        completion: completion)
+                })
+            }
+        }
+    }
+
+    private func verificationDidComplete() {
+        dismissFlow(didSucceed: true)
+    }
+
+    public func dismissFlow(didSucceed: Bool) {
+        AssertIsOnMainThread()
+
+        guard let changePhoneNumberViewFromViewController = delegate?.changePhoneNumberViewFromViewController else {
+            owsFailDebug("Missing changePhoneNumberViewFromViewController.")
+            return
+        }
+        guard let navigationController = changePhoneNumberViewFromViewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+
+        RegistrationBaseViewController.restoreBackButton(changePhoneNumberViewFromViewController)
+
+        navigationController.popToViewController(changePhoneNumberViewFromViewController, animated: true) {
+
+            RegistrationBaseViewController.restoreBackButton(changePhoneNumberViewFromViewController)
+
+            if didSucceed {
+                let toast = NSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL",
+                                              comment: "Message indicating that 'change phone number' was successful.")
+                changePhoneNumberViewFromViewController.presentToast(text: toast)
+            }
+        }
+    }
+
+    private func verificationFailed(fromViewController: UIViewController,
+                                    error: Error,
+                                    completion : @escaping (VerificationOutcome) -> Void) {
+        AssertIsOnMainThread()
+
+        if let registrationMissing2FAPinError = error as? RegistrationMissing2FAPinError {
+
+            Logger.info("Missing 2FA PIN.")
+
+            verificationDidRequire2FAPin(viewController: fromViewController,
+                                         kbsAuth: registrationMissing2FAPinError.remoteAttestationAuth)
+        } else {
+            let nsError = error as NSError
+            if nsError.domain == OWSSignalServiceKitErrorDomain &&
+                nsError.code == OWSErrorCode.userError.rawValue {
+                completion(.invalidVerificationCode)
+            }
+
+            Logger.warn("Error: \(error)")
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("REGISTRATION_VERIFICATION_FAILED_TITLE", comment: "Alert view title"),
+                                            message: error.userErrorDescription,
+                                            fromViewController: fromViewController)
+        }
+    }
+
+    // MARK: -
+
+    func firstViewController() -> UIViewController {
+        ChangePhoneNumberSplashViewController(changePhoneNumberController: self)
+    }
+
+    public func verificationDidRequire2FAPin(viewController: UIViewController,
+                                             kbsAuth: RemoteAttestationAuth) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is ChangePhoneNumber2FAViewController) else {
+            // 2fa view is already presented, we don't need to push it again.
+            return
+        }
+        guard let oldPhoneNumber = self.oldPhoneNumber?.asPhoneNumber,
+              let newPhoneNumber = self.newPhoneNumber?.asPhoneNumber else {
+                  owsFailDebug("Missing phone number.")
+                  return
+              }
+
+        let view = ChangePhoneNumber2FAViewController(changePhoneNumberController: self,
+                                                      oldPhoneNumber: oldPhoneNumber,
+                                                      newPhoneNumber: newPhoneNumber,
+                                                      kbsAuth: kbsAuth)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    // MARK: - State
+
+    public var oldCountryState: RegistrationCountryState = .defaultValue
+
+    public var oldPhoneNumber: RegistrationPhoneNumber?
+
+    public var newCountryState: RegistrationCountryState = .defaultValue
+
+    public var newPhoneNumber: RegistrationPhoneNumber?
+
+    public var captchaToken: String?
+
+    public var registrationLockToken: String?
+
+    public var verificationCode: String?
+
+    // MARK: -
+
+    func showCaptchaView(fromViewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        guard let oldPhoneNumber = oldPhoneNumber?.asPhoneNumber else {
+            owsFailDebug("Missing oldPhoneNumber.")
+            return
+        }
+        guard let newPhoneNumber = newPhoneNumber?.asPhoneNumber else {
+            owsFailDebug("Missing newPhoneNumber.")
+            return
+        }
+
+        let view = ChangePhoneNumberCaptchaViewController(changePhoneNumberController: self,
+                                                          oldPhoneNumber: oldPhoneNumber,
+                                                          newPhoneNumber: newPhoneNumber)
+        navigationController.pushViewController(view, animated: true)
+    }
+}
+
+// MARK: -
+
+extension ChangePhoneNumberController: RegistrationHelperDelegate {
+
+    public func registrationRequestVerificationDidSucceed(fromViewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController.")
+            return
+        }
+        guard let oldPhoneNumber = oldPhoneNumber?.asPhoneNumber else {
+            owsFailDebug("Missing oldPhoneNumber.")
+            return
+        }
+        guard let newPhoneNumber = newPhoneNumber?.asPhoneNumber else {
+            owsFailDebug("Missing newPhoneNumber.")
+            return
+        }
+
+        let vc = ChangePhoneNumberVerificationViewController(changePhoneNumberController: self,
+                                                             oldPhoneNumber: oldPhoneNumber,
+                                                             newPhoneNumber: newPhoneNumber)
+        navigationController.pushViewController(vc, animated: true)
+    }
+
+    public func registrationRequestVerificationDidRequireCaptcha(fromViewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        showCaptchaView(fromViewController: fromViewController)
+    }
+
+    public func registrationIncrementVerificationRequestCount() {}
+}
+
+// MARK: -
+
+extension ChangePhoneNumberController: RegistrationPinAttemptsExhaustedViewDelegate {
+    var hasPendingRestoration: Bool { false }
+
+    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController) {
+        dismissFlow(didSucceed: false)
+    }
+}

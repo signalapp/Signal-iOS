@@ -1246,7 +1246,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
-    private func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
+    public func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
         // Remove stale auth credentials.
         self.authCredentialStore.removeAll(transaction: transaction)
     }
