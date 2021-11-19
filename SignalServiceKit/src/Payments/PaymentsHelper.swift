@@ -152,7 +152,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     public func warmCaches() {}
 
     public func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction) {
-        owsFail("Not implemented.")
+        // Do nothing.
     }
 
     public func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool {
