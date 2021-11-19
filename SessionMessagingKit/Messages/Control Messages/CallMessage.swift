@@ -9,7 +9,11 @@ public final class CallMessage : ControlMessage {
     public var sdps: [String]?
         
     public override var ttl: UInt64 { 2 * 60 * 1000 }
-    public override var isSelfSendValid: Bool { true }
+    public override var isSelfSendValid: Bool {
+        if case .answer = kind { return true }
+        if case .endCall = kind { return true }
+        return false
+    }
     
     // NOTE: Multiple ICE candidates may be batched together for performance
     
