@@ -781,7 +781,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     let currencyCode = isUpdating ? self.persistedSubscriberCurrencyCode ?? self.currencyCode : self.currencyCode
                     if let price = subscription.currency[currencyCode] {
                         let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
-                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
+                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
                         pricingLabel.numberOfLines = 0
 
                         if !isCurrent {
@@ -821,17 +821,21 @@ class SubscriptionViewController: OWSTableViewController2 {
             owsFailDebug("Asked to cancel subscription but no persisted subscriberID")
             return
         }
-        firstly {
-            try SubscriptionManager.cancelSubscription(for: persistedSubscriberID)
-        }.done(on: .main) {
-            if let navController = self.navigationController {
-                self.view.presentToast(
-                    text: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED", comment: "Toast indicating that the subscription has been cancelled"), fromViewController: navController)
-                navController.popViewController(animated: true)
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            firstly {
+                try SubscriptionManager.cancelSubscription(for: persistedSubscriberID)
+            }.done(on: .main) {
+                modal.dismiss {
+                    if let navController = self.navigationController {
+                        self.view.presentToast(
+                            text: NSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED", comment: "Toast indicating that the subscription has been cancelled"), fromViewController: navController)
+                        navController.popViewController(animated: true)
+                    }
+                }
+            }.catch { error in
+                modal.dismiss {}
+                owsFailDebug("Failed to cancel subscription \(error)")
             }
-
-        }.catch { error in
-            owsFailDebug("Failed to cancel subscription \(error)")
         }
 
     }
@@ -926,14 +930,15 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard let currencyCode = self.persistedSubscriberCurrencyCode, let subscriptionAmount = subscription.currency[currencyCode] else {
+        let currencyCode = subscriptionViewState == .subscriptionUpdating ? persistedSubscriberCurrencyCode ?? currencyCode : currencyCode
+        guard let subscriptionAmount = subscription.currency[currencyCode] else {
             owsFailDebug("Failed to get amount for current currency code")
             return
         }
 
         if subscriptionViewState == .subscriptionUpdating {
             var currencyString: String = ""
-            if let selectedSubscription = selectedSubscription, let currencyCode = self.persistedSubscriberCurrencyCode, let price = selectedSubscription.currency[currencyCode] {
+            if let selectedSubscription = selectedSubscription, let price = selectedSubscription.currency[currencyCode] {
                 currencyString = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
             }
 
