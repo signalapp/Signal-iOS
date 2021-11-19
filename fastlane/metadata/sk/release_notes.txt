@@ -1,5 +1,5 @@
-With no data to sell and no ads, we rely on your contributions to power Signal:
-• You can now help sustain Signal by contributing a small donation each month using Apple Pay. Sustainers earn fun badges they can display on their profile to help spread awareness. 
-• Give Signal a boost using Apple Pay. Boosts are a quick one-time donation that let’s you say thanks and keep Signal going. Boosts come with their own unique badge.
+Bez údajov na predaj a bez reklám sa spoliehame na vaše príspevky na podporu Signal:
+• Teraz môžete pomôcť udržať Signal tak, že každý mesiac prispejete malým darom pomocou Apple Pay. Podporovatelia získavajú zábavné odznaky, ktoré môžu zobraziť na svojom profile, aby pomohli šíriť povedomie o podpore.
+• Podporte Signal pomocou Apple Pay. Podpora je rýchlym jednorazovým darom, ktorý vám umožní poďakovať a udržať Signal v chode. Podpora prichádza s vlastným jedinečným odznakom.
 
-This release also includes numerous bug fixes.
+Toto vydanie tiež obsahuje množstvo opráv chýb.

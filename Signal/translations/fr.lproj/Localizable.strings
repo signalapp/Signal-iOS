@@ -374,7 +374,7 @@
 "BACK_BUTTON" = "Retour";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mes badges";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Badges";
@@ -1527,18 +1527,6 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
-
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Faire un don";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal est alimenté par des personnes telles que vous. Manifestez votre soutien dès aujourd’hui.";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Non merci";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Faire un don à Signal";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Montant du don";
@@ -5804,7 +5792,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrou d’écran";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Masquer l'écran lors du basculement d'App";
+"SETTINGS_SCREEN_SECURITY" = "Cacher l'écran dans le changeur d’appli";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Montrer la liste d'appels \"Récents\" dans l'application téléphone d'iOS.";
@@ -6037,6 +6025,18 @@
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Abonnement";
 
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribuer";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Non merci";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ correspond. Vous pouvez marquer ce contact comme confirmé.";
 
@@ -6094,6 +6094,18 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Chargement";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Pourquoi contribuer ?";
+
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
@@ -6125,7 +6137,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Veuillez contacter l’assistance.";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
@@ -6134,7 +6146,7 @@
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/mois";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
@@ -6143,13 +6155,13 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Traitement du paiement…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Traitement de la transaction…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Lire la suite.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";

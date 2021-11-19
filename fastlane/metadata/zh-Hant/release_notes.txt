@@ -1,5 +1,5 @@
-With no data to sell and no ads, we rely on your contributions to power Signal:
-• You can now help sustain Signal by contributing a small donation each month using Apple Pay. Sustainers earn fun badges they can display on their profile to help spread awareness. 
-• Give Signal a boost using Apple Pay. Boosts are a quick one-time donation that let’s you say thanks and keep Signal going. Boosts come with their own unique badge.
+我們不會出售的你資料和沒有廣告，我們依賴的是你對壯大Signal 的努力：
+• 你現在可以使用 Apple Pay 每月捐獻一小筆捐款，以幫助維持 Signal。 維護者可以獲得有趣的徽章，他們可以在他們的個人資料上展示，以幫助宣傳。
+• 使用Apple Pay 贊助 Signal。Boosts是一種快速的一次性捐獻，讓你說聲謝謝並讓 Signal 繼續維護。Boosts 帶有自己獨特的徽章。
 
-This release also includes numerous bug fixes.
+此版本還包括許多錯誤修復。

@@ -1528,18 +1528,6 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Locație ocolire cenzură";
 
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Donați";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal este susținut de oameni ca tine. Arată-ți sprijinul astăzi!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Nu, mulțumesc";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Donați pentru Signal";
-
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Sumă donație";
 
@@ -6037,6 +6025,18 @@
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Abonament";
 
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribuie";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Nu, mulțumesc";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numărul tău de siguranța cu %@ se potrivește. Poți marca acest contact ca fiind verificat.";
 
@@ -6094,6 +6094,18 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Se încarcă";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "De ce să contribuiți?";
+
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
@@ -6125,7 +6137,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Te rugăm contactează asistența.";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
@@ -6155,7 +6167,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Plata ta este încă în procesare. Ceea ce poate dura câteva minute în funcție de conexiunea ta.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";

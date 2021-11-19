@@ -374,7 +374,7 @@
 "BACK_BUTTON" = "Voltar";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Meus selos";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Selos";
@@ -383,7 +383,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Torne-se um apoiador";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Fazer uma doação ao Signal";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Agradecemos por sua doação única!";
@@ -392,16 +392,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Exibir no perfil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Definir como selo em destaque";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Agradecemos por seu apoio!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Quando você tiver mais de um selo, você poderá escolher qual deles será apresentado em seu perfil para as outras pessoas verem.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Você ganhou o selo %@! Ajude o Signal a aumentar a conscientização ao exibir esse selo no seu perfil.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Fechar balão";
@@ -479,10 +479,10 @@
 "BLUR_TOOLTIP" = "Novo: Desfoque rostos ou desenhe em alguma zona para desfocá-la.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Definir a moeda";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Diga “Obrigado!” e ganhe o selo Boost por 30 dias.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Insira o valor";
@@ -500,7 +500,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Selecione uma quantia para doar";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Fazer uma doação ao Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Adicionar";
@@ -653,7 +653,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selecione o país";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Editar foto";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Aqui está uma prévia da cor da conversa.";
@@ -905,10 +905,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Algo não está funcionando";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Apoiadores e doação ao Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Apoiadores e doação ao Signal";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "O Signal não conseguiu completar seu pedido de suporte técnico.";
@@ -1022,7 +1022,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ligar";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Obtenha selos para o seu perfil ao apoiar o Signal. Toque em um selo para saber mais.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Selos";
@@ -1528,18 +1528,6 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Localização para contornar a censura";
 
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Doar";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal é mantido por pessoas como você. Mostre o seu apoio hoje!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Não. Agradeço.";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Doar para o Signal";
-
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Valor da doação";
 
@@ -1799,10 +1787,10 @@
 "FAILED_VERIFICATION_TITLE" = "Falha ao verificar número de segurança!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Escolher um selo";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Selo em destaque";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marcar como verificado";
@@ -5849,7 +5837,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Doação única";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "Torne-se um apoiador recorrente ao Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de Registro";
@@ -6032,10 +6020,22 @@
 "SUBSCRIBER_BADGES" = "Selos";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Ajustar doação";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Perguntas frequentes sobre doação";
+
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribuir";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal é mantido por pessoas como você. Contribua e receba um selo.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Não. Agradeço.";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Torne-se um apoiador";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "O número de segurança entre você e %@ coincide. Você pode marcar este contato como verificado.";
@@ -6094,14 +6094,26 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Carregando";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Por que contribuir?";
+
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ainda em processamento";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "Fazer uma doação ao Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obter um selo %@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancelar doação";
@@ -6113,52 +6125,52 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Você não será cobrado novamente. O seu selo será removido do seu perfil ao final do período do seu faturamento.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Cancelar a doação mensal?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Cancelar?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Não foi possível adicionar o selo. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Não foi possível adicionar seu selo à sua conta. Entre em contato com o suporte.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Não foi possível adicionar o selo";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Por favor, entre em contato com o suporte.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Definir a moeda";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Meu apoio";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/mês";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expira em %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renova em %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Efetuando o pagamento...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Efetuando a transação…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Leia mais.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Renova em %@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Seu pagamento ainda está sendo efetuado. Isso pode demorar alguns minutos, dependendo da sua conexão.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "A sua doação mensal foi cancelada.";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Agora não";
@@ -6167,16 +6179,16 @@
 "SUSTAINER_VIEW_TITLE" = "O Signal é mantido por pessoas como você.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Será cobrado de você, hoje, o valor total (%@) do preço da nova doação. Sua nova doação será renovada mensalmente.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Atualizar doação?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Atualizar";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Em vez de apoiar tecnologias desenvolvidas para terceiros lucrarem com seus dados privados, apoie tecnologias desenvolvidas para você, juntando-se à comunidade de pessoas que as sustentam financeiramente.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Desligado";

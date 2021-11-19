@@ -374,13 +374,13 @@
 "BACK_BUTTON" = "Назад";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Мои значки";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Значки";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Станьте Поддерживающим";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Стать Поддерживающим";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Дайте «Ускорение» приложению Signal";
@@ -392,16 +392,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показывать в профиле";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Сделать главным значком";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Спасибо за вашу поддержку!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Когда у вас больше одного значка, вы можете выбрать главный значок, который другие люди будут видеть в вашем профиле.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Вы заработали значок «%@»! Помогите Signal увеличить осведомлённость, показав этот значок в своём профиле.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Закрыть баннер";
@@ -479,10 +479,10 @@
 "BLUR_TOOLTIP" = "Новинка: размытие лиц и любых других фрагментов";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Выберите валюту";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Скажите «Спасибо!» и получите значок «Ускорение» на 30 дней.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Ввести сумму";
@@ -653,7 +653,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Выберите страну";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Редактировать фото";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Это предпросмотр цвета чата.";
@@ -1022,7 +1022,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "аудио";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Получайте значки для своего профиля, поддерживая Signal. Нажмите на значок, чтобы узнать больше.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Значки";
@@ -1528,18 +1528,6 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Местоположение обхода цензуры";
 
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Пожертвовать";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal существует благодаря таким людям, как вы. Пожалуйста, поддержите нас!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Нет, спасибо";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Поддержите Signal";
-
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Сумма пожертвования";
 
@@ -1799,10 +1787,10 @@
 "FAILED_VERIFICATION_TITLE" = "Не удалось подтвердить код безопасности!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Выберите значок";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Главный значок";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Отметить как подтвержденный";
@@ -5849,7 +5837,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Ускорение Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Станьте Поддерживающим Signal";
+"SETTINGS_SUBSCRIPTION" = "Стать Поддерживающим Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокировка регистрации";
@@ -6032,10 +6020,22 @@
 "SUBSCRIBER_BADGES" = "Значки";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Управлять подпиской";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "ЧаВО по подписке";
+
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Поддержать";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal существует благодаря таким людям, как вы. Поддержите нас и получите значок.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Нет, спасибо";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Стать Поддерживающим";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваш код безопасности с %@ совпал. Вы можете отметить этот контакт как подтверждённый.";
@@ -6094,14 +6094,26 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Загрузка";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Почему стоит поддерживать?";
+
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Всё ещё обрабатывается";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Добавить Ускорение Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Получите значок «%@»";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Отменить подписку";
@@ -6116,49 +6128,49 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Подтверждаете отмену?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Не удалось добавить значок. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не удалось добавить ваш значок в вашу учётную запись. Пожалуйста, свяжитесь с поддержкой.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не удалось добавить значок";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Пожалуйста, свяжитесь с поддержкой.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Выберите валюту";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Моя поддержка";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/месяц";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Истекает %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Продлится %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обрабатываем платёж…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обрабатываем транзакцию…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Узнать больше.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Продлится %@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш платёж всё ещё обрабатывается. Это может занять несколько минут, в зависимости от вашего соединения.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Ваша подписка была отменена";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Не сейчас";
@@ -6167,16 +6179,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal существует благодаря таким людям, как вы.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Полная сумма новой подписки (%@) будет взята с вас сегодня. Ваша новая подписка будет продлеваться ежемесячно.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Обновить подписку?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Обновить";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Поддержите технологию, сделанную для вас, а не для ваших данных, присоединившись к сообществу людей, поддерживающих её.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Отключено";

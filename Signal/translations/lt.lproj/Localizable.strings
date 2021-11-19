@@ -374,7 +374,7 @@
 "BACK_BUTTON" = "Atgal";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mano ženkliukai";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Ženkliukai";
@@ -395,7 +395,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Ačiū už jūsų palaikymą!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
@@ -479,7 +479,7 @@
 "BLUR_TOOLTIP" = "Nauja: Suliekite veidus arba pieškite ten, kur norite sulieti.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Nustatyti valiutą";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
@@ -653,7 +653,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Pasirinkite šalį";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Taisyti nuotrauką";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Štai pokalbio spalvos peržiūra.";
@@ -1527,18 +1527,6 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzūravimo apėjimo vieta";
-
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Paaukokite";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal veikia dėka tokių žmonių kaip jūs. Išreikškite savo palaikymą šiandien!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Ne, ačiū";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Paaukokite Signal programėlei";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Paaukojimo suma";
@@ -6037,6 +6025,18 @@
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
 
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal veikia dėka tokių žmonių kaip jūs. Prisidėkite ir gaukite ženkliuką.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Ne, ačiū";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Jūsų saugumo numeris su %@ sutampa. Dabar galite pažymėti šį adresatą kaip patvirtintą.";
 
@@ -6094,8 +6094,20 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Įkeliama";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vis dar apdorojama";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
@@ -6116,43 +6128,43 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nepavyko pridėti ženkliuko. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Nepavyko pridėti ženkliuko";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Nustatyti valiutą";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/mėn.";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Baigia galioti %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Atsinaujina %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Apdorojamas mokėjimas...";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Skaitykite daugiau.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Atsinaujina %@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Jūsų mokėjimas yra vis dar apdorojamas. Tai gali užimti kelias minutes, priklausomai nuo jūsų interneto ryšio.";

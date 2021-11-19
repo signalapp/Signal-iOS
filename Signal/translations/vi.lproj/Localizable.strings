@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Đã rõ";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or  media couldn’t be delivered to you from %@ in this chat.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dáng, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@ trong khung chat này.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Vấn đề Truyền tải";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from %@. They may have tried sending it to you directly, or in a group.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dáng, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@. có thể họ đã gửi trực tiếp cho bạn hoặc gửi trong một nhóm nào đó.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Bỏ";
@@ -341,13 +341,13 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Loa";
 
 /* Action text for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Add Photo";
+"AVATAR_BUILDER_MEGAPHONE_ACTION" = "Thêm hình ảnh";
 
 /* Body for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_BODY" = "Choose a look and color or customize your initials.";
+"AVATAR_BUILDER_MEGAPHONE_BODY" = "Chọn định dạng và màu sắc hoặc tùy chỉnh chữ ký của bạn.";
 
 /* Title for avatar builder megaphone */
-"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Add a profile photo";
+"AVATAR_BUILDER_MEGAPHONE_TITLE" = "Thêm ảnh đại diện";
 
 /* Text prompting the user to choose a color when editing their avatar */
 "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR" = "Chọn Màu";
@@ -374,34 +374,34 @@
 "BACK_BUTTON" = "Trở lại";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Huy hiệu của tôi";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "Huy hiệu";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Trở thành người quyên góp";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Quyên góp cho Signal";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "Cảm ơn bạn đã quyên góp";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Hiển thị trên thông tin cá nhân";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Chọn huy hiệu mặc định";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Cảm ơn bạn đã đống góp!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Khi bạn có nhiều hơn một huy hiệu. bạn có thể chọn huy hiệu mặc định mà mọi người sẽ nhìn thấy trên hồ sơ của bạn.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Bạn đã nhận được huy hiệu %@! Hãy giúp Signal gửi thông điệp đến mọi người bằng cách đính huy hiệu này lên hồ sơ của bạn.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Tắt biểu ngữ";
@@ -479,16 +479,16 @@
 "BLUR_TOOLTIP" = "Mới: Làm mờ mặt hoặc vẽ bất kì chỗ nào để làm mờ.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Đặt kỳ hạn";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Hãy cảm ơn và nhận huy hiệu đống góp trong 30 ngày.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Nhập vào Số tiền Tuỳ chọn";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "Thêm lựa chọn thanh toán";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Chọn một số tiền lớn hơn để đóng góp";
@@ -500,7 +500,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Chọn số tiền để đóng góp";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Quyên góp cho Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Thêm";
@@ -653,7 +653,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Chọn Quốc gia";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Tùy chỉnh ảnh";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Đây là mẫu xem trước của màu cuộc trò chuyện.";
@@ -905,10 +905,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Có điều gì đó đang không hoạt động";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Người hổ trợ & Đống góp cho Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Người hổ trợ & Đống góp cho Signal";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal không thể hoàn thành yêu cầu hỗ trợ của bạn. ";
@@ -947,7 +947,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "Xóa";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "Thông tin";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "Chuyển tiếp";
@@ -1022,10 +1022,10 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "âm thanh";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Hãy thu thập nhiều huy hiệu đính trên hồ sơ của bạn bằng cách hổ trở cho Signal. Bấm vào \"huy hiệu\" để biết thêm chi tiết.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Huy hiệu";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Bạn sẽ không còn nhận được tin nhắn hoặc cập nhật từ người dùng này.";
@@ -1217,7 +1217,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Đọc Thêm";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Copied to Clipboard";
+"COPIED_TO_CLIPBOARD" = "đã sao chép vào bộ nhớ tạm";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Đặt lại phiên này sẽ cho phép bạn nhận các tin nhắn trong tương lai từ %@, nhưng bạn không thể khôi phục các tin nhắn đã hỏng.";
@@ -1520,25 +1520,13 @@
 "DISMISS_BUTTON_TEXT" = "Bỏ qua";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Loại bỏ menu tiên đoán";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Hiển thị huy hiệu trên hồ sơ cá nhân";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Địa điểm Tránh Kiểm duyệt";
-
-/* Action text for donation megaphone */
-"DONATION_MEGAPHONE_ACTION" = "Ủng hộ";
-
-/* Body for donation megaphone */
-"DONATION_MEGAPHONE_BODY" = "Signal được hỗ trợ bởi những cá nhân như bạn. Hãy thể hiện sự hỗ trợ của bạn ngay hôm nay!";
-
-/* Cancel text for donation megaphone */
-"DONATION_MEGAPHONE_CANCEL" = "Không, Cảm ơn";
-
-/* Title for donation megaphone */
-"DONATION_MEGAPHONE_TITLE" = "Ủng hộ Signal";
 
 /* Donation amount label for the donate to signal view */
 "DONATION_VIEW_AMOUNT_LABEL" = "Số tiền đóng góp";
@@ -1661,16 +1649,16 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Không thể truy cập danh bạ.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Không thể chuyển tiếp tin nhắn.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Không thể chuyển tiếp tin nhắn vì tin nhắn đã bị xóa.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Không thể chuyển tiếp tin nhắn ví chúng đã bị xóa.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Không thể chuyển tiếp tin nhắn.";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Không thể lưu video.";
@@ -1724,10 +1712,10 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Không tải được tập đính kèm.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Không thể nhận được một tin nhắn từ %@";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "A message could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Có một tin nhắn không nhận được";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Đã nhận được tin nhắn trùng lặp.";
@@ -1763,10 +1751,10 @@
 "ERROR_NETWORK_FAILURE" = "Lỗi Kết nối mạng";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Vui lòng giúp chúng tôi nâng cập Signal bằng cách báo cáo lỗi này và lịch sử sửa lỗi từ thiết bị của bạn đến support@signal.org;%@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal Beta: Đã xảy ra lỗi";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Thiết bị này không còn được liên kết. Hãy liên kết lại để gửi tin nhắn.";
@@ -1799,10 +1787,10 @@
 "FAILED_VERIFICATION_TITLE" = "Không thể xác minh Số An toàn!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Chọn một huy hiệu";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Huy hiệu mặc định";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Đánh dấu là Đã xác minh";
@@ -1820,28 +1808,28 @@
 "FORWARD_MESSAGE" = "Chuyển tiếp tin nhắn";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Tin nhắn được chuyển tiếp sẽ được gửi ngay bây giờ.";
 
 /* Label for button to proceed with forwarding a single message. */
 "FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_1" = "Gửi tin nhắn";
 
 /* Format for label for button to proceed with forwarding multiple messages. Embeds: {{ the number of forwarded messages. }} */
-"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Send %@ messages";
+"FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_N_FORMAT" = "Gửi %@tin nhắn";
 
 /* Title for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
+"FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Chuyển tiếp nhanh hơn";
 
 /* Indicates that a single message was forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_1" = "Tin nhắn đã được gửi đi";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Các tin nhắn đã được gửi đi";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Thêm vào một tin nhắn";
 
 /* Title for the 'forward message(s)' view. */
-"FORWARD_MESSAGE_TITLE" = "Forward To";
+"FORWARD_MESSAGE_TITLE" = "Chuyển tiếp đến";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "Bạn không có tập đa phương tiện nào trong cuộc trò chuyện này.";
@@ -1865,7 +1853,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Diện mạo";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Add Photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Thêm hình ảnh";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Mời bạn bè";
@@ -3206,7 +3194,7 @@
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Chuyển tiếp tin nhắn này";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Forward selected messages";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Chuyển tiếp các tin nhắn đã chọn";
 
 /* Label for button to open a group invite. */
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Mở Lời mời Nhóm";
@@ -3245,13 +3233,13 @@
 "MESSAGE_ACTION_TITLE_STICKER_PACK" = "Gói Nhãn dán";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 0 items are selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "0 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_0" = "Đã chọn 0";
 
 /* Label for the toolbar used in the multi-select mode of conversation view when 1 item is selected. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "1 Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_1" = "Đã chọn 1";
 
 /* Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}. */
-"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "%@ Selected";
+"MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT" = "Đã chọn %@";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Tin nhắn";
@@ -3311,7 +3299,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Chi tiết Tin nhắn";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "Message Preview";
+"MESSAGE_PREVIEW" = "Xem trước nội dung tin nhắn";
 
 /* Action sheet action to confirm blocking a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Chặn";
@@ -4679,7 +4667,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Bạn cần đăng ký trước khi có thể gửi tin nhắn.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "There was an account previously registered with this number that is available for transfer.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "Đã có một tài khoản được đăng ký trước đó với số máy này sẵn sàn để chuyển số.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Xác thực Không thành công";
@@ -4721,7 +4709,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Số điện thoại bạn đang muốn đăng ký đã được đăng ký trên máy chủ khác, vui lòng hủy đăng ký từ thiết bị đó và thử lại.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Remove preview";
+"REMOVE_PREVIEW" = "Xóa bản xem trước";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Chọn Quản trị viên Mới";
@@ -5186,7 +5174,7 @@
 "SETTINGS_COPYRIGHT" = "Bản quyền Signal Messenger\nCấp phép dưới GPLv3";
 
 /* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Subscription";
+"SETTINGS_CURRENT_SUBSCRIPTION" = "Số tiền đống góp";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Việc sử dụng Dữ liệu";
@@ -5210,13 +5198,13 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Thiết lập lại Cài đặt Tải-Tự động";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Sent Media Quality";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Chất lượng tập tin đa phương tiện đã gửi";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Choose the quality you send photos and videos.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Chọn chất lượng hình ảnh và video bạn muốn gửi đi.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Sent Media";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Tập tin đa phương tiện đã được gửi";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Việc sử dụng Dữ liệu";
@@ -5831,25 +5819,25 @@
 "SETTINGS_SECURITY_TITLE" = "Bảo mật Ứng dụng";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Việc gửi tập tin đa phương tiện chất lượng cao sẽ tốn nhiều lưu lượng hơn.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Hình ảnh và video";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Share Contacts with iOS";
+"SETTINGS_SHARING_SUGGESTIONS" = " Chia sẻ thông tin liên lạc với iOS";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề suất cho người dùng";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Cho phép iOS truy cập vào thông tin liên lạc và hội thoại để kích hoạt các tính năng như chia sẻ các đề suất cho người dùng và hiển thị thông báo";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal Boost";
+"SETTINGS_SIGNAL_BOOST" = "Tăng trưởng Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "Trở thành người quyên góp cho Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Khoá Đăng ký";
@@ -6029,13 +6017,25 @@
 "STICKERS_UNINSTALL_BUTTON" = "Gỡ cài đặt";
 
 /* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Badges";
+"SUBSCRIBER_BADGES" = "Huy hiệu";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Quản lý Quyên góp";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Quyên góp";
+
+/* Action text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+
+/* Body for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+
+/* Cancel text for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Không, Cảm ơn";
+
+/* Title for subscription megaphone */
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Trở thành người quyên góp";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Số an toàn của bạn với %@ trùng khớp. Bạn có thể đánh dấu liên hệ này là đã xác minh.";
@@ -6094,71 +6094,83 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Đang tải...";
 
+/* First block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+
+/* Second block of description text in read more sheet */
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+
+/* Title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+
+/* Why Contribute title for the signal sustainer read more view */
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vẫn đang xữ lý";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "Thêm vào một phần quyên góp cho Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Nhận một huy hiệu %@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Hũy bỏ Quyên góp";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Xác nhận";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Bạn sẽ không thể thay đổi quyết định này. Huy hiệu của bạn sẽ được gỡ bỏ khỏi hồ sơ cá nhân khi hết thời hạn.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Xác nhận hủy bỏ?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Không thể thêm huy hiệu. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Huy hiệu của bạn không thể thêm vào tài khoản, xin vui lòng liên hệ với chúng tôi để được hổ trợ.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Không thể thêm huy hiệu";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Xin vui lòng liên hệ với chúng tôi để được hổ trợ.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Đặt kỳ hạn";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Hổ trợ của tôi";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/tháng";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Hết hạn %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · làm mới %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Đang xử lý thanh toán...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Đang xử lý Giao dịch...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Đọc thêm.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Làm mới %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Thanh toán của bán đang được xử lý. Việc này có thể mất vài phút tùy vào kết nối của bạn.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Việc quyên góp của bạn đã được hủy bỏ";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Để sau";
@@ -6167,16 +6179,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal được hỗ trợ bởi những cá nhân như bạn.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Bạn sẽ bị mất tất cả số tiền (%@) trong lần quyên góp hôm nay. Việc quyên góp của bạn sẽ được gia hạn vào mỗi tháng.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Cập nhật quyên góp?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Cập nhật";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Hỗ trợ technology được xây dựng cho bạn - không phải để lấy dữ liệu của bạn - bằng cách tham gia cộng đồng những người duy trì nó.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Tắt";
