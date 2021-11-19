@@ -49,7 +49,7 @@ public extension RegistrationUtils {
                         let window: UIWindow = CurrentAppContext().mainWindow!
                         window.rootViewController = navigationController
                     }
-                }.catch(on: .global()) { error in
+                }.catch(on: .main) { error in
                     AssertIsOnMainThread()
 
                     Logger.warn("Re-registration failure: \(error).")
