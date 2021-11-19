@@ -524,10 +524,14 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private static var outerHStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
+        let layoutMargins = UIEdgeInsets(top: 0,
+                                         leading: 16,
+                                         bottom: 0,
+                                         trailing: 8)
+        return ManualStackView.Config(axis: .horizontal,
                                alignment: .center,
                                spacing: 12,
-                               layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0))
+                               layoutMargins: layoutMargins)
     }
 
     private static var avatarStackConfig: ManualStackView.Config {
@@ -646,8 +650,9 @@ public class HomeViewCell: UITableViewCell {
         let unreadLabelSize = CVText.measureLabel(config: unreadIndicatorLabelConfig,
                                                   maxWidth: .greatestFiniteMagnitude)
 
-        let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.35)
-        // This is a bit arbitrary, but it should scale with the size of dynamic text
+        // This is a bit arbitrary, but it should scale with the size of dynamic text.
+        let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.25)
+        // The "end caps" of the pill shape should be a half-circle.
         let minMargin = CeilEven(unreadBadgeHeight * 0.5)
         // Pill should be at least circular; can be wider.
         let badgeSize = CGSize(width: max(unreadBadgeHeight,
