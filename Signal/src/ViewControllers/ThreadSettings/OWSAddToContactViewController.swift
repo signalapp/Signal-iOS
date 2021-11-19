@@ -8,6 +8,7 @@ import Contacts
 import ContactsUI
 import SignalServiceKit
 import SignalMessaging
+import SignalUI
 
 @objc
 public class OWSAddToContactViewController: OWSViewController {

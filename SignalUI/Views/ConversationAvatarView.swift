@@ -5,6 +5,15 @@
 import UIKit
 import SignalMessaging
 
+public protocol ConversationAvatarViewDelegate: AnyObject {
+    func didTapAvatar()
+    func didTapBadge()
+}
+public extension ConversationAvatarViewDelegate {
+    func didTapAvatar() {}
+    func didTapBadge() {}
+}
+
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public required init(
@@ -330,6 +339,50 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     @objc
     public override func sizeThatFits(_ size: CGSize) -> CGSize { intrinsicContentSize }
+
+    // MARK: - Controls
+
+    lazy private var avatarTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.addTarget(self, action: #selector(didTapAvatar(_:)))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        return tapGestureRecognizer
+    }()
+
+    lazy private var badgeTapGestureRecognizer: UITapGestureRecognizer = {
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        tapGestureRecognizer.addTarget(self, action: #selector(didTapBadge(_:)))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        return tapGestureRecognizer
+    }()
+
+    public weak var interactionDelegate: ConversationAvatarViewDelegate? {
+        didSet {
+            if interactionDelegate != nil, oldValue == nil {
+                avatarView.addGestureRecognizer(avatarTapGestureRecognizer)
+                badgeView.addGestureRecognizer(badgeTapGestureRecognizer)
+                avatarView.isUserInteractionEnabled = true
+                badgeView.isUserInteractionEnabled = true
+                isUserInteractionEnabled = true
+            } else if interactionDelegate == nil, oldValue != nil {
+                avatarView.removeGestureRecognizer(avatarTapGestureRecognizer)
+                badgeView.removeGestureRecognizer(badgeTapGestureRecognizer)
+                avatarView.isUserInteractionEnabled = false
+                badgeView.isUserInteractionEnabled = false
+                isUserInteractionEnabled = false
+            }
+        }
+    }
+
+    @objc private func didTapAvatar(_ sender: UITapGestureRecognizer) {
+        guard avatarView.image != nil else { return }
+        interactionDelegate?.didTapAvatar()
+    }
+
+    @objc private func didTapBadge(_ sender: UITapGestureRecognizer) {
+        guard badgeView.image != nil else { return }
+        interactionDelegate?.didTapBadge()
+    }
 
     // MARK: Notifications
 

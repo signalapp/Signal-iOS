@@ -61,6 +61,7 @@ extension ConversationSettingsViewController {
         contents.addSection(mainSection)
 
         addAllMediaSectionIfNecessary(to: contents)
+        addBadgesItemIfNecessary(to: contents)
 
         if let groupModel = currentGroupModel, !groupModel.isPlaceholder {
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel, sectionIndex: contents.sections.count))
@@ -71,8 +72,6 @@ extension ConversationSettingsViewController {
         } else if isContactThread, hasGroupThreads, !isNoteToSelf {
             contents.addSection(buildMutualGroupsSection(sectionIndex: contents.sections.count))
         }
-
-        addBadgesItemIfNecessary(to: contents)
 
         if !isNoteToSelf {
             contents.addSection(buildBlockAndLeaveSection())

@@ -4,6 +4,7 @@
 
 import Foundation
 import ContactsUI
+import SignalUI
 
 @objc
 class MemberActionSheet: InteractiveSheetViewController {
@@ -332,7 +333,7 @@ class MemberActionSheet: InteractiveSheetViewController {
 
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
-    func tappedAvatar() {
+    func didTapAvatar() {
         guard let avatarView = avatarView, avatarView.primaryImage != nil else { return }
         guard let vc = databaseStorage.read(block: { readTx in
             AvatarViewController(address: self.address, renderLocalUserAsNoteToSelf: false, readTx: readTx)

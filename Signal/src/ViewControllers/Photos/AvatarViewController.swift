@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalUI
 
 @objc(OWSAvatarViewController)
 class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
