@@ -174,7 +174,7 @@ public class HomeViewCell: UITableViewCell {
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
         outerHStack.autoPinEdge(toSuperviewEdge: .leading)
-        outerHStack.autoPinTrailingToSuperviewMargin()
+        outerHStack.autoPinEdge(toSuperviewEdge: .trailing)
         outerHStack.autoPinHeightToSuperview()
 
         self.selectionStyle = .default
@@ -524,14 +524,10 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private static var outerHStackConfig: ManualStackView.Config {
-        let layoutMargins = UIEdgeInsets(top: 0,
-                                         leading: 16,
-                                         bottom: 0,
-                                         trailing: 8)
-        return ManualStackView.Config(axis: .horizontal,
+        ManualStackView.Config(axis: .horizontal,
                                alignment: .center,
                                spacing: 12,
-                               layoutMargins: layoutMargins)
+                               layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 0))
     }
 
     private static var avatarStackConfig: ManualStackView.Config {
