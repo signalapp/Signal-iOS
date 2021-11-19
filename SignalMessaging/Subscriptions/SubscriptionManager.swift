@@ -7,6 +7,12 @@ import SignalServiceKit
 import PassKit
 import ZKGroup
 
+public enum SubscriptionRedemptionFailureReason: Int {
+    case none
+    case validationFailed
+    case paymentFailed
+}
+
 public class SubscriptionLevel: Comparable {
     public let level: UInt
     public let name: String
@@ -75,6 +81,7 @@ public class SubscriptionManager: NSObject {
     private static let lastSubscriptionExpirationKey = "subscriptionExpiration"
     private static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
     private static let lastSubscriptionReceiptRedemptionFailedKey = "lastSubscriptionReceiptRedemptionFailedKey"
+    private static let userManuallyCancelledSubscriptionKey = "userManuallyCancelledSubscriptionKey"
 
     public static var terminateTransactionIfPossible = false
 
@@ -181,12 +188,25 @@ public class SubscriptionManager: NSObject {
                                   transaction: transaction)
     }
 
-    public static func setLastReceiptRedemptionFailed(failed: Bool, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setBool(failed, key: lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
+    public static func setLastReceiptRedemptionFailed(failureReason: SubscriptionRedemptionFailureReason, transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setInt(failureReason.rawValue, key: lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
     }
 
-    public static func lastReceiptRedemptionFailed(transaction: SDSAnyReadTransaction) -> Bool {
-        return subscriptionKVS.getBool(lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction) ?? false
+    public static func lastReceiptRedemptionFailed(transaction: SDSAnyReadTransaction) -> SubscriptionRedemptionFailureReason {
+        let intValue = subscriptionKVS.getInt(lastSubscriptionReceiptRedemptionFailedKey, transaction: transaction)
+        guard let intValue = intValue else {
+            return .none
+        }
+
+        return SubscriptionRedemptionFailureReason(rawValue: intValue)!
+    }
+
+    public static func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction) ?? false
+    }
+
+    private static func setUserManuallyCancelledSubscription(_ userCancelled: Bool, transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setBool(userCancelled, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
     }
 
     private class func setupNewSubscriberID() throws -> Promise<Data> {
@@ -342,6 +362,7 @@ public class SubscriptionManager: NSObject {
                 SDSDatabaseStorage.shared.write { transaction in
                     self.setSubscriberID(nil, transaction: transaction)
                     self.setSubscriberCurrencyCode(nil, transaction: transaction)
+                    self.setUserManuallyCancelledSubscription(true, transaction: transaction)
                     self.storageServiceManager.recordPendingLocalAccountUpdates()
                 }
             }
@@ -420,7 +441,7 @@ public class SubscriptionManager: NSObject {
 
         // Reset failure state
         SDSDatabaseStorage.shared.write { transaction in
-            self.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
+            self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
         }
 
         SDSDatabaseStorage.shared.asyncWrite { transaction in
@@ -463,22 +484,35 @@ public class SubscriptionManager: NSObject {
             } else if statusCode == 204 {
                 Logger.debug("User has no active subscriptions")
                 throw OWSRetryableSubscriptionError()
-            } else if statusCode == 400 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
+            } else if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
+                let failureReason: SubscriptionRedemptionFailureReason = statusCode == 402 ? .paymentFailed : .validationFailed
+                SDSDatabaseStorage.shared.write { transaction in
+                    self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
+                }
                 throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
             } else {
                 throw OWSRetryableSubscriptionError()
             }
 
+            let failValidation = {
+                SDSDatabaseStorage.shared.write { transaction in
+                    self.setLastReceiptRedemptionFailed(failureReason: .validationFailed, transaction: transaction)
+                }
+            }
+
             guard let json = response.responseBodyJson as? [String: Any] else {
+                failValidation()
                 throw OWSAssertionError("Unable to parse response body.")
             }
 
             guard let parser = ParamParser(responseObject: json) else {
+                failValidation()
                 throw OWSAssertionError("Missing or invalid response.")
             }
 
             let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
             guard let receiptCredentialResponseData = Data(base64Encoded: receiptCredentialResponseString) else {
+                failValidation()
                 throw OWSAssertionError("Unable to parse receiptCredentialResponse into data.")
             }
 
@@ -494,18 +528,21 @@ public class SubscriptionManager: NSObject {
             }
 
             guard receiptCredentialHasValidLevel else {
+                failValidation()
                 throw OWSAssertionError("Unexpected receipt credential level")
             }
 
             // Validate receipt credential expiration % 86400 == 0, per server spec
             let expiration = try receiptCredential.getReceiptExpirationTime()
             guard expiration % 86400 == 0 else {
+                failValidation()
                 throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
             }
 
             // Validate expiration is less than 60 days from now
             let maximumValidExpirationDate = Date().timeIntervalSince1970 + (60 * 24 * 60 * 60)
             guard TimeInterval(expiration) < maximumValidExpirationDate else {
+                failValidation()
                 throw OWSAssertionError("Invalid receipt credential expiration, expiration is more than 60 days from now")
             }
 
