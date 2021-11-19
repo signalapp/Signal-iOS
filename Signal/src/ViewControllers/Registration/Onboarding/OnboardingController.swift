@@ -716,7 +716,7 @@ public class OnboardingController: NSObject {
                                     completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
-        if let registrationMissing2FAPinError = error as? RegistrationMissing2FAPinError {
+        if let registrationMissing2FAPinError = (error as Error) as? RegistrationMissing2FAPinError {
 
             Logger.info("Missing 2FA PIN.")
 
