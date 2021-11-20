@@ -343,8 +343,7 @@ import CallKit
                 call: newCall,
                 destinationDeviceId: sourceDevice,
                 hangupType: .needPermission,
-                deviceId: localDeviceId,
-                useLegacyHangupMessage: true
+                deviceId: localDeviceId
             )
 
             // Store the call as a missed call for the local user. They will see it in the conversation
@@ -404,7 +403,6 @@ import CallKit
                                           messageAgeSec: messageAgeSec,
                                           callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
                                           localDevice: localDeviceId,
-                                          remoteSupportsMultiRing: supportsMultiRing,
                                           isLocalDevicePrimary: isPrimaryDevice,
                                           senderIdentityKey: identityKeys.contactIdentityKey,
                                           receiverIdentityKey: identityKeys.localIdentityKey)
@@ -437,7 +435,7 @@ import CallKit
         }
 
         do {
-            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, remoteSupportsMultiRing: supportsMultiRing, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
+            try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, opaque: opaque, senderIdentityKey: identityKeys.contactIdentityKey, receiverIdentityKey: identityKeys.localIdentityKey)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = callService.currentCall, currentCall.individualCall?.callId == callId {
@@ -843,11 +841,6 @@ import CallKit
             // TODO - This should not be a failure.
             call.individualCall.state = .localFailure
             callService.terminate(call: call)
-
-        case .ignoreCallsFromNonMultiringCallers:
-            handleMissedCall(call)
-            call.individualCall.state = .localFailure
-            callService.terminate(call: call)
         }
     }
 
@@ -976,7 +969,7 @@ import CallKit
         }
     }
 
-    public func callManager(_ callManager: CallService.CallManagerType, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32, useLegacyHangupMessage: Bool) {
+    public func callManager(_ callManager: CallService.CallManagerType, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendHangup")
@@ -999,11 +992,7 @@ import CallKit
             }
 
             let callMessage: OWSOutgoingCallMessage
-            if useLegacyHangupMessage {
-                callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, legacyHangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
-            } else {
-                callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, hangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
-            }
+            callMessage = OWSOutgoingCallMessage(thread: call.individualCall.thread, hangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
 
             return Self.databaseStorage.write { transaction in
                 ThreadUtil.enqueueMessagePromise(

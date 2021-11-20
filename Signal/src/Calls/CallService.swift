@@ -1182,8 +1182,7 @@ extension CallService: CallManagerDelegate {
         call: SignalCall,
         destinationDeviceId: UInt32?,
         hangupType: HangupType,
-        deviceId: UInt32,
-        useLegacyHangupMessage: Bool
+        deviceId: UInt32
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
@@ -1194,8 +1193,7 @@ extension CallService: CallManagerDelegate {
             call: call,
             destinationDeviceId: destinationDeviceId,
             hangupType: hangupType,
-            deviceId: deviceId,
-            useLegacyHangupMessage: useLegacyHangupMessage
+            deviceId: deviceId
         )
     }
 
