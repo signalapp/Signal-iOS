@@ -511,12 +511,12 @@ class SubscriptionViewController: OWSTableViewController2 {
                     var statusText: NSMutableAttributedString?
                     if subscriptionPending {
                         let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
-                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                     } else if subscriptionFailed {
                         let helpFormat = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
                         let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
                         let text = String(format: helpFormat, contactSupport)
-                        let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                         attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
                         statusText = attributedText
                     } else {
@@ -524,7 +524,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                         let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                         let renewalString = self.dateFormatter.string(from: renewalDate)
                         let text = String(format: renewalFormat, renewalString)
-                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                     }
 
                     self.statusLabel.attributedText = statusText
@@ -546,10 +546,10 @@ class SubscriptionViewController: OWSTableViewController2 {
                     }
                     addBoostButton.dimsWhenHighlighted = true
                     addBoostButton.layer.cornerRadius = 8
-                    addBoostButton.backgroundColor = Theme.accentBlueColor
+                    addBoostButton.backgroundColor = .ows_accentBlue
                     containerStackView.addArrangedSubview(addBoostButton)
                     addBoostButton.autoSetDimension(.height, toSize: 48)
-                    addBoostButton.autoPinWidthToSuperviewMargins()
+                    addBoostButton.autoPinWidthToSuperview(withMargin: 34)
 
                     if subscriptionPending || subscriptionFailed {
                         addBoostButton.isHighlighted = true
