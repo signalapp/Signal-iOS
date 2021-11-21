@@ -794,6 +794,8 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         requestMicrophonePermissionIfNeeded() { [weak self] in
             self?.cancelVoiceMessageRecording()
         }
+        // Keep screen on
+        UIApplication.shared.isIdleTimerDisabled = false
         guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
         // Cancel any current audio playback
         audioPlayer?.stop()
@@ -842,6 +844,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     func endVoiceMessageRecording() {
+        UIApplication.shared.isIdleTimerDisabled = true
         // Hide the UI
         snInputView.hideVoiceMessageUI()
         // Cancel the timer

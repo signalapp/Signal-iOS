@@ -233,12 +233,12 @@ extension MessageReceiver {
     // MARK: - Unsend Requests
     
     public static func handleUnsendRequest(_ message: UnsendRequest, using transaction: Any) {
-        guard message.sender == message.author else { return }
         let userPublicKey = getUserHexEncodedPublicKey()
+        guard message.sender == message.author || userPublicKey == message.sender else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         if let author = message.author, let timestamp = message.timestamp {
             let localMessage: TSMessage?
-            if userPublicKey == message.sender {
+            if userPublicKey == author {
                 localMessage = TSOutgoingMessage.find(withTimestamp: timestamp)
             } else {
                 localMessage = TSIncomingMessage.find(withAuthorId: author, timestamp: timestamp, transaction: transaction)
@@ -251,10 +251,14 @@ extension MessageReceiver {
                         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [notificationIdentifier])
                     }
                 }
-                if let serverHash = messageToDelete.serverHash {
-                    SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
+                if author == message.sender {
+                    if let serverHash = messageToDelete.serverHash {
+                        SnodeAPI.deleteMessage(publicKey: author, serverHashes: [serverHash]).retainUntilComplete()
+                    }
+                    messageToDelete.updateForDeletion(with: transaction)
+                } else {
+                    messageToDelete.remove(with: transaction)
                 }
-                messageToDelete.updateForDeletion(with: transaction)
             }
         }
     }
@@ -362,10 +366,12 @@ extension MessageReceiver {
         if isMainAppAndActive {
             cancelTypingIndicatorsIfNeeded(for: message.sender!)
         }
-        // Keep track of the open group server message ID ↔ message ID relationship
-        if let serverID = message.openGroupServerMessageID, let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
-            tsMessage.openGroupServerMessageID = serverID
-            tsMessage.save(with: transaction)
+        if let tsMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) {
+            // Keep track of the open group server message ID ↔ message ID relationship
+            if let serverID = message.openGroupServerMessageID { tsMessage.openGroupServerMessageID = serverID }
+            // Keep track of server hash
+            if let serverHash = message.serverHash { tsMessage.serverHash = serverHash }
+             tsMessage.save(with: transaction)
         }
         if let tsOutgoingMessage = TSMessage.fetch(uniqueId: tsMessageID, transaction: transaction) as? TSOutgoingMessage,
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) {
