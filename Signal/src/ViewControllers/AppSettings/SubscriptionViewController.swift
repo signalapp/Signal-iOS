@@ -79,6 +79,8 @@ class SubscriptionViewController: OWSTableViewController2 {
     private lazy var statusLabel: LinkingTextView = LinkingTextView()
     private lazy var descriptionTextView = LinkingTextView()
 
+    private var subscriptionLevelCells: [SubscriptionLevelCell] = []
+
     private var subscriptionRedemptionPending: Bool {
         var hasPendingJobs = false
         SDSDatabaseStorage.shared.read { transaction in
@@ -704,6 +706,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private func buildSubscriptionLevelCells(subscriptions: [SubscriptionLevel], section: OWSTableSection) {
+        subscriptionLevelCells.removeAll()
         for (index, subscription) in subscriptions.enumerated() {
             section.add(.init(
                 customCellBlock: { [weak self] in
@@ -729,6 +732,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
                     background.layer.cornerRadius = 12
                     stackView.addSubview(background)
+                    cell.cellBackgroundView = background
                     background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: index == 0 ? 0 : 12, leading: 24, bottom: 0, trailing: 24))
 
                     let badge = subscription.badge
@@ -739,6 +743,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     }
                     stackView.addArrangedSubview(imageView)
                     imageView.autoSetDimensions(to: CGSize(square: 64))
+                    cell.badgeImageView = imageView
 
                     let textStackView = UIStackView()
                     textStackView.axis = .vertical
@@ -806,13 +811,56 @@ class SubscriptionViewController: OWSTableViewController2 {
                     textStackView.addArrangedSubviews([titleStackView, descriptionLabel, pricingLabel])
                     stackView.addArrangedSubview(textStackView)
 
+                    self.subscriptionLevelCells.append(cell)
                     return cell
                 },
                 actionBlock: {
                     self.selectedSubscription = subscription
-                    self.updateTableContents()
+                    self.updateLevelSelectionState(for: subscription)
                 }
             ))
+        }
+    }
+
+    private func updateLevelSelectionState(for subscription: SubscriptionLevel) {
+
+        var subscriptionCell: SubscriptionLevelCell?
+        var index: Int?
+        for (idx, cell) in subscriptionLevelCells.enumerated() {
+            if cell.subscriptionID == subscription.level {
+                subscriptionCell = cell
+                index = idx
+                cell.toggleSelectedOutline(true)
+            } else {
+                cell.toggleSelectedOutline(false)
+            }
+        }
+
+        let animationNames = [
+            "boost_fire",
+            "boost_shock",
+            "boost_rockets"
+        ]
+
+        guard let subscriptionCell = subscriptionCell, let index = index, let imageView = subscriptionCell.badgeImageView else {
+            return owsFailDebug("Unable to add animation to cell")
+        }
+
+        guard let selectedAnimation = animationNames[safe: index] else {
+            return owsFailDebug("Missing animation for preset")
+        }
+
+        let animationView = AnimationView(name: selectedAnimation)
+        animationView.isUserInteractionEnabled = false
+        animationView.loopMode = .playOnce
+        animationView.contentMode = .scaleAspectFit
+        animationView.backgroundBehavior = .forceFinish
+        self.view.addSubview(animationView)
+        animationView.autoPinEdge(.bottom, to: .top, of: imageView, withOffset: 40)
+        animationView.autoPinEdge(.leading, to: .leading, of: imageView)
+        animationView.autoMatch(.width, to: .width, of: imageView)
+        animationView.play { _ in
+            animationView.removeFromSuperview()
         }
     }
 
@@ -1253,7 +1301,15 @@ extension SubscriptionViewController: UITextViewDelegate {
 }
 
 private class SubscriptionLevelCell: UITableViewCell {
-    public var subscriptionID: UInt = 0
+    var subscriptionID: UInt = 0
+    var badgeImageView: UIImageView?
+    var cellBackgroundView: UIView?
+
+    public func toggleSelectedOutline(_ selected: Bool) {
+        if let background = cellBackgroundView {
+            background.layer.borderColor = selected ? Theme.accentBlueColor.cgColor : SubscriptionViewController.bubbleBorderColor.cgColor
+        }
+    }
 }
 
 private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
