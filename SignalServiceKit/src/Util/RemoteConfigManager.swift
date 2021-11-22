@@ -228,12 +228,12 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var donorBadgeDisplay: Bool {
-        DebugFlags.forceDonorBadgeDisplay || isEnabled(.donorBadgeDisplay)
+        DebugFlags.forceDonorBadgeDisplay || !isEnabled(.donorBadgeDisplayKillSwitch)
     }
 
     @objc
     public static var donorBadgeAcquisition: Bool {
-        DebugFlags.forceDonorBadgeAcquisition || isEnabled(.donorBadgeAcquisition)
+        DebugFlags.forceDonorBadgeAcquisition || !isEnabled(.donorBadgeAcquisitionKillSwitch)
     }
 
     // MARK: -
@@ -423,8 +423,8 @@ private struct Flags {
         case viewedReceiptSending
         case senderKeyKillSwitch
         case messageResendKillSwitch
-        case donorBadgeDisplay
-        case donorBadgeAcquisition
+        case donorBadgeDisplayKillSwitch
+        case donorBadgeAcquisitionKillSwitch
     }
 
     // Values defined in this array remain set once they are

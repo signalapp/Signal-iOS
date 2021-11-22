@@ -463,10 +463,10 @@ public class DebugFlags: BaseFlags {
     public static let forceViewedReceiptSending = true
 
     @objc
-    public static let forceDonorBadgeDisplay = build.includes(.beta)
+    public static let forceDonorBadgeDisplay = build.includes(.qa)
 
     @objc
-    public static let forceDonorBadgeAcquisition = build.includes(.beta)
+    public static let forceDonorBadgeAcquisition = build.includes(.qa)
 
     @objc
     public static let forceSubscriptionMegaphone = build.includes(.qa)
