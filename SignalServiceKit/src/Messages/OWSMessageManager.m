@@ -922,9 +922,8 @@ NS_ASSUME_NONNULL_BEGIN
             return;
     }
 
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"earlyTimestamps: %lu.", (unsigned long)earlyTimestamps.count);
-    }
+    // TODO: Move to internal logging.
+    OWSLogInfo(@"earlyTimestamps: %lu.", (unsigned long)earlyTimestamps.count);
 
     for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
         UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
@@ -936,9 +935,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    transaction:transaction];
     }
 
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(@"Complete.");
-    }
+    // TODO: Move to internal logging without flush.
+    OWSLogInfo(@"Complete.");
+    OWSLogFlush();
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
