@@ -56,17 +56,14 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
     }
 
+    private let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
+
     private lazy var avatarView: ConversationAvatarView = {
-        let newAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
-        databaseStorage.read { readTx in
-            newAvatarView.update(readTx) { config in
-                if let address = tsAccountManager.localAddress(with: readTx) {
-                    config.dataSource = .address(address)
-                }
-            }
-        }
+        let newAvatarView = ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
         return newAvatarView
     }()
+
+    private var avatarImage: UIImage?
 
     private lazy var redemptionLoadingSpinner: AnimationView = {
         let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
@@ -288,6 +285,9 @@ class SubscriptionViewController: OWSTableViewController2 {
             return stackView
         }()
 
+        // Update avatar view
+        updateAvatarView()
+
         // Footer setup
         bottomFooterStackView.axis = .vertical
         bottomFooterStackView.alignment = .center
@@ -311,6 +311,44 @@ class SubscriptionViewController: OWSTableViewController2 {
         UIView.performWithoutAnimation {
             self.shouldHideBottomFooter = !(self.subscriptionViewState == .subscriptionNotYetSetUp || self.subscriptionViewState == .subscriptionUpdating)
         }
+    }
+
+    private func updateAvatarView() {
+
+        let useExistingBadge = subscriptionViewState == .subscriptionExists || self.selectedSubscription == nil
+        let shouldAddBadge = subscriptionViewState != .loading
+        if useExistingBadge {
+            databaseStorage.read { readTx in
+                self.avatarView.update(readTx) { config in
+                    if let address = tsAccountManager.localAddress(with: readTx) {
+                        config.dataSource = .address(address)
+                        config.addBadgeIfApplicable = shouldAddBadge
+                    }
+                }
+            }
+        } else {
+            databaseStorage.read { readTx in
+                if self.avatarImage == nil {
+                    self.avatarImage = Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: self.sizeClass.avatarDiameter,
+                                                                                  localUserDisplayMode: .asUser,
+                                                                                  transaction: readTx)
+                }
+
+                var avatarBadge: UIImage?
+                if let selectedSubscription = self.selectedSubscription {
+                    let assets = selectedSubscription.badge.assets
+                    avatarBadge = assets.flatMap { sizeClass.fetchImageFromBadgeAssets($0) }
+                }
+
+                self.avatarView.update(readTx) { config in
+                    config.dataSource = .asset(avatar: avatarImage, badge: avatarBadge)
+                    config.addBadgeIfApplicable = shouldAddBadge
+                }
+
+            }
+
+        }
+
     }
 
     private func buildTableForPendingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
@@ -823,6 +861,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private func updateLevelSelectionState(for subscription: SubscriptionLevel) {
+        updateAvatarView()
 
         var subscriptionCell: SubscriptionLevelCell?
         var index: Int?
