@@ -937,7 +937,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Move to internal logging without flush.
     OWSLogInfo(@"Complete.");
-    OWSLogFlush();
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
