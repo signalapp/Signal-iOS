@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 #import <CocoaLumberjack/DDFileLogger.h>
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DebugLogger : NSObject
 
-+ (instancetype)sharedLogger;
++ (instancetype)shared;
 
 - (void)enableFileLogging;
 
@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSURL *errorLogsDir;
 
 - (void)wipeLogs;
+
+- (void)removeObsoleteDebugLogs;
 
 - (NSArray<NSString *> *)allLogFilePaths;
 

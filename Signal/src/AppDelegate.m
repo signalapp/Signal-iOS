@@ -147,15 +147,15 @@ void uncaughtExceptionHandler(NSException *exception)
     // Specified at Product -> Scheme -> Edit Scheme -> Test -> Arguments -> Environment to avoid things like
     // the phone directory being looked up during tests.
     isLoggingEnabled = TRUE;
-    [DebugLogger.sharedLogger enableTTYLogging];
+    [DebugLogger.shared enableTTYLogging];
 #else
     isLoggingEnabled = OWSPreferences.isLoggingEnabled;
 #endif
     if (isLoggingEnabled) {
-        [DebugLogger.sharedLogger enableFileLogging];
+        [DebugLogger.shared enableFileLogging];
     }
     if (SSKDebugFlags.audibleErrorLogging) {
-        [DebugLogger.sharedLogger enableErrorReporting];
+        [DebugLogger.shared enableErrorReporting];
     }
     [DebugLogger configureSwiftLogging];
 
@@ -1222,6 +1222,9 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     [SignalApp.shared ensureRootViewController:launchStartedAt];
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{ [DebugLogger.shared removeObsoleteDebugLogs]; });
 }
 
 - (void)registrationStateDidChange
