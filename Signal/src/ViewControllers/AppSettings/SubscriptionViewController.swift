@@ -1121,7 +1121,16 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                     self.fetchCurrentSubscription()
                 }
 
-                ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.subscriptionMegaphone)
+                // We can't use a sneaky transaction here, because the
+                // subscription's existence means that the experience
+                // upgrade is no longer "active" and won't be found
+                // in the unsnoozed list.
+                self.databaseStorage.write { transaction in
+                    ExperienceUpgradeManager.snoozeExperienceUpgrade(
+                        .subscriptionMegaphone,
+                        transaction: transaction.unwrapGrdbWrite
+                    )
+                }
 
                 // Only show the badge sheet if redemption succeeds.
                 if let selectedSubscription = self.selectedSubscription {
