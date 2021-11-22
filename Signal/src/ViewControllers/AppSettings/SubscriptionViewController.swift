@@ -1396,6 +1396,7 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         contentScrollView.autoPinWidthToSuperview()
         contentScrollView.autoPinEdge(toSuperviewEdge: .bottom)
         contentScrollView.autoPinEdge(.top, to: .bottom, of: handleContainer)
+        contentScrollView.alwaysBounceVertical = true
 
         buildContents()
     }
