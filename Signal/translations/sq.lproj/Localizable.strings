@@ -484,6 +484,9 @@
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Thoni “Faleminderit!” dhe fitoni stemën Përforcim për 30 ditë.";
 
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Jepni Sasi Vetjake";
 
@@ -6029,7 +6032,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Kontribuoni";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal-i bazohet në njerëz si ju. Kontribuoni dhe merrni një stemë.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Jo Falemnderit";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Po ngarkohet";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal-i është një ent jofitimprurës, pa reklamues për të apo investues, i bazuar vetëm te njerëzit që e përdorin dhe vlerësojnë. Bëni një dhurim mujor ripërsëritës dhe merrni një stemë profili për t’u treguar të tjerëve përkrahjen tuaj.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal-i i është përkushtuar zhvillimit të teknologjive të privatësisë me burim të hapur që mbrojnë shprehjen e lirë dhe bëjnë të mundur komunikimin global. \n\nKontributi juaj është ushqim dhe paguan për zhvillimin e një aplikacioni të përdorur nga miliona vetë për komunikim privat. Pa reklama. Pa gjurmues. Pa shaka.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Përkrahni teknologjinë që është ngritur për ju - jo për të dhënat tuaja - duke u bërë pjesë e bashkësisë që e mbështet atë.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Pse të Jepet Ndihmesë?";

@@ -1,5 +1,2 @@
-Omdat we nooit gegevens verkopen en geen advertenties plaatsen zijn we afhankelijk van donaties om Signal mogelijk te maken:
-• Je kunt ons vanaf nu helpen door elke maand een donatie te doen via Apple Pay. Als ondersteuner verdien je leuke badges die je op je profiel kunt weergeven om bewustwording te creëren.
-• Je kunt Signal een eenmalige oppepper geven via Apple pay. Met zo'n eenmalige donatie zeg je bedankt en help je Signal vooruit. Hierbij ontvang je een aparte badge om op je profiel weer te geven.
-
-Deze uitgave bevat ook een groot aantal foutoplossingen.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

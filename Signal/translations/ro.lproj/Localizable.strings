@@ -374,13 +374,13 @@
 "BACK_BUTTON" = "Înapoi";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Insignele mele";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Insigne";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Fii un Susținător";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dați un Boost la Signal";
@@ -392,16 +392,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afișați la profil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Folosește ca insignă principală";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Îți mulțumim pentru sprijin!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Atunci când aveți mai mult de o insignă, puteți alege una pe care să o afișați pentru ca ceilalți să o vadă pe profilul dvs.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Ai obținut insigna %@! Ajută Signal să crească gradul de conștientizare prin afișarea acestei insigne pe profilul tău.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Închide notificarea";
@@ -479,10 +479,13 @@
 "BLUR_TOOLTIP" = "Nou: Estompează fețe sau desenează oriunde pentru a estompa.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Alege Moneda";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Spune \"Mulțumesc!\" și obține insigna Boost pentru 30 de zile.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduceți o sumă specifică";
@@ -653,7 +656,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Selectează țara";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Editează fotografia";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Iată o previzualizare a culorii conversației.";
@@ -1022,7 +1025,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Poți obține insigne pentru profilul tău susținând Signal. Atinge o insignă pentru a afla mai multe.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Insigne";
@@ -1787,10 +1790,10 @@
 "FAILED_VERIFICATION_TITLE" = "Verificarea Numărului de Siguranță a eșuat!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Selectează o insignă";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Insignă principală";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marchează ca verificat";
@@ -2198,7 +2201,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Setările grupului au fost modificate pentru a permite tuturor membrilor să trimită mesaje.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Ați modificat setările grupului pentru a permite tuturor membrilor să trimită mesaje.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Ai modificat setările grupului pentru a permite tuturor membrilor să trimită mesaje.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ a modificat setările grupului pentru a permite tuturor membrilor să trimită mesaje.";
@@ -2207,7 +2210,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Setările grupului au fost modificate pentru a permite doar administratorilor să trimită mesaje.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Ați modificat setările grupului pentru a permite doar administratorilor să trimită mesaje.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Ai modificat setările grupului pentru a permite doar administratorilor să trimită mesaje.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ a modificat setările grupului pentru a permite doar administratorilor să trimită mesaje.";
@@ -2222,31 +2225,31 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Grup";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Alăturați-vă";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Alătură-te";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Se încarcă...";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Doriți să vă alăturați acestui grup și să vă împărtășiți numele și fotografia cu membrii săi?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vrei să te alături acestui grup și să partajezi numele și fotografia ta cu membrii săi?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Te rog verifică dacă ești online și încearcă din nou.";
 
 /* Error message the attempt to request to join the group failed. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Vă rugăm încercați din nou.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Te rugăm încearcă din nou.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Aceasta nu este o adresă de grup validă. Asigură-te că toată adresa este intactă și corectă înainte să te alături grupului. ";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Aceasta nu este o adresă de grup validă. Asigură-te că toată adresa este intactă și corectă înainte să te alături grupului.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Link invalid";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualizați Signal de pe acest dispozitiv pentru a vă alătura acestui grup.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualizează Signal de pe acest dispozitiv pentru a te alătura acestui grup.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Solicitați unui administrator să aprobe membrii noi care se alătură prin linkul grupului.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Solicită unui administrator să aprobe membrii noi ce se alătură prin linkul grupului.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Aprobare noi membri";
@@ -2258,7 +2261,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Distribuie adresa";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Distribuie această adresă prietenilor pentru a le permite să se alăture grupului. ";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Distribuie această adresă prietenilor pentru a le permite să se alăture grupului.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invită prieteni";
@@ -2270,7 +2273,7 @@
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Persoanele care scanează acest cod se vor putea alătura grupului tău. Administratorii vor trebui în continuare să aprobe noi membri dacă ai setarea activată.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Partajați codul";
+"GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Partajează codul";
 
 /* The title for the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_TITLE" = "Cod QR";
@@ -2285,19 +2288,19 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Link grup";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Solicitați unui administrator să aprobe membri noi care se alătură prin linkul grupului.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Solicită unui administrator să aprobe membri noi care se alătură prin linkul grupului.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Resetare link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Sigur doriți să resetați linkul de grup? Oamenii nu vor mai putea să se alăture grupului folosind linkul curent.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Sigur dorești să resetezi linkul de grup? Oamenii nu vor mai putea să se alăture grupului folosind linkul curent.";
 
 /* Label for the 'share link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK" = "Partajați";
+"GROUP_LINK_VIEW_SHARE_LINK" = "Partajează";
 
 /* Label for the 'share group link via iOS sharing UI' button in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Partajați";
+"GROUP_LINK_VIEW_SHARE_LINK_VIA_IOS_SHARING" = "Partajează";
 
 /* Label for the 'share group link via QR code' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_QR_CODE" = "Cod QR";
@@ -2306,31 +2309,31 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Partajează prin Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Oricine cu această adresă poate vedea numele grupului și membrii săi și poate solicita o cerere de aderare la grup. Distribuiți adresa cu persoanele de încredere.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Oricine cu această adresă poate vedea numele grupului și membrii săi și poate solicita o cerere de aderare la grup. Distribuie adresa cu persoane de încredere.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Link grup";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ v-a adăugat.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ te-a adăugat.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sunteți acum administrator.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ești acum administrator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ te-a făcut administrator.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Ați acceptat o invitație la grup.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Ai acceptat o invitație la grup.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Ați acceptat o invitație la grup de la %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Ai acceptat o invitație la grup de la %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Ați refuzat o invitație la grup.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Ai refuzat o invitație la grup.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Ați refuzat o invitație la grup de la %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Ai refuzat o invitație la grup de la %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ a revocat invitația ta la grup.";
@@ -2360,13 +2363,13 @@
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ a aprobat solicitarea ta de a te alătura grupului.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Ați anulat solicitarea de a vă alătura grupului.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Ai anulat solicitarea de a te alătura grupului.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Solicitarea de aderare la grup a fost respinsă. ";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Solicitarea de aderare la grup a fost respinsă.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Ați trimis o cerere de alăturare la grup.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Ai trimis o cerere de alăturare la grup.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Privilegiile tale de administrare au fost revocate.";
@@ -2393,10 +2396,10 @@
 "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_FORMAT" = "%@ Membri";
 
 /* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Dvs.";
+"GROUP_MEMBER_LOCAL_USER" = "Tu";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Puteți adăuga sau invita prieteni după crearea acestui grup.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Poți adăuga sau invita prieteni după crearea acestui grup.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membri";
@@ -2405,7 +2408,7 @@
 "GROUP_MEMBERSHIP_MANY_COLLISIONS_BANNER_TITLE_FORMAT" = "%@ membri ai grupului au nume similar.";
 
 /* Button to allow user to review known name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Atingeți pentru examinare";
+"GROUP_MEMBERSHIP_NAME_COLLISION_BANNER_REVIEW_BUTTON" = "Atinge pentru examinare";
 
 /* A header string above a group member's contact info */
 "GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_HEADER" = "Membru";
@@ -2414,10 +2417,10 @@
 "GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Revizuire membri";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membri ai grupului au nume similar, revizuiți membri de mai jos și alegeți să luați o decizie.";
+"GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER" = "%@ membri ai grupului au nume similar, revizuiește membri de mai jos și alege să iei o decizie.";
 
 /* A header string informing the user about a name collision in group membership. Embeds {{ total number of colliding members }} */
-"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membri ai grupului au același nume, revizuiți membrii de mai jos și alegeți să luați o decizie.";
+"GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER" = "%@ membri ai grupului au același nume, revizuiește membrii de mai jos și alege să iei o decizie.";
 
 /* Banner title alerting user to a single name collision set ub the group membership. Embeds {{ total number of colliding members }} */
 "GROUP_MEMBERSHIP_SINGLE_COLLISION_BANNER_TITLE_FORMAT" = "%@ membri ai grupului au același nume.";
@@ -2432,13 +2435,13 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ a acceptat o invitație la grup.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a acceptat invitația dvs. la grup.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a acceptat invitația ta la grup.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ a acceptat o invitație la grup de la %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "L-ai adăugat pe %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Ai adăugat pe %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ a adăugat pe %2$@.";
@@ -2447,25 +2450,25 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ a fost adăugat la grup.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "O persoană a refuzat invitația la grup.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 persoană a refuzat invitația la grup.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "O persoană invitată de către %@ a refuzat invitația la grup.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 persoană invitată de %@ a refuzat invitația la grup.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a refuzat invitația dvs. la grup.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ a refuzat invitația ta la grup.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ este acum administrator";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "L-ați făcut pe %@ administrator.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Ai făcut pe %@ administrator.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ l-a făcut pe %2$@ administrator.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ a făcut pe %2$@ administrator.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitația la grup a fost revocată pentru o persoană.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitația la grup a fost revocată pentru 1 persoană.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitația la grup a fost revocată pentru %@.";
@@ -2480,7 +2483,7 @@
 "GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitațiile la grup au fost revocate pentru %@ oameni.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "O persoană a fost invitată în grup.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 persoană a fost invitată în grup.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ a fost invitat în grup.";
@@ -2507,13 +2510,13 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ a părăsit grupul.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "L-ai eliminat pe %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Ai eliminat pe %@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ a eliminat pe %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Ați aprobat o solicitare de aderare la grup de la %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Ai aprobat o solicitare de aderare la grup de la %@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ a aprobat o cerere de alăturare la grup de la %1$@.";
@@ -2537,7 +2540,7 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Privilegiile de administrator au fost revocate pentru %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ați revocat privilegiile de administrator de la %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ai revocat privilegiile de administrator de la %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ a revocat privilegiile de administrator pentru %2$@.";
@@ -2558,7 +2561,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED" = "Poza grupului a fost eliminată.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Ați eliminat poza.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Ai eliminat poza.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ a eliminat poza.";
@@ -2567,13 +2570,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED" = "Poza grupului a fost actualizată.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ați actualizat poza.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ai actualizat poza.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ a actualizat poza.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Ați actualizat grupul.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Ai actualizat grupul.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ a actualizat grupul.";
@@ -2582,7 +2585,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "Descrierea grupului a fost eliminată.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Ați eliminat descrierea grupului.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Ai eliminat descrierea grupului.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ a șters descrierea grupului";
@@ -2591,7 +2594,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "Descrierea grupului a fost schimbată.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Ați schimbat descrierea grupului.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Ai schimbat descrierea grupului.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ a schimbat descrierea grupului.";
@@ -2600,7 +2603,7 @@
 "GROUP_UPDATED_NAME_REMOVED" = "Numele grupului a fost șters.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Ați șters numele grupului.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Ai șters numele grupului.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ a șters numele grupului.";
@@ -2621,13 +2624,13 @@
 "GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Un membru nu a putut fi adăugat noului grup și a fost șters din grup. ";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nu ai putut fi adăugat noilor grupuri și ai fost șters din grup. ";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nu ai putut fi adăugat noului grup și ai fost șters din grup.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membri nu au putut fi adăugați noului grup și au fost șterși din grup.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Un membru nu a putut fi adăugat noului grup și a fost șters din grup. ";
+"GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Un membru nu a putut fi adăugat noului grup și a fost șters din grup.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nu ai putut fi adăugat la noul grup și ai fost invitat să te înscrii";
@@ -2636,19 +2639,19 @@
 "GROUP_WAS_MIGRATED_USERS_INVITED_N_FORMAT" = "%@ membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.";
 
 /* Message indicating that the local user left the group. */
-"GROUP_YOU_LEFT" = "Ați părăsit grupul.";
+"GROUP_YOU_LEFT" = "Ai părăsit grupul.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratori";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Numai %@ poate trimite mesaje";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Numai %@ pot trimite mesaje";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Trimiteți un mesaj unui administrator";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Trimite un mesaj unui administrator";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Alegeți un nou administrator pentru acest grup înainte de a pleca.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Alege un nou administrator pentru acest grup înainte de a pleca.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Utilizatorul este deja în grup.";
@@ -2657,13 +2660,13 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Invitația nu a putut fi acceptată.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Blocați grupul";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blochează grupul";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blocați grupul și %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blochează grupul și %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blocați %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blochează %@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Invită prieteni";
@@ -2675,49 +2678,49 @@
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_1_TITLE" = "Ce sunt grupurile vechi?";
 
 /* Body text for the second section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Grupurile vechi nu pot fi încă migrate la cele noi, dar poți crea un Grup Nou cu aceeași membri dacă aceștia folosesc toți ultima versiune Signal.\n\nSignal va oferi o metodă de migrare a grupurilor vechi mai târziu. ";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_2_BODY" = "Grupurile vechi nu pot fi încă migrate la cele noi, dar poți crea un Grup Nou cu aceeași membri dacă aceștia folosesc toți ultima versiune Signal.\n\nSignal va oferi o metodă de migrare a grupurilor vechi mai târziu.";
 
 /* Title for the second section of the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_SECTION_2_TITLE" = "Pot să migrez un grup vechi?";
 
 /* Body text for the third section of the 'legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pentru a crea un grup nou, toți membri ar trebui să se actualizeze la cea mai recentă versiune a Signal.";
+"GROUPS_LEGACY_GROUP_ALERT_SECTION_3_BODY" = "Pentru a crea un grup nou, toți membri ar trebui să actualizeze la cea mai recentă versiune Signal.";
 
 /* Title for the 'legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Grupuri vechi vs. grupuri noi";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualizați acest grup pentru a activa noi funcționalități cum ar fi @mențiuni și abilitatea de a administra grupul. Membrii care nu și-au partajat numele și poza de profil cu acest grup vor fi invitați să se alăture. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Actualizează acest grup pentru a activa noi funcționalități cum ar fi @mențiuni și abilitatea de a administra grupul. Membrii care nu și-au partajat numele și poza de profil cu acest grup vor fi invitați să se alăture. %@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nu se poate actualiza la noul grup";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Acest grup vechi nu poate fi actualizat la noile grupuri din cauza numărului mare de membri. Dimensiunea maximă a grupului este de %@. ";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Acest grup vechi nu poate fi actualizat la noile grupuri din cauza numărului mare de membri. Dimensiunea maximă a grupului este de %@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Acest grup va fi actualizat când toți membrii vor folosi o versiune a aplicației Signal capabilă să suporte funcționalitățile noilor grupuri.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tot istoricul mesajelor și conținutul media o să fie păstrate înainte de actualizare.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Tot istoricul mesajelor și conținutul media vor fi păstrate înainte de actualizare.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Acest grup nu poate fi creat din cauză că un membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îl ștergi din lista de membri. ";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_1" = "Acest grup nu poate fi creat din cauză că 1 membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îl ștergi din lista de membri.";
 
 /* Title for alert that explains that a new group cannot be created 1 member does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Grupul nu poate fi creat pentru că %@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membrii își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. ";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_N_FORMAT" = "Grupul nu poate fi creat pentru că %@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membrii își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul.";
 
 /* Indicates that a new group cannot be created because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Acest grup nu poate fi creat din cauză că un membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. %@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_1" = "Acest grup nu poate fi creat din cauză că 1 membru folosește o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acest membru își actualizează aplicația Signal sau îl ștergi înainte de a crea grupul. %@";
 
 /* Indicates that a new group cannot be created because multiple members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Grupul nu poate fi creat pentru că %1$@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membrii își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. %2$@";
+"GROUPS_LEGACY_GROUP_CREATION_ERROR_FORMAT_N" = "Grupul nu poate fi creat pentru că %1$@ membrii folosesc o versiune învechită a aplicației Signal. Poți crea grupul, abia după ce acești membri își actualizează aplicația Signal sau îi ștergi înainte de a crea grupul. %2$@";
 
 /* Title for alert that explains that a new group will be a legacy group because 1 member does not support v2 groups. */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un Grup Vechi va fi creat deoarece 1 membru folosește o versiune veche de Signal. Puteți crea un Grup de tip Nou cu ei după ce își actualizează Signal, sau îi eliminați înainte de a crea grupul.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_1" = "Un Grup Vechi va fi creat deoarece 1 membru folosește o versiune veche de Signal. Poți crea un Grup de tip Nou cu ei după ce își actualizează Signal, sau îi elimini înainte de a crea grupul.";
 
 /* Title for alert that explains that a new group will be a legacy group because multiple members do not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }} */
-"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un Grup Vechi ca fi creat deoarece %@ membrii folosesc o versiune veche de Signal. Puteți crea un Grup de tip Nou cu ei după ce își actualizează Signal, sau îi eliminați înainte de a crea grupul.";
+"GROUPS_LEGACY_GROUP_CREATION_WARNING_ALERT_TITLE_N_FORMAT" = "Un Grup Vechi ca fi creat deoarece %@ membrii folosesc o versiune veche de Signal. Poți crea un Grup de tip Nou cu ei după ce își actualizează Signal, sau îi elimini înainte de a crea grupul.";
 
 /* Indicates that a new group will be a legacy group because a member does not support v2 groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_CREATION_WARNING_FORMAT_1" = "1 membru nu suportă Noile Grupuri, astfel acest grup va fi un Grup Vechi. %@";
@@ -2747,13 +2750,13 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Grup vechi";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Va trebui să acceptați o invitație pentru a vă alătura din nou acestui grup și nu veți primi mesaje de grup până când nu acceptați.";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "Va trebui să accepți o invitație pentru a te alătura din nou acestui grup și nu vei primi mesaje de grup până când nu accepți.";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Actualizați grupul";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "Actualizează grupul";
 
 /* Title for the the 'migrate group' banner. */
-"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pentru a accesa funcții precum @mențiuni și administratori, actualizați acest grup.";
+"GROUPS_LEGACY_GROUP_MIGRATE_GROUP_OFFER_BANNER" = "Pentru a accesa funcții precum @mențiuni și administratori, actualizează acest grup.";
 
 /* Title for the 'migrated group' alert view. */
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Ce sunt Noile Grupuri?";
@@ -2762,7 +2765,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tot istoricul mesajelor și conținutul media a fost păstrat înainte de actualizare.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Noile grupuri au funcții precum @mențiuni și administratori de grup și vor sprijini mai multe funcții în viitor.";
+"GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Noile grupuri au funcții precum @mențiuni și administratori de grup și vor suporta mai multe funcții în viitor.";
 
 /* Title for the 'new groups' alert view. */
 "GROUPS_LEGACY_GROUP_NEW_GROUPS_ALERT_TITLE" = "Noile grupuri";
@@ -2771,10 +2774,10 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ADD_MEMBERS_BUTTON" = "Adaugă membri";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Adăugați membru?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_1" = "Adaugi membrul?";
 
 /* Title for the 're-add dropped group members' alert view. */
-"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Adăugați membri?";
+"GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_ALERT_TITLE_N" = "Adaugi membri?";
 
 /* Label for the 'add members' button in the 're-add dropped groups members' banner. */
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_BUTTON" = "Adaugă membri";
@@ -2801,7 +2804,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Acești membri vor trebui să accepte din nou invitația de a se alătura acestui grup, și nu vor primi mesaje din grup până când nu vor accepta:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Acest membru nu se poate alătura noilor grupuri și va fi șters din grup. ";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Acest membru nu se poate alătura noilor grupuri și va fi șters din grup.";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Acest membru nu se poate alătura grupurilor noi și va fi eliminat din grup:";
@@ -2810,13 +2813,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Actualizează la noul grup";
 
 /* Label for the 'upgrade this group' button in the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Actualizați acest grup";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_BUTTON" = "Actualizează acest grup";
 
 /* Message for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE" = "Acest grup nu a putut fi actualizat la noul tip de grup chiar acum.";
 
 /* Message for error alert indicating the group update failed due to network connectivity. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Acest grup nu poate fi actualizat noilor grupuri pentru că nu există o conexiune la Internet. Te rog să încerci mai târziu. ";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_MESSAGE_NETWORK" = "Acest grup nu poate fi actualizat noilor grupuri pentru că nu există o conexiune la Internet. Te rog să încerci mai târziu.";
 
 /* Title for error alert indicating the group update failed. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_FAILED_ERROR_TITLE" = "Nu am putut finaliza actualizarea";
@@ -2825,25 +2828,25 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_UPGRADE_SUCCEEDED" = "Actualizează la noul grup.";
 
 /* An \"upgrade\" link for upgrading legacy groups to new groups. */
-"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "actualizați acest grup.";
+"GROUPS_LEGACY_GROUP_UPGRADE_LINK" = "actualizează acest grup.";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Înainte de a pleca, alege un nou administrator pentru acest grup.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Alegeți un nou administrator";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Alege un nou administrator";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Alegeți un nou administrator";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Alege un nou administrator";
 
 /* Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}. */
-"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Grupurile pe Signal au performanțe maxime cu %@ membri sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.";
+"GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_FORMAT" = "Grupurile Signal au performanțe maxime cu %@ de membri sau mai puțin. Adăugarea mai multor membri va provoca întârzieri la trimiterea și primirea mesajelor.";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "A fost atinsă limita de membri recomandată";
 
 /* Message asking the user to confirm that they want to add a member to the group. */
-"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Adaugă oricum acești membri?";
+"GROUPS_TOO_MANY_MEMBERS_CONFIRM" = "Adaugă oricum acest membru?";
 
 /* Label for button that lets the user view the request to join the group. */
 "GROUPS_VIEW_REQUEST_BUTTON" = "Vezi solicitarea";
@@ -2852,10 +2855,10 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Vezi solicitări";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Contactați-ne";
+"HELP_CONTACT_US" = "Contactează-ne";
 
 /* Help item that takes the user to the Signal support website */
-"HELP_SUPPORT_CENTER" = "Centru suport";
+"HELP_SUPPORT_CENTER" = "Centru Asistență";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversații arhivate";
@@ -2897,22 +2900,22 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Desenați oriunde pentru a estompa";
+"IMAGE_EDITOR_BLUR_HINT" = "Desenează oriunde pentru a estompa";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "Estompare fețe";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Desenați pentru a estompa fețe sau zone adiționale";
+"IMAGE_EDITOR_BLUR_TOAST" = "Desenează pentru a estompa fețe sau zone adiționale";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nu puteți partaja mai mult de %@ elemente.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Nu poți partaja mai mult de %@ elemente.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Schimbă accesul la fotografii";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Permiteți accesul complet din Setări sau schimbați la care poze are acces Signal.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Permite acces complet din Setări sau alegeți ce poze poate Signal accesa.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Nu vezi fotografiile tale?";
@@ -2951,10 +2954,10 @@
 "IN_CALL_TERMINATED" = "Apelul a fost terminat.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Aceste conversații sunt arhivate și vor fi vizibile în Inbox doar dacă sunt primite mesaje noi.  ";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Aceste conversații sunt arhivate și vor fi vizibile în Inbox doar dacă sunt primite mesaje noi.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Nici o conversație încă.\nÎncepe prin a trimite un mesaj unui prieten.";
+"INBOX_VIEW_EMPTY_INBOX" = "Nicio conversație încă.\nÎncepe prin a trimite un mesaj unui prieten.";
 
 /* info message text in conversation view. {embeds callee name} */
 "INCOMING_CALL_FORMAT" = "%@ te-a sunat";
@@ -2963,13 +2966,13 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Poți trimite sau primi mesaje sincronizate de pe telefon sau iPad.  Pentru a păstra securitatea conversațiilor tale, istoricul acestora nu este transferat pe noile dispozitive asociate.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ este pe Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ folosește Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Autocolante";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Atingeți de două ori și țineți apăsat pentru a înregistra. Eliberați pentru a trimite sau glisați spre stânga pentru a anula. Atingeți de două ori și glisați în sus pentru a bloca înregistrarea.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Atinge de două ori și ține apăsat pentru a înregistra. Eliberează pentru a trimite sau glisează spre stânga pentru a anula. Atinge de două ori și glisează în sus pentru a bloca înregistrarea.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Mesaj vocal";
@@ -2996,25 +2999,25 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Invitarea mai multor utilizatori în același timp va porni un mesaj de grup și destinatarii se vor putea vedea reciproc.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Alăturați-vă";
+"JOIN_CALL_PILL_BUTTON" = "Alătură-te";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Mergeți la toate fișierele media";
+"KEY_COMMAND_ALL_MEDIA" = "Mergi la toate fișierele media";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Arhivați conversația";
+"KEY_COMMAND_ARCHIVE" = "Arhivează conversația";
 
 /* A keyboard command to open the current conversation's attachment picker. */
 "KEY_COMMAND_ATTACHMENTS" = "Afișează atașamentele";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Mergeți la informațiile despre conversație";
+"KEY_COMMAND_CONVERSATION_INFO" = "Mergi la informații despre conversație";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focalizați bara de introducere";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Focalizează bara de introducere";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Mergeți la căutare GIF";
+"KEY_COMMAND_GIF_SEARCH" = "Mergi la căutare GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Grup nou";
@@ -3023,25 +3026,25 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Mesaj nou";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Mergeți la conversația următoare";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Mergi la conversația următoare";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Mergeți la conversația anterioară";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Mergi la conversația anterioară";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Căutați";
+"KEY_COMMAND_SEARCH" = "Caută";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Setări";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Afișați autocolantele";
+"KEY_COMMAND_STICKERS" = "Arată autocolantele";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Dezarhivați conversația";
+"KEY_COMMAND_UNARCHIVE" = "Dezarhivează conversația";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Aflați mai multe";
+"LEARN_MORE" = "Află mai multe";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Părăsește";
@@ -3068,10 +3071,10 @@
 "LINK_DEVICE_RESTART" = "Încearcă din nou";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanează codul QR care este afișat pe dispozitivul care vrei să-l asociezi.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanează codul QR care este afișat pe dispozitivul pe care vrei să-l asociezi.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scanați codul QR pentru a conecta un dispozitiv nou.";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scanează codul QR pentru a conecta un dispozitiv nou.";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Asociază un dispozitiv nou";
@@ -3089,19 +3092,19 @@
 "LINKPREVIEWS_MEGAPHONE_BODY" = "Previzualizările adreselor web sunt acum generate pentru toate paginile web.";
 
 /* Disable button for link previews megaphone */
-"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Dezactivați";
+"LINKPREVIEWS_MEGAPHONE_BUTTON_DISABLE" = "Dezactivează";
 
 /* Title for link previews megaphone */
 "LINKPREVIEWS_MEGAPHONE_TITLE" = "Previzualizează orice adresă web";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Pentru a putea să transferi contul tău Signal, este nevoie să activezi accesul la rețeaua locală pe ambele dispozitive.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Pentru a putea transfera contul tău Signal, este nevoie să activezi accesul la rețeaua locală pe ambele dispozitive.";
 
 /* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Aveți nevoie de ajutor?";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Ai nevoie de ajutor?";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Pe ambele dispozitive, deschide aplicația Setări";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Pe fiecare dispozitiv, deschide aplicația Setări";
 
 /* Third step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activează \"Rețea Locală\"";
@@ -3113,10 +3116,10 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activează accesul la rețeaua locală";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Căutați după nume sau adresă";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Caută după nume sau adresă";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Selectați locația";
+"LOCATION_PICKER_TITLE" = "Selectează locația";
 
 /* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "Jurnalizare";
@@ -3158,7 +3161,7 @@
 "MEGAPHONE_REMIND_LATER" = "Amintește-mi mai târziu";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "Vă amintim mai târziu.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Îți vom aminti mai târziu.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copiază textul mesajului";
@@ -3167,10 +3170,10 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Șterge pentru toată lumea";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Acest mesaj va fi șters pentru toți participanții la conversație dacă aceștia folosesc o versiune recentă Signal. Toți participanții vor putea vedea că ai șters mesajul. ";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Acest mesaj va fi șters pentru toți participanții la conversație dacă aceștia folosesc o versiune recentă Signal. Participanții vor putea vedea că ai șters mesajul.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pentru cine doriți să ștergeți acest mesaj?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pentru cine vrei să ștergi acest mesaj?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Șterge doar pentru mine";
@@ -3179,7 +3182,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Șterge acest mesaj";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Ștergeți mesajele selectate";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Șterge mesajele selectate";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Mai multe informații";
@@ -3191,19 +3194,19 @@
 "MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mailul nu este configurat.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Redirecționați acest mesaj";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Redirecționează acest mesaj";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Redirecționați mesajele selectate";
+"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGES" = "Redirecționează mesajele selectate";
 
 /* Label for button to open a group invite. */
-"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Deschideți invitația de grup";
+"MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Deschide invitația de grup";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Deschideți linkul";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Deschide linkul";
 
 /* Label for button to open a sticker pack. */
-"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Vizualizați pachetul de autocolante";
+"MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Vezi pachetul de autocolante";
 
 /* Label for button to call a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Apelează";
@@ -3221,7 +3224,7 @@
 "MESSAGE_ACTION_REPLY" = "Răspunde la acest mesaj";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "Selectați mai multe";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Selectează mai multe";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Partajează media";
@@ -3305,49 +3308,49 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blochează";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blocați și ștergeți";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blochează și șterge";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Raportați spam-ul și blocați";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Raportează spamul și blochează";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Persoanele blocate nu vor putea să vă sune sau să vă trimită mesaje.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Persoanele blocate nu vor putea să te sune sau să-ți trimită mesaje.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blochez pe %@?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blochezi pe %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Veți părăsi acest grup și nu veți mai primi mesaje sau actualizări.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Vi părăsi acest grup și nu vei mai primi mesaje sau actualizări.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blocați și părăsiți %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blochează și părăsește %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Șterge";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Această conversație va fi ștearsă de pe toate dispozitivele tale asociate. ";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Această conversație va fi ștearsă de pe toate dispozitivele tale asociate.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Șterg conversația?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Ștergi conversația?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Ștergeți și părăsiți";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Șterge și părăsește";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Vei părăsi acest grup și va fi șters de pe toate dispozitivele tale.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Ștergeți și părăsiți grupul?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Șterge și părăsește grupul?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Revizuiți solicitările cu mare atenție. Signal a găsit un alt contact cu același nume. ";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Revizuiește solicitările cu mare atenție. Signal a găsit un alt contact cu același nume.";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "Contactul tău";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Dacă nu sunteți sigur de la cine provine solicitarea, consultați persoanele de contact de mai jos și luați o decizie.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Dacă nu ești sigur de la cine provine solicitarea, consultă persoanele de contact de mai jos și ia o decizie.";
 
 /* A header string above the requester's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "Solicitare";
@@ -3356,7 +3359,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Revizuire solicitări";
 
 /* A button that updates a known contact's information to resolve a name collision */
-"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Actualizați contactul";
+"MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Actualizează contactul";
 
 /* Button to allow user to review known name collisions with an incoming message request */
 "MESSAGE_REQUEST_REVIEW_NAME_COLLISION" = "Revizuire solicitări";
@@ -3365,19 +3368,19 @@
 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Raportat ca spam și blocat.";
 
 /* A button used to accept a user on an incoming message request. */
-"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Acceptați";
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Acceptă";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blochează";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Permiteți lui %@ să vă trimită mesaje și să vă împărtășiți numele și fotografia cu ei? Nu veți primi niciun mesaj până când nu îi deblocați.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Permiți lui %@ să-ți trimită mesaje și îți partajezi numele și fotografia cu ei? Nu vei primi niciun mesaj până când nu îi deblochezi.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Deblocați acest grup și împărtășiți numele și fotografia cu membrii săi? Nu veți primi niciun mesaj până când nu îi deblocați.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Deblochezi acest grup și împărtășești numele și fotografia cu membrii săi? Nu vei primi niciun mesaj până când nu îi deblochezi.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deblocați acest grup? Nu vor ști că le-ați văzut mesajele până când nu îl deblocați.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Deblochezi acest grup? Nu vor ști că le-ai văzut mesajele până când nu îi deblochezi.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Continuă";
@@ -3386,31 +3389,31 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Șterge";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continuă conversația ta cu %@ și partajezi numele și fotografia de profil cu el/ea?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Continui conversația ta cu %@ și partajezi numele și fotografia de profil cu ei?";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continuați conversația cu acest grup și partajați numele și fotografia dvs. cu membrii săi?";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Continui conversația cu acest grup și partajezi numele și fotografia ta cu membrii săi?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Permiteți lui %@ să vă trimită mesaje și să vă împărtășiți numele și fotografia cu ei? Nu vor ști că le-ai văzut mesajul până nu accepți.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Permiți lui %@ să-ți trimită mesaje și împărtășești numele și fotografia cu ei? Nu vor ști că le-ai văzut mesajul până nu accepți.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Vă alăturați acestui grup și împărtășiți numele și fotografia cu membrii săi? Nu vor ști că le-ai văzut mesajele până nu accepți.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Te alături acestui grup și împărtășești numele și fotografia cu membrii săi? Nu vor ști că le-ai văzut mesajele până nu accepți.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Vă alăturați acestui grup? Nu vor ști că le-ați văzut mesajele până nu veți accepta.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Te alături acestui grup? Nu vor ști că le-ai văzut mesajele până nu veți accepta.";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Deblochează";
 
 /* Label for button to cancel your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Anulați cererea";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Anulează cererea";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Îți anulezi solicitarea de a te alătura acestui grup?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Anulezi solicitarea de a te alătura acestui grup?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Solicitarea ta de a te alătura grupului a fost trimisă administratorului. Vei fi anunțat de decizia lor în curând. ";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Solicitarea ta de a te alătura grupului a fost trimisă administratorului. Vei fi notificat când acesta ia o decizie.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Trimis";
@@ -3425,7 +3428,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Eșuat";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Trimis parțial, atingeți pentru detalii";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Trimis parțial, atinge pentru detalii";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "Trimiterea a fost întreruptă";
@@ -3440,7 +3443,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Omis";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Trimitere eșuata.";
+"MESSAGE_STATUS_SEND_FAILED" = "Trimitere eșuată.";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Se trimite...";
@@ -3452,7 +3455,7 @@
 "MESSAGE_STATUS_UPLOADING" = "Se încarcă ...";
 
 /* status message for viewed messages */
-"MESSAGE_STATUS_VIEWED" = "Vizualizată";
+"MESSAGE_STATUS_VIEWED" = "Vizualizat";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Mesaj nou";
@@ -3467,10 +3470,10 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Ai blocat 1 membru al acestui grup";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Ai blocat %@ membri din acest grup";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Ai blocat %@ membri ai acestui grup";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mai mult de un membru din acest grup nu mai este marcat ca verificat. Apasă pentru opțiuni.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Mai mult de un membru al acestui grup nu mai este marcat ca fiind verificat. Apasă pentru opțiuni.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Mesaje noi";
@@ -3479,7 +3482,7 @@
 "MISSED_CALL" = "Apel ratat";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Poți activa accesul camerei din aplicația iOS Setări pentru a putea realiza apeluri video în Signal. ";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Poți permite accesul la cameră din aplicația iOS Setări pentru a putea realiza apeluri video în Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal are nevoie de acces la camera ta.";
@@ -3491,7 +3494,7 @@
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal are nevoie de acces la locația ta pentru această funcționalitate.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Poți activa această permisiune din aplicația iOS Setări. ";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Poți activa această permisiune din aplicația iOS Setări.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal are nevoie de acces la pozele tale pentru această funcționalitate.";
@@ -3542,7 +3545,7 @@
 "NEW_GROUP_CREATION_FAILED" = "Noul grup nu a putut fi creat.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Noul grup nu a putut fi creat. Verificați conexiunea la internet și încercați din nou.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Noul grup nu a putut fi creat. Verifică-ți conexiunea la internet și încearcă din nou.";
 
 /* Indicates that a group member does not support New Groups. */
 "NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Nu suportă noile grupuri";
@@ -3560,13 +3563,13 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ către %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Numiți grupul";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Numește grupul";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Alți utilizatori";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Selectați membrii";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Selectează membri";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vrei să renunți la aceste schimbări?";
@@ -3593,7 +3596,7 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Nu există alte grupuri în comun.";
 
 /* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Alegeți un contact sau un grup pentru a începe o conversație.";
+"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Alege un contact sau un grup pentru a începe o conversație.";
 
 /* Title welcoming to the app */
 "NO_SELECTED_CONVERSATION_TITLE" = "Bun venit la Signal";
@@ -3602,28 +3605,28 @@
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Mesaj nou către:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nu a fost găsit niciun utilizator. Invitați prin SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nu a fost găsit niciun utilizator. Invită prin SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notă personală";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "S-ar putea să fi primit mesaje în timpul repornirii %@.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Este posibil să fi primit mesaje în timp ce %@-ul se repornea.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Pentru a primi notificări pentru mesaje noi:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Apăsați pe \"Navigați la Setări\" mai jos";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Apăsă pe \"Navigați la Setări\" mai jos";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activați \"Permiteți notificările\"";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activează \"Permite notificări\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Apăsați pe Notificări";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Atinge Notificări";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activați notificările";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activează notificările";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Nu acum";
@@ -3635,10 +3638,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Nu rata niciodată un mesaj de la contactele și grupurile tale.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Activați notificările?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Activezi notificările?";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca și citit\", \"Răspundeți\" și \"Apelează înapoi.\"";
+"NOTIFICATIONS_FOOTER_WARNING" = "Acțiuni includ \"Marchează ca citit\", \"Răspunde\" și \"Apelează înapoi.\"";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Fără nume sau conținut";
@@ -3665,16 +3668,16 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN incorect. Încercările au fost epuizate.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Creați un PIN nou";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Creează un PIN nou";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introduceți un PIN alfanumeric";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Introdu un PIN alfanumeric";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Introduceți un PIN numeric";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Introdu un PIN numeric";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Aveți nevoie de ajutor?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Ai nevoie de ajutor?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorect";
@@ -3689,37 +3692,37 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Omite și creează un PIN nou";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Dacă nu vă mai amintiți codul PIN, puteți crea unul nou. Vă puteți înregistra și utiliza contul, dar veți pierde unele setări salvate, cum ar fi informațiile despre profil.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Dacă nu iți mai amintești codul PIN, poți crea unul nou. Îți poți înregistra și utiliza contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Săriți peste introducerea PIN-ului?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Sari peste introducerea PIN-ului?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Adaugă o notă de umanitate mesajelor tale";
 
 /* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Deoarece ați fost inactiv pentru o perioadă lungă de timp, trebuie să vă înregistrați din nou pentru a utiliza Signal.";
+"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Deoarece ai fost inactiv pentru o perioadă lungă de timp, trebuie să te înregistrezi din nou pentru a utiliza Signal.";
 
 /* Title of the 'onboarding after dropped YDB' view. */
 "ONBOARDING_DROPPED_YDB_TITLE" = "Înregistrare la Signal";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Înregistrați iPad-ul";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Înregistrează iPad-ul";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Asociați iPhone-ul";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Asociază iPhone-ul";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Apăsarea pe \"Înregistrare iPad\" vă va permite să creați un nou cont de Signal sau să mutați un cont existent pe acest iPad. Acest lucru va dezactiva Signal pe orice alt dispozitiv înregistrat în prezent cu același număr de telefon.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Apăsând pe \"Înregistrare iPad\" poți crea un nou cont Signal sau poți muta un cont existent pe acest iPad. Acest lucru va dezactiva Signal pe orice alt dispozitiv înregistrat în prezent cu același număr de telefon.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Apăsând pe \"Asociere iPhone\" vă va permite să vă conectați telefonul la un cont existent. În general, asocierea telefonului nu este recomandată și va limita anumite funcționalități, cum ar fi apelarea.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Apăsând pe \"Asociere iPhone\" vei putea să-ți conectezi telefonul cu un cont existent. În general, asocierea telefonului nu este recomandată și va limita anumite funcționalități, cum ar fi apelarea.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Înregistrează acest iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Asociați acest iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Asociază acest iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Înregistrarea acestui iPad va dezactiva Signal pe orice alt dispozitiv înregistrat în prezent cu același număr de telefon.";
@@ -3731,7 +3734,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Activare permisiuni";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Activarea notificărilor și a contactelor vă permite să vedeți când sosesc mesajele și vă ajută să găsiți persoane pe care le cunoașteți. Contactele sunt criptate, astfel încât serviciul Signal nu le poate vedea.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Activarea notificărilor și a contactelor îți permite să vezi când sosesc mesaje și te ajută să găsești persoane pe care le cunoști. Contactele sunt criptate, astfel încât serviciul Signal nu le poate vedea.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Activare permisiuni";
@@ -3746,28 +3749,28 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Numărul tău de telefon";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Vă rugăm să așteptați câteva minute înainte să încercați din nou. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Te rugăm să aștepți câteva minute înainte să încerci din nou. (%@)";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Introduceți numărul dvs. de telefon";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Introdu numărul tău de telefon";
 
 /* Title of the 'onboarding phone number' view when the user is re-registering. */
 "ONBOARDING_PHONE_NUMBER_TITLE_REREGISTERING" = "Numărul tău de telefon";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Număr de telefon invalid. Pentru a vă putea înregistra vă rugăm să introduceți un număr de telefon valid.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Număr de telefon invalid. Te rugăm introdu un număr de telefon valid pentru a te înregistra.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Ai depășit limita de încercări ale PIN-ului, dar poți accesa contul tău Signal prin crearea unui nou PIN. Pentru confidențialitate și securitate, contul tău va fi restaurat fără informații sau setări de profil salvate.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Aflați mai multe despre PIN-uri";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Află mai multe despre PIN-uri";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Pentru a vă proteja confidențialitatea și securitatea contului, l-am blocat timp de 7 zile.\n\nDupă 7 zile de inactivitate, veți putea înregistra acest număr de telefon fără a avea nevoie de codul PIN. Tot conținutul va fi șters.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Pentru a ați proteja confidențialitatea și securitatea contului, l-am blocat timp de 7 zile.\n\nDupă 7 zile de inactivitate, vei putea înregistra acest număr de telefon fără a avea nevoie de codul PIN. Tot conținutul va fi șters.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Aflați mai multe despre conturi blocate";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Află mai multe despre conturi blocate";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Cont blocat";
@@ -3818,7 +3821,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Retrimite cod în %@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Introduceți codul trimis la %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Introdu codul trimis la %@";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Cod de verificare";
@@ -3836,10 +3839,10 @@
 "OUTAGE_WARNING" = "Signal întâmpină dificultăți tehnice. Muncim din greu pentru a restabili serviciul cât mai repede posibil.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "Ați apelat pe %@";
+"OUTGOING_CALL_FORMAT" = "Ai apelat pe %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Respingeți solicitarea";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Respinge solicitarea";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ la %2$@";
@@ -3851,7 +3854,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ va fi notificat că ați refuzat.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Respingeți solicitarea?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Respingi solicitarea?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Comision consolidare monedă";
@@ -3884,13 +3887,13 @@
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Adăugați o notiță";
+"PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Adăugă o notiță";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
 "PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Sold disponibil: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirmați plata";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirmă plata";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Plătește";
@@ -3902,22 +3905,22 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Serviciul nu a putut fi contactat";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nu aveți suficient MOB pentru a finaliza această plată.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nu ai suficient MOB pentru a finaliza această plată.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nu aveți suficient MOB pentru a finaliza această plată. Soldul dvs. curent este %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nu ai suficient MOB pentru a finaliza această plată. Soldul tău curent este %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Tranzacție invalidă";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualizați Signal pentru a folosi plățile.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Actualizează Signal pentru a folosi plățile.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Plata nu a fost încă verificată";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Plata nu s-a putut finaliza. Verificați conexiunea și încercați din nou.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Plata nu s-a putut finaliza. Verifică-ți conexiunea și încearcă din nou.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Comision de rețea";
@@ -3938,7 +3941,7 @@
 "PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "Plătește";
 
 /* Label for the 'total payment amount' indicator. */
-"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Suma totală";
+"PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Sumă totală";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "Procesare";
@@ -4019,13 +4022,13 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Eroare necunoscută";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Pentru a trimite o plată către acest utilizator, el trebuie să accepte o solicitare de mesaj din partea dvs.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Pentru a trimite o plată către acest utilizator, acesta trebuie să accepte o solicitare de mesaj din partea ta.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Pentru a trimite o plată către acest utilizator, el trebuie să accepte o solicitare de mesaj din partea dvs. Trimiteți-i un mesaj pentru a crea o solicitare.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Pentru a trimite o plată către acest utilizator, acesta trebuie să accepte o solicitare de mesaj din partea ta. Trimite-i un mesaj pentru a crea o solicitare.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Nu puteți trimite plata";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Nu se poate trimite plata";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Aceasta persoană nu a activat plățile.";
@@ -4046,16 +4049,16 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Plată invalidă";
 
 /* Title of 'accept member request to join group' button. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Adăugați la grup";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Adăugă la grup";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Adăugați pe “%@” la grup?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Adaugi pe “%@” la grup?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Respingeți cererea";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Respinge cererea";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Respingeți cererea de la “%@”?";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Respinge cererea de la “%@”?";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ a invitat o persoană";
@@ -4073,7 +4076,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" a fost adăugat(ă).";
 
 /* Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ solicitări de membru în așteptare. ";
+"PENDING_GROUP_MEMBERS_REQUEST_BANNER_FORMAT" = "%@ solicitări de membru în așteptare.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Vezi solicitări";
@@ -4082,31 +4085,31 @@
 "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" a fost refuzat(ă).";
 
 /* Format for 'revoke invalid 1 invite' item. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revocați invitația invalidă";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITE_1" = "Revocă invitația invalidă";
 
 /* Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revocați %@ invitații invalide";
+"PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_N_FORMAT" = "Revocă %@ invitații invalide";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revocare invitație";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocați invitația de grup trimisă de “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocă invitația de grup trimisă de “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocați %1$@ invitații trimise de către “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocă %1$@ invitații trimise de către “%2$@“?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revocați invitațiile";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revocă invitațiile";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocați invitația de grup pentru  “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocă invitația de grup pentru  “%@“?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Nu sunt afișate detalii despre persoanele invitate de alți membri ai grupului. Dacă invitații aleg să se alăture, informațiile lor vor fi partajate grupului în acel moment. Nu vor vedea niciun mesaj din grup până nu se alătură.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Nu sunt afișate detalii despre persoanele invitate de alți membri ai grupului. Dacă invitații aleg să se alăture, informațiile lor vor fi partajate cu grupul în acel moment. Nu vor vedea niciun mesaj din grup până nu se alătură.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Persoanele din această listă încearcă să se alăture \"%@\" folosind linkul grupului. ";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Persoanele din această listă încearcă să se alăture \"%@\" folosind linkul grupului.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invitații invalide";
@@ -4115,7 +4118,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invitați de alții";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invitați de dvs.";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Invitați de tine";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Eroare la procesarea mesajului primit";
@@ -4133,25 +4136,25 @@
 "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Videoclip vizibil o singură dată";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Vizualizați poza";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Vezi poza";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Vizualizare videoclip";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Vezi videoclipul";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Vizualizată";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Vizualizat";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Toată lumea";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Oricine are numărul tău de telefon în lista de contacte, te va vedea ca un contact pe Signal. Alții te vor putea găsi folosind numărul tău de telefon utilizând funcția Căutare.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Oricine are numărul tău de telefon în lista de contacte, te va vedea drept contact Signal. Alții te vor putea găsi folosind numărul tău de telefon utilizând funcția Căutare.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Nimeni";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nimeni nu te va putea găsi pe Signal folosind numărul tău de telefon. Nu vei fi vizibil ca și contact pentru persoanele care au numărul tău de telefon în lista lor de contacte, în timp ce alții nu te vor putea găsi folosind numărul tău de telefon utilizând funcția Căutare. ";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nimeni nu te va putea găsi pe Signal folosind numărul tău de telefon. Nu vei fi vizibil ca persoană de contact pentru cei care au numărul tău de telefon în lista lor de contacte, iar alții nu te vor putea găsi folosind numărul tău de telefon utilizând funcția Căutare.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemplu: %@";
@@ -4160,19 +4163,19 @@
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Contactele mele";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Numai contactele tale vă vor vedea numărul de telefon pe Signal.";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Numai contactele tale vor vedea numărul tău de telefon pe Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Toată lumea";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Numărul dvs. de telefon va fi vizibil pentru persoanele și grupurile către care trimiteți mesaje. Persoanele care au numărul dvs. de telefon în lista lor de contacte îl vor vedea și în Signal.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Numărul tău de telefon va fi vizibil pentru persoanele și grupurile către care trimiți mesaje. Persoanele care au numărul tău de telefon în lista lor de contacte îl vor vedea și pe Signal.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nimeni";
 
 /* A user friendly description of the 'nobody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nimeni nu vă va vedea numărul de telefon pe Signal.";
+"PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nimeni nu va vedea numărul tău de telefon pe Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
@@ -4205,7 +4208,7 @@
 "PHONE_NUMBER_TYPE_UNKNOWN" = "Telefon";
 
 /* Label for 'Work' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK" = "Servici";
+"PHONE_NUMBER_TYPE_WORK" = "Serviciu";
 
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax serviciu";
@@ -4229,136 +4232,136 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 caractere.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Schimbați-vă PIN-ul";
+"PIN_CREATION_CHANGING_TITLE" = "Schimbă-ți PIN-ul";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "Confirmă PIN-ul ";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Introduceți codul PIN pe care tocmai l-ați creat.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Introdu codul PIN pe care tocmai l-ai creat.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Creați un PIN alfanumeric";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Creează un PIN alfanumeric";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Creați un PIN numeric";
+"PIN_CREATION_CREATE_NUMERIC" = "Creează un PIN numeric";
 
 /* Action of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Dezactivare PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Dacă dezactivați codul PIN, veți pierde toate datele când vă înregistrați din nou la Signal, dacă nu le transferați de pe alt dispozitiv iOS. Nu puteți activa Blocarea înregistrării în timp ce codul PIN este dezactivat.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Dacă dezactivezi codul PIN, vei pierde toate datele atunci când te vei înregistra din nou la Signal, dacă nu le transferi de pe alt dispozitiv iOS. Nu poți activa Blocarea înregistrării în timp ce codul PIN este dezactivat.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Avertizare";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "PIN-ul tău nu a fost salvat. Vom solicita să creezi un PIN mai târziu.";
+"PIN_CREATION_ERROR_MESSAGE" = "PIN-ul tău nu a fost salvat. Îți vom solicita să creezi un PIN mai târziu.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_TITLE" = "Crearea PIN-ului a eșuat";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-urile păstrează informațiile stocate în Signal criptate, astfel încât numai tu să le poți accesa. Profilul, setările și contactele se vor restabili atunci când reinstalați Signal. Nu aveți nevoie de PIN pentru a deschide aplicația.";
+"PIN_CREATION_EXPLANATION" = "PIN-urile păstrează informațiile stocate în Signal criptate, astfel încât numai tu să le poți accesa. Profilul, setările și contactele se vor restabili atunci când reinstalezi Signal. Nu ai nevoie de PIN pentru a deschide aplicația.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Aflați mai multe despre PIN-uri";
+"PIN_CREATION_LEARN_MORE" = "Află mai multe despre PIN-uri";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PIN-urile nu se potrivesc. Încercați din nou.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN-urile nu se potrivesc. Încearcă din nou.";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN-ul trebuie să aibă cel puțin 4 cifre";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Introduceți din nou PIN-ul";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Introdu din nou PIN-ul";
 
 /* Indicates the work we are doing while creating the user's pin */
 "PIN_CREATION_PIN_PROGRESS" = "Se creează PIN-ul...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Puteți schimba codul PIN atât timp cât acest dispozitiv este înregistrat.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Poți schimba codul PIN atât timp cât acest dispozitiv este înregistrat.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Schimbați-vă PIN-ul";
+"PIN_CREATION_RECREATION_TITLE" = "Schimbă-ți PIN-ul";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Dezactivare";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Pentru a dezactiva codul PIN, trebuie mai întâi să dezactivați Blocarea înregistrării.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Pentru a dezactiva codul PIN, trebuie mai întâi să dezactivezi Blocarea înregistrării.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Dezactivați Blocarea Înregistrării?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Dezactivezi Blocarea Înregistrării?";
 
 /* Skip action on the pin creation view */
 "PIN_CREATION_SKIP" = "Dezactivare PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Creați-vă PIN-ul";
+"PIN_CREATION_TITLE" = "Creează-ți PIN-ul";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Alegeți un PIN mai puternic";
+"PIN_CREATION_WEAK_ERROR" = "Alege un PIN mai puternic";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Codul PIN nu a putut fi dezactivat. Vă vom solicita din nou mai târziu.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Codul PIN nu a putut fi dezactivat. Îți vom solicita din nou mai târziu.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Dezactivarea PIN-ului a eșuat.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Pentru a vă ajuta să memorați codul PIN, vă vom rugă să îl introduceți periodic. În timp, o să-l cerem mai rar.";
+"PIN_REMINDER_EXPLANATION" = "Pentru a te ajuta să memorezi codul PIN, te vom ruga să îl introduci periodic. În timp, o să-l cerem mai rar.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Ați uitat PIN-ul?";
+"PIN_REMINDER_FORGOT_PIN" = "Ai uitat PIN-ul?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verificați PIN-ul";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Verifică PIN-ul";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Ocazional vă vom solicita să vă confirmați codul PIN pentru a-l reține mai ușor.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Ocazional îți vom solicita să confirmi codul PIN pentru a-l reține mai ușor.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Vă reamintim în câteva zile.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Iți vom reaminti în câteva zile.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Verifică PIN-ul Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Vă reamintim mâine.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Îți vom reaminti mâine.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Îți vom reaminti din nou în câteva săptămâni. ";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Îți vom reaminti din nou în câteva săptămâni.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Vă reamintim într-o săptămână.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Îți vom reaminti din nou într-o săptămână.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "PIN invalid, încercați din nou.";
+"PIN_REMINDER_MISMATCH_ERROR" = "PIN invalid, încercă din nou.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Introduceți PIN-ul dvs. Signal";
+"PIN_REMINDER_TITLE" = "Introdu PIN-ul tău Signal";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-ul trebuie să aibă cel puțin 4 cifre.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Puteți fixa până la 4 conversații.";
+"PINNED_CONVERSATION_LIMIT" = "Poți fixa până la 4 conversații.";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fixată";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Creați PIN";
+"PINS_MEGAPHONE_ACTION" = "Creează un PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "PIN-urile păstrează informațiile stocate în Signal criptate";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Vă amintim mai târziu. Crearea unui PIN o să devină obligatorie în %ld zile.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %ld zile.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Creați un PIN";
+"PINS_MEGAPHONE_TITLE" = "Creează un PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN creat. Poate fi schimbat din meniul de setări.";
@@ -4370,7 +4373,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Redă media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Nu ai marcat pe %@ ca și verificat.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Nu ai marcat pe %@ ca verificat.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Verificat";
@@ -4385,7 +4388,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Șterge verificarea";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi un număr de siguranță pentru %@. Ești sigur că verifici contactul corect?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Acesta nu pare a fi numărul de siguranță pentru %@. Ești sigur că verifici contactul corect?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Numărul din clipboard-ul tău nu pare a fi un număr de siguranță corect pentru această conversație.";
@@ -4454,7 +4457,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ și-a schimbat numele profilului în %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Numele dvs.";
+"PROFILE_NAME_VIEW_TITLE" = "Numele tău";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Despre";
@@ -4481,10 +4484,10 @@
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Prenume (obligatoriu)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profilul poate fi actualizat doar când sunteți conectat la internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "Profilul poate fi actualizat doar când ești conectat la internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profilul dvs. este criptat integral. Profilul dvs. și modificările sale vor fi vizibile pentru contactele dvs., atunci când inițiați sau acceptați conversații noi.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profilul tău este criptat integral. Profilul și modificările sale vor fi vizibile pentru contactele tale, atunci când inițiezi sau accepți conversații noi.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salvează";
@@ -4511,7 +4514,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Dvs.";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Tu";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Mesajul original nu a fost găsit.";
@@ -4595,19 +4598,19 @@
 "REGISTER_2FA_FORGOT_PIN" = "Mi-am uitat PIN-ul.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Aveți nevoi de ajutor?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ai nevoi de ajutor?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Codul PIN este un cod de +4 cifre pe care l-ați creat, care poate fi numeric sau alfanumeric. Dacă nu vă puteți aminti codul PIN, va trebui să așteptați 7 zile pentru a vă reînregistra contul.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Codul PIN este un cod de +4 cifre pe care l-ai creat, care poate fi numeric sau alfanumeric. Dacă nu îți poți aminti codul PIN, va trebui să aștepți 7 zile pentru a reînregistra contul.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Codul PIN este un cod format din +4 cifre pe care l-ați creat, care poate fi numeric sau alfanumeric. Dacă nu vă mai amintiți codul PIN, puteți crea unul nou. Vă puteți înregistra și utiliza contul, dar veți pierde unele setări salvate, cum ar fi informațiile despre profil.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Codul PIN este un cod format din +4 cifre pe care l-ai creat, care poate fi numeric sau alfanumeric. Dacă nu îți mai amintești codul PIN, poți crea unul nou. Te poți înregistra și utiliza contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Codul PIN este un cod numeric format din 4+ cifre pe care l-ați creat. Dacă nu vă puteți aminti codul PIN, va trebui să așteptați 7 zile pentru a vă reînregistra contul.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Codul PIN este un cod numeric format din 4+ cifre pe care l-ai creat. Dacă nu îți mai amintești codul PIN, va trebui să aștepți 7 zile pentru a reînregistra contul.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Mai aveți %lu încercări rămase. Dacă rămâneți fără încercări, puteți crea un cod PIN nou. Vă puteți înregistra și utiliza contul, dar veți pierde unele setări salvate, cum ar fi informațiile despre profil.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Mai ai %lu încercări rămase. Dacă rămâi fără încercări, poți crea un cod PIN nou. Te poți înregistra și utiliza contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Mai ai %lu încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți reînregistra fără PIN. Contul tău va fi golit și tot conținutul șters.";
@@ -4616,7 +4619,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Mai ai o încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți reînregistra fără PIN. Contul tău va fi golit și tot conținutul șters.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Mai aveți o încercare rămasă. Dacă rămâneți fără încercări, puteți crea un cod PIN nou. Vă puteți înregistra și utiliza contul, dar veți pierde unele setări salvate, cum ar fi informațiile despre profil.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Mai ai o încercare rămasă. Dacă rămâi fără încercări, poți crea un cod PIN nou. Poți să te înregistrezi și să utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorect";
@@ -4628,13 +4631,13 @@
 "REGISTER_2FA_SUBMIT_BUTTON" = "Trimite";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "Bine ați venit!";
+"REGISTER_CONTACTS_WELCOME" = "Bine ai venit!";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Ați încercat de prea multe ori. Vă rog așteptați un minut înainte să încercați din nou.";
+"REGISTER_RATE_LIMITING_BODY" = "Ai încercat de prea multe ori. Te rugăm să aștepți un minut înainte să încerci din nou.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Ați încercat de prea multe ori. Vă rog așteptați un minut înainte să încercați din nou.";
+"REGISTER_RATE_LIMITING_ERROR" = "Ai încercat de prea multe ori. Te rugăm să aștepți un minut înainte să încerci din nou.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Eroare la re-înregistrare pentru notificările push.";
@@ -4643,7 +4646,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Prefixul țării";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Introduceți numărul";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Introdu numărul";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Eroare la înregistrare";
@@ -4652,7 +4655,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nu putem activa contul tău până nu verifici codul pe care ți l-am trimis.";
 
 /* Alert body for network failure during registration */
-"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Pentru a continua, verificați conexiunea la internet a telefonului și încercați din nou.";
+"REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_BODY" = "Pentru a continua, verifică conexiunea la internet a telefonului și încearcă din nou.";
 
 /* Alert title for network failure during registration */
 "REGISTRATION_ERROR_NETWORK_FAILURE_ALERT_TITLE" = "Verificare conexiune";
@@ -4691,7 +4694,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nici un număr de telefon";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Un cod de verificare o să fie trimis la acest număr. Numărul dvs. de telefon de mai sus este corect? ";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Un cod de verificare o să fie trimis la acest număr. Numărul tău de telefon de mai sus este corect? ";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Confirmare număr: %@";
@@ -4709,10 +4712,10 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Numărul de telefon pe care încerci să-l înregistrezi a fost deja înregistrat pe alt server, te rog anulează înregistrarea de pe acel server și încearcă din nou.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Eliminați previzualizarea";
+"REMOVE_PREVIEW" = "Elimină previzualizarea";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Alegeți un nou administrator";
+"REPLACE_ADMIN_VIEW_TITLE" = "Alege un nou administrator";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Înregistrează-te din nou pentru notificări push";
@@ -4754,7 +4757,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Trimite oricum";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Este posibil ca următoarele persoane să fi reinstalat sau schimbat dispozitivele. Verificați numărul de siguranță cu acestea pentru a vă asigura confidențialitatea.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Este posibil ca următoarele persoane să fi reinstalat sau schimbat dispozitivele. Verifică numărul de siguranță cu acestea pentru a-ți asigura confidențialitatea.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Verificat anterior";
@@ -4772,10 +4775,10 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Numărul tău de siguranță pentru %@ s-a schimbat. S-ar putea să dorești să-l verifici.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scanați codul QR de pe dispozitivul contactului dvs.";
+"SCAN_CODE_INSTRUCTIONS" = "Scanează codul QR de pe dispozitivul contactului tău.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Scanați Codul QR";
+"SCAN_QR_CODE_VIEW_TITLE" = "Scanează Codul QR";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
@@ -4949,7 +4952,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Caută dupa nume sau număr";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Căutați";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Caută";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Alte contacte";
@@ -4967,7 +4970,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Codul de asociere nu a putut fi obținut";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pentru a lega acest dispozitiv la un alt cont, trebuie mai întâi să resetați acest dispozitiv. Sigur ștergeți tot istoricul (mesaje, atașamente, apeluri etc.)? Această acțiune este ireversibilă.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pentru a lega acest dispozitiv la un alt cont, trebuie mai întâi să resetezi acest dispozitiv. Sigur ștergi tot istoricul (mesaje, atașamente, apeluri etc.)? Această acțiune este ireversibilă.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Șterge tot";
@@ -4982,25 +4985,25 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versiune nesuportată";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Celălalt dispozitiv rulează o versiune veche de Signal care nu acceptă scanarea codurilor QR iPad. Vă rugăm să instalați cea mai recentă versiune de Signal și să încercați din nou.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Celălalt dispozitiv rulează o versiune veche de Signal care nu acceptă scanarea codurilor QR iPad. Te rugăm să instalezi cea mai recentă versiune de Signal și să încerci din nou.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Actualizați dispozitivul de scanare";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Actualizează dispozitivul de scanare";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Asocierea dispozitivului a eșuat";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Alegeți un nume pentru acest dispozitiv";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Alege un nume pentru acest dispozitiv";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Veți vedea acest nume la \"Dispozitive asociate.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Vei vedea acest nume la \"Dispozitive asociate.\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Alegeți un nume";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Alege un nume";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finalizați asocierea";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finalizează asocierea";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Deschide Signal pe telefon pentru a asocia acest iPad la contul tău.";
@@ -5015,7 +5018,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instalează Signal pe telefonul tău";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Atingeți imaginea de profil pentru a deschide setările de Signal pe telefon. Apoi \"Dispozitive asociate\" și \"Asociați dispozitiv nou\" pentru a scana acest cod cu telefonul:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Atinge imaginea de profil pentru a deschide setările de Signal pe telefon. Apoi \"Dispozitive asociate\" și \"Asociază dispozitiv nou\" pentru a scana acest cod cu telefonul:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Obțineți ajutor pentru asocierea iPad-ului tău aici";
@@ -5048,16 +5051,16 @@
 "SEND_INVITE_SUCCESS" = "Ai invitat prietenul tău să folosească Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Renunțați la media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Renunță la media";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Întoarceți-vă la cameră";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Întoarce-te la cameră";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Întoarceți-vă la librăria media";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Întoarce-te la librăria media";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Invită un prieten prin SMS nesecurizat?";
+"SEND_SMS_CONFIRM_TITLE" = "Inviți un prieten prin SMS nesecurizat?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Ai dori să inviți numărul următor să folosească aplicația Signal:";
@@ -5102,7 +5105,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Ocolirea cenzurii a fost activată pe baza numărului tău de telefon.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ați dezactivat manual ocolirea cenzurii.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ai dezactivat manual ocolirea cenzurii.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Ocolirea cenzurii poate fi activată numai atunci când ești conectat la internet.";
@@ -5201,7 +5204,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Calitatea fișierelor media trimise";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Alege calitatea la care trimiteți fotografii și videoclipuri.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Alege calitatea la care trimiți fotografii și videoclipuri.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Fișiere media trimise";
@@ -5219,10 +5222,10 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Nu transfera";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Aveți un sold de %@. Dacă nu vă transferați fondurile către adresa unui alt portofel înainte de a vă șterge contul, acestea vor fi pierdute definitiv.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Ai un sold de %@. Dacă nu îți transferi fondurile către adresa unui alt portofel înainte de a șterge contul, acestea vor fi pierdute definitiv.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transferați soldul plăților?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transferi soldul plăților?";
 
 /* Button for transferring the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transferă sold";
@@ -5240,10 +5243,10 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Dispariție mesaje";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Setați un temporizator implicit de dispariție a mesajelor pentru toate conversațiile noi inițiate de dvs.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Setează un temporizator implicit de dispariție a mesajelor pentru toate conversațiile noi inițiate de tine.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donați pentru Signal";
+"SETTINGS_DONATE" = "Donează pentru Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Ajutor";
@@ -5264,10 +5267,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Termeni și politica de confidențialitate";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Generați previzualizări ale linkurilor";
+"SETTINGS_LINK_PREVIEWS" = "Generează previzualizări ale linkurilor";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Obțineți previzualizările linkurilor direct de pe site-urile web pentru mesajele pe care le trimiteți.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Obține previzualizările link-urilor direct de pe site-urile web pentru mesajele pe care le trimiți.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Niciodată";
@@ -5294,7 +5297,7 @@
 "SETTINGS_MESSAGING" = "Mesagerie";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Vedeți și distribuiți când mesajele sunt citite și tastate. Dacă este dezactivată, nu veți vedea confirmările de citire sau indicatorii de tastare de la alte persoane.";
+"SETTINGS_MESSAGING_FOOTER" = "Vezi și distribuie când mesajele sunt citite și tastate. Dacă este dezactivată, nu vei vedea confirmările de citire sau indicatorii de tastare de la alte persoane.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Setări";
@@ -5324,7 +5327,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Activare";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Puteți utiliza Signal pentru a trimite si primi MobileCoin. Toate plățile sunt supuse Termenilor de Utilizare ai Monedei virtuale și Portofelului MobileCoin. Aceasta este o caracteristică beta, prin urmare puteți întâmpina probleme, iar plățile sau soldul pierdut nu pot fi recuperate.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Poți utiliza Signal pentru a trimite și primi MobileCoin. Toate plățile sunt supuse Termenilor de Utilizare ai Monedei virtuale și Portofelului MobileCoin. Aceasta este o caracteristică beta, prin urmare poți întâmpina probleme, iar plățile sau soldul pierdut nu pot fi recuperate.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Activare";
@@ -5336,7 +5339,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Adăugare fonduri";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Pentru a adăuga fonduri, trimiteți MobileCoin către adresa portofelului dvs. Începeți o tranzacție din contul dvs de la un exchange care acceptă MobileCoin, după care scanați codul QR sau copiați adresa portofelului.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Pentru a adăuga fonduri, trimite MobileCoin către adresa portofelului tău. Inițiază o tranzacție din contul tău de la un exchange care acceptă MobileCoin, după care scanează codul QR sau copiază adresa portofelului.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Adresa portofelului a fost copiată";
@@ -5348,19 +5351,19 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ la %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Puteți transfera în continuare fonduri către un exchange, dar nu mai puteți trimite sau primi plăți ori adăuga fonduri.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Poți transfera în continuare fonduri către un exchange, dar nu mai poți trimite sau primi plăți ori adăuga fonduri.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Nu puteți dezactiva plățile deoarece soldul dvs. nu este disponibil. Verificați conexiunea și încercați din nou.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Nu poți dezactiva plățile deoarece soldul tău nu este disponibil. Verifică conexiunea și încearcă din nou.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Plata nu s-a putut finaliza deoarece soldul dvs. nu este disponibil. Verificați conexiunea și încercați din nou.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Plata nu s-a putut finaliza deoarece soldul tău nu este disponibil. Verifică conexiunea și încearcă din nou.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Puteți transfera în continuare fonduri către un exchange, dar nu mai puteți trimite sau primi plăți ori adăuga fonduri.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Poți transfera în continuare fonduri către un exchange, dar nu mai poți trimite sau primi plăți ori adăuga fonduri.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Puteți transfera în continuare fonduri către un exchange, dar nu mai puteți trimite sau primi plăți ori adăuga fonduri.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Plățile în Signal nu mai sunt disponibile. Poți transfera în continuare fonduri către un exchange, dar nu mai poți trimite sau primi plăți ori adăuga fonduri.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversiile sunt doar estimări și este posibil să nu fie precise";
@@ -5369,34 +5372,34 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Toate monedele";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transferați soldul rămas";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transferă soldul rămas";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Dezactivare";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Dezactivați plățile";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Dezactivează plățile";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Nu veți putea trimite sau primi MobileCoin în Signal, dacă dezactivați plățile.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Nu vei putea trimite sau primi MobileCoin în Signal, dacă dezactivezi plățile.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Dezactivați Plățile ?";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Dezactivezi Plățile?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Dezactivați plățile";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Dezactivează plățile";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Este recomandat să vă transferați fondurile către o altă adresă de portofel înainte de a dezactiva plățile. Dacă alegeți să nu vă transferați fondurile acum, acestea vor rămâne în portofelul dvs. asociat cu Signal dacă reactivați plățile.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Este recomandat să îți transferi fondurile către o altă adresă de portofel înainte de a dezactiva plățile. Dacă alegi să nu îți transferi fondurile acum, acestea vor rămâne în portofelul tău asociat cu Signal dacă reactivezi plățile.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Soldul dvs. va rămâne în portofelul asociat cu Signal, dacă alegeți sa reactivați plățile";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Soldul tău va rămâne în portofelul asociat cu Signal, dacă alegi sa reactivezi plățile.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Dezactivați fără transfer?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Dezactivezi fără transfer?";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Dezactivați fără transfer";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Dezactivează fără transfer";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
 "SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Plățile nu au putut fi dezactivate";
@@ -5414,31 +5417,31 @@
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Despre MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Puteți adăuga fonduri pentru a le folosi în Signal transferând MobileCoin către adresa portofelului dvs.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Poți adăuga fonduri pentru a le folosi în Signal transferând MobileCoin către adresa portofelului tău.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adăugarea fondurilor";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Puteți schimba oricând MobileCoin în numerar la un exchange care acceptă MobileCoin. Nu trebuie decât să faceți un transfer către contul dvs. de la acel exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Poți schimba oricând MobileCoin în numerar la un exchange care acceptă MobileCoin. Nu trebuie decât să faci un transfer către contul tău de la acel exchange.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Schimbul în numerar";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Actualizați PIN";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Actualizează PIN-ul";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Având un sold ridicat, vă este recomandat să treceți la un PIN alfanumeric pentru a asigura mai multa protecție contului dvs.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Având un sold ridicat, este recomandat să treci la un PIN alfanumeric pentru a asigura mai multă protecție contului tău.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualizați-vă PIN-ul";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Actualizează-ți PIN-ul";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Transcrie fraza de recuperare";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Fraza dvs. de recuperare vă oferă încă o metodă de a vă restaura contul de plăți";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Fraza ta de recuperare îți oferă încă o metodă de a-ți restaura contul de plăți.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Transcrie fraza de recuperare";
@@ -5450,13 +5453,13 @@
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Nu există activități recente deocamdată.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Doriți să activați plățile?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Veri să activezi plățile?";
 
 /* Title for the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Plățile nu sunt activate";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Înregistrați-vă din nou pentru a trimite plăți.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Înregistrează-te din nou pentru a trimite plăți.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Nu este înregistrată";
@@ -5468,7 +5471,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Plăți activate.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Utilizați Signal pentru a trimite și primi MobileCoin, o nouă monedă digitală axată pe confidențialitate. Activați pentru a începe.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Utilizează Signal pentru a trimite și primi MobileCoin, o nouă monedă digitală axată pe confidențialitate. Activează pentru a începe.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivează plățile";
@@ -5477,7 +5480,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Vă prezentăm Plăți (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Soldul dvs. va fi restituit automat când reinstalați Signal dacă vă confirmați PIN-ul Signal. De asemenea vă puteți recupera soldul utilizând o frază de recuperare, ce este formată din 24 de cuvinte și este unică pentru dvs. Ar trebui să o scrieți pe hârtie si să o păstrați într-un loc sigur.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Soldul tău va fi restituit automat când reinstalezi Signal dacă confirmi PIN-ul Signal. De asemenea îți poți recupera soldul utilizând o frază de recuperare, ce este formată din 24 de cuvinte și este unică pentru tine. Ar trebui să o scrii pe hârtie si să o păstrezi într-un loc sigur.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Adăugare fonduri";
@@ -5501,7 +5504,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ la %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Dvs.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Tu";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Trimis";
@@ -5516,10 +5519,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Detaliile tranzacției inclusiv valoarea și data acesteia, fac parte din registrul MobileCoin";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Un \"comision de consolidare monedă\" este perceput când monedele pe care le dețineți nu pot fi combinate pentru a finaliza o tranzacție. Consolidarea vă permite să continuați efectuarea de plăți.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Un „comision de consolidare monedă” este perceput atunci când monedele pe care le deții nu pot fi combinate pentru a finaliza o tranzacție. Consolidarea îți permite să continui efectuarea de plăți.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nu aveți suficient MOB pentru a finaliza această plată. Soldul dvs. curent este %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nu ai suficient MOB pentru a finaliza această plată. Soldul tău curent este %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Fonduri insuficiente";
@@ -5546,7 +5549,7 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Plăți recente";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Înainte de a putea dezactiva PIN-ul, trebuie să transcrieți fraza de recuperare, pentru a vă asigura că puteți recăpăta contul de plăți.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Înainte de a putea dezactiva PIN-ul, trebuie să transcrii fraza de recuperare pentru a te asigura că poți recăpăta accesul la plățile contului.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Transcrie fraza de recuperare";
@@ -5558,22 +5561,22 @@
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Sold rămas";
 
 /* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Eliminați";
+"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Elimină";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restaurează contul de plăți";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Asigurați-vă că ați introdus corect fraza dvs.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Asigură-te că ai introdus corect fraza ta.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirmați fraza de recuperare";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirmă fraza de recuperare";
 
 /* Message indicating that 'restore payments wallet' is complete. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Contul de plăți a fost restaurat.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Introduceți manual";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Introdu manual";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Restaurarea a eșuat";
@@ -5591,19 +5594,19 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Frază de recuperare";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Lipiți fraza de recuperare";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Lipește fraza de recuperare";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Fraza de recuperare este formată din 24 de cuvinte și este unică pentru dvs. Utilizați această frază pentru a vă recupera contul de plăți.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Fraza de recuperare este formată din 24 de cuvinte și este unică pentru tine. Utilizează această frază pentru a-ți recupera contul de plăți.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introduceți fraza de recuperare";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Introduce fraza de recuperare";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Frază de recuperare";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Introduceți cuvântul %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Introduce cuvântul %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Frază de recuperare invalidă.";
@@ -5612,10 +5615,10 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Cuvântul este scris greșit.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Introduceți fraza de recuperare";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Introduce fraza de recuperare";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanați codul QR pentru destinatarul transferului.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scanează codul QR pentru destinatarul transferului.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Adresă invalidă";
@@ -5627,7 +5630,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Trimite plata";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Alegeți destinatarul";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Alege destinatarul";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Conversie monedă";
@@ -5636,13 +5639,13 @@
 "SETTINGS_PAYMENTS_TITLE" = "Plăți";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Nu puteți transfera către adresa propriului portofel Signal. Introduceți adresa portofelului din contul dvs. la un exchange acceptat.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Nu poți transfera către adresa propriului portofel Signal. Introduce adresa portofelului din contul tău la un exchange acceptat.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Poți vira MobileCoin efectuând un transfer către adresa portofelului furnizat de exchange. Adresa portofelului este șirul de cifre și litere situat în mod obișnuit sub codul QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Verificați adresa portofelului spre care doriți să transferați și încercați din nou.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Verifică adresa portofelului spre care vrei să transferi și încearcă din nou.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Adresă incorectă";
@@ -5651,10 +5654,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Către: Scanează sau introdu adresa portofelului";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transferați către exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transferă către exchange";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transferați către exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transferă către exchange";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Configurarea frazei de recuperare s-a terminat.";
@@ -5663,19 +5666,19 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Confirmă";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Introduceți cuvintele %1$@ și %2$@ din fraza dvs. de recuperare.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Introdu cuvintele %1$@ și %2$@ din fraza ta de recuperare.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Un cuvânt este greșit. Încercați din nou.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Un cuvânt este greșit. Încearcă din nou.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Ambele cuvinte sunt greșite. Încercați din nou.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Ambele cuvinte sunt greșite. Încearcă din nou.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Cuvânt %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirmați fraza de recuperare";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirmă fraza de recuperare";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Frază de recuperare copiată";
@@ -5684,13 +5687,13 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Copiere în clipboard";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Dacă alegeți să păstrați fraza dvs. de recuperare în mod digital, asigurați-vă că este stocată în siguranță undeva de încredere.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Dacă alegi să păstrezi fraza ta de recuperare în mod digital, asigură-te că este stocată în siguranță undeva de încredere.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copiere în clipboard?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Afișați fraza din nou";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Vezi din nou fraza";
 
 /* Title for the first step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Afișare fraza de recuperare";
@@ -5837,7 +5840,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Signal Boost";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "Fii un Susținător Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocare înregistrare";
@@ -6020,7 +6023,7 @@
 "SUBSCRIBER_BADGES" = "Insigne";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Gestionare abonament";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Abonament";
@@ -6029,13 +6032,13 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribuie";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal este susținut de oameni ca dvs. Contribuiți și primiți o insignă.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Nu, mulțumesc";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Fii un Susținător";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Numărul tău de siguranța cu %@ se potrivește. Poți marca acest contact ca fiind verificat.";
@@ -6095,25 +6098,25 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Se încarcă";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal este o organizație non-profit, fără agenți de publicitate sau investitori, susținută doar de oamenii care o folosesc și o apreciază. Fă o contribuție lunară recurentă și primești o insignă de profil pentru a-ți împărtăși sprijinul.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal este dedicat dezvoltării de tehnologii open source pentru confidențialitate care protejează libertatea de exprimare și permit o comunicare globală sigură\n\nDonația ta susține această cauză și plătește pentru dezvoltarea și funcționarea unei aplicații folosită de milioane de oameni pentru comunicare privată. Fără reclame. Fără elemente de urmărire. Pe bune.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Sprijină tehnologia construită pentru tine - nu pentru datele tale - alăturându-te comunității de oameni care o susțin.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "De ce să contribuiți?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "În curs de procesare";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Adăugați un Boost la Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obține insigna %@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Anulare abonament";
@@ -6128,49 +6131,49 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmați anularea?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nu s-a putut adăuga insigna. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Insigna nu a putut fi adăugată în cont. Te rugăm să contactezi asistența.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Nu s-a putut adăuga insigna";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Te rugăm contactează asistența.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Alege Moneda";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Sprijinul meu";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/lună";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expiră: %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Reînnoire: %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Se procesează plata...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Se procesează tranzacția...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Citește mai mult";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Reînnoire: %@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Plata ta este încă în procesare. Ceea ce poate dura câteva minute în funcție de conexiunea ta.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Abonamentul tău a fost anulat.";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Nu acum";
@@ -6179,16 +6182,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal este susținut de oameni ca tine.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vei fi taxat astăzi cu prețul integral al noului abonament (%@). Noul tău abonament se va reînnoi lunar.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Actualizezi abonamentul?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Actualizează";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Sprijină tehnologia construită pentru tine—nu pentru datele tale— alăturându-te comunității de oameni care o susțin.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Dezactivate";

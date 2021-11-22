@@ -401,7 +401,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Когда у вас больше одного значка, вы можете выбрать главный значок, который другие люди будут видеть в вашем профиле.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Вы заработали значок «%@»! Помогите Signal увеличить осведомлённость, показав этот значок в своём профиле.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Вы заработали значок %@! Помогите Signal повысить осведомленность, отобразив этот значок в вашем профиле.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Закрыть баннер";
@@ -483,6 +483,9 @@
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Скажите «Спасибо!» и получите значок «Ускорение» на 30 дней.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Ввести сумму";
@@ -662,7 +665,7 @@
 "CHAT_COLOR_INCOMING_MESSAGE_1" = "Это предпросмотр цвета чата.";
 
 /* The second incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_2" = "Ещё одно сообщение";
+"CHAT_COLOR_INCOMING_MESSAGE_2" = "Еще одно сообщение";
 
 /* The outgoing bubble text when setting a chat color. */
 "CHAT_COLOR_OUTGOING_MESSAGE" = "Этот цвет виден только вам.";
@@ -3569,10 +3572,10 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Выберите участников";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите сбросить внесённые изменения?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите сбросить внесенные изменения?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохранённые изменения";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
 
 /* No comment provided by engineer. */
 "new_message" = "Новое сообщение";
@@ -3914,7 +3917,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Обновите Signal, чтобы использовать платежи.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Платёж ещё не проверен";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Платеж еще не проверен";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Не удалось выполнить платёж. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
@@ -4667,7 +4670,7 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Вы должны зарегистрироваться перед тем, как отправлять сообщения.";
 
 /* Error message indicating that device transfer from another device might be possible. */
-"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "На этот номер была ранее зарегистрирована учётная запись, которая доступна для переноса.";
+"REGISTRATION_TRANSFER_AVAILABLE_DESCRIPTION" = "На этот номер была ранее зарегистрирована учетная запись, которая доступна для переноса.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Ошибка подтверждения";
@@ -4967,13 +4970,13 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Не удалось получить код привязки";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Чтобы привязать это устройство к другой учётной записи, необходимо сначала сбросить данные Signal на этом устройстве. Вы действительно хотите удалить всю историю (сообщения, вложения, звонки и т. д.)? Это действие необратимо.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Чтобы привязать это устройство к другой учетной записи, необходимо сначала сбросить данные Signal на этом устройстве. Вы действительно хотите удалить всю историю (сообщения, вложения, звонки и т. д.)? Это действие необратимо.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Удалить всё";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Удалить все";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Учётная запись не совпадает";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Учетная запись не совпадает";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Обновите Signal на этом устройстве, чтобы привязать его к своему телефону.";
@@ -6095,19 +6098,19 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Загрузка";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal — некоммерческая организация без рекламодателей и инвесторов, поддерживаемая только людьми, которые используют и ценят ее. Делая пожертвование ежемесячно, вы получите значок для профиля, чтобы поделиться с другими тем, что вы поддерживаете Signal.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal предан разработке технологии конфиденциальности с открытым исходным кодом, которая защищает свободу слова и делает возможным безопасное общение по всему миру.\n\nВаш вклад поддерживает эту миссию и оплачивает разработку и работу приложения, которое используется миллионами людей для конфиденциального общения. Без рекламы. Без трекеров. Без шуток.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Поддержите технологию, сделанную для вас, а не для ваших данных, присоединившись к сообществу, которое поддерживает ее.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Почему стоит поддерживать?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Всё ещё обрабатывается";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Все еще обрабатывается";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Добавить Ускорение Signal";
@@ -6122,7 +6125,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Подтвердить";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "С вас больше не будет взиматься плата. Ваш значок будет удалён из профиля в конце вашего расчётного периода.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "С вас больше не будет взиматься плата. Ваш значок будет удален из профиля в конце вашего расчетного периода.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Подтверждаете отмену?";
@@ -6131,7 +6134,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Не удалось добавить значок. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не удалось добавить ваш значок в вашу учётную запись. Пожалуйста, свяжитесь с поддержкой.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не удалось добавить ваш значок в вашу учетную запись. Пожалуйста, свяжитесь с поддержкой.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не удалось добавить значок";
@@ -6155,19 +6158,19 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Продлится %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обрабатываем платёж…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обрабатываем платеж…";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обрабатываем транзакцию…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Узнать больше.";
+"SUSTAINER_VIEW_READ_MORE" = "Читать далее.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Продлится %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш платёж всё ещё обрабатывается. Это может занять несколько минут, в зависимости от вашего соединения.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш платеж все еще обрабатывается. Это может занять несколько минут, в зависимости от вашего соединения.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Ваша подписка была отменена";
@@ -6188,7 +6191,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Обновить";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Поддержите технологию, сделанную для вас, а не для ваших данных, присоединившись к сообществу людей, поддерживающих её.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Поддержите технологию, сделанную для вас, а не для ваших данных, присоединившись к сообществу людей, поддерживающих ее.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Отключено";
@@ -6380,7 +6383,7 @@
 "UPDATE_GROUP_FAILED" = "Не удалось обновить группу.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Не удалось обновить группу. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Не удалось обновить группу. Проверьте ваше подключение к интернету и попробуйте еще раз.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Создать PIN-код";

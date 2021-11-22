@@ -1,5 +1,2 @@
-我們不會出售的你資料和沒有廣告，我們依賴的是你對壯大Signal 的努力：
-• 你現在可以使用 Apple Pay 每月捐獻一小筆捐款，以幫助維持 Signal。 維護者可以獲得有趣的徽章，他們可以在他們的個人資料上展示，以幫助宣傳。
-• 使用Apple Pay 贊助 Signal。Boosts是一種快速的一次性捐獻，讓你說聲謝謝並讓 Signal 繼續維護。Boosts 帶有自己獨特的徽章。
-
-此版本還包括許多錯誤修復。
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

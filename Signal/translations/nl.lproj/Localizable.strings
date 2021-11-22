@@ -380,7 +380,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Badges";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Wordt een ondersteuner";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Word een ondersteuner";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Help Signal met een eenmalige bijdrage";
@@ -483,6 +483,9 @@
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Bedank Signal en verdien de eenmalige-donatie-badge voor 30 dagen.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Vul een zelfgekozen bedrag in";
@@ -5837,7 +5840,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Eenmalige donatie";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Wordt een Signal-ondersteuner";
+"SETTINGS_SUBSCRIPTION" = "Word een Signal-ondersteuner";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
@@ -6035,7 +6038,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Nee";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Wordt een ondersteuner";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Word een ondersteuner";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %@ komt overeen. Je kunt deze contactpersoon markeren als geverifieerd.";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Aan het laden";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is een organisatie zonder winstoogmerk zonder adverteerders en zonder investeerders, uitsluitend mogelijk gemaakt door mensen die de app gebruiken en die er waarde aan hechten. Geef een maandelijkse donatie en ontvang een profiel-badge die je—als je dat wilt—kunt weergeven op je profiel om te laten zien dat je Signal ondersteunt.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Het Signal-team heeft als missie om privacy-technologie met een open broncode te ontwikkelen waarmee vrijheid van expressie wordt beschermd en beveiligde communicatie over de hele wereld beschikbaar wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en de servers en bandbreedte die nodig zijn voor een app door miljoenen mensen wordt gebruikt voor privécommunicatie. Geen advertenties, geen volgers, geen grapje.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Ondersteun technologie die is gemaakt voor jou, niet voor het verzamelen van je gegevens, door één van de donateurs te worden die Signal mogelijk maken.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Waarom bijdragen?";

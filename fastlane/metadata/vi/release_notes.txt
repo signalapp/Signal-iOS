@@ -1,5 +1,2 @@
-Không kinh doanh hay quảng cáo, chúng tôi dựa vào những đống góp của bạn để phát triển nguồn lực Signal::
-• giờ đây, bạn có thể quyên góp để duy trị Signal bằng một khoản tiền nhỏ mỗi tháng từ ví Apple Pay. Những nhà tài trợ sẽ nhận được một huy hiệu nhỏ trên profile của mình để có thể truyền bá làn sóng quyên góp đến mọi người.
-• Mỗi lần bạn quyên góp cho Signal qua Apple Pay, sẽ được tính là một lượt quyên góp. Bạn sẽ nhận được lời cảm ơn vì đã góp phần duy trì hoạt động của Signal và một huy hiệu độc nhất cho mỗi lần quyên góp.
-
-Phiên bản này đã bao gồm nhiều lần sửa lỗi.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

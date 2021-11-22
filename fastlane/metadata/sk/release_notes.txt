@@ -1,5 +1,2 @@
-Bez údajov na predaj a bez reklám sa spoliehame na vaše príspevky na podporu Signal:
-• Teraz môžete pomôcť udržať Signal tak, že každý mesiac prispejete malým darom pomocou Apple Pay. Podporovatelia získavajú zábavné odznaky, ktoré môžu zobraziť na svojom profile, aby pomohli šíriť povedomie o podpore.
-• Podporte Signal pomocou Apple Pay. Podpora je rýchlym jednorazovým darom, ktorý vám umožní poďakovať a udržať Signal v chode. Podpora prichádza s vlastným jedinečným odznakom.
-
-Toto vydanie tiež obsahuje množstvo opráv chýb.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

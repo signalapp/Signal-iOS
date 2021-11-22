@@ -380,13 +380,13 @@
 "BADGE_CONFIGURATION_TITLE" = "徽章";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為贊助人";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為定期贊助人";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "贊助 Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "單次贊助 Signal";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "謝謝你的推廣!";
+"BADGE_THANKS_BOOST_TITLE" = "謝謝你的贊助!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "在個人資訊中展示";
@@ -482,7 +482,10 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "設定貨幣";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得贊助徽章 30 天 。";
+"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得單次贊助徽章 30 天 。";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
@@ -500,7 +503,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "選擇要贊助的金額";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "贊助 Signal";
+"BOOST_VIEW_TITLE" = "單次贊助 Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "新增";
@@ -905,10 +908,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "操作異常";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "贊助人 & Signal 贊助";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "定期贊助者 & Signal 單次贊助";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "贊助人 & Signal贊助";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "定期贊助者 & Signal單次贊助";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal 無法完成你的支援請求。";
@@ -5834,10 +5837,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "允許 iOS 連結 Signal 聯絡人和聊天以獲取共享建議和通知等功能。";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal 贊助";
+"SETTINGS_SIGNAL_BOOST" = "Signal 單次贊助";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "成為Signal 贊助人";
+"SETTINGS_SUBSCRIPTION" = "成為Signal 定期贊助人";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "註冊鎖";
@@ -6035,7 +6038,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "在心中";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "成為贊助人";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "成為定期贊助人";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "你與 %@的安全碼相符合。你可以將此聯絡人標記為已驗證。";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "讀取中";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal 是一個沒有廣告商或投資者的非營利組織，僅由使用和重視它的人維持。 每月定期捐款並獲得個人資料成就徽章以分享你的支持。";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal 致力於開發開源隱私技術，以保護言論自由並實現安全的全球通訊。\n\n你的貢獻推動了這一事業，並為數百萬人用於私密通訊應用程式的開發和運營支付了費用。 沒有廣告。 沒有追踪器。 這絕不是開玩笑。";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "加入技術支援的社群是為了你打造的技術，-而不是為你的個資-。";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "為何要捐款?";
@@ -6110,7 +6113,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "仍在處理中";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的贊助";
+"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的單次贊助次數";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "得到一個 %@ 徽章";
