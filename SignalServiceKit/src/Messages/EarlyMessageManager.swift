@@ -130,10 +130,6 @@ public class EarlyMessageManager: NSObject {
             }
         }
 
-        var logDescription: String {
-            "[EarlyReceipt: \(encodedType.rawValue)]"
-        }
-
         case outgoingMessageRead(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
         case outgoingMessageDelivered(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
         case outgoingMessageViewed(sender: SignalServiceAddress, deviceId: UInt32, timestamp: UInt64)
@@ -165,7 +161,7 @@ public class EarlyMessageManager: NSObject {
     }
 
     private static let maxEarlyEnvelopeSize: Int = 1024
-    private static let maxEarlyReceiptsPerMessage: Int = 128
+    private static let maxQueuedPerMessage: Int = 128
 
     private var pendingEnvelopeStore = SDSKeyValueStore(collection: "EarlyEnvelopesStore")
     private var pendingReceiptStore =  SDSKeyValueStore(collection: "EarlyReceiptsStore")
@@ -209,6 +205,11 @@ public class EarlyMessageManager: NSObject {
         } catch {
             owsFailDebug("Failed to decode existing early envelopes for message \(identifier) with error \(error)")
             envelopes = []
+        }
+
+        while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
+            envelopes.remove(at: 0)
+            owsFailDebug("Dropping early envelope \(OWSMessageManager.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
         }
 
         envelopes.append(EarlyEnvelope(
@@ -311,15 +312,16 @@ public class EarlyMessageManager: NSObject {
         }
 
         guard !Set(receipts).contains(earlyReceipt) else {
-            Logger.warn("Ignoring duplicate early receipt: \(earlyReceipt.logDescription)")
+            Logger.warn("Ignoring duplicate early receipt \(earlyReceipt) for message \(identifier)")
             return
         }
 
-        receipts.append(earlyReceipt)
-
-        if receipts.count > Self.maxEarlyReceiptsPerMessage {
-            receipts = Array(receipts.suffix(Self.maxEarlyReceiptsPerMessage))
+        while receipts.count >= Self.maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
+            receipts.remove(at: 0)
+            owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
         }
+
+        receipts.append(earlyReceipt)
 
         do {
             try pendingReceiptStore.setCodable(receipts, key: identifier.key, transaction: transaction)
@@ -453,7 +455,7 @@ public class EarlyMessageManager: NSObject {
             let staleEnvelopeKeys = allEnvelopeKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
-                      timestamp > oldestTimestampToKeep else {
+                      timestamp < oldestTimestampToKeep else {
                     return false
                 }
                 return true
@@ -464,7 +466,7 @@ public class EarlyMessageManager: NSObject {
             let staleReceiptKeys = allReceiptKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
-                      timestamp > oldestTimestampToKeep else {
+                      timestamp < oldestTimestampToKeep else {
                     return false
                 }
                 return true
@@ -472,26 +474,27 @@ public class EarlyMessageManager: NSObject {
             self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transaction)
 
             let remainingReceiptKeys = Set(allReceiptKeys).subtracting(staleReceiptKeys)
-            self.deduplicateEarlyReceiptsIfNecessary(remainingReceiptKeys: remainingReceiptKeys,
+            self.trimEarlyReceiptsIfNecessary(remainingReceiptKeys: remainingReceiptKeys,
                                                      transaction: transaction)
         }
     }
 
-    private func deduplicateEarlyReceiptsIfNecessary(remainingReceiptKeys: Set<String>,
-                                                     transaction: SDSAnyWriteTransaction) {
+    private func trimEarlyReceiptsIfNecessary(
+        remainingReceiptKeys: Set<String>,
+        transaction: SDSAnyWriteTransaction
+    ) {
         guard CurrentAppContext().isMainApp,
               !CurrentAppContext().isRunningTests else {
                   return
               }
 
-        let deduplicatedReceiptKey = "deduplicatedReceiptKey"
-            let hasDeduplicatedReceipts = self.metadataStore.getBool(deduplicatedReceiptKey,
-                                                                     defaultValue: false,
-                                                                     transaction: transaction)
-        guard !hasDeduplicatedReceipts else {
-            return
-        }
-        self.metadataStore.setBool(true, key: deduplicatedReceiptKey, transaction: transaction)
+        let trimmedReceiptsKey = "trimmedReceiptsKey"
+        let hasTrimmedReceipts = self.metadataStore.getBool(
+            trimmedReceiptsKey,
+            defaultValue: false,
+            transaction: transaction)
+        guard !hasTrimmedReceipts else { return }
+        self.metadataStore.setBool(true, key: trimmedReceiptsKey, transaction: transaction)
 
         var removedTotal: Int = 0
         for receiptKey in remainingReceiptKeys {
@@ -500,8 +503,14 @@ public class EarlyMessageManager: NSObject {
                     let receipts: [EarlyReceipt] = try self.pendingReceiptStore.getCodableValue(forKey: receiptKey,
                                                                                                 transaction: transaction) ?? []
                     var deduplicatedReceipts = OrderedSet(receipts).orderedMembers
-                    if deduplicatedReceipts.count > Self.maxEarlyReceiptsPerMessage {
-                        deduplicatedReceipts = Array(deduplicatedReceipts.suffix(Self.maxEarlyReceiptsPerMessage))
+                    if deduplicatedReceipts.count != receipts.count {
+                        Logger.info("De-duplicated early receipts for message \(receiptKey): \(receipts.count) - \(receipts.count - deduplicatedReceipts.count) -> \(deduplicatedReceipts.count)")
+                    }
+
+                    if deduplicatedReceipts.count > Self.maxQueuedPerMessage {
+                        let countBeforeTrimming = deduplicatedReceipts.count
+                        deduplicatedReceipts = Array(deduplicatedReceipts.suffix(Self.maxQueuedPerMessage))
+                        Logger.info("Trimmed early receipts for message \(receiptKey): \(countBeforeTrimming) - \(countBeforeTrimming - deduplicatedReceipts.count) -> \(deduplicatedReceipts.count)")
                     }
 
                     guard !receipts.isEmpty,
@@ -512,9 +521,7 @@ public class EarlyMessageManager: NSObject {
                                                        key: receiptKey,
                                                        transaction: transaction)
                     owsAssertDebug(receipts.count > deduplicatedReceipts.count)
-                    let removedCount: Int = receipts.count - deduplicatedReceipts.count
-                    Logger.info("De-duplicated early receipts: \(receipts.count) - \(removedCount) -> \(deduplicatedReceipts.count)")
-                    removedTotal += removedCount
+                    removedTotal += receipts.count - deduplicatedReceipts.count
                 } catch {
                     owsFailDebug("Failed to decode early receipts: \(error)")
                     self.pendingReceiptStore.removeValue(forKey: receiptKey, transaction: transaction)
@@ -522,7 +529,7 @@ public class EarlyMessageManager: NSObject {
             }
         }
         if removedTotal > 0 {
-            Logger.info("De-duplicated early receipts (total): \(removedTotal)")
+            Logger.info("Removed early receipts (total): \(removedTotal)")
         }
     }
 }
@@ -533,11 +540,11 @@ extension SSKProtoReceiptMessageType: CustomStringConvertible {
     public var description: String {
         switch self {
         case .delivery:
-            return ".delivery"
+            return "delivery"
         case .read:
-            return ".read"
+            return "read"
         case .viewed:
-            return ".viewed"
+            return "viewed"
         @unknown default:
             owsFailDebug("unexpected SSKProtoReceiptMessageType: \(self.rawValue)")
             return "Unknown"
