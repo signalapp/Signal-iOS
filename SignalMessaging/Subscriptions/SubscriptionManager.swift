@@ -501,7 +501,10 @@ public class SubscriptionManager: NSObject {
             if statusCode == 200 {
                 Logger.info("Got valid receipt response")
             } else if statusCode == 204 {
-                Logger.info("User has no active subscriptions, retrying!")
+                Logger.info("User has no active subscriptions when getting receipt presentation, retrying!")
+                throw OWSRetryableSubscriptionError()
+            } else {
+                Logger.info("Got undefined non-4xx error fetching receipt presentation, retrying!")
                 throw OWSRetryableSubscriptionError()
             }
 
@@ -773,7 +776,10 @@ extension SubscriptionManager {
             if statusCode == 200 {
                 Logger.debug("Got valid receipt response")
             } else if statusCode == 204 {
-                Logger.debug("No receipt could be found for this payment intent")
+                Logger.debug("No receipt could be found for this boost payment intent")
+                throw OWSRetryableSubscriptionError()
+            } else {
+                Logger.info("Got undefined non-4xx error fetching boost receipt presentation, retrying!")
                 throw OWSRetryableSubscriptionError()
             }
 
