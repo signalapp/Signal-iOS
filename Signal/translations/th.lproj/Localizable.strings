@@ -484,6 +484,9 @@
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
 
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "กรอกจำนวนเอง";
 
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ไม่สามารถทำให้คำขอการสนับสนุนของคุณจบสิ้นลงได้";
@@ -6142,8 +6145,14 @@
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";

@@ -484,6 +484,9 @@
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Sig \"Tak!\", og gør dig fortjent til Boost-emblemet i 30 dage.";
 
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Dit Boost-emblem udløber %@.";
+
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Angiv tilpasset beløb";
 
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Bidragsydere & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Bidragsydere & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal kunne ikke sende dit ønske om support";
@@ -2060,7 +2063,7 @@
 "GROUP_CALLS_MEGAPHONE_BODY" = "Åben en ny gruppe for at starte et gratis krypteret gruppeopkald";
 
 /* Title for group calls megaphone */
-"GROUP_CALLS_MEGAPHONE_TITLE" = "Introducerer gruppeopkald";
+"GROUP_CALLS_MEGAPHONE_TITLE" = "Nu introduceres gruppeopkald";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Du oprettede gruppen";
@@ -5474,7 +5477,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Genaktivér Betalinger";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducerer Betalinger (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Nu introduceres betalinger (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Din saldo gendannes automatisk, når du geninstallerer Signal, hvis du bekræfter din Signal-pinkode. Du kan også gendanne din saldo ved hjælp af en gendannelsessætning, som er en 24-ords sætning, der er unik for dig. Skriv den ned, og opbevar den et sikkert sted.";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Henter";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal er en nonprofitorganisation uden annoncører eller investorer, der kun opretholdes af de mennesker, der bruger og værdsætter den. Giv et fast månedligt bidrag og få et profilemblem til at dele din støtte.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal er dedikeret til at udvikle open source-privatlivsteknologi, der beskytter ytringsfriheden og muliggør sikker global kommunikation.\n\nDit bidrag støtter denne sag og betaler for udviklingen og driften af en app, der bruges af millioner til privat kommunikation. Ingen reklamer. Ingen trackere. Ingen spøg.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Støt teknologi, der er udviklet til dig - ikke for at høste dine data - ved at blive en del af det fællesskab, der støtter op om den.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Hvorfor bidrage?";
@@ -6142,8 +6145,14 @@
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Indstil valuta";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Min støtte";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/måned";
@@ -6392,7 +6401,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pinkoder sørger for at information lagret hos Signal, er krypteret, så kun du kan få adgang til den. Din profil, indstillinger og kontakter gendannes, når du geninstallerer. Du har ikke brug for din pinkode for at åbne appen.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer pinkoder";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Nu introduceres pinkoder";
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Deaktiver pinkode";

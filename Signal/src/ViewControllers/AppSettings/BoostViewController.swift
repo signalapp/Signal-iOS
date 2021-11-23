@@ -84,6 +84,16 @@ class BoostViewController: OWSTableViewController2 {
         }
     }
     private var boostBadge: ProfileBadge?
+    private var boostExpiration: UInt64? {
+        profileManagerImpl.localUserProfile().profileBadgeInfo?.first { $0.badgeId == "BOOST" }?.expiration
+    }
+
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateStyle = .long
+        return formatter
+    }()
 
     enum State: Equatable {
         case loading
@@ -223,9 +233,21 @@ class BoostViewController: OWSTableViewController2 {
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(20, after: titleLabel)
 
+            let bodyText: String
+            if let expiration = self.boostExpiration, expiration > Date().ows_millisecondsSince1970 {
+                let renewalFormat = NSLocalizedString(
+                    "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT",
+                    comment: "The body text for the donate to signal view, embeds {{Expiration}}"
+                )
+                let renewalDate = Date(millisecondsSince1970: expiration)
+                bodyText = String(format: renewalFormat, self.dateFormatter.string(from: renewalDate))
+            } else {
+                bodyText = NSLocalizedString("BOOST_VIEW_BODY", comment: "The body text for the donate to signal view")
+            }
+
             let bodyTextView = LinkingTextView()
             bodyTextView.attributedText = .composed(of: [
-                NSLocalizedString("BOOST_VIEW_BODY", comment: "The body text for the donate to signal view"),
+                bodyText,
                 " ",
                 CommonStrings.learnMore.styled(with: .link(SupportConstants.subscriptionFAQURL))
             ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))

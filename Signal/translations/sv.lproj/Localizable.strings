@@ -374,7 +374,7 @@
 "BACK_BUTTON" = "Tillbaka";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mina märken";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Märken";
@@ -383,7 +383,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Bli en upprätthållare";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Ge Signal ett lyft";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Ge Signal en boost";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Tack för boosten!";
@@ -392,16 +392,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Visa på profilen";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Presentera märket";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Tack för ditt stöd!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "När du har mer än ett märke kan du välja ett för att visa andra i din profil.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Du har tjänat %@-märket! Hjälp Signal att skapa medvetenhet genom att visa detta märke på din profil.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Stäng skylten";
@@ -479,10 +479,13 @@
 "BLUR_TOOLTIP" = "Nytt: Oskärpa ansikten eller dra var som helst för att oskärpa.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Ställ in valuta";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Säg \"Tack!\" och få Boost-märket i 30 dagar.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Ange anpassat belopp";
@@ -608,7 +611,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Ljud";
 
 /* label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Neka";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Avfärda";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Avsluta samtal";
@@ -653,7 +656,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Välj land";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Ändra foto";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Här är en förhandsvisning av chattfärgen.";
@@ -689,7 +692,7 @@
 "CHAT_COLOR_SETTINGS_TITLE" = "Chattfärg";
 
 /* Title for the 'edit chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Redigera färg";
+"CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE" = "Ändra färg";
 
 /* Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}. */
 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_N_FORMAT" = "Denna färg används i %@ chattar. Vill du spara ändringar för alla chattar?";
@@ -905,10 +908,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Något som inte fungerar";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Upprätthållare & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal kunde inte slutföra din supportförfrågan.";
@@ -1022,7 +1025,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ljud";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Få märken för din profil genom att stöda Signal. Tryck på ett märke om du vill veta mer.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Märken";
@@ -1568,7 +1571,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal behöver åtkomst för att ändra kontaktinformation";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Ändra grupp";
+"EDIT_GROUP_DEFAULT_TITLE" = "Redigera grupp";
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Denna användare kan inte läggas till i gruppen förrän användaren uppgraderar Signal.";
@@ -1787,10 +1790,10 @@
 "FAILED_VERIFICATION_TITLE" = "Det gick inte att verifiera säkerhetsnumret!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Välj ett märke";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Presenterat märke";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Markera som verifierad";
@@ -2327,10 +2330,10 @@
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Du accepterade en inbjudan till gruppen från %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Du nekade en inbjudan till gruppen.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Du avfärdade en inbjudan till gruppen.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du nekade en inbjudan till gruppen från %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du avfärdade en inbjudan till gruppen från %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ återkallade din inbjudan till gruppen.";
@@ -2447,13 +2450,13 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ lades till gruppen.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person nekade inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person avfärdade inbjudan till gruppen.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person inbjuden av %@ nekade inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person inbjuden av %@ avfärdade inbjudan till gruppen.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ nekade din inbjudan till gruppen.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ avfärdade din inbjudan till gruppen.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ är nu en administratör";
@@ -2930,7 +2933,7 @@
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missades på grund av pågående samtal på annan enhet.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Nekades på annan enhet.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Avfärdades på annan enhet.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Återansluter...";
@@ -3839,7 +3842,7 @@
 "OUTGOING_CALL_FORMAT" = "Du ringde %@";
 
 /* Button used to decline a payment request. */
-"PAYMENTS_ACTION_DECLINE_REQUEST" = "Neka begäran";
+"PAYMENTS_ACTION_DECLINE_REQUEST" = "Avfärda begäran";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
 "PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ i %2$@";
@@ -3848,10 +3851,10 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ kommer att meddelas att du nekade.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ kommer att meddelas att du avfärdade.";
 
 /* Title for the 'decline a payment request' alert. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Neka denna begäran?";
+"PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Avfärda denna begäran?";
 
 /* Label for 'defragmentation' payments. */
 "PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Avgift för myntsanering";
@@ -3860,7 +3863,7 @@
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Det gick inte att avbryta begäran.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Det gick inte att neka begäran.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "Det gick inte att avfärda begäran.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Misslyckades";
@@ -6020,7 +6023,7 @@
 "SUBSCRIBER_BADGES" = "Märken";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Hantera prenumeration";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "Vanliga frågor om prenumeration";
@@ -6095,25 +6098,25 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Läser in";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal är en ideell organisation utan annonsörer eller investerare, som endast upprätthålls av de personer som använder och värdesätter den. Ge ett återkommande månadsbidrag och få ett profilmärke för att dela ditt stöd.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal är engagerad i att utveckla integritetsteknologi med öppen källkod som skyddar yttrandefriheten och möjliggör säker global kommunikation.\n\nDitt bidrag driver denna rättsfråga och betalar för utvecklingen och driften av en app som används av miljoner för privat kommunikation. Inga annonser. Inga spårare. Inget påhitt.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Stöd teknik som är byggd för dig - inte för din data - genom att gå med i gemenskapen som upprätthåller den.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Varför bidra?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Bearbetar fortfarande";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Lägg till en Signal-boost";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Skaffa ett %@-märke";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Avbryt prenumeration";
@@ -6128,49 +6131,55 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Bekräfta annullering?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Det gick inte att lägga till märket. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Ditt märke kunde inte läggas till ditt konto. Vänligen kontakta supporten.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Det gick inte att lägga till märke";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "Vänligen kontakta supporten.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Ställ in valuta";
+
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Mitt stöd";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/månad";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Upphör %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Förnyar %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Bearbetar betalning...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Bearbetar transaktion...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Läs mer.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Förnyar %@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Din betalning behandlas fortfarande. Detta kan ta några minuter beroende på din anslutning.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Din prenumeration har avslutats";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Inte nu";
@@ -6179,16 +6188,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal drivs av personer som du.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Du kommer att debiteras hela beloppet (%@) av det nya prenumerationspriset idag. Ditt nya abonnemang förnyas varje månad.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Uppdatera prenumeration?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Uppdatera";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Stöd teknik som är byggd för dig - inte för din data - genom att gå med i gemenskapen av människor som upprätthåller den.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Av";
@@ -6353,7 +6362,7 @@
 "UNNAMED_DEVICE" = "Namnlös enhet";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Lossa";
+"UNPIN_ACTION" = "Lösgör";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Chattar";

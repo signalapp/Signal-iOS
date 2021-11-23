@@ -374,28 +374,28 @@
 "BACK_BUTTON" = "Natrag";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Moji bedževi";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "Bedževi";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Donirajte jednokratno";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "Hvala vam na uplati!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Prikaži bedž na svom profilu";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Hvala vam na podršci!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
@@ -479,16 +479,19 @@
 "BLUR_TOOLTIP" = "Novo: Zamaglite lica ili crtajte bilo gdje kako biste ih zamaglili";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "Odaberite valutu";
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Unesi prilagođeni iznos";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "Više opcija plaćanja";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Unesite veći iznos za donaciju";
@@ -500,7 +503,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Unesite iznos za donaciju";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Donirajte jednokratnom uplatom";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Dodaj";
@@ -653,7 +656,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Odaberi državu";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Uredite fotografiju";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "Ovo je pregled boje razgovora.";
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nije uspio dovršiti vaš zahtjev za podršku.";
@@ -1025,7 +1028,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Bedževi";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Više nećete primati poruke ni ažuriranja od ovog korisnika.";
@@ -1523,7 +1526,7 @@
 "DISMISS_CONTEXT_MENU" = "Odbaci kontekstni izbornik";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikažite bedževe na svom profilu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Mjesto zaobilaska cenzure";
@@ -1787,7 +1790,7 @@
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Odaberite bedž";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
@@ -5174,7 +5177,7 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nGPLv3 licenca";
 
 /* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "Subscription";
+"SETTINGS_CURRENT_SUBSCRIPTION" = "Pretplata";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Upotreba podatkovnih podataka";
@@ -6017,16 +6020,16 @@
 "STICKERS_UNINSTALL_BUTTON" = "Deinstaliraj";
 
 /* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Badges";
+"SUBSCRIBER_BADGES" = "Bedževi";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Upravljajte svojom pretplatom";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "Najčešća pitanja";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Doprinesite";
 
 /* Body for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
@@ -6095,7 +6098,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Učitavanje";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je neprofitna organizacija bez oglasa i investitora koju podržavaju samo ljudi koji ga koriste i cijene. Donirajte na mjesečnoj bazi kako biste dobili svoj bedž profila u znak vaše potpore projektu.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6104,7 +6107,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Zašto donirati?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
@@ -6116,7 +6119,7 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Otkažite pretplatu";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Potvrdi";
@@ -6125,7 +6128,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Potvrditi otkazivanje?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6137,31 +6140,37 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Molimo Vas da kontaktirate podršku";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "Odaberite valutu";
+
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "Moja podrška";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Ističe %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Procesuiranje plaćanja…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Procesuiranje transakcije…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "Pročitaj više.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";

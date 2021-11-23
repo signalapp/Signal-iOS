@@ -380,7 +380,7 @@
 "BADGE_CONFIGURATION_TITLE" = "نشان‌ها";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "به یک حامی تبدیل شوید";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "سیگنال را تقویت کنید";
@@ -483,6 +483,9 @@
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "مبلغ دلخواه را وارد کنید";
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "سیگنال نتوانست بود درخواست پشتیبانی شما را کامل کند.";
@@ -5837,7 +5840,7 @@
 "SETTINGS_SIGNAL_BOOST" = "تقویت سیگنال";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "به یک حامی سیگنال تبدیل شوید";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "قفل ثبت‌نام";
@@ -6026,7 +6029,7 @@
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "پرسش‌های متداول اشتراک";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "کمک کردن";
 
 /* Body for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
@@ -6035,7 +6038,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "نه،‌ ممنون";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "به یک حامی تبدیل شوید";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "کلید هویت‌سنجی شما با %@ مطابقت دارد. شما می‌توانید این مخاطب را به عنوان تأیید شده علامت‌گذاری کنید.";
@@ -6110,7 +6113,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Add a Signal Boost";
+"SUSTAINER_VIEW_ADD_BOOST" = "یک تقویت سیگنال اضافه کنید";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
@@ -6137,13 +6140,19 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "لطفاً با پشتیبانی تماس بگیرید.";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/month";

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class EarlyMessageManager: NSObject {
@@ -25,7 +26,7 @@ public class EarlyMessageManager: NSObject {
         let serverDeliveryTimestamp: UInt64
     }
 
-    private enum EarlyReceipt: Codable {
+    private enum EarlyReceipt: Codable, Hashable {
         private enum CodingKeys: String, CodingKey {
             case type, sender, deviceId, timestamp
         }
@@ -91,26 +92,41 @@ public class EarlyMessageManager: NSObject {
 
             switch self {
             case .outgoingMessageRead(let sender, let deviceId, let timestamp):
-                try container.encode(EncodedType.outgoingMessageRead, forKey: .type)
+                try container.encode(encodedType, forKey: .type)
                 try container.encode(sender, forKey: .sender)
                 try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
             case .outgoingMessageDelivered(let sender, let deviceId, let timestamp):
-                try container.encode(EncodedType.outgoingMessageDelivered, forKey: .type)
+                try container.encode(encodedType, forKey: .type)
                 try container.encode(sender, forKey: .sender)
                 try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
             case .outgoingMessageViewed(let sender, let deviceId, let timestamp):
-                try container.encode(EncodedType.outgoingMessageViewed, forKey: .type)
+                try container.encode(encodedType, forKey: .type)
                 try container.encode(sender, forKey: .sender)
                 try container.encode(deviceId, forKey: .deviceId)
                 try container.encode(timestamp, forKey: .timestamp)
             case .messageReadOnLinkedDevice(let timestamp):
-                try container.encode(EncodedType.messageReadOnLinkedDevice, forKey: .type)
+                try container.encode(encodedType, forKey: .type)
                 try container.encode(timestamp, forKey: .timestamp)
             case .messageViewedOnLinkedDevice(let timestamp):
-                try container.encode(EncodedType.messageViewedOnLinkedDevice, forKey: .type)
+                try container.encode(encodedType, forKey: .type)
                 try container.encode(timestamp, forKey: .timestamp)
+            }
+        }
+
+        private var encodedType: EncodedType {
+            switch self {
+            case .outgoingMessageRead:
+                return .outgoingMessageRead
+            case .outgoingMessageDelivered:
+                return .outgoingMessageDelivered
+            case .outgoingMessageViewed:
+                return .outgoingMessageViewed
+            case .messageReadOnLinkedDevice:
+                return .messageReadOnLinkedDevice
+            case .messageViewedOnLinkedDevice:
+                return .messageViewedOnLinkedDevice
             }
         }
 
@@ -145,9 +161,11 @@ public class EarlyMessageManager: NSObject {
     }
 
     private static let maxEarlyEnvelopeSize: Int = 1024
+    private static let maxQueuedPerMessage: Int = 128
 
     private var pendingEnvelopeStore = SDSKeyValueStore(collection: "EarlyEnvelopesStore")
     private var pendingReceiptStore =  SDSKeyValueStore(collection: "EarlyReceiptsStore")
+    private var metadataStore =  SDSKeyValueStore(collection: "EarlyMessageManager.metadata")
 
     public override init() {
         super.init()
@@ -187,6 +205,11 @@ public class EarlyMessageManager: NSObject {
         } catch {
             owsFailDebug("Failed to decode existing early envelopes for message \(identifier) with error \(error)")
             envelopes = []
+        }
+
+        while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
+            envelopes.remove(at: 0)
+            owsFailDebug("Dropping early envelope \(OWSMessageManager.description(for: droppedEarlyEnvelope.envelope)) for message \(identifier) due to excessive early envelopes.")
         }
 
         envelopes.append(EarlyEnvelope(
@@ -286,6 +309,16 @@ public class EarlyMessageManager: NSObject {
         } catch {
             owsFailDebug("Failed to decode existing early receipts for message \(identifier) with error \(error)")
             receipts = []
+        }
+
+        guard !Set(receipts).contains(earlyReceipt) else {
+            Logger.warn("Ignoring duplicate early receipt \(earlyReceipt) for message \(identifier)")
+            return
+        }
+
+        while receipts.count >= Self.maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
+            receipts.remove(at: 0)
+            owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
         }
 
         receipts.append(earlyReceipt)
@@ -415,30 +448,106 @@ public class EarlyMessageManager: NSObject {
     }
 
     private func cleanupStaleMessages() {
-        databaseStorage.asyncWrite { transction in
+        databaseStorage.asyncWrite { transaction in
             let oldestTimestampToKeep = Date.ows_millisecondTimestamp() - kWeekInMs
 
-            let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transction)
+            let allEnvelopeKeys = self.pendingEnvelopeStore.allKeys(transaction: transaction)
             let staleEnvelopeKeys = allEnvelopeKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
-                      timestamp > oldestTimestampToKeep else {
+                      timestamp < oldestTimestampToKeep else {
                     return false
                 }
                 return true
             }
-            self.pendingEnvelopeStore.removeValues(forKeys: staleEnvelopeKeys, transaction: transction)
+            self.pendingEnvelopeStore.removeValues(forKeys: staleEnvelopeKeys, transaction: transaction)
 
-            let allReceiptKeys = self.pendingReceiptStore.allKeys(transaction: transction)
+            let allReceiptKeys = self.pendingReceiptStore.allKeys(transaction: transaction)
             let staleReceiptKeys = allReceiptKeys.filter {
                 guard let timestampString = $0.split(separator: ".")[safe: 1],
                       let timestamp = UInt64(timestampString),
-                      timestamp > oldestTimestampToKeep else {
+                      timestamp < oldestTimestampToKeep else {
                     return false
                 }
                 return true
             }
-            self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transction)
+            self.pendingReceiptStore.removeValues(forKeys: staleReceiptKeys, transaction: transaction)
+
+            let remainingReceiptKeys = Set(allReceiptKeys).subtracting(staleReceiptKeys)
+            self.trimEarlyReceiptsIfNecessary(remainingReceiptKeys: remainingReceiptKeys,
+                                                     transaction: transaction)
+        }
+    }
+
+    private func trimEarlyReceiptsIfNecessary(
+        remainingReceiptKeys: Set<String>,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard CurrentAppContext().isMainApp,
+              !CurrentAppContext().isRunningTests else {
+                  return
+              }
+
+        let trimmedReceiptsKey = "trimmedReceiptsKey"
+        let hasTrimmedReceipts = self.metadataStore.getBool(
+            trimmedReceiptsKey,
+            defaultValue: false,
+            transaction: transaction)
+        guard !hasTrimmedReceipts else { return }
+        self.metadataStore.setBool(true, key: trimmedReceiptsKey, transaction: transaction)
+
+        var removedTotal: Int = 0
+        for receiptKey in remainingReceiptKeys {
+            autoreleasepool {
+                do {
+                    let receipts: [EarlyReceipt] = try self.pendingReceiptStore.getCodableValue(forKey: receiptKey,
+                                                                                                transaction: transaction) ?? []
+                    var deduplicatedReceipts = OrderedSet(receipts).orderedMembers
+                    if deduplicatedReceipts.count != receipts.count {
+                        Logger.info("De-duplicated early receipts for message \(receiptKey): \(receipts.count) - \(receipts.count - deduplicatedReceipts.count) -> \(deduplicatedReceipts.count)")
+                    }
+
+                    if deduplicatedReceipts.count > Self.maxQueuedPerMessage {
+                        let countBeforeTrimming = deduplicatedReceipts.count
+                        deduplicatedReceipts = Array(deduplicatedReceipts.suffix(Self.maxQueuedPerMessage))
+                        Logger.info("Trimmed early receipts for message \(receiptKey): \(countBeforeTrimming) - \(countBeforeTrimming - deduplicatedReceipts.count) -> \(deduplicatedReceipts.count)")
+                    }
+
+                    guard !receipts.isEmpty,
+                          receipts.count != deduplicatedReceipts.count else {
+                        return
+                    }
+                    try pendingReceiptStore.setCodable(deduplicatedReceipts,
+                                                       key: receiptKey,
+                                                       transaction: transaction)
+                    owsAssertDebug(receipts.count > deduplicatedReceipts.count)
+                    removedTotal += receipts.count - deduplicatedReceipts.count
+                } catch {
+                    owsFailDebug("Failed to decode early receipts: \(error)")
+                    self.pendingReceiptStore.removeValue(forKey: receiptKey, transaction: transaction)
+                }
+            }
+        }
+        if removedTotal > 0 {
+            Logger.info("Removed early receipts (total): \(removedTotal)")
+        }
+    }
+}
+
+// MARK: -
+
+extension SSKProtoReceiptMessageType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .delivery:
+            return "delivery"
+        case .read:
+            return "read"
+        case .viewed:
+            return "viewed"
+        @unknown default:
+            owsFailDebug("unexpected SSKProtoReceiptMessageType: \(self.rawValue)")
+            return "Unknown"
         }
     }
 }

@@ -174,7 +174,7 @@ public class HomeViewCell: UITableViewCell {
         contentView.addSubview(outerHStack)
         outerHStack.shouldDeactivateConstraints = false
         outerHStack.autoPinEdge(toSuperviewEdge: .leading)
-        outerHStack.autoPinTrailingToSuperviewMargin()
+        outerHStack.autoPinEdge(toSuperviewEdge: .trailing)
         outerHStack.autoPinHeightToSuperview()
 
         self.selectionStyle = .default
@@ -646,8 +646,9 @@ public class HomeViewCell: UITableViewCell {
         let unreadLabelSize = CVText.measureLabel(config: unreadIndicatorLabelConfig,
                                                   maxWidth: .greatestFiniteMagnitude)
 
-        let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.35)
-        // This is a bit arbitrary, but it should scale with the size of dynamic text
+        // This is a bit arbitrary, but it should scale with the size of dynamic text.
+        let unreadBadgeHeight = ceil(unreadIndicatorLabelConfig.font.lineHeight * 1.25)
+        // The "end caps" of the pill shape should be a half-circle.
         let minMargin = CeilEven(unreadBadgeHeight * 0.5)
         // Pill should be at least circular; can be wider.
         let badgeSize = CGSize(width: max(unreadBadgeHeight,

@@ -484,6 +484,9 @@
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Dweud \"Diolch!\" ac ennill bathodyn Hwb am 30 diwrnod.";
 
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Rhowch Swm Personol";
 
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Cynhalwyr a Hwb Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Cynhalwyr a Hwb Signal";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Nid oedd Signal yn gallu cwblhau eich cais am gymorth.";
@@ -6026,10 +6029,10 @@
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "Cwestiynau Cyffredin Tanysgrifio";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Cyfrannu";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Mae grym Signal mewn pobl fel chi. Cyfrannwch a hawlio bathodyn.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Dim Diolch";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Llwytho";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Mae Signal yn gorff ddim-er-elw heb unrhyw hysbysebwyr na buddsoddwyr, sy'n cael ei gynnal dim ond gan y bobl sy'n ei ddefnyddio a'i werthfawrogi. Gwnewch gyfraniad misol cylchol a derbyn bathodyn proffil i rannu'ch cefnogaeth.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Mae Signal wedi ymrwymo i ddatblygu technoleg preifatrwydd ffynhonnell agored sy'n amddiffyn mynegiant rhydd ac yn galluogi cyfathrebu byd-eang diogel.\n\nMae eich cyfraniad yn cefnogi'r achos hwn ac yn talu am ddatblygu a gweithredu ap a ddefnyddir gan filiynau ar gyfer cyfathrebu preifat. Dim hysbysebion. Dim olrheinwyr. Dim lol.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Cefnogwch dechnoleg sydd wedi'i hadeiladu ar eich cyfer chi - nid ar gyfer eich data - trwy ymuno â'r gymuned sy'n ei chynnal.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Pam Cyfrannu?";
@@ -6142,8 +6145,14 @@
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Gosod arian cyfred";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Fy Nghefnogaeth";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/mis";

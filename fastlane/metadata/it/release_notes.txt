@@ -1,5 +1,2 @@
-Senza dati da vendere e senza pubblicità, ci affidiamo ai tuoi contributi per alimentare Signal:
-• Ora puoi aiutare a sostenere Signal facendo una piccola donazione ogni mese con Apple Pay. I sostenitori guadagnano badge divertenti che possono mostrare sul loro profilo per aiutare a diffondere la consapevolezza.
-• Dai un boost a Signal usando Apple Pay. I Boost sono una rapida donazione singola che ti permette di ringraziare e far continuare Signal. I Boost sono dotati di un badge unico.
-
-Questa versione include anche numerose correzioni di bug.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

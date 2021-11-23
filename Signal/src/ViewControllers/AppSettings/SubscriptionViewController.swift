@@ -56,17 +56,14 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
     }
 
+    private let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
+
     private lazy var avatarView: ConversationAvatarView = {
-        let newAvatarView = ConversationAvatarView(sizeClass: .eightyEight, localUserDisplayMode: .asUser)
-        databaseStorage.read { readTx in
-            newAvatarView.update(readTx) { config in
-                if let address = tsAccountManager.localAddress(with: readTx) {
-                    config.dataSource = .address(address)
-                }
-            }
-        }
+        let newAvatarView = ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
         return newAvatarView
     }()
+
+    private var avatarImage: UIImage?
 
     private lazy var redemptionLoadingSpinner: AnimationView = {
         let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
@@ -79,6 +76,8 @@ class SubscriptionViewController: OWSTableViewController2 {
     private lazy var statusLabel: LinkingTextView = LinkingTextView()
     private lazy var descriptionTextView = LinkingTextView()
 
+    private var subscriptionLevelCells: [SubscriptionLevelCell] = []
+
     private var subscriptionRedemptionPending: Bool {
         var hasPendingJobs = false
         SDSDatabaseStorage.shared.read { transaction in
@@ -88,12 +87,12 @@ class SubscriptionViewController: OWSTableViewController2 {
         return hasPendingJobs
     }
 
-    private var subscriptionRedemptionFailed: Bool {
-        var redemptionFailed = false
+    private var subscriptionRedemptionFailureReason: SubscriptionRedemptionFailureReason {
+        var failureReason: SubscriptionRedemptionFailureReason = .none
         SDSDatabaseStorage.shared.read { transaction in
-            redemptionFailed = SubscriptionManager.lastReceiptRedemptionFailed(transaction: transaction)
+            failureReason = SubscriptionManager.lastReceiptRedemptionFailed(transaction: transaction)
         }
-        return redemptionFailed
+        return failureReason
     }
 
     private let bottomFooterStackView = UIStackView()
@@ -286,6 +285,9 @@ class SubscriptionViewController: OWSTableViewController2 {
             return stackView
         }()
 
+        // Update avatar view
+        updateAvatarView()
+
         // Footer setup
         bottomFooterStackView.axis = .vertical
         bottomFooterStackView.alignment = .center
@@ -309,6 +311,44 @@ class SubscriptionViewController: OWSTableViewController2 {
         UIView.performWithoutAnimation {
             self.shouldHideBottomFooter = !(self.subscriptionViewState == .subscriptionNotYetSetUp || self.subscriptionViewState == .subscriptionUpdating)
         }
+    }
+
+    private func updateAvatarView() {
+
+        let useExistingBadge = subscriptionViewState == .subscriptionExists || self.selectedSubscription == nil
+        let shouldAddBadge = subscriptionViewState != .loading
+        if useExistingBadge {
+            databaseStorage.read { readTx in
+                self.avatarView.update(readTx) { config in
+                    if let address = tsAccountManager.localAddress(with: readTx) {
+                        config.dataSource = .address(address)
+                        config.addBadgeIfApplicable = shouldAddBadge
+                    }
+                }
+            }
+        } else {
+            databaseStorage.read { readTx in
+                if self.avatarImage == nil {
+                    self.avatarImage = Self.avatarBuilder.avatarImageForLocalUser(diameterPoints: self.sizeClass.avatarDiameter,
+                                                                                  localUserDisplayMode: .asUser,
+                                                                                  transaction: readTx)
+                }
+
+                var avatarBadge: UIImage?
+                if let selectedSubscription = self.selectedSubscription {
+                    let assets = selectedSubscription.badge.assets
+                    avatarBadge = assets.flatMap { sizeClass.fetchImageFromBadgeAssets($0) }
+                }
+
+                self.avatarView.update(readTx) { config in
+                    config.dataSource = .asset(avatar: avatarImage, badge: avatarBadge)
+                    config.addBadgeIfApplicable = shouldAddBadge
+                }
+
+            }
+
+        }
+
     }
 
     private func buildTableForPendingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
@@ -402,7 +442,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     private func buildTableForExistingSubscriptionState(contents: OWSTableContents, section: OWSTableSection) {
 
         let subscriptionPending = subscriptionRedemptionPending
-        let subscriptionFailed = subscriptionRedemptionFailed
+        let subscriptionFailed = subscriptionRedemptionFailureReason != .none
 
         // My Support header
         section.add(.init(
@@ -465,28 +505,27 @@ class SubscriptionViewController: OWSTableViewController2 {
                         owsFailDebug("Can't find a matching description")
                         return cell
                     }
-                    if let subscription = subscriptionLevel {
-                        let imageView = UIImageView()
-                        imageView.setContentHuggingHigh()
 
-                        if let badgeImage = subscription.badge.assets?.universal160 {
-                            imageView.image = badgeImage
-                        }
+                    let imageView = UIImageView()
+                    imageView.setContentHuggingHigh()
 
-                        stackView.addArrangedSubview(imageView)
-                        imageView.autoSetDimensions(to: CGSize(square: 64))
-
-                        if subscriptionPending {
-                            stackView.addSubview(self.redemptionLoadingSpinner)
-                            self.redemptionLoadingSpinner.autoPin(toEdgesOf: imageView, withInset: UIEdgeInsets(hMargin: 14, vMargin: 14))
-                            let progress = self.redemptionLoadingSpinner.currentProgress
-                            self.redemptionLoadingSpinner.play(fromProgress: progress, toProgress: 1)
-                        } else {
-                            self.redemptionLoadingSpinner.removeFromSuperview()
-                        }
-
-                        imageView.alpha = subscriptionPending || subscriptionFailed ? 0.5 : 1
+                    if let badgeImage = subscription.badge.assets?.universal160 {
+                        imageView.image = badgeImage
                     }
+
+                    stackView.addArrangedSubview(imageView)
+                    imageView.autoSetDimensions(to: CGSize(square: 64))
+
+                    if subscriptionPending {
+                        stackView.addSubview(self.redemptionLoadingSpinner)
+                        self.redemptionLoadingSpinner.autoPin(toEdgesOf: imageView, withInset: UIEdgeInsets(hMargin: 14, vMargin: 14))
+                        let progress = self.redemptionLoadingSpinner.currentProgress
+                        self.redemptionLoadingSpinner.play(fromProgress: progress, toProgress: 1)
+                    } else {
+                        self.redemptionLoadingSpinner.removeFromSuperview()
+                    }
+
+                    imageView.alpha = subscriptionPending || subscriptionFailed ? 0.5 : 1
 
                     let textStackView = UIStackView()
                     textStackView.axis = .vertical
@@ -500,23 +539,26 @@ class SubscriptionViewController: OWSTableViewController2 {
                     titleLabel.numberOfLines = 0
 
                     let pricingLabel = UILabel()
-                    if let persistedCurrencyCode = self.persistedSubscriberCurrencyCode, let price = subscription.currency[persistedCurrencyCode] {
-                        let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
-                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: self.currencyCode)
-                        pricingLabel.text = String(format: pricingFormat, currencyString)
-                        pricingLabel.font = .ows_dynamicTypeBody2
-                        pricingLabel.numberOfLines = 0
+                    let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
+                    var amount = currentSubscription.amount
+                    if !Stripe.zeroDecimalCurrencyCodes.contains(currentSubscription.currency) {
+                        amount = amount.dividing(by: NSDecimalNumber(value: 100))
                     }
+
+                    let currencyString = DonationUtilities.formatCurrency(amount, currencyCode: currentSubscription.currency)
+                    pricingLabel.text = String(format: pricingFormat, currencyString)
+                    pricingLabel.font = .ows_dynamicTypeBody2
+                    pricingLabel.numberOfLines = 0
 
                     var statusText: NSMutableAttributedString?
                     if subscriptionPending {
                         let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
-                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                     } else if subscriptionFailed {
-                        let helpFormat = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
+                        let helpFormat = self.subscriptionRedemptionFailureReason == .validationFailed ?  NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}") : NSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occured text, embeds {{link to contact support}}")
                         let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
                         let text = String(format: helpFormat, contactSupport)
-                        let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                         attributedText.addAttributes([.link: NSURL()], range: NSRange(location: text.utf16.count - contactSupport.utf16.count, length: contactSupport.utf16.count))
                         statusText = attributedText
                     } else {
@@ -524,7 +566,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                         let renewalDate = Date(timeIntervalSince1970: currentSubscription.endOfCurrentPeriod)
                         let renewalString = self.dateFormatter.string(from: renewalDate)
                         let text = String(format: renewalFormat, renewalString)
-                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: UIColor.ows_gray45, .font: UIFont.ows_dynamicTypeBody2])
+                        statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                     }
 
                     self.statusLabel.attributedText = statusText
@@ -546,12 +588,12 @@ class SubscriptionViewController: OWSTableViewController2 {
                     }
                     addBoostButton.dimsWhenHighlighted = true
                     addBoostButton.layer.cornerRadius = 8
-                    addBoostButton.backgroundColor = Theme.accentBlueColor
+                    addBoostButton.backgroundColor = .ows_accentBlue
                     containerStackView.addArrangedSubview(addBoostButton)
                     addBoostButton.autoSetDimension(.height, toSize: 48)
-                    addBoostButton.autoPinWidthToSuperviewMargins()
+                    addBoostButton.autoPinWidthToSuperview(withMargin: 34)
 
-                    if subscriptionPending || subscriptionFailed {
+                    if subscriptionPending {
                         addBoostButton.isHighlighted = true
                         addBoostButton.isUserInteractionEnabled = false
                     }
@@ -704,6 +746,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     private func buildSubscriptionLevelCells(subscriptions: [SubscriptionLevel], section: OWSTableSection) {
+        subscriptionLevelCells.removeAll()
         for (index, subscription) in subscriptions.enumerated() {
             section.add(.init(
                 customCellBlock: { [weak self] in
@@ -729,6 +772,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     background.layer.borderColor = isSelected ? Theme.accentBlueColor.cgColor : Self.bubbleBorderColor.cgColor
                     background.layer.cornerRadius = 12
                     stackView.addSubview(background)
+                    cell.cellBackgroundView = background
                     background.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(top: index == 0 ? 0 : 12, leading: 24, bottom: 0, trailing: 24))
 
                     let badge = subscription.badge
@@ -739,6 +783,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     }
                     stackView.addArrangedSubview(imageView)
                     imageView.autoSetDimensions(to: CGSize(square: 64))
+                    cell.badgeImageView = imageView
 
                     let textStackView = UIStackView()
                     textStackView.axis = .vertical
@@ -806,13 +851,57 @@ class SubscriptionViewController: OWSTableViewController2 {
                     textStackView.addArrangedSubviews([titleStackView, descriptionLabel, pricingLabel])
                     stackView.addArrangedSubview(textStackView)
 
+                    self.subscriptionLevelCells.append(cell)
                     return cell
                 },
                 actionBlock: {
                     self.selectedSubscription = subscription
-                    self.updateTableContents()
+                    self.updateLevelSelectionState(for: subscription)
                 }
             ))
+        }
+    }
+
+    private func updateLevelSelectionState(for subscription: SubscriptionLevel) {
+        updateAvatarView()
+
+        var subscriptionCell: SubscriptionLevelCell?
+        var index: Int?
+        for (idx, cell) in subscriptionLevelCells.enumerated() {
+            if cell.subscriptionID == subscription.level {
+                subscriptionCell = cell
+                index = idx
+                cell.toggleSelectedOutline(true)
+            } else {
+                cell.toggleSelectedOutline(false)
+            }
+        }
+
+        let animationNames = [
+            "boost_fire",
+            "boost_shock",
+            "boost_rockets"
+        ]
+
+        guard let subscriptionCell = subscriptionCell, let index = index, let imageView = subscriptionCell.badgeImageView else {
+            return owsFailDebug("Unable to add animation to cell")
+        }
+
+        guard let selectedAnimation = animationNames[safe: index] else {
+            return owsFailDebug("Missing animation for preset")
+        }
+
+        let animationView = AnimationView(name: selectedAnimation)
+        animationView.isUserInteractionEnabled = false
+        animationView.loopMode = .playOnce
+        animationView.contentMode = .scaleAspectFit
+        animationView.backgroundBehavior = .forceFinish
+        self.view.addSubview(animationView)
+        animationView.autoPinEdge(.bottom, to: .top, of: imageView, withOffset: 40)
+        animationView.autoPinEdge(.leading, to: .leading, of: imageView)
+        animationView.autoMatch(.width, to: .width, of: imageView)
+        animationView.play { _ in
+            animationView.removeFromSuperview()
         }
     }
 
@@ -862,8 +951,9 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     func presentBadgeCantBeAddedSheet() {
-        let title = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
+        let title = subscriptionRedemptionFailureReason == .validationFailed ?  NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet") : NSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet")
         let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
+
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(ActionSheetAction(
             title: NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
@@ -882,6 +972,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     return
                 }
                 let supportVC = ContactSupportViewController()
+                supportVC.selectedFilter = .sustainers
                 let navVC = OWSNavigationController(rootViewController: supportVC)
                 self?.presentFormSheet(navVC, animated: true)
             }
@@ -1121,7 +1212,16 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                     self.fetchCurrentSubscription()
                 }
 
-                ExperienceUpgradeManager.snoozeExperienceUpgradeWithSneakyTransaction(.subscriptionMegaphone)
+                // We can't use a sneaky transaction here, because the
+                // subscription's existence means that the experience
+                // upgrade is no longer "active" and won't be found
+                // in the unsnoozed list.
+                self.databaseStorage.write { transaction in
+                    ExperienceUpgradeManager.snoozeExperienceUpgrade(
+                        .subscriptionMegaphone,
+                        transaction: transaction.unwrapGrdbWrite
+                    )
+                }
 
                 // Only show the badge sheet if redemption succeeds.
                 if let selectedSubscription = self.selectedSubscription {
@@ -1244,7 +1344,15 @@ extension SubscriptionViewController: UITextViewDelegate {
 }
 
 private class SubscriptionLevelCell: UITableViewCell {
-    public var subscriptionID: UInt = 0
+    var subscriptionID: UInt = 0
+    var badgeImageView: UIImageView?
+    var cellBackgroundView: UIView?
+
+    public func toggleSelectedOutline(_ selected: Bool) {
+        if let background = cellBackgroundView {
+            background.layer.borderColor = selected ? Theme.accentBlueColor.cgColor : SubscriptionViewController.bubbleBorderColor.cgColor
+        }
+    }
 }
 
 private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
@@ -1289,6 +1397,7 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         contentScrollView.autoPinWidthToSuperview()
         contentScrollView.autoPinEdge(toSuperviewEdge: .bottom)
         contentScrollView.autoPinEdge(.top, to: .bottom, of: handleContainer)
+        contentScrollView.alwaysBounceVertical = true
 
         buildContents()
     }

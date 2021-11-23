@@ -174,7 +174,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func didSucceed() {
         self.databaseStorage.write { transaction in
             if !self.isBoost {
-                SubscriptionManager.setLastReceiptRedemptionFailed(failed: false, transaction: transaction)
+                SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
             }
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             NotificationCenter.default.postNotificationNameAsync(
@@ -200,9 +200,6 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func didFail(error: Error) {
         Logger.error("failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
-            if !self.isBoost {
-                SubscriptionManager.setLastReceiptRedemptionFailed(failed: true, transaction: transaction)
-            }
             NotificationCenter.default.postNotificationNameAsync(
                 SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
                 object: nil

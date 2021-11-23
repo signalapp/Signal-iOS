@@ -296,7 +296,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "写真を撮ると、ここから送信できます。";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "支払い";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "決済";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "添付ファイル";
@@ -374,13 +374,13 @@
 "BACK_BUTTON" = "戻る";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "マイバッジ";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "バッジ";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "サポーターになりましょう";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "サポーターになってください";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signalをブーストしましょう";
@@ -392,22 +392,22 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "プロフィールに表示する";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "注目のバッジにする";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "ご支援をありがとうございます！";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "複数のバッジを持っている場合は、自分のプロフィールに表示するバッジを選ぶことができます。";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "%@バッジを獲得しました！このバッジをプロフィールに表示して、Signalの認知度向上に貢献してください。";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "バナーを閉じる";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "今後このグループからはメッセージや更新を受信しません。";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "今後このグループからは、メッセージや更新を受信しません。";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ブロックする";
@@ -479,16 +479,19 @@
 "BLUR_TOOLTIP" = "新機能: 顔や任意の場所をぼかすことができます";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "通貨を設定してください";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "30日間のブーストバッジを獲得しましょう。 ";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "金額を入力してください";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "その他の支払い方法";
+"BOOST_VIEW_OTHER_WAYS" = "その他の決済方法";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "これより多い寄付額を選択してください";
@@ -551,7 +554,7 @@
 "BUTTON_SUBMIT" = "送信する";
 
 /* Label for the 'view' button. */
-"BUTTON_VIEW" = "表示する";
+"BUTTON_VIEW" = "見る";
 
 /* Label for the 'yes' button. */
 "BUTTON_YES" = "はい";
@@ -653,7 +656,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "国の選択";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "画像を編集";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "チャットの色のプレビューです。";
@@ -731,7 +734,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ユーザ名検索";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOSの設定で連絡先へのアクセス権限を有効にして、連絡先の誰がSignalを利用しているか確認できます。";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "連絡先からSignalユーザを見つけるには、iOSの設定で連絡先へのアクセスを有効にしてください。";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "メッセージを消去して、アプリを初期化します。処理が完了するとアプリを閉じます。";
@@ -818,10 +821,10 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "チャットで連絡先の名前と写真を見るには:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "下の「設定へ」をタップ";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "以下の「設定へ」をタップ";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "「連絡先」をオンにする";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "「連絡先」を有効にする";
 
 /* Title for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "「連絡先」をオン";
@@ -830,7 +833,7 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "今はしない";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "オン";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "有効にする";
 
 /* Body for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "チャットで連絡先の名前と写真を見る。";
@@ -863,7 +866,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "連絡先の項目が選択されていません。";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "サポートに問い合わせる";
+"CONTACT_SUPPORT" = "お問い合わせ";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "新機能をリクエストします";
@@ -884,10 +887,10 @@
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "その他";
 
 /* The localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS" = "支払い";
+"CONTACT_SUPPORT_FILTER_PAYMENTS" = "決済機能";
 
 /* A brief localized representation of the 'payments' support filter. */
-"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "支払い";
+"CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "決済";
 
 /* Prompt telling the user to select a filter for their support request. */
 "CONTACT_SUPPORT_FILTER_PROMPT" = "お困りですか？";
@@ -905,10 +908,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "動作しないものがある";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "定期的な寄付 & 単発の寄付";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "サポーター & Signalブースト";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "定期的な寄付 & 単発の寄付";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalは、サポートリクエストを完了できませんでした。";
@@ -1016,22 +1019,22 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_NONE" = "無効";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "グループ名、アイコン、説明、消えるメッセージのタイマーを編集できるユーザーを選択してください。";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "グループ名、アイコン、説明、消えるメッセージのタイマーを編集できるユーザを選択してください。";
 
 /* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "音声通話";
+"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "音声";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signalをサポートすると、あなたのプロフィールにバッジが表示されます。バッジをタップすると詳細が表示されます。";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "バッジ";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "今後このユーザからのメッセージや更新は受信されなくなります。";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "今後このユーザからは、メッセージや更新を受信しません。";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "今後このグループからはメッセージや更新を受信しません。";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "今後このグループからは、メッセージや更新を受信しません。";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "グループをブロックする";
@@ -1055,7 +1058,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "メンバーを追加";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "グループメンバーを編集できるユーザーを選択してください。";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "グループメンバーを編集できるユーザを選択してください。";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "グループリンク";
@@ -1181,16 +1184,16 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "管理者のみ";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "グループのブロック解除";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "グループのブロックを解除";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "ユーザーのブロック解除";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "ユーザのブロックを解除";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "ミュートを解除";
 
 /* Button to start a video call */
-"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "ビデオ通話";
+"CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "ビデオ";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "連絡先の詳細";
@@ -1376,7 +1379,7 @@
 "DEVICE_LINKED_AT_LABEL" = "リンク: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "端末リストの更新に失敗";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "端末リストを更新できませんでした";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "移行を中止する";
@@ -1421,10 +1424,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS端末から移行する";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "続行すると、この電話番号で登録している他の端末でSignalが使えなくなります。";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "続行すると、同じ電話番号で登録されている他の端末のSignalが無効化されます。";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新規の端末を確認できませんでした。再試行してください";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新しい端末を確認できませんでした、再度試してください。";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "移行を完了できませんでした。両端末が近くにあることを確認して、もう一度試してください";
@@ -1553,7 +1556,7 @@
 "DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "ご支援ありがとうございます！";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signalはユーザーの皆様によって支えられています。";
+"DONATION_VIEW_TITLE" = "Signalはユーザの皆様によって支えられています";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_BODY" = "Signalのチームは、表現の自由を守り、安全なグローバルコミュニケーションを可能にする、オープンソースのプライバシー保護技術を開発するというミッションに取り組んでいます。\n\nあなたの寄付は、世界中の何百万人もの人々が、プライベートでリアルタイムなコミュニケーションのために使用しているアプリの開発、サーバおよび通信の費用に充てられます。";
@@ -1592,7 +1595,7 @@
 "EDIT_ITEM_COPY_ACTION" = "コピー";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "こんにちは\n\n最近、私はiPhoneでの会話・チャットにSignal（シグナル）というアプリを使っています。このアプリを使うと、会話内容が他人に傍受されません。あなたもインストールしてみませんか？\n\nSignalはiPhoneでもAndroidでも使えます。ここからインストールできます: %@\n\nSignalは、普通のメッセージアプリと同じように使えます。写真や動画も送れますし、電話もできますし、３人以上でのチャットもできます。一番いいところは、通信内容が暗号化されていることです。Signalの開発者でさえ傍受できない仕組みになっており、非常に安全です。\n\nSignalの開発者であるOpen Whisper Systemsについての詳細はここをご覧ください: %@";
+"EMAIL_INVITE_BODY" = "こんにちは\n\n最近、私はiPhoneでのチャットにSignalを使っています。このアプリを使うと、会話や通話内容が他人に傍受されません。あなたもインストールしてみませんか？\n\nSignalはiPhoneでもAndroidでも使えます。ここからインストールできます: %@\n\nSignalは、普通のメッセージアプリと同じように使えます。写真や動画も送れますし、通話もできますし、グループでのチャットもできます。一番いいところは、Signalの開発者でさえも通信内容を傍受できない仕組みです！\n\nSignalの開発者であるOpen Whisper Systemsについての詳細は、こちらをご覧ください: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "メッセージアプリをSignalにしましょう";
@@ -1700,7 +1703,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "サーバにエラーが発生しました。あとで再度試してください。";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "サーバはメッセージの送信前にユーザー認証を要求しています。";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "サーバはメッセージの送信前にユーザ認証を要求しています。";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "不明なエラーが発生しました。";
@@ -1787,10 +1790,10 @@
 "FAILED_VERIFICATION_TITLE" = "安全番号を検証できませんでした！";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "バッジを選択してください";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "注目のバッジ";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "検証済みにする";
@@ -1889,10 +1892,10 @@
 "GO_TO_SETTINGS_BUTTON" = "設定へ";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "グループ情報を編集できるユーザーを「%@」に変更しました。";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "グループ情報を編集できるユーザを「%@」に変更しました。";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ がグループ情報を編集できるユーザーを「%2$@」に変更しました。";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ がグループ情報を編集できるユーザを「%2$@」に変更しました。";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "「%@」はグループ情報を変更できます。";
@@ -1913,10 +1916,10 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "無効";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "グループメンバーを編集できるユーザーを「%@」に変更しました。";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "グループメンバーを編集できるユーザを「%@」に変更しました。";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ がグループメンバーを編集できるユーザーを「%2$@」に変更しました。";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ がグループメンバーを編集できるユーザを「%2$@」に変更しました。";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "「%@」はグループメンバーを変更できます。";
@@ -2180,7 +2183,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ がグループリンクを管理者承認制にしました。";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ を自動的にこのグループに追加することはできません。ユーザーは受信した招待を受け入れるまで、グループメッセージを閲覧できません。";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ を自動的にこのグループに追加することはできません。ユーザは受信した招待を受け入れるまで、グループメッセージを閲覧できません。";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "招待を送信しました";
@@ -2237,13 +2240,13 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "あとで再度試してください。";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "このグループリンクは有効ではありません。リンクが完全か、確認してください。";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "これは有効なグループリンクではありません。参加しようとする前に、リンク全体が正しいか確認してください。";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "無効なリンク";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "このグループに参加するには、Signalのバージョンを更新してください。";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "このグループに参加するには、この端末のSignalをアップデートしてください。";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "グループリンク経由での新メンバー参加時に、管理者の承認を要求します。";
@@ -2258,7 +2261,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "リンクを共有する";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "友達とリンクを共有して、すぐにこのグループに参加できるようにしましょう。";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "友達とリンクを共有して、すぐにこのグループに参加してもらいましょう。";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "友達を招待しましょう";
@@ -2747,7 +2750,7 @@
 "GROUPS_LEGACY_GROUP_INDICATOR" = "レガシーグループ";
 
 /* Indicates that the local user needs to accept an invitation to rejoin the group after a group migration. */
-"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "あなたがグループへの招待を受け入れるまで、グループメッセージは受信できません:";
+"GROUPS_LEGACY_GROUP_LOCAL_USER_INVITED" = "グループへの招待を受け入れるまで、グループメッセージは受信できません。";
 
 /* Label for the 'migrate' button in the 'migrate group' banner. */
 "GROUPS_LEGACY_GROUP_MIGRATE_GROUP_MIGRATE_BUTTON" = "アップグレードする";
@@ -2789,16 +2792,16 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "すべてのメッセージ履歴とメディアは、アップグレード前から維持されています。";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "このメンバーはグループから削除されました。アップグレードするまで再参加できません:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "このメンバーはグループから削除され、アップグレードするまで再参加できません:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "このメンバーはグループから削除されました。アップグレードするまで再参加できません:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "これらのメンバーはグループから削除され、アップグレードするまで再参加できません:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "このメンバーがグループへの招待を受け入れるまで、グループメッセージは受信できません:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "このメンバーがこのグループに再参加するには、招待を受け入れる必要があり、それまでグループメッセージは受信できません:";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "このメンバーがグループへの招待を受け入れるまで、グループメッセージは受信できません:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "これらのメンバーがこのグループに再参加するには、招待を受け入れる必要があり、それまでグループメッセージは受信できません:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "このメンバーは新しいグループに参加できないため、グループから削除されます:";
@@ -2912,7 +2915,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "写真を変更";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "写真にアクセスできるように設定でSignalにアクセス権限を与えます";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "設定でフルアクセスを許可したり、Signalがアクセスできる写真を変更したりできます。";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "写真が見えませんか？";
@@ -2924,13 +2927,13 @@
 "IN_CALL_CONNECTING" = "接続しています…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "他のデバイスから応答がありました。";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "他の端末で応答されました。";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "他のデバイスで通話中のため失敗しました。";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "他の端末で通話中のため、呼び出しができませんでした。";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "他のデバイスで拒否しました。";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "他の端末で拒否されました。";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "再接続しています…";
@@ -3038,7 +3041,7 @@
 "KEY_COMMAND_STICKERS" = "ステッカーを表示";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "受信箱に戻す";
+"KEY_COMMAND_UNARCHIVE" = "チャットのアーカイブを解除";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "詳細を見る";
@@ -3116,7 +3119,7 @@
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "名前や住所で検索";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "場所を選択";
+"LOCATION_PICKER_TITLE" = "場所の選択";
 
 /* Title for the 'logging' help section. */
 "LOGGING_SECTION" = "デバッグログ";
@@ -3566,7 +3569,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "他のユーザ";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "メンバーを選択";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "メンバーの選択";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "変更を破棄しますか？";
@@ -3614,31 +3617,31 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "新着メッセージの通知を受けるには:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "下の「設定へ」をタップ";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "以下の「設定へ」をタップ";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "「通知を許可」をオンにする。";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "「通知を許可」を有効にする";
 
 /* Second step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "通知をタップ";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "通知をオンにする。";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "通知の有効化";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "今はしない";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "オン";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "有効にする";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "連絡先やグループからのメッセージを見逃しません。";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "通知をオンにしますか?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "通知を有効にしますか？";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "「既読にする」、「返信」及び「折り返す」を含む";
+"NOTIFICATIONS_FOOTER_WARNING" = "「既読にする」、「返信」および「折り返す」を含みます";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "名前もメッセージも非表示";
@@ -3875,10 +3878,10 @@
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "失敗";
 
 /* Status indicator for outgoing payments which failed due to insufficient funds. */
-"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "残金が不足";
+"PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "残高不足";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "レシートが送付できませんでした。";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "レシートを送金先に送付できませんでした";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "無効";
@@ -3887,37 +3890,37 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "メモを追加";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "利用可能な残金: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "利用可能残高: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "支払いを確認";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "決済を確認";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "支払う";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "送金";
 
 /* Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}. */
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "連絡先にアクセスできませんでした。";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "決済システムに接続できませんでした";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "支払いを完了できる十分なMOBがありません。";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "決済を完了できる十分なMOBがありません。";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "支払いを完了できる十分なMOBがありません。残高は%@です。";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "決済を完了できる十分なMOBがありません。残高は%@です。";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "無効な取引";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "無効な取引です";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "支払い機能を利用するには、Signalをアップデートしてください。";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "決済機能を利用するには、Signalをアップデートしてください。";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "支払いはまだ検証されていません";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "決済はまだ確認されていません";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "支払いを完了できませんでした。インターネット接続を確認して再度試してください。";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "決済を完了できませんでした。インターネット接続を確認して再度試してください。";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "ネットワーク手数料";
@@ -3926,7 +3929,7 @@
 "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "概算 %@";
 
 /* Label for the 'invalid amount' button. */
-"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "無効な金額";
+"PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "無効な金額です";
 
 /* Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}. */
 "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT" = "%1$@ / %2$@";
@@ -3935,7 +3938,7 @@
 "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER" = "メモ";
 
 /* Label for the 'new payment' button. */
-"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "払う";
+"PAYMENTS_NEW_PAYMENT_PAY_BUTTON" = "送金";
 
 /* Label for the 'total payment amount' indicator. */
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "合計";
@@ -3944,22 +3947,22 @@
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "処理中";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "受取人 %@ ";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "送金先 %@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "請求する";
 
 /* Label for the payments notification banner for a single payment notification. */
-"PAYMENTS_NOTIFICATION_BANNER_1" = "1件の支払い通知";
+"PAYMENTS_NOTIFICATION_BANNER_1" = "1件の決済通知";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ があなたに %2$@ 送りました。";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ があなたに%2$@送金しました";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ 件の支払い通知";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@件の新しい決済通知";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "支払い完了";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "決済完了";
 
 /* Status indicator for incoming payments which have not yet been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "未検証";
@@ -3968,22 +3971,22 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "検証済み";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "支払い完了";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "決済完了";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "送信しています…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "送信";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "送金済み";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "準備しています";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "準備中";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "未検証";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "検証済み";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "確認済み";
 
 /* Status indicator for payments which had an unknown failure. */
 "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "不明なエラー";
@@ -4004,7 +4007,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "送信しています…";
 
 /* Status indicator for outgoing payments which have been sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "送信";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "送金済み";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "準備しています";
@@ -4019,31 +4022,31 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "不明なエラー";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "このユーザーに送金するには、相手があなたからのメッセージ申請を受け入れる必要があります。";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "このユーザに送金するには、相手があなたからのメッセージ申請を受け入れる必要があります。";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "このユーザーに送金するには、相手があなたからのメッセージ申請を受け入れる必要があります。メッセージ申請を行うため、メッセージを送信してください。";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "このユーザに送金するには、相手があなたからのメッセージ申請を受け入れる必要があります。メッセージ申請を行うため、メッセージを送信してください。";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "送金できません";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "この人は支払い機能を有効にしていません。";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "この人は決済機能を有効にしていません。";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "無効な宛先";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "無効な宛先です";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "移行";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "振替";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "受け取り済み";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "着金した決済";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "送金済み";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "送金した決済";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "無効";
+"PAYMENTS_UNKNOWN_PAYMENT" = "無効な決済";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "グループに追加する";
@@ -4103,7 +4106,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "「%@」に対するグループ招待を無効にしますか？";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "他のグループメンバーが招待したユーザの詳細は表示されません。招待されたユーザが参加を選択した時点で、グループ内で共有されます。招待されたユーザは、参加するまでグループ内のメッセージを閲覧できません。";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "他のグループメンバーが招待したユーザの詳細は表示されません。招待されたユーザが参加した時点で、グループ内で共有されます。招待されたユーザは、参加するまでグループ内のメッセージを閲覧できません。";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "このリストの人々が、グループリンクから「%@」への参加を申請しています。";
@@ -4763,7 +4766,7 @@
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "安全番号が変わりました";
 
 /* View safety number action for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "表示";
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "表示する";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "私たちのSignal安全番号:\n%@";
@@ -4787,7 +4790,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "認証に失敗しました。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "認証に失敗しました。後で再試行してください";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "認証失敗が多すぎます。あとで再度試してください。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "画面ロックを使用するには、iOSの設定でパスコードを有効にしてください。";
@@ -4982,7 +4985,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "非対応バージョン";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "あなたの他の端末が、Signalの古いバージョンを使用しているため、iPadのQRコードをスキャンできません。最新のバージョンをインストールしてください。";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "あなたの他の端末が、古いバージョンのSignalを使用しているため、iPadのQRコードをスキャンできません。最新のSignalをインストールして、再度試してください。";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "端末をアップデートしてください";
@@ -4991,7 +4994,7 @@
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "端末をリンクできませんでした";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "この端末の名前を選択";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "この端末の名前を選択してください";
 
 /* label text */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "この名前は「リンク済み端末」に表示されます";
@@ -5069,7 +5072,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "標準";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signalは、エンドツーエンドの暗号を使用しており、セッションを時々更新する必要があります。セキュリティには影響しませんが、この連絡先からのメッセージが失われる場合があり、その際は再送を依頼する必要があるかもしれません。";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signalはエンドツーエンドの暗号化を使用しており、時々セッションの更新が必要な場合があります。これはチャットのセキュリティには影響しませんが、この連絡先からのメッセージを失った可能性があるため、再送を依頼することができます。";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "セッションが更新されました";
@@ -5135,7 +5138,7 @@
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "可能な場合、システムの連絡先写真を表示します。";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "システムの連絡先写真を使用";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "システムの連絡先写真を使用する";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "テーマ";
@@ -5183,7 +5186,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "データ通信量の抑制";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "データ通信量を抑えて低品質なネットワーク上での通話を改善します。";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "データ通信量を抑えて、低品質なネットワーク上での通話を改善します。";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "通話";
@@ -5216,7 +5219,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "アカウントを削除する";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "送金禁止";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "振り替えない";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "あなたの残高は%@です。口座を削除する前に、残高を別のウォレットに振り替えなければ、永遠に失われます。";
@@ -5225,7 +5228,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "残高を振り替えますか？";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "残高を移行";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "残高を振替";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "すべてのデータを削除する";
@@ -5267,7 +5270,7 @@
 "SETTINGS_LINK_PREVIEWS" = "リンクプレビューを生成する";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "送信メッセージのリンクプレビューをウェブサイトから直接取得します。";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "送信メッセージのリンクプレビューを、ウェブサイトから直接取得します。";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "なし";
@@ -5294,7 +5297,7 @@
 "SETTINGS_MESSAGING" = "メッセージ";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "メッセージの既読や入力中の状態を相手に共有します。無効の場合、相手の既読通知や入力中アイコンも表示されません。";
+"SETTINGS_MESSAGING_FOOTER" = "メッセージの既読や入力中の状態を相手と共有します。無効の場合、相手の既読通知や入力中アイコンは表示されません。";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "設定";
@@ -5321,16 +5324,16 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Label for the 'agree to payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "支払い条件に同意";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "有効にする";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "SignalでMobileCoinを利用できます。すべての支払いは、MobileCoinsとMobileCoin Walletの利用規約に準じます。この機能はベータ版であり、問題が発生したり、支払いや残高を失う恐れがあります。";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "SignalでMobileCoinを利用できます。すべての決済は、MobileCoinsとMobileCoin Walletの利用規約に準じます。この機能はベータ版であり、問題が発生したり、決済や残高を失う恐れがあります。";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "支払い確認を有効化";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "決済確認の有効化";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoinの規約を見る";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoinの利用規約";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "入金";
@@ -5342,25 +5345,25 @@
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "ウォレットアドレスをコピーしました";
 
 /* Label for the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_ALL_RECORDS" = "すべての支払い";
+"SETTINGS_PAYMENTS_ALL_RECORDS" = "すべての決済";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ (%3$@現在)";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signalの支払い機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Signalの決済機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "残高が不明なため、支払い機能を停止できません。インターネット接続を確認して再度試してください。";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "残高が不明なため、決済機能を停止できません。インターネット接続を確認して再度試してください。";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "残高が不明なため、支払いを完了できませんでした。インターネット接続を確認して再度試してください。";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "残高が不明なため、決済を完了できませんでした。インターネット接続を確認して再度試してください。";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signalの支払い機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Signalの決済機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signalの支払い機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Signalの決済機能は、利用できなくなりました。取引所への振替は可能ですが、送金や受け取り、入金はできません。";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "金額は概算であり、正確ではない場合があります。";
@@ -5369,28 +5372,28 @@
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "すべての通貨";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "残高を移行";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "残高を振替";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "支払い機能を停止";
+"SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "停止する";
 
 /* Label for 'deactivate payments' button in the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "支払い機能を停止";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "決済機能を停止";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "支払い機能を停止すると、SignalでMobilecoinを利用できなくなります。";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "決済機能を停止すると、SignalでMobilecoinを利用できなくなります。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "支払い機能を停止しますか？";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "決済機能を停止しますか？";
 
 /* Label for the 'de-activate payments' view of the app settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "支払い機能を停止";
+"SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "決済機能を停止";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "支払い機能を停止する前に、別のウォレットアドレスに残高を振り替えることをお勧めします。振り替えない残高は、支払い機能を再開する場合、Signalにリンクされたウォレットに残ります。";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "決済機能を停止する前に、別のウォレットアドレスに残高を振り替えることをお勧めします。振り替えない残高は、決済機能を再開する場合、Signalにリンクされたウォレットに残ります。";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "残高は、支払い機能を再開する場合、Signalにリンクされたウォレットに残ります。";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "残高は、決済機能を再開する場合、Signalにリンクされたウォレットに残ります。";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "振り替えずに停止しますか？";
@@ -5399,13 +5402,13 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "振り替えずに停止する";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "支払い機能を停止できませんでした";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "決済機能を停止できませんでした";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "詳細";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "支払い機能を有効化";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "決済機能を有効化";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoinは、プライバシーを重視した新しいデジタル通貨です。";
@@ -5438,22 +5441,22 @@
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "リカバリーフレーズを保管";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "リカバリーフレーズは、支払い口座を復元するもう一つの方法です。";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "リカバリーフレーズは、決済口座を復元するもう一つの方法です。";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "リカバリーフレーズの保管";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "無効なウォレットアドレス";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "無効なウォレットアドレスです";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "最近の取引はありません";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "支払い機能を有効にしますか？";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "決済機能を有効にしますか？";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "支払い機能が無効です";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "決済機能が無効です";
 
 /* Message for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "送金するには再登録してください。";
@@ -5462,19 +5465,19 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "未登録";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "支払い機能を有効化";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "決済機能を有効化";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "支払い機能が有効になりました";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "決済機能が有効になりました。";
 
 /* Message for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Signalを使って、プライバシーを重視した新しいデジタル通貨であるMobileCoinを利用できます。有効化して始めましょう。";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "支払い機能を再有効化";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "決済機能を再有効化";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "支払い機能のご紹介 (ベータ)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "決済機能のご紹介 (ベータ)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Signalの再インストール時にSignal PINを確認すると、残高は自動で復元されます。また、あなた固有の24語のリカバリーフレーズを使って、残高を復元することもできます。リカバリーフレーズは、書きとめて安全な場所に保管してください。";
@@ -5492,7 +5495,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "着金";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ から受け取り";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ から着金";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "送金者";
@@ -5504,34 +5507,34 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "あなた";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "送信";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "送金";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@ に送金";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@ に送金済み";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "状態";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "支払い金額や時刻などの取引の詳細は、MobileCoin台帳の一部です。";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "決済金額や時刻などの取引の詳細は、MobileCoin台帳の一部です。";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "「コインクリーンアップ手数料」は、お手持ちのコインを組み合わせて取引を完了できない場合に発生します。クリーンアップすることで、送金を続けることができます。";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "支払いを完了できる十分なMOBがありません。残高は%@です。";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "決済を完了できる十分なMOBがありません。残高は%@です。";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "残高不足";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "支払人 %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "送金元 %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "受取人 %@ ";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "送金先 %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "支払い機能を停止";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "決済機能を停止";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "すべて";
@@ -5540,10 +5543,10 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_INCOMING" = "着金";
 
 /* Label for the 'outgoing payments' mode of the 'all payment records' section of the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "送信";
+"SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "送金";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "最近の支払い";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "最近の決済";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "PINを無効にする前に、口座を回復するためのリカバリーフレーズを保管しなければなりません。";
@@ -5552,7 +5555,7 @@
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "リカバリーフレーズを保管";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "支払いリカバリーフレーズを保存";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "決済機能リカバリーフレーズの保管";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "残高";
@@ -5561,28 +5564,28 @@
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "削除";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "支払い口座を復元";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "決済口座を復元";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "フレーズが正しいか確認してください";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "正しいフレーズを入力したか確認してください。";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "リカバリーフレーズの確認";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "支払い口座が復元されました。";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "決済口座が復元されました。";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "マニュアル入力";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "復元に失敗しました";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "復元できませんでした";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "有効なリカバリーフレーズではありません";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "リカバリーフレーズが正しくありません。";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "不正なパスフレーズ";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "無効なパスフレーズです";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "クリップボードから貼り付け";
@@ -5609,16 +5612,16 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "無効なリカバリーフレーズです。";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "スペルが正しくありません";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "スペルが正しくありません。";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "リカバリーフレーズを入力してください";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "受取人のQRコードを読み取ります。";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "振替先のQRコードを読み取ります。";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "無効なアドレス";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "無効なアドレスです";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QRコードをスキャン";
@@ -5627,13 +5630,13 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "送金";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "受取人を選択";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "送信先の選択";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "通貨換算";
 
 /* Label for the 'payments' section of the app settings. */
-"SETTINGS_PAYMENTS_TITLE" = "支払い機能";
+"SETTINGS_PAYMENTS_TITLE" = "決済機能";
 
 /* Error indicating that it is not valid to send yourself a payment. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "あなた自身のSignalのウォレットアドレスには振替できません。サポートされている取引所にある、あなたの口座のウォレットアドレスを入力してください。";
@@ -5645,40 +5648,40 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "振替先のウォレットアドレスを確認して、再度試してください。";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "不正なアドレス";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "無効なアドレスです";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "支払先: スキャンするかウォレットアドレスを入力してください";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "振替先: スキャンするかウォレットアドレスを入力してください";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "取引所に送付";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "取引所へ振替";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "取引所に送付";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "取引所へ振替";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "リカバリーフレーズの設定が完了";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "リカバリーフレーズの設定が完了しました。";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "確認";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "リカバリーフレーズの %1$@ と %2$@ を入力してください。";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "リカバリーフレーズの%1$@と%2$@を入力してください。";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "単語が間違っています。再度試してください。";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "両方の単語が間違っています。再入力してください。";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "両方の単語が間違っています。再度試してください。";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "単語 %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "単語%@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "リカバリーフレーズを確認";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "リカバリーフレーズの確認";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "リカバリーフレーズがコピーされました";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "リカバリーフレーズをコピーしました";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "クリップボードにコピー";
@@ -5708,7 +5711,7 @@
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "リカバリーフレーズ";
 
 /* Title for the 'payments settings' view in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_TITLE" = "支払い機能 (ベータ)";
+"SETTINGS_PAYMENTS_VIEW_TITLE" = "決済機能 (ベータ)";
 
 /* Label for the payments wallet address. */
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "あなたのウォレットアドレス";
@@ -5894,7 +5897,7 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "準備できていません";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "添付ファイルの送信失敗";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "添付ファイルを送信できません";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%1$@/%2$@をアップロードしています…";
@@ -5903,7 +5906,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "アップロードしています…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "添付ファイル作成に失敗";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "添付ファイルを準備できません";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signalと共有";
@@ -5924,7 +5927,7 @@
 "SHARING_SUGGESTIOONS_MEGAPHONE_BUTTON_ENABLE" = "有効にする";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "安全番号を表示";
+"SHOW_SAFETY_NUMBER_ACTION" = "安全番号の検証";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "チャットを表示";
@@ -6020,19 +6023,19 @@
 "SUBSCRIBER_BADGES" = "バッジ";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "サブスクリプションを管理";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "サブスクリプションのよくある質問";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "支援する";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "寄付する";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signalはユーザーの皆様によって支えられています。ご支援をお願いします！";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signalはユーザの皆様によって支えられています。ご寄付いただきバッジを獲得してください。";
 
 /* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "寄付しない";
+"SUBSCRIPTION_MEGAPHONE_CANCEL" = "今はしない";
 
 /* Title for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_TITLE" = "サポーターになりましょう";
@@ -6071,7 +6074,7 @@
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOSバージョン: %@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "言語設定: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "言語と地域: %@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
 "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "ログURL: %@";
@@ -6095,25 +6098,25 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "読み込み中";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signalは、広告主や投資家を持たない非営利団体であり、Signalを利用し、評価くださる方々によって支えられています。毎月の定期的なご寄付をいただき、あなたのご支援を示すプロフィールバッジを受け取ってください。";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signalは、表現の自由を守り、安全なグローバルコミュニケーションを可能にする、オープンソースのプライバシー保護技術の開発に取り組んでいます。\n\nあなたの寄付はこの活動を後押しし、何百万人もの人々がプライベートなコミュニケーションに使用する、アプリの開発と運営に充てられます。広告はありません。トラッカーもいません。";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "データのためではなく、あなたのために作られた技術を支えるコミュニティに参加して、サポートをお願いします。";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "寄付をお願いする理由";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "処理を継続しています";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "Signalブーストを追加";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "%@バッジを獲得しましょう";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "サブスクリプションを解除";
@@ -6128,67 +6131,73 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "解除しますか？";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "バッジを追加できませんでした。%@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "あなたのアカウントにバッジを追加できませんでした。お手数ですが、サポートまでお問い合わせください。";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "バッジを追加できませんでした";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "サポートにお問い合わせください。";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "通貨を設定してください";
+
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "マイサポート";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/月";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · 有効期限 %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · 更新 %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "決済を処理しています…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "処理しています…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "続きを読む";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "更新 %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "あなたの支払いはまだ処理が続いています。接続状況によっては数分かかる場合があります。";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "あなたの決済はまだ処理が続いています。接続状況によっては数分かかる場合があります。";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "あなたのサブスクリプションは解除されました";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "今はしない";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signalはユーザーの皆様によって支えられています。";
+"SUSTAINER_VIEW_TITLE" = "Signalはユーザの皆様によって支えられています";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "本日、新しいサブスクリプション価格の全額 (%@) が請求されます。あなたのサブスクリプションは毎月更新されます。";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "サブスクリプションを更新しますか？";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "更新する";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "データのためではなく、あなたのために作られた技術を支える人々のコミュニティに参加して、サポートをお願いします。";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "オフ";
@@ -6290,7 +6299,7 @@
 "TXT_DELETE_TITLE" = "削除";
 
 /* Label for the unarchive button for conversations list view */
-"UNARCHIVE_ACTION" = "受信箱に戻す";
+"UNARCHIVE_ACTION" = "アーカイブ解除";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "連絡先にないユーザです。このユーザをブロックしますか？";
@@ -6404,7 +6413,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "iOSのアップグレード";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Signalのユーザ名作成は任意です。ユーザー名を作成すると、他のSignalユーザはあなたの電話番号を知らなくても、あなたにこのユーザ名で連絡できるようになります。";
+"USERNAME_DESCRIPTION" = "Signalのユーザ名作成は任意です。ユーザ名を作成すると、他のSignalユーザはあなたの電話番号を知らなくても、あなたにこのユーザ名で連絡できるようになります。";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "ユーザ名には半角の英数字とアンダーバーのみ使用できます。";
@@ -6461,10 +6470,10 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "検証状態が変わりました。";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "安全番号を表示する";
+"VERIFY_PRIVACY" = "安全番号の検証";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "安全番号を表示する";
+"VERIFY_PRIVACY_MULTIPLE" = "安全番号の検証";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "ビデオ通話";

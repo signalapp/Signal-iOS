@@ -484,6 +484,9 @@
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Diga “Obrigado!” e ganhe o selo Boost por 30 dias.";
 
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Insira o valor";
 
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Apoiadores e doação ao Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Apoiadores e doação ao Signal";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "O Signal não conseguiu completar seu pedido de suporte técnico.";
@@ -2579,13 +2582,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ atualizou o grupo.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "A descrição do grupo foi apagada.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "A descrição do grupo foi excluída.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Você apagou a descrição do grupo.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Você excluiu a descrição do grupo.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ apagou a descrição do grupo.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ excluiu a descrição do grupo.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "A descrição do grupo foi alterada.";
@@ -2618,13 +2621,13 @@
 "GROUP_WAS_MIGRATED" = "Este grupo foi atualizado para um Novo Grupo.";
 
 /* Message indicating that 1 user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Um membro não pôde ser adicionado ao Novo Grupo e foi removido do grupo.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_1" = "Um membro não pôde ser adicionado ao Novo Grupo e foi excluído do grupo.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Você não pôde ser adicionado ao Novo Grupo e foi removido do grupo.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Você não pôde ser adicionado ao Novo Grupo e foi excluído do grupo.";
 
 /* Message indicating that N users were dropped while migrating the group. Embeds {{ the number of dropped users }}. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membros não puderam ser adicionados ao Novo Grupo e foram removidos do grupo.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_N_FORMAT" = "%@ membros não puderam ser adicionados ao Novo Grupo e foram excluídos do grupo.";
 
 /* Message indicating that 1 user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_1" = "Um membro não pôde ser adicionado ao Novo Grupo e foi convidado a entrar";
@@ -2789,10 +2792,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Todo o histórico de mensagens e mídia de antes da atualização foram mantidos.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Este membro foi removido do grupo e não poderá participar novamente do grupo até que atualize o Signal:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Este membro foi excluído do grupo e não poderá participar novamente do grupo até que atualize o Signal:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Estes membros foram removidos do grupo e não poderão participar novamente do grupo até que atualizem o Signal:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Estes membros foram excluídos do grupo e não poderão participar novamente do grupo até que atualizem o Signal:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Este membro precisará aceitar um convite para entrar novamente neste grupo e não receberá as mensagens do grupo até que aceite:";
@@ -2801,10 +2804,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Estes membros precisarão aceitar um convite para entrar novamente neste grupo e não receberão as mensagens do grupo até que aceitem:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Este membro não é capaz de participar de Novos Grupos, e será removido do grupo:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Este membro não é capaz de participar de Novos Grupos, e será excluído do grupo:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Estes membros não são capazes de participar de Novos Grupos, e serão removidos do grupo:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Estes membros não são capazes de participar de Novos Grupos, e serão excluídos do grupo:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Atualizar para o Novo Grupo";
@@ -6095,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Carregando";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal é uma organização sem fins lucrativos, sem anunciantes ou investidores, sustentada apenas pelas pessoas que a utilizam e valorizam. Faça uma doação mensal recorrente e receba um selo para compartilhar o seu apoio no seu perfil.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal está comprometido com a missão de desenvolver tecnologias de código aberto focadas em privacidade que protegem a liberdade de expressão e permitem haver segurança na comunicação global.\n\nSua doação alimenta essa causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas em suas comunicações privadas. Sem anúncios. Sem rastreadores. Sem brincadeira.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Em vez de apoiar tecnologias desenvolvidas para terceiros lucrarem com seus dados privados, apoie uma tecnologia desenvolvida para você, juntando-se à comunidade que a sustenta financeiramente.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Por que contribuir?";
@@ -6142,8 +6145,14 @@
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Definir a moeda";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Meu apoio";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/mês";

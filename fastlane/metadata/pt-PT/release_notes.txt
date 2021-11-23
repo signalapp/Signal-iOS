@@ -1,5 +1,2 @@
-Não reunimos os seus dados para os vender e não lucramos com anúncios, portanto contamos com as suas doações para manter o Signal em funcionamento:
-• You can now help sustain Signal by contributing a small donation each month using Apple Pay. Sustainers earn fun badges they can display on their profile to help spread awareness. 
-• Give Signal a boost using Apple Pay. Boosts are a quick one-time donation that let’s you say thanks and keep Signal going. Boosts come with their own unique badge.
-
-This release also includes numerous bug fixes.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

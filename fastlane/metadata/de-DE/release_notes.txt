@@ -1,5 +1,2 @@
-Da wir keine Daten verkaufen und keine Werbung schalten, sind wir auf Spenden angewiesen, um Signal zu betreiben:
-★ Du kannst Signal unterstützen, zahle monatlich einen kleinen Betrag mit Apple Pay. Unterstützer erhalten Abzeichen, die sie auf ihrem Profil anzeigen können.
-• Gib Signal einen Boost mit Apple Pay. Boosts sind eine kleine einmalige Spende. Erhalte das einzigartige Boost Abzeichen.
-
-Diese Version enthält auch zahlreiche Fehlerkorrekturen.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

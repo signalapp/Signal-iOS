@@ -1,5 +1,2 @@
-Ilman myytäviä tietoja ja mainontaa, tarvitsemme käyttäjiemme tukea Signalin ylläpitoon:
-• Voit nyt auttaa Signalin toimintaa osallistumalla pienellä kuukausittaisella lahjoituksella käyttäen Apple Payta. Tukijat ansaitsevat hauskoja merkkejä, jotka näkyvät heidän profiileissaan tietoisuuden levittämiseksi.
-• Boostaa Signalia käyttäen Apple Payta. Boostit ovat nopeita kertalahjoituksia, joilla voit sanoa kiitos ja tukea Signalin toimintaa. Boostauksesta saa oman, ainutlaatuisen merkin.
-
-Tämä julkaisu sisältää myös useita korjauksia.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

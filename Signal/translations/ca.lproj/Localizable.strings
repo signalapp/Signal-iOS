@@ -374,13 +374,13 @@
 "BACK_BUTTON" = "Enrere";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Les meves insígnies";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Insígnies";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Sigueu-ne un sostenidor";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Doneu una empenta al Signal";
@@ -483,6 +483,9 @@
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduïu la quantitat personalitzada";
@@ -908,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "El Signal no ha pogut completar la sol·licitud d'assistència.";
@@ -1787,7 +1790,7 @@
 "FAILED_VERIFICATION_TITLE" = "No s'ha pogut verificar el número de seguretat!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "Seleccioneu una insígnia";
 
 /* The title for the featured badge settings page */
 "FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
@@ -5837,7 +5840,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Empenta del Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "Convertiu-vos en sostenidor del Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocatge de registre";
@@ -6026,16 +6029,16 @@
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "PMF de la subscripció";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribuïu-hi";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "El Signal és sostingut per persones com vós. Contribuïu-hi i rebeu una insígnia.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "No, gràcies";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Sigueu-ne un sostenidor";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "El número de seguretat amb %@ coincideix. Podeu marcar el contacte com a verificat.";
@@ -6113,7 +6116,7 @@
 "SUSTAINER_VIEW_ADD_BOOST" = "Afegiu una empenta al Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obteniu una insígnia %@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel·la la subscripció";
@@ -6128,7 +6131,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "En confirmeu la cancel·lació?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "No s'ha pogut afegir la insígnia. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
@@ -6137,16 +6140,22 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Poseu-vos en contacte amb l'assistència.";
 
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Set currency";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
 
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@ / mes";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
@@ -6164,10 +6173,10 @@
 "SUSTAINER_VIEW_READ_MORE" = "Read More.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "Renovació: %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "El pagament encara s'està processant. Això pot trigar uns quants minuts segons la connexió.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
@@ -6188,7 +6197,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Actualitza-la";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Ajudeu la tecnologia creada per a vosaltres, no per a les vostres dades, afegint-vos a la comunitat de persones que la sustenten.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Inactiu";

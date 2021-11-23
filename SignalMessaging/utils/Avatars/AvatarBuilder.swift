@@ -105,25 +105,23 @@ public class AvatarBuilder: NSObject {
     @objc
     func contactsDidChange(notification: Notification) {
         AssertIsOnMainThread()
-
-        requestToImageCache.removeAllObjects()
         requestToContentCache.removeAllObjects()
     }
 
     @objc
     func otherUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
-
-        requestToImageCache.removeAllObjects()
-        requestToContentCache.removeAllObjects()
+        if let address = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress {
+            addressToAvatarIdentifierCache.removeObject(forKey: address)
+        }
     }
 
     @objc
     func localUsersProfileDidChange(notification: Notification) {
         AssertIsOnMainThread()
-
-        requestToImageCache.removeAllObjects()
-        requestToContentCache.removeAllObjects()
+        if let address = tsAccountManager.localAddress {
+            addressToAvatarIdentifierCache.removeObject(forKey: address)
+        }
     }
 
     // MARK: -
@@ -192,10 +190,13 @@ public class AvatarBuilder: NSObject {
                               diameterPoints: diameterPoints,
                               localUserDisplayMode: localUserDisplayMode,
                               transaction: transaction)
-        guard let cacheKey = request.cacheKey else {
+        guard let requestCacheKey = request.cacheKey else {
             return nil
         }
-        return requestToImageCache.object(forKey: cacheKey)
+        guard let content = requestToContentCache.object(forKey: requestCacheKey) else {
+            return nil
+        }
+        return contentToImageCache.object(forKey: content.cacheKey)
     }
 
     private func request(forGroupThread groupThread: TSGroupThread,
@@ -231,10 +232,13 @@ public class AvatarBuilder: NSObject {
         let request = request(forGroupThread: groupThread,
                               diameterPoints: diameterPoints,
                               transaction: transaction)
-        guard let cacheKey = request.cacheKey else {
+        guard let requestCacheKey = request.cacheKey else {
             return nil
         }
-        return requestToImageCache.object(forKey: cacheKey)
+        guard let content = requestToContentCache.object(forKey: requestCacheKey) else {
+            return nil
+        }
+        return contentToImageCache.object(forKey: content.cacheKey)
     }
 
     @objc
@@ -387,6 +391,12 @@ public class AvatarBuilder: NSObject {
 
     // MARK: - Requests
 
+    // We can't enumerate cache keys to selectively remove certain objects
+    // Instead we add a layer of indirection to map known SignalServiceAddress to ephemeral UUID
+    // That way, we can index into this indirect cache to remove the ephemeral UUID used to construct
+    // the request cacheKey, in effect, removing the item from the final cache.
+    private let addressToAvatarIdentifierCache = LRUCache<SignalServiceAddress, String>(maxSize: 256, nseMaxSize: 0)
+
     public enum RequestType {
         case contactAddress(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode)
         case text(text: String, theme: AvatarTheme)
@@ -398,11 +408,12 @@ public class AvatarBuilder: NSObject {
         fileprivate var cacheKey: String? {
             switch self {
             case .contactAddress(let address, let localUserDisplayMode):
-                guard let serviceIdentifier = address.serviceIdentifier else {
-                    owsFailDebug("Missing serviceIdentifier.")
-                    return nil
-                }
-                return "contactAddress.\(serviceIdentifier).\(localUserDisplayMode.rawValue)"
+                let indirectAvatarIdentifier = AvatarBuilder.shared.addressToAvatarIdentifierCache[address] ?? {
+                    let newId = UUID().uuidString
+                    AvatarBuilder.shared.addressToAvatarIdentifierCache[address] = newId
+                    return newId
+                }()
+                return "contactAddress.\(indirectAvatarIdentifier).\(localUserDisplayMode.rawValue)"
             case .text(let text, let theme):
                 return "text.\(text).\(theme.rawValue)"
             case .contactDefaultIcon(let theme):
@@ -578,19 +589,9 @@ public class AvatarBuilder: NSObject {
 
     // MARK: -
 
-    // This cache needs to be evacuated whenever anything that
-    // would affect AvatarContent for the request changes.
-    private let requestToImageCache = LRUCache<String, UIImage>(maxSize: 128, nseMaxSize: 0)
-
     private func avatarImage(forRequest request: Request, transaction: SDSAnyReadTransaction) -> UIImage? {
         let avatarContent = avatarContent(forRequest: request, transaction: transaction)
-        guard let image = avatarImage(forAvatarContent: avatarContent) else {
-            return nil
-        }
-        if let cacheKey = request.cacheKey {
-            requestToImageCache.setObject(image, forKey: cacheKey)
-        }
-        return image
+        return avatarImage(forAvatarContent: avatarContent)
     }
 
     // This cache needs to be evacuated whenever anything that

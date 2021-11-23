@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Đã rõ";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dáng, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@ trong khung chat này.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dán, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@ trong khung chat này.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Vấn đề Truyền tải";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dáng, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@. có thể họ đã gửi trực tiếp cho bạn hoặc gửi trong một nhóm nào đó.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Một tin nhắn, nhãn dán, thông tin hoặc tập tin đa phương tiện đã không gửi được cho bạn từ %@. Có thể họ đã gửi trực tiếp cho bạn hoặc gửi trong một nhóm nào đó.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Bỏ";
@@ -483,6 +483,9 @@
 
 /* The body text for the donate to signal view */
 "BOOST_VIEW_BODY" = "Hãy cảm ơn và nhận huy hiệu đống góp trong 30 ngày.";
+
+/* The body text for the donate to signal view, embeds {{Expiration}} */
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Nhập vào Số tiền Tuỳ chọn";
@@ -905,10 +908,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Có điều gì đó đang không hoạt động";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Người hổ trợ & Đống góp cho Signal";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Người hổ trợ & Đóng góp cho Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Người hổ trợ & Đống góp cho Signal";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal không thể hoàn thành yêu cầu hỗ trợ của bạn. ";
@@ -1217,7 +1220,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Đọc Thêm";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "đã sao chép vào bộ nhớ tạm";
+"COPIED_TO_CLIPBOARD" = "Đã sao chép vào bộ nhớ tạm";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Đặt lại phiên này sẽ cho phép bạn nhận các tin nhắn trong tương lai từ %@, nhưng bạn không thể khôi phục các tin nhắn đã hỏng.";
@@ -6026,7 +6029,7 @@
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "FAQ Quyên góp";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "Đống góp";
 
 /* Body for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
@@ -6104,7 +6107,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Contribute?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Vì sao phải Quyên góp?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vẫn đang xữ lý";
@@ -6142,8 +6145,14 @@
 /* Set currency label in sustainer view */
 "SUSTAINER_VIEW_CURRENCY" = "Đặt kỳ hạn";
 
+/* Action sheet title for Error Processing Payment sheet */
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Hổ trợ của tôi";
+
+/* Payment error occured text, embeds {{link to contact support}} */
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/tháng";
@@ -6152,7 +6161,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Hết hạn %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · làm mới %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Làm mới %@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Đang xử lý thanh toán...";

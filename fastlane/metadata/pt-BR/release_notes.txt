@@ -1,5 +1,2 @@
-Não coletamos seus dados para vendê-los e não lucramos com anúncios, portanto contamos com suas doações para manter o Signal em funcionamento:
-★ Agora você pode contribuir para o Signal com uma quantia mensal usando o Apple Pay. Doadores ganham selos divertidos para exibir em seus perfis, ajudando na conscientização.
-• Dê um impulso ao Signal usando o Apple Pay. Com uma doação única e rápida, você nos agradece e mantém o Signal funcionando. Doadores recebem um selo exclusivo.
-
-Esta versão também inclui várias correções de erros.
+• We spruced up the chat list a bit to make unread chats clearer to see
+• Fixes for some issues with search and zooming in on photos

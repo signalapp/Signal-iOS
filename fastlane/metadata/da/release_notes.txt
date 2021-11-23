@@ -1,5 +1,2 @@
-Vi har ingen data at sælge og ingen reklamer, derfor er vi afhængige af dine bidrag for at drive Signal:
-• Du kan nu støtte Signal med et lille beløb hver måned via Apple Pay. Bidragsydere optjener sjove emblemer, som de kan vise på deres profil for at sprede budskabet. 
-• Giv Signal et boost ved brug af Apple Pay. Boosts er hurtige engangsbidrag for at sige tak og holde Signal i live. Boosts kommer med deres eget unikke emblem.
-
-Denne opdatering indeholder også mange fejlrettelser.
+• Vi har piftet samtalelisten en smule op for at gøre ulæste samtaler mere tydelige at se
+• Løser nogle problemer med søgning og zooming på billeder
