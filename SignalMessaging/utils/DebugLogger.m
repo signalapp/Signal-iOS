@@ -27,7 +27,7 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
 
 @implementation DebugLogger
 
-+ (instancetype)sharedLogger
++ (instancetype)shared
 {
     static DebugLogger *shared = nil;
     static dispatch_once_t onceToken;
@@ -190,7 +190,45 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     }
 }
 
+- (void)removeObsoleteDebugLogs
+{
+    NSArray<NSString *> *allAppIds = @[
+        @"org.whispersystems.signal",
+        @"org.whispersystems.signal.shareextension",
+        @"org.whispersystems.signal.SignalNSE",
+
+        // Obsolete, should not be included:
+        // @"org.whispersystems.signal.NotificationServiceExtension",
+    ];
+    BOOL (^hasKnownAppId)(NSString *) = ^(NSString *logFileName) {
+        for (NSString *appId in allAppIds) {
+            NSString *prefix = [appId stringByAppendingString:@" "];
+            if ([logFileName hasPrefix:prefix]) {
+                return YES;
+            }
+        }
+        return NO;
+    };
+
+    NSArray<NSString *> *logFilePaths = self.allLogFilePaths;
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    for (NSString *logFilePath in logFilePaths) {
+        NSString *logFileName = logFilePath.lastPathComponent;
+        if (!hasKnownAppId(logFileName)) {
+            OWSLogInfo(@"Removing: %@", logFileName);
+            BOOL success = [fileManager removeItemAtPath:logFilePath error:&error];
+            if (!success || error) {
+                OWSFailDebug(@"Failed to delete log file: %@", error);
+            }
+        }
+    }
+}
+
 @end
+
+#pragma mark -
 
 @implementation ErrorLogger
 

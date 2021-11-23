@@ -259,7 +259,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
     });
 
-    [DebugLogger.sharedLogger wipeLogs];
+    [DebugLogger.shared wipeLogs];
     exit(0);
 }
 

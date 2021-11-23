@@ -212,7 +212,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     NSString *zipDirPath = [tempDirectory stringByAppendingPathComponent:logsName];
     [OWSFileSystem ensureDirectoryExists:zipDirPath];
 
-    NSArray<NSString *> *logFilePaths = DebugLogger.sharedLogger.allLogFilePaths;
+    NSArray<NSString *> *logFilePaths = DebugLogger.shared.allLogFilePaths;
     if (logFilePaths.count < 1) {
         failure(NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found."));
         return;
