@@ -8,9 +8,12 @@ import PassKit
 import ZKGroup
 
 public enum SubscriptionRedemptionFailureReason: Int {
-    case none
-    case validationFailed
-    case paymentFailed
+    case none = 0
+    case localValidationFailed = 1
+    case serverValidationFailed = 400
+    case paymentFailed = 402
+    case paymentNotFound = 404
+    case paymentIntentRedeemed = 409
 }
 
 public class SubscriptionLevel: Comparable {
@@ -210,7 +213,11 @@ public class SubscriptionManager: NSObject {
             return .none
         }
 
-        return SubscriptionRedemptionFailureReason(rawValue: intValue)!
+        if let reason = SubscriptionRedemptionFailureReason(rawValue: intValue) {
+            return reason
+        } else {
+            return .none
+        }
     }
 
     public static func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
@@ -492,34 +499,26 @@ public class SubscriptionManager: NSObject {
             let statusCode = response.responseStatusCode
 
             if statusCode == 200 {
-                Logger.debug("Got valid receipt response")
+                Logger.info("Got valid receipt response")
             } else if statusCode == 204 {
-                Logger.debug("User has no active subscriptions")
-                throw OWSRetryableSubscriptionError()
-            } else if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
-                let failureReason: SubscriptionRedemptionFailureReason = statusCode == 402 ? .paymentFailed : .validationFailed
-                SDSDatabaseStorage.shared.write { transaction in
-                    self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
-                }
-                throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
-            } else {
+                Logger.info("User has no active subscriptions, retrying!")
                 throw OWSRetryableSubscriptionError()
             }
 
             let failValidation = {
                 SDSDatabaseStorage.shared.write { transaction in
-                    self.setLastReceiptRedemptionFailed(failureReason: .validationFailed, transaction: transaction)
+                    self.setLastReceiptRedemptionFailed(failureReason: .localValidationFailed, transaction: transaction)
                 }
             }
 
             guard let json = response.responseBodyJson as? [String: Any] else {
                 failValidation()
-                throw OWSAssertionError("Unable to parse response body.")
+                throw OWSAssertionError("Unable to parse receipt presentation response body.")
             }
 
             guard let parser = ParamParser(responseObject: json) else {
                 failValidation()
-                throw OWSAssertionError("Missing or invalid response.")
+                throw OWSAssertionError("Missing or invalid receipt presentation response.")
             }
 
             let receiptCredentialResponseString: String = try parser.required(key: "receiptCredentialResponse")
@@ -541,14 +540,14 @@ public class SubscriptionManager: NSObject {
 
             guard receiptCredentialHasValidLevel else {
                 failValidation()
-                throw OWSAssertionError("Unexpected receipt credential level")
+                throw OWSAssertionError("Unexpected receipt credential level, validation failed. Got \(level), expected \(targetSubscriptionLevel) or \(priorSubscriptionLevel)")
             }
 
             // Validate receipt credential expiration % 86400 == 0, per server spec
             let expiration = try receiptCredential.getReceiptExpirationTime()
             guard expiration % 86400 == 0 else {
                 failValidation()
-                throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0")
+                throw OWSAssertionError("Invalid receipt credential expiration, expiration mod != 0, validation failed")
             }
 
             // Validate expiration is less than 60 days from now
@@ -561,6 +560,21 @@ public class SubscriptionManager: NSObject {
             let receiptCredentialPresentation = try clientOperations.createReceiptCredentialPresentation(receiptCredential: receiptCredential)
 
             return receiptCredentialPresentation
+        }.recover { error -> Promise<ReceiptCredentialPresentation> in
+            if let error = error as? OWSHTTPError {
+                let statusCode = error.responseStatusCode
+                if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
+                    let failureReason = SubscriptionRedemptionFailureReason(rawValue: statusCode)!
+                    SDSDatabaseStorage.shared.write { transaction in
+                        self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
+                    }
+                    throw OWSAssertionError("Receipt redemption failed with unrecoverable HTTP code \(statusCode)")
+                } else {
+                    Logger.info("Receipt redemption failed with retryable HTTP code \(statusCode)")
+                    throw OWSRetryableSubscriptionError()
+                }
+            }
+            throw error
         }
     }
 
@@ -633,7 +647,7 @@ public class SubscriptionManager: NSObject {
             return
         }
 
-        Logger.debug("Performing subscription heartbeat")
+        Logger.info("[Subscriptions] Performing subscription heartbeat")
 
         guard let subscriberID = subscriberID, currencyCode != nil else {
             Logger.info("[Subscriptions] No subscription + currency code found")
@@ -656,8 +670,11 @@ public class SubscriptionManager: NSObject {
 
             if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 < subscription.endOfCurrentPeriod {
                 // Re-kick
-                Logger.info("[Subscriptions] Triggering receipt redemption job during heartbeat")
+                let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
+                Logger.info("[Subscriptions] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
                 try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
+            } else {
+                Logger.info("[Subscriptions] Not triggering receipt redemption, expiration date is the same")
             }
 
             // Save last expiration
@@ -758,10 +775,6 @@ extension SubscriptionManager {
             } else if statusCode == 204 {
                 Logger.debug("No receipt could be found for this payment intent")
                 throw OWSRetryableSubscriptionError()
-            } else if [400, 402, 409].contains(statusCode) {
-                throw OWSAssertionError("Receipt redemption failed with unrecoverable code")
-            } else {
-                throw OWSRetryableSubscriptionError()
             }
 
             guard let json = response.responseBodyJson as? [String: Any] else {
@@ -805,6 +818,17 @@ extension SubscriptionManager {
             } catch {
                 throw OWSAssertionError("Missing clientID key")
             }
+        }.recover { error -> Promise<ReceiptCredentialPresentation> in
+            if let error = error as? OWSHTTPError {
+                let statusCode = error.responseStatusCode
+                if [400, 402, 409].contains(statusCode) {
+                    throw OWSAssertionError("Boost receipt redemption failed with unrecoverable HTTP code \(statusCode)")
+                } else {
+                    Logger.info("Boost receipt redemption failed with retryable HTTP code \(statusCode)")
+                    throw OWSRetryableSubscriptionError()
+                }
+            }
+            throw error
         }
     }
 
