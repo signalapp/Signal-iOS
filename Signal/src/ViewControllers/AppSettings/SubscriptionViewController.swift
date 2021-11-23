@@ -566,7 +566,8 @@ class SubscriptionViewController: OWSTableViewController2 {
                         let text = NSLocalizedString("SUSTAINER_VIEW_PROCESSING_TRANSACTION", comment: "Status text while processing a badge redemption")
                         statusText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
                     } else if subscriptionFailed {
-                        let helpFormat = self.subscriptionRedemptionFailureReason == .validationFailed ?  NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}") : NSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occured text, embeds {{link to contact support}}")
+                        let helpFormat = self.subscriptionRedemptionFailureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_PAYMENT_ERROR", comment: "Payment error occured text, embeds {{link to contact support}}")
+                        : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE", comment: "Couldn't add badge text, embeds {{link to contact support}}")
                         let contactSupport = NSLocalizedString("SUSTAINER_VIEW_CONTACT_SUPPORT", comment: "Contact support link")
                         let text = String(format: helpFormat, contactSupport)
                         let attributedText = NSMutableAttributedString(string: text, attributes: [.foregroundColor: Theme.secondaryTextAndIconColor, .font: UIFont.ows_dynamicTypeBody2])
@@ -967,7 +968,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     func presentBadgeCantBeAddedSheet() {
-        let title = subscriptionRedemptionFailureReason == .validationFailed ?  NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet") : NSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet")
+        let title = subscriptionRedemptionFailureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet") : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")
         let message = NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE", comment: "Action sheet message for Couldn't Add Badge sheet")
 
         let actionSheet = ActionSheetController(title: title, message: message)
