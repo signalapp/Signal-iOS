@@ -127,11 +127,11 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             let numberOfNotifications: Int
             if let lastRequest = notifications[notificationIdentifier], let counter = lastRequest.content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] as? Int  {
                 numberOfNotifications = counter + 1
+                content.body = String(format: NotificationStrings.incomingCollapsedMessagesBody, "\(numberOfNotifications)")
             } else {
                 numberOfNotifications = 1
             }
             content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] = numberOfNotifications
-            content.body = "\(numberOfNotifications) new messages."
         } else {
             trigger = nil
         }

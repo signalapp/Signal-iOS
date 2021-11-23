@@ -50,6 +50,9 @@ public class NotificationStrings: NSObject {
 
     @objc
     static public let incomingMessageBody = NSLocalizedString("APN_Message", comment: "notification body")
+    
+    @objc
+    static public let incomingCollapsedMessagesBody = NSLocalizedString("APN_Collapsed_Messages", comment: "collapsed notification body for background polling")
 
     @objc
     static public let incomingGroupMessageTitleFormat = NSLocalizedString("NEW_GROUP_MESSAGE_NOTIFICATION_TITLE", comment: "notification title. Embeds {{author name}} and {{group name}}")
