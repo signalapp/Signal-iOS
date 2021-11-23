@@ -20,6 +20,7 @@ public final class Colors : NSObject {
     @objc public static var border: UIColor { UIColor(named: "session_border")! }
     @objc public static var cellBackground: UIColor { UIColor(named: "session_cell_background")! }
     @objc public static var cellSelected: UIColor { UIColor(named: "session_cell_selected")! }
+    @objc public static var cellPinned: UIColor { UIColor(named: "session_cell_pinned")! }
     @objc public static var navigationBarBackground: UIColor { UIColor(named: "session_navigation_bar_background")! }
     @objc public static var searchBarPlaceholder: UIColor { UIColor(named: "session_search_bar_placeholder")! } // Also used for the icons
     @objc public static var searchBarBackground: UIColor { UIColor(named: "session_search_bar_background")! }

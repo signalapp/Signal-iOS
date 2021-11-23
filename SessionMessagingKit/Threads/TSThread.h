@@ -16,6 +16,7 @@ BOOL IsNoteToSelfEnabled(void);
  */
 @interface TSThread : TSYapDatabaseObject
 
+@property (nonatomic) BOOL isPinned;
 @property (nonatomic) BOOL shouldBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly, nullable) NSDate *lastInteractionDate;
