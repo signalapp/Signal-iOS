@@ -911,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
