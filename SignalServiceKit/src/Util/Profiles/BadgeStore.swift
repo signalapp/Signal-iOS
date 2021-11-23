@@ -162,6 +162,11 @@ public class BadgeStore: NSObject {
             // Something changed, so we need to update our database copy
             try newBadge.save(writeTx.unwrapGrdbWrite.database)
 
+            guard !CurrentAppContext().isNSE else {
+                Logger.warn("Skipping in NSE.")
+                return
+            }
+
             // Finally we update our cached badge and start preparing our assets
             firstly {
                 populateAssets(newBadge)
