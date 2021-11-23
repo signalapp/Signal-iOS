@@ -65,6 +65,8 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private var avatarImage: UIImage?
 
+    private var paymentButton: PKPaymentButton?
+
     private lazy var redemptionLoadingSpinner: AnimationView = {
         let loadingAnimationView = AnimationView(name: "indeterminate_spinner_blue")
         loadingAnimationView.loopMode = .loop
@@ -287,6 +289,7 @@ class SubscriptionViewController: OWSTableViewController2 {
 
         // Update avatar view
         updateAvatarView()
+        paymentButton = nil
 
         // Footer setup
         bottomFooterStackView.axis = .vertical
@@ -433,6 +436,7 @@ class SubscriptionViewController: OWSTableViewController2 {
             }
 
             let applePayContributeButton = newPaymentButton()
+            self.paymentButton = applePayContributeButton
             bottomFooterStackView.addArrangedSubview(applePayContributeButton)
             applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
@@ -707,6 +711,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
 
         let applePayContributeButton = newPaymentButton()
+        self.paymentButton = applePayContributeButton
         bottomFooterStackView.addArrangedSubview(applePayContributeButton)
         applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
@@ -857,6 +862,10 @@ class SubscriptionViewController: OWSTableViewController2 {
                 actionBlock: {
                     self.selectedSubscription = subscription
                     self.updateLevelSelectionState(for: subscription)
+                    if self.subscriptionViewState == .subscriptionUpdating, let paymentButton = self.paymentButton, let currentSubscription = self.currentSubscription, let selectedSubscription = self.selectedSubscription {
+                        let enabled = currentSubscription.level != selectedSubscription.level
+                        paymentButton.isEnabled = enabled
+                    }
                 }
             ))
         }
