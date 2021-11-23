@@ -175,6 +175,11 @@ public class BadgeStore: NSObject {
     }
 
     func fetchBadgeWithId(_ badgeId: String, readTx: SDSAnyReadTransaction) -> ProfileBadge? {
+        guard !CurrentAppContext().isNSE else {
+            Logger.warn("Skipping in NSE.")
+            return nil
+        }
+
         do {
             return try lock.withLock {
                 if let cachedBadge = badgeCache[badgeId] {
@@ -207,6 +212,11 @@ public class BadgeStore: NSObject {
     }
 
     private func populateAssets(_ badge: ProfileBadge) -> Promise<Void> {
+        guard !CurrentAppContext().isNSE else {
+            Logger.warn("Skipping in NSE.")
+            return Promise.value(())
+        }
+
         lock.assertOwner()
 
         // We try and reuse any existing BadgeAssets instances if we have one cached
