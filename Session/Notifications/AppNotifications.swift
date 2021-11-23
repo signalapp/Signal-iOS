@@ -37,6 +37,7 @@ struct AppNotificationUserInfoKey {
     static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     static let callBackNumber = "Signal.AppNotificationsUserInfoKey.callBackNumber"
     static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
+    static let threadNotificationCounter = "Session.AppNotificationsUserInfoKey.threadNotificationCounter"
 }
 
 extension AppNotificationCategory {
@@ -80,9 +81,9 @@ extension AppNotificationAction {
     }
 }
 
-// Delay notification of incoming messages when it's likely to be read by a linked device to
-// avoid notifying a user on their phone while a conversation is actively happening on desktop.
-let kNotificationDelayForRemoteRead: TimeInterval = 5
+// Delay notification of incoming messages when it's a background polling to
+// avoid too many notifications fired at the same time
+let kNotificationDelayForBackgroumdPoll: TimeInterval = 5
 
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
@@ -201,6 +202,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 owsFailDebug("unexpected thread: \(thread)")
                 return
             }
+        default:
+            notificationTitle = "Session"
         }
 
         var notificationBody: String?
@@ -209,6 +212,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = NotificationStrings.incomingMessageBody
         case .namePreview:
             notificationBody = messageText
+        default:
+            notificationBody = NotificationStrings.incomingMessageBody
         }
 
         guard let threadId = thread.uniqueId else {
@@ -220,7 +225,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
-        var category = AppNotificationCategory.incomingMessage
+        let category = AppNotificationCategory.incomingMessage
 
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId

@@ -96,17 +96,18 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
+        let isReplacingNotification = replacingIdentifier != nil
+        var isBackgroudPoll = false
+        if let threadIdentifier = userInfo[AppNotificationUserInfoKey.threadId] as? String {
+            content.threadIdentifier = threadIdentifier
+            isBackgroudPoll = replacingIdentifier == threadIdentifier
+        }
         let isAppActive = UIApplication.shared.applicationState == .active
         if let sound = sound, sound != OWSSound.none {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
-
-        var notificationIdentifier: String = UUID().uuidString
-        if let replacingIdentifier = replacingIdentifier {
-            notificationIdentifier = replacingIdentifier
-            Logger.debug("replacing notification with identifier: \(notificationIdentifier)")
-            cancelNotification(identifier: notificationIdentifier)
-        }
+        
+        let notificationIdentifier = isReplacingNotification ? replacingIdentifier! : UUID().uuidString
 
         if shouldPresentNotification(category: category, userInfo: userInfo) {
             if let displayableTitle = title?.filterForDisplay {
@@ -119,10 +120,26 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             // Play sound and vibrate, but without a `body` no banner will show.
             Logger.debug("supressing notification body")
         }
+        
+        let trigger: UNNotificationTrigger?
+        if isBackgroudPoll {
+            trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForBackgroumdPoll, repeats: false)
+            let numberOfNotifications: Int
+            if let lastRequest = notifications[notificationIdentifier], let counter = lastRequest.content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] as? Int  {
+                numberOfNotifications = counter + 1
+            } else {
+                numberOfNotifications = 1
+            }
+            content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] = numberOfNotifications
+            content.body = "\(numberOfNotifications) new messages."
+        } else {
+            trigger = nil
+        }
 
-        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
+        if isReplacingNotification { cancelNotification(identifier: notificationIdentifier) }
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
