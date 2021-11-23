@@ -249,7 +249,7 @@ public enum PushRegistrationError: Error {
         let completionSignal = DispatchSemaphore(value: 0)
         firstly { () -> Promise<Void> in
             let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
-            let pushTokensPromise = SyncPushTokensJob().run()
+            let pushTokensPromise = SyncPushTokensJob(uploadOnlyIfStale: false).run()
             return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
         }.ensure(on: .global()) {
             completionSignal.signal()

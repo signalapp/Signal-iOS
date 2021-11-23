@@ -414,8 +414,7 @@ public class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
-        let job = SyncPushTokensJob()
-        job.uploadOnlyIfStale = false
+        let job = SyncPushTokensJob(uploadOnlyIfStale: false)
         return job.run()
     }
 

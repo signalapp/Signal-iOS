@@ -10,27 +10,35 @@ class SyncPushTokensJob: NSObject {
     @objc
     public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
 
-    @objc var uploadOnlyIfStale = true
+    private let uploadOnlyIfStale: Bool
+
+    required init(uploadOnlyIfStale: Bool) {
+        self.uploadOnlyIfStale = uploadOnlyIfStale
+    }
+
+    private static let hasUploadedTokensOnce = AtomicBool(false)
 
     func run() -> Promise<Void> {
         Logger.info("Starting.")
 
         return firstly {
             return self.pushRegistrationManager.requestPushTokens()
-        }.then { (pushToken: String, voipToken: String?) -> Promise<Void> in
-            Logger.info("finished: requesting push tokens")
+        }.then(on: .global()) { (pushToken: String, voipToken: String?) -> Promise<Void> in
+            Logger.info("Fetched pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+
             var shouldUploadTokens = false
 
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
-                Logger.debug("Push tokens changed.")
+                Logger.info("Push tokens changed.")
                 shouldUploadTokens = true
             } else if !self.uploadOnlyIfStale {
-                Logger.debug("Forced uploading, even though tokens didn't change.")
+                Logger.info("Forced uploading, even though tokens didn't change.")
                 shouldUploadTokens = true
-            }
-
-            if Self.appVersion.lastAppVersion != Self.appVersion.currentAppReleaseVersion {
+            } else if Self.appVersion.lastAppVersion != Self.appVersion.currentAppReleaseVersion {
                 Logger.info("Uploading due to fresh install or app upgrade.")
+                shouldUploadTokens = true
+            } else if !Self.hasUploadedTokensOnce.get() {
+                Logger.info("Uploading for app launch.")
                 shouldUploadTokens = true
             }
 
@@ -44,8 +52,10 @@ class SyncPushTokensJob: NSObject {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
             }.done(on: .global()) { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
+
+                Self.hasUploadedTokensOnce.set(true)
             }
-        }.done {
+        }.done(on: .global()) {
             Logger.info("completed successfully.")
         }
     }
@@ -54,19 +64,18 @@ class SyncPushTokensJob: NSObject {
 
     @objc
     class func run() {
-        firstly {
-            SyncPushTokensJob().run()
-        }.done {
-            Logger.info("completed successfully.")
-        }.catch { error in
-            Logger.error("Error: \(error).")
-        }
+        run(uploadOnlyIfStale: true)
     }
 
     @objc
-    @available(swift, obsoleted: 1.0)
-    func run() -> AnyPromise {
-        AnyPromise(self.run())
+    class func run(uploadOnlyIfStale: Bool) {
+        firstly {
+            SyncPushTokensJob(uploadOnlyIfStale: uploadOnlyIfStale).run()
+        }.done(on: .global()) {
+            Logger.info("completed successfully.")
+        }.catch(on: .global()) { error in
+            Logger.error("Error: \(error).")
+        }
     }
 
     // MARK: 
@@ -81,12 +90,18 @@ class SyncPushTokensJob: NSObject {
             Logger.info("Recording new plain push token")
             self.preferences.setPushToken(pushToken)
             didTokensChange = true
+
+            // Tokens should now be aligned with stored tokens.
+            owsAssertDebug(pushToken == self.preferences.getPushToken())
         }
 
         if voipToken != self.preferences.getVoipToken() {
             Logger.info("Recording new voip token")
             self.preferences.setVoipToken(voipToken)
             didTokensChange = true
+
+            // Tokens should now be aligned with stored tokens.
+            owsAssertDebug(voipToken == self.preferences.getVoipToken())
         }
 
         if didTokensChange {
