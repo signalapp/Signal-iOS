@@ -742,7 +742,6 @@ static NSTimeInterval launchStartedAt;
 - (LKAppMode)getCurrentAppMode
 {
     LKAppMode appMode = [self getAppModeOrSystemDefault];
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
     return appMode;
 }
 
