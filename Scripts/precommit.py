@@ -269,7 +269,7 @@ def find_forward_class_statement_section(text):
 
 def find_forward_protocol_statement_section(text):
     def is_forward_protocol_statement(line):
-        return line.strip().startswith('@protocol ')
+        return line.strip().startswith('@protocol ') and line.strip().endswith(';') 
 
     return find_matching_section(text, is_forward_protocol_statement)
 
