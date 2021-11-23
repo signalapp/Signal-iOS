@@ -485,7 +485,7 @@
 "BOOST_VIEW_BODY" = "Sag »Danke!« und erhalte das Boost-Abzeichen für 30 Tage.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Dein Boost-Abzeichen wird am %@ ablaufen.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Eigenen Betrag eingeben";
@@ -911,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Unterstützer & Signal-Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Unterstützer & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal konnte deine Supportanfrage nicht abschließen.";
@@ -6146,13 +6146,13 @@
 "SUSTAINER_VIEW_CURRENCY" = "Währung festlegen";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Fehler beim Verarbeiten der Zahlung";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Meine Unterstützung";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Fehler beim Verarbeiten der Zahlung. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/Monat";

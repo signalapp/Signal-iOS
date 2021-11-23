@@ -380,7 +380,7 @@
 "BADGE_CONFIGURATION_TITLE" = "バッジ";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "サポーターになってください";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "サポーターになりませんか";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signalをブーストしましょう";
@@ -485,7 +485,7 @@
 "BOOST_VIEW_BODY" = "30日間のブーストバッジを獲得しましょう。 ";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "あなたのブーストバッジは、%@に期限か切れます。";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "金額を入力してください";
@@ -911,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "サポーター & Signalブースト";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "サポーター & ブースト";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signalは、サポートリクエストを完了できませんでした。";
@@ -6038,7 +6038,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "今はしない";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "サポーターになりましょう";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "サポーターになりませんか";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ に対する安全番号が一致しました。この相手は検証済みにできます。";
@@ -6146,13 +6146,13 @@
 "SUSTAINER_VIEW_CURRENCY" = "通貨を設定してください";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "決済の処理中にエラーが発生しました";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "マイサポート";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "決済の処理中にエラーが発生しました。%@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/月";

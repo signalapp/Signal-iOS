@@ -392,7 +392,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Näytä profiilissa";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Tee esitelty merkki";
+"BADGE_THANKS_MAKE_FEATURED" = "Aseta esiteltäväksi merkiksi";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Kiitämme tuestasi!";
@@ -485,7 +485,7 @@
 "BOOST_VIEW_BODY" = "Sano \"Kiitos!\" ja ansaitse Boost-merkki 30 päivän ajaksi.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Merkkisi Boostaus erääntyy %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syöltä muu summa";
@@ -911,7 +911,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Tukijat ja Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Tukijat ja Boostaus";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal ei kyennyt täyttämään tukipyyntöäsi.";
@@ -1793,7 +1793,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Valitse merkki";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Suositeltu merkki";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Esitelty merkki";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merkitse varmennetuksi";
@@ -3785,7 +3785,7 @@
 "ONBOARDING_PIN_TITLE" = "Syötä tunnusluku";
 
 /* Title label for profile creation step of onboarding */
-"ONBOARDING_PROFILE_CREATION_TITLE" = "Profiilisi";
+"ONBOARDING_PROFILE_CREATION_TITLE" = "Oma profiili";
 
 /* Placeholder text for the family name field of the profile creation view. */
 "ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Sukunimi (valinnainen)";
@@ -6098,13 +6098,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ladataan";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal on voittoa tavoittelematon järjestö ilman mainostajia tai sijoittajia ja toimii ainoastaan sitä arvostavien käyttäjien tuella.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal on sitoutunut kehittämään avoimen lähdekoodin tietosuojateknologiaa, joka suojaa sananvapautta ja mahdollistaa turvallisen, maailmanlaajuisen viestinnän.\n\nTukesi tuo tälle polttoainetta ja sillä kustannetaan miljoonien yksityiseen viestintään käyttämän sovelluksen kehitys- ja toimintakustannukset. Ei mainoksia. Ei seurantaa. Ei vitsi.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Tue sinulle, eikä tiedollesi kehitettyä teknologiaa liittymällä Signalia ylläpitävään yhteisöön.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Miksi avustaa?";
@@ -6146,13 +6146,13 @@
 "SUSTAINER_VIEW_CURRENCY" = "Aseta valuutta";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Virhe käsiteltäessä maksua";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Antamani tuki";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Virhe käsiteltäessä maksua. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/kk";

@@ -240,7 +240,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
     @objc
     func didTapSubscribe() {
         dismiss(animated: true) {
-            CurrentAppContext().frontmostViewController()?.present(SubscriptionViewController(), animated: true)
+            CurrentAppContext().frontmostViewController()?.present(OWSNavigationController(rootViewController: SubscriptionViewController()), animated: true)
         }
     }
 
