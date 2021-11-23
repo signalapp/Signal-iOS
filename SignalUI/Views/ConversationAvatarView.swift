@@ -113,13 +113,13 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         // Adopters that'd like to fetch the image synchronously can set this to perform
         // the next model update synchronously if necessary.
-        fileprivate var updateSynchronously: Bool = false
+        fileprivate var forceSyncUpdate: Bool = false
         public mutating func applyConfigurationSynchronously() {
-            updateSynchronously = true
+            forceSyncUpdate = true
         }
         fileprivate mutating func checkForSyncUpdateAndClear() -> Bool {
-            let shouldUpdateSync = updateSynchronously
-            updateSynchronously = false
+            let shouldUpdateSync = forceSyncUpdate || (dataSource?.isDataImmediatelyAvailable != true)
+            forceSyncUpdate = false
             return shouldUpdateSync
         }
     }
@@ -565,6 +565,13 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         switch self {
         case .thread(let thread): return thread.uniqueId
         case .address, .asset: return nil
+        }
+    }
+
+    fileprivate var isDataImmediatelyAvailable: Bool {
+        switch self {
+        case .thread, .address: return false
+        case .asset: return true
         }
     }
 
