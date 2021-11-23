@@ -91,6 +91,13 @@ class SubscriptionViewController: OWSTableViewController2 {
 
     private var subscriptionRedemptionFailureReason: SubscriptionRedemptionFailureReason {
         var failureReason: SubscriptionRedemptionFailureReason = .none
+
+        if let currentSubscription = currentSubscription {
+            if currentSubscription.status == .incomplete || currentSubscription.status == .incompleteExpired {
+                return .paymentFailed
+            }
+        }
+
         SDSDatabaseStorage.shared.read { transaction in
             failureReason = SubscriptionManager.lastReceiptRedemptionFailed(transaction: transaction)
         }

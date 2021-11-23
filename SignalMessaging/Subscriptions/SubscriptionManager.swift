@@ -47,6 +47,17 @@ public class SubscriptionLevel: Comparable {
 }
 
 public struct Subscription {
+
+    public enum StripeSubscriptionStatus: String {
+        case trialing = "trialing"
+        case active = "active"
+        case incomplete = "incomplete"
+        case incompleteExpired = "incomplete_expired"
+        case pastDue = "past_due"
+        case cancelled = "cancelled"
+        case unpaid = "unpaid"
+    }
+
     public let level: UInt
     public let currency: String
     public let amount: NSDecimalNumber
@@ -54,6 +65,7 @@ public struct Subscription {
     public let billingCycleAnchor: TimeInterval
     public let active: Bool
     public let cancelAtEndOfPeriod: Bool
+    public let status: StripeSubscriptionStatus
 
     public init(jsonDictionary: [String: Any]) throws {
         let params = ParamParser(dictionary: jsonDictionary)
@@ -65,7 +77,7 @@ public struct Subscription {
         billingCycleAnchor = try params.required(key: "billingCycleAnchor")
         active = try params.required(key: "active")
         cancelAtEndOfPeriod = try params.required(key: "cancelAtPeriodEnd")
-
+        status = StripeSubscriptionStatus(rawValue: try params.required(key: "status"))!
     }
 }
 
