@@ -58,6 +58,12 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
+- (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    return nil;
+}
+
 - (void)setProfileKeyData:(NSData *)profileKey
                forAddress:(SignalServiceAddress *)address
         userProfileWriter:(UserProfileWriter)userProfileWriter

@@ -340,6 +340,24 @@ extension MemberActionSheet: ConversationHeaderDelegate {
         }) else { return }
         present(vc, animated: true)
     }
+    func didTapBadge() {
+        guard avatarView != nil else { return }
+        let (profile, shortName) = databaseStorage.read { transaction in
+            return (
+                profileManager.getUserProfile(for: address, transaction: transaction),
+                contactsManager.shortDisplayName(for: address, transaction: transaction)
+            )
+        }
+        guard let primaryBadge = profile?.visibleBadges.first?.badge else { return }
+        let owner: BadgeDetailsSheet.Owner
+        if address.isLocalAddress {
+            owner = .local(shortName: shortName)
+        } else {
+            owner = .remote(shortName: shortName)
+        }
+        let badgeSheet = BadgeDetailsSheet(focusedBadge: primaryBadge, owner: owner)
+        present(badgeSheet, animated: true, completion: nil)
+    }
     func tappedConversationSearch() {}
     func didTapUnblockThread(completion: @escaping () -> Void) {
         guard let fromViewController = fromViewController else { return }
