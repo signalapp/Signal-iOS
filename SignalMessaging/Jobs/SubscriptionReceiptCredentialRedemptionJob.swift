@@ -165,6 +165,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             )
         }.done(on: .global()) {
             Logger.info("[Subscriptions] Successfully redeemed receipt credential presentation")
+            SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
             self.didSucceed()
         }.catch(on: .global()) { error in
             self.reportError(error)

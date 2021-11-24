@@ -1008,6 +1008,7 @@
 		F00385FF273F6388000B5ABD /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FC273F6388000B5ABD /* SubscriptionManager.swift */; };
 		F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FD273F6388000B5ABD /* DonationUtilities.swift */; };
 		F0038601273F6388000B5ABD /* Stripe.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00385FE273F6388000B5ABD /* Stripe.swift */; };
+		F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */; };
 		F026749627405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F026749527405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift */; };
 		F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */; };
 		F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */; };
@@ -2330,6 +2331,7 @@
 		F00385FC273F6388000B5ABD /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		F00385FD273F6388000B5ABD /* DonationUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonationUtilities.swift; sourceTree = "<group>"; };
 		F00385FE273F6388000B5ABD /* Stripe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stripe.swift; sourceTree = "<group>"; };
+		F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheet.swift; sourceTree = "<group>"; };
 		F026749527405BF4005853DC /* SubscriptionReceiptCredentialRedemptionJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionReceiptCredentialRedemptionJob.swift; sourceTree = "<group>"; };
 		F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActionsAccessory.swift; sourceTree = "<group>"; };
 		F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuInteraction.swift; sourceTree = "<group>"; };
@@ -2583,6 +2585,7 @@
 				888017912741F33B00346E9A /* BoostViewController.swift */,
 				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
 				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
+				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
 				887B380725F0355700685845 /* ChatsSettingsViewController.swift */,
 				3414896825C9B6490098E3ED /* CurrencyPickerViewController.swift */,
 				887B6DCC25F6C41500E677D4 /* Data Usage */,
@@ -6333,6 +6336,7 @@
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
 				F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
+				F02564D8274EDF4600D7B48A /* BadgeExpirationSheet.swift in Sources */,
 				34ACA7E82733159600E47AD4 /* ChangePhoneNumberController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */,
