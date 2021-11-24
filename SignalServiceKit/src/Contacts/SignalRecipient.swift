@@ -286,28 +286,15 @@ extension SignalRecipient {
                 transaction.executeUpdate(sql: sql, arguments: arguments)
             }
 
-            // If a record does _NOT_ have a valid phoneNumber, we consult orphanBehavior.
-            switch dbTableMapping.orphanBehavior {
-            case .remove:
-                // If orphanBehavior is .remove, we remove the record.
-                let sql = """
-                    DELETE FROM \(databaseTableName)
-                    WHERE \(uuidColumn) = ?
-                    AND \(phoneNumberColumn) IS NULL
-                    """
-                let arguments: StatementArguments = [uuidString]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
-            case .mockUuid:
-                // If orphanBehavior is .mockUuid, we apply a mock uuid.
-                let sql = """
-                    UPDATE \(databaseTableName)
-                    SET \(uuidColumn) = ?
-                    WHERE \(uuidColumn) = ?
-                    AND \(phoneNumberColumn) IS NULL
-                    """
-                let arguments: StatementArguments = [mockUuid, uuidString]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
-            }
+            // If a record does _NOT_ have a valid phoneNumber, we apply a mock uuid.
+            let sql = """
+                UPDATE \(databaseTableName)
+                SET \(uuidColumn) = ?
+                WHERE \(uuidColumn) = ?
+                AND \(phoneNumberColumn) IS NULL
+                """
+            let arguments: StatementArguments = [mockUuid, uuidString]
+            transaction.executeUpdate(sql: sql, arguments: arguments)
         }
     }
 
@@ -344,28 +331,15 @@ extension SignalRecipient {
                 transaction.executeUpdate(sql: sql, arguments: arguments)
             }
 
-            // If a record does _NOT_ have a valid uuid, we consult orphanBehavior.
-            switch dbTableMapping.orphanBehavior {
-            case .remove:
-                // If orphanBehavior is .remove, we remove the record.
-                let sql = """
-                    DELETE FROM \(databaseTableName)
-                    WHERE \(phoneNumberColumn) = ?
-                    AND \(uuidColumn) IS NULL
-                    """
-                let arguments: StatementArguments = [phoneNumber]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
-            case .mockUuid:
-                // If orphanBehavior is .mockUuid, we clear the phoneNumber and apply a mock uuid.
-                let sql = """
-                    UPDATE \(databaseTableName)
-                    SET \(uuidColumn) = ?, \(phoneNumberColumn) = NULL
-                    WHERE \(phoneNumberColumn) = ?
-                    AND \(uuidColumn) IS NULL
-                    """
-                let arguments: StatementArguments = [mockUuid, phoneNumber]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
-            }
+            // If a record does _NOT_ have a valid uuid, we clear the phoneNumber and apply a mock uuid.
+            let sql = """
+                UPDATE \(databaseTableName)
+                SET \(uuidColumn) = ?, \(phoneNumberColumn) = NULL
+                WHERE \(phoneNumberColumn) = ?
+                AND \(uuidColumn) IS NULL
+                """
+            let arguments: StatementArguments = [mockUuid, phoneNumber]
+            transaction.executeUpdate(sql: sql, arguments: arguments)
         }
     }
 
@@ -374,44 +348,29 @@ extension SignalRecipient {
         let uuidColumn: String
         let phoneNumberColumn: String
 
-        // OrphanBehavior specifies how to handle an orphan record which
-        // no longer has a valid uuid or phone number.
-        enum OrphanBehavior {
-            case remove
-            case mockUuid
-        }
-        let orphanBehavior: OrphanBehavior
-
         static var all: [DBTableMapping] {
             return [
                 DBTableMapping(databaseTableName: "\(ThreadRecord.databaseTableName)",
                                uuidColumn: "\(threadColumn: .contactUUID)",
-                               phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)",
-                               orphanBehavior: .mockUuid),
+                               phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)"),
                 DBTableMapping(databaseTableName: "\(GroupMemberRecord.databaseTableName)",
                                uuidColumn: "\(groupMemberColumn: .uuidString)",
-                               phoneNumberColumn: "\(groupMemberColumn: .phoneNumber)",
-                               orphanBehavior: .remove),
+                               phoneNumberColumn: "\(groupMemberColumn: .phoneNumber)"),
                 DBTableMapping(databaseTableName: "\(ReactionRecord.databaseTableName)",
                                uuidColumn: "\(reactionColumn: .reactorUUID)",
-                               phoneNumberColumn: "\(reactionColumn: .reactorE164)",
-                               orphanBehavior: .remove),
+                               phoneNumberColumn: "\(reactionColumn: .reactorE164)"),
                 DBTableMapping(databaseTableName: "\(InteractionRecord.databaseTableName)",
                                uuidColumn: "\(interactionColumn: .authorUUID)",
-                               phoneNumberColumn: "\(interactionColumn: .authorPhoneNumber)",
-                               orphanBehavior: .mockUuid),
+                               phoneNumberColumn: "\(interactionColumn: .authorPhoneNumber)"),
                 DBTableMapping(databaseTableName: "\(UserProfileRecord.databaseTableName)",
                                uuidColumn: "\(userProfileColumn: .recipientUUID)",
-                               phoneNumberColumn: "\(userProfileColumn: .recipientPhoneNumber)",
-                               orphanBehavior: .mockUuid),
+                               phoneNumberColumn: "\(userProfileColumn: .recipientPhoneNumber)"),
                 DBTableMapping(databaseTableName: "\(SignalAccountRecord.databaseTableName)",
                                uuidColumn: "\(signalAccountColumn: .recipientUUID)",
-                               phoneNumberColumn: "\(signalAccountColumn: .recipientPhoneNumber)",
-                               orphanBehavior: .mockUuid),
+                               phoneNumberColumn: "\(signalAccountColumn: .recipientPhoneNumber)"),
                 DBTableMapping(databaseTableName: "pending_read_receipts",
                                uuidColumn: "authorUuid",
-                               phoneNumberColumn: "authorPhoneNumber",
-                               orphanBehavior: .remove)
+                               phoneNumberColumn: "authorPhoneNumber")
             ]
         }
     }
