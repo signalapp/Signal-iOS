@@ -1559,7 +1559,7 @@
 "DONATION_VIEW_TITLE" = "Signal wordt onder andere gefinancierd door donaties van mensen zoals jij.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "Het Signal-team heeft als missie om privacy-technologie met een open broncode te ontwikkelen waarmee vrijheid van expressie wordt beschermd en beveiligde communicatie over de hele wereld beschikbaar wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en voor de servers en de bandbreedte die nodig zijn voor een app met miljoenen gebruikers over de hele wereld.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Het Signal-team heeft als missie om privacy-technologie met een open broncode te ontwikkelen waarmee vrijheid van expressie wordt beschermd en beveiligde communicatie over de hele wereld beschikbaar wordt gemaakt. Dit alles zonder advertenties en zonder dat je gedrag wordt gevolgd. Jouw bijdrage helpt dit mogelijk te maken.\n\nMet je donatie betalen we voor de ontwikkeling van Signal en voor de servers en de bandbreedte die nodig zijn voor een app waarmee miljoenen mensen over de hele wereld direct en in privé met elkaar kunnen communiceren.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Waarom zou ik doneren?";
