@@ -1046,10 +1046,12 @@ public extension PaymentsImpl {
             let paymentRequest = TSPaymentRequest(requestUuidString: requestUuidString,
                                                   paymentAmount: paymentAmount,
                                                   memoMessage: memoMessage)
+            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
             let message = OWSOutgoingPaymentMessage(thread: thread,
                                                     paymentCancellation: nil,
                                                     paymentNotification: nil,
-                                                    paymentRequest: paymentRequest)
+                                                    paymentRequest: paymentRequest,
+                                                    expiresInSeconds: expiresInSeconds)
             Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             return message
         }
@@ -1078,10 +1080,12 @@ public extension PaymentsImpl {
         let paymentNotification = TSPaymentNotification(memoMessage: memoMessage,
                                                         requestUuidString: requestUuidString,
                                                         mcReceiptData: mcReceiptData)
+        let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
         let message = OWSOutgoingPaymentMessage(thread: thread,
                                                 paymentCancellation: nil,
                                                 paymentNotification: paymentNotification,
-                                                paymentRequest: nil)
+                                                paymentRequest: nil,
+                                                expiresInSeconds: expiresInSeconds)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
@@ -1102,10 +1106,12 @@ public extension PaymentsImpl {
         let thread = TSContactThread.getOrCreateThread(withContactAddress: address,
                                                        transaction: transaction)
         let paymentCancellation = TSPaymentCancellation(requestUuidString: requestUuidString)
+        let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
         let message = OWSOutgoingPaymentMessage(thread: thread,
                                                 paymentCancellation: paymentCancellation,
                                                 paymentNotification: nil,
-                                                paymentRequest: nil)
+                                                paymentRequest: nil,
+                                                expiresInSeconds: expiresInSeconds)
         Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
