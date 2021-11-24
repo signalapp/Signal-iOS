@@ -470,6 +470,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.searchResultsController viewDidAppear:animated];
 
+    [self showBadgeExpirationSheetIfNeeded];
+
     self.hasEverAppeared = YES;
 }
 
