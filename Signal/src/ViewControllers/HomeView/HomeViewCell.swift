@@ -796,8 +796,7 @@ public class HomeViewCell: UITableViewCell {
         let thread = configuration.thread
         var text: String = ""
         if let labelDate = configuration.overrideDate ?? thread.homeViewInfo?.lastMessageDate {
-            text = DateUtil.formatMessageTimestampForCVC(labelDate.ows_millisecondsSince1970,
-                                                         shouldUseLongFormat: false)
+            text = DateUtil.formatDateShort(labelDate)
         }
         return CVLabelConfig(text: text,
                              font: dateTimeFont,

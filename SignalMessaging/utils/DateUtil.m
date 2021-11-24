@@ -33,7 +33,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     dispatch_once(&onceToken, ^{
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
-        [formatter setDateFormat:DATE_FORMAT_WEEKDAY];
+        [formatter setLocalizedDateFormatFromTemplate:DATE_FORMAT_WEEKDAY];
     });
     return formatter;
 }
@@ -45,7 +45,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     dispatch_once(&onceToken, ^{
         formatter = [NSDateFormatter new];
         [formatter setLocale:[NSLocale currentLocale]];
-        [formatter setLocalizedDateFormatFromTemplate: @"MMM d"];
+        [formatter setLocalizedDateFormatFromTemplate:@"M/d"];
     });
     return formatter;
 }
@@ -171,7 +171,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     } else if (dateIsOlderThanToday) {
         dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
     } else {
-        dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
+        dateTimeString = [DateUtil formatMessageTimestampForCVC:date.ows_millisecondsSince1970 shouldUseLongFormat:NO];
     }
 
     return dateTimeString;
