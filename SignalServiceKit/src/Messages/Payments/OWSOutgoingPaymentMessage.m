@@ -20,10 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
            paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
            paymentNotification:(nullable TSPaymentNotification *)paymentNotification
                 paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+              expiresInSeconds:(uint32_t)expiresInSeconds
 {
     OWSAssertDebug(paymentCancellation != nil || paymentNotification != nil || paymentRequest != nil);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    messageBuilder.expiresInSeconds = expiresInSeconds;
     self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
@@ -159,6 +161,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Could not build paymentCancellation proto: %@.", error);
         }
     }
+
+    [builder setExpireTimer:self.expiresInSeconds];
 
     [builder setRequiredProtocolVersion:(uint32_t)SSKProtoDataMessageProtocolVersionPayments];
     return builder;

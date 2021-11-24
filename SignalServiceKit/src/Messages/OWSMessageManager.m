@@ -1985,11 +1985,6 @@ NS_ASSUME_NONNULL_BEGIN
         serverGuid = nil;
     }
 
-    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
-                                                 dataMessage:dataMessage
-                                                      thread:thread
-                                                 transaction:transaction];
-
     TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                      thread:thread
                                                                                 transaction:transaction];
@@ -2043,6 +2038,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (paymentModels != nil) {
         OWSFailDebug(@"Unexpected payment model.");
     }
+
+    [self updateDisappearingMessageConfigurationWithEnvelope:envelope
+                                                 dataMessage:dataMessage
+                                                      thread:thread
+                                                 transaction:transaction];
 
     // Legit usage of senderTimestamp when creating an incoming group message record
     //

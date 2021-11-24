@@ -21,7 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread
            paymentCancellation:(nullable TSPaymentCancellation *)paymentCancellation
            paymentNotification:(nullable TSPaymentNotification *)paymentNotification
-                paymentRequest:(nullable TSPaymentRequest *)paymentRequest;
+                paymentRequest:(nullable TSPaymentRequest *)paymentRequest
+              expiresInSeconds:(uint32_t)expiresInSeconds;
 
 // --- CODE GENERATION MARKER
 
