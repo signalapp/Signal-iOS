@@ -417,6 +417,13 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             existingInstance = uuidInstance;
         }
     } else if (phoneNumberInstance) {
+        if (address.uuidString) {
+            // There is no instance of SignalRecipient for the new uuid,
+            // but other db tables might have mappings for the new uuid.
+            // We need to clear that out.
+            [SignalRecipient clearDBMappingsForUuid:address.uuidString transaction:transaction];
+        }
+
         if (address.uuidString && phoneNumberInstance.recipientUUID != nil) {
             OWSLogWarn(@"Learned phoneNumber (%@) now belongs to uuid (%@).", address.phoneNumber, address.uuid);
 
@@ -444,6 +451,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     } else if (uuidInstance) {
         if (address.phoneNumber) {
             // We need to update the phone number on uuidInstance.
+
+            // There is no instance of SignalRecipient for the new phone number,
+            // but other db tables might have mappings for the new phone number.
+            // We need to clear that out.
+            [SignalRecipient clearDBMappingsForPhoneNumber:address.phoneNumber transaction:transaction];
 
             if (uuidInstance.recipientPhoneNumber == nil) {
                 OWSLogWarn(

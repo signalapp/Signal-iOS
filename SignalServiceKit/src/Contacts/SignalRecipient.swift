@@ -38,6 +38,8 @@ extension SignalRecipient {
         recipientPhoneNumber = newPhoneNumber
 
         let newUuid = self.recipientUUID
+        Logger.info("uuid: \(String(describing: oldUuid?.uuidString)) ->  \(String(describing: newUuid)), phoneNumber: \(String(describing: oldPhoneNumber)) -> \(String(describing: newPhoneNumber))")
+
         transaction.addAsyncCompletion(queue: .global()) {
             let phoneNumbers: [String] = [oldPhoneNumber, newPhoneNumber].compactMap { $0 }
             for phoneNumber in phoneNumbers {
@@ -53,107 +55,10 @@ extension SignalRecipient {
             }
         }
 
-        let arguments: StatementArguments = [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
-
-        // Update TSThread
-        do {
-            let sql = """
-            UPDATE \(ThreadRecord.databaseTableName)
-            SET \(threadColumn: .contactUUID) = ?, \(threadColumn: .contactPhoneNumber) = ?
-            WHERE (\(threadColumn: .contactUUID) IS ? OR \(threadColumn: .contactUUID) IS NULL)
-            AND (\(threadColumn: .contactPhoneNumber) IS ? OR \(threadColumn: .contactPhoneNumber) IS NULL)
-            AND NOT (\(threadColumn: .contactUUID) IS NULL AND \(threadColumn: .contactPhoneNumber) IS NULL)
-            """
-
-            transaction.executeUpdate(sql: sql, arguments: arguments)
-        }
-
-        // Update TSGroupMember
-        do {
-            let sql = """
-            UPDATE \(GroupMemberRecord.databaseTableName)
-            SET \(groupMemberColumn: .uuidString) = ?, \(groupMemberColumn: .phoneNumber) = ?
-            WHERE (\(groupMemberColumn: .uuidString) IS ? OR \(groupMemberColumn: .uuidString) IS NULL)
-            AND (\(groupMemberColumn: .phoneNumber) IS ? OR \(groupMemberColumn: .phoneNumber) IS NULL)
-            AND NOT (\(groupMemberColumn: .uuidString) IS NULL AND \(groupMemberColumn: .phoneNumber) IS NULL)
-            """
-
-            transaction.executeUpdate(sql: sql, arguments: arguments)
-        }
-
-        // Update OWSReaction
-        do {
-            let sql = """
-            UPDATE \(ReactionRecord.databaseTableName)
-            SET \(reactionColumn: .reactorUUID) = ?, \(reactionColumn: .reactorE164) = ?
-            WHERE (\(reactionColumn: .reactorUUID) IS ? OR \(reactionColumn: .reactorUUID) IS NULL)
-            AND (\(reactionColumn: .reactorE164) IS ? OR \(reactionColumn: .reactorE164) IS NULL)
-            AND NOT (\(reactionColumn: .reactorUUID) IS NULL AND \(reactionColumn: .reactorE164) IS NULL)
-            """
-
-            transaction.executeUpdate(sql: sql, arguments: arguments)
-        }
-
-        // Update TSInteraction
-        do {
-            let sql = """
-            UPDATE \(InteractionRecord.databaseTableName)
-            SET \(interactionColumn: .authorUUID) = ?, \(interactionColumn: .authorPhoneNumber) = ?
-            WHERE (\(interactionColumn: .authorUUID) IS ? OR \(interactionColumn: .authorUUID) IS NULL)
-            AND (\(interactionColumn: .authorPhoneNumber) IS ? OR \(interactionColumn: .authorPhoneNumber) IS NULL)
-            AND NOT (\(interactionColumn: .authorUUID) IS NULL AND \(interactionColumn: .authorPhoneNumber) IS NULL)
-            """
-
-            transaction.executeUpdate(sql: sql, arguments: arguments)
-        }
-
-        // Update OWSUserProfile
-        do {
-            let sql = """
-            UPDATE \(UserProfileRecord.databaseTableName)
-            SET \(userProfileColumn: .recipientUUID) = ?, \(userProfileColumn: .recipientPhoneNumber) = ?
-            WHERE (\(userProfileColumn: .recipientUUID) IS ? OR \(userProfileColumn: .recipientUUID) IS NULL)
-            AND (\(userProfileColumn: .recipientPhoneNumber) IS ? OR \(userProfileColumn: .recipientPhoneNumber) IS NULL)
-            AND NOT (\(userProfileColumn: .recipientUUID) IS NULL AND \(userProfileColumn: .recipientPhoneNumber) IS NULL)
-            """
-
-            transaction.executeUpdate(
-                sql: sql,
-                arguments: [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
-            )
-        }
-
-        // Update SignalAccount
-        do {
-            let sql = """
-            UPDATE \(SignalAccountRecord.databaseTableName)
-            SET \(signalAccountColumn: .recipientUUID) = ?, \(signalAccountColumn: .recipientPhoneNumber) = ?
-            WHERE (\(signalAccountColumn: .recipientUUID) IS ? OR \(signalAccountColumn: .recipientUUID) IS NULL)
-            AND (\(signalAccountColumn: .recipientPhoneNumber) IS ? OR \(signalAccountColumn: .recipientPhoneNumber) IS NULL)
-            AND NOT (\(signalAccountColumn: .recipientUUID) IS NULL AND \(signalAccountColumn: .recipientPhoneNumber) IS NULL)
-            """
-
-            transaction.executeUpdate(
-                sql: sql,
-                arguments: [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
-            )
-        }
-
-        // Update pending_read_receipts
-        do {
-            let sql = """
-            UPDATE pending_read_receipts
-            SET authorUuid = ?, authorPhoneNumber = ?
-            WHERE (authorUuid IS ? OR authorUuid IS NULL)
-            AND (authorPhoneNumber IS ? OR authorPhoneNumber IS NULL)
-            AND NOT (authorUuid IS NULL AND authorPhoneNumber IS NULL)
-            """
-
-            transaction.executeUpdate(
-                sql: sql,
-                arguments: [recipientUUID, recipientPhoneNumber, recipientUUID, oldPhoneNumber]
-            )
-        }
+        Self.updateDBTableMappings(newPhoneNumber: newPhoneNumber,
+                                   oldPhoneNumber: oldPhoneNumber,
+                                   newUuid: newUuid,
+                                   transaction: transaction)
 
         if let newUuidString = newUuid?.nilIfEmpty,
            let newUuid = UUID(uuidString: newUuidString),
@@ -220,7 +125,7 @@ extension SignalRecipient {
         let recipientUUID = self.recipientUUID
 
         if let newUuidString = recipientUUID,
-            let newUuid = UUID(uuidString: newUuidString) {
+           let newUuid = UUID(uuidString: newUuidString) {
 
             // If we're removing the phone number from a phone-number-only
             // recipient (e.g. assigning a mock uuid), remove any old mapping
@@ -302,7 +207,7 @@ extension SignalRecipient {
         }
 
         if let newUuidString = recipientUUID,
-            let newUuid = UUID(uuidString: newUuidString) {
+           let newUuid = UUID(uuidString: newUuidString) {
             let newAddress = SignalServiceAddress(uuid: newUuid, phoneNumber: newPhoneNumber)
 
             transaction.addAsyncCompletion(queue: .global()) {
@@ -318,6 +223,196 @@ extension SignalRecipient {
             // Evacuate caches again once the transaction completes, in case
             // some kind of race occured.
             ModelReadCaches.shared.evacuateAllCaches()
+        }
+    }
+
+    private static func updateDBTableMappings(newPhoneNumber: String?,
+                                              oldPhoneNumber: String?,
+                                              newUuid: String?,
+                                              transaction: GRDBWriteTransaction) {
+
+        guard newUuid != nil || newPhoneNumber != nil else {
+            owsFailDebug("Missing newUuid and newPhoneNumber.")
+            return
+        }
+
+        for dbTableMapping in DBTableMapping.all {
+            let databaseTableName = dbTableMapping.databaseTableName
+            let uuidColumn = dbTableMapping.uuidColumn
+            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
+            let sql = """
+                UPDATE \(databaseTableName)
+                SET \(uuidColumn) = ?, \(phoneNumberColumn) = ?
+                WHERE (\(uuidColumn) IS ? OR \(uuidColumn) IS NULL)
+                AND (\(phoneNumberColumn) IS ? OR \(phoneNumberColumn) IS NULL)
+                AND NOT (\(uuidColumn) IS NULL AND \(phoneNumberColumn) IS NULL)
+                """
+
+            let arguments: StatementArguments = [newUuid, newPhoneNumber, newUuid, oldPhoneNumber]
+            transaction.executeUpdate(sql: sql, arguments: arguments)
+        }
+    }
+
+    // There is no instance of SignalRecipient for the new uuid,
+    // but other db tables might have mappings for the new uuid.
+    // We need to clear that out.
+    @objc
+    public static func clearDBMappings(forUuid uuidString: String,
+                                       transaction: SDSAnyWriteTransaction) {
+        guard let uuidString = uuidString.nilIfEmpty else {
+            owsFailDebug("Invalid phoneNumber.")
+            return
+        }
+
+        Logger.info("uuidString: \(uuidString)")
+
+        let mockUuid = UUID().uuidString
+        let transaction = transaction.unwrapGrdbWrite
+
+        for dbTableMapping in DBTableMapping.all {
+            let databaseTableName = dbTableMapping.databaseTableName
+            let uuidColumn = dbTableMapping.uuidColumn
+            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
+
+            // If a record has a valid phoneNumber, we can simply clear the uuid.
+            do {
+                let sql = """
+                    UPDATE \(databaseTableName)
+                    SET \(uuidColumn) = NULL
+                    WHERE \(uuidColumn) = ?
+                    AND \(phoneNumberColumn) IS NOT NULL
+                    """
+                let arguments: StatementArguments = [uuidString]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            }
+
+            // If a record does _NOT_ have a valid phoneNumber, we consult orphanBehavior.
+            switch dbTableMapping.orphanBehavior {
+            case .remove:
+                // If orphanBehavior is .remove, we remove the record.
+                let sql = """
+                    DELETE FROM \(databaseTableName)
+                    WHERE \(uuidColumn) = ?
+                    AND \(phoneNumberColumn) IS NULL
+                    """
+                let arguments: StatementArguments = [uuidString]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            case .mockUuid:
+                // If orphanBehavior is .mockUuid, we apply a mock uuid.
+                let sql = """
+                    UPDATE \(databaseTableName)
+                    SET \(uuidColumn) = ?
+                    WHERE \(uuidColumn) = ?
+                    AND \(phoneNumberColumn) IS NULL
+                    """
+                let arguments: StatementArguments = [mockUuid, uuidString]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            }
+        }
+    }
+
+    // There is no instance of SignalRecipient for the new phone number,
+    // but other db tables might have mappings for the new phone number.
+    // We need to clear that out.
+    @objc
+    public static func clearDBMappings(forPhoneNumber phoneNumber: String,
+                                       transaction: SDSAnyWriteTransaction) {
+        guard let phoneNumber = phoneNumber.nilIfEmpty else {
+            owsFailDebug("Invalid phoneNumber.")
+            return
+        }
+
+        Logger.info("phoneNumber: \(phoneNumber)")
+
+        let mockUuid = UUID().uuidString
+        let transaction = transaction.unwrapGrdbWrite
+
+        for dbTableMapping in DBTableMapping.all {
+            let databaseTableName = dbTableMapping.databaseTableName
+            let uuidColumn = dbTableMapping.uuidColumn
+            let phoneNumberColumn = dbTableMapping.phoneNumberColumn
+
+            // If a record has a valid uuid, we can simply clear the phoneNumber.
+            do {
+                let sql = """
+                    UPDATE \(databaseTableName)
+                    SET \(phoneNumberColumn) = NULL
+                    WHERE \(phoneNumberColumn) = ?
+                    AND \(uuidColumn) IS NOT NULL
+                    """
+                let arguments: StatementArguments = [phoneNumber]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            }
+
+            // If a record does _NOT_ have a valid uuid, we consult orphanBehavior.
+            switch dbTableMapping.orphanBehavior {
+            case .remove:
+                // If orphanBehavior is .remove, we remove the record.
+                let sql = """
+                    DELETE FROM \(databaseTableName)
+                    WHERE \(phoneNumberColumn) = ?
+                    AND \(uuidColumn) IS NULL
+                    """
+                let arguments: StatementArguments = [phoneNumber]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            case .mockUuid:
+                // If orphanBehavior is .mockUuid, we clear the phoneNumber and apply a mock uuid.
+                let sql = """
+                    UPDATE \(databaseTableName)
+                    SET \(uuidColumn) = ?, \(phoneNumberColumn) = NULL
+                    WHERE \(phoneNumberColumn) = ?
+                    AND \(uuidColumn) IS NULL
+                    """
+                let arguments: StatementArguments = [mockUuid, phoneNumber]
+                transaction.executeUpdate(sql: sql, arguments: arguments)
+            }
+        }
+    }
+
+    private struct DBTableMapping {
+        let databaseTableName: String
+        let uuidColumn: String
+        let phoneNumberColumn: String
+
+        // OrphanBehavior specifies how to handle an orphan record which
+        // no longer has a valid uuid or phone number.
+        enum OrphanBehavior {
+            case remove
+            case mockUuid
+        }
+        let orphanBehavior: OrphanBehavior
+
+        static var all: [DBTableMapping] {
+            return [
+                DBTableMapping(databaseTableName: "\(ThreadRecord.databaseTableName)",
+                               uuidColumn: "\(threadColumn: .contactUUID)",
+                               phoneNumberColumn: "\(threadColumn: .contactPhoneNumber)",
+                               orphanBehavior: .mockUuid),
+                DBTableMapping(databaseTableName: "\(GroupMemberRecord.databaseTableName)",
+                               uuidColumn: "\(groupMemberColumn: .uuidString)",
+                               phoneNumberColumn: "\(groupMemberColumn: .phoneNumber)",
+                               orphanBehavior: .remove),
+                DBTableMapping(databaseTableName: "\(ReactionRecord.databaseTableName)",
+                               uuidColumn: "\(reactionColumn: .reactorUUID)",
+                               phoneNumberColumn: "\(reactionColumn: .reactorE164)",
+                               orphanBehavior: .remove),
+                DBTableMapping(databaseTableName: "\(InteractionRecord.databaseTableName)",
+                               uuidColumn: "\(interactionColumn: .authorUUID)",
+                               phoneNumberColumn: "\(interactionColumn: .authorPhoneNumber)",
+                               orphanBehavior: .mockUuid),
+                DBTableMapping(databaseTableName: "\(UserProfileRecord.databaseTableName)",
+                               uuidColumn: "\(userProfileColumn: .recipientUUID)",
+                               phoneNumberColumn: "\(userProfileColumn: .recipientPhoneNumber)",
+                               orphanBehavior: .mockUuid),
+                DBTableMapping(databaseTableName: "\(SignalAccountRecord.databaseTableName)",
+                               uuidColumn: "\(signalAccountColumn: .recipientUUID)",
+                               phoneNumberColumn: "\(signalAccountColumn: .recipientPhoneNumber)",
+                               orphanBehavior: .mockUuid),
+                DBTableMapping(databaseTableName: "pending_read_receipts",
+                               uuidColumn: "authorUuid",
+                               phoneNumberColumn: "authorPhoneNumber",
+                               orphanBehavior: .remove)
+            ]
         }
     }
 
