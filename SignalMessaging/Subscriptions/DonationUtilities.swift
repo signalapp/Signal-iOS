@@ -100,7 +100,6 @@ public class DonationUtilities: NSObject {
         request.merchantCapabilities = .capability3DS
         request.countryCode = "US"
         request.currencyCode = currencyCode
-        request.requiredShippingContactFields = [.emailAddress]
         request.supportedNetworks = DonationUtilities.supportedNetworks
         return request
     }
