@@ -724,7 +724,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         applePayContributeButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         applePayContributeButton.autoPinWidthToSuperview(withMargin: 23)
 
-        if let currentSubscription = currentSubscription, let selectedSubscription = selectedSubscription {
+        if self.subscriptionRedemptionFailureReason == .none, let currentSubscription = currentSubscription, let selectedSubscription = selectedSubscription {
             let enabled = currentSubscription.level != selectedSubscription.level
             applePayContributeButton.isEnabled = enabled
         }
@@ -870,7 +870,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                 actionBlock: {
                     self.selectedSubscription = subscription
                     self.updateLevelSelectionState(for: subscription)
-                    if self.subscriptionViewState == .subscriptionUpdating, let paymentButton = self.paymentButton, let currentSubscription = self.currentSubscription, let selectedSubscription = self.selectedSubscription {
+                    if self.subscriptionViewState == .subscriptionUpdating, self.subscriptionRedemptionFailureReason == .none, let paymentButton = self.paymentButton, let currentSubscription = self.currentSubscription, let selectedSubscription = self.selectedSubscription {
                         let enabled = currentSubscription.level != selectedSubscription.level
                         paymentButton.isEnabled = enabled
                     }

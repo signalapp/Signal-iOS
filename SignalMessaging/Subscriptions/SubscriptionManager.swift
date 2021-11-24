@@ -326,6 +326,19 @@ public class SubscriptionManager: NSObject {
                                               currencyCode: String) throws -> Promise<Void> {
         Logger.info("[Subscriptions] Updating subscription level")
 
+        let failureReason: SubscriptionRedemptionFailureReason = SDSDatabaseStorage.shared.read { transaction in
+            return self.lastReceiptRedemptionFailed(transaction: transaction)
+        }
+
+        if failureReason != .none {
+            Logger.info("[Subscriptions] Upgrading subscription with a prior known error state, cancelling and re-setting up")
+            return firstly {
+                try self.cancelSubscription(for: subscriberID)
+            }.then(on: .sharedUserInitiated) {
+                try self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
+            }
+        }
+
         var generatedClientSecret = ""
         var generatedPaymentID = ""
         return firstly {
