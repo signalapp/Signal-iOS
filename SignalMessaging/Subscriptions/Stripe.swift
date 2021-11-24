@@ -28,7 +28,7 @@ public struct Stripe: Dependencies {
             API.createToken(with: payment)
         }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
 
-            let parameters: [String: Any] = ["card": ["token": tokenId], "billing_details": ["email": payment.shippingContact?.emailAddress ?? ""], "type": "card"]
+            let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
             return try API.postForm(endpoint: "payment_methods", parameters: parameters)
         }.map(on: .sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
@@ -200,13 +200,10 @@ fileprivate extension Stripe {
                     throw OWSGenericError("Boost transaction chain cancelled")
                 }
 
-                var parameters = [
+                let parameters = [
                     "payment_method": paymentMethodId,
                     "client_secret": clientSecret
                 ]
-                if let email = payment.shippingContact?.emailAddress {
-                    parameters["receipt_email"] = email
-                }
                 return try postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm", parameters: parameters)
             }.asVoid()
         }
