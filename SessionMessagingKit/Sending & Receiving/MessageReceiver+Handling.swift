@@ -268,6 +268,7 @@ extension MessageReceiver {
     // MARK: - Call Messages
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
+        guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else { return }
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
