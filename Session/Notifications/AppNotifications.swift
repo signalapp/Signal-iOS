@@ -158,9 +158,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
-        guard !thread.isMuted else {
-            return
-        }
+        guard !thread.isMuted else { return }
+        guard let threadId = thread.uniqueId else { return }
+        
+        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
+        
+        let isBackgroudPoll = identifier == threadId
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(with: transaction)
@@ -195,9 +198,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 if groupName.count < 1 {
                     groupName = MessageStrings.newGroupDefaultTitle
                 }
-                notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
-                                           senderName,
-                                           groupName)
+                notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
             default:
                 owsFailDebug("unexpected thread: \(thread)")
                 return
@@ -216,11 +217,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = NotificationStrings.incomingMessageBody
         }
 
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         assert((notificationBody ?? notificationTitle) != nil)
 
         // Don't reply from lockscreen if anyone in this conversation is
@@ -230,8 +226,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
-        
-        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
 
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
@@ -252,6 +246,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
             notificationTitle = thread.name()
+        default:
+            notificationTitle = nil
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
