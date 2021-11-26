@@ -133,7 +133,7 @@ public final class SessionCallManager: NSObject {
         callUpdate.supportsDTMF = false
     }
     
-    public func handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
+    public func handleIncomingCallOfferInBusyState(offerMessage: CallMessage, using transaction: YapDatabaseReadWriteTransaction) {
         guard let caller = offerMessage.sender, let thread = TSContactThread.fetch(for: caller, using: transaction) else { return }
         let message = CallMessage()
         message.uuid = offerMessage.uuid

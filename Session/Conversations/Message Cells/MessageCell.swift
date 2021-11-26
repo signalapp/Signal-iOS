@@ -46,7 +46,11 @@ class MessageCell : UITableViewCell {
     static func getCellType(for viewItem: ConversationViewItem) -> MessageCell.Type {
         switch viewItem.interaction {
         case is TSIncomingMessage: fallthrough
-        case is TSOutgoingMessage: return VisibleMessageCell.self
+        case is TSOutgoingMessage:
+            if let message = viewItem.interaction as? TSMessage, message.isCallMessage {
+                return CallMessageCell.self
+            }
+            return VisibleMessageCell.self
         case is TSInfoMessage: return InfoMessageCell.self
         case is TypingIndicatorInteraction: return TypingIndicatorCell.self
         default: preconditionFailure()

@@ -228,7 +228,7 @@ final class ConversationCell : UITableViewCell {
         }
         statusIndicatorView.backgroundColor = nil
         let lastMessage = threadViewModel.lastMessageForInbox
-        if let lastMessage = lastMessage as? TSOutgoingMessage {
+        if let lastMessage = lastMessage as? TSOutgoingMessage, !lastMessage.isCallMessage {
             let image: UIImage
             let status = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: lastMessage)
             switch status {

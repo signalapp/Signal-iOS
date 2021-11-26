@@ -153,6 +153,18 @@ BOOL IsNoteToSelfEnabled(void)
     return @[];
 }
 
+- (BOOL)hasOutgoingInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    __block BOOL hasOutgoingInteraction = NO;
+    [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, BOOL *stop) {
+        if ([interaction interactionType] == OWSInteractionType_OutgoingMessage) {
+            hasOutgoingInteraction = YES;
+            *stop = YES;
+        }
+    }];
+    return hasOutgoingInteraction;
+}
+
 #pragma mark Interactions
 
 /**

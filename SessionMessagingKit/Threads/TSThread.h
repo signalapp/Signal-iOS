@@ -39,6 +39,13 @@ BOOL IsNoteToSelfEnabled(void);
 - (NSString *)name;
 
 /**
+ *  Returns if there is any outgoing interations in this thread.
+ *
+ *  @return YES if there are outgoing interations, NO otherwise.
+ */
+- (BOOL)hasOutgoingInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+/**
  * @returns recipientId for each recipient in the thread
  */
 @property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;

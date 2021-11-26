@@ -51,11 +51,15 @@ extension AppDelegate {
         // Pre offer messages
         MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
+            guard SSKPreferences.areCallsEnabled else {
+                // TODO: Show tips and insert a missing call message
+                return
+            }
             let callManager = AppEnvironment.shared.callManager
             // Ignore pre offer message after the same call instance has been generated
             if let currentCall = callManager.currentCall, currentCall.uuid == message.uuid! { return }
-            guard callManager.currentCall == nil && SSKPreferences.areCallsEnabled else {
-                callManager.handleIncomingCallOfferInBusyOrUnenabledState(offerMessage: message, using: transaction)
+            guard callManager.currentCall == nil else {
+                callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
                 return
             }
             // Create incoming call message

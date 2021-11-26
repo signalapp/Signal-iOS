@@ -41,4 +41,5 @@ public final class Colors : NSObject {
     @objc public static var pnOptionBackground: UIColor { UIColor(named: "session_pn_option_background")! }
     @objc public static var pnOptionBorder: UIColor { UIColor(named: "session_pn_option_border")! }
     @objc public static var pathsBuilding: UIColor { UIColor(named: "session_paths_building")! }
+    @objc public static var callMessageBackground: UIColor { UIColor(named: "session_call_message_background")! }
 }
