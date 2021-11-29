@@ -406,10 +406,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
             let deletedMessageView = DeletedMessageView(viewItem: viewItem, textColor: bodyLabelTextColor)
             snContentView.addSubview(deletedMessageView)
             deletedMessageView.pin(to: snContentView)
-        case .callMessage:
-            let callMessageView = CallMessageView(viewItem: viewItem, textColor: bodyLabelTextColor)
-            snContentView.addSubview(callMessageView)
-            callMessageView.pin(to: snContentView)
         default: return
         }
     }

@@ -32,8 +32,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_MediaMessage";
         case OWSMessageCellType_OversizeTextDownloading:
             return @"OWSMessageCellType_OversizeTextDownloading";
-        case OWSMessageCellType_CallMessage:
-            return @"OWSMessageCellType_CallMessage";
         case OWSMessageCellType_DeletedMessage:
             return @"OWSMessageCellType_DeletedMessage";
     }
@@ -477,11 +475,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     if (message.isDeleted) {
         self.messageCellType = OWSMessageCellType_DeletedMessage;
-        return;
-    }
-    
-    if (message.isCallMessage) {
-        self.messageCellType = OWSMessageCellType_CallMessage;
         return;
     }
 
