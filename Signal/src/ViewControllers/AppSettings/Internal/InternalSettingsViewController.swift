@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalMessaging
 
 @objc
 class InternalSettingsViewController: OWSTableViewController2 {
@@ -90,11 +91,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         infoSection.add(.label(withText: "Memory Usage: \(LocalDevice.memoryUsage)"))
 
-        let (threadCount, messageCount, attachmentCount) = databaseStorage.read { transaction in
+        let (threadCount, messageCount, attachmentCount, subscriberID) = databaseStorage.read { transaction in
             return (
                 TSThread.anyCount(transaction: transaction),
                 TSInteraction.anyCount(transaction: transaction),
-                TSAttachment.anyCount(transaction: transaction)
+                TSAttachment.anyCount(transaction: transaction),
+                SubscriptionManager.getSubscriberID(transaction: transaction)
             )
         }
 
@@ -144,6 +146,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.copyableItem(label: "Language Code", value: Locale.current.languageCode?.nilIfEmpty))
         infoSection.add(.copyableItem(label: "Region Code", value: Locale.current.regionCode?.nilIfEmpty))
         infoSection.add(.copyableItem(label: "Currency Code", value: Locale.current.currencyCode?.nilIfEmpty))
+
+        if let subscriberID = subscriberID {
+            infoSection.add(.label(withText: "subscriberID \(subscriberID.asBase64Url)"))
+        }
 
         contents.addSection(infoSection)
 

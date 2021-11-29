@@ -228,6 +228,19 @@ public class SubscriptionManager: NSObject {
         subscriptionKVS.setBool(userCancelled, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
     }
 
+    private static func lastSubscriptionExpirationDate(transaction: SDSAnyReadTransaction) -> Date? {
+        return subscriptionKVS.getDate(lastSubscriptionExpirationKey, transaction: transaction)
+    }
+
+    private static func setLastSubscriptionExpirationDate(_ expirationDate: Date?, transaction: SDSAnyWriteTransaction) {
+        guard let expirationDate = expirationDate else {
+            subscriptionKVS.removeValue(forKey: lastSubscriptionExpirationKey, transaction: transaction)
+            return
+        }
+
+        subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction)
+    }
+
     private class func setupNewSubscriberID() throws -> Promise<Data> {
         Logger.info("[Subscriptions] Setting up new subscriber ID")
         let newSubscriberID = generateSubscriberID()
@@ -326,6 +339,19 @@ public class SubscriptionManager: NSObject {
                                               currencyCode: String) throws -> Promise<Void> {
         Logger.info("[Subscriptions] Updating subscription level")
 
+        let failureReason: SubscriptionRedemptionFailureReason = SDSDatabaseStorage.shared.read { transaction in
+            return self.lastReceiptRedemptionFailed(transaction: transaction)
+        }
+
+        if failureReason != .none {
+            Logger.info("[Subscriptions] Upgrading subscription with a prior known error state, cancelling and re-setting up")
+            return firstly {
+                try self.cancelSubscription(for: subscriberID)
+            }.then(on: .sharedUserInitiated) {
+                try self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
+            }
+        }
+
         var generatedClientSecret = ""
         var generatedPaymentID = ""
         return firstly {
@@ -381,6 +407,8 @@ public class SubscriptionManager: NSObject {
                 SDSDatabaseStorage.shared.write { transaction in
                     self.setSubscriberID(nil, transaction: transaction)
                     self.setSubscriberCurrencyCode(nil, transaction: transaction)
+                    self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
+                    self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
                     self.setUserManuallyCancelledSubscription(true, transaction: transaction)
                     self.storageServiceManager.recordPendingLocalAccountUpdates()
                 }
@@ -432,17 +460,28 @@ public class SubscriptionManager: NSObject {
                                        subscription: SubscriptionLevel,
                                        currency: String) -> Promise<Void> {
 
-        let subscriberID = subscriberID.asBase64Url
+        let subscriberIDURL = subscriberID.asBase64Url
         let key = Cryptography.generateRandomBytes(UInt(32)).asBase64Url
         let level = String(subscription.level)
-        let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(subscriberID, level: level, currency: currency, idempotencyKey: key)
+        let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(subscriberIDURL, level: level, currency: currency, idempotencyKey: key)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.then(on: .global()) { response -> Promise<Subscription?> in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
             }
+
+            return self.getCurrentSubscriptionStatus(for: subscriberID)
+        }.done(on: .global()) { subscription in
+            guard let subscription = subscription else {
+                throw OWSAssertionError("Failed to fetch valid subscription object afer setSubscription")
+            }
+
+            SDSDatabaseStorage.shared.write { transaction in
+                self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
+            }
+
         }
     }
 
@@ -682,9 +721,7 @@ public class SubscriptionManager: NSObject {
 
             // Save last expiration
             SDSDatabaseStorage.shared.write { transaction in
-                self.subscriptionKVS.setDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod),
-                                                                          key: self.lastSubscriptionExpirationKey,
-                                                                          transaction: transaction)
+                self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
 
             // Save heartbeat
