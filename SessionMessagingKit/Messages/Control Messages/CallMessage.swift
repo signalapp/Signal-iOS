@@ -8,7 +8,6 @@ public final class CallMessage : ControlMessage {
     /// See https://developer.mozilla.org/en-US/docs/Glossary/SDP for more information.
     public var sdps: [String]?
         
-    public override var ttl: UInt64 { 2 * 60 * 1000 }
     public override var isSelfSendValid: Bool {
         if case .answer = kind { return true }
         if case .endCall = kind { return true }
