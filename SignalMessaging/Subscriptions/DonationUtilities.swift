@@ -11,14 +11,20 @@ public class DonationUtilities: NSObject {
         PKPaymentAuthorizationController.canMakePayments()
     }
 
-    public static let supportedNetworks: [PKPaymentNetwork] = [
-        .visa,
-        .masterCard,
-        .amex,
-        .discover,
-        .JCB,
-        .interac
-    ]
+    public static var supportedNetworks: [PKPaymentNetwork] {
+        let additionalNetworks: [PKPaymentNetwork]
+        if #available(iOS 12, *) {
+            additionalNetworks = [.maestro]
+        } else {
+            additionalNetworks = []
+        }
+        return [
+            .visa,
+            .masterCard,
+            .amex,
+            .discover
+        ] + additionalNetworks
+    }
 
     public enum Symbol: Equatable {
         case before(String)
