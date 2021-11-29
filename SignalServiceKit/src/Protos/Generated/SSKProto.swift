@@ -11439,6 +11439,7 @@ public enum SSKProtoSyncMessageFetchLatestType: Int32 {
     case unknown = 0
     case localProfile = 1
     case storageManifest = 2
+    case subscriptionStatus = 3
 }
 
 private func SSKProtoSyncMessageFetchLatestTypeWrap(_ value: SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum) -> SSKProtoSyncMessageFetchLatestType {
@@ -11446,6 +11447,7 @@ private func SSKProtoSyncMessageFetchLatestTypeWrap(_ value: SignalServiceProtos
     case .unknown: return .unknown
     case .localProfile: return .localProfile
     case .storageManifest: return .storageManifest
+    case .subscriptionStatus: return .subscriptionStatus
     }
 }
 
@@ -11454,6 +11456,7 @@ private func SSKProtoSyncMessageFetchLatestTypeUnwrap(_ value: SSKProtoSyncMessa
     case .unknown: return .unknown
     case .localProfile: return .localProfile
     case .storageManifest: return .storageManifest
+    case .subscriptionStatus: return .subscriptionStatus
     }
 }
 

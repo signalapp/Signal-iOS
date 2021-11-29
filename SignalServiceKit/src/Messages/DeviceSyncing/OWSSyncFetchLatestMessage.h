@@ -6,8 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_CLOSED_ENUM(NSUInteger,
-    OWSSyncFetchType) { OWSSyncFetchType_Unknown, OWSSyncFetchType_LocalProfile, OWSSyncFetchType_StorageManifest };
+typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncFetchType) {
+    OWSSyncFetchType_Unknown,
+    OWSSyncFetchType_LocalProfile,
+    OWSSyncFetchType_StorageManifest,
+    OWSSyncFetchType_SubscriptionStatus
+};
 
 @interface OWSSyncFetchLatestMessage : OWSOutgoingSyncMessage
 

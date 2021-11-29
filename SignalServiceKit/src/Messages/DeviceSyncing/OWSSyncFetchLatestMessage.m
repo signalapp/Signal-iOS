@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
             return SSKProtoSyncMessageFetchLatestTypeLocalProfile;
         case OWSSyncFetchType_StorageManifest:
             return SSKProtoSyncMessageFetchLatestTypeStorageManifest;
+        case OWSSyncFetchType_SubscriptionStatus:
+            return SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus;
     }
 }
 

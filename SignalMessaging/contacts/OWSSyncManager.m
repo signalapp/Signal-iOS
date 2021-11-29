@@ -485,6 +485,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_StorageManifest];
 }
 
+- (void)sendFetchLatestSubscriptionStatusSyncMessage
+{
+    [self sendFetchLatestSyncMessageWithType:OWSSyncFetchType_SubscriptionStatus];
+}
+
 - (void)sendFetchLatestSyncMessageWithType:(OWSSyncFetchType)fetchType
 {
     OWSLogInfo(@"");
@@ -522,6 +527,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         }
         case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
             [SSKEnvironment.shared.storageServiceManager restoreOrCreateManifestIfNecessary];
+            break;
+        case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:
+
+            [SubscriptionManager performDeviceSubscriptionExpiryUpdate];
             break;
     }
 }

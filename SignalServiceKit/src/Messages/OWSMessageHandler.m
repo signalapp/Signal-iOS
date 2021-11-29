@@ -250,6 +250,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
                 return @"FetchLatest_LocalProfile";
             case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
                 return @"FetchLatest_StorageManifest";
+            case SSKProtoSyncMessageFetchLatestTypeSubscriptionStatus:
+                return @"FetchLatest_SubscriptionStatus";
         }
     } else {
         OWSFailDebug(@"Unknown sync message type");

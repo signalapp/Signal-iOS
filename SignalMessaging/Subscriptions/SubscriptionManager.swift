@@ -251,12 +251,13 @@ public class SubscriptionManager: NSObject {
     }
 
     private static func setLastSubscriptionExpirationDate(_ expirationDate: Date?, transaction: SDSAnyWriteTransaction) {
-        guard let expirationDate = expirationDate else {
+        if let expirationDate = expirationDate {
+            subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction)
+        } else {
             subscriptionKVS.removeValue(forKey: lastSubscriptionExpirationKey, transaction: transaction)
-            return
         }
 
-        subscriptionKVS.setDate(expirationDate, key: lastSubscriptionExpirationKey, transaction: transaction)
+        OWSSyncManager.shared.sendFetchLatestSubscriptionStatusSyncMessage()
     }
 
     private class func setupNewSubscriberID() throws -> Promise<Data> {
@@ -499,7 +500,6 @@ public class SubscriptionManager: NSObject {
             SDSDatabaseStorage.shared.write { transaction in
                 self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
-
         }
     }
 
@@ -733,13 +733,14 @@ public class SubscriptionManager: NSObject {
                 let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
                 Logger.info("[Subscriptions] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
                 try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
+
+                // Save last expiration
+                SDSDatabaseStorage.shared.write { transaction in
+                    self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
+                }
+
             } else {
                 Logger.info("[Subscriptions] Not triggering receipt redemption, expiration date is the same")
-            }
-
-            // Save last expiration
-            SDSDatabaseStorage.shared.write { transaction in
-                self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
 
             // Save heartbeat
@@ -754,6 +755,46 @@ public class SubscriptionManager: NSObject {
         SDSDatabaseStorage.shared.write { transaction in
             // Update keepalive
             self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction)
+        }
+    }
+
+    @objc
+    public class func performDeviceSubscriptionExpiryUpdate() {
+        Logger.info("[Subscriptions] doing subscription expiry update")
+
+        var lastSubscriptionExpiration: Date?
+        var subscriberID: Data?
+        SDSDatabaseStorage.shared.read { transaction in
+            lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
+            subscriberID = self.getSubscriberID(transaction: transaction)
+        }
+
+        guard let subscriberID = subscriberID else {
+            owsFailDebug("Device missing subscriberID")
+            return
+        }
+
+        firstly(on: .sharedBackground) {
+            // Fetch current subscription
+            self.getCurrentSubscriptionStatus(for: subscriberID)
+        }.done(on: .sharedBackground) { subscription in
+            guard let subscription = subscription else {
+                Logger.info("[Subscriptions] No current subscription for this subscriberID")
+                return
+            }
+
+            if let lastSubscriptionExpiration = lastSubscriptionExpiration, lastSubscriptionExpiration.timeIntervalSince1970 == subscription.endOfCurrentPeriod {
+                Logger.info("[Subscriptions] Not updating last subscription expiration, expirations are the same")
+            } else {
+                Logger.info("[Subscriptions] Updating last subscription expiration")
+                // Save last expiration
+                SDSDatabaseStorage.shared.write { transaction in
+                    self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
+                }
+            }
+
+        }.catch(on: .sharedBackground) { error in
+            owsFailDebug("Failed last subscription expiration update with error \(error)")
         }
     }
 }
