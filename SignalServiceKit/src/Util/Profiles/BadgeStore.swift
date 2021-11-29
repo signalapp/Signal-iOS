@@ -162,11 +162,6 @@ public class BadgeStore: NSObject {
             // Something changed, so we need to update our database copy
             try newBadge.save(writeTx.unwrapGrdbWrite.database)
 
-            guard !CurrentAppContext().isNSE else {
-                Logger.warn("Skipping in NSE.")
-                return
-            }
-
             // Finally we update our cached badge and start preparing our assets
             firstly {
                 populateAssets(newBadge)
@@ -180,11 +175,6 @@ public class BadgeStore: NSObject {
     }
 
     func fetchBadgeWithId(_ badgeId: String, readTx: SDSAnyReadTransaction) -> ProfileBadge? {
-        guard !CurrentAppContext().isNSE else {
-            Logger.warn("Skipping in NSE.")
-            return nil
-        }
-
         do {
             return try lock.withLock {
                 if let cachedBadge = badgeCache[badgeId] {
@@ -217,11 +207,6 @@ public class BadgeStore: NSObject {
     }
 
     private func populateAssets(_ badge: ProfileBadge) -> Promise<Void> {
-        guard !CurrentAppContext().isNSE else {
-            Logger.warn("Skipping in NSE.")
-            return Promise.value(())
-        }
-
         lock.assertOwner()
 
         // We try and reuse any existing BadgeAssets instances if we have one cached
