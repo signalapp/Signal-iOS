@@ -2,13 +2,6 @@ import SessionUtilitiesKit
 
 @objc public extension TSOutgoingMessage {
     
-    @objc(fromCallOffer:associatedWith:)
-    static func from(_ callMessage: CallMessage, associatedWith thread: TSThread) -> TSOutgoingMessage {
-        let outgoingMessage = TSOutgoingMessage(in: thread, messageBody: NSLocalizedString("call_outgoing", comment: ""), attachmentId: nil)
-        outgoingMessage.isCallMessage = true
-        return outgoingMessage
-    }
-    
     @objc(from:associatedWith:)
     static func from(_ visibleMessage: VisibleMessage, associatedWith thread: TSThread) -> TSOutgoingMessage {
         return from(visibleMessage, associatedWith: thread, using: nil)

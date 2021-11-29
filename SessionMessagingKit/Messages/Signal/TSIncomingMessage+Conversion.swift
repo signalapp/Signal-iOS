@@ -1,26 +1,5 @@
 
 public extension TSIncomingMessage {
-    
-    static func from(_ callMessage: CallMessage, associatedWith thread: TSThread) -> TSIncomingMessage {
-        let sender = callMessage.sender!
-        let result = TSIncomingMessage(
-            timestamp: callMessage.sentTimestamp!,
-            in: thread,
-            authorId: sender,
-            sourceDeviceId: 1,
-            messageBody: NSLocalizedString("call_incoming", comment: ""),
-            attachmentIds: [],
-            expiresInSeconds: 0,
-            quotedMessage: nil,
-            linkPreview: nil,
-            wasReceivedByUD: true,
-            openGroupInvitationName: nil,
-            openGroupInvitationURL: nil,
-            serverHash: callMessage.serverHash
-        )
-        result.isCallMessage = true
-        return result
-    }
 
     static func from(_ visibleMessage: VisibleMessage, quotedMessage: TSQuotedMessage?, linkPreview: OWSLinkPreview?, associatedWith thread: TSThread) -> TSIncomingMessage {
         let sender = visibleMessage.sender!

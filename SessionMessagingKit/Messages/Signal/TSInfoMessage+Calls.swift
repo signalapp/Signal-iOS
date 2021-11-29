@@ -30,7 +30,7 @@
         guard self.messageType == .call else { return }
         self.callState = newCallState
         var contactName: String = ""
-        if let contactThread = self.thread as? TSContactThread {
+        if let contactThread = self.thread(with: transaction) as? TSContactThread {
             let sessionID =  contactThread.contactSessionID()
             contactName = Storage.shared.getContact(with: sessionID)?.displayName(for: Contact.Context.regular) ?? sessionID
         }
