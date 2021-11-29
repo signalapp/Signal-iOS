@@ -113,6 +113,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"GROUP_YOU_LEFT", @"");
         case TSInfoMessageTypeGroupUpdated:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", @"");
+        case TSInfoMessageTypeCall:
+            return _customMessage;
         default:
             break;
     }

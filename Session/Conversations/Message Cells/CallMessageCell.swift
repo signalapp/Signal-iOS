@@ -7,6 +7,14 @@ final class CallMessageCell : MessageCell {
     // MARK: UI Components
     private lazy var iconImageView = UIImageView()
     
+    private lazy var timestampLabel: UILabel = {
+        let result = UILabel()
+        result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        result.textColor = Colors.text
+        result.textAlignment = .center
+        return result
+    }()
+    
     private lazy var label: UILabel = {
         let result = UILabel()
         result.numberOfLines = 0
@@ -30,6 +38,14 @@ final class CallMessageCell : MessageCell {
         return result
     }()
     
+    private lazy var stackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ timestampLabel, container ])
+        result.axis = .vertical
+        result.alignment = .center
+        result.spacing = Values.smallSpacing
+        return result
+    }()
+    
     // MARK: Settings
     private static let iconSize: CGFloat = 16
     private static let inset = Values.mediumSpacing
@@ -42,11 +58,12 @@ final class CallMessageCell : MessageCell {
         super.setUpViewHierarchy()
         iconImageViewWidthConstraint.isActive = true
         iconImageViewHeightConstraint.isActive = true
-        addSubview(container)
-        container.pin(.left, to: .left, of: self, withInset: CallMessageCell.margin)
-        container.pin(.top, to: .top, of: self, withInset: CallMessageCell.inset)
-        container.pin(.right, to: .right, of: self, withInset: -CallMessageCell.margin)
-        container.pin(.bottom, to: .bottom, of: self, withInset: -CallMessageCell.inset)
+        addSubview(stackView)
+        container.autoPinWidthToSuperview()
+        stackView.pin(.left, to: .left, of: self, withInset: CallMessageCell.margin)
+        stackView.pin(.top, to: .top, of: self, withInset: CallMessageCell.inset)
+        stackView.pin(.right, to: .right, of: self, withInset: -CallMessageCell.margin)
+        stackView.pin(.bottom, to: .bottom, of: self, withInset: -CallMessageCell.inset)
     }
     
     // MARK: Updating
@@ -60,10 +77,14 @@ final class CallMessageCell : MessageCell {
         default: icon = nil
         }
         if let icon = icon {
-            iconImageView.image = icon.withTint(Colors.text)
+            iconImageView.image = icon
         }
         iconImageViewWidthConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
         self.label.text = message.customMessage
+        
+        let date = message.dateForUI()
+        let description = DateUtil.formatDate(forDisplay: date)
+        timestampLabel.text = description
     }
 }
