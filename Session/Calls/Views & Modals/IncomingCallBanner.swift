@@ -173,11 +173,13 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 1.0
         }, completion: nil)
-        Vibration.shared.startVibration()
+        CallRingTonePlayer.shared.startVibration()
+        CallRingTonePlayer.shared.startPlayingRingTone()
     }
     
     public func dismiss() {
-        Vibration.shared.stopVibrationIfPossible()
+        CallRingTonePlayer.shared.stopVibrationIfPossible()
+        CallRingTonePlayer.shared.stopPlayingRingTone()
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
             self.alpha = 0.0
         }, completion: { _ in

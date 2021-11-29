@@ -48,12 +48,21 @@ extension AppDelegate {
         }
     }
     
+    private func insertCallInfoMessage(for message: CallMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSInfoMessage {
+        let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
+        let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
+        infoMessage.save(with: transaction)
+        return infoMessage
+    }
+    
     @objc func setUpCallHandling() {
         // Pre offer messages
         MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
             guard SSKPreferences.areCallsEnabled else {
-                // TODO: Show tips and insert a missing call message
+                let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
+                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                // TODO: add tips
                 return
             }
             let callManager = AppEnvironment.shared.callManager
@@ -63,10 +72,7 @@ extension AppDelegate {
                 callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
                 return
             }
-            // Create incoming call message
-            let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-            let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
-            infoMessage.save(with: transaction)
+            let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
             // Handle UI
             if let caller = message.sender, let uuid = message.uuid {
                 let call = SessionCall(for: caller, uuid: uuid, mode: .answer)

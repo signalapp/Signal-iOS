@@ -139,6 +139,7 @@
 		7B0EFDEE274F598600FFAAE7 /* TimestampUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDED274F598600FFAAE7 /* TimestampUtils.swift */; };
 		7B0EFDF0275084AA00FFAAE7 /* CallMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDEF275084AA00FFAAE7 /* CallMessageCell.swift */; };
 		7B0EFDF2275449AA00FFAAE7 /* TSInfoMessage+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */; };
+		7B0EFDF4275490EA00FFAAE7 /* ringing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */; };
 		7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E1271E743B00848B49 /* OWSSounds.swift */; };
 		7B1581E4271FC59D00848B49 /* CallModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E3271FC59C00848B49 /* CallModal.swift */; };
 		7B1581E6271FD2A100848B49 /* VideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */; };
@@ -149,7 +150,7 @@
 		7B7CB18B270591630079FF93 /* ShareLogsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18A270591630079FF93 /* ShareLogsModal.swift */; };
 		7B7CB18E270D066F0079FF93 /* IncomingCallBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */; };
 		7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB18F270FB2150079FF93 /* MiniCallView.swift */; };
-		7B7CB192271508AD0079FF93 /* Vibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB191271508AD0079FF93 /* Vibration.swift */; };
+		7B7CB192271508AD0079FF93 /* CallRingTonePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7CB191271508AD0079FF93 /* CallRingTonePlayer.swift */; };
 		7BA68909272A27BE00EFC32F /* SessionCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA68908272A27BE00EFC32F /* SessionCall.swift */; };
 		7BA6890D27325CCC00EFC32F /* SessionCallManager+CXCallController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */; };
 		7BA6890F27325CE300EFC32F /* SessionCallManager+CXProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */; };
@@ -1131,6 +1132,7 @@
 		7B0EFDED274F598600FFAAE7 /* TimestampUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampUtils.swift; sourceTree = "<group>"; };
 		7B0EFDEF275084AA00FFAAE7 /* CallMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageCell.swift; sourceTree = "<group>"; };
 		7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Calls.swift"; sourceTree = "<group>"; };
+		7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ringing.mp3; sourceTree = "<group>"; };
 		7B1581E1271E743B00848B49 /* OWSSounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSounds.swift; sourceTree = "<group>"; };
 		7B1581E3271FC59C00848B49 /* CallModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallModal.swift; sourceTree = "<group>"; };
 		7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewVC.swift; sourceTree = "<group>"; };
@@ -1142,7 +1144,7 @@
 		7B7CB18A270591630079FF93 /* ShareLogsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareLogsModal.swift; sourceTree = "<group>"; };
 		7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingCallBanner.swift; sourceTree = "<group>"; };
 		7B7CB18F270FB2150079FF93 /* MiniCallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniCallView.swift; sourceTree = "<group>"; };
-		7B7CB191271508AD0079FF93 /* Vibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vibration.swift; sourceTree = "<group>"; };
+		7B7CB191271508AD0079FF93 /* CallRingTonePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRingTonePlayer.swift; sourceTree = "<group>"; };
 		7BA68908272A27BE00EFC32F /* SessionCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCall.swift; sourceTree = "<group>"; };
 		7BA6890C27325CCC00EFC32F /* SessionCallManager+CXCallController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXCallController.swift"; sourceTree = "<group>"; };
 		7BA6890E27325CE300EFC32F /* SessionCallManager+CXProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCallManager+CXProvider.swift"; sourceTree = "<group>"; };
@@ -1953,6 +1955,7 @@
 		34074F54203D0722004596AE /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */,
 				45A2F004204473A3002E978A /* NewMessage.aifc */,
 				34661FB720C1C0D60056EDD6 /* message_sent.aiff */,
 				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
@@ -2373,7 +2376,7 @@
 				C38EF23D255B6D66007E1867 /* UIView+OWS.h */,
 				C38EF23E255B6D66007E1867 /* UIView+OWS.m */,
 				C38EF2EF255B6DBB007E1867 /* Weak.swift */,
-				7B7CB191271508AD0079FF93 /* Vibration.swift */,
+				7B7CB191271508AD0079FF93 /* CallRingTonePlayer.swift */,
 				7B0EFDED274F598600FFAAE7 /* TimestampUtils.swift */,
 			);
 			path = General;
@@ -4218,6 +4221,7 @@
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
+				7B0EFDF4275490EA00FFAAE7 /* ringing.mp3 in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
 				C3A01E06261D24C400290BEB /* storage-seed-1.der in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
@@ -4663,7 +4667,7 @@
 				C3BBE0A82554D4DE0050F1E3 /* JSON.swift in Sources */,
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				C32C5A2D256DB849003C73A2 /* LKGroupUtilities.m in Sources */,
-				7B7CB192271508AD0079FF93 /* Vibration.swift in Sources */,
+				7B7CB192271508AD0079FF93 /* CallRingTonePlayer.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				B8856E09256F1676001CE70E /* UIDevice+featureSupport.swift in Sources */,
 				B8856DEF256F161F001CE70E /* NSString+SSK.m in Sources */,

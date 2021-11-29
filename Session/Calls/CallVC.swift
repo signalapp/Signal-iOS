@@ -195,6 +195,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
         self.call.hasConnectedDidChange = {
             DispatchQueue.main.async {
+                CallRingTonePlayer.shared.stopPlayingRingTone()
                 self.callInfoLabel.text = "Connected"
                 self.minimizeButton.isHidden = false
                 UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {

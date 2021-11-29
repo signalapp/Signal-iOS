@@ -69,7 +69,7 @@ public final class SessionCallManager: NSObject {
                 self.provider.reportOutgoingCall(with: call.callID, connectedAt: call.connectedDate)
             }
         }
-        callTimeOutTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: false) { _ in
+        callTimeOutTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: false) { _ in
             guard let currentCall = self.currentCall else { return }
             currentCall.didTimeout = true
             self.endCall(currentCall) { error in
