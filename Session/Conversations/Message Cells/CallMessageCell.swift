@@ -51,11 +51,12 @@ final class CallMessageCell : MessageCell {
     
     // MARK: Updating
     override func update() {
-        guard let message = viewItem?.interaction as? TSMessage, message.isCallMessage else { return }
+        guard let message = viewItem?.interaction as? TSInfoMessage, message.messageType == .call else { return }
         let icon: UIImage?
-        switch message.interactionType() {
-        case .outgoingMessage: icon = UIImage(named: "CallOutgoing")
-        case .incomingMessage: icon = UIImage(named: "CallIncoming")
+        switch message.callState {
+        case .outgoing: icon = UIImage(named: "CallOutgoing")?.withTint(Colors.text)
+        case .incoming: icon = UIImage(named: "CallIncoming")?.withTint(Colors.text)
+        case .missed: icon = UIImage(named: "CallMissed")?.withTint(Colors.destructive)
         default: icon = nil
         }
         if let icon = icon {
@@ -63,8 +64,6 @@ final class CallMessageCell : MessageCell {
         }
         iconImageViewWidthConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
-        Storage.read { transaction in
-            self.label.text = message.previewText(with: transaction)
-        }
+        self.label.text = message.customMessage
     }
 }

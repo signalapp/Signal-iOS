@@ -14,7 +14,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     let webRTCSession: WebRTCSession
     let isOutgoing: Bool
     var remoteSDP: RTCSessionDescription? = nil
-    var callMessageTimestamp: UInt64?
+    var callMessageID: String?
     var answerCallAction: CXAnswerCallAction? = nil
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
@@ -182,12 +182,12 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Actions
     func startSessionCall() {
         guard case .offer = mode else { return }
-        var promise: Promise<UInt64>!
+        var promise: Promise<String?>!
         Storage.write(with: { transaction in
             promise = self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction)
         }, completion: { [weak self] in
-            let _ = promise.done { timestamp in
-                self?.callMessageTimestamp = timestamp
+            let _ = promise.done { messageID in
+                self?.callMessageID = messageID
                 Storage.shared.write { transaction in
                     self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
                 }
@@ -219,41 +219,28 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     // MARK: Update call message
     func updateCallMessage(mode: EndCallMode) {
-        guard let callMessageTimestamp = callMessageTimestamp else { return }
+        guard let callMessageID = callMessageID else { return }
         Storage.write { transaction in
-            let tsMessage: TSMessage?
-            if self.isOutgoing {
-                tsMessage = TSOutgoingMessage.find(withTimestamp: callMessageTimestamp)
-            } else {
-                tsMessage = TSIncomingMessage.find(withAuthorId: self.sessionID, timestamp: callMessageTimestamp, transaction: transaction)
-            }
-            if let messageToUpdate = tsMessage {
+            let infoMessage = TSInfoMessage.fetch(uniqueId: callMessageID, transaction: transaction)
+            if let messageToUpdate = infoMessage {
                 var shouldMarkAsRead = false
-                let newMessageBody: String
                 if self.duration > 0 {
-                    let durationString = NSString.formatDurationSeconds(UInt32(self.duration), useShortFormat: true)
-                    newMessageBody = "\(self.isOutgoing ? NSLocalizedString("call_outgoing", comment: "") : NSLocalizedString("call_incoming", comment: "")): \(durationString)"
                     shouldMarkAsRead = true
                 } else if self.hasStartedConnecting {
-                    newMessageBody = NSLocalizedString("call_cancelled", comment: "")
                     shouldMarkAsRead = true
                 } else {
                     switch mode {
-                    case .local:
-                        newMessageBody = self.isOutgoing ? NSLocalizedString("call_cancelled", comment: "") : NSLocalizedString("call_rejected", comment: "")
-                        shouldMarkAsRead = true
-                    case .remote:
-                        newMessageBody = self.isOutgoing ? NSLocalizedString("call_rejected", comment: "") : NSLocalizedString("call_missing", comment: "")
-                    case .unanswered:
-                        newMessageBody = NSLocalizedString("call_timeout", comment: "")
-                    case .answeredElsewhere:
-                        newMessageBody = messageToUpdate.body!
-                        shouldMarkAsRead = true
+                    case .local: shouldMarkAsRead = true
+                    case .remote: break
+                    case .unanswered: break
+                    case .answeredElsewhere: shouldMarkAsRead = true
+                    }
+                    if messageToUpdate.callState == .incoming {
+                        messageToUpdate.updateCallInfoMessage(.missed, using: transaction)
                     }
                 }
-                messageToUpdate.updateCall(withNewBody: newMessageBody, transaction: transaction)
-                if let incomingMessage = tsMessage as? TSIncomingMessage, shouldMarkAsRead {
-                    incomingMessage.markAsReadNow(withSendReadReceipt: false, transaction: transaction)
+                if shouldMarkAsRead {
+                    messageToUpdate.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), sendReadReceipt: false, transaction: transaction)
                 }
             }
         }

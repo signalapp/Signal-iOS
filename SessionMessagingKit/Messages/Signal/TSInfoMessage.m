@@ -65,6 +65,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     }
 
     _messageType = infoMessage;
+    _callState = TSInfoMessageCallStateUnknown;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {

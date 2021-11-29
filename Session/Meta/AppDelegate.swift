@@ -2,6 +2,7 @@ import PromiseKit
 import WebRTC
 import SessionUIKit
 import UIKit
+import SessionMessagingKit
 
 extension AppDelegate {
 
@@ -64,12 +65,12 @@ extension AppDelegate {
             }
             // Create incoming call message
             let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-            let tsMessage = TSIncomingMessage.from(message, associatedWith: thread)
-            tsMessage.save(with: transaction)
+            let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
+            infoMessage.save(with: transaction)
             // Handle UI
             if let caller = message.sender, let uuid = message.uuid {
                 let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-                call.callMessageTimestamp = message.sentTimestamp
+                call.callMessageID = infoMessage.uniqueId
                 self.showCallUIForCall(call)
             }
         }

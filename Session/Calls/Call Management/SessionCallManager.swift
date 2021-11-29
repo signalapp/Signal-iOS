@@ -140,9 +140,9 @@ public final class SessionCallManager: NSObject {
         message.kind = .endCall
         print("[Calls] Sending end call message.")
         MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
-        if let tsMessage = TSIncomingMessage.find(withAuthorId: caller, timestamp: offerMessage.sentTimestamp!, transaction: transaction) {
-            tsMessage.updateCall(withNewBody: NSLocalizedString("call_missing", comment: ""), transaction: transaction)
-        }
+        let infoMessage = TSInfoMessage.from(offerMessage, associatedWith: thread)
+        infoMessage.save(with: transaction)
+        infoMessage.updateCallInfoMessage(.missed, using: transaction)
     }
     
     public func invalidateTimeoutTimer() {

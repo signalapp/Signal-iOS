@@ -15,12 +15,21 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeGroupCurrentUserLeft,
     TSInfoMessageTypeDisappearingMessagesUpdate,
     TSInfoMessageTypeScreenshotNotification,
-    TSInfoMessageTypeMediaSavedNotification
+    TSInfoMessageTypeMediaSavedNotification,
+    TSInfoMessageTypeCall
+};
+
+typedef NS_ENUM(NSInteger, TSInfoMessageCallState) {
+    TSInfoMessageCallStateIncoming,
+    TSInfoMessageCallStateOutgoing,
+    TSInfoMessageCallStateMissed,
+    TSInfoMessageCallStateUnknown
 };
 
 @property (atomic, readonly) TSInfoMessageType messageType;
-@property (atomic, readonly, nullable) NSString *customMessage;
+@property (atomic, nullable) NSString *customMessage;
 @property (atomic, readonly, nullable) NSString *unregisteredRecipientId;
+@property (atomic) TSInfoMessageCallState callState;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread

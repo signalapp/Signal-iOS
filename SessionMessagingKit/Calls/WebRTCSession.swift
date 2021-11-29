@@ -117,19 +117,21 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     // MARK: Signaling
-    public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<UInt64> {
+    public func sendPreOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<String?> {
         print("[Calls] Sending pre-offer message.")
         guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
-        let (promise, seal) = Promise<UInt64>.pending()
+        let (promise, seal) = Promise<String?>.pending()
         DispatchQueue.main.async {
             let message = CallMessage()
+            message.sender = getUserHexEncodedPublicKey()
+            message.sentTimestamp = NSDate.millisecondTimestamp()
             message.uuid = self.uuid
             message.kind = .preOffer
-            let tsMessage = TSOutgoingMessage.from(message, associatedWith: thread)
-            tsMessage.save(with: transaction)
+            let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
+            infoMessage.save(with: transaction)
             MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
                 print("[Calls] Pre-offer message has been sent.")
-                seal.fulfill((tsMessage.timestamp))
+                seal.fulfill((infoMessage.uniqueId))
             }.catch2 { error in
                 seal.reject(error)
             }

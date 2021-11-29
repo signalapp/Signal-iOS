@@ -581,9 +581,9 @@
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Settings";
-"call_outgoing" = "Outgoing Call";
-"call_incoming" = "Incoming Call";
-"call_missing" = "Missing Call";
+"call_outgoing" = "You called %@";
+"call_incoming" = "%@ called you";
+"call_missed" = "Missed Call from %@";
 "call_rejected" = "Rejected Call";
 "call_cancelled" = "Cancelled Call";
 "call_timeout" = "Unanswered Call";

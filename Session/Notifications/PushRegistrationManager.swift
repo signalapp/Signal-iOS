@@ -242,7 +242,12 @@ public enum PushRegistrationError: Error {
         let payload = payload.dictionaryPayload
         if let uuid = payload["uuid"] as? String, let caller = payload["caller"] as? String, let timestamp = payload["timestamp"] as? UInt64 {
             let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-            call.callMessageTimestamp = timestamp
+            Storage.write{ transaction in
+                let thread = TSContactThread.getOrCreateThread(withContactSessionID: caller, transaction: transaction)
+                let infoMessage = TSInfoMessage.callInfoMessage(from: caller, timestamp: timestamp, in: thread)
+                infoMessage.save(with: transaction)
+                call.callMessageID = infoMessage.uniqueId
+            }
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
             appDelegate.startClosedGroupPoller()
