@@ -259,16 +259,6 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         webRTCSession.attachLocalRenderer(renderer)
     }
     
-    // MARK: Audio I/O swithcing
-    func switchAudioMode(mode: AudioMode) {
-        audioMode = mode
-        if mode == .speaker {
-            webRTCSession.configureAudioSession(outputAudioPort: .speaker)
-        } else {
-            webRTCSession.configureAudioSession()
-        }
-    }
-    
     // MARK: Delegate
     public func webRTCIsConnected() {
         guard !self.hasConnected else { return }
