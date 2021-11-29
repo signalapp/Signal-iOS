@@ -59,6 +59,12 @@ extension AppDelegate {
         // Pre offer messages
         MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
             guard CurrentAppContext().isMainApp else { return }
+            guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else {
+                // Add missed call message for call offer messages from more than one minute
+                let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
+                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                return
+            }
             guard SSKPreferences.areCallsEnabled else {
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
                 infoMessage.updateCallInfoMessage(.missed, using: transaction)

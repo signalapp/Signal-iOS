@@ -268,7 +268,6 @@ extension MessageReceiver {
     // MARK: - Call Messages
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
-        guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else { return }
         let transaction = transaction as! YapDatabaseReadWriteTransaction
         // Ignore call messages from threads without outgoing messages
         guard let sender = message.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) else { return }
