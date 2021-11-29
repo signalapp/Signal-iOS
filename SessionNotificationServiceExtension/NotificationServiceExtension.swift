@@ -225,7 +225,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 let payload: JSON = ["uuid": uuid, "caller": caller, "timestamp": timestamp]
                 CXProvider.reportNewIncomingVoIPPushPayload(payload) { error in
                     if let error = error {
-                        self.contentHandler!(content)
+                        self.handleSuccess(for: content)
                         owsFailDebug("Failed to notify main app of call message: \(error)")
                     } else {
                         self.completeSilenty()
@@ -234,7 +234,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                 }
             }
         } else {
-            self.contentHandler!(content)
+            self.handleSuccess(for: content)
         }
     }
 
