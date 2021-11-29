@@ -362,7 +362,11 @@ public final class MessageSender : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         if case .contact(let publicKey) = destination, !isSyncMessage {
             if let message = message as? VisibleMessage { message.syncTarget = publicKey }
-            if let message = message as? ExpirationTimerUpdate { message.syncTarget = publicKey }
+            if let message = message as? ExpirationTimerUpdate {
+                message.syncTarget = publicKey
+                // Prevent the same ExpirationTimerUpdate to be handled twice
+                Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
+            }
             // FIXME: Make this a job
             sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
         }
