@@ -52,10 +52,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     private lazy var profilePictureView: UIImageView = {
         let result = UIImageView()
+        let radius: CGFloat = isIPhone6OrSmaller ? 100 : 120
         result.image = self.call.profilePicture
-        result.set(.width, to: 240)
-        result.set(.height, to: 240)
-        result.layer.cornerRadius = 120
+        result.set(.width, to: radius * 2)
+        result.set(.height, to: radius * 2)
+        result.layer.cornerRadius = radius
         result.layer.masksToBounds = true
         result.contentMode = .scaleAspectFill
         return result
@@ -254,6 +255,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     func setUpViewHierarchy() {
+        let safeAreaInsets = UIApplication.shared.keyWindow!.safeAreaInsets
         // Profile picture container
         let profilePictureContainer = UIView()
         view.addSubview(profilePictureContainer)
@@ -266,7 +268,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         call.attachLocalVideoRenderer(localVideoView)
         view.addSubview(localVideoView)
         localVideoView.pin(.right, to: .right, of: view, withInset: -Values.smallSpacing)
-        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
+        let topMargin = safeAreaInsets.top + Values.veryLargeSpacing
         localVideoView.pin(.top, to: .top, of: view, withInset: topMargin)
         // Fade view
         view.addSubview(fadeView)
