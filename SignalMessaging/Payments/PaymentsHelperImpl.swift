@@ -135,7 +135,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                                 paymentsEntropy: newPaymentsEntropy)
         owsAssertDebug(paymentsState.isEnabled)
         setPaymentsState(paymentsState,
-                         updateStorageService: true,
+                         originatedLocally: true,
                          transaction: transaction)
         owsAssertDebug(arePaymentsEnabled)
         return true
@@ -145,7 +145,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
         switch paymentsState {
         case .enabled(let paymentsEntropy):
             setPaymentsState(.disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy),
-                             updateStorageService: true,
+                             originatedLocally: true,
                              transaction: transaction)
         case .disabled, .disabledWithPaymentsEntropy:
             owsFailDebug("Payments already disabled.")
@@ -154,12 +154,18 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
     }
 
     public func setPaymentsState(_ newPaymentsState: PaymentsState,
-                                 updateStorageService: Bool,
+                                 originatedLocally: Bool,
                                  transaction: SDSAnyWriteTransaction) {
         let oldPaymentsState = self.paymentsState
         var newPaymentsState = newPaymentsState
 
-        if newPaymentsState.isEnabled && !self.canEnablePayments {
+        // If payments was enabled remotely (e.g. on another device or previous install) we want
+        // to enable it even if the current device no longer supports enabling payments. This will
+        // behave as if the payments kill switch is turned on until the user is on a payments enabled
+        // install, but preserve their access to payments in the UI.
+        let canEnablePaymentsLocallyOrRemotely = self.canEnablePayments || !originatedLocally
+
+        if newPaymentsState.isEnabled && !canEnablePaymentsLocallyOrRemotely {
             // If we cannot enable payments, ensure that any new entropy is always preserved.
             if let paymentsEntropy = newPaymentsState.paymentsEntropy {
                 newPaymentsState = .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
@@ -167,6 +173,7 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                 newPaymentsState = .disabled
             }
         }
+
         guard newPaymentsState != oldPaymentsState else {
             Logger.verbose("Ignoring redundant change.")
             return
@@ -196,9 +203,9 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
 
             Self.paymentsEvents.paymentsStateDidChange()
 
-            if updateStorageService {
+            if originatedLocally {
                 // We only need to re-upload the profile if the change originated
-                // locally, i.e. if updateStorageService is true.
+                // locally.
                 Logger.info("Re-uploading local profile due to payments state change.")
                 Self.profileManager.reuploadLocalProfile()
 

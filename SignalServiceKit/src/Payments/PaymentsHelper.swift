@@ -70,7 +70,7 @@ public protocol PaymentsHelperSwift: PaymentsHelper {
 
     var paymentsState: PaymentsState { get }
     func setPaymentsState(_ value: PaymentsState,
-                          updateStorageService: Bool,
+                          originatedLocally: Bool,
                           transaction: SDSAnyWriteTransaction)
     func clearState(transaction: SDSAnyWriteTransaction)
 }
@@ -182,7 +182,7 @@ extension MockPaymentsHelper: PaymentsHelperSwift {
     public var paymentsState: PaymentsState { .disabled }
 
     public func setPaymentsState(_ value: PaymentsState,
-                                 updateStorageService: Bool,
+                                 originatedLocally: Bool,
                                  transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
