@@ -140,6 +140,7 @@
 		7B0EFDF0275084AA00FFAAE7 /* CallMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDEF275084AA00FFAAE7 /* CallMessageCell.swift */; };
 		7B0EFDF2275449AA00FFAAE7 /* TSInfoMessage+Calls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */; };
 		7B0EFDF4275490EA00FFAAE7 /* ringing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */; };
+		7B0EFDF62755CC5400FFAAE7 /* CallMissedTipsModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */; };
 		7B1581E2271E743B00848B49 /* OWSSounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E1271E743B00848B49 /* OWSSounds.swift */; };
 		7B1581E4271FC59D00848B49 /* CallModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E3271FC59C00848B49 /* CallModal.swift */; };
 		7B1581E6271FD2A100848B49 /* VideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */; };
@@ -1133,6 +1134,7 @@
 		7B0EFDEF275084AA00FFAAE7 /* CallMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageCell.swift; sourceTree = "<group>"; };
 		7B0EFDF1275449AA00FFAAE7 /* TSInfoMessage+Calls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+Calls.swift"; sourceTree = "<group>"; };
 		7B0EFDF3275490EA00FFAAE7 /* ringing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ringing.mp3; sourceTree = "<group>"; };
+		7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMissedTipsModal.swift; sourceTree = "<group>"; };
 		7B1581E1271E743B00848B49 /* OWSSounds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSounds.swift; sourceTree = "<group>"; };
 		7B1581E3271FC59C00848B49 /* CallModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallModal.swift; sourceTree = "<group>"; };
 		7B1581E5271FD2A100848B49 /* VideoPreviewVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewVC.swift; sourceTree = "<group>"; };
@@ -2084,6 +2086,7 @@
 				7B7CB18D270D066F0079FF93 /* IncomingCallBanner.swift */,
 				7B7CB18F270FB2150079FF93 /* MiniCallView.swift */,
 				7B1581E727210ECC00848B49 /* RenderView.swift */,
+				7B0EFDF52755CC5400FFAAE7 /* CallMissedTipsModal.swift */,
 			);
 			path = "Views & Modals";
 			sourceTree = "<group>";
@@ -4899,6 +4902,7 @@
 				B84A89BC25DE328A0040017D /* ProfilePictureVC.swift in Sources */,
 				34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */,
 				451166C01FD86B98000739BA /* AccountManager.swift in Sources */,
+				7B0EFDF62755CC5400FFAAE7 /* CallMissedTipsModal.swift in Sources */,
 				C374EEF425DB31D40073A857 /* VoiceMessageRecordingView.swift in Sources */,
 				7B1581E6271FD2A100848B49 /* VideoPreviewVC.swift in Sources */,
 				B83F2B88240CB75A000A54AB /* UIImage+Scaling.swift in Sources */,

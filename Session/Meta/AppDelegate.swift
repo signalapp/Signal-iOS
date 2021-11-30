@@ -55,10 +55,12 @@ extension AppDelegate {
         return infoMessage
     }
     
-    private func showMissedCallTipsIfNeeded() {
+    private func showMissedCallTipsIfNeeded(caller: String) {
         let userDefaults = UserDefaults.standard
         guard !userDefaults[.hasSeenCallMissedTips] else { return }
-        
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+        let callMissedTipsModal = CallMissedTipsModal(caller: caller)
+        presentingVC.present(callMissedTipsModal, animated: true, completion: nil)
         userDefaults[.hasSeenCallMissedTips] = true
     }
     
@@ -75,7 +77,10 @@ extension AppDelegate {
             guard SSKPreferences.areCallsEnabled else {
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
                 infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                self.showMissedCallTipsIfNeeded()
+                let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
+                DispatchQueue.main.async {
+                    self.showMissedCallTipsIfNeeded(caller: contactName)
+                }
                 return
             }
             let callManager = AppEnvironment.shared.callManager

@@ -596,3 +596,5 @@
 "light_mode_theme" = "Light";
 "PIN_BUTTON_TEXT" = "Pin";
 "UNPIN_BUTTON_TEXT" = "Unpin";
+"modal_call_missed_tips_title" = "Call missed";
+"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
