@@ -141,6 +141,24 @@ public class SubscriptionManager: NSObject {
 
     // MARK: Current subscription status
 
+    // Returns if we have a current subscription or not as calculated via our cached last subscription expiry date and subscriberID.
+    // The most accurate way to determine subscription status is via getCurrentSubscriptionStatus()
+    public class func hasCurrentSubscriptionCached() -> Bool {
+
+        var subscriberID: Data? = nil, lastSubscriptionExpiryDate: Date? = nil
+        SDSDatabaseStorage.shared.read { transaction in
+            subscriberID = self.getSubscriberID(transaction: transaction)
+            lastSubscriptionExpiryDate = self.lastSubscriptionExpirationDate(transaction: transaction)
+        }
+
+        guard subscriberID != nil, let lastSubscriptionExpiryDate = lastSubscriptionExpiryDate else {
+            return false
+        }
+
+        return lastSubscriptionExpiryDate.isAfterNow
+
+    }
+
     public class func getCurrentSubscriptionStatus(for subscriberID: Data) -> Promise<Subscription?> {
         let subscriberIDString = subscriberID.asBase64Url
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberIDString)
