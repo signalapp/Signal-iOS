@@ -8,6 +8,8 @@ import MediaPlayer
 final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
     var latestKnownAudioOutputDeviceName: String?
+    var durationTimer: Timer?
+    var duration: Int = -1
     var shouldRestartCamera = true
     weak var conversationVC: ConversationVC? = nil
     
@@ -45,6 +47,17 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         layer.colors = [ UIColor(hex: 0x000000).withAlphaComponent(0.4).cgColor, UIColor(hex: 0x000000).withAlphaComponent(0).cgColor ]
         result.layer.insertSublayer(layer, at: 0)
         result.set(.height, to: height)
+        return result
+    }()
+    
+    private lazy var profilePictureView: UIImageView = {
+        let result = UIImageView()
+        result.image = self.call.profilePicture
+        result.set(.width, to: 240)
+        result.set(.height, to: 240)
+        result.layer.cornerRadius = 120
+        result.layer.masksToBounds = true
+        result.contentMode = .scaleAspectFill
         return result
     }()
     
@@ -199,16 +212,15 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 CallRingTonePlayer.shared.stopPlayingRingTone()
                 self.callInfoLabel.text = "Connected"
                 self.minimizeButton.isHidden = false
-                UIView.animate(withDuration: 0.5, delay: 1, options: [], animations: {
-                    self.callInfoLabel.alpha = 0
-                }, completion: { _ in
-                    self.callInfoLabel.isHidden = true
-                    self.callInfoLabel.alpha = 1
-                })
+                self.durationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                    self.updateDuration()
+                }
             }
         }
         self.call.hasEndedDidChange = {
             DispatchQueue.main.async {
+                self.durationTimer?.invalidate()
+                self.durationTimer = nil
                 self.handleEndCallMessage()
             }
         }
@@ -242,14 +254,9 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     func setUpViewHierarchy() {
-        // Background
-        let background = getBackgroudView()
-        view.addSubview(background)
-        background.pin(to: view)
-        // Call info label
-        view.addSubview(callInfoLabel)
-        callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
-        callInfoLabel.center(in: view)
+        // Profile picture container
+        let profilePictureContainer = UIView()
+        view.addSubview(profilePictureContainer)
         // Remote video view
         call.attachRemoteVideoRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
@@ -283,25 +290,21 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         view.addSubview(operationPanel)
         operationPanel.center(.horizontal, in: view)
         operationPanel.pin(.bottom, to: .top, of: responsePanel, withInset: -Values.veryLargeSpacing)
-    }
-    
-    private func getBackgroudView() -> UIView {
-        let background = UIView()
-        let imageView = UIImageView()
-        imageView.layer.cornerRadius = 150
-        imageView.layer.masksToBounds = true
-        imageView.contentMode = .scaleAspectFill
-        imageView.image = self.call.profilePicture
-        background.addSubview(imageView)
-        imageView.set(.width, to: 300)
-        imageView.set(.height, to: 300)
-        imageView.center(in: background)
-        let blurView = UIView()
-        blurView.alpha = 0.5
-        blurView.backgroundColor = .black
-        background.addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
-        return background
+        // Profile picture view
+        profilePictureContainer.pin(.top, to: .bottom, of: fadeView)
+        profilePictureContainer.pin(.bottom, to: .top, of: operationPanel)
+        profilePictureContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: view)
+        profilePictureContainer.addSubview(profilePictureView)
+        profilePictureView.center(in: profilePictureContainer)
+        // Call info label
+        let callInfoLabelContainer = UIView()
+        view.addSubview(callInfoLabelContainer)
+        callInfoLabelContainer.pin(.top, to: .bottom, of: profilePictureView)
+        callInfoLabelContainer.pin(.bottom, to: .bottom, of: profilePictureContainer)
+        callInfoLabelContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: view)
+        callInfoLabelContainer.addSubview(callInfoLabel)
+        callInfoLabel.translatesAutoresizingMaskIntoConstraints = false
+        callInfoLabel.center(in: callInfoLabelContainer)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -322,7 +325,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     
     func handleEndCallMessage() {
         print("[Calls] Ending call.")
-        callInfoLabel.isHidden = false
         callInfoLabel.text = "Call Ended"
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
@@ -355,6 +357,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 self.presentingViewController?.dismiss(animated: true, completion: nil)
             }
         }
+    }
+    
+    @objc private func updateDuration() {
+        duration += 1
+        callInfoLabel.text = String(format: "%.2d:%.2d", duration/60, duration%60)
     }
     
     // MARK: Minimize to a floating view
@@ -414,11 +421,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
             if let latestKnownAudioOutputDeviceName = latestKnownAudioOutputDeviceName, currentOutput.portName == latestKnownAudioOutputDeviceName { return }
             latestKnownAudioOutputDeviceName = currentOutput.portName
             switch currentOutput.portType {
-            case .builtInReceiver:
-                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = .white
-                volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
             case .builtInSpeaker:
                 let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
                 volumeView.setRouteButtonImage(image, for: .normal)
@@ -440,11 +442,14 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 volumeView.setRouteButtonImage(image, for: .normal)
                 volumeView.tintColor = UIColor(hex: 0x1F1F1F)
                 volumeView.backgroundColor = .white
+            case .builtInReceiver: fallthrough
             default:
-                break
+                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = .white
+                volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
             }
         }
-        print(currentRoute.outputs)
     }
     
     // MARK: Pan gesture handling
