@@ -358,15 +358,17 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         delete.backgroundColor = Colors.destructive
         
         let isPinned = thread.isPinned
-        let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { _, _ in
+        let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
             thread.isPinned = true
             thread.save()
+            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
             tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
         }
         pin.backgroundColor = Colors.pathsBuilding
-        let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { _, _ in
+        let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
             thread.isPinned = false
             thread.save()
+            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
             tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
         }
         unpin.backgroundColor = Colors.pathsBuilding

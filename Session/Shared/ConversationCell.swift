@@ -64,7 +64,7 @@ final class ConversationCell : UITableViewCell {
         let size = ConversationCell.unreadCountViewSize
         result.set(.width, to: size)
         result.set(.height, to: size)
-        result.tintColor = Colors.text
+        result.tintColor = Colors.pinIcon
         result.layer.masksToBounds = true
         return result
     }()
@@ -193,7 +193,7 @@ final class ConversationCell : UITableViewCell {
     private func update() {
         AssertIsOnMainThread()
         guard let thread = threadViewModel?.threadRecord else { return }
-        backgroundColor = thread.isPinned ? Colors.cellPinned : Colors.cellBackground
+        backgroundColor = threadViewModel.isPinned ? Colors.cellPinned : Colors.cellBackground
         let isBlocked: Bool
         if let thread = thread as? TSContactThread {
             isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactSessionID())
