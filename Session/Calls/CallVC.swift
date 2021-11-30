@@ -233,6 +233,11 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                 }
             }
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(audioRouteDidChange), name: AVAudioSession.routeChangeNotification, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setUpViewHierarchy() {
@@ -309,7 +314,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
     }
     
-    // MARK: Interaction
+    // MARK: Call signalling
     func handleAnswerMessage(_ message: CallMessage) {
         callInfoLabel.text = "Connecting..."
     }
@@ -351,6 +356,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
     }
     
+    // MARK: Minimize to a floating view
     @objc private func minimize() {
         self.shouldRestartCamera = false
         let miniCallView = MiniCallView(from: self)
@@ -359,6 +365,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
+    // MARK: Video and Audio
     @objc private func operateCamera() {
         if (call.isVideoEnabled) {
             localVideoView.isHidden = true
@@ -399,6 +406,45 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         }
     }
     
+    @objc private func audioRouteDidChange() {
+        let currentSession = AVAudioSession.sharedInstance()
+        let currentRoute = currentSession.currentRoute
+        if let currentOutput = currentRoute.outputs.first {
+            switch currentOutput.portType {
+            case .builtInReceiver:
+                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = .white
+                volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
+            case .builtInSpeaker:
+                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
+                volumeView.backgroundColor = .white
+            case .headphones:
+                let image = UIImage(named: "Headsets")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
+                volumeView.backgroundColor = .white
+            case .bluetoothLE: fallthrough
+            case .bluetoothA2DP:
+                let image = UIImage(named: "Bluetooth")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
+                volumeView.backgroundColor = .white
+            case .bluetoothHFP:
+                let image = UIImage(named: "Airpods")?.withRenderingMode(.alwaysTemplate)
+                volumeView.setRouteButtonImage(image, for: .normal)
+                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
+                volumeView.backgroundColor = .white
+            default:
+                break
+            }
+        }
+        print(currentRoute.outputs)
+    }
+    
+    // MARK: Pan gesture handling
     @objc private func handlePanGesture(gesture: UIPanGestureRecognizer) {
         let location = gesture.location(in: self.view)
         if let draggedView = gesture.view {
