@@ -55,6 +55,13 @@ extension AppDelegate {
         return infoMessage
     }
     
+    private func showMissedCallTipsIfNeeded() {
+        let userDefaults = UserDefaults.standard
+        guard !userDefaults[.hasSeenCallMissedTips] else { return }
+        
+        userDefaults[.hasSeenCallMissedTips] = true
+    }
+    
     @objc func setUpCallHandling() {
         // Pre offer messages
         MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
@@ -68,7 +75,7 @@ extension AppDelegate {
             guard SSKPreferences.areCallsEnabled else {
                 let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
                 infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                // TODO: add tips
+                self.showMissedCallTipsIfNeeded()
                 return
             }
             let callManager = AppEnvironment.shared.callManager

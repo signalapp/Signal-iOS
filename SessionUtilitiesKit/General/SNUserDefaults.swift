@@ -7,6 +7,7 @@ public enum SNUserDefaults {
         case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case hasSeenCallIPExposureWarning
+        case hasSeenCallMissedTips
         case isUsingFullAPNs
     }
 
