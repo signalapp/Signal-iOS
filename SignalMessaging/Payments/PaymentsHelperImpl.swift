@@ -157,10 +157,15 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift {
                                  updateStorageService: Bool,
                                  transaction: SDSAnyWriteTransaction) {
         let oldPaymentsState = self.paymentsState
+        var newPaymentsState = newPaymentsState
 
-        guard !newPaymentsState.isEnabled || canEnablePayments else {
-            owsFailDebug("Payments cannot be enabled.")
-            return
+        if newPaymentsState.isEnabled && !self.canEnablePayments {
+            // If we cannot enable payments, ensure that any new entropy is always preserved.
+            if let paymentsEntropy = newPaymentsState.paymentsEntropy {
+                newPaymentsState = .disabledWithPaymentsEntropy(paymentsEntropy: paymentsEntropy)
+            } else {
+                newPaymentsState = .disabled
+            }
         }
         guard newPaymentsState != oldPaymentsState else {
             Logger.verbose("Ignoring redundant change.")
