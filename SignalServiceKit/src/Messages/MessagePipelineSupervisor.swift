@@ -31,7 +31,7 @@ public class MessagePipelineSupervisor: NSObject {
 
         if !isolated {
             SwiftSingletons.register(self)
-            configureDefualtSuspensions()
+            configureDefaultSuspensions()
         }
     }
 
@@ -115,7 +115,7 @@ public class MessagePipelineSupervisor: NSObject {
         }
     }
 
-    private func configureDefualtSuspensions() {
+    private func configureDefaultSuspensions() {
         // By default, we want to make sure we're suspending message processing until
         // a UUID backfill task completes. Only do this if:
         // - We're in a context that will try processing messages

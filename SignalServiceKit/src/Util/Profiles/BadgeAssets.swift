@@ -68,6 +68,12 @@ public class BadgeAssets: NSObject {
             // If we're already fetching, or have hit a terminal state, there's nothing left to do
             guard state != .fetching, state != .fetched, state != .unavailable else { return false }
 
+            guard !CurrentAppContext().isNSE else {
+                Logger.info("Badge assets unavailable. Currently running in the NSE")
+                state = .unavailable
+                return false
+            }
+
             // If we have all our assets on disk, we're good to go
             let allAssetUrls = [fileUrlForSpritesheet()] + Variant.allCases.map { fileUrlForVariant($0) }
             guard allAssetUrls.contains(where: { OWSFileSystem.fileOrFolderExists(url: $0) == false }) else {
@@ -77,6 +83,8 @@ public class BadgeAssets: NSObject {
             }
 
             guard CurrentAppContext().isMainApp else {
+                // The share extension can display badges that we've fetched, but we'll save fetching badges
+                // we don't have for the main app.
                 Logger.info("Skipping badge fetch. Not in main app.")
                 state = .unavailable
                 return false
@@ -162,6 +170,12 @@ extension BadgeAssets {
     @objc public var universal160: UIImage? { imageForVariant(.universal160) }
 
     private func imageForVariant(_ variant: Variant) -> UIImage? {
+        let currentState = lock.withLock { state }
+        guard currentState == .fetched else {
+            Logger.debug("Current badge state is \(currentState). Badge asset unavailable")
+            return nil
+        }
+
         let fileUrl = fileUrlForVariant(variant)
         guard let imageSource = CGImageSourceCreateWithURL(fileUrl as CFURL, nil) else { return nil }
 
