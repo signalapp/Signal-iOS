@@ -9,7 +9,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
     var latestKnownAudioOutputDeviceName: String?
     var durationTimer: Timer?
-    var duration: Int = -1
+    var duration: Int = 0
     var shouldRestartCamera = true
     weak var conversationVC: ConversationVC? = nil
     
@@ -360,8 +360,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     @objc private func updateDuration() {
-        duration += 1
         callInfoLabel.text = String(format: "%.2d:%.2d", duration/60, duration%60)
+        duration += 1
     }
     
     // MARK: Minimize to a floating view
