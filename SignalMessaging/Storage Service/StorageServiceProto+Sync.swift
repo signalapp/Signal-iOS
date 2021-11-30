@@ -740,7 +740,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                                                           paymentsEntropy: paymentsEntropy)
 
             Self.paymentsHelperSwift.setPaymentsState(mergedPaymentsState,
-                                                      updateStorageService: false,
+                                                      originatedLocally: false,
                                                       transaction: transaction)
         }
 

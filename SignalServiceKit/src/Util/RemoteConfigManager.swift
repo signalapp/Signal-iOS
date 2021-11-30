@@ -576,8 +576,13 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     // MARK: -
 
     @objc func registrationStateDidChange() {
-        guard self.tsAccountManager.isRegistered else { return }
-        self.refreshIfReady()
+        guard tsAccountManager.isRegistered else { return }
+        Logger.info("Refreshing and immediately applying new flags due to new registration.")
+        refresh().done {
+            self.cacheCurrent()
+        }.catch { error in
+            owsFailDebug("Failed to update remote config after registration change \(error)")
+        }
     }
 
     public func warmCaches() {
@@ -637,7 +642,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }
     }
 
-    private func refresh() {
+    @discardableResult
+    private func refresh() -> Promise<Void> {
         firstly {
             self.serviceClient.getRemoteConfig()
         }.done(on: .global()) { (fetchedConfig: [String: RemoteConfigItem]) in
