@@ -7,6 +7,7 @@ import MediaPlayer
 
 final class CallVC : UIViewController, VideoPreviewDelegate {
     let call: SessionCall
+    var latestKnownAudioOutputDeviceName: String?
     var shouldRestartCamera = true
     weak var conversationVC: ConversationVC? = nil
     
@@ -410,6 +411,8 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         let currentSession = AVAudioSession.sharedInstance()
         let currentRoute = currentSession.currentRoute
         if let currentOutput = currentRoute.outputs.first {
+            if let latestKnownAudioOutputDeviceName = latestKnownAudioOutputDeviceName, currentOutput.portName == latestKnownAudioOutputDeviceName { return }
+            latestKnownAudioOutputDeviceName = currentOutput.portName
             switch currentOutput.portType {
             case .builtInReceiver:
                 let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
