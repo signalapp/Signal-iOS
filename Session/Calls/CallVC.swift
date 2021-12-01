@@ -26,7 +26,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         result.contentMode = .scaleAspectFill
         result.set(.width, to: 80)
         result.set(.height, to: 173)
-        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
+//        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
         return result
     }()
     
@@ -34,6 +34,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         let result = RTCMTLVideoView()
         result.alpha = 0
         result.contentMode = .scaleAspectFill
+        result.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleRemoteVieioViewTapped)))
         return result
     }()
     
@@ -196,6 +197,13 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.25) {
                     self.remoteVideoView.alpha = isEnabled ? 1 : 0
+                }
+                if self.callInfoLabel.alpha < 0.5 {
+                    UIView.animate(withDuration: 0.25) {
+                        self.operationPanel.alpha = 1
+                        self.responsePanel.alpha = 1
+                        self.callInfoLabel.alpha = 1
+                    }
                 }
             }
         }
@@ -483,6 +491,15 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
                     }, completion: nil)
                 }
             }
+        }
+    }
+    
+    @objc private func handleRemoteVieioViewTapped(gesture: UITapGestureRecognizer) {
+        let isHidden = callInfoLabel.alpha < 0.5
+        UIView.animate(withDuration: 0.5) {
+            self.operationPanel.alpha = isHidden ? 1 : 0
+            self.responsePanel.alpha = isHidden ? 1 : 0
+            self.callInfoLabel.alpha = isHidden ? 1 : 0
         }
     }
 }
