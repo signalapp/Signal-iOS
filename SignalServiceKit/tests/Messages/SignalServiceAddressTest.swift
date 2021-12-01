@@ -168,7 +168,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // There should be hash continuity for uuid1, since the uuid remains the same.
         XCTAssertEqual(hash1, hash2)
         XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
-        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
@@ -181,10 +181,10 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // uuid2, phoneNumber1
         let hash3 = SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1, trustLevel: .high).hash
 
-        // There should not be hash continuity for uuid2, since the uuid has changed.
+        // There should be hash continuity for uuid2, even though the uuid has changed.
         XCTAssertEqual(hash1, hash2)
-        XCTAssertNotEqual(hash1, hash3)
-        XCTAssertNotEqual(hash2, hash3)
+        XCTAssertEqual(hash1, hash3)
+        XCTAssertEqual(hash2, hash3)
         XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
         XCTAssertEqual(hash3, SignalServiceAddress(uuid: uuid2).hash)
         XCTAssertEqual(hash3, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
@@ -217,7 +217,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // There should be hash continuity for uuid1, since the uuid remains the same.
         XCTAssertEqual(hash1, hash2)
         XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid1).hash)
-        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         XCTAssertEqual(uuid1, SignalServiceAddress(uuid: uuid1).uuid)
@@ -437,7 +437,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, hash3)
         XCTAssertNotEqual(hash2, hash3)
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
-        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
@@ -479,7 +479,7 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, hash3)
         XCTAssertNotEqual(hash2, hash3)
         XCTAssertEqual(hash1, SignalServiceAddress(uuid: uuid1).hash)
-        XCTAssertNotEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
         XCTAssertEqual(hash2, SignalServiceAddress(uuid: uuid2).hash)
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
@@ -635,5 +635,67 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(uuid: uuid2).phoneNumber)
         XCTAssertNil(SignalServiceAddress(phoneNumber: phoneNumber2).uuid)
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
+    }
+
+    func test_hashStability1() {
+        let uuid1 = UUID()
+        let uuid2 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+        let phoneNumber2 = mockPhoneNumber()
+
+        let hash_u1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash)
+
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .low).hash)
+        // hash_u1 is now also associated with p1.
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
+
+        let hash_u2 = SignalServiceAddress(uuid: uuid2, phoneNumber: nil).hash
+        XCTAssertEqual(hash_u2, SignalServiceAddress(uuid: uuid2, phoneNumber: nil).hash)
+        XCTAssertNotEqual(hash_u2, hash_u1)
+
+        // hash_u2 is now also associated with p2.
+        XCTAssertEqual(hash_u2, SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .low).hash)
+        XCTAssertEqual(hash_u2, SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber2, trustLevel: .high).hash)
+        XCTAssertEqual(hash_u2, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber2).hash)
+
+        // We now re-map p2 to u1.
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .low).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2, trustLevel: .high).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash)
+        XCTAssertEqual(hash_u2, SignalServiceAddress(uuid: uuid2, phoneNumber: nil).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber2).hash)
+    }
+
+    func test_hashStability2() {
+        let uuid1 = UUID()
+        let phoneNumber1 = mockPhoneNumber()
+
+        let hash_u1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash)
+
+        let hash_p1 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash
+        XCTAssertEqual(hash_p1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
+        XCTAssertNotEqual(hash_u1, hash_p1)
+
+        let address_u1 = SignalServiceAddress(uuid: uuid1, phoneNumber: nil)
+        let address_p1 = SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1)
+
+        // We now map p1 to u1.
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1, trustLevel: .high).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash)
+        XCTAssertEqual(hash_u1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
+
+        // New u1 addresses are equal to old u1 addresses and have the same hash.
+        XCTAssertEqual(address_u1, SignalServiceAddress(uuid: uuid1, phoneNumber: nil))
+        XCTAssertEqual(address_u1.hash, SignalServiceAddress(uuid: uuid1, phoneNumber: nil).hash)
+
+        // New p1 addresses are equal to old p1 addresses BUT DO NOT have the same hash.
+        // This degenerate case is unfortunately unavoidable without large changes where
+        // the cure is probably worse than the disease.
+        XCTAssertEqual(address_p1, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1))
+        XCTAssertNotEqual(address_p1.hash, SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1).hash)
     }
 }
