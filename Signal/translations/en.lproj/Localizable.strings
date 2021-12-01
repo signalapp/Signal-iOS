@@ -523,6 +523,9 @@
 /* Label for the 'edit' button. */
 "BUTTON_EDIT" = "Edit";
 
+/* Label for the 'mute' button. */
+"BUTTON_MUTE" = "Mute";
+
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Next";
 
@@ -552,6 +555,9 @@
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "Submit";
+
+/* Label for the 'unmute' button. */
+"BUTTON_UNMUTE" = "Unmute";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "View";
@@ -984,6 +990,30 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+
+/* Message for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_MESSAGE" = "";
+
+/* Title for the 'conversation mute confirmation' alert. */
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+
+/* 1 day */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 day";
+
+/* 1 hour */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 hour";
+
+/* 1 year */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1Y" = "1 year";
+
+/* 2 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_2H" = "2 hours";
+
+/* 7 days */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_7D" = "7 days";
+
+/* Always */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Always";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class HVTableDataSource: NSObject {
@@ -663,6 +664,22 @@ extension HVTableDataSource: UITableViewDataSource {
                 owsFailDebug("Missing viewController.")
                 return nil
             }
+
+            let muteAction = UIContextualAction(style: .normal,
+                                                title: nil) { [weak viewController] (_, _, completion) in
+                if threadViewModel.isMuted {
+                    viewController?.unmuteThread(threadViewModel: threadViewModel)
+                }
+                else {
+                    viewController?.muteThreadWithSelection(threadViewModel: threadViewModel)
+                }
+                completion(false)
+            }
+            muteAction.backgroundColor = .ows_accentIndigo
+            muteAction.image = self.actionImage(name: "bell-disabled-solid-24",
+                                                title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton)
+            muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton :CommonStrings.muteButton
+
             let deleteAction = UIContextualAction(style: .destructive,
                                                   title: nil) { [weak viewController] (_, _, completion) in
                 viewController?.deleteThreadWithConfirmation(threadViewModel: threadViewModel)
@@ -689,7 +706,7 @@ extension HVTableDataSource: UITableViewDataSource {
             archiveAction.accessibilityLabel = archiveTitle
 
             // The first action will be auto-performed for "very long swipes".
-            return UISwipeActionsConfiguration(actions: [ archiveAction, deleteAction ])
+            return UISwipeActionsConfiguration(actions: [ archiveAction, deleteAction, muteAction ])
         }
     }
 
