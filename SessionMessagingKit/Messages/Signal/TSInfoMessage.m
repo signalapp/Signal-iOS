@@ -126,7 +126,12 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 - (BOOL)shouldAffectUnreadCounts
 {
-    return NO;
+    switch (_messageType) {
+        case TSInfoMessageTypeCall:
+            return YES;
+        default:
+            return NO;
+    }
 }
 
 - (uint64_t)expireStartedAt
