@@ -90,7 +90,7 @@ class BaseVC : UIViewController {
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        NotificationCenter.default.post(name: .appModeChanged, object: nil)
+        // NotificationCenter.default.post(name: .appModeChanged, object: nil)
     }
 
     @objc internal func handleAppModeChangedNotification(_ notification: Notification) {
