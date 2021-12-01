@@ -412,6 +412,21 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
             [phoneNumberInstance changePhoneNumber:nil transaction:transaction.unwrapGrdbWrite];
             [phoneNumberInstance anyOverwritingUpdateWithTransaction:transaction];
+
+            // We've already used phoneNumberInstance.changePhoneNumber() above to
+            // ensure that phoneNumberInstance does not use the new address.phoneNumber.
+            //
+            // However, phoneNumberInstance.changePhoneNumber() will only update
+            // mappings in other database tables that exactly match the address
+            // components of phoneNumberInstance.
+            //
+            // The mappings in other tables might not exactly match the mappings in
+            // the SignalRecipient table.  Therefore, to avoid crashes and other
+            // mapping problems, we need to ensure that no other db tables has a
+            // mapping that uses address.phoneNumber _before_ we use
+            // uuidInstance.changePhoneNumber() with address.phoneNumber.
+            [SignalRecipient clearDBMappingsForPhoneNumber:address.phoneNumber transaction:transaction];
+
             [uuidInstance changePhoneNumber:address.phoneNumber transaction:transaction.unwrapGrdbWrite];
 
             existingInstance = uuidInstance;
