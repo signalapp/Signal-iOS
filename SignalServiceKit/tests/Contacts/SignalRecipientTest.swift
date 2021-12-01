@@ -490,8 +490,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            // We should now have one group member: (u1, p2).
-            XCTAssertEqual(1, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            // We should now have two group members: (u1, p2), (fake uuid, nil).
+            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
@@ -637,8 +637,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            // We should now have one group member: (u2, p1).
-            XCTAssertEqual(1, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
+            // We should now have two group members: (u2, p1), (fake uuid, nil).
+            XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
