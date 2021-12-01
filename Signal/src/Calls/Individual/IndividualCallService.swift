@@ -546,7 +546,7 @@ import CallKit
 
             let useTurnOnly = isUnknownCaller || Self.preferences.doCallsHideIPAddress()
 
-            let useLowBandwidth = CallService.useLowBandwidthWithSneakyTransaction()
+            let useLowBandwidth = CallService.shouldUseLowBandwidthWithSneakyTransaction(for: NetworkRoute(localAdapterType: .unknown))
             Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
 
             // Tell the Call Manager to proceed with its active call.
