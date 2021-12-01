@@ -225,11 +225,19 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
         if let thisUuid = uuid,
             let otherUuid = otherAddress.uuid {
-            return thisUuid == otherUuid
+            let isEqual = thisUuid == otherUuid
+            if isEqual, self.hash != otherAddress.hash {
+                Logger.warn("Equal addresses have different hashes: \(self), other: \(otherAddress).")
+            }
+            return isEqual
         }
         if phoneNumber != nil ||
             otherAddress.phoneNumber != nil {
-            return otherAddress.phoneNumber == phoneNumber
+            let isEqual = otherAddress.phoneNumber == phoneNumber
+            if isEqual, self.hash != otherAddress.hash {
+                Logger.warn("Equal addresses have different hashes: \(self), other: \(otherAddress).")
+            }
+            return isEqual
         }
         return false
     }
@@ -380,7 +388,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         owsAssertDebug(uuid == self.uuid)
         backingPhoneNumber.set(SignalServiceAddress.cache.phoneNumber(forUuid: uuid))
     }
-    
+
     public static func addressComponentsDescription(uuidString: String?,
                                                     phoneNumber: String?) -> String {
         var splits = [String]()
@@ -504,18 +512,12 @@ public class SignalServiceAddressCache: NSObject {
                 // If we previously had a phone number, disassociate it from the UUID.
                 if let oldPhoneNumber = uuidToPhoneNumberCache[uuid],
                    oldPhoneNumber != phoneNumber {
-                    phoneNumberToHashValueCache[oldPhoneNumber] = nil
                     phoneNumberToUUIDCache[oldPhoneNumber] = nil
-
                 }
 
                 // If we previously had a UUID, disassociate it from the phone number.
                 if let oldUuid = phoneNumberToUUIDCache[phoneNumber],
                    oldUuid != uuid {
-                    if uuidToHashValueCache[oldUuid] == hash {
-                        owsFailDebug("Unexpectedly using hash for old uuid.")
-                        uuidToHashValueCache[oldUuid] = nil
-                    }
                     uuidToPhoneNumberCache[oldUuid] = nil
                 }
 
@@ -556,7 +558,6 @@ public class SignalServiceAddressCache: NSObject {
                 uuidToPhoneNumberCache[oldUuid] = nil
             }
 
-            phoneNumberToHashValueCache[phoneNumber] = nil
             phoneNumberToUUIDCache[phoneNumber] = nil
         }
     }
@@ -586,7 +587,6 @@ public class SignalServiceAddressCache: NSObject {
 
             // If we previously had a phone number, disassociate it from the UUID
             if let oldPhoneNumber = uuidToPhoneNumberCache[uuid] {
-                phoneNumberToHashValueCache[oldPhoneNumber] = nil
                 phoneNumberToUUIDCache[oldPhoneNumber] = nil
             }
 
@@ -596,7 +596,6 @@ public class SignalServiceAddressCache: NSObject {
                oldUuid != uuid {
                 if uuidToHashValueCache[oldUuid] == hash {
                     owsFailDebug("Unexpectedly using hash for old uuid.")
-                    uuidToHashValueCache[oldUuid] = nil
                 }
                 uuidToPhoneNumberCache[oldUuid] = nil
             }
