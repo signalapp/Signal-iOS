@@ -18,7 +18,7 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     var answerCallAction: CXAnswerCallAction? = nil
     var contactName: String {
         let contact = Storage.shared.getContact(with: self.sessionID)
-        return contact?.displayName(for: Contact.Context.regular) ?? self.sessionID
+        return contact?.displayName(for: Contact.Context.regular) ?? "\(self.sessionID.prefix(4)))...\(self.sessionID.suffix(4))"
     }
     var profilePicture: UIImage {
         if let result = OWSProfileManager.shared().profileAvatar(forRecipientId: sessionID) {

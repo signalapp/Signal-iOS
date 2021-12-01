@@ -11,7 +11,7 @@
         var contactName: String = ""
         if let contactThread = thread as? TSContactThread {
             let sessionID =  contactThread.contactSessionID()
-            contactName = Storage.shared.getContact(with: sessionID)?.displayName(for: Contact.Context.regular) ?? sessionID
+            contactName = Storage.shared.getContact(with: sessionID)?.displayName(for: Contact.Context.regular) ?? "\(sessionID.prefix(4)))...\(sessionID.suffix(4))"
         }
         if caller == getUserHexEncodedPublicKey() {
             callState = .outgoing
