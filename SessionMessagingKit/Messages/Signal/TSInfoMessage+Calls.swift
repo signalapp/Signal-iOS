@@ -12,7 +12,7 @@
         } else {
             callState = .incoming
         }
-        let infoMessage = TSInfoMessage.init(timestamp: timestamp, in: thread, messageType: .call)
+        let infoMessage = TSInfoMessage(timestamp: timestamp, in: thread, messageType: .call)
         infoMessage.callState = callState
         return infoMessage
     }

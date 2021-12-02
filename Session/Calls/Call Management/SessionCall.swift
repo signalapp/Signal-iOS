@@ -182,12 +182,22 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     // MARK: Actions
     func startSessionCall() {
         guard case .offer = mode else { return }
-        var promise: Promise<String?>!
+        guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadID(fromContactSessionID: sessionID)) else { return }
+        
+        let message = CallMessage()
+        message.sender = getUserHexEncodedPublicKey()
+        message.sentTimestamp = NSDate.millisecondTimestamp()
+        message.uuid = self.uuid
+        message.kind = .preOffer
+        let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
+        infoMessage.save()
+        self.callMessageID = infoMessage.uniqueId
+        
+        var promise: Promise<Void>!
         Storage.write(with: { transaction in
-            promise = self.webRTCSession.sendPreOffer(to: self.sessionID, using: transaction)
+            promise = self.webRTCSession.sendPreOffer(message, in: thread, using: transaction)
         }, completion: { [weak self] in
-            let _ = promise.done { messageID in
-                self?.callMessageID = messageID
+            let _ = promise.done {
                 Storage.shared.write { transaction in
                     self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
                 }
