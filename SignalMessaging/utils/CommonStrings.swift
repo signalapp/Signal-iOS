@@ -227,6 +227,16 @@ public class CommonStrings: NSObject {
     }
 
     @objc
+    static public var muteButton: String {
+        NSLocalizedString("BUTTON_MUTE", comment: "Label for the 'mute' button.")
+    }
+
+    @objc
+    static public var unmuteButton: String {
+        NSLocalizedString("BUTTON_UNMUTE", comment: "Label for the 'unmute' button.")
+    }
+
+    @objc
     static public var genericError: String {
         NSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
     }

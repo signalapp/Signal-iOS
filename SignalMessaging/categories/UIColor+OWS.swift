@@ -101,6 +101,12 @@ public extension UIColor {
         return UIColor(rgbHex: 0xF44336)
     }
 
+    /// mute unmute background color
+    @objc(ows_accentIndigoColor)
+    class var ows_accentIndigo: UIColor {
+        return UIColor(rgbHex: 0x5951c8)
+    }
+
     // MARK: - GreyScale
 
     @objc(ows_whiteColor)

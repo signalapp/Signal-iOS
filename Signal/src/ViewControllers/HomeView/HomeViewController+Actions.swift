@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 extension HomeViewController {
 
@@ -74,6 +75,45 @@ extension HomeViewController {
 
         databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
+        }
+    }
+
+    func muteThreadWithSelection(threadViewModel: ThreadViewModel) {
+        AssertIsOnMainThread()
+
+        let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE",
+                                                                   comment: "Title for the 'conversation mute confirmation' alert."))
+        for (title, seconds) in [
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), kHourInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * kHourInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), kDayInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), kWeekInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS", comment: "Always"), -1)] {
+            alert.addAction(ActionSheetAction(title: title, style: .default) { [weak self] _ in
+                self?.muteThread(threadViewModel: threadViewModel, duration: seconds)
+            })
+        }
+        alert.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(alert)
+    }
+
+    func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
+        AssertIsOnMainThread()
+
+        databaseStorage.write { transaction in
+            let timeStamp = seconds < 0
+            ? ThreadAssociatedData.alwaysMutedTimestamp
+            : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
+            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: timeStamp, updateStorageService: true, transaction: transaction)
+        }
+    }
+
+    func unmuteThread(threadViewModel: ThreadViewModel) {
+        AssertIsOnMainThread()
+
+        databaseStorage.write { transaction in
+            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: Date.ows_millisecondTimestamp(), updateStorageService: true, transaction: transaction)
         }
     }
 
