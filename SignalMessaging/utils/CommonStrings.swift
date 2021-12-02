@@ -230,7 +230,7 @@ public class CommonStrings: NSObject {
     static public var muteButton: String {
         NSLocalizedString("BUTTON_MUTE", comment: "Label for the 'mute' button.")
     }
-    
+
     @objc
     static public var unmuteButton: String {
         NSLocalizedString("BUTTON_UNMUTE", comment: "Label for the 'unmute' button.")

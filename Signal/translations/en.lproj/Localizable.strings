@@ -991,9 +991,6 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
 
-/* Message for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_MESSAGE" = "";
-
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
 
@@ -1003,14 +1000,11 @@
 /* 1 hour */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 hour";
 
-/* 1 year */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1Y" = "1 year";
-
 /* 2 hours */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_2H" = "2 hours";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 hours";
 
 /* 7 days */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_7D" = "7 days";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 week";
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Always";
