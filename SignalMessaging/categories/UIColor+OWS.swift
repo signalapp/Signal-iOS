@@ -100,7 +100,7 @@ public extension UIColor {
     class var ows_accentRed: UIColor {
         return UIColor(rgbHex: 0xF44336)
     }
-    
+
     /// mute unmute background color
     @objc(ows_accentIndigoColor)
     class var ows_accentIndigo: UIColor {

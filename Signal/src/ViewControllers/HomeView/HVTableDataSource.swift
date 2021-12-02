@@ -669,14 +669,13 @@ extension HVTableDataSource: UITableViewDataSource {
                                                 title: nil) { [weak viewController] (_, _, completion) in
                 if threadViewModel.isMuted {
                     viewController?.unmuteThread(threadViewModel: threadViewModel)
-                }
-                else {
+                } else {
                     viewController?.muteThreadWithSelection(threadViewModel: threadViewModel)
                 }
                 completion(false)
             }
             muteAction.backgroundColor = .ows_accentIndigo
-            muteAction.image = self.actionImage(name: "bell-disabled-solid-24",
+            muteAction.image = self.actionImage(name: threadViewModel.isMuted ? "bell-solid-24" : "bell-disabled-solid-24",
                                                 title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton)
             muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton :CommonStrings.muteButton
 
