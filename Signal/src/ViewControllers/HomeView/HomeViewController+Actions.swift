@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 extension HomeViewController {
 
@@ -83,10 +84,10 @@ extension HomeViewController {
         let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE",
                                                                    comment: "Title for the 'conversation mute confirmation' alert."))
         for (title, seconds) in [
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), 60 * 60),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * 60 * 60),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), 24 * 60 * 60),
-            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), 7 * 24 * 60 * 60),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1H", comment: "1 hour"), kHourInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_8H", comment: "8 hours"), 8 * kHourInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1D", comment: "1 day"), kDayInterval),
+            (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_1W", comment: "1 week"), kWeekInterval),
             (NSLocalizedString("CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS", comment: "Always"), -1)] {
             alert.addAction(ActionSheetAction(title: title, style: .default) { [weak self] _ in
                 self?.muteThread(threadViewModel: threadViewModel, duration: seconds)
@@ -97,13 +98,13 @@ extension HomeViewController {
         presentActionSheet(alert)
     }
 
-    func muteThread(threadViewModel: ThreadViewModel, duration seconds: Int) {
+    func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
             let timeStamp = seconds < 0
             ? ThreadAssociatedData.alwaysMutedTimestamp
-            : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds) * 1000)
+            : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
             threadViewModel.associatedData.updateWith(mutedUntilTimestamp: timeStamp, updateStorageService: true, transaction: transaction)
         }
     }
