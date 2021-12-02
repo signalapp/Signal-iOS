@@ -81,7 +81,9 @@ final class CallMessageCell : MessageCell {
         }
         iconImageViewWidthConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
         iconImageViewHeightConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
-        self.label.text = message.customMessage
+        Storage.read { transaction in
+            self.label.text = message.previewText(with: transaction)
+        }
         
         let date = message.dateForUI()
         let description = DateUtil.formatDate(forDisplay: date)

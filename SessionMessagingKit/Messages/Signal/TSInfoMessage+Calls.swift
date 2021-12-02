@@ -7,20 +7,12 @@
     
     static func callInfoMessage(from caller: String, timestamp: UInt64, in thread: TSThread) -> TSInfoMessage {
         let callState: TSInfoMessageCallState
-        let messageBody: String
-        var contactName: String = ""
-        if let contactThread = thread as? TSContactThread {
-            let sessionID =  contactThread.contactSessionID()
-            contactName = Storage.shared.getContact(with: sessionID)?.displayName(for: Contact.Context.regular) ?? "\(sessionID.prefix(4))...\(sessionID.suffix(4))"
-        }
         if caller == getUserHexEncodedPublicKey() {
             callState = .outgoing
-            messageBody = String(format: NSLocalizedString("call_outgoing", comment: ""), contactName)
         } else {
             callState = .incoming
-            messageBody = String(format: NSLocalizedString("call_incoming", comment: ""), contactName)
         }
-        let infoMessage = TSInfoMessage.init(timestamp: timestamp, in: thread, messageType: .call, customMessage: messageBody)
+        let infoMessage = TSInfoMessage.init(timestamp: timestamp, in: thread, messageType: .call)
         infoMessage.callState = callState
         return infoMessage
     }
@@ -29,12 +21,6 @@
     func updateCallInfoMessage(_ newCallState: TSInfoMessageCallState, using transaction: YapDatabaseReadWriteTransaction) {
         guard self.messageType == .call else { return }
         self.callState = newCallState
-        var contactName: String = ""
-        if let contactThread = self.thread(with: transaction) as? TSContactThread {
-            let sessionID =  contactThread.contactSessionID()
-            contactName = Storage.shared.getContact(with: sessionID)?.displayName(for: Contact.Context.regular) ?? sessionID
-        }
-        self.customMessage = String(format: NSLocalizedString("call_missed", comment: ""), contactName)
         self.save(with: transaction)
     }
 }

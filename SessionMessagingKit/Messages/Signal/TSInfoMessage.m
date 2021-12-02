@@ -3,6 +3,7 @@
 //
 
 #import "TSInfoMessage.h"
+#import "TSContactThread.h"
 #import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
@@ -104,8 +105,33 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return OWSInteractionType_Info;
 }
 
+- (NSString *)getCallMessagePreviewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSThread *thread = [self threadWithTransaction:transaction];
+    if ([thread isKindOfClass: [TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *sessionID = contactThread.contactSessionID;
+        NSString *name = contactThread.name;
+        if ([name isEqual:sessionID]) {
+            name = [NSString stringWithFormat:@"%@...%@", [sessionID substringToIndex:4], [sessionID substringFromIndex:sessionID.length - 4]];
+        }
+        switch (_callState) {
+            case TSInfoMessageCallStateIncoming:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_incoming", @""), name];
+            case TSInfoMessageCallStateOutgoing:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_outgoing", @""), name];
+            case TSInfoMessageCallStateMissed:
+                return [NSString stringWithFormat:NSLocalizedString(@"call_missed", @""), name];
+            default:
+                break;
+        }
+    }
+    return _customMessage;
+}
+
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    
     switch (_messageType) {
         case TSInfoMessageTypeGroupCreated:
             return NSLocalizedString(@"GROUP_CREATED", @"");
@@ -114,7 +140,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageTypeGroupUpdated:
             return _customMessage != nil ? _customMessage : NSLocalizedString(@"GROUP_UPDATED", @"");
         case TSInfoMessageTypeCall:
-            return _customMessage;
+            return [self getCallMessagePreviewTextWithTransaction:transaction];
         default:
             break;
     }
