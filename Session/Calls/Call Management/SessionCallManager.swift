@@ -103,6 +103,7 @@ public final class SessionCallManager: NSObject {
     
     public func reportCurrentCallEnded(reason: CXCallEndedReason?) {
         guard let call = currentCall else { return }
+        invalidateTimeoutTimer()
         if let reason = reason {
             self.provider.reportCall(with: call.callID, endedAt: nil, reason: reason)
             switch (reason) {
