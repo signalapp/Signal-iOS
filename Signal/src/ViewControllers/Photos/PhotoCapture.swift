@@ -70,7 +70,7 @@ class PhotoCapture: NSObject {
     var focusObservation: NSKeyValueObservation?
     override init() {
         self.session = AVCaptureSession()
-        self.captureOutput = CaptureOutput()
+        self.captureOutput = CaptureOutput(session: session)
     }
 
     func didCompleteFocusing() {
@@ -805,6 +805,7 @@ protocol ImageCaptureOutput: AnyObject {
 
 class CaptureOutput: NSObject {
 
+    let session: AVCaptureSession
     let imageOutput: ImageCaptureOutput
 
     let videoDataOutput: AVCaptureVideoDataOutput
@@ -863,12 +864,14 @@ class CaptureOutput: NSObject {
 
     // MARK: - Init
 
-    override init() {
+    init(session: AVCaptureSession) {
         imageOutput = PhotoCaptureOutputAdaptee()
 
         videoDataOutput = AVCaptureVideoDataOutput()
+        videoDataOutput.alwaysDiscardsLateVideoFrames = false
         audioDataOutput = AVCaptureAudioDataOutput()
 
+        self.session = session
         super.init()
 
         videoDataOutput.setSampleBufferDelegate(self, queue: movieRecordingQueue)
@@ -976,21 +979,26 @@ class CaptureOutput: NSObject {
     func completeMovie(delegate: CaptureOutputDelegate) {
         assertOnQueue(movieRecordingQueue)
 
-        firstly { () -> Promise<URL> in
-            assertOnQueue(movieRecordingQueue)
-            guard let movieRecording = self.clearMovieRecording() else {
-                // If the user cancels a video before recording begins,
-                // the instance of MovieRecording might not be set yet.
-                // clearMovieRecording() will ensure that race does not
-                // cause problems.
-                Logger.warn("Movie recording is nil.")
-                throw PhotoCaptureError.invalidVideo
+        DispatchQueue.main.async { [weak self] in
+            self?.session.stopRunning()
+            CaptureOutput.movieRecordingQueue.async { [weak self] in
+                firstly { () -> Promise<URL> in
+                    assertOnQueue(CaptureOutput.movieRecordingQueue)
+                    guard let movieRecording = self?.clearMovieRecording() else {
+                        // If the user cancels a video before recording begins,
+                        // the instance of MovieRecording might not be set yet.
+                        // clearMovieRecording() will ensure that race does not
+                        // cause problems.
+                        Logger.warn("Movie recording is nil.")
+                        throw PhotoCaptureError.invalidVideo
+                    }
+                    return movieRecording.finish()
+                }.done { outputUrl in
+                    delegate.captureOutputDidCapture(movieUrl: .success(outputUrl))
+                }.catch { error in
+                    delegate.captureOutputDidCapture(movieUrl: .failure(error))
+                }
             }
-            return movieRecording.finish()
-        }.done { outputUrl in
-            delegate.captureOutputDidCapture(movieUrl: .success(outputUrl))
-        }.catch { error in
-            delegate.captureOutputDidCapture(movieUrl: .failure(error))
         }
     }
 
