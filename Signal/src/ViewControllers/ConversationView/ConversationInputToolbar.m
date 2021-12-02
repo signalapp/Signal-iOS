@@ -1342,9 +1342,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
     [self updateHeightWithTextView:textView];
     [self updateInputLinkPreview];
+    [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
 }
 
 - (void)textViewDidChangeSelection:(UITextView *)textView
