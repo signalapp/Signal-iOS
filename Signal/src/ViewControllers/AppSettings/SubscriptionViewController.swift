@@ -27,7 +27,19 @@ class SubscriptionViewController: OWSTableViewController2 {
         } else if fetchedSubscriptionStatus == false || subscriptions == nil {
             return .loading
         } else {
-            return currentSubscription != nil ? .subscriptionExists : .subscriptionNotYetSetUp
+            guard let currentSubscription = currentSubscription else {
+                return .subscriptionNotYetSetUp
+            }
+
+            if !ignoreProfileBadgeStateForNewBadgeRedemption && profileSubscriptionBadges.isEmpty {
+                return .subscriptionNotYetSetUp
+            }
+
+            if currentSubscription.active {
+                return .subscriptionExists
+            } else {
+                return (subscriptionRedemptionFailureReason == .none) ? .subscriptionExists : .subscriptionNotYetSetUp
+            }
         }
     }
 
@@ -40,12 +52,24 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
     }
 
+    private var currentSubscription: Subscription?
+
+    private lazy var profileSubscriptionBadges: [OWSUserProfileBadgeInfo] = {
+        return SubscriptionManager.currentProfileSubscriptionBadges()
+    }()
+
     private var selectedSubscription: SubscriptionLevel?
 
-    private var fetchedSubscriptionStatus = false
+    private var fetchedSubscriptionStatus = false {
+        didSet {
+            if fetchedSubscriptionStatus {
+                showBadgeExpirySheetIfNeeded()
+            }
+        }
+    }
 
+    private var ignoreProfileBadgeStateForNewBadgeRedemption = false
     private var updatingSubscriptions = false
-    private var currentSubscription: Subscription?
     private var persistedSubscriberID: Data?
     private var persistedSubscriberCurrencyCode: String?
 
@@ -218,11 +242,11 @@ class SubscriptionViewController: OWSTableViewController2 {
             currencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction)
         }
 
-        if let subscripberID = subscriberID, let currencyCode = currencyCode {
+        if let subscriberID = subscriberID, let currencyCode = currencyCode {
             self.persistedSubscriberID = subscriberID
             self.persistedSubscriberCurrencyCode = currencyCode
             firstly {
-                SubscriptionManager.getCurrentSubscriptionStatus(for: subscripberID)
+                SubscriptionManager.getCurrentSubscriptionStatus(for: subscriberID)
             }.done(on: .main) { subscription in
                 self.fetchedSubscriptionStatus = true
                 self.currentSubscription = subscription
@@ -242,6 +266,31 @@ class SubscriptionViewController: OWSTableViewController2 {
                 self.fetchedSubscriptionStatus = true
             }
         }
+    }
+
+    func showBadgeExpirySheetIfNeeded() {
+        guard subscriptionViewState == .subscriptionNotYetSetUp, let subscriptions = subscriptions else {
+            return
+        }
+
+        let expiredBadgeID = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
+        guard let expiredBadgeID = expiredBadgeID else {
+            return
+        }
+
+        let subscriptionLevel = subscriptions.first { $0.badge.id == expiredBadgeID }
+
+        guard let subscriptionLevel = subscriptionLevel else {
+            owsFailDebug("Unable to find current subscription level for expired badge")
+            return
+        }
+
+        selectedSubscription = subscriptionLevel
+        updateTableContents()
+
+        let sheet = BadgeExpirationSheet(badge: subscriptionLevel.badge)
+        sheet.delegate = self
+        self.present(sheet, animated: true)
     }
 
     func updateTableContents() {
@@ -473,16 +522,8 @@ class SubscriptionViewController: OWSTableViewController2 {
         ))
 
         // Current support level
-        if let currentSubscription = currentSubscription, let subscriptions = subscriptions {
-            let level = currentSubscription.level
-            var subscriptionLevel: SubscriptionLevel?
-            for subscription in subscriptions {
-                if subscription.level == level {
-                    subscriptionLevel = subscription
-                    break
-                }
-            }
-
+        let subscriptionLevel = subscriptionLevelForSubscription(currentSubscription)
+        if let subscriptionLevel = subscriptionLevel, let currentSubscription = currentSubscription {
             section.add(.init(
                 customCellBlock: { [weak self] in
                     guard let self = self else { return UITableViewCell() }
@@ -512,15 +553,10 @@ class SubscriptionViewController: OWSTableViewController2 {
                     containerStackView.addArrangedSubview(stackView)
                     stackView.autoPinWidthToSuperviewMargins()
 
-                    guard let subscription = subscriptionLevel else {
-                        owsFailDebug("Can't find a matching description")
-                        return cell
-                    }
-
                     let imageView = UIImageView()
                     imageView.setContentHuggingHigh()
 
-                    if let badgeImage = subscription.badge.assets?.universal160 {
+                    if let badgeImage = subscriptionLevel.badge.assets?.universal160 {
                         imageView.image = badgeImage
                     }
 
@@ -543,7 +579,7 @@ class SubscriptionViewController: OWSTableViewController2 {
                     textStackView.alignment = .leading
                     textStackView.spacing = 4
 
-                    let localizedBadgeName = subscription.name
+                    let localizedBadgeName = subscriptionLevel.name
                     let titleLabel = UILabel()
                     titleLabel.text = localizedBadgeName
                     titleLabel.font = .ows_dynamicTypeBody.ows_semibold
@@ -1217,6 +1253,8 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 throw SubscriptionError.assertion
             }
 
+            self.ignoreProfileBadgeStateForNewBadgeRedemption = true
+
             progressView.stopAnimating(success: true) {
                 backdropView.alpha = 0
             } completion: {
@@ -1483,4 +1521,16 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         secondDescriptionBlock.lineBreakMode = .byWordWrapping
         stackView.addArrangedSubview(secondDescriptionBlock)
     }
+}
+
+extension SubscriptionViewController: BadgeExpirationSheetDelegate {
+
+    func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
+        requestApplePayDonation()
+    }
+
+    func badgeExpirationSheetNotNowButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
+        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
+    }
+
 }

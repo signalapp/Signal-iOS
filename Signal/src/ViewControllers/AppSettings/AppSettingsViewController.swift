@@ -67,16 +67,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     private lazy var hasCurrentSubscription: Bool = {
-        var subscriberID: Data?
-        SDSDatabaseStorage.shared.read { transaction in
-            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
-        }
-
-        guard subscriberID != nil else {
-            return false
-        }
-
-        return true
+        return SubscriptionManager.hasCurrentSubscriptionCached()
     }()
 
     func updateTableContents() {
