@@ -799,6 +799,7 @@ extension HVTableDataSource: UITableViewDataSource {
                 readStateAction = UIContextualAction(style: .destructive,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
+                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: ["markAsRead": true])
                     // We delay here so the animation can play out before we
                     // reload the cell
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
@@ -813,6 +814,7 @@ extension HVTableDataSource: UITableViewDataSource {
                 readStateAction = UIContextualAction(style: .normal,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
+                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: ["markAsRead": false])
                     // We delay here so the animation can play out before we
                     // reload the cell
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
