@@ -1526,6 +1526,7 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
 extension SubscriptionViewController: BadgeExpirationSheetDelegate {
 
     func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
+        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
         requestApplePayDonation()
     }
 
