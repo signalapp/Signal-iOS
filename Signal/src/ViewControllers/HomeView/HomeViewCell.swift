@@ -903,7 +903,12 @@ public class HomeViewCell: UITableViewCell {
     private func temporarySetUnreadIndicator(notification: Notification) {
         AssertIsOnMainThread()
         let markAsRead = notification.userInfo?["markAsRead"] as? Bool ?? false
-        unreadBadge.alpha = markAsRead ? 0 : 1
+        let uiChangesBlock = { [weak self] in self?.unreadBadge.alpha = markAsRead ? 0 : 1 }
+        if let duration = notification.userInfo?["duration"] as? Double, duration > 0 {
+            UIView.animate(withDuration: duration) { uiChangesBlock() }
+        } else {
+            uiChangesBlock()
+        }
     }
 
     // MARK: - Typing Indicators

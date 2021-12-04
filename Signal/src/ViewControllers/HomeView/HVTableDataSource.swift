@@ -794,15 +794,17 @@ extension HVTableDataSource: UITableViewDataSource {
                                                       title: CommonStrings.pinAction)
             }
 
+            let kPullbackAnimationDuration = 0.65
+            let userInfo = ["markAsRead": threadViewModel.hasUnreadMessages, "duration": kPullbackAnimationDuration + 0.2] as [String: Any]
             let readStateAction: UIContextualAction
             if threadViewModel.hasUnreadMessages {
                 readStateAction = UIContextualAction(style: .destructive,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
-                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: ["markAsRead": true])
+                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: userInfo)
                     // We delay here so the animation can play out before we
                     // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + kPullbackAnimationDuration) { [weak viewController] in
                         viewController?.markThreadAsRead(threadViewModel: threadViewModel)
                     }
                 }
@@ -814,10 +816,10 @@ extension HVTableDataSource: UITableViewDataSource {
                 readStateAction = UIContextualAction(style: .normal,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
-                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: ["markAsRead": false])
+                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: userInfo)
                     // We delay here so the animation can play out before we
                     // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + kPullbackAnimationDuration) { [weak viewController] in
                         viewController?.markThreadAsUnread(threadViewModel: threadViewModel)
                     }
                 }
