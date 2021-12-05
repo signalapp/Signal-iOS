@@ -14,6 +14,7 @@ public class ThreadViewModel: NSObject {
     @objc public let contactSessionID: String?
     @objc public let name: String
     @objc public let isMuted: Bool
+    @objc public let isPinned: Bool
     @objc public let isOnlyNotifyingForMentions: Bool
     @objc public let hasUnreadMentions: Bool
 
@@ -31,6 +32,7 @@ public class ThreadViewModel: NSObject {
         self.isGroupThread = thread.isGroupThread()
         self.name = thread.name()
         self.isMuted = thread.isMuted
+        self.isPinned = thread.isPinned
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
         self.lastMessageForInbox = lastInteraction

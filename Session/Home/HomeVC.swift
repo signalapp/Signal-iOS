@@ -356,6 +356,23 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             self.present(alert, animated: true, completion: nil)
         }
         delete.backgroundColor = Colors.destructive
+        
+        let isPinned = thread.isPinned
+        let pin = UITableViewRowAction(style: .normal, title: NSLocalizedString("PIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
+            thread.isPinned = true
+            thread.save()
+            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
+            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+        }
+        pin.backgroundColor = Colors.pathsBuilding
+        let unpin = UITableViewRowAction(style: .normal, title: NSLocalizedString("UNPIN_BUTTON_TEXT", comment: "")) { [weak self] _, _ in
+            thread.isPinned = false
+            thread.save()
+            self?.threadViewModelCache.removeValue(forKey: thread.uniqueId!)
+            tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
+        }
+        unpin.backgroundColor = Colors.pathsBuilding
+        
         if let thread = thread as? TSContactThread {
             let publicKey = thread.contactSessionID()
             let blockingManager = SSKEnvironment.shared.blockingManager
@@ -370,9 +387,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
                 tableView.reloadRows(at: [ indexPath ], with: UITableView.RowAnimation.fade)
             }
             unblock.backgroundColor = Colors.unimportant
-            return [ delete, (isBlocked ? unblock : block) ]
+            return [ delete, (isBlocked ? unblock : block), (isPinned ? unpin : pin) ]
         } else {
-            return [ delete ]
+            return [ delete, (isPinned ? unpin : pin) ]
         }
     }
     
