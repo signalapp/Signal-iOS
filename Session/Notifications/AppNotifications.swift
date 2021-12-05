@@ -37,6 +37,7 @@ struct AppNotificationUserInfoKey {
     static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     static let callBackNumber = "Signal.AppNotificationsUserInfoKey.callBackNumber"
     static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
+    static let threadNotificationCounter = "Session.AppNotificationsUserInfoKey.threadNotificationCounter"
 }
 
 extension AppNotificationCategory {
@@ -80,9 +81,9 @@ extension AppNotificationAction {
     }
 }
 
-// Delay notification of incoming messages when it's likely to be read by a linked device to
-// avoid notifying a user on their phone while a conversation is actively happening on desktop.
-let kNotificationDelayForRemoteRead: TimeInterval = 5
+// Delay notification of incoming messages when it's a background polling to
+// avoid too many notifications fired at the same time
+let kNotificationDelayForBackgroumdPoll: TimeInterval = 5
 
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
@@ -157,9 +158,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
 
-        guard !thread.isMuted else {
-            return
-        }
+        guard !thread.isMuted else { return }
+        guard let threadId = thread.uniqueId else { return }
+        
+        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
+        
+        let isBackgroudPoll = identifier == threadId
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(with: transaction)
@@ -194,13 +198,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 if groupName.count < 1 {
                     groupName = MessageStrings.newGroupDefaultTitle
                 }
-                notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
-                                           senderName,
-                                           groupName)
+                notificationTitle = isBackgroudPoll ? groupName : String(format: NotificationStrings.incomingGroupMessageTitleFormat, senderName, groupName)
             default:
                 owsFailDebug("unexpected thread: \(thread)")
                 return
             }
+        default:
+            notificationTitle = "Session"
         }
 
         var notificationBody: String?
@@ -209,24 +213,19 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationBody = NotificationStrings.incomingMessageBody
         case .namePreview:
             notificationBody = messageText
-        }
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
+        default:
+            notificationBody = NotificationStrings.incomingMessageBody
         }
 
         assert((notificationBody ?? notificationTitle) != nil)
 
         // Don't reply from lockscreen if anyone in this conversation is
         // "no longer verified".
-        var category = AppNotificationCategory.incomingMessage
+        let category = AppNotificationCategory.incomingMessage
 
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
-        
-        let identifier: String = incomingMessage.notificationIdentifier ?? UUID().uuidString
 
         DispatchQueue.main.async {
             notificationBody = MentionUtilities.highlightMentions(in: notificationBody!, threadID: thread.uniqueId!)
@@ -247,6 +246,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
             notificationTitle = thread.name()
+        default:
+            notificationTitle = nil
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
