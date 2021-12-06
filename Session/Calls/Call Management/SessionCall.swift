@@ -240,13 +240,17 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
                     shouldMarkAsRead = true
                 } else {
                     switch mode {
-                    case .local: shouldMarkAsRead = true
-                    case .remote: break
-                    case .unanswered: break
-                    case .answeredElsewhere: shouldMarkAsRead = true
-                    }
-                    if messageToUpdate.callState == .incoming {
-                        messageToUpdate.updateCallInfoMessage(.missed, using: transaction)
+                    case .local:
+                        shouldMarkAsRead = true
+                        fallthrough
+                    case .remote:
+                        fallthrough
+                    case .unanswered:
+                        if messageToUpdate.callState == .incoming {
+                            messageToUpdate.updateCallInfoMessage(.missed, using: transaction)
+                        }
+                    case .answeredElsewhere:
+                        shouldMarkAsRead = true
                     }
                 }
                 if shouldMarkAsRead {

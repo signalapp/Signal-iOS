@@ -269,11 +269,12 @@ extension MessageReceiver {
     
     public static func handleCallMessage(_ message: CallMessage, using transaction: Any) {
         let transaction = transaction as! YapDatabaseReadWriteTransaction
-        // Ignore call messages from threads without outgoing messages
-        guard let sender = message.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) else { return }
         switch message.kind! {
         case .preOffer:
             print("[Calls] Received pre-offer message.")
+            // It is enough just ignoring the pre offers, other call messages
+            // for this call would be dropped because of no Session call instance
+            guard let sender = message.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) else { return }
             handleNewCallOfferMessageIfNeeded?(message, transaction)
         case .offer:
             print("[Calls] Received offer message.")
