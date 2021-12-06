@@ -22,7 +22,7 @@ public class RemoteConfig: BaseFlags {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
         self.researchMegaphone = Self.isCountryCodeBucketEnabled(.researchMegaphone, valueFlags: valueFlags)
-        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.subscriptionMegaphone, valueFlags: valueFlags)
+        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.subscriptionMegaphone2, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
     }
@@ -450,7 +450,7 @@ private struct Flags {
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
-        case subscriptionMegaphone
+        case subscriptionMegaphone2
         case subscriptionMegaphoneSnoozeInterval
     }
 }
