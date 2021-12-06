@@ -811,7 +811,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                          bioEmoji:(nullable ProfileValue *)bioEmoji
                                         hasAvatar:(BOOL)hasAvatar
                                    paymentAddress:(nullable ProfileValue *)paymentAddress
-                                  visibleBadgeIds:(nullable NSArray<NSString *> *)visibleBadgeIds
+                                  visibleBadgeIds:(NSArray<NSString *> *)visibleBadgeIds
                                           version:(NSString *)version
                                        commitment:(NSData *)commitment
 {
@@ -842,9 +842,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
         OWSAssertDebug(paymentAddress.hasValidBase64Length);
         parameters[@"paymentAddress"] = paymentAddress.encryptedBase64;
     }
-    if (visibleBadgeIds != nil) {
-        parameters[@"badgeIds"] = visibleBadgeIds;
-    }
+    parameters[@"badgeIds"] = [visibleBadgeIds copy];
 
     NSURL *url = [NSURL URLWithString:textSecureVersionedProfileAPI];
     return [TSRequest requestWithUrl:url
