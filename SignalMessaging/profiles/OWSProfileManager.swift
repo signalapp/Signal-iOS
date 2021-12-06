@@ -632,7 +632,7 @@ class PendingProfileUpdate: NSObject, NSCoding {
         self.profileBio = aDecoder.decodeObject(forKey: "profileBio") as? String
         self.profileBioEmoji = aDecoder.decodeObject(forKey: "profileBioEmoji") as? String
         self.profileAvatarData = aDecoder.decodeObject(forKey: "profileAvatarData") as? Data
-        self.visibleBadgeIds = aDecoder.decodeObject(forKey: "visiboleBadgeIds") as? [String]
+        self.visibleBadgeIds = aDecoder.decodeObject(forKey: "visibleBadgeIds") as? [String]
         self.unsavedRotatedProfileKey = aDecoder.decodeObject(forKey: "unsavedRotatedProfileKey") as? OWSAES256Key
         if aDecoder.containsValue(forKey: "userProfileWriter"),
            let userProfileWriter = UserProfileWriter(rawValue: UInt(aDecoder.decodeInt32(forKey: "userProfileWriter"))) {
