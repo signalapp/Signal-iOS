@@ -3,10 +3,14 @@
 //
 
 import Foundation
+import SignalCoreKit
+import SignalServiceKit
 
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int)
+    func emojiPickerWillBeginDragging(_ emojiPicker: EmojiPickerCollectionView)
+
 }
 
 class EmojiPickerCollectionView: UICollectionView {
@@ -21,10 +25,31 @@ class EmojiPickerCollectionView: UICollectionView {
     var hasRecentEmoji: Bool { !recentEmoji.isEmpty }
 
     private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
+    private lazy var allAvailableEmoji: [EmojiWithSkinTones] = {
+        return Array(allAvailableEmojiByCategory.values).flatMap({$0})
+    }()
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
     static let minimumSpacing: CGFloat = 10
+
+    public var searchText: String? {
+        didSet {
+            searchWithText(searchText)
+        }
+    }
+
+    private var emojiSearchResults: [EmojiWithSkinTones] = []
+    private var emojiSearchLocalization: String?
+    private var emojiSearchIndex: [String: [String]]?
+
+    public var isSearching: Bool {
+        if let searchText = searchText, searchText.count != 0 {
+            return true
+        }
+
+        return false
+    }
 
     lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
 
@@ -66,6 +91,15 @@ class EmojiPickerCollectionView: UICollectionView {
 
         addGestureRecognizer(tapGestureRecognizer)
         tapGestureRecognizer.delegate = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(emojiSearchManifestUpdated), name: EmojiSearchIndex.EmojiSearchManifestFetchedNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emojiSearchIndexUpdated), name: EmojiSearchIndex.EmojiSearchIndexFetchedNotification, object: nil)
+
+        EmojiSearchIndex.updateManifestIfNeeded()
+        emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalizationForLocale(NSLocale.current.identifier)
+        if let emojiSearchLocalization = emojiSearchLocalization {
+            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: true)
+        }
     }
 
     required init?(coder: NSCoder) {
@@ -96,7 +130,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     func emojiForIndexPath(_ indexPath: IndexPath) -> EmojiWithSkinTones? {
-        return emojiForSection(indexPath.section)[safe: indexPath.row]
+        return isSearching ? emojiSearchResults[safe: indexPath.row] : emojiForSection(indexPath.section)[safe: indexPath.row]
     }
 
     func nameForSection(_ section: Int) -> String? {
@@ -149,6 +183,53 @@ class EmojiPickerCollectionView: UICollectionView {
         }
     }
 
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        pickerDelegate?.emojiPickerWillBeginDragging(self)
+    }
+
+    // MARK: - Search
+
+    func searchWithText(_ searchText: String?) {
+        if let searchText = searchText {
+            if let emojiSearchIndex = emojiSearchIndex {
+                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                    let rawEmoji = emoji.baseEmoji.rawValue
+                    if let terms = emojiSearchIndex[rawEmoji] {
+                        for term in terms {
+                            if term.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil {
+                                return true
+                            }
+                        }
+                    }
+                    return false
+                }
+            } else { // Search on raw emoji name if no index is available
+                emojiSearchResults = allAvailableEmoji.filter { emoji in
+                    return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil
+                }
+            }
+        } else {
+            emojiSearchResults = []
+        }
+
+        reloadData()
+    }
+
+    @objc
+    func emojiSearchManifestUpdated(notification: Notification) {
+        emojiSearchLocalization = EmojiSearchIndex.searchIndexLocalizationForLocale(NSLocale.current.identifier)
+        if let emojiSearchLocalization = emojiSearchLocalization {
+            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
+        }
+    }
+
+    @objc
+    func emojiSearchIndexUpdated(notification: Notification) {
+        if let emojiSearchLocalization = emojiSearchLocalization {
+            emojiSearchIndex = EmojiSearchIndex.emojiSearchIndex(for: emojiSearchLocalization, shouldFetch: false)
+        }
+    }
+
     var scrollingToSection: Int?
     func scrollToSectionHeader(_ section: Int, animated: Bool) {
         guard let attributes = layoutAttributesForSupplementaryElement(
@@ -156,7 +237,7 @@ class EmojiPickerCollectionView: UICollectionView {
             at: IndexPath(item: 0, section: section)
         ) else { return }
         scrollingToSection = section
-        setContentOffset(CGPoint(x: 0, y: attributes.frame.minY), animated: animated)
+        setContentOffset(CGPoint(x: 0, y: (attributes.frame.minY - contentInset.top)), animated: animated)
     }
 
     private weak var currentSkinTonePicker: EmojiSkinTonePicker?
@@ -229,11 +310,11 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
 
 extension EmojiPickerCollectionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return emojiForSection(section).count
+        return isSearching ? emojiSearchResults.count : emojiForSection(section).count
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return Emoji.Category.allCases.count + categoryIndexOffset
+        return isSearching ? 1 : Emoji.Category.allCases.count + categoryIndexOffset
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -277,6 +358,10 @@ extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                           layout collectionViewLayout: UICollectionViewLayout,
                           referenceSizeForHeaderInSection section: Int) -> CGSize {
+        guard !isSearching else {
+            return CGSize.zero
+        }
+
         let measureCell = EmojiSectionHeader()
         measureCell.label.text = nameForSection(section)
         return measureCell.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
@@ -344,5 +429,168 @@ private class EmojiSectionHeader: UICollectionReusableView {
         labelSize.width += layoutMargins.left + layoutMargins.right
         labelSize.height += layoutMargins.top + layoutMargins.bottom
         return labelSize
+    }
+}
+
+// URL handling
+private class EmojiSearchIndex: NSObject {
+
+    public static let EmojiSearchManifestFetchedNotification = Notification.Name("EmojiSearchManifestFetchedNotification")
+    public static let EmojiSearchIndexFetchedNotification = Notification.Name("EmojiSearchIndexFetchedNotification")
+
+    private static let emojiSearchIndexKVS = SDSKeyValueStore(collection: "EmojiSearchIndexKeyValueStore")
+    private static let emojiSearchIndexVersionKey = "emojiSearchIndexVersionKey"
+    private static let emojiSearchIndexAvailableLocalizationsKey = "emojiSearchIndexAvailableLocalizationsKey"
+
+    private static let remoteManifestURL = URL(string: "/dynamic/android/emoji/search/manifest.json")!
+    private static let remoteSearchFormat = "/static/android/emoji/search/%d/%@.json"
+
+    public class func updateManifestIfNeeded() {
+        var searchIndexVersion: Int = 0
+        var searchIndexLocalizations: [String] = []
+        (searchIndexVersion, searchIndexLocalizations) = SDSDatabaseStorage.shared.read { transaction in
+            let version = self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
+            let locs: [String] = self.emojiSearchIndexKVS.getObject(forKey: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) as? [String] ?? []
+            return (version, locs)
+        }
+
+        let urlSession = signalService.urlSessionForUpdates()
+        firstly {
+            urlSession.dataTaskPromise(self.remoteManifestURL.absoluteString, method: .get)
+        }.done { response in
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Bad response code for emoji manifest fetch")
+            }
+
+            guard let json = response.responseBodyJson as? [String: Any] else {
+                throw OWSAssertionError("Unable to generate JSON for emoji manifest from response body.")
+            }
+
+            guard let parser = ParamParser(responseObject: json) else {
+                throw OWSAssertionError("Unable to parse emoji manifest from response body.")
+            }
+
+            let remoteVersionString: String = try parser.required(key: "version")
+            let remoteVersion = Int(remoteVersionString) ?? 0
+            let remoteLocalizations: [String] = try parser.required(key: "languages")
+            if remoteVersion != searchIndexVersion {
+                Logger.info("[Emoji Search] Invalidating search index, old version \(searchIndexVersion), new version \(remoteVersion)")
+                self.invalidateSearchIndex(newVersion: remoteVersion, localizationsToInvalidate: searchIndexLocalizations, newLocalizations: remoteLocalizations)
+                let localization = self.searchIndexLocalizationForLocale(NSLocale.current.identifier, searchIndexManifest: remoteLocalizations)
+                if let localization = localization {
+                    self.fetchEmojiSearchIndex(for: localization, version: remoteVersion)
+                }
+                NotificationCenter.default.postNotificationNameAsync(self.EmojiSearchManifestFetchedNotification, object: nil)
+            }
+        }.catch { error in
+            owsFailDebug("Failed to download manifest \(error)")
+        }
+    }
+
+    public static func searchIndexLocalizationForLocale(_ locale: String, searchIndexManifest: [String]? = nil) -> String? {
+        var manifest = searchIndexManifest
+        if manifest == nil {
+            manifest = SDSDatabaseStorage.shared.read { transaction in
+                return self.emojiSearchIndexKVS.getObject(forKey: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction) as? [String] ?? []
+            }
+        }
+
+        guard let manifest = manifest else {
+            Logger.info("[Emoji Search] Manifest not yet downloaded")
+            return nil
+        }
+
+        // We have a specific locale for this
+        if manifest.contains(locale) {
+            return locale
+        }
+
+        // Look for a generic top level
+        let localizationComponents = locale.components(separatedBy: "_")
+        if localizationComponents.count > 1, let firstComponent = localizationComponents.first {
+            if manifest.contains(firstComponent) {
+                return firstComponent
+            }
+        }
+        return nil
+    }
+
+    public static func emojiSearchIndex(for localization: String, shouldFetch: Bool) -> [String: [String]]? {
+        var index: [String: [String]]?
+
+        SDSDatabaseStorage.shared.read { transaction in
+            index = self.emojiSearchIndexKVS.getObject(forKey: localization, transaction: transaction) as? [String: [String]]
+        }
+
+        if shouldFetch && index == nil {
+            Logger.debug("Kicking off fetch for localization \(localization)")
+            self.fetchEmojiSearchIndex(for: localization)
+        }
+
+        return index
+    }
+
+    private static func invalidateSearchIndex(newVersion: Int, localizationsToInvalidate: [String], newLocalizations: [String]) {
+        SDSDatabaseStorage.shared.write { transaction in
+            for localization in localizationsToInvalidate {
+                self.emojiSearchIndexKVS.removeValue(forKey: localization, transaction: transaction)
+            }
+
+            self.emojiSearchIndexKVS.setObject(newLocalizations, key: emojiSearchIndexAvailableLocalizationsKey, transaction: transaction)
+            self.emojiSearchIndexKVS.setInt(newVersion, key: emojiSearchIndexVersionKey, transaction: transaction)
+        }
+    }
+
+    private static func fetchEmojiSearchIndex(for localization: String, version: Int? = nil) {
+
+        var searchIndexVersion = version
+        if searchIndexVersion == nil {
+            searchIndexVersion = SDSDatabaseStorage.shared.read { transaction in
+                return self.emojiSearchIndexKVS.getInt(emojiSearchIndexVersionKey, transaction: transaction) ?? 0
+            }
+        }
+
+        guard let searchIndexVersion = searchIndexVersion else {
+            owsFailDebug("No local emoji index version, manifest must be updated first")
+            return
+        }
+
+        let urlSession = signalService.urlSessionForUpdates()
+        let request = String(format: remoteSearchFormat, searchIndexVersion, localization)
+        firstly {
+            urlSession.dataTaskPromise(request, method: .get)
+        }.done { response in
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Bad response code for emoji index fetch")
+            }
+
+            guard let json = response.responseBodyJson as? [[String: Any]] else {
+                throw OWSAssertionError("Unable to generate JSON for emoji index from response body.")
+            }
+
+            let index = self.buildSearchIndexMap(for: json)
+            SDSDatabaseStorage.shared.write { transaction in
+                self.emojiSearchIndexKVS.setObject(index, key: localization, transaction: transaction)
+            }
+
+            NotificationCenter.default.postNotificationNameAsync(self.EmojiSearchIndexFetchedNotification, object: nil)
+
+        }.catch { error in
+            owsFailDebug("Failed to download manifest \(error)")
+        }
+    }
+
+    private static func buildSearchIndexMap(for responseArray: [[String: Any]]) -> [String: [String]] {
+        var index: [String: [String]] = [:]
+
+        for response in responseArray {
+            let emoji: String? = response["emoji"] as? String
+            let tags: [String]? = response["tags"] as? [String]
+            if let emoji = emoji, let tags = tags {
+                index[emoji] = tags
+            }
+        }
+
+        return index
     }
 }
