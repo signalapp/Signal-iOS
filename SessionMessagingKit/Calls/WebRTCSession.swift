@@ -139,7 +139,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
             if let error = error {
                 seal.reject(error)
             } else {
-                guard let self = self, let sdp = sdp else { preconditionFailure() }
+                guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
                 self.peerConnection.setLocalDescription(sdp) { error in
                     if let error = error {
                         print("Couldn't initiate call due to error: \(error).")
@@ -171,7 +171,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
             if let error = error {
                 seal.reject(error)
             } else {
-                guard let self = self, let sdp = sdp else { preconditionFailure() }
+                guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
                 self.peerConnection.setLocalDescription(sdp) { error in
                     if let error = error {
                         print("Couldn't accept call due to error: \(error).")
@@ -242,6 +242,13 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         if isRestartingICEConnection { mandatory[kRTCMediaConstraintsIceRestart] = kRTCMediaConstraintsValueTrue }
         let optional: [String:String] = [:]
         return RTCMediaConstraints(mandatoryConstraints: mandatory, optionalConstraints: optional)
+    }
+    
+    private func correctSessionDescription(sdp: RTCSessionDescription?) -> RTCSessionDescription? {
+        guard let sdp = sdp else { return nil }
+        let cbrSdp = sdp.description.replace(regex: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", with: "$1;cbr=1\r\n")
+        let finalSdp = cbrSdp.replace(regex: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", with: "")
+        return RTCSessionDescription(type: sdp.type, sdp: finalSdp)
     }
     
     // MARK: Peer connection delegate
