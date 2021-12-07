@@ -794,19 +794,12 @@ extension HVTableDataSource: UITableViewDataSource {
                                                       title: CommonStrings.pinAction)
             }
 
-            let kPullbackAnimationDuration = 0.65
-            let userInfo = ["markAsRead": threadViewModel.hasUnreadMessages, "duration": kPullbackAnimationDuration + 0.2] as [String: Any]
             let readStateAction: UIContextualAction
             if threadViewModel.hasUnreadMessages {
                 readStateAction = UIContextualAction(style: .destructive,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
-                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: userInfo)
-                    // We delay here so the animation can play out before we
-                    // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + kPullbackAnimationDuration) { [weak viewController] in
-                        viewController?.markThreadAsRead(threadViewModel: threadViewModel)
-                    }
+                    viewController?.markThreadAsRead(threadViewModel: threadViewModel)
                 }
                 readStateAction.backgroundColor = .ows_accentBlue
                 readStateAction.accessibilityLabel = CommonStrings.readAction
@@ -816,12 +809,7 @@ extension HVTableDataSource: UITableViewDataSource {
                 readStateAction = UIContextualAction(style: .normal,
                                                      title: nil) { [weak viewController] (_, _, completion) in
                     completion(false)
-                    NotificationCenter.default.post(name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE, object: thread, userInfo: userInfo)
-                    // We delay here so the animation can play out before we
-                    // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + kPullbackAnimationDuration) { [weak viewController] in
-                        viewController?.markThreadAsUnread(threadViewModel: threadViewModel)
-                    }
+                    viewController?.markThreadAsUnread(threadViewModel: threadViewModel)
                 }
                 readStateAction.backgroundColor = .ows_accentBlue
                 readStateAction.accessibilityLabel = CommonStrings.unreadAction
@@ -838,6 +826,21 @@ extension HVTableDataSource: UITableViewDataSource {
 // MARK: -
 
 extension HVTableDataSource {
+
+    public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
+        AssertIsOnMainThread()
+
+        if let primKey = threadViewModel(forIndexPath: indexPath)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+            for cell in tableView.visibleCells {
+                if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
+                    homeCell.reset()
+                    homeCell.configure(cellContentToken: token)
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
     fileprivate struct HVCellConfigurationAndContentToken {
         let configuration: HomeViewCell.Configuration

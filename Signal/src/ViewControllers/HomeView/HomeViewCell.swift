@@ -9,8 +9,6 @@ import SignalUI
 @objc
 public class HomeViewCell: UITableViewCell {
 
-    static let TEMPORARY_CHANGE_UNREAD_BADGE = NSNotification.Name(rawValue: "TEMPORARY_CHANGE_UNREAD_BADGE")
-
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
@@ -123,7 +121,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
-    private var thread: TSThread? {
+    var thread: TSThread? {
         cellContentToken?.thread
     }
 
@@ -210,7 +208,6 @@ public class HomeViewCell: UITableViewCell {
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: messageStatusToken,
             unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
-            hideUnreadIndicator: configuration.hasOverrideSnippet || !configuration.thread.hasUnreadMessages,
 
             topRowStackConfig: Self.topRowStackConfig,
             bottomRowStackConfig: Self.bottomRowStackConfig,
@@ -364,10 +361,6 @@ public class HomeViewCell: UITableViewCell {
                                                selector: #selector(typingIndicatorStateDidChange),
                                                name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(temporarySetUnreadIndicator(notification:)),
-                                               name: HomeViewCell.TEMPORARY_CHANGE_UNREAD_BADGE,
-                                               object: thread)
 
         // The top row contains:
         //
@@ -440,7 +433,6 @@ public class HomeViewCell: UITableViewCell {
            let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
             let unreadBadge = configureUnreadBadge(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
                                                    unreadBadgeMeasurements: unreadBadgeMeasurements)
-            unreadBadge.alpha = configs.hideUnreadIndicator ? 0 : 1
             bottomRowStackSubviews.append(unreadBadge)
         }
 
@@ -625,7 +617,14 @@ public class HomeViewCell: UITableViewCell {
     private static func buildUnreadIndicatorLabelConfig(configuration: Configuration) -> CVLabelConfig? {
         let text: String
         switch configuration.unreadMode {
-        case .none, .unreadWithoutCount:
+        case .none:
+            // If we're using the conversation list cell to render search results,
+            // don't show "unread badge" or "message status" indicator.
+            //
+            // Or there might simply be no unread messages / the thread is not
+            // marked as unread.
+            return nil
+        case .unreadWithoutCount:
             text = ""
         case .unreadWithCount(let unreadCount):
             text = unreadCount > 0 ? OWSFormat.formatUInt(unreadCount) : ""
@@ -851,7 +850,7 @@ public class HomeViewCell: UITableViewCell {
         reset()
     }
 
-    private func reset() {
+    func reset() {
         isCellVisible = false
 
         for cvview in cvviews {
@@ -897,18 +896,6 @@ public class HomeViewCell: UITableViewCell {
         }
 
         updateTypingIndicatorState()
-    }
-
-    @objc
-    private func temporarySetUnreadIndicator(notification: Notification) {
-        AssertIsOnMainThread()
-        let markAsRead = notification.userInfo?["markAsRead"] as? Bool ?? false
-        let uiChangesBlock = { [weak self] in self?.unreadBadge.alpha = markAsRead ? 0 : 1 }
-        if let duration = notification.userInfo?["duration"] as? Double, duration > 0 {
-            UIView.animate(withDuration: duration) { uiChangesBlock() }
-        } else {
-            uiChangesBlock()
-        }
     }
 
     // MARK: - Typing Indicators
@@ -969,7 +956,6 @@ private struct HVCellConfigs {
     let hasOverrideSnippet: Bool
     let messageStatusToken: HVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
-    let hideUnreadIndicator: Bool
 
     // Configs
     let topRowStackConfig: ManualStackView.Config
