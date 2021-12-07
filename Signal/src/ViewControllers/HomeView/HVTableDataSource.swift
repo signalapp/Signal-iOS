@@ -665,70 +665,16 @@ extension HVTableDataSource: UITableViewDataSource {
                 return nil
             }
 
-            let muteAction = UIContextualAction(style: .normal,
-                                                title: nil) { [weak viewController] (_, _, completion) in
-                if threadViewModel.isMuted {
-                    viewController?.unmuteThread(threadViewModel: threadViewModel)
-                } else {
-                    viewController?.muteThreadWithSelection(threadViewModel: threadViewModel)
+            return ThreadSwipeHandler(with: viewController).trailingSwipeActionsConfiguration(for: threadViewModel,
+                                                                                                 archiveFromInbox: viewController.homeViewMode == .inbox,
+                                                                                                 closeConversationBlock: { [weak self] in
+                if let self = self, self.isConversationActive(forThread: threadViewModel.threadRecord) {
+                    viewController.conversationSplitViewController?.closeSelectedConversation(animated: true)
                 }
-                completion(false)
-            }
-            muteAction.backgroundColor = .ows_accentIndigo
-            muteAction.image = self.actionImage(name: threadViewModel.isMuted ? "bell-solid-24" : "bell-disabled-solid-24",
-                                                title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton)
-            muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton :CommonStrings.muteButton
-
-            let deleteAction = UIContextualAction(style: .destructive,
-                                                  title: nil) { [weak viewController] (_, _, completion) in
-                viewController?.deleteThreadWithConfirmation(threadViewModel: threadViewModel)
-                completion(false)
-            }
-            deleteAction.backgroundColor = .ows_accentRed
-            deleteAction.image = self.actionImage(name: "trash-solid-24",
-                                                  title: CommonStrings.deleteButton)
-            deleteAction.accessibilityLabel = CommonStrings.deleteButton
-
-            let archiveAction = UIContextualAction(style: .normal,
-                                                   title: nil) { [weak viewController] (_, _, completion) in
-                viewController?.archiveThread(threadViewModel: threadViewModel)
-                completion(false)
-            }
-
-            let archiveTitle = (viewController.homeViewMode == .inbox
-                                    ? CommonStrings.archiveAction
-                                    : CommonStrings.unarchiveAction)
-
-            archiveAction.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
-            archiveAction.image = self.actionImage(name: "archive-solid-24",
-                                                  title: archiveTitle)
-            archiveAction.accessibilityLabel = archiveTitle
-
-            // The first action will be auto-performed for "very long swipes".
-            return UISwipeActionsConfiguration(actions: [ archiveAction, deleteAction, muteAction ])
+            }, updateUIBlock: {
+                viewController.updateViewState()
+            })
         }
-    }
-
-    private func actionImage(name imageName: String, title: String) -> UIImage? {
-        AssertIsOnMainThread()
-
-        // We need to bake the title text into the image because `UIContextualAction`
-        // only displays title + image when the cell's height > 91. We want to always
-        // show both.
-        guard let image = UIImage(named: imageName) else {
-            owsFailDebug("Missing image.")
-            return nil
-        }
-        guard let image = image.withTitle(title,
-                                          font: UIFont.systemFont(ofSize: 13),
-                                          color: .ows_white,
-                                          maxTitleWidth: 68,
-                                          minimumScaleFactor: CGFloat(8) / CGFloat(13),
-                                          spacing: 4) else {
-            owsFailDebug("Missing image.")
-            return nil
-        }
-        return image.withRenderingMode(.alwaysTemplate)
     }
 
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -768,65 +714,11 @@ extension HVTableDataSource: UITableViewDataSource {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }
-            let thread = threadViewModel.threadRecord
-
-            let isThreadPinned = PinnedThreadManager.isThreadPinned(thread)
-            let pinnedStateAction: UIContextualAction
-            if isThreadPinned {
-                pinnedStateAction = UIContextualAction(style: .normal,
-                                                       title: nil) { [weak viewController] (_, _, completion) in
-                    viewController?.unpinThread(threadViewModel: threadViewModel)
-                    completion(false)
-                }
-                pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
-                pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction
-                pinnedStateAction.image = actionImage(name: "unpin-solid-24",
-                                                      title: CommonStrings.unpinAction)
-            } else {
-                pinnedStateAction = UIContextualAction(style: .destructive,
-                                                       title: nil) { [weak viewController] (_, _, completion) in
-                    completion(false)
-                    viewController?.pinThread(threadViewModel: threadViewModel)
-                }
-                pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
-                pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
-                pinnedStateAction.image = actionImage(name: "pin-solid-24",
-                                                      title: CommonStrings.pinAction)
+            guard let viewController = self.viewController else {
+                owsFailDebug("Missing viewController.")
+                return nil
             }
-
-            let readStateAction: UIContextualAction
-            if threadViewModel.hasUnreadMessages {
-                readStateAction = UIContextualAction(style: .destructive,
-                                                     title: nil) { [weak viewController] (_, _, completion) in
-                    completion(false)
-                    // We delay here so the animation can play out before we
-                    // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
-                        viewController?.markThreadAsRead(threadViewModel: threadViewModel)
-                    }
-                }
-                readStateAction.backgroundColor = .ows_accentBlue
-                readStateAction.accessibilityLabel = CommonStrings.readAction
-                readStateAction.image = actionImage(name: "read-solid-24",
-                                                    title: CommonStrings.readAction)
-            } else {
-                readStateAction = UIContextualAction(style: .normal,
-                                                     title: nil) { [weak viewController] (_, _, completion) in
-                    completion(false)
-                    // We delay here so the animation can play out before we
-                    // reload the cell
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.65) { [weak viewController] in
-                        viewController?.markThreadAsUnread(threadViewModel: threadViewModel)
-                    }
-                }
-                readStateAction.backgroundColor = .ows_accentBlue
-                readStateAction.accessibilityLabel = CommonStrings.unreadAction
-                readStateAction.image = actionImage(name: "unread-solid-24",
-                                                    title: CommonStrings.unreadAction)
-            }
-
-            // The first action will be auto-performed for "very long swipes".
-            return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
+            return ThreadSwipeHandler(with: viewController).leadingSwipeActionsConfiguration(for: threadViewModel)
         }
     }
 }
