@@ -28,6 +28,7 @@ extension Storage {
             let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return nil }
         let tsMessage: TSMessage
         if message.sender == getUserPublicKey() {
+            if let _ = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) { return nil }
             let tsOutgoingMessage = TSOutgoingMessage.from(message, associatedWith: thread, using: transaction)
             var recipients: [String] = []
             if let syncTarget = message.syncTarget {

@@ -58,6 +58,17 @@ final class ConversationCell : UITableViewCell {
         return result
     }()
     
+    private lazy var isPinnedIcon: UIImageView = {
+        let result = UIImageView(image: UIImage(named: "Pin")!.withRenderingMode(.alwaysTemplate))
+        result.contentMode = .scaleAspectFit
+        let size = ConversationCell.unreadCountViewSize
+        result.set(.width, to: size)
+        result.set(.height, to: size)
+        result.tintColor = Colors.pinIcon
+        result.layer.masksToBounds = true
+        return result
+    }()
+    
     private lazy var timestampLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
@@ -124,7 +135,7 @@ final class ConversationCell : UITableViewCell {
         hasMentionLabel.pin(to: hasMentionView)
         // Label stack view
         let topLabelSpacer = UIView.hStretchingSpacer()
-        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ])
+        let topLabelStackView = UIStackView(arrangedSubviews: [ displayNameLabel, isPinnedIcon, unreadCountView, hasMentionView, topLabelSpacer, timestampLabel ])
         topLabelStackView.axis = .horizontal
         topLabelStackView.alignment = .center
         topLabelStackView.spacing = Values.smallSpacing / 2 // Effectively Values.smallSpacing because there'll be spacing before and after the invisible spacer
@@ -182,6 +193,7 @@ final class ConversationCell : UITableViewCell {
     private func update() {
         AssertIsOnMainThread()
         guard let thread = threadViewModel?.threadRecord else { return }
+        backgroundColor = threadViewModel.isPinned ? Colors.cellPinned : Colors.cellBackground
         let isBlocked: Bool
         if let thread = thread as? TSContactThread {
             isBlocked = SSKEnvironment.shared.blockingManager.isRecipientIdBlocked(thread.contactSessionID())
@@ -195,6 +207,7 @@ final class ConversationCell : UITableViewCell {
             accentLineView.backgroundColor = Colors.accent
             accentLineView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         }
+        isPinnedIcon.isHidden = !threadViewModel.isPinned
         unreadCountView.isHidden = !threadViewModel.hasUnreadMessages
         let unreadCount = threadViewModel.unreadCount
         unreadCountLabel.text = unreadCount < 100 ? "\(unreadCount)" : "99+"

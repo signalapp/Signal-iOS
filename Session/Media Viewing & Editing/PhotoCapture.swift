@@ -593,7 +593,11 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
         @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-            let data = photo.fileDataRepresentation()!
+            var data = photo.fileDataRepresentation()!
+            // Call normalized here to fix the orientation
+            if let srcImage = UIImage(data: data) {
+                data = srcImage.normalized().jpegData(compressionQuality: 1.0)!
+            }
             DispatchQueue.main.async {
                 self.delegate?.captureOutputDidFinishProcessing(photoData: data, error: error)
             }
