@@ -165,21 +165,9 @@ public class TSConstants: NSObject {
 
 private class TSConstantsProduction: TSConstantsProtocol {
 
-    public var mainServiceWebSocketAPI_identified: String {
-        FeatureFlags.newHostNames
-            ? "wss://chat.signal.org/v1/websocket/"
-            : "wss://textsecure-service.whispersystems.org/v1/websocket/"
-    }
-    public var mainServiceWebSocketAPI_unidentified: String {
-        FeatureFlags.newHostNames
-            ? "wss://ud-chat.signal.org/v1/websocket/"
-            : "wss://textsecure-service.whispersystems.org/v1/websocket/"
-    }
-    public var mainServiceURL: String {
-        FeatureFlags.newHostNames
-            ? "https://chat.signal.org/"
-            : "https://textsecure-service.whispersystems.org/"
-    }
+    public let mainServiceWebSocketAPI_identified = "wss://chat.signal.org/v1/websocket/"
+    public let mainServiceWebSocketAPI_unidentified = "wss://ud-chat.signal.org/v1/websocket/"
+    public let mainServiceURL = "https://chat.signal.org/"
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let contactDiscoveryURL = "https://api.directory.signal.org"
@@ -227,21 +215,9 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
 private class TSConstantsStaging: TSConstantsProtocol {
 
-    public var mainServiceWebSocketAPI_identified: String {
-        FeatureFlags.newHostNames
-            ? "wss://chat.staging.signal.org/v1/websocket/"
-            : "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-    }
-    public var mainServiceWebSocketAPI_unidentified: String {
-        FeatureFlags.newHostNames
-            ? "wss://ud-chat.staging.signal.org/v1/websocket/"
-            : "wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-    }
-    public var mainServiceURL: String {
-        FeatureFlags.newHostNames
-            ? "https://chat.staging.signal.org/"
-            : "https://textsecure-service-staging.whispersystems.org/"
-    }
+    public let mainServiceWebSocketAPI_identified = "wss://chat.staging.signal.org/v1/websocket/"
+    public let mainServiceWebSocketAPI_unidentified = "wss://ud-chat.staging.signal.org/v1/websocket/"
+    public let mainServiceURL = "https://chat.staging.signal.org/"
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let contactDiscoveryURL = "https://api-staging.directory.signal.org"
