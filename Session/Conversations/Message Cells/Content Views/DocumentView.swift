@@ -4,8 +4,7 @@ final class DocumentView : UIView {
     private let textColor: UIColor
     
     // MARK: Settings
-    private static let iconSize: CGFloat = 24
-    private static let iconImageViewSize: CGFloat = 40
+    private static let iconImageViewSize: CGSize = CGSize(width: 26, height: 40)
     
     // MARK: Lifecycle
     init(viewItem: ConversationViewItem, textColor: UIColor) {
@@ -26,26 +25,23 @@ final class DocumentView : UIView {
     private func setUpViewHierarchy() {
         guard let attachment = viewItem.attachmentStream ?? viewItem.attachmentPointer else { return }
         // Image view
-        let iconSize = DocumentView.iconSize
-        let icon = UIImage(named: "actionsheet_document_black")?.withTint(textColor)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
+        let icon = UIImage(named: "File")?.withTint(textColor)
         let imageView = UIImageView(image: icon)
         imageView.contentMode = .center
         let iconImageViewSize = DocumentView.iconImageViewSize
-        imageView.set(.width, to: iconImageViewSize)
-        imageView.set(.height, to: iconImageViewSize)
+        imageView.set(.width, to: iconImageViewSize.width)
+        imageView.set(.height, to: iconImageViewSize.height)
         // Body label
         let titleLabel = UILabel()
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.text = attachment.sourceFilename ?? "File"
         titleLabel.textColor = textColor
-        titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        titleLabel.font = .systemFont(ofSize: Values.mediumFontSize, weight: .light)
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ imageView, titleLabel ])
         stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 12)
+        stackView.spacing = Values.verySmallSpacing
         addSubview(stackView)
-        stackView.pin(to: self, withInset: Values.smallSpacing)
+        stackView.pin(to: self)
     }
 }
