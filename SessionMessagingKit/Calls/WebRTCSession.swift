@@ -246,7 +246,7 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     
     private func correctSessionDescription(sdp: RTCSessionDescription?) -> RTCSessionDescription? {
         guard let sdp = sdp else { return nil }
-        let cbrSdp = sdp.description.replace(regex: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", with: "$1;cbr=1\r\n")
+        let cbrSdp = sdp.sdp.description.replace(regex: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", with: "$1;cbr=1\r\n")
         let finalSdp = cbrSdp.replace(regex: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", with: "")
         return RTCSessionDescription(type: sdp.type, sdp: finalSdp)
     }
