@@ -157,7 +157,10 @@ extension HomeViewController {
                     tableView.insertRows(at: [newIndexPath], with: rowAnimation)
                 }
             case .update(let oldIndexPath):
-                tableView.reloadRows(at: [oldIndexPath], with: .none)
+                let tds = tableView.dataSource as? HVTableDataSource
+                if tds == nil || !tds!.updateVisibleCellContent(at: oldIndexPath, for: tableView) {
+                    tableView.reloadRows(at: [oldIndexPath], with: .none)
+                }
             }
         }
 

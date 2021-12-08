@@ -274,7 +274,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
 
         let expiredBadgeID = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
-        guard let expiredBadgeID = expiredBadgeID else {
+        guard let expiredBadgeID = expiredBadgeID, expiredBadgeID != "BOOST" else {
             return
         }
 
@@ -1526,6 +1526,7 @@ private class SubscriptionReadMoreSheet: InteractiveSheetViewController {
 extension SubscriptionViewController: BadgeExpirationSheetDelegate {
 
     func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
+        SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
         requestApplePayDonation()
     }
 

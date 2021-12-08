@@ -725,6 +725,21 @@ extension HVTableDataSource: UITableViewDataSource {
 
 extension HVTableDataSource {
 
+    public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
+        AssertIsOnMainThread()
+
+        if let primKey = threadViewModel(forIndexPath: indexPath)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+            for cell in tableView.visibleCells {
+                if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
+                    homeCell.reset()
+                    homeCell.configure(cellContentToken: token)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     fileprivate struct HVCellConfigurationAndContentToken {
         let configuration: HomeViewCell.Configuration
         let contentToken: HVCellContentToken
