@@ -375,3 +375,9 @@ extension HomeViewController: BadgeExpirationSheetDelegate {
 
     func badgeExpirationSheetNotNowButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) { }
 }
+
+extension HomeViewController: ThreadSwipeHandlerUIUpdater {
+    func updateUIAfterSwipeAction() {
+        updateViewState()
+    }
+}

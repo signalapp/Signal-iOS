@@ -12,7 +12,11 @@ public class HVTableDataSource: NSObject {
     public let tableView = HVTableView()
 
     @objc
-    public weak var viewController: HomeViewController?
+    public weak var viewController: HomeViewController? {
+        didSet {
+            threadSwipeHandler.parent = viewController
+        }
+    }
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
@@ -24,6 +28,7 @@ public class HVTableDataSource: NSObject {
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
     fileprivate var lastPreloadCellDate: Date?
+    fileprivate let threadSwipeHandler = ThreadSwipeHandler()
 
     public required override init() {
         super.init()
@@ -665,14 +670,11 @@ extension HVTableDataSource: UITableViewDataSource {
                 return nil
             }
 
-            return ThreadSwipeHandler(with: viewController).trailingSwipeActionsConfiguration(for: threadViewModel,
-                                                                                                 archiveFromInbox: viewController.homeViewMode == .inbox,
-                                                                                                 closeConversationBlock: { [weak self] in
+            return threadSwipeHandler.trailingSwipeActionsConfiguration(for: threadViewModel,
+                                                                           closeConversationBlock: { [weak self] in
                 if let self = self, self.isConversationActive(forThread: threadViewModel.threadRecord) {
                     viewController.conversationSplitViewController?.closeSelectedConversation(animated: true)
                 }
-            }, updateUIBlock: {
-                viewController.updateViewState()
             })
         }
     }
@@ -714,11 +716,7 @@ extension HVTableDataSource: UITableViewDataSource {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }
-            guard let viewController = self.viewController else {
-                owsFailDebug("Missing viewController.")
-                return nil
-            }
-            return ThreadSwipeHandler(with: viewController).leadingSwipeActionsConfiguration(for: threadViewModel)
+            return threadSwipeHandler.leadingSwipeActionsConfiguration(for: threadViewModel)
         }
     }
 }

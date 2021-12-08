@@ -6,14 +6,21 @@ import Foundation
 import SignalMessaging
 import UIKit
 
-class ThreadSwipeHandler {
-    let parent: UIViewController
+protocol ThreadSwipeHandlerUIUpdater {
+    func updateUIAfterSwipeAction()
+}
 
-    required init(with parent: UIViewController) {
+class ThreadSwipeHandler {
+    weak var parent: UIViewController?
+
+    init() {
+    }
+
+    init(with parent: UIViewController?) {
         self.parent = parent
     }
 
-    public func leadingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?, updatedHandler: (()->Void)? = nil) -> UISwipeActionsConfiguration? {
+    public func leadingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel else {
@@ -27,16 +34,14 @@ class ThreadSwipeHandler {
             pinnedStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
                 self?.unpinThread(threadViewModel: threadViewModel)
                 completion(false)
-                updatedHandler?()
             }
             pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
             pinnedStateAction.accessibilityLabel = CommonStrings.unpinAction
             pinnedStateAction.image = actionImage(name: "unpin-solid-24", title: CommonStrings.unpinAction)
         } else {
-            pinnedStateAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completion) in
+            pinnedStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
                 completion(false)
-                self.pinThread(threadViewModel: threadViewModel)
-                updatedHandler?()
+                self?.pinThread(threadViewModel: threadViewModel)
             }
             pinnedStateAction.backgroundColor = UIColor(rgbHex: 0xff990a)
             pinnedStateAction.accessibilityLabel = CommonStrings.pinAction
@@ -45,19 +50,17 @@ class ThreadSwipeHandler {
 
         let readStateAction: UIContextualAction
         if threadViewModel.hasUnreadMessages {
-            readStateAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completion) in
+            readStateAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
                 completion(false)
-                self.markThreadAsRead(threadViewModel: threadViewModel)
-                updatedHandler?()
+                self?.markThreadAsRead(threadViewModel: threadViewModel)
             }
             readStateAction.backgroundColor = .ows_accentBlue
             readStateAction.accessibilityLabel = CommonStrings.readAction
             readStateAction.image = actionImage(name: "read-solid-24", title: CommonStrings.readAction)
         } else {
-            readStateAction = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
+            readStateAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
                 completion(false)
-                self.markThreadAsUnread(threadViewModel: threadViewModel)
-                updatedHandler?()
+                self?.markThreadAsUnread(threadViewModel: threadViewModel)
             }
             readStateAction.backgroundColor = .ows_accentBlue
             readStateAction.accessibilityLabel = CommonStrings.unreadAction
@@ -68,18 +71,18 @@ class ThreadSwipeHandler {
         return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
     }
 
-    public func trailingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?, archiveFromInbox: Bool? = nil, closeConversationBlock: (()->Void)? = nil, updateUIBlock: (()->Void)? = nil) -> UISwipeActionsConfiguration? {
+    public func trailingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?, closeConversationBlock: (() -> Void)? = nil) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel else {
             return nil
         }
 
-        let muteAction = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
+        let muteAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
             if threadViewModel.isMuted {
-                self.unmuteThread(threadViewModel: threadViewModel)
+                self?.unmuteThread(threadViewModel: threadViewModel)
             } else {
-                self.muteThreadWithSelection(threadViewModel: threadViewModel)
+                self?.muteThreadWithSelection(threadViewModel: threadViewModel)
             }
             completion(false)
         }
@@ -88,16 +91,16 @@ class ThreadSwipeHandler {
                                        title: threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton)
         muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
 
-        let deleteAction = UIContextualAction(style: .destructive, title: nil) { (_, _, completion) in
-            self.deleteThreadWithConfirmation(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock, updateUIBlock: updateUIBlock)
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
+            self?.deleteThreadWithConfirmation(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
             completion(false)
         }
         deleteAction.backgroundColor = .ows_accentRed
         deleteAction.image = actionImage(name: "trash-solid-24", title: CommonStrings.deleteButton)
         deleteAction.accessibilityLabel = CommonStrings.deleteButton
 
-        let archiveAction = UIContextualAction(style: .normal, title: nil) { (_, _, completion) in
-            self.archiveThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock, updateUIBlock: updateUIBlock)
+        let archiveAction = UIContextualAction(style: .normal, title: nil) { [weak self] (_, _, completion) in
+            self?.archiveThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
             completion(false)
         }
 
@@ -131,19 +134,21 @@ class ThreadSwipeHandler {
         return image.withRenderingMode(.alwaysTemplate)
     }
 
-    fileprivate func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (()->Void)?, updateUIBlock: (()->Void)?) {
+    fileprivate func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isArchived: !threadViewModel.isArchived,
                                                       updateStorageService: true,
                                                       transaction: transaction)
         }
-        updateUIBlock?()
+        if let parent = parent as? ThreadSwipeHandlerUIUpdater {
+            parent.updateUIAfterSwipeAction()
+        }
     }
 
-    fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (()->Void)?, updateUIBlock: (()->Void)?) {
+    fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         let alert = ActionSheetController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
@@ -152,27 +157,29 @@ class ThreadSwipeHandler {
                                                                      comment: "Message for the 'conversation delete confirmation' alert."))
         alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,
                                           style: .destructive) { [weak self] _ in
-            self?.deleteThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock, updateUIBlock: updateUIBlock)
+            self?.deleteThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
-        parent.presentActionSheet(alert)
+        parent?.presentActionSheet(alert)
     }
 
-    fileprivate func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (()->Void)?, updateUIBlock: (()->Void)?) {
+    fileprivate func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             threadViewModel.threadRecord.softDelete(with: transaction)
         }
-        updateUIBlock?()
+        if let parent = parent as? ThreadSwipeHandlerUIUpdater {
+            parent.updateUIAfterSwipeAction()
+        }
     }
 
     fileprivate func markThreadAsRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             threadViewModel.threadRecord.markAllAsRead(updateStorageService: true, transaction: transaction)
         }
     }
@@ -180,7 +187,7 @@ class ThreadSwipeHandler {
     fileprivate func markThreadAsUnread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
         }
     }
@@ -202,13 +209,13 @@ class ThreadSwipeHandler {
         }
         alert.addAction(OWSActionSheets.cancelAction)
 
-        parent.presentActionSheet(alert)
+        parent?.presentActionSheet(alert)
     }
 
     fileprivate func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
         AssertIsOnMainThread()
 
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             let timeStamp = seconds < 0
             ? ThreadAssociatedData.alwaysMutedTimestamp
             : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
@@ -219,7 +226,7 @@ class ThreadSwipeHandler {
     fileprivate func unmuteThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent.databaseStorage.write { transaction in
+        parent?.databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(mutedUntilTimestamp: Date.ows_millisecondTimestamp(), updateStorageService: true, transaction: transaction)
         }
     }
@@ -228,7 +235,7 @@ class ThreadSwipeHandler {
         AssertIsOnMainThread()
 
         do {
-            try parent.databaseStorage.write { transaction in
+            try parent?.databaseStorage.write { transaction in
                 try PinnedThreadManager.pinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
             }
         } catch {
@@ -245,7 +252,7 @@ class ThreadSwipeHandler {
         AssertIsOnMainThread()
 
         do {
-            try parent.databaseStorage.write { transaction in
+            try parent?.databaseStorage.write { transaction in
                 try PinnedThreadManager.unpinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
             }
         } catch {

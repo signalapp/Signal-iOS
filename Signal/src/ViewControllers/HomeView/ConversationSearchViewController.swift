@@ -54,6 +54,7 @@ public class ConversationSearchViewController: UITableViewController {
     }
 
     private var hasThemeChanged = false
+    private lazy var threadSwipeHandler: ThreadSwipeHandler = { ThreadSwipeHandler(with: self) }()
 
     class var matchSnippetStyle: StringStyle {
         StringStyle(
@@ -478,28 +479,14 @@ public class ConversationSearchViewController: UITableViewController {
                                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
-        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
-            owsFailDebug("unknown section: \(indexPath.section)")
-            return nil
-        }
-
-        let thread = searchSection == .contactThreads ? searchResultSet.contactThreads[indexPath.row].thread
-        : (searchSection == .groupThreads ? searchResultSet.groupThreads[indexPath.row].thread : nil)
-        return ThreadSwipeHandler(with: self).trailingSwipeActionsConfiguration(for: thread)
+        return threadSwipeHandler.trailingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
     public override func tableView(_ tableView: UITableView,
                                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
-        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
-            owsFailDebug("unknown section: \(indexPath.section)")
-            return nil
-        }
-
-        let thread = searchSection == .contactThreads ? searchResultSet.contactThreads[indexPath.row].thread
-        : (searchSection == .groupThreads ? searchResultSet.groupThreads[indexPath.row].thread : nil)
-        return ThreadSwipeHandler(with: self).leadingSwipeActionsConfiguration(for: thread)
+        return threadSwipeHandler.leadingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
     // MARK: Update Search Results
@@ -545,9 +532,12 @@ public class ConversationSearchViewController: UITableViewController {
             return
         }
 
-        // a database change will lead to a search with the lastSearchText
+        // a database change will lead to a search with the searchText=lastSearchText
         // in this case we only want to update the visible cells
-        let updateCellCandidates: [HomeViewCell]? = lastSearchText == searchText ? tableView.visibleCells.filter {$0 as? HomeViewCell != nil} as? [HomeViewCell] : nil
+        var updateCellCandidates: [HomeViewCell]?
+        if lastSearchText == searchText {
+            updateCellCandidates = tableView.visibleCells.filter {$0 as? HomeViewCell != nil} as? [HomeViewCell]
+        }
         guard updateCellCandidates == nil || updateCellCandidates!.count > 0 else {
             // Ignoring redundant search.
             return
@@ -587,6 +577,17 @@ public class ConversationSearchViewController: UITableViewController {
     }
 
     // MARK: -
+
+    private func getThreadViewModelFor(indexPath: IndexPath) -> ThreadViewModel? {
+        if let searchSection = SearchSection(rawValue: indexPath.section) {
+            if searchSection == .contactThreads {
+                return searchResultSet.contactThreads[indexPath.row].thread
+            } else if searchSection == .groupThreads {
+                return searchResultSet.groupThreads[indexPath.row].thread
+            }
+        }
+        return nil
+    }
 
     private func getIndexPathFor(threadId: String?) -> (SearchSection, Int)? {
         if let threadId = threadId {
