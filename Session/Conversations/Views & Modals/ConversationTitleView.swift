@@ -44,7 +44,7 @@ final class ConversationTitleView : UIView {
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.isLayoutMarginsRelativeArrangement = true
-        let shouldShowCallButton = !thread.isNoteToSelf() && !thread.isGroupThread() && (SSKPreferences.areCallsEnabled || !UserDefaults.standard[.hasSeenCallIPExposureWarning])
+        let shouldShowCallButton = SessionCall.isEnabled && !thread.isNoteToSelf() && !thread.isGroupThread() && (SSKPreferences.areCallsEnabled || !UserDefaults.standard[.hasSeenCallIPExposureWarning])
         let leftMargin: CGFloat = shouldShowCallButton ? 54 : 8 // Contact threads also have the call button to compensate for
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: leftMargin, bottom: 0, right: 0)
         addSubview(stackView)

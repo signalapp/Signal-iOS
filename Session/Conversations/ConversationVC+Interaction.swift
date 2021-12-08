@@ -28,6 +28,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     
     // MARK: Call
     @objc func startCall(_ sender: Any?) {
+        guard SessionCall.isEnabled else { return }
         let userDefaults = UserDefaults.standard
         if !SSKPreferences.areCallsEnabled && !userDefaults[.hasSeenCallIPExposureWarning] {
             userDefaults[.hasSeenCallIPExposureWarning] = true

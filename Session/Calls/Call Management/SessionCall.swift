@@ -5,6 +5,9 @@ import PromiseKit
 import CallKit
 
 public final class SessionCall: NSObject, WebRTCSessionDelegate {
+    
+    @objc static let isEnabled = true
+    
     // MARK: Metadata Properties
     let uuid: String
     let callID: UUID // This is for CallKit
