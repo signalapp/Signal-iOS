@@ -87,23 +87,24 @@ public class ContactsMaps: NSObject {
     }
 
     fileprivate static func phoneNumbers(forContact contact: Contact, localNumber: String?) -> [String] {
-        return contact.parsedPhoneNumbers.compactMap { phoneNumber in
+        let phoneNumbers: [String] = contact.parsedPhoneNumbers.compactMap { phoneNumber in
             guard let phoneNumberE164 = phoneNumber.toE164().nilIfEmpty else {
-                return nil
-            }
-
-            // Ignore any system contact records for the local contact.
-            // For the local user we never want to show the avatar /
-            // name that you have entered for yourself in your system
-            // contacts. Instead, we always want to display your profile
-            // name and avatar.
-            let isLocalContact = phoneNumberE164 == localNumber
-            guard !isLocalContact else {
                 return nil
             }
 
             return phoneNumberE164
         }
+
+        if let localNumber = localNumber, phoneNumbers.contains(localNumber) {
+            // Ignore any system contact records for the local contact.
+            // For the local user we never want to show the avatar /
+            // name that you have entered for yourself in your system
+            // contacts. Instead, we always want to display your profile
+            // name and avatar.
+            return []
+        }
+
+        return phoneNumbers
     }
 
     @objc
