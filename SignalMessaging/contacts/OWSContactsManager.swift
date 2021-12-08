@@ -566,6 +566,11 @@ extension OWSContactsManager {
                   return nil
               }
 
+        guard !address.isLocalAddress else {
+            // Never use system contact or synced image data for the local user
+            return nil
+        }
+
         if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
            let contact = contactsManagerCache.contact(forPhoneNumber: phoneNumber, transaction: transaction),
            let cnContactId = contact.cnContactId,
