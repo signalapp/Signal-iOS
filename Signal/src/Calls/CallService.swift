@@ -340,13 +340,14 @@ public final class CallService: NSObject {
         guard AppReadiness.isAppReady else { return }
         guard let currentCall = currentCall else { return }
 
-        let useLowBandwidth = Self.useLowBandwidthWithSneakyTransaction()
-        Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
-
         switch currentCall.mode {
         case let .group(call):
+            let useLowBandwidth = Self.shouldUseLowBandwidthWithSneakyTransaction(for: call.localDeviceState.networkRoute)
+            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
             call.updateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
         case let .individual(call) where call.state == .connected:
+            let useLowBandwidth = Self.shouldUseLowBandwidthWithSneakyTransaction(for: call.networkRoute)
+            Logger.info("Configuring call for \(useLowBandwidth ? "low" : "standard") bandwidth")
             callManager.udpateBandwidthMode(bandwidthMode: useLowBandwidth ? .low : .normal)
         default:
             // Do nothing. We'll reapply the bandwidth mode once connected
@@ -354,10 +355,16 @@ public final class CallService: NSObject {
         }
     }
 
-    static func useLowBandwidthWithSneakyTransaction() -> Bool {
+    static func shouldUseLowBandwidthWithSneakyTransaction(for networkRoute: NetworkRoute) -> Bool {
         let highBandwidthInterfaces = databaseStorage.read { readTx in
             Self.highBandwidthNetworkInterfaces(readTx: readTx)
         }
+        if let allowsHighBandwidth = highBandwidthInterfaces.includes(networkRoute.localAdapterType) {
+            return !allowsHighBandwidth
+        }
+        // If we aren't sure whether the current route's high-bandwidth, fall back to checking reachability.
+        // This also handles the situation where WebRTC doesn't know what interface we're on,
+        // which is always true on iOS 11.
         return !Self.reachabilityManager.isReachable(with: highBandwidthInterfaces)
     }
 
@@ -1115,6 +1122,8 @@ extension CallService: CallManagerDelegate {
         networkRoute: NetworkRoute
     ) {
         Logger.info("Network route changed for call: \(call): \(networkRoute.localAdapterType.rawValue)")
+        call.individualCall.networkRoute = networkRoute
+        configureBandwidthMode()
     }
 
     public func callManager(
@@ -1268,5 +1277,25 @@ extension CallMessageUrgency {
     case .droppable: return .droppable
     case .handleImmediately: return .handleImmediately
     }
+    }
+}
+
+extension NetworkInterfaceSet {
+    func includes(_ ringRtcAdapter: NetworkAdapterType) -> Bool? {
+        switch ringRtcAdapter {
+        case .unknown, .vpn, .anyAddress:
+            if self.isEmpty {
+                return false
+            } else if self.inverted.isEmpty {
+                return true
+            } else {
+                // We don't know the underlying interface, so we can't assume anything.
+                return nil
+            }
+        case .cellular, .cellular2G, .cellular3G, .cellular4G, .cellular5G:
+            return self.contains(.cellular)
+        case .ethernet, .wifi, .loopback:
+            return self.contains(.wifi)
+        }
     }
 }

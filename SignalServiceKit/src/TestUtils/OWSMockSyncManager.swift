@@ -40,6 +40,10 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
+    public func sendFetchLatestSubscriptionStatusSyncMessage() {
+        Logger.info("")
+    }
+
     public func sendKeysSyncMessage() {
         Logger.info("")
     }

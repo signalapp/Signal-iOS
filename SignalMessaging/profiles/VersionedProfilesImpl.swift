@@ -41,7 +41,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                      profileBio: String?,
                                      profileBioEmoji: String?,
                                      profileAvatarData: Data?,
-                                     visibleBadgeIds: [String]?,
+                                     visibleBadgeIds: [String],
                                      unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
 
         firstly(on: .global()) {

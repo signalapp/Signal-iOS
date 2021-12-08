@@ -103,6 +103,8 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
         }
     }
 
+    var networkRoute: NetworkRoute = NetworkRoute(localAdapterType: .unknown)
+
     // MARK: -
 
     // tracking cleanup

@@ -3002,6 +3002,7 @@ struct SignalServiceProtos_SyncMessage {
       case unknown // = 0
       case localProfile // = 1
       case storageManifest // = 2
+      case subscriptionStatus // = 3
 
       init() {
         self = .unknown
@@ -3012,6 +3013,7 @@ struct SignalServiceProtos_SyncMessage {
         case 0: self = .unknown
         case 1: self = .localProfile
         case 2: self = .storageManifest
+        case 3: self = .subscriptionStatus
         default: return nil
         }
       }
@@ -3021,6 +3023,7 @@ struct SignalServiceProtos_SyncMessage {
         case .unknown: return 0
         case .localProfile: return 1
         case .storageManifest: return 2
+        case .subscriptionStatus: return 3
         }
       }
 
@@ -7294,7 +7297,8 @@ extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: SwiftProtobuf._P
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "UNKNOWN"),
     1: .same(proto: "LOCAL_PROFILE"),
-    2: .same(proto: "STORAGE_MANIFEST")
+    2: .same(proto: "STORAGE_MANIFEST"),
+    3: .same(proto: "SUBSCRIPTION_STATUS")
   ]
 }
 

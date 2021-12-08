@@ -225,9 +225,6 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let newHostNames = true
-
-    @objc
     public static let groupRings = false
 
     @objc

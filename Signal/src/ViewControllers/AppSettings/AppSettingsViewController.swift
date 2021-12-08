@@ -40,6 +40,13 @@ class AppSettingsViewController: OWSTableViewController2 {
             name: .localNumberDidChange,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(subscriptionStateDidChange),
+            name: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+            object: nil
+        )
     }
 
     @objc
@@ -61,22 +68,24 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    @objc
+    func subscriptionStateDidChange() {
+        AssertIsOnMainThread()
+
+        updateTableContents()
+    }
+
     override func themeDidChange() {
         super.themeDidChange()
         updateTableContents()
     }
 
     private lazy var hasCurrentSubscription: Bool = {
-        var subscriberID: Data?
-        SDSDatabaseStorage.shared.read { transaction in
-            subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction)
-        }
+        return SubscriptionManager.hasCurrentSubscriptionCached()
+    }()
 
-        guard subscriberID != nil else {
-            return false
-        }
-
-        return true
+    private lazy var hasExpiredSubscription: Bool = {
+        return SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction() != nil
     }()
 
     func updateTableContents() {
@@ -262,15 +271,29 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         if RemoteConfig.donorBadgeAcquisition {
             if DonationUtilities.isApplePayAvailable {
-                section4.add(.disclosureItem(
-                    icon: .settingsDonate,
-                    name: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"),
-                    actionBlock: { [weak self] in
-                        let vc = SubscriptionViewController()
-                        self?.navigationController?.pushViewController(vc, animated: true)
+                section4.add(.init(customCellBlock: { [weak self] in
+                    guard let self = self else { return UITableViewCell() }
+                    let cell = OWSTableItem.buildCellWithAccessoryLabel(
+                        icon: .settingsDonate,
+                    itemName: self.hasCurrentSubscription ? NSLocalizedString("SETTINGS_CURRENT_SUBSCRIPTION", comment: "Title for the 'Subscription' link in settings.") : NSLocalizedString("SETTINGS_SUBSCRIPTION", comment: "Title for the 'become a sustainer' link in settings."),
+                        accessoryType: .disclosureIndicator,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sustainer"))
+
+                    if self.hasExpiredSubscription {
+                        let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
+                        imageView.tintColor = Theme.accentBlueColor
+                        cell.contentView.addSubview(imageView)
+
+                        imageView.autoSetDimensions(to: CGSize(square: 24))
+                        imageView.autoVCenterInSuperview()
+                        imageView.autoPinEdge(.trailing, to: .trailing, of: cell.contentView, withOffset: -8)
                     }
-                ))
+
+                    return cell
+                }, actionBlock: { [weak self] in
+                    let vc = SubscriptionViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }))
 
                 section4.add(.disclosureItem(
                     icon: .settingsBoost,
