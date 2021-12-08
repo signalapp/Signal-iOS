@@ -80,8 +80,14 @@ public class NewGroupMembersBar: UIView {
             owsFailDebug("Missing heightConstraint.")
             return
         }
-        let contentHeight = self.contentHeight
-        heightConstraint.constant = members.isEmpty ? 0 : contentHeight
+        let desiredHeight = members.isEmpty ? 0 : self.contentHeight
+        if heightConstraint.constant != desiredHeight {
+            superview?.layoutIfNeeded()
+            heightConstraint.constant = desiredHeight
+            UIView.animate(withDuration: 0.5) { [weak self] in
+                self?.superview?.layoutIfNeeded()
+            }
+        }
     }
 
     private var contentHeight: CGFloat {
