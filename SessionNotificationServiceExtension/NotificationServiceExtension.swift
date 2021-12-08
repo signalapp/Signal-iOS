@@ -93,6 +93,10 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                     case let callMessage as CallMessage:
                         MessageReceiver.handleCallMessage(callMessage, using: transaction)
                         if !SSKPreferences.areCallsEnabled {
+                            if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) {
+                                let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
+                                infoMessage.updateCallInfoMessage(.missed, using: transaction)
+                            }
                             return self.completeSilenty()
                         }
                         notificationContent.userInfo = userInfo
@@ -134,6 +138,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         }
     }
 
+    // MARK: Set up environment
     private func setUpIfNecessary(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
@@ -171,18 +176,6 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
         NotificationCenter.default.addObserver(self, selector: #selector(storageIsReady), name: .StorageIsReady, object: nil)
     }
     
-    override public func serviceExtensionTimeWillExpire() {
-        // Called just before the extension will be terminated by the system.
-        // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
-        let notificationContent = self.notificationContent!
-        notificationContent.userInfo = userInfo
-        notificationContent.badge = 1
-        notificationContent.title = "Session"
-        notificationContent.body = "You've got a new message"
-        handleSuccess(for: notificationContent)
-    }
-    
     @objc
     private func versionMigrationsDidComplete() {
         AssertIsOnMainThread()
@@ -213,6 +206,19 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
+    }
+    
+    // MARK: Completion
+    override public func serviceExtensionTimeWillExpire() {
+        // Called just before the extension will be terminated by the system.
+        // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
+        let userInfo: [String:Any] = [ NotificationServiceExtension.isFromRemoteKey : true ]
+        let notificationContent = self.notificationContent!
+        notificationContent.userInfo = userInfo
+        notificationContent.badge = 1
+        notificationContent.title = "Session"
+        notificationContent.body = "You've got a new message"
+        handleSuccess(for: notificationContent)
     }
     
     private func completeSilenty() {
