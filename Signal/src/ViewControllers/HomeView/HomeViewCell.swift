@@ -121,7 +121,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
-    private var thread: TSThread? {
+    var thread: TSThread? {
         cellContentToken?.thread
     }
 
@@ -850,7 +850,7 @@ public class HomeViewCell: UITableViewCell {
         reset()
     }
 
-    private func reset() {
+    func reset() {
         isCellVisible = false
 
         for cvview in cvviews {
