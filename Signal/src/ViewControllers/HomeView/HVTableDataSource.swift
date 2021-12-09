@@ -12,11 +12,7 @@ public class HVTableDataSource: NSObject {
     public let tableView = HVTableView()
 
     @objc
-    public weak var viewController: HomeViewController? {
-        didSet {
-            threadSwipeHandler.parent = viewController
-        }
-    }
+    public weak var viewController: HomeViewController?
 
     fileprivate var splitViewController: UISplitViewController? { viewController?.splitViewController }
 
@@ -28,7 +24,6 @@ public class HVTableDataSource: NSObject {
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
     fileprivate var lastPreloadCellDate: Date?
-    fileprivate let threadSwipeHandler = ThreadSwipeHandler()
 
     public required override init() {
         super.init()
@@ -670,8 +665,8 @@ extension HVTableDataSource: UITableViewDataSource {
                 return nil
             }
 
-            return threadSwipeHandler.trailingSwipeActionsConfiguration(for: threadViewModel,
-                                                                           closeConversationBlock: { [weak self] in
+            return viewController.trailingSwipeActionsConfiguration(for: threadViewModel,
+                                                                       closeConversationBlock: { [weak self] in
                 if let self = self, self.isConversationActive(forThread: threadViewModel.threadRecord) {
                     viewController.conversationSplitViewController?.closeSelectedConversation(animated: true)
                 }
@@ -716,7 +711,12 @@ extension HVTableDataSource: UITableViewDataSource {
                 owsFailDebug("Missing threadViewModel.")
                 return nil
             }
-            return threadSwipeHandler.leadingSwipeActionsConfiguration(for: threadViewModel)
+            guard let viewController = self.viewController else {
+                owsFailDebug("Missing viewController.")
+                return nil
+            }
+
+            return viewController.leadingSwipeActionsConfiguration(for: threadViewModel)
         }
     }
 }

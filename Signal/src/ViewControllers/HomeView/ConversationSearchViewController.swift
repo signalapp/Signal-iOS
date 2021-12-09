@@ -11,7 +11,7 @@ public protocol ConversationSearchViewDelegate: AnyObject {
 }
 
 @objc
-public class ConversationSearchViewController: UITableViewController {
+public class ConversationSearchViewController: UITableViewController, ThreadSwipeHandler {
 
     // MARK: -
 
@@ -54,7 +54,6 @@ public class ConversationSearchViewController: UITableViewController {
     }
 
     private var hasThemeChanged = false
-    private lazy var threadSwipeHandler: ThreadSwipeHandler = { ThreadSwipeHandler(with: self) }()
 
     class var matchSnippetStyle: StringStyle {
         StringStyle(
@@ -477,16 +476,12 @@ public class ConversationSearchViewController: UITableViewController {
 
     public override func tableView(_ tableView: UITableView,
                                    trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        AssertIsOnMainThread()
-
-        return threadSwipeHandler.trailingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
+        return trailingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
     public override func tableView(_ tableView: UITableView,
                                    leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        AssertIsOnMainThread()
-
-        return threadSwipeHandler.leadingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
+        return leadingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
     }
 
     // MARK: Update Search Results

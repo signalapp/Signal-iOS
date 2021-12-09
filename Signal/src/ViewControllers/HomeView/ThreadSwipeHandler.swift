@@ -6,21 +6,14 @@ import Foundation
 import SignalMessaging
 import UIKit
 
-protocol ThreadSwipeHandlerUIUpdater {
-    func updateUIAfterSwipeAction()
+@objc
+protocol ThreadSwipeHandler {
+    @objc optional func updateUIAfterSwipeAction()
 }
 
-class ThreadSwipeHandler {
-    weak var parent: UIViewController?
+extension ThreadSwipeHandler where Self: UIViewController {
 
-    init() {
-    }
-
-    init(with parent: UIViewController?) {
-        self.parent = parent
-    }
-
-    public func leadingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?) -> UISwipeActionsConfiguration? {
+    func leadingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel else {
@@ -71,7 +64,7 @@ class ThreadSwipeHandler {
         return UISwipeActionsConfiguration(actions: [ readStateAction, pinnedStateAction ])
     }
 
-    public func trailingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?, closeConversationBlock: (() -> Void)? = nil) -> UISwipeActionsConfiguration? {
+    func trailingSwipeActionsConfiguration(for threadViewModel: ThreadViewModel?, closeConversationBlock: (() -> Void)? = nil) -> UISwipeActionsConfiguration? {
         AssertIsOnMainThread()
 
         guard let threadViewModel = threadViewModel else {
@@ -113,7 +106,7 @@ class ThreadSwipeHandler {
         return UISwipeActionsConfiguration(actions: [archiveAction, deleteAction, muteAction])
     }
 
-    public func actionImage(name imageName: String, title: String) -> UIImage? {
+    func actionImage(name imageName: String, title: String) -> UIImage? {
         AssertIsOnMainThread()
         // We need to bake the title text into the image because `UIContextualAction`
         // only displays title + image when the cell's height > 91. We want to always
@@ -138,14 +131,12 @@ class ThreadSwipeHandler {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isArchived: !threadViewModel.isArchived,
                                                       updateStorageService: true,
                                                       transaction: transaction)
         }
-        if let parent = parent as? ThreadSwipeHandlerUIUpdater {
-            parent.updateUIAfterSwipeAction()
-        }
+        updateUIAfterSwipeAction?()
     }
 
     fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
@@ -161,25 +152,23 @@ class ThreadSwipeHandler {
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
-        parent?.presentActionSheet(alert)
+        presentActionSheet(alert)
     }
 
     fileprivate func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             threadViewModel.threadRecord.softDelete(with: transaction)
         }
-        if let parent = parent as? ThreadSwipeHandlerUIUpdater {
-            parent.updateUIAfterSwipeAction()
-        }
+        updateUIAfterSwipeAction?()
     }
 
     fileprivate func markThreadAsRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             threadViewModel.threadRecord.markAllAsRead(updateStorageService: true, transaction: transaction)
         }
     }
@@ -187,7 +176,7 @@ class ThreadSwipeHandler {
     fileprivate func markThreadAsUnread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isMarkedUnread: true, updateStorageService: true, transaction: transaction)
         }
     }
@@ -209,13 +198,13 @@ class ThreadSwipeHandler {
         }
         alert.addAction(OWSActionSheets.cancelAction)
 
-        parent?.presentActionSheet(alert)
+        presentActionSheet(alert)
     }
 
     fileprivate func muteThread(threadViewModel: ThreadViewModel, duration seconds: TimeInterval) {
         AssertIsOnMainThread()
 
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             let timeStamp = seconds < 0
             ? ThreadAssociatedData.alwaysMutedTimestamp
             : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
@@ -226,7 +215,7 @@ class ThreadSwipeHandler {
     fileprivate func unmuteThread(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
-        parent?.databaseStorage.write { transaction in
+        databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(mutedUntilTimestamp: Date.ows_millisecondTimestamp(), updateStorageService: true, transaction: transaction)
         }
     }
@@ -235,7 +224,7 @@ class ThreadSwipeHandler {
         AssertIsOnMainThread()
 
         do {
-            try parent?.databaseStorage.write { transaction in
+            try databaseStorage.write { transaction in
                 try PinnedThreadManager.pinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
             }
         } catch {
@@ -252,7 +241,7 @@ class ThreadSwipeHandler {
         AssertIsOnMainThread()
 
         do {
-            try parent?.databaseStorage.write { transaction in
+            try databaseStorage.write { transaction in
                 try PinnedThreadManager.unpinThread(threadViewModel.threadRecord, updateStorageService: true, transaction: transaction)
             }
         } catch {
