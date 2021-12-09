@@ -58,6 +58,22 @@ extension HomeViewController {
                                                selector: #selector(uiContentSizeCategoryDidChange),
                                                name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ThreadUtil.messageSent,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ReactionManager.localUserReacted,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ConversationSettingsViewController.disapperaringMessagesSettingsChanged,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ConversationViewController.callStarted,
+                                               object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -176,6 +192,15 @@ extension HomeViewController {
 
         // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
+    }
+
+    @objc
+    private func clearSearch(_ notification: NSNotification) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
+            if let self = self {
+                self.searchBar.delegate?.searchBarCancelButtonClicked?(self.searchBar)
+            }
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import UIKit
 import SignalUI
 
 extension ConversationSettingsViewController {
+    public static let disapperaringMessagesSettingsChanged = Notification.Name("disapperaringMessagesSettingsChanged")
 
     // MARK: - Helpers
 
@@ -329,6 +330,7 @@ extension ConversationSettingsViewController {
                 ) { configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()
+                    NotificationCenter.default.post(name: ConversationSettingsViewController.disapperaringMessagesSettingsChanged, object: nil)
                 }
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }

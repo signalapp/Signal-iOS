@@ -7,6 +7,7 @@ import SignalMessaging
 
 @objc
 public extension ThreadUtil {
+    static let messageSent = Notification.Name("messageSent")
 
     // MARK: - Durable Message Enqueue
 
@@ -90,6 +91,7 @@ public extension ThreadUtil {
         if message.hasRenderableContent() {
             thread.donateSendMessageIntent(transaction: readTransaction)
         }
+        NotificationCenter.default.post(name: ThreadUtil.messageSent, object: nil)
         return message
     }
 
