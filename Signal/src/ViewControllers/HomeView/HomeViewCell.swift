@@ -121,6 +121,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
+    private var timestampUpdater: Timer?
     var thread: TSThread? {
         cellContentToken?.thread
     }
@@ -203,6 +204,7 @@ public class HomeViewCell: UITableViewCell {
         return HVCellConfigs(
             thread: configuration.thread.threadRecord,
             lastReloadDate: configuration.lastReloadDate,
+            timestamp: configuration.overrideDate ?? configuration.thread.homeViewInfo?.lastMessageDate,
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
@@ -390,6 +392,23 @@ public class HomeViewCell: UITableViewCell {
         }
 
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
+        if let date = configs.timestamp {
+            timestampUpdater?.invalidate()
+            if DateUtil.dateIsOlderThanToday(date) {
+                timestampUpdater = nil
+            } else {
+                timestampUpdater = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (_) in
+                    if let self = self {
+                        self.dateTimeLabel.text = DateUtil.formatDateShort(date)
+                        if DateUtil.dateIsOlderThanToday(date) {
+                            self.timestampUpdater?.invalidate()
+                            self.timestampUpdater = nil
+                        }
+                    }
+                }
+            }
+        }
+
         topRowStackSubviews.append(dateTimeLabel)
 
         // The bottom row layout is also complicated because we want to be able to
@@ -851,6 +870,8 @@ public class HomeViewCell: UITableViewCell {
     }
 
     func reset() {
+        timestampUpdater?.invalidate()
+        timestampUpdater = nil
         isCellVisible = false
 
         for cvview in cvviews {
@@ -951,6 +972,7 @@ private struct HVCellConfigs {
     // State
     let thread: TSThread
     let lastReloadDate: Date?
+    let timestamp: Date?
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
