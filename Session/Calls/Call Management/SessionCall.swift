@@ -6,7 +6,7 @@ import CallKit
 
 public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
-    @objc static let isEnabled = true
+    @objc static let isEnabled = false
     
     // MARK: Metadata Properties
     let uuid: String
