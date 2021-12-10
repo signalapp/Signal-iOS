@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSLayoutConstraint *bottomLayoutConstraint;
 @property (nonatomic) BOOL shouldAnimateBottomLayout;
 @property (nonatomic) BOOL hasObservedNotifications;
+@property (nonatomic) CGFloat keyboardAdjustmentOffsetForAutoPinnedToBottomView;
 @property (nonatomic) CGFloat lastBottomLayoutInset;
 
 @end
@@ -126,6 +127,14 @@ NS_ASSUME_NONNULL_BEGIN
                                              withOffset:self.lastBottomLayoutInset];
     }
     return self.bottomLayoutConstraint;
+}
+
+- (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view
+                                                           avoidNotch:(BOOL)avoidNotch
+                                      adjustmentWithKeyboardPresented:(CGFloat)adjustment
+{
+    self.keyboardAdjustmentOffsetForAutoPinnedToBottomView = adjustment;
+    return [self autoPinViewToBottomOfViewControllerOrKeyboard:view avoidNotch:avoidNotch];
 }
 
 - (void)observeNotificationsForBottomView
@@ -265,7 +274,9 @@ NS_ASSUME_NONNULL_BEGIN
     // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the length
     // (height) of the bottomLayoutGuide, else we'd have an unnecessary buffer between the popped keyboard and the input
     // bar.
-    CGFloat newInset = MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
+    CGFloat newInset = MAX(0,
+        (self.view.height + self.keyboardAdjustmentOffsetForAutoPinnedToBottomView - self.bottomLayoutGuide.length
+            - keyboardEndFrameConverted.origin.y));
     self.lastBottomLayoutInset = newInset;
 
     UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
