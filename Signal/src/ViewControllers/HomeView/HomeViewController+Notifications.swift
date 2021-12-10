@@ -74,6 +74,10 @@ extension HomeViewController {
                                                selector: #selector(clearSearch),
                                                name: ConversationViewController.callStarted,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ConversationViewController.respondedToPendingMessageRequest,
+                                               object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
