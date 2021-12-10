@@ -13,6 +13,7 @@ public class InteractiveSheetViewController: OWSViewController {
     public weak var externalBackdropView: UIView?
     private lazy var _internalBackdropView = UIView()
     public var backdropView: UIView? { externalBackdropView ?? _internalBackdropView }
+    public var backdropColor = Theme.backdropColor
 
     public var maxWidth: CGFloat { 512 }
     public var minHeight: CGFloat { 346 }
@@ -290,9 +291,9 @@ private class InteractiveSheetAnimationController: UIPresentationController {
         return vc.externalBackdropView != nil
     }
 
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
+    init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, backdropColor: UIColor? = Theme.backdropColor) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView?.backgroundColor = Theme.backdropColor
+        backdropView?.backgroundColor = backdropColor
     }
 
     override func presentationTransitionWillBegin() {
@@ -328,6 +329,7 @@ private class InteractiveSheetAnimationController: UIPresentationController {
 
 extension InteractiveSheetViewController: UIViewControllerTransitioningDelegate {
     public func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        return InteractiveSheetAnimationController(presentedViewController: presented, presenting: presenting)
+        let controller = InteractiveSheetAnimationController(presentedViewController: presented, presenting: presenting, backdropColor: self.backdropColor)
+        return controller
     }
 }

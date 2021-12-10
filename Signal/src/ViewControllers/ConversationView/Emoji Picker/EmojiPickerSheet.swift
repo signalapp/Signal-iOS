@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SignalServiceKit
 
 @objc
 class EmojiPickerSheet: InteractiveSheetViewController {
@@ -14,18 +15,34 @@ class EmojiPickerSheet: InteractiveSheetViewController {
     let collectionView = EmojiPickerCollectionView()
     lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
 
+    let allowReactionConfiguration: Bool
+
     lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
         searchBar.placeholder = NSLocalizedString("HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", comment: "Placeholder text for search bar which filters conversations.")
         searchBar.delegate = self
         searchBar.searchBarStyle = .minimal
-        searchBar.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
         return searchBar
     }()
 
-    init(completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
+    lazy var configureButton: UIButton = {
+        let button = UIButton()
+
+        button.setImage(Theme.iconImage(.emojiSettings), for: .normal)
+        button.tintColor = Theme.primaryIconColor
+
+        button.addTarget(self, action: #selector(didSelectConfigureButton), for: .touchUpInside)
+        return button
+    }()
+
+    init(allowReactionConfiguration: Bool = true, completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
+        self.allowReactionConfiguration = allowReactionConfiguration
         self.completionHandler = completionHandler
         super.init()
+
+        if !allowReactionConfiguration {
+            self.backdropColor = .clear
+        }
     }
 
     public required init() {
@@ -41,9 +58,25 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        contentView.addSubview(searchBar)
-        searchBar.autoPinWidthToSuperview()
-        searchBar.autoPinEdge(toSuperviewEdge: .top)
+
+        contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+
+        let topStackView = UIStackView()
+        topStackView.axis = .horizontal
+        topStackView.isLayoutMarginsRelativeArrangement = true
+        topStackView.spacing = 8
+
+        if allowReactionConfiguration {
+            topStackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 16)
+            topStackView.addArrangedSubviews([searchBar, configureButton])
+        } else {
+            topStackView.addArrangedSubview(searchBar)
+        }
+
+        contentView.addSubview(topStackView)
+
+        topStackView.autoPinWidthToSuperview()
+        topStackView.autoPinEdge(toSuperviewEdge: .top)
 
         contentView.addSubview(collectionView)
         collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
@@ -54,7 +87,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
         contentView.addSubview(sectionToolbar)
         sectionToolbar.autoPinWidthToSuperview()
-        autoPinView(toBottomOfViewControllerOrKeyboard: sectionToolbar, avoidNotch: false, adjustmentWithKeyboardPresented: 32)
+        let offset: CGFloat = UIDevice.current.hasIPhoneXNotch ? 32 : 0
+        autoPinView(toBottomOfViewControllerOrKeyboard: sectionToolbar, avoidNotch: false, adjustmentWithKeyboardPresented: offset)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -77,6 +111,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: sectionToolbar.height, trailing: 0)
         collectionView.contentInset = contentInset
         collectionView.scrollIndicatorInsets = contentInset
+
     }
 
     private func expandSheetAnimated() {
@@ -87,6 +122,13 @@ class EmojiPickerSheet: InteractiveSheetViewController {
             self.view.layoutIfNeeded()
             self.backdropView?.alpha = 1
         })
+    }
+
+    @objc
+    private func didSelectConfigureButton(sender: UIButton) {
+        let configVC = EmojiReactionPickerConfigViewController()
+        let navController = UINavigationController(rootViewController: configVC)
+        self.present(navController, animated: true)
     }
 }
 

@@ -135,6 +135,7 @@ public enum ThemeIcon: UInt {
     case emojiSymbol
     case emojiTravel
     case emojiRecent
+    case emojiSettings
 
     case sealedSenderIndicator
     case accessoryCheckmark
@@ -422,6 +423,8 @@ public extension Theme {
             return "emoji-travel-\(isDarkThemeEnabled ? "solid" : "outline")-20"
         case .emojiRecent:
             return "recent-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiSettings:
+            return "emoji-settings-\(isDarkThemeEnabled ? "solid" : "outline")-24"
 
         case .sealedSenderIndicator:
             return isDarkThemeEnabled ? "unidentified-delivery-solid-20" : "unidentified-delivery-outline-20"
