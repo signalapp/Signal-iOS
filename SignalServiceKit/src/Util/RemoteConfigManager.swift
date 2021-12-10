@@ -10,8 +10,8 @@ public class RemoteConfig: BaseFlags {
 
     // rather than interact with `config` directly, prefer encoding any string constants
     // into a getter below...
-    private let isEnabledFlags: [String: Bool]
-    private let valueFlags: [String: AnyObject]
+    fileprivate let isEnabledFlags: [String: Bool]
+    fileprivate let valueFlags: [String: AnyObject]
     private let researchMegaphone: Bool
     private let subscriptionMegaphone: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
@@ -406,6 +406,13 @@ private struct Flags {
         case uuidSafetyNumbers
     }
 
+    // Values defined in this array will update while the app is running,
+    // as soon as we fetch an update to the remote config. They will not
+    // wait for an app restart.
+    enum HotSwappableIsEnabledFlags: String, FlagType {
+        case donorBadgeAcquisitionKillSwitch
+    }
+
     // We filter the received config down to just the supported flags.
     // This ensures if we have a sticky flag it doesn't get inadvertently
     // set because we cached a value before it went public. e.g. if we set
@@ -432,6 +439,19 @@ private struct Flags {
     enum StickyValuesFlags: String, FlagType {
         case groupsV2MaxGroupSizeRecommended
         case groupsV2MaxGroupSizeHardLimit
+    }
+
+    // Values defined in this array will update while the app is running,
+    // as soon as we fetch an update to the remote config. They will not
+    // wait for an app restart.
+    enum HotSwappableValuesFlags: String, FlagType {
+        case groupsV2MaxGroupSizeRecommended
+        case groupsV2MaxGroupSizeHardLimit
+        case automaticSessionResetAttemptInterval
+        case reactiveProfileKeyAttemptInterval
+        case paymentsDisabledRegions
+        case subscriptionMegaphone2
+        case subscriptionMegaphoneSnoozeInterval
     }
 
     // We filter the received config down to just the supported values.
@@ -509,7 +529,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     private let hasWarmedCache = AtomicBool(false)
 
-    private var _cachedConfig: RemoteConfig?
+    private var _cachedConfig = AtomicOptional<RemoteConfig>(nil)
     @objc
     public private(set) var cachedConfig: RemoteConfig? {
         get {
@@ -517,14 +537,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                 owsFailDebug("CachedConfig not yet set.")
             }
 
-            return _cachedConfig
+            return _cachedConfig.get()
         }
-        set {
-            AssertIsOnMainThread()
-            assert(_cachedConfig == nil)
-
-            _cachedConfig = newValue
-        }
+        set { _cachedConfig.set(newValue) }
     }
 
     @objc
@@ -538,7 +553,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             guard self.tsAccountManager.isRegistered else {
                 return
             }
-            self.refreshIfReady()
+            self.scheduleNextRefresh()
         }
 
         // Listen for registration state changes so we can fetch the config
@@ -557,7 +572,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     @objc func registrationStateDidChange() {
         guard tsAccountManager.isRegistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
-        refresh().done {
+        refresh().done(on: .global()) {
             self.cacheCurrent()
         }.catch { error in
             owsFailDebug("Failed to update remote config after registration change \(error)")
@@ -575,8 +590,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     }
 
     private func cacheCurrent() {
-        AssertIsOnMainThread()
-
         var isEnabledFlags = [String: Bool]()
         var valueFlags = [String: AnyObject]()
         self.databaseStorage.read { transaction in
@@ -596,7 +609,14 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         hasWarmedCache.set(true)
     }
 
-    private func refreshIfReady() {
+    private static let refreshInterval = 2 * kHourInterval
+    private var refreshTimer: Timer?
+    private func scheduleNextRefresh() {
+        AssertIsOnMainThread()
+
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+
         guard let lastFetched = (databaseStorage.read { transaction in
             self.keyValueStore.getLastFetched(transaction: transaction)
         }) else {
@@ -604,10 +624,20 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             return
         }
 
-        if abs(lastFetched.timeIntervalSinceNow) > 2 * kHourInterval {
+        let timeSinceLastFetch = abs(lastFetched.timeIntervalSinceNow)
+
+        if timeSinceLastFetch >= Self.refreshInterval {
             refresh()
         } else {
-            Logger.info("skipping due to recent fetch.")
+            Logger.info("Scheduling remote config refresh in \(Self.refreshInterval - timeSinceLastFetch) seconds.")
+
+            refreshTimer = Timer.scheduledTimer(
+                withTimeInterval: Self.refreshInterval - timeSinceLastFetch,
+                repeats: false
+            ) { [weak self] timer in
+                timer.invalidate()
+                self?.refresh()
+            }
         }
     }
 
@@ -623,7 +653,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     @discardableResult
     private func refresh() -> Promise<Void> {
-        firstly {
+        Logger.info("Refreshing remote config.")
+
+        return firstly(on: .global()) {
             self.serviceClient.getRemoteConfig()
         }.done(on: .global()) { (fetchedConfig: [String: RemoteConfigItem]) in
             // Extract the _supported_ flags from the fetched config.
@@ -645,6 +677,25 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                     }
                 }
             }
+
+            // Hotswap any hotswappable flags.
+
+            var cachedIsEnabledFlags = self.cachedConfig?.isEnabledFlags ?? [:]
+            var cachedValueFlags = self.cachedConfig?.valueFlags ?? [:]
+
+            for flag in Flags.HotSwappableIsEnabledFlags.allRawFlags {
+                cachedIsEnabledFlags[flag] = isEnabledFlags[flag]
+            }
+
+            for flag in Flags.HotSwappableValuesFlags.allRawFlags {
+                cachedValueFlags[flag] = valueFlags[flag]
+            }
+
+            self.cachedConfig = RemoteConfig(isEnabledFlags: cachedIsEnabledFlags, valueFlags: cachedValueFlags)
+
+            Logger.info("Hotswapped new remoteConfig. isEnabledFlags: \(cachedIsEnabledFlags), valueFlags: \(cachedValueFlags)")
+
+            // Persist all flags in the database to be applied on next launch.
 
             self.databaseStorage.write { transaction in
                 // Preserve any sticky flags.
@@ -672,9 +723,12 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                 self.keyValueStore.setLastFetched(Date(), transaction: transaction)
                 self.checkClientExpiration(valueFlags: valueFlags)
             }
-            Logger.info("stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
+
+            Logger.info("Stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
         }.catch { error in
             Logger.error("error: \(error)")
+        }.ensure {
+            self.scheduleNextRefresh()
         }
     }
 }

@@ -447,7 +447,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
-    if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
+    if (![ExperienceUpgradeManager presentNextFromViewController:self] && !self.hasEverAppeared) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
         [self presentGetStartedBannerIfNecessary];
     }
