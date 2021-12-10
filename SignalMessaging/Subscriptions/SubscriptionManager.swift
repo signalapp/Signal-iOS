@@ -257,6 +257,8 @@ public class SubscriptionManager: NSObject {
                 self.setUserManuallyCancelledSubscription(false, transaction: transaction)
                 self.setSubscriberID(subscriberID, transaction: transaction)
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+                self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
+                self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
                 self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
 
@@ -738,7 +740,7 @@ public class SubscriptionManager: NSObject {
         var newExpiringBadgeID: String?
         if currentSubscriberBadgeIDs.count == 0 && persistedSubscriberBadgeIDs.count > 0 && !userManuallyCancelled {
             newExpiringBadgeID = persistedSubscriberBadgeIDs.first
-        } else if currentBoostBadgeIDs.count == 0 && persistedBoostBadgeIDs.count > 0 {
+        } else if expiringBadgeID == nil && currentBoostBadgeIDs.count == 0 && persistedBoostBadgeIDs.count > 0 {
             newExpiringBadgeID = persistedBoostBadgeIDs.first
         }
 
@@ -747,8 +749,14 @@ public class SubscriptionManager: NSObject {
             showExpiryOnHomeScreen = true
         }
 
+        // If the last persisted expiring ID is a subscription but we now have valid sub badgeIDs, clear state and do not show expiry sheet
+        if expiringBadgeID != "BOOST" && currentSubscriberBadgeIDs.count > 0 {
+            expiringBadgeID = nil
+            showExpiryOnHomeScreen = false
+        }
+
         Logger.info("[Subscriptions] Current sub badges \(currentSubscriberBadgeIDs.count), persisted sub badges \(persistedSubscriberBadgeIDs.count)")
-        Logger.info("[Subscriptions] Current boost badges \(currentBoostBadgeIDs.count), persisted sub badges \(persistedBoostBadgeIDs.count)")
+        Logger.info("[Subscriptions] Current boost badges \(currentBoostBadgeIDs.count), persisted boost badges \(persistedBoostBadgeIDs.count)")
         Logger.info("[Subscriptions] mostRecentlyExpiredBadgeID is \(expiringBadgeID ?? "none")")
 
         // Persist new values
