@@ -11,7 +11,7 @@ public protocol ConversationSearchViewDelegate: AnyObject {
 }
 
 @objc
-public class ConversationSearchViewController: UITableViewController {
+public class ConversationSearchViewController: UITableViewController, ThreadSwipeHandler {
 
     // MARK: -
 
@@ -255,14 +255,16 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    private func cellContentToken(forConfiguration configuration: HomeViewCell.Configuration) -> HVCellContentToken {
+    private func cellContentToken(forConfiguration configuration: HomeViewCell.Configuration, useCache: Bool = true) -> HVCellContentToken {
         AssertIsOnMainThread()
 
         // If we have an existing HVCellContentToken, use it.
         // Cell measurement/arrangement is expensive.
         let cacheKey = "\(configuration.thread.threadRecord.uniqueId).\(configuration.overrideSnippet?.string ?? "")"
-        if let cellContentToken = cellContentCache.get(key: cacheKey) {
-            return cellContentToken
+        if useCache {
+            if let cellContentToken = cellContentCache.get(key: cacheKey) {
+                return cellContentToken
+            }
         }
 
         let cellContentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
@@ -472,6 +474,16 @@ public class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    public override func tableView(_ tableView: UITableView,
+                                   trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return trailingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
+    }
+
+    public override func tableView(_ tableView: UITableView,
+                                   leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        return leadingSwipeActionsConfiguration(for: getThreadViewModelFor(indexPath: indexPath))
+    }
+
     // MARK: Update Search Results
 
     var refreshTimer: Timer?
@@ -514,7 +526,14 @@ public class ConversationSearchViewController: UITableViewController {
             reloadTableData()
             return
         }
-        guard lastSearchText != searchText else {
+
+        // a database change will lead to a search with the searchText=lastSearchText
+        // in this case we only want to update the visible cells
+        var updateCellCandidates: [HomeViewCell]?
+        if lastSearchText == searchText {
+            updateCellCandidates = tableView.visibleCells.filter {$0 as? HomeViewCell != nil} as? [HomeViewCell]
+        }
+        guard updateCellCandidates == nil || updateCellCandidates!.count > 0 else {
             // Ignoring redundant search.
             return
         }
@@ -538,13 +557,47 @@ public class ConversationSearchViewController: UITableViewController {
                 // Discard results from stale search.
                 return
             }
-
             self.searchResultSet = results
-            self.reloadTableData()
+            if let candidates = updateCellCandidates {
+                for cell in candidates {
+                    if let (section, row) = self.getIndexPathFor(threadId: cell.thread?.uniqueId), let configuration = self.cellConfiguration(searchSection: section, row: row) {
+                        cell.reset()
+                        cell.configure(cellContentToken: self.cellContentToken(forConfiguration: configuration, useCache: false))
+                    }
+                }
+            } else {
+                self.reloadTableData()
+            }
         })
     }
 
     // MARK: -
+
+    private func getThreadViewModelFor(indexPath: IndexPath) -> ThreadViewModel? {
+        if let searchSection = SearchSection(rawValue: indexPath.section) {
+            if searchSection == .contactThreads {
+                return searchResultSet.contactThreads[indexPath.row].thread
+            } else if searchSection == .groupThreads {
+                return searchResultSet.groupThreads[indexPath.row].thread
+            }
+        }
+        return nil
+    }
+
+    private func getIndexPathFor(threadId: String?) -> (SearchSection, Int)? {
+        if let threadId = threadId {
+            if let row = searchResultSet.contactThreads.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
+                return (SearchSection.contactThreads, row)
+            }
+            if let row = searchResultSet.groupThreads.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
+                return (SearchSection.groupThreads, row)
+            }
+            if let row = searchResultSet.messages.map({$0.thread.threadRecord.uniqueId}).firstIndex(of: threadId) {
+                return (SearchSection.messages, row)
+            }
+        }
+        return nil
+    }
 
     private func isBlocked(thread: ThreadViewModel) -> Bool {
         owsAssertDebug(thread.homeViewInfo != nil)
