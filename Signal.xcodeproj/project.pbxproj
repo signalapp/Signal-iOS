@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06289300DC49EDEA6FEC730C /* Pods_SignalPerformanceTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C61A9604F0FC0D258C8CE27F /* Pods_SignalPerformanceTests.framework */; };
+		1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */; };
 		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
@@ -1154,6 +1155,7 @@
 		02E4AF4827F1AD3630C8B77B /* Pods-SignalUITests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.profiling.xcconfig"; sourceTree = "<group>"; };
 		0435CB909E03469591D260F3 /* Pods-SignalUI.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUI/Pods-SignalUI.testable release.xcconfig"; sourceTree = "<group>"; };
 		10AE4264D3E52937D8964A86 /* Pods-SignalMessaging.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.profiling.xcconfig"; sourceTree = "<group>"; };
+		1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSwipeHandler.swift; sourceTree = "<group>"; };
 		14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
 		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
@@ -2706,6 +2708,7 @@
 				34E95C1D269F4F4F004807EC /* HVRenderState.swift */,
 				34E95C20269F4F4F004807EC /* HVTableDataSource.swift */,
 				34E95C1F269F4F4F004807EC /* HVViewState.swift */,
+				1477630A275E20D700D1067E /* ThreadSwipeHandler.swift */,
 			);
 			path = HomeView;
 			sourceTree = "<group>";
@@ -6325,6 +6328,7 @@
 				887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */,
 				3426A37025631C250036407F /* CVComponentLinkPreview.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
+				1477630B275E20D700D1067E /* ThreadSwipeHandler.swift in Sources */,
 				881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */,
 				887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */,
 				8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */,
