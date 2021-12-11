@@ -541,6 +541,22 @@ extension MentionTextView {
         } else if let string = UIPasteboard.general.strings?.first {
             replaceCharacters(in: selectedRange, with: string)
         }
+
+        if !textStorage.isEmpty {
+            // Pasting very long text generates an obscure UI error producing an UITextView where the lower
+            // part contains invisible characters. The exact root of the issue is still unclear but the following
+            // lines of code work as a workaround.
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
+                if let self = self {
+                    let oldRange = self.selectedRange
+                    self.selectedRange = NSRange.init(location: 0, length: 0)
+                    // inserting blank text into the text storage will remove the invisible characters
+                    self.textStorage.insert(NSAttributedString(string: ""), at: 0)
+                    // setting the range (again) will ensure scrolling to the correct position
+                    self.selectedRange = oldRange
+                }
+            }
+        }
     }
 }
 

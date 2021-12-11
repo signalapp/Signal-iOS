@@ -52,6 +52,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 @property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
 
+@property (nonatomic) BOOL hasEverPresentedExperienceUpgrade;
+
 @end
 
 #pragma mark -
@@ -447,7 +449,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     [super viewDidAppear:animated];
 
-    if (!self.hasEverAppeared && ![ExperienceUpgradeManager presentNextFromViewController:self]) {
+    if (!self.getStartedBanner && !self.hasEverPresentedExperienceUpgrade &&
+        [ExperienceUpgradeManager presentNextFromViewController:self]) {
+        self.hasEverPresentedExperienceUpgrade = YES;
+    } else if (!self.hasEverAppeared) {
         [OWSActionSheets showIOSUpgradeNagIfNecessary];
         [self presentGetStartedBannerIfNecessary];
     }
