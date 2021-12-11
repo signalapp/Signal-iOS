@@ -25,13 +25,16 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var lastPreloadCellDate: Date?
 
+    fileprivate var updateTimer: Timer?
+
     fileprivate var nextUpdateAt: Date? {
         didSet {
-            if nextUpdateAt == nil {
-                updateTimer?.invalidate()
-                updateTimer = nil
-            } else {
-                updateTimer = Timer.scheduledTimer(withTimeInterval: nextUpdateAt!.timeIntervalSinceNow, repeats: false) { [weak self] (_) in
+            guard nextUpdateAt != oldValue else {
+                return
+            }
+
+            if let interval = nextUpdateAt?.timeIntervalSinceNow {
+                updateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] (_) in
                     if let self = self {
                         for path in self.tableView.indexPathsForVisibleRows ?? [] {
                             if !self.updateVisibleCellContent(at: path, for: self.tableView) {
@@ -41,10 +44,12 @@ public class HVTableDataSource: NSObject {
                     }
                     self?.updateAndSetRefreshTimer()
                 }
+            } else if updateTimer != nil {
+                updateTimer?.invalidate()
+                updateTimer = nil
             }
         }
     }
-    fileprivate var updateTimer: Timer?
 
     public required override init() {
         super.init()
@@ -927,6 +932,7 @@ public class HVTableView: UITableView {
 
         lastReloadDate = Date()
         super.reloadData()
+        (dataSource as? HVTableDataSource)?.updateAndSetRefreshTimer()
     }
 
     @objc
