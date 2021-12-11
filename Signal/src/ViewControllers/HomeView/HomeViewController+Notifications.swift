@@ -6,6 +6,8 @@ import Foundation
 
 extension HomeViewController {
 
+    public static let clearSearch = Notification.Name("clearSearch")
+
     @objc
     public func observeNotifications() {
         AssertIsOnMainThread()
@@ -60,23 +62,11 @@ extension HomeViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearSearch),
-                                               name: ThreadUtil.messageSent,
+                                               name: HomeViewController.clearSearch,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearSearch),
                                                name: ReactionManager.localUserReacted,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(clearSearch),
-                                               name: ConversationSettingsViewController.disapperaringMessagesSettingsChanged,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(clearSearch),
-                                               name: ConversationViewController.callStarted,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(clearSearch),
-                                               name: ConversationViewController.respondedToPendingMessageRequest,
                                                object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)

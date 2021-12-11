@@ -7,7 +7,6 @@ import SafariServices
 
 @objc
 extension ConversationViewController: MessageRequestDelegate {
-    static let respondedToPendingMessageRequest = Notification.Name("respondedToPendingMessageRequest")
 
     func messageRequestViewDidTapBlock(mode: MessageRequestMode) {
         AssertIsOnMainThread()
@@ -81,7 +80,7 @@ extension ConversationViewController: MessageRequestDelegate {
         }
         syncManager.sendMessageRequestResponseSyncMessage(thread: thread,
                                                           responseType: .block)
-        NotificationCenter.default.post(name: ConversationViewController.respondedToPendingMessageRequest, object: nil)
+        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 
     func blockThreadAndDelete() {
@@ -114,7 +113,7 @@ extension ConversationViewController: MessageRequestDelegate {
             ),
             extraVInset: bottomBar.height
         )
-        NotificationCenter.default.post(name: ConversationViewController.respondedToPendingMessageRequest, object: nil)
+        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 
     func reportSpam() {
@@ -220,7 +219,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 self.thread.softDelete(with: transaction)
             }
             self.conversationSplitViewController?.closeSelectedConversation(animated: true)
-            NotificationCenter.default.post(name: ConversationViewController.respondedToPendingMessageRequest, object: nil)
+            NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
         }
 
         guard let groupThread = thread as? TSGroupThread,
@@ -260,7 +259,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 // Send our profile key to the sender
                 let profileKeyMessage = OWSProfileKeyMessage(thread: thread)
                 Self.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
-                NotificationCenter.default.post(name: ConversationViewController.respondedToPendingMessageRequest, object: nil)
+                NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
             }
         }
 

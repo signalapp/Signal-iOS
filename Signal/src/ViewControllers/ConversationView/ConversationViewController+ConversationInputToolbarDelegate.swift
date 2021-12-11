@@ -143,6 +143,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         if didAddToProfileWhitelist {
             ensureBannerState()
         }
+
+        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 
     public func sendSticker(_ stickerInfo: StickerInfo) {
@@ -318,6 +320,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             if didAddToProfileWhitelist {
                 self.ensureBannerState()
             }
+
+            NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
         }
     }
 
@@ -591,6 +595,8 @@ extension ConversationViewController: LocationPickerDelegate {
             if didAddToProfileWhitelist {
                 self.ensureBannerState()
             }
+
+            NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error).")
         }

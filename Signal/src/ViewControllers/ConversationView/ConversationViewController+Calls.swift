@@ -5,7 +5,6 @@
 import Foundation
 
 public extension ConversationViewController {
-    static let callStarted = Notification.Name("callStarted")
 
     var isCurrentCallForThread: Bool {
         thread.uniqueId == callService.currentCall?.thread.uniqueId
@@ -100,7 +99,7 @@ public extension ConversationViewController {
 
         outboundIndividualCallInitiator.initiateCall(address: contactThread.contactAddress,
                                                      isVideo: withVideo)
-        NotificationCenter.default.post(name: ConversationViewController.callStarted, object: nil)
+        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 
     func refreshCallState() {
