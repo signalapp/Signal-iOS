@@ -12,9 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldUseTheme;
 
+
 // We often want to pin one view to the bottom of a view controller
 // BUT adjust its location upward if the keyboard appears.
 - (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch;
+// Use this variant for view controllers who's view is not full screen (such as sheets)
+- (NSLayoutConstraint *)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view
+                                                           avoidNotch:(BOOL)avoidNotch
+                                      adjustmentWithKeyboardPresented:(CGFloat)adjustment;
 
 - (void)removeBottomLayout;
 

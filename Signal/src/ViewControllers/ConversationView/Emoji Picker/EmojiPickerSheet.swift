@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 class EmojiPickerSheet: InteractiveSheetViewController {
@@ -12,6 +13,15 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     let collectionView = EmojiPickerCollectionView()
     lazy var sectionToolbar = EmojiPickerSectionToolbar(delegate: self)
+
+    lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = NSLocalizedString("HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", comment: "Placeholder text for search bar which filters conversations.")
+        searchBar.delegate = self
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
+        return searchBar
+    }()
 
     init(completionHandler: @escaping (EmojiWithSkinTones?) -> Void) {
         self.completionHandler = completionHandler
@@ -31,14 +41,20 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+        contentView.addSubview(searchBar)
+        searchBar.autoPinWidthToSuperview()
+        searchBar.autoPinEdge(toSuperviewEdge: .top)
 
         contentView.addSubview(collectionView)
-        collectionView.autoPinEdgesToSuperviewEdges()
+        collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
+        collectionView.autoPinEdge(.bottom, to: .bottom, of: contentView)
+        collectionView.autoPinWidthToSuperview()
         collectionView.pickerDelegate = self
+        collectionView.alwaysBounceVertical = true
 
         contentView.addSubview(sectionToolbar)
         sectionToolbar.autoPinWidthToSuperview()
-        sectionToolbar.autoPinEdge(toSuperviewEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: sectionToolbar, avoidNotch: false, adjustmentWithKeyboardPresented: 32)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -58,14 +74,12 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
         // Ensure you can scroll to the last emoji without
         // them being stuck behind the toolbar.
-        collectionView.contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: sectionToolbar.height, trailing: 0)
+        let contentInset = UIEdgeInsets(top: 0, leading: 0, bottom: sectionToolbar.height, trailing: 0)
+        collectionView.contentInset = contentInset
+        collectionView.scrollIndicatorInsets = contentInset
     }
-}
 
-extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
-    func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection section: Int) {
-        collectionView.scrollToSectionHeader(section, animated: false)
-
+    private func expandSheetAnimated() {
         guard heightConstraint?.constant != maximizedHeight else { return }
 
         UIView.animate(withDuration: maxAnimationDuration, delay: 0, options: .curveEaseOut, animations: {
@@ -74,9 +88,31 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
             self.backdropView?.alpha = 1
         })
     }
+}
+
+extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
+    func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection section: Int) {
+        if let searchText = collectionView.searchText, searchText.count > 0 {
+            searchBar.text = nil
+            collectionView.searchText = nil
+
+            // Collection view needs a moment to reload
+            DispatchQueue.main.async {
+                self.collectionView.scrollToSectionHeader(section, animated: false)
+            }
+        } else {
+            collectionView.scrollToSectionHeader(section, animated: false)
+        }
+
+        expandSheetAnimated()
+    }
 
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool {
         return collectionView.hasRecentEmoji
+    }
+
+    func emojiPickerWillBeginDragging(_ emojiPicker: EmojiPickerCollectionView) {
+        searchBar.resignFirstResponder()
     }
 }
 
@@ -88,5 +124,15 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
 
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int) {
         sectionToolbar.setSelectedSection(section)
+    }
+}
+
+extension EmojiPickerSheet: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        expandSheetAnimated()
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        collectionView.searchText = searchText
     }
 }
