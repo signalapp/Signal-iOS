@@ -744,9 +744,19 @@ public class SubscriptionManager: NSObject {
             newExpiringBadgeID = persistedBoostBadgeIDs.first
         }
 
-        if let newExpiringBadgeID = newExpiringBadgeID, newExpiringBadgeID != expiringBadgeID {
-            expiringBadgeID = newExpiringBadgeID
-            showExpiryOnHomeScreen = true
+        if let newExpiringBadgeID = newExpiringBadgeID {
+            if newExpiringBadgeID != expiringBadgeID {
+                Logger.info("[Subscriptions] Got new potential expiring badgeID \(newExpiringBadgeID)")
+                expiringBadgeID = newExpiringBadgeID
+                showExpiryOnHomeScreen = true
+            }
+        } else { // Don't pass through old expiry state if we have something new
+            if expiringBadgeID != nil && ((currentSubscriberBadgeIDs.count > persistedBoostBadgeIDs.count && expiringBadgeID != "BOOST") ||
+                (currentBoostBadgeIDs.count > persistedBoostBadgeIDs.count && expiringBadgeID == "BOOST")) {
+                Logger.info("[Subscriptions] Got more current badgeIDs than persisted, clearing out old expiring ID \(expiringBadgeID ?? "none")")
+                expiringBadgeID = nil
+                showExpiryOnHomeScreen = false
+            }
         }
 
         // If the last persisted expiring ID is a subscription but we now have valid sub badgeIDs, clear state and do not show expiry sheet
@@ -757,7 +767,7 @@ public class SubscriptionManager: NSObject {
 
         Logger.info("[Subscriptions] Current sub badges \(currentSubscriberBadgeIDs.count), persisted sub badges \(persistedSubscriberBadgeIDs.count)")
         Logger.info("[Subscriptions] Current boost badges \(currentBoostBadgeIDs.count), persisted boost badges \(persistedBoostBadgeIDs.count)")
-        Logger.info("[Subscriptions] mostRecentlyExpiredBadgeID is \(expiringBadgeID ?? "none")")
+        Logger.info("[Subscriptions] mostRecentlyExpiredBadgeID is \(expiringBadgeID ?? "none"), show on home screen \(showExpiryOnHomeScreen) user cancelled \(userManuallyCancelled)")
 
         // Persist new values
         SDSDatabaseStorage.shared.write { transaction in
@@ -932,6 +942,7 @@ extension SubscriptionManager {
     }
 
     public static func setShowExpirySheetOnHomeScreenKey(show: Bool, transaction: SDSAnyWriteTransaction) {
+        Logger.info("\(show)")
         subscriptionKVS.setBool(show, key: showExpirySheetOnHomeScreenKey, transaction: transaction)
     }
 
