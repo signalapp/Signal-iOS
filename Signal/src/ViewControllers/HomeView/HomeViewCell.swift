@@ -121,7 +121,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
-    private var timestampUpdater: Timer?
+    public var nextUpdateTimestamp: Date?
     var thread: TSThread? {
         cellContentToken?.thread
     }
@@ -392,20 +392,14 @@ public class HomeViewCell: UITableViewCell {
         }
 
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
-        if let date = configs.timestamp {
-            timestampUpdater?.invalidate()
-            if DateUtil.dateIsOlderThanToday(date) {
-                timestampUpdater = nil
-            } else {
-                timestampUpdater = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (_) in
-                    if let self = self {
-                        self.dateTimeLabel.text = DateUtil.formatDateShort(date)
-                        if DateUtil.dateIsOlderThanToday(date) {
-                            self.timestampUpdater?.invalidate()
-                            self.timestampUpdater = nil
-                        }
-                    }
-                }
+        self.nextUpdateTimestamp = nil
+        if let date = configs.timestamp, !DateUtil.dateIsOlderThanToday(date) {
+            self.dateTimeLabel.text = DateUtil.formatDateShort(date)
+            let calendar = Calendar.current
+            let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
+            if minutesDiff <= 60 {
+                let secondsDiff = (calendar.dateComponents([.second], from: date, to: Date()).second ?? 0) % 60
+                self.nextUpdateTimestamp = Date().addingTimeInterval(Double(60 - secondsDiff))
             }
         }
 
@@ -870,8 +864,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     func reset() {
-        timestampUpdater?.invalidate()
-        timestampUpdater = nil
+        nextUpdateTimestamp = nil
         isCellVisible = false
 
         for cvview in cvviews {

@@ -25,6 +25,27 @@ public class HVTableDataSource: NSObject {
 
     fileprivate var lastPreloadCellDate: Date?
 
+    fileprivate var nextUpdateAt: Date? {
+        didSet {
+            if nextUpdateAt == nil {
+                updateTimer?.invalidate()
+                updateTimer = nil
+            } else {
+                updateTimer = Timer.scheduledTimer(withTimeInterval: nextUpdateAt!.timeIntervalSinceNow, repeats: false) { [weak self] (_) in
+                    if let self = self {
+                        for path in self.tableView.indexPathsForVisibleRows ?? [] {
+                            if !self.updateVisibleCellContent(at: path, for: self.tableView) {
+                                self.tableView.reloadRows(at: [path], with: .none)
+                            }
+                        }
+                    }
+                    self?.updateAndSetRefreshTimer()
+                }
+            }
+        }
+    }
+    fileprivate var updateTimer: Timer?
+
     public required override init() {
         super.init()
     }
@@ -572,6 +593,7 @@ extension HVTableDataSource: UITableViewDataSource {
             tableView.deselectRow(at: indexPath, animated: false)
         }
 
+        updateAndSetRefreshTimer(for: cell)
         return cell
     }
 
@@ -724,6 +746,21 @@ extension HVTableDataSource: UITableViewDataSource {
 // MARK: -
 
 extension HVTableDataSource {
+
+    func updateAndSetRefreshTimer(for cell: HomeViewCell?) {
+        if let cell = cell, let timestamp = cell.nextUpdateTimestamp {
+            if nextUpdateAt == nil || timestamp.isBefore(nextUpdateAt!) {
+                nextUpdateAt = timestamp
+            }
+        }
+    }
+
+    func updateAndSetRefreshTimer() {
+        nextUpdateAt = nil
+        for cell in tableView.visibleCells {
+            updateAndSetRefreshTimer(for: cell as? HomeViewCell)
+        }
+    }
 
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
