@@ -156,19 +156,34 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let uuid: UUID? = try container.decodeIfPresent(UUID.self, forKey: .backingUuid)
+        let phoneNumber: String? = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
 
-        // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
-        // pull the phone number from the cache.
-        let phoneNumber: String?
-        if let decodedUuid = uuid {
-            phoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: decodedUuid)
+        // If we know the uuid, always rely on the cached phone number
+        // and discard any decoded phone number that may relate to a
+        // stale mapping.
+        if let uuid = uuid,
+            let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
+            backingPhoneNumber = AtomicOptional(cachedPhoneNumber)
         } else {
-            phoneNumber = try container.decodeIfPresent(String.self, forKey: .backingPhoneNumber)
+            if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
+                owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
+            }
+
+            backingPhoneNumber = AtomicOptional(phoneNumber)
         }
 
-        backingUuid = AtomicOptional(uuid)
-        backingPhoneNumber = AtomicOptional(phoneNumber)
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get(), trustLevel: .low)
+        if uuid == nil, let phoneNumber = phoneNumber,
+            let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
+            backingUuid = AtomicOptional(cachedUuid)
+        } else {
+            backingUuid = AtomicOptional(uuid)
+        }
+
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(
+            uuid: backingUuid.get(),
+            phoneNumber: backingPhoneNumber.get(),
+            trustLevel: .low
+        )
 
         super.init()
 
@@ -185,17 +200,35 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        backingUuid = AtomicOptional(aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
+        let uuid = aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?
+        let phoneNumber = aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?
 
-        // Only decode the backingPhoneNumber if we don't know the UUID, otherwise
-        // pull the phone number from the cache.
-        if let backingUuid = backingUuid.get() {
-            backingPhoneNumber = AtomicOptional(SignalServiceAddress.cache.phoneNumber(forUuid: backingUuid))
+        // If we know the uuid, always rely on the cached phone number
+        // and discard any decoded phone number that may relate to a
+        // stale mapping.
+        if let uuid = uuid,
+            let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
+            backingPhoneNumber = AtomicOptional(cachedPhoneNumber)
         } else {
-            backingPhoneNumber = AtomicOptional(aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+            if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
+                owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
+            }
+
+            backingPhoneNumber = AtomicOptional(phoneNumber)
         }
 
-        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid.get(), phoneNumber: backingPhoneNumber.get(), trustLevel: .low)
+        if uuid == nil, let phoneNumber = phoneNumber,
+            let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
+            backingUuid = AtomicOptional(cachedUuid)
+        } else {
+            backingUuid = AtomicOptional(uuid)
+        }
+
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(
+            uuid: backingUuid.get(),
+            phoneNumber: backingPhoneNumber.get(),
+            trustLevel: .low
+        )
 
         super.init()
 

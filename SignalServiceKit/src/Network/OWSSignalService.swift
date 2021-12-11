@@ -14,6 +14,7 @@ fileprivate extension OWSSignalService {
         case cds(host: String, censorshipCircumventionPrefix: String)
         case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
         case kbs
+        case updates
         case updates2
 
         static func type(forCdnNumber cdnNumber: UInt32) -> SignalServiceType {
@@ -70,6 +71,10 @@ fileprivate extension OWSSignalService {
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.keyBackupURL)!,
                                      censorshipCircumventionPathPrefix: TSConstants.keyBackupCensorshipPrefix,
                                      shouldHandleRemoteDeprecation: true)
+        case .updates:
+            return SignalServiceInfo(baseUrl: URL(string: TSConstants.updatesURL)!,
+                                     censorshipCircumventionPathPrefix: "unimplemented",
+                                     shouldHandleRemoteDeprecation: false)
         case .updates2:
             return SignalServiceInfo(baseUrl: URL(string: TSConstants.updates2URL)!,
                                      censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
@@ -100,7 +105,13 @@ fileprivate extension OWSSignalService {
                                        extraHeaders: extraHeaders)
         } else {
             let baseUrl = signalServiceInfo.baseUrl
-            let securityPolicy = OWSHTTPSecurityPolicy.shared()
+            let securityPolicy: AFSecurityPolicy
+            switch signalServiceType {
+            case .updates:
+                securityPolicy = OWSURLSession.defaultSecurityPolicy
+            default:
+                securityPolicy = OWSHTTPSecurityPolicy.shared()
+            }
             urlSession = OWSURLSession(baseUrl: baseUrl,
                                        securityPolicy: securityPolicy,
                                        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
@@ -143,6 +154,10 @@ public extension OWSSignalService {
 
     func urlSessionForKBS() -> OWSURLSession {
         buildUrlSession(for: .kbs)
+    }
+
+    func urlSessionForUpdates() -> OWSURLSession {
+        buildUrlSession(for: .updates)
     }
 
     func urlSessionForUpdates2() -> OWSURLSession {
