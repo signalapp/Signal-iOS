@@ -60,12 +60,15 @@ public extension HomeViewController {
 
         let expiredBadgeID = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
         guard let expiredBadgeID = expiredBadgeID else {
+            Logger.info("No expired badgeIDs, not showing sheet")
             return
         }
 
         let shouldShow = SDSDatabaseStorage.shared.read { transaction in
             SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction)
         }
+
+        Logger.info("showing expiry sheet \(shouldShow) for badge \(expiredBadgeID)")
 
         guard shouldShow else {
             return
