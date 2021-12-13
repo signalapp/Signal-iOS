@@ -58,6 +58,17 @@ class SendMediaNavigationController: OWSNavigationController {
 
     @objc
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
+    
+    @objc class func showingWithImage(_ attachment: SignalAttachment, delegate: SendMediaNavDelegate) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController()
+        navController.sendMediaNavDelegate = delegate
+        let approvalViewController = AttachmentApprovalViewController(mode: .modal, attachments: [ attachment ])
+        approvalViewController.approvalDelegate = navController
+        approvalViewController.messageText = delegate.sendMediaNavInitialMessageText(navController)
+        navController.setViewControllers([approvalViewController], animated: false)
+
+        return navController
+    }
 
     @objc
     public class func showingCameraFirst() -> SendMediaNavigationController {

@@ -37,6 +37,22 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     public required init?(coder: NSCoder) {
         preconditionFailure("Use init(delegate:) instead.")
     }
+    
+    public override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(paste(_:)) {
+            if let _ = UIPasteboard.general.image {
+                return true
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    
+    public override func paste(_ sender: Any?) {
+        if let image = UIPasteboard.general.image {
+            snDelegate?.didPasteImageFromPasteboard(self, image: image)
+        }
+        super.paste(sender)
+    }
 
     private func setUpViewHierarchy() {
         showsHorizontalScrollIndicator = false
@@ -80,4 +96,5 @@ protocol InputTextViewDelegate : AnyObject {
     
     func inputTextViewDidChangeSize(_ inputTextView: InputTextView)
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
+    func didPasteImageFromPasteboard(_ inputTextView: InputTextView, image: UIImage)
 }

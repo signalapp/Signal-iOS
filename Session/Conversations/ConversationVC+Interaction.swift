@@ -49,6 +49,16 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     }
 
     // MARK: Attachments
+    func didPasteImageFromPasteboard(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+        let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
+        
+        let sendMediaNavController = SendMediaNavigationController.showingWithImage(attachment, delegate: self)
+        sendMediaNavController.modalPresentationStyle = .fullScreen
+        self.present(sendMediaNavController, animated: true, completion: nil)
+    }
+    
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
         dismiss(animated: true, completion: nil)
     }

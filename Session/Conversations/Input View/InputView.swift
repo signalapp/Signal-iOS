@@ -143,6 +143,10 @@ final class InputView : UIView, InputViewButtonDelegate, InputTextViewDelegate, 
         autoGenerateLinkPreviewIfPossible()
         delegate?.inputTextViewDidChangeContent(inputTextView)
     }
+    
+    func didPasteImageFromPasteboard(_ inputTextView: InputTextView, image: UIImage) {
+        delegate?.didPasteImageFromPasteboard(image)
+    }
 
     // We want to show either a link preview or a quote draft, but never both at the same time. When trying to
     // generate a link preview, wait until we're sure that we'll be able to build a link preview from the given
@@ -351,4 +355,5 @@ protocol InputViewDelegate : AnyObject, ExpandingAttachmentsButtonDelegate, Voic
     func handleQuoteViewCancelButtonTapped()
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
     func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)
+    func didPasteImageFromPasteboard(_ image: UIImage)
 }
