@@ -211,8 +211,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     }
                     target:weakSelf
                     selector:@selector(didToggleCallsEnabled:)]];
-    callsSection.headerTitle = NSLocalizedString(
-        @"SETTINGS_CALLS_HEADER", @"Header for setting for enabling & disabling voice & video calls.");
+    callsSection.headerTitle = [NSString stringWithFormat:@"%@ (BETA)", NSLocalizedString( @"SETTINGS_CALLS_HEADER", @"Header for setting for enabling & disabling voice & video calls.")];
     callsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_CALLS_FOOTER", @"Footer for setting for enabling & disabling voice & video calls.");
     [contents addSection:callsSection];
