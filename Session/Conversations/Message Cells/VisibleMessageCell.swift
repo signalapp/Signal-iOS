@@ -468,6 +468,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let location = gestureRecognizer.location(in: self)
         if profilePictureView.frame.contains(location) && VisibleMessageCell.shouldShowProfilePicture(for: viewItem) {
             guard let message = viewItem.interaction as? TSIncomingMessage else { return }
+            guard !message.isOpenGroupMessage else { return } // Do not show user details to prevent spam
             delegate?.showUserDetails(for: message.authorId)
         } else if replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
