@@ -29,11 +29,7 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
     // MARK: Call
     @objc func startCall(_ sender: Any?) {
         guard SessionCall.isEnabled else { return }
-        let userDefaults = UserDefaults.standard
-        if !SSKPreferences.areCallsEnabled && !userDefaults[.hasSeenCallIPExposureWarning] {
-            userDefaults[.hasSeenCallIPExposureWarning] = true
-            showCallModal()
-        } else if SSKPreferences.areCallsEnabled {
+        if SSKPreferences.areCallsEnabled {
             requestMicrophonePermissionIfNeeded { }
             guard AVAudioSession.sharedInstance().recordPermission == .granted else { return }
             guard let contactSessionID = (thread as? TSContactThread)?.contactSessionID() else { return }
@@ -45,13 +41,6 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
             self.inputAccessoryView?.alpha = 0
             present(callVC, animated: true, completion: nil)
         }
-    }
-    
-    internal func showCallModal() {
-        let callModal = CallModal() { [weak self] in
-            self?.startCall(nil)
-        }
-        present(callModal, animated: true, completion: nil)
     }
     
     internal func showCallVCIfNeeded() {
