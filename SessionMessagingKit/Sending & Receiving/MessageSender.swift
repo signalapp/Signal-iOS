@@ -355,6 +355,10 @@ public final class MessageSender : NSObject {
             // Start the disappearing messages timer if needed
             OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
         }
+        // Prevent the same ExpirationTimerUpdate to be handled twice
+        if let message = message as? ExpirationTimerUpdate {
+            Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
+        }
         // Sync the message if:
         // • it's a visible message or an expiration timer update
         // • the destination was a contact
@@ -362,11 +366,7 @@ public final class MessageSender : NSObject {
         let userPublicKey = getUserHexEncodedPublicKey()
         if case .contact(let publicKey) = destination, !isSyncMessage {
             if let message = message as? VisibleMessage { message.syncTarget = publicKey }
-            if let message = message as? ExpirationTimerUpdate {
-                message.syncTarget = publicKey
-                // Prevent the same ExpirationTimerUpdate to be handled twice
-                Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
-            }
+            if let message = message as? ExpirationTimerUpdate { message.syncTarget = publicKey }
             // FIXME: Make this a job
             sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
         }
