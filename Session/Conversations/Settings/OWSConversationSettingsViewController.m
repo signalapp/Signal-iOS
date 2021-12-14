@@ -1025,8 +1025,11 @@ CGFloat kIconViewLength = 24;
 - (void)saveName
 {
     if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:((TSContactThread *)self.thread).contactSessionID];
-    if (contact == nil) { return; }
+    NSString *sessionID = ((TSContactThread *)self.thread).contactSessionID;
+    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
+    if (contact == nil) {
+        contact = [[SNContact alloc] initWithSessionID:sessionID];
+    }
     NSString *text = [self.displayNameTextField.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
     contact.nickname = text.length > 0 ? text : nil;
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
