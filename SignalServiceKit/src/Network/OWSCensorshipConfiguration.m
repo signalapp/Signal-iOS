@@ -48,7 +48,7 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
         OWSFailDebug(@"baseURL was unexpectedly nil with specifiedDomain: %@", specifiedDomain);
         return self.defaultConfiguration;
     }
-    AFSecurityPolicy *securityPolicy = [self securityPolicyForDomain:specifiedDomain];
+    OWSHTTPSecurityPolicy *securityPolicy = [self securityPolicyForDomain:specifiedDomain];
     OWSAssertDebug(securityPolicy);
 
     return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
@@ -58,12 +58,13 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
 {
     NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", OWSFrontingHost_Default];
     NSURL *baseURL = [NSURL URLWithString:frontingURLString];
-    AFSecurityPolicy *securityPolicy = [self securityPolicyForDomain:OWSFrontingHost_Default];
+    OWSHTTPSecurityPolicy *securityPolicy = [self securityPolicyForDomain:OWSFrontingHost_Default];
 
     return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
 }
 
-- (instancetype)initWithDomainFrontBaseURL:(NSURL *)domainFrontBaseURL securityPolicy:(AFSecurityPolicy *)securityPolicy
+- (instancetype)initWithDomainFrontBaseURL:(NSURL *)domainFrontBaseURL
+                            securityPolicy:(OWSHTTPSecurityPolicy *)securityPolicy
 {
     OWSAssertDebug(domainFrontBaseURL);
     OWSAssertDebug(securityPolicy);
@@ -122,10 +123,10 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
 #pragma mark - Reflector Pinning Policy
 
 // When using censorship circumvention, we pin to the fronted domain host.
-// Adding a new domain front entails adding a corresponding AFSecurityPolicy
-// and pinning to it's CA.
+// Adding a new domain front entails adding a corresponding OWSHTTPSecurityPolicy
+// and pinning to its CA.
 // If the security policy requires new certificates, include them in the SSK bundle
-+ (AFSecurityPolicy *)securityPolicyForDomain:(NSString *)domain
++ (OWSHTTPSecurityPolicy *)securityPolicyForDomain:(NSString *)domain
 {
     if ([domain isEqualToString:OWSFrontingHost_GoogleEgypt]) {
         return self.googlePinningPolicy;
@@ -148,7 +149,7 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     }
 }
 
-+ (AFSecurityPolicy *)pinningPolicyWithCertNames:(NSArray<NSString *> *)certNames
++ (OWSHTTPSecurityPolicy *)pinningPolicyWithCertNames:(NSArray<NSString *> *)certNames
 {
     NSMutableSet<NSData *> *certificates = [NSMutableSet new];
     for (NSString *certName in certNames) {
@@ -164,7 +165,7 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
         [certificates addObject:certData];
     }
 
-    return [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
+    return [[OWSHTTPSecurityPolicy alloc] initWithPinnedCertificates:certificates];
 }
 
 + (nullable NSData *)certificateDataWithName:(NSString *)name error:(NSError **)error
@@ -200,9 +201,9 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     return certData;
 }
 
-+ (AFSecurityPolicy *)yahooViewPinningPolicy_deprecated
++ (OWSHTTPSecurityPolicy *)yahooViewPinningPolicy_deprecated
 {
-    static AFSecurityPolicy *securityPolicy = nil;
+    static OWSHTTPSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // DigiCertGlobalRootG2 - view.yahoo.com
@@ -212,9 +213,9 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     return securityPolicy;
 }
 
-+ (AFSecurityPolicy *)souqPinningPolicy_deprecated
++ (OWSHTTPSecurityPolicy *)souqPinningPolicy_deprecated
 {
-    static AFSecurityPolicy *securityPolicy = nil;
+    static OWSHTTPSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // SFSRootCAG2 - cms.souqcdn.com
@@ -224,9 +225,9 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     return securityPolicy;
 }
 
-+ (AFSecurityPolicy *)googlePinningPolicy
++ (OWSHTTPSecurityPolicy *)googlePinningPolicy
 {
-    static AFSecurityPolicy *securityPolicy = nil;
+    static OWSHTTPSecurityPolicy *securityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         // GIAG2 cert plus root certs from pki.goog

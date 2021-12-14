@@ -105,12 +105,12 @@ fileprivate extension OWSSignalService {
                                        extraHeaders: extraHeaders)
         } else {
             let baseUrl = signalServiceInfo.baseUrl
-            let securityPolicy: AFSecurityPolicy
+            let securityPolicy: OWSHTTPSecurityPolicy
             switch signalServiceType {
             case .updates:
                 securityPolicy = OWSURLSession.defaultSecurityPolicy
             default:
-                securityPolicy = OWSHTTPSecurityPolicy.shared()
+                securityPolicy = OWSURLSession.signalServiceSecurityPolicy
             }
             urlSession = OWSURLSession(baseUrl: baseUrl,
                                        securityPolicy: securityPolicy,

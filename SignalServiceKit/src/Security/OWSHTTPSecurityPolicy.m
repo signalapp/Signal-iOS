@@ -7,26 +7,33 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSHTTPSecurityPolicy ()
+@property (readonly) NSSet<NSData *> *pinnedCertificates;
+@end
+
 @implementation OWSHTTPSecurityPolicy
 
 + (instancetype)sharedPolicy {
     static OWSHTTPSecurityPolicy *httpSecurityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        httpSecurityPolicy = [[self alloc] initWithOWSPolicy];
+        httpSecurityPolicy = [[self alloc]
+            initWithPinnedCertificates:[NSSet setWithObject:[self certificateDataForService:@"textsecure"]]];
     });
     return httpSecurityPolicy;
 }
 
-- (instancetype)initWithOWSPolicy {
-    self = [[super class] defaultPolicy];
++ (instancetype)systemDefault
+{
+    return [[self alloc] initWithPinnedCertificates:[NSSet set]];
+}
 
+- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates
+{
+    self = [super init];
     if (self) {
-        self.pinnedCertificates = [NSSet setWithArray:@[
-            [self.class certificateDataForService:@"textsecure"]
-        ]];
+        _pinnedCertificates = [certificates copy];
     }
-
     return self;
 }
 
@@ -70,15 +77,19 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    NSMutableArray *pinnedCertificates = [NSMutableArray array];
-    for (NSData *certificateData in self.pinnedCertificates) {
-        [pinnedCertificates
-            addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-    }
+    if ([self.pinnedCertificates count] > 0) {
+        NSMutableArray *pinnedCertificates = [NSMutableArray array];
+        for (NSData *certificateData in self.pinnedCertificates) {
+            [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(
+                                              NULL, (__bridge CFDataRef)certificateData)];
+        }
 
-    if (SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates) != errSecSuccess) {
-        OWSLogError(@"The anchor certificates couldn't be set.");
-        return NO;
+        if (SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates) != errSecSuccess) {
+            OWSLogError(@"The anchor certificates couldn't be set.");
+            return NO;
+        }
+    } else {
+        // Use SecTrust's default set of anchor certificates.
     }
 
     if (!AFServerTrustIsValid(serverTrust)) {
@@ -93,7 +104,7 @@ static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
     SecTrustResultType result;
     __Require_noErr_Quiet(SecTrustEvaluate(serverTrust, &result), _out);
 
-    isValid = (result == kSecTrustResultUnspecified);
+    isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
 
 _out:
     return isValid;

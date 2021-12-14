@@ -5,6 +5,7 @@
 import Foundation
 import PassKit
 import SignalServiceKit
+import AFNetworking
 
 public struct Stripe: Dependencies {
     public static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {

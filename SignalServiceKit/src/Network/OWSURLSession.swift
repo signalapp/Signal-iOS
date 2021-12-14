@@ -120,8 +120,7 @@ public class OWSURLSession: NSObject {
 
     private let configuration: URLSessionConfiguration
 
-    // TODO: Replace AFSecurityPolicy.
-    private let securityPolicy: AFSecurityPolicy
+    private let securityPolicy: OWSHTTPSecurityPolicy
 
     private let extraHeaders: [String: String]
 
@@ -195,12 +194,12 @@ public class OWSURLSession: NSObject {
     }()
 
     @objc
-    public static var defaultSecurityPolicy: AFSecurityPolicy {
-        AFSecurityPolicy.default()
+    public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy {
+        OWSHTTPSecurityPolicy.systemDefault()
     }
 
     @objc
-    public static var signalServiceSecurityPolicy: AFSecurityPolicy {
+    public static var signalServiceSecurityPolicy: OWSHTTPSecurityPolicy {
         OWSHTTPSecurityPolicy.shared()
     }
 
@@ -221,7 +220,7 @@ public class OWSURLSession: NSObject {
 
     public init(baseUrl: URL? = nil,
                 frontingInfo: FrontingInfo? = nil,
-                securityPolicy: AFSecurityPolicy,
+                securityPolicy: OWSHTTPSecurityPolicy,
                 configuration: URLSessionConfiguration,
                 extraHeaders: [String: String] = [:],
                 maxResponseSize: Int? = nil) {
@@ -239,22 +238,17 @@ public class OWSURLSession: NSObject {
     }
 
     @objc
-    public init(baseUrl: URL? = nil,
-                frontingInfo: FrontingInfo? = nil,
-                securityPolicy: AFSecurityPolicy,
-                configuration: URLSessionConfiguration,
-                extraHeaders: [String: String] = [:]) {
-        self.baseUrl = baseUrl
-        self.frontingInfo = frontingInfo
-        self.securityPolicy = securityPolicy
-        self.configuration = configuration
-        self.extraHeaders = extraHeaders
-        self.maxResponseSize = nil
-
-        super.init()
-
-        // Ensure this is set so that we don't try to create it in deinit().
-        _ = self.delegateBox
+    public convenience init(baseUrl: URL?,
+                            frontingInfo: FrontingInfo?,
+                            securityPolicy: OWSHTTPSecurityPolicy,
+                            configuration: URLSessionConfiguration,
+                            extraHeaders: [String: String]) {
+        self.init(baseUrl: baseUrl,
+                  frontingInfo: frontingInfo,
+                  securityPolicy: securityPolicy,
+                  configuration: configuration,
+                  extraHeaders: extraHeaders,
+                  maxResponseSize: nil)
     }
 
     deinit {
