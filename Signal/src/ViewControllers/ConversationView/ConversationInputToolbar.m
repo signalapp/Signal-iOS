@@ -697,16 +697,21 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         [self.attachmentButton setSelected:self.desiredKeyboardType == KeyboardType_Attachment animated:isAnimated];
 
         [self updateSuggestedStickers];
+    };
 
+    // we had some strange effects (invisible text areas) animating the final [self layoutIfNeeded] block
+    // this approach seems to be a valid workaround
+    if (isAnimated) {
+        [UIView animateWithDuration:0.1 animations:updateBlock completion:^(BOOL finished) {
+            if (doLayout) {
+                [self performSelector:@selector(layoutIfNeeded) withObject:NULL afterDelay:0.1];
+            }
+        }];
+    } else {
+        updateBlock();
         if (doLayout) {
             [self layoutIfNeeded];
         }
-    };
-
-    if (isAnimated) {
-        [UIView animateWithDuration:0.1 animations:updateBlock];
-    } else {
-        updateBlock();
     }
 }
 
