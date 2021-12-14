@@ -54,9 +54,9 @@ extension ConversationVC : InputViewDelegate, MessageCellDelegate, ContextMenuAc
         let dataSource = DataSourceValue.dataSource(with: imageData, utiType: kUTTypeJPEG as String)
         let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String, imageQuality: .medium)
         
-        let sendMediaNavController = SendMediaNavigationController.showingWithImage(attachment, delegate: self)
-        sendMediaNavController.modalPresentationStyle = .fullScreen
-        self.present(sendMediaNavController, animated: true, completion: nil)
+        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: [ attachment ], approvalDelegate: self)
+        approvalVC.modalPresentationStyle = .fullScreen
+        self.present(approvalVC, animated: true, completion: nil)
     }
     
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
