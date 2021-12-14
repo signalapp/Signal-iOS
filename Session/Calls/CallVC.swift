@@ -338,6 +338,9 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         callInfoLabel.text = "Call Ended"
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
+            self.operationPanel.alpha = 1
+            self.responsePanel.alpha = 1
+            self.callInfoLabel.alpha = 1
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
             self.conversationVC?.showInputAccessoryView()
