@@ -26,9 +26,6 @@ pod 'SignalMetadataKit', git: 'ssh://git@github.com/signalapp/SignalMetadataKit'
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-pod 'AFNetworking/NSURLSession', inhibit_warnings: true, git: 'https://github.com/signalapp/AFNetworking.git', branch: 'signal/3.2.1'
-# pod 'AFNetworking', path: '../AFNetworking'
-
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
 pod 'ZKGroup', git: 'https://github.com/signalapp/zkgroup', testspecs: ["Tests"]
