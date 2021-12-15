@@ -505,6 +505,14 @@ public extension NSObject {
     static var webSocketFactory: WebSocketFactory {
         SSKEnvironment.shared.webSocketFactoryRef
     }
+
+    var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    static var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -1001,6 +1009,14 @@ public extension Dependencies {
 
     static var webSocketFactory: WebSocketFactory {
         SSKEnvironment.shared.webSocketFactoryRef
+    }
+
+    var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    static var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
     }
 }
 

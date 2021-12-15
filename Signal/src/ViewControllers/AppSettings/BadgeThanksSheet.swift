@@ -24,13 +24,12 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     private let tableViewController = OWSTableViewController2()
     private let handleContainer = UIView()
 
-    private static let boostBadgeId = "BOOST"
     private let badge: ProfileBadge
-    private var isBoost: Bool { badge.id == Self.boostBadgeId }
+    private var isBoost: Bool { BoostBadgeIds.contains(badge.id) }
     private var isPrimaryBadge: Bool { badge.id == visibleBadges.first?.badgeId }
 
     private lazy var profileSnapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-    private lazy var hasAnySustainerBadge = profileSnapshot.profileBadgeInfo?.first { $0.badgeId != Self.boostBadgeId } != nil
+    private lazy var hasAnySustainerBadge = profileSnapshot.profileBadgeInfo?.first { SubscriptionBadgeIds.contains($0.badgeId) } != nil
     private lazy var visibleBadges = profileSnapshot.profileBadgeInfo?.filter { $0.isVisible ?? false } ?? []
     private var hasVisibleBadges: Bool { visibleBadges.count > 0 }
 
@@ -106,15 +105,16 @@ class BadgeThanksSheet: InteractiveSheetViewController {
     }
 
     var titleText: String {
-        switch badge.id {
-        case "BOOST": return NSLocalizedString(
-            "BADGE_THANKS_BOOST_TITLE",
-            comment: "Title for boost on the thank you sheet."
-        )
-        default: return NSLocalizedString(
-            "BADGE_THANKS_SUBSCRIPTION_TITLE",
-            comment: "Title for subscription on the thank you sheet."
-        )
+        if BoostBadgeIds.contains(badge.id) {
+            return NSLocalizedString(
+                "BADGE_THANKS_BOOST_TITLE",
+                comment: "Title for boost on the thank you sheet."
+            )
+        } else {
+            return NSLocalizedString(
+                "BADGE_THANKS_SUBSCRIPTION_TITLE",
+                comment: "Title for subscription on the thank you sheet."
+            )
         }
     }
 

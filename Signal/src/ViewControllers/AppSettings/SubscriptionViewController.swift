@@ -274,7 +274,7 @@ class SubscriptionViewController: OWSTableViewController2 {
         }
 
         let expiredBadgeID = SubscriptionManager.mostRecentlyExpiredBadgeIDWithSneakyTransaction()
-        guard let expiredBadgeID = expiredBadgeID, expiredBadgeID != "BOOST" else {
+        guard let expiredBadgeID = expiredBadgeID, SubscriptionBadgeIds.contains(expiredBadgeID) else {
             return
         }
 

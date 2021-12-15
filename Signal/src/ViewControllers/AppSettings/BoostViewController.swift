@@ -85,7 +85,7 @@ class BoostViewController: OWSTableViewController2 {
     }
     private var boostBadge: ProfileBadge?
     private var boostExpiration: UInt64? {
-        profileManagerImpl.localUserProfile().profileBadgeInfo?.first { $0.badgeId == "BOOST" }?.expiration
+        profileManagerImpl.localUserProfile().profileBadgeInfo?.first { BoostBadgeIds.contains($0.badgeId) }?.expiration
     }
 
     private lazy var dateFormatter: DateFormatter = {

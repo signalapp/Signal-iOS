@@ -815,6 +815,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 
     if (isLocalUserProfile) {
         [self.profileManager localProfileWasUpdated:self];
+        [self.subscriptionManager reconcileBadgeStatesWithTransaction:transaction];
     }
 
     // Insert a profile change update in conversations, if necessary

@@ -93,7 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
     PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
     id<WebSocketFactory> webSocketFactory = [WebSocketFactoryMock new];
-    
+    id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
+
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
@@ -146,8 +147,9 @@ NS_ASSUME_NONNULL_BEGIN
                     spamChallengeResolver:spamChallengeResolver
                            senderKeyStore:senderKeyStore
                           phoneNumberUtil:phoneNumberUtil
-                         webSocketFactory:webSocketFactory];
-    
+                         webSocketFactory:webSocketFactory
+                      subscriptionManager:subscriptionManager];
+
     if (!self) {
         return nil;
     }

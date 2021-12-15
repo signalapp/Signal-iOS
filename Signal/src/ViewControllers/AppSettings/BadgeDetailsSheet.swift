@@ -24,8 +24,6 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
     private let tableViewController = OWSTableViewController2()
     private let handleContainer = UIView()
 
-    private static let boostBadgeId = "BOOST"
-
     public enum Owner: Equatable {
         // TODO: Eventually we won't need a short name for self, the server will provide copy for us.
         case local(shortName: String)
@@ -42,8 +40,8 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
 
         var isLocal: Bool {
             switch self {
-            case .local(_): return true
-            case .remote(_): return false
+            case .local: return true
+            case .remote: return false
             }
         }
     }
@@ -175,7 +173,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
         switch focusedBadge.rawCategory.lowercased() {
         case "donor":
             if DonationUtilities.isApplePayAvailable {
-                if focusedBadge.id == Self.boostBadgeId {
+                if BoostBadgeIds.contains(focusedBadge.id) {
                     let boostButtonSection = OWSTableSection()
                     boostButtonSection.hasBackground = false
                     contents.addSection(boostButtonSection)
@@ -201,7 +199,7 @@ class BadgeDetailsSheet: InteractiveSheetViewController {
 
                         return cell
                     }, actionBlock: nil))
-                } else {
+                } else if SubscriptionBadgeIds.contains(focusedBadge.id) {
                     let subscribeButtonSection = OWSTableSection()
                     subscribeButtonSection.hasBackground = false
                     contents.addSection(subscribeButtonSection)

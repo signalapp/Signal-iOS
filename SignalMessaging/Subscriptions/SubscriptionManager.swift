@@ -3,9 +3,26 @@
 //
 
 import Foundation
-import SignalServiceKit
 import PassKit
 import ZKGroup
+
+public enum SubscriptionBadgeIds: String, CaseIterable {
+    case low = "R_LOW"
+    case med = "R_MED"
+    case high = "R_HIGH"
+
+    public static func contains(_ id: String) -> Bool {
+        allCases.lazy.map { $0.rawValue }.contains(id)
+    }
+}
+
+public enum BoostBadgeIds: String, CaseIterable {
+    case boost = "BOOST"
+
+    public static func contains(_ id: String) -> Bool {
+        allCases.lazy.map { $0.rawValue }.contains(id)
+    }
+}
 
 public enum SubscriptionRedemptionFailureReason: Int {
     case none = 0
@@ -87,6 +104,17 @@ public struct Subscription {
 @objc
 public class SubscriptionManager: NSObject {
 
+    @objc
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            Self.performSubscriptionKeepAliveIfNecessary()
+        }
+    }
+
     public static let subscriptionJobQueue = SubscriptionReceiptCredentialJobQueue()
     public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
     public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
@@ -148,33 +176,16 @@ public class SubscriptionManager: NSObject {
 
     // Returns if we have a current subscription or not as calculated via our cached last subscription expiry date and subscriberID.
     // The most accurate way to determine subscription status is via getCurrentSubscriptionStatus()
-    public class func hasCurrentSubscriptionCached() -> Bool {
-
-        var subscriberID: Data? = nil, lastSubscriptionExpiryDate: Date? = nil
-        SDSDatabaseStorage.shared.read { transaction in
-            subscriberID = self.getSubscriberID(transaction: transaction)
-            lastSubscriptionExpiryDate = self.lastSubscriptionExpirationDate(transaction: transaction)
-        }
-
-        guard subscriberID != nil, let lastSubscriptionExpiryDate = lastSubscriptionExpiryDate else {
-            return false
-        }
-
-        if currentProfileSubscriptionBadges().count == 0 {
-            return false
-        }
-
-        return lastSubscriptionExpiryDate.isAfterNow
+    public class func hasCurrentSubscriptionWithSneakyTransaction() -> Bool {
+        databaseStorage.read { subscriptionManager.hasCurrentSubscription(transaction: $0) }
     }
 
     public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
         let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
         let profileBadges = snapshot.profileBadgeInfo ?? []
         return profileBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> OWSUserProfileBadgeInfo? in
-            if badge.badgeId != "BOOST" {
-                return badge
-            }
-            return nil
+            guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
+            return badge
         }
     }
 
@@ -253,7 +264,7 @@ public class SubscriptionManager: NSObject {
 
             generatedSubscriberID = subscriberID
 
-            SDSDatabaseStorage.shared.write { transaction in
+            databaseStorage.write { transaction in
                 self.setUserManuallyCancelledSubscription(false, transaction: transaction)
                 self.setSubscriberID(subscriberID, transaction: transaction)
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
@@ -309,7 +320,7 @@ public class SubscriptionManager: NSObject {
                                               currencyCode: String) throws -> Promise<Void> {
         Logger.info("[Subscriptions] Updating subscription level")
 
-        let failureReason: SubscriptionRedemptionFailureReason = SDSDatabaseStorage.shared.read { transaction in
+        let failureReason: SubscriptionRedemptionFailureReason = databaseStorage.read { transaction in
             return self.lastReceiptRedemptionFailed(transaction: transaction)
         }
 
@@ -374,7 +385,7 @@ public class SubscriptionManager: NSObject {
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
             } else {
-                SDSDatabaseStorage.shared.write { transaction in
+                databaseStorage.write { transaction in
                     self.setSubscriberID(nil, transaction: transaction)
                     self.setSubscriberCurrencyCode(nil, transaction: transaction)
                     self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
@@ -448,7 +459,7 @@ public class SubscriptionManager: NSObject {
                 throw OWSAssertionError("Failed to fetch valid subscription object afer setSubscription")
             }
 
-            SDSDatabaseStorage.shared.write { transaction in
+            databaseStorage.write { transaction in
                 self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
         }
@@ -467,11 +478,11 @@ public class SubscriptionManager: NSObject {
         }
 
         // Reset failure state
-        SDSDatabaseStorage.shared.write { transaction in
+        databaseStorage.write { transaction in
             self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
         }
 
-        SDSDatabaseStorage.shared.asyncWrite { transaction in
+        databaseStorage.asyncWrite { transaction in
 
             self.subscriptionJobQueue.add(isBoost: false,
                                           receiptCredentialRequestContext: request.context.serialize().asData,
@@ -517,7 +528,7 @@ public class SubscriptionManager: NSObject {
             }
 
             let failValidation = {
-                SDSDatabaseStorage.shared.write { transaction in
+                databaseStorage.write { transaction in
                     self.setLastReceiptRedemptionFailed(failureReason: .localValidationFailed, transaction: transaction)
                 }
             }
@@ -576,7 +587,7 @@ public class SubscriptionManager: NSObject {
                 let statusCode = error.responseStatusCode
                 if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
                     let failureReason = SubscriptionRedemptionFailureReason(rawValue: statusCode)!
-                    SDSDatabaseStorage.shared.write { transaction in
+                    databaseStorage.write { transaction in
                         self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
                     }
                     throw OWSAssertionError("Receipt redemption failed with unrecoverable HTTP code \(statusCode)")
@@ -627,7 +638,7 @@ public class SubscriptionManager: NSObject {
     public class func performSubscriptionKeepAliveIfNecessary() {
 
         // Kick job queue
-        subscriptionJobQueue.runAnyQueuedRetry()
+        _ = subscriptionJobQueue.runAnyQueuedRetry()
 
         Logger.info("[Subscriptions] Checking for subscription heartbeat")
 
@@ -636,7 +647,7 @@ public class SubscriptionManager: NSObject {
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
         var currencyCode: String?
-        SDSDatabaseStorage.shared.read { transaction in
+        databaseStorage.read { transaction in
             lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
             lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
@@ -654,9 +665,6 @@ public class SubscriptionManager: NSObject {
         }
 
         Logger.info("[Subscriptions] Performing subscription heartbeat")
-
-        // Update badge states first
-        mostRecentlyExpiredBadgeIDWithSneakyTransaction()
 
         guard tsAccountManager.isPrimaryDevice else {
             Logger.info("[Subscriptions] Bailing out of remaining heartbeat tasks, this is not the primary device")
@@ -689,7 +697,7 @@ public class SubscriptionManager: NSObject {
                 try self.requestAndRedeemRecieptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
 
                 // Save last expiration
-                SDSDatabaseStorage.shared.write { transaction in
+                databaseStorage.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
 
@@ -705,83 +713,12 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    // Reconciles cached non-expired badge IDs with current profile badges, and returns the last expired ID if one exists.
-    // Also sets mostRecentlyExpiredBadgeID
     public static func mostRecentlyExpiredBadgeIDWithSneakyTransaction() -> String? {
-        Logger.info("[Subscriptions] Checking if current badge set has changed")
-
-        // Get current badges
-        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: true)
-        let currentBadges: [OWSUserProfileBadgeInfo] = snapshot.profileBadgeInfo ?? []
-        let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
-            if badge.badgeId != "BOOST" {
-                return badge.badgeId
-            }
-            return nil
-        }
-
-        let currentBoostBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
-            if badge.badgeId == "BOOST" {
-                return badge.badgeId
-            }
-            return nil
-        }
-
-        var persistedSubscriberBadgeIDs: [String] = [], persistedBoostBadgeIDs: [String] = [], expiringBadgeID: String?, userManuallyCancelled = false, showExpiryOnHomeScreen = false
-
-        SDSDatabaseStorage.shared.read { transaction in
-            persistedSubscriberBadgeIDs = self.knownUserSubscriptionBadgeIDs(transaction: transaction)
-            persistedBoostBadgeIDs = self.knownUserBoostBadgeIDs(transaction: transaction)
-            expiringBadgeID = self.mostRecentlyExpiredBadgeID(transaction: transaction)
-            userManuallyCancelled = self.userManuallyCancelledSubscription(transaction: transaction)
-            showExpiryOnHomeScreen = self.showExpirySheetOnHomeScreenKey(transaction: transaction)
-        }
-
-        var newExpiringBadgeID: String?
-        if currentSubscriberBadgeIDs.count == 0 && persistedSubscriberBadgeIDs.count > 0 && !userManuallyCancelled {
-            newExpiringBadgeID = persistedSubscriberBadgeIDs.first
-        } else if expiringBadgeID == nil && currentBoostBadgeIDs.count == 0 && persistedBoostBadgeIDs.count > 0 {
-            newExpiringBadgeID = persistedBoostBadgeIDs.first
-        }
-
-        if let newExpiringBadgeID = newExpiringBadgeID {
-            if newExpiringBadgeID != expiringBadgeID {
-                Logger.info("[Subscriptions] Got new potential expiring badgeID \(newExpiringBadgeID)")
-                expiringBadgeID = newExpiringBadgeID
-                showExpiryOnHomeScreen = true
-            }
-        } else { // Don't pass through old expiry state if we have something new
-            if expiringBadgeID != nil && ((currentSubscriberBadgeIDs.count > persistedBoostBadgeIDs.count && expiringBadgeID != "BOOST") ||
-                (currentBoostBadgeIDs.count > persistedBoostBadgeIDs.count && expiringBadgeID == "BOOST")) {
-                Logger.info("[Subscriptions] Got more current badgeIDs than persisted, clearing out old expiring ID \(expiringBadgeID ?? "none")")
-                expiringBadgeID = nil
-                showExpiryOnHomeScreen = false
-            }
-        }
-
-        // If the last persisted expiring ID is a subscription but we now have valid sub badgeIDs, clear state and do not show expiry sheet
-        if expiringBadgeID != "BOOST" && currentSubscriberBadgeIDs.count > 0 {
-            expiringBadgeID = nil
-            showExpiryOnHomeScreen = false
-        }
-
-        Logger.info("[Subscriptions] Current sub badges \(currentSubscriberBadgeIDs.count), persisted sub badges \(persistedSubscriberBadgeIDs.count)")
-        Logger.info("[Subscriptions] Current boost badges \(currentBoostBadgeIDs.count), persisted boost badges \(persistedBoostBadgeIDs.count)")
-        Logger.info("[Subscriptions] mostRecentlyExpiredBadgeID is \(expiringBadgeID ?? "none"), show on home screen \(showExpiryOnHomeScreen) user cancelled \(userManuallyCancelled)")
-
-        // Persist new values
-        SDSDatabaseStorage.shared.write { transaction in
-            self.setKnownUserSubscriptionBadgeIDs(badgeIDs: currentSubscriberBadgeIDs, transaction: transaction)
-            self.setKnownUserBoostBadgeIDs(badgeIDs: currentBoostBadgeIDs, transaction: transaction)
-            self.setMostRecentlyExpiredBadgeID(badgeID: expiringBadgeID, transaction: transaction)
-            self.setShowExpirySheetOnHomeScreenKey(show: showExpiryOnHomeScreen, transaction: transaction)
-        }
-
-        return expiringBadgeID
+        databaseStorage.read { mostRecentlyExpiredBadgeID(transaction: $0) }
     }
 
     private static func updateSubscriptionHeartbeatDate() {
-        SDSDatabaseStorage.shared.write { transaction in
+        databaseStorage.write { transaction in
             // Update keepalive
             self.subscriptionKVS.setDate(Date(), key: self.lastSubscriptionHeartbeatKey, transaction: transaction)
         }
@@ -793,7 +730,7 @@ public class SubscriptionManager: NSObject {
 
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
-        SDSDatabaseStorage.shared.read { transaction in
+        databaseStorage.read { transaction in
             lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
             subscriberID = self.getSubscriberID(transaction: transaction)
         }
@@ -817,7 +754,7 @@ public class SubscriptionManager: NSObject {
             } else {
                 Logger.info("[Subscriptions] Updating last subscription expiration")
                 // Save last expiration
-                SDSDatabaseStorage.shared.write { transaction in
+                databaseStorage.write { transaction in
                     self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
                 }
             }
@@ -936,7 +873,7 @@ extension SubscriptionManager {
     }
 
     public static func clearMostRecentlyExpiredBadgeIDWithSneakyTransaction() {
-        SDSDatabaseStorage.shared.write { transaction in
+        databaseStorage.write { transaction in
             self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
         }
     }
@@ -975,7 +912,7 @@ extension SubscriptionManager {
             }
         }
 
-        SDSDatabaseStorage.shared.asyncWrite { transaction in
+        databaseStorage.asyncWrite { transaction in
 
             self.subscriptionJobQueue.add(isBoost: true,
                                           receiptCredentialRequestContext: request.context.serialize().asData,
@@ -1118,5 +1055,111 @@ extension SubscriptionManager {
 
             return try ProfileBadge(jsonDictionary: badgeJson)
         }
+    }
+}
+
+@objc
+extension SubscriptionManager: SubscriptionManagerProtocol {
+    public func reconcileBadgeStates(transaction: SDSAnyWriteTransaction) {
+        Logger.info("Reconciling badge state.")
+
+        // Get current badges
+        let currentBadges = profileManagerImpl.localUserProfile().profileBadgeInfo ?? []
+        let currentSubscriberBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
+            guard SubscriptionBadgeIds.contains(badge.badgeId) else { return nil }
+            return badge.badgeId
+        }
+
+        let currentBoostBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
+            guard BoostBadgeIds.contains(badge.badgeId) else { return nil }
+            return badge.badgeId
+        }
+
+        // Read existing values
+        let persistedSubscriberBadgeIDs = Self.knownUserSubscriptionBadgeIDs(transaction: transaction)
+        let persistedBoostBadgeIDs = Self.knownUserBoostBadgeIDs(transaction: transaction)
+        var expiringBadgeId = Self.mostRecentlyExpiredBadgeID(transaction: transaction)
+        var userManuallyCancelled = Self.userManuallyCancelledSubscription(transaction: transaction)
+        var showExpiryOnHomeScreen = Self.showExpirySheetOnHomeScreenKey(transaction: transaction)
+
+        let newSubscriberBadgeIds = Set(currentSubscriberBadgeIDs).subtracting(persistedSubscriberBadgeIDs)
+        Logger.info("Learned of \(newSubscriberBadgeIds.count) new subscriber badge ids: \(newSubscriberBadgeIds)")
+
+        let expiredSubscriberBadgeIds = Set(persistedSubscriberBadgeIDs).subtracting(currentSubscriberBadgeIDs)
+        Logger.info("Learned of \(expiredSubscriberBadgeIds.count) newly expired subscriber badge ids: \(expiredSubscriberBadgeIds)")
+
+        let newBoostBadgeIds = Set(currentBoostBadgeIDs).subtracting(persistedBoostBadgeIDs)
+        Logger.info("Learned of \(newBoostBadgeIds.count) new boost badge ids: \(newBoostBadgeIds)")
+
+        let expiredBoostBadgeIds = Set(persistedBoostBadgeIDs).subtracting(currentBoostBadgeIDs)
+        Logger.info("Learned of \(expiredBoostBadgeIds.count) newly expired boost badge ids: \(expiredBoostBadgeIds)")
+
+        var newExpiringBadgeId: String?
+        if let persistedBadgeId = persistedSubscriberBadgeIDs.first, currentSubscriberBadgeIDs.isEmpty {
+            if !userManuallyCancelled {
+                Logger.info("Last subscription badge id expired \(persistedBadgeId)")
+                newExpiringBadgeId = persistedBadgeId
+            } else {
+                Logger.info("Last subscription badge id expired \(persistedBadgeId), but ignoring because subscription was manually cancelled")
+            }
+        }
+
+        if let persistedBadgeId = persistedBoostBadgeIDs.first, currentBoostBadgeIDs.isEmpty {
+            if (expiringBadgeId == nil || BoostBadgeIds.contains(expiringBadgeId!)) && newExpiringBadgeId == nil {
+                Logger.info("Last boost badge id expired \(persistedBadgeId)")
+                newExpiringBadgeId = persistedBadgeId
+            } else {
+                Logger.info("Last boost badge id expired \(persistedBadgeId), but ignoring because subscription badge also expired")
+            }
+        }
+
+        if let newExpiringBadgeId = newExpiringBadgeId, newExpiringBadgeId != expiringBadgeId {
+            Logger.info("Recording new expired badge id to show on home screen \(newExpiringBadgeId)")
+            expiringBadgeId = newExpiringBadgeId
+            showExpiryOnHomeScreen = true
+        } else if let oldExpiringBadgeId = expiringBadgeId {
+            if SubscriptionBadgeIds.contains(oldExpiringBadgeId), !newSubscriberBadgeIds.isEmpty {
+                Logger.info("Clearing expired subscription badge id \(oldExpiringBadgeId), new subscription badge found.")
+                expiringBadgeId = nil
+                showExpiryOnHomeScreen = false
+            } else if BoostBadgeIds.contains(oldExpiringBadgeId), !newBoostBadgeIds.isEmpty {
+                Logger.info("Clearing expired boost badge id \(oldExpiringBadgeId), new boost badge found.")
+                expiringBadgeId = nil
+                showExpiryOnHomeScreen = false
+            }
+        }
+
+        if userManuallyCancelled, !newSubscriberBadgeIds.isEmpty {
+            Logger.info("Clearing manual subscription cancellation, new subscription badge found.")
+            userManuallyCancelled = false
+        }
+
+        Logger.info("""
+        Reconciled badge state:
+            Subscriber Badge Ids: \(currentSubscriberBadgeIDs)
+            Boost Badge Ids: \(currentBoostBadgeIDs)
+            Most Recently Expired Badge Id: \(expiringBadgeId ?? "nil")
+            Show Expiry On Home Screen: \(showExpiryOnHomeScreen)
+            User Manually Cancelled Subscription: \(userManuallyCancelled)
+        """)
+
+        // Persist new values
+        Self.setKnownUserSubscriptionBadgeIDs(badgeIDs: currentSubscriberBadgeIDs, transaction: transaction)
+        Self.setKnownUserBoostBadgeIDs(badgeIDs: currentBoostBadgeIDs, transaction: transaction)
+        Self.setMostRecentlyExpiredBadgeID(badgeID: expiringBadgeId, transaction: transaction)
+        Self.setShowExpirySheetOnHomeScreenKey(show: showExpiryOnHomeScreen, transaction: transaction)
+        Self.setUserManuallyCancelledSubscription(userManuallyCancelled, transaction: transaction)
+    }
+
+    public func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
+        guard !Self.currentProfileSubscriptionBadges().isEmpty else { return false }
+
+        guard Self.getSubscriberID(transaction: transaction) != nil else { return false }
+
+        guard let lastSubscriptionExpiryDate = Self.lastSubscriptionExpirationDate(transaction: transaction) else {
+            return false
+        }
+
+        return lastSubscriptionExpiryDate.isAfterNow
     }
 }

@@ -38,7 +38,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
     }
 
     private lazy var isCurrentSustainer = {
-        return SubscriptionManager.hasCurrentSubscriptionCached()
+        return SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction()
     }()
 
     required init(badge: ProfileBadge) {
@@ -102,34 +102,35 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
     }
 
     var titleText: String {
-        switch badge.id {
-        case "BOOST": return NSLocalizedString(
-            "BADGE_EXPIRED_BOOST_TITLE",
-            comment: "Title for boost on the badge expiration sheet."
-        )
-        default: return NSLocalizedString(
-            "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
-            comment: "Title for subscription on the badge expiration sheet."
-        )
+        if BoostBadgeIds.contains(badge.id) {
+            return NSLocalizedString(
+                "BADGE_EXPIRED_BOOST_TITLE",
+                comment: "Title for boost on the badge expiration sheet."
+            )
+        } else {
+            return NSLocalizedString(
+                "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
+                comment: "Title for subscription on the badge expiration sheet."
+            )
         }
     }
 
     var bodyText: String {
         var formatText: String
 
-        switch (badgeID: badge.id, isSustainer: isCurrentSustainer) {
-        case (badgeID: "BOOST", isSustainer: true):
-            formatText = NSLocalizedString(
-                "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet."
-            )
-        case (badgeID: "BOOST", isSustainer: false):
-            formatText = NSLocalizedString(
-                "BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet."
-            )
-
-        default:
+        if BoostBadgeIds.contains(badge.id) {
+            if isCurrentSustainer {
+                formatText = NSLocalizedString(
+                    "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
+                    comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet."
+                )
+            } else {
+                formatText = NSLocalizedString(
+                    "BADGE_EXIPRED_BOOST_BODY_FORMAT",
+                    comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet."
+                )
+            }
+        } else {
             formatText = NSLocalizedString(
                 "BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT",
                 comment: "String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}."
@@ -140,14 +141,15 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
     }
 
     var actionButtonText: String {
-        switch (badgeID: badge.id, isSustainer: isCurrentSustainer) {
-        case (badgeID: "BOOST", isSustainer: true):
-            return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
-                                     comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
-        case (badgeID: "BOOST", isSustainer: false):
-            return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
-                                     comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
-        default:
+        if BoostBadgeIds.contains(badge.id) {
+            if isCurrentSustainer {
+                return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
+                                         comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
+            } else {
+                return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
+                                         comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
+            }
+        } else {
             return NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
                                      comment: "Button title for subscription on the badge expiration sheet.")
         }

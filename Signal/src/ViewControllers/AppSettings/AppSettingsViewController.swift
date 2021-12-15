@@ -66,7 +66,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     }
 
     private lazy var hasCurrentSubscription: Bool = {
-        return SubscriptionManager.hasCurrentSubscriptionCached()
+        return SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction()
     }()
 
     private lazy var hasExpiredSubscription: Bool = {

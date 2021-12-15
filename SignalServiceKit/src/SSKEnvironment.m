@@ -59,6 +59,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic) id<WebSocketFactory> webSocketFactoryRef;
+@property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 
 @end
 
@@ -122,6 +123,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id<WebSocketFactory>)webSocketFactory
+                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
 {
     self = [super init];
     if (!self) {
@@ -181,7 +183,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     _senderKeyStoreRef = senderKeyStore;
     _phoneNumberUtilRef = phoneNumberUtil;
     _webSocketFactoryRef = webSocketFactory;
-    
+    _subscriptionManagerRef = subscriptionManager;
+
     return self;
 }
 
