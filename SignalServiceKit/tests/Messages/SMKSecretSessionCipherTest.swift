@@ -49,14 +49,13 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let bobCipher: SMKSecretSessionCipher = try! bobMockClient.createSecretSessionCipher()
 
         // Pair<SignalProtocolAddress, byte[]> plaintext = bobCipher.decrypt(new CertificateValidator(trustRoot.getPublicKey()), ciphertext, 31335);
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
-        let bobPlaintext = try! bobCipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator,
-                                                                       cipherTextData: ciphertext,
-                                                                       timestamp: 31335,
-                                                                       localE164: bobMockClient.recipientE164,
-                                                                       localUuid: bobMockClient.recipientUuid,
-                                                                       localDeviceId: bobMockClient.deviceId,
-                                                                       protocolContext: nil)
+        let bobPlaintext = try! bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
+                                                         cipherTextData: ciphertext,
+                                                         timestamp: 31335,
+                                                         localE164: bobMockClient.recipientE164,
+                                                         localUuid: bobMockClient.recipientUuid,
+                                                         localDeviceId: bobMockClient.deviceId,
+                                                         protocolContext: nil)
 
         // assertEquals(new String(plaintext.second()), "smert za smert");
         // assertEquals(plaintext.first().getName(), "+14151111111");
@@ -113,19 +112,21 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // } catch (InvalidMetadataMessageException e) {
         //   // good
         // }
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
         do {
-            _ = try bobCipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator,
-                                                           cipherTextData: ciphertext,
-                                                           timestamp: 31335,
-                                                           localE164: bobMockClient.recipientE164,
-                                                           localUuid: bobMockClient.recipientUuid,
-                                                           localDeviceId: bobMockClient.deviceId,
-                                                           protocolContext: nil)
+            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
+                                             cipherTextData: ciphertext,
+                                             timestamp: 31335,
+                                             localE164: bobMockClient.recipientE164,
+                                             localUuid: bobMockClient.recipientUuid,
+                                             localDeviceId: bobMockClient.deviceId,
+                                             protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
             // Decryption is expected to fail.
-            XCTAssert(knownSenderError.underlyingError is SMKCertificateError )
+            guard case SMKSecretSessionCipherError.invalidCertificate = knownSenderError.underlyingError else {
+                XCTFail("wrong underlying error: \(knownSenderError.underlyingError)")
+                return
+            }
             XCTAssertEqual(knownSenderError.contentHint, aliceContentHint)
             XCTAssertEqual(knownSenderError.groupId, aliceGroupId)
             XCTAssertNoThrow(
@@ -188,19 +189,21 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // } catch (InvalidMetadataMessageException e) {
         //   // good
         // }
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
         do {
-            _ = try bobCipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator,
-                                                           cipherTextData: ciphertext,
-                                                           timestamp: 31338,
-                                                           localE164: bobMockClient.recipientE164,
-                                                           localUuid: bobMockClient.recipientUuid,
-                                                           localDeviceId: bobMockClient.deviceId,
-                                                           protocolContext: nil)
+            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
+                                             cipherTextData: ciphertext,
+                                             timestamp: 31338,
+                                             localE164: bobMockClient.recipientE164,
+                                             localUuid: bobMockClient.recipientUuid,
+                                             localDeviceId: bobMockClient.deviceId,
+                                             protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
             // Decryption is expected to fail.
-            XCTAssert(knownSenderError.underlyingError is SMKCertificateError )
+            guard case SMKSecretSessionCipherError.invalidCertificate = knownSenderError.underlyingError else {
+                XCTFail("wrong underlying error: \(knownSenderError.underlyingError)")
+                return
+            }
             XCTAssertEqual(knownSenderError.contentHint, aliceContentHint)
             XCTAssertEqual(knownSenderError.groupId, aliceGroupId)
             XCTAssertNoThrow(
@@ -258,15 +261,14 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // } catch (InvalidMetadataMessageException e) {
         //   // good
         // }
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
         do {
-            _ = try bobCipher.throwswrapped_decryptMessage(certificateValidator: certificateValidator,
-                                                           cipherTextData: ciphertext,
-                                                           timestamp: 31335,
-                                                           localE164: bobMockClient.recipientE164,
-                                                           localUuid: bobMockClient.recipientUuid,
-                                                           localDeviceId: bobMockClient.deviceId,
-                                                           protocolContext: nil)
+            _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
+                                             cipherTextData: ciphertext,
+                                             timestamp: 31335,
+                                             localE164: bobMockClient.recipientE164,
+                                             localUuid: bobMockClient.recipientUuid,
+                                             localDeviceId: bobMockClient.deviceId,
+                                             protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch SignalError.invalidMessage(_) {
             // Decryption is expected to fail.
@@ -324,9 +326,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
         // Test: Bob decrypts the ciphertext
         let bobCipher = try! bobMockClient.createSecretSessionCipher()
-        let bobValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
-        let bobPlaintext = try! bobCipher.throwswrapped_decryptMessage(
-            certificateValidator: bobValidator,
+        let bobPlaintext = try! bobCipher.decryptMessage(
+            trustRoot: trustRoot.publicKey,
             cipherTextData: Data(singleRecipientCiphertext),
             timestamp: 31335,
             localE164: bobMockClient.recipientE164,
@@ -382,10 +383,9 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
         // Test: Bob decrypts the ciphertext
         let bobCipher = try! bobMockClient.createSecretSessionCipher()
-        let bobValidator = SMKCertificateDefaultValidator(trustRoot: ECPublicKey(trustRoot.publicKey))
         do {
-            _ = try bobCipher.throwswrapped_decryptMessage(
-                certificateValidator: bobValidator,
+            _ = try bobCipher.decryptMessage(
+                trustRoot: trustRoot.publicKey,
                 cipherTextData: Data(singleRecipientCiphertext),
                 timestamp: 31335,
                 localE164: bobMockClient.recipientE164,

@@ -30,6 +30,7 @@ public struct SecretSessionKnownSenderError: Error {
 @objc
 public enum SMKSecretSessionCipherError: Int, Error {
     case selfSentMessage
+    case invalidCertificate
 }
 
 // MARK: -
@@ -245,13 +246,13 @@ fileprivate extension SMKMessageType {
 
     // public Pair<SignalProtocolAddress, byte[]> decrypt(CertificateValidator validator, byte[] ciphertext, long timestamp)
     //    throws InvalidMetadataMessageException, InvalidMetadataVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyException, ProtocolNoSessionException, ProtocolLegacyMessageException, ProtocolInvalidVersionException, ProtocolDuplicateMessageException, ProtocolInvalidKeyIdException, ProtocolUntrustedIdentityException
-    public func throwswrapped_decryptMessage(certificateValidator: SMKCertificateValidator,
-                                             cipherTextData: Data,
-                                             timestamp: UInt64,
-                                             localE164: String?,
-                                             localUuid: UUID?,
-                                             localDeviceId: Int32,
-                                             protocolContext: StoreContext?) throws -> SMKDecryptResult {
+    public func decryptMessage(trustRoot: PublicKey,
+                               cipherTextData: Data,
+                               timestamp: UInt64,
+                               localE164: String?,
+                               localUuid: UUID?,
+                               localDeviceId: Int32,
+                               protocolContext: StoreContext?) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
             throw SMKError.assertionError(description: "\(logTag) invalid timestamp")
         }
@@ -273,12 +274,11 @@ fileprivate extension SMKMessageType {
 
         do {
             // validator.validate(content.getSenderCertificate(), timestamp);
-            try certificateValidator.throwswrapped_validate(
-                senderCertificate: messageContent.senderCertificate,
-                validationTime: timestamp)
+            guard try messageContent.senderCertificate.validate(trustRoot: trustRoot, time: timestamp) else {
+                throw SMKSecretSessionCipherError.invalidCertificate
+            }
 
-            let paddedMessagePlaintext = try throwswrapped_decrypt(messageContent: messageContent,
-                                                                   context: context)
+            let paddedMessagePlaintext = try decrypt(messageContent: messageContent, context: context)
 
             // return new Pair<>(new SignalProtocolAddress(content.getSenderCertificate().getSender(),
             //     content.getSenderCertificate().getSenderDeviceId()),
@@ -303,8 +303,7 @@ fileprivate extension SMKMessageType {
     // private byte[] decrypt(UnidentifiedSenderMessageContent message)
     // throws InvalidVersionException, InvalidMessageException, InvalidKeyException, DuplicateMessageException,
     // InvalidKeyIdException, UntrustedIdentityException, LegacyMessageException, NoSessionException
-    private func throwswrapped_decrypt(messageContent: UnidentifiedSenderMessageContent,
-                                       context: StoreContext) throws -> Data {
+    private func decrypt(messageContent: UnidentifiedSenderMessageContent, context: StoreContext) throws -> Data {
 
         // SignalProtocolAddress sender = new SignalProtocolAddress(message.getSenderCertificate().getSender(),
         // message.getSenderCertificate().getSenderDeviceId());

@@ -672,8 +672,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let localDeviceId = tsAccountManager.storedDeviceId()
 
-        let certificateValidator = SMKCertificateDefaultValidator(trustRoot: Self.udManager.trustRoot())
-
         let cipher: SMKSecretSessionCipher
         do {
             cipher = try SMKSecretSessionCipher(
@@ -690,8 +688,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let decryptResult: SMKDecryptResult
         do {
-            decryptResult = try cipher.throwswrapped_decryptMessage(
-                certificateValidator: certificateValidator,
+            decryptResult = try cipher.decryptMessage(
+                trustRoot: Self.udManager.trustRoot.key,
                 cipherTextData: encryptedData,
                 timestamp: envelope.serverTimestamp,
                 localE164: localAddress.phoneNumber,
