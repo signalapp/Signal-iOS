@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalCoreKit
-import AFNetworking
 
 @objc
 public enum HTTPMethod: UInt {
@@ -1313,18 +1312,18 @@ extension OWSURLSession {
                                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         do {
             let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl()
-            let boundary = AFMultipartBody.createMultipartFormBoundary()
+            let boundary = OWSMultipartBody.createMultipartFormBoundary()
             // Order of form parts matters.
             let textParts = textPartsDictionary.map { (key, value) in
-                AFMultipartTextPart(key: key, value: value)
+                OWSMultipartTextPart(key: key, value: value)
             }
-            try AFMultipartBody.write(forInputFileURL: inputFileURL,
-                                      outputFileURL: multipartBodyFileURL,
-                                      name: name,
-                                      fileName: fileName,
-                                      mimeType: mimeType,
-                                      boundary: boundary,
-                                      textParts: textParts)
+            try OWSMultipartBody.write(forInputFileURL: inputFileURL,
+                                       outputFileURL: multipartBodyFileURL,
+                                       name: name,
+                                       fileName: fileName,
+                                       mimeType: mimeType,
+                                       boundary: boundary,
+                                       textParts: textParts)
             guard let bodyFileSize = OWSFileSystem.fileSize(of: multipartBodyFileURL) else {
                 return Promise(error: OWSAssertionError("Missing bodyFileSize."))
             }
