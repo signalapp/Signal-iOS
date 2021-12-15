@@ -56,7 +56,9 @@ extension ContextMenuVC {
             if isReplyingAllowed() { result.append(Action.reply(viewItem, delegate)) }
             result.append(Action.copy(viewItem, delegate))
             let isGroup = viewItem.isGroupThread
-            if isGroup && viewItem.interaction is TSIncomingMessage { result.append(Action.copySessionID(viewItem, delegate)) }
+            if let message = viewItem.interaction as? TSIncomingMessage, isGroup, !message.isOpenGroupMessage {
+                result.append(Action.copySessionID(viewItem, delegate))
+            }
             if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
             if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
                 result.append(Action.ban(viewItem, delegate))
@@ -69,7 +71,9 @@ extension ContextMenuVC {
             if viewItem.canCopyMedia() { result.append(Action.copy(viewItem, delegate)) }
             if viewItem.canSaveMedia() { result.append(Action.save(viewItem, delegate)) }
             let isGroup = viewItem.isGroupThread
-            if isGroup && viewItem.interaction is TSIncomingMessage { result.append(Action.copySessionID(viewItem, delegate)) }
+            if let message = viewItem.interaction as? TSIncomingMessage, isGroup, !message.isOpenGroupMessage {
+                result.append(Action.copySessionID(viewItem, delegate))
+            }
             if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
             if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
                 result.append(Action.ban(viewItem, delegate))
