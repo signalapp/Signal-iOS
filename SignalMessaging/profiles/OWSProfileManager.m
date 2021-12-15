@@ -113,7 +113,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             && TSAccountManager.shared.isRegistered) {
             [self logLocalAvatarStatus];
             [self fetchLocalUsersProfile];
-            [SubscriptionManager performSubscriptionKeepAliveIfNecessary];
         }
     });
 
