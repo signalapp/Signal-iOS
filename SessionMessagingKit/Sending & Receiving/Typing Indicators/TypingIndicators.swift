@@ -63,7 +63,7 @@ public class TypingIndicatorsImpl : NSObject, TypingIndicators {
     }
 
     private func setup() {
-        _areTypingIndicatorsEnabled = OWSPrimaryStorage.shared().dbReadConnection.bool(forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection, defaultValue: true)
+        _areTypingIndicatorsEnabled = OWSPrimaryStorage.shared().dbReadConnection.bool(forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection, defaultValue: false)
     }
 
     // MARK: -
