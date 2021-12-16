@@ -48,34 +48,6 @@ private class SMKSecretKeySpec: NSObject {
 
 // MARK: -
 
-private class SMKEphemeralKeys: NSObject {
-
-    @objc public let chainKey: Data
-    @objc public let cipherKey: SMKSecretKeySpec
-    @objc public let macKey: SMKSecretKeySpec
-
-    init(chainKey: Data, cipherKey: Data, macKey: Data) {
-        self.chainKey = chainKey
-        self.cipherKey = SMKSecretKeySpec(keyData: cipherKey, algorithm: "AES")
-        self.macKey = SMKSecretKeySpec(keyData: macKey, algorithm: "HmacSHA256")
-    }
-}
-
-// MARK: -
-
-private class SMKStaticKeys: NSObject {
-
-    @objc public let cipherKey: SMKSecretKeySpec
-    @objc public let macKey: SMKSecretKeySpec
-
-    init(cipherKey: Data, macKey: Data) {
-        self.cipherKey = SMKSecretKeySpec(keyData: cipherKey, algorithm: "AES")
-        self.macKey = SMKSecretKeySpec(keyData: macKey, algorithm: "HmacSHA256")
-    }
-}
-
-// MARK: -
-
 @objc public enum SMKMessageType: Int {
     case whisper
     case prekey
