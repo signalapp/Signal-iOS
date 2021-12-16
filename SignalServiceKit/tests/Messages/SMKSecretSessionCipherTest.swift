@@ -10,15 +10,15 @@ import SignalCoreKit
 
 // https://github.com/signalapp/libsignal-metadata-java/blob/master/tests/src/test/java/org/signal/libsignal/metadata/SecretSessionCipherTest.java
 // public class SecretSessionCipherTest extends TestCase {
-class SMKSecretSessionCipherTest: XCTestCase {
+class SMKSecretSessionCipherTest: SSKBaseTestSwift {
 
     // public void testEncryptDecrypt() throws UntrustedIdentityException, InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException, InvalidMetadataMessageException, ProtocolDuplicateMessageException, ProtocolUntrustedIdentityException, ProtocolLegacyMessageException, ProtocolInvalidKeyException, InvalidMetadataVersionException, ProtocolInvalidVersionException, ProtocolInvalidMessageException, ProtocolInvalidKeyIdException, ProtocolNoSessionException, SelfSendException {
     func testEncryptDecrypt() {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -52,9 +52,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let bobPlaintext = try! bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
                                                          cipherTextData: ciphertext,
                                                          timestamp: 31335,
-                                                         localE164: bobMockClient.recipientE164,
-                                                         localUuid: bobMockClient.recipientUuid,
-                                                         localDeviceId: bobMockClient.deviceId,
                                                          protocolContext: nil)
 
         // assertEquals(new String(plaintext.second()), "smert za smert");
@@ -70,8 +67,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -116,9 +113,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
             _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
                                              cipherTextData: ciphertext,
                                              timestamp: 31335,
-                                             localE164: bobMockClient.recipientE164,
-                                             localUuid: bobMockClient.recipientUuid,
-                                             localDeviceId: bobMockClient.deviceId,
                                              protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
@@ -147,8 +141,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
@@ -193,9 +187,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
             _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
                                              cipherTextData: ciphertext,
                                              timestamp: 31338,
-                                             localE164: bobMockClient.recipientE164,
-                                             localUuid: bobMockClient.recipientUuid,
-                                             localDeviceId: bobMockClient.deviceId,
                                              protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
@@ -224,8 +215,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
         // TestInMemorySignalProtocolStore aliceStore = new TestInMemorySignalProtocolStore();
         // TestInMemorySignalProtocolStore bobStore   = new TestInMemorySignalProtocolStore();
         // NOTE: We use MockClient to ensure consistency between of our session state.
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
 
         // initializeSessions(aliceStore, bobStore);
         initializeSessions(aliceMockClient: aliceMockClient,
@@ -265,9 +256,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
             _ = try bobCipher.decryptMessage(trustRoot: trustRoot.publicKey,
                                              cipherTextData: ciphertext,
                                              timestamp: 31335,
-                                             localE164: bobMockClient.recipientE164,
-                                             localUuid: bobMockClient.recipientUuid,
-                                             localDeviceId: bobMockClient.deviceId,
                                              protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch SignalError.invalidMessage(_) {
@@ -282,8 +270,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
     func testGroupEncryptDecrypt_Success() {
         // Setup: Initialize sessions and sender certificate
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
@@ -330,9 +318,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
             trustRoot: trustRoot.publicKey,
             cipherTextData: Data(singleRecipientCiphertext),
             timestamp: 31335,
-            localE164: bobMockClient.recipientE164,
-            localUuid: bobMockClient.recipientUuid,
-            localDeviceId: bobMockClient.deviceId,
             protocolContext: nil)
 
         // Verify
@@ -344,8 +329,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
 
     func testGroupEncryptDecrypt_Failure() {
         // Setup: Initialize sessions and sender certificate
-        let aliceMockClient = MockClient(address: aliceAddress, deviceId: 1, registrationId: 1234)
-        let bobMockClient = MockClient(address: bobAddress, deviceId: 1, registrationId: 1235)
+        let aliceMockClient = MockClient(address: MockClient.aliceAddress, deviceId: 1, registrationId: 1234)
+        let bobMockClient = MockClient(address: MockClient.bobAddress, deviceId: 1, registrationId: 1235)
         initializeSessions(aliceMockClient: aliceMockClient, bobMockClient: bobMockClient)
 
         let trustRoot = IdentityKeyPair.generate()
@@ -388,9 +373,6 @@ class SMKSecretSessionCipherTest: XCTestCase {
                 trustRoot: trustRoot.publicKey,
                 cipherTextData: Data(singleRecipientCiphertext),
                 timestamp: 31335,
-                localE164: bobMockClient.recipientE164,
-                localUuid: bobMockClient.recipientUuid,
-                localDeviceId: bobMockClient.deviceId,
                 protocolContext: nil)
             XCTFail("Decryption should have failed.")
         } catch let knownSenderError as SecretSessionKnownSenderError {
@@ -425,7 +407,7 @@ class SMKSecretSessionCipherTest: XCTestCase {
     // private SenderCertificate createCertificateFor(ECKeyPair trustRoot, String sender, int deviceId, ECPublicKey identityKey, long expires)
     //     throws InvalidKeyException, InvalidCertificateException, InvalidProtocolBufferException {
     private func createCertificateFor(trustRoot: IdentityKeyPair,
-                                      senderAddress: SMKAddress,
+                                      senderAddress: SignalServiceAddress,
                                       senderDeviceId: UInt32,
                                       identityKey: PublicKey,
                                       expirationTimestamp: UInt64) -> SenderCertificate {
@@ -433,8 +415,8 @@ class SMKSecretSessionCipherTest: XCTestCase {
         let serverCertificate = try! ServerCertificate(keyId: 1,
                                                        publicKey: serverKey.publicKey,
                                                        trustRoot: trustRoot.privateKey)
-        return try! SenderCertificate(sender: SealedSenderAddress(e164: senderAddress.e164,
-                                                                  uuidString: senderAddress.uuid!.uuidString,
+        return try! SenderCertificate(sender: SealedSenderAddress(e164: senderAddress.phoneNumber,
+                                                                  uuidString: senderAddress.uuidString!,
                                                                   deviceId: senderDeviceId),
                                       publicKey: identityKey,
                                       expiration: expirationTimestamp,

@@ -1163,7 +1163,7 @@ extension MessageSender {
                                                           senderKeyStore: Self.senderKeyStore)
 
             serializedMessage = try secretCipher.encryptMessage(
-                recipient: SMKAddress(uuid: recipientAddress.uuid, e164: recipientAddress.phoneNumber),
+                recipient: recipientAddress,
                 deviceId: deviceId,
                 paddedPlaintext: paddedPlaintext,
                 contentHint: messageSend.message.contentHint.signalClientHint,

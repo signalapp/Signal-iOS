@@ -6,21 +6,26 @@ import Foundation
 import SignalServiceKit
 import SignalClient
 
-// Two manipulated-but-valid v1 UUIDs.
-let aliceAddress: SMKAddress = .uuid(UUID(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!)
-let bobAddress: SMKAddress = .uuid(UUID(uuidString: "bbbbbbbb-7000-11eb-b32a-33b8a8a487a6")!)
-
 class MockClient {
+
+    // Two manipulated-but-valid v1 UUIDs.
+    // These are computed rather than stored because SignalServiceAddress expects an SSKEnvironment.
+    static var aliceAddress: SignalServiceAddress {
+        return SignalServiceAddress(uuid: UUID(uuidString: "aaaaaaaa-7000-11eb-b32a-33b8a8a487a6")!)
+    }
+    static var bobAddress: SignalServiceAddress {
+        SignalServiceAddress(uuid: UUID(uuidString: "bbbbbbbb-7000-11eb-b32a-33b8a8a487a6")!)
+    }
 
     var recipientUuid: UUID? {
         return address.uuid
     }
 
     var recipientE164: String? {
-        return address.e164
+        return address.phoneNumber
     }
 
-    let address: SMKAddress
+    let address: SignalServiceAddress
     var protocolAddress: ProtocolAddress {
         try! ProtocolAddress(name: address.uuid!.uuidString, deviceId: UInt32(deviceId))
     }
@@ -36,7 +41,7 @@ class MockClient {
     let identityStore: InMemorySignalProtocolStore
     let senderKeyStore: InMemorySignalProtocolStore
 
-    init(address: SMKAddress, deviceId: Int32, registrationId: Int32) {
+    init(address: SignalServiceAddress, deviceId: Int32, registrationId: Int32) {
         self.address = address
         self.deviceId = deviceId
         self.registrationId = registrationId
@@ -107,7 +112,7 @@ class MockClient {
         // SessionBuilder aliceSessionBuilder = new SessionBuilder(aliceStore, new SignalProtocolAddress("+14152222222", 1));
         // aliceSessionBuilder.process(bobBundle);
         let bobProtocolAddress = try! ProtocolAddress(
-            name: bobMockClient.address.uuid?.uuidString ?? bobMockClient.address.e164!,
+            name: bobMockClient.address.uuid?.uuidString ?? bobMockClient.address.phoneNumber!,
             deviceId: UInt32(bitPattern: bobMockClient.deviceId))
         try! processPreKeyBundle(bobBundle,
                                  for: bobProtocolAddress,
