@@ -533,9 +533,6 @@ static NSTimeInterval launchStartedAt;
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];
 
-        // For non-legacy users, read receipts are on by default.
-        [self.readReceiptManager setAreReadReceiptsEnabled:YES];
-
         [self startPollerIfNeeded];
         [self startClosedGroupPoller];
         [self startOpenGroupPollersIfNeeded];
