@@ -238,8 +238,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit-Private`, branch `mlin/PR/AbsoluteTimedGuarantees`)"
-  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit-Private`, branch `mlin/PR/AbsoluteTimedGuarantees`)"
+  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
+  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -321,8 +321,7 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :branch: mlin/PR/AbsoluteTimedGuarantees
-    :git: "git@github.com:signalapp/SignalCoreKit-Private"
+    :git: "git@github.com:signalapp/SignalCoreKit"
   SignalMetadataKit:
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   SignalRingRTC:
@@ -373,8 +372,8 @@ CHECKOUT OPTIONS:
     :commit: aaa24f6efae6114f1252ae86f02aeedc69a8b151
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 063292c2d99c0c37141bf6e26a99a8698d7bd7c4
-    :git: "git@github.com:signalapp/SignalCoreKit-Private"
+    :commit: 517562ffa87cd18fe812d2abe50ff152e03e47e7
+    :git: "git@github.com:signalapp/SignalCoreKit"
   SignalMetadataKit:
     :commit: 90f1776e631e8e232360bbe11db620c77f078567
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -439,6 +438,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZKGroup: 8f762d76c98c38d4de3c9a3406309e873a856383
 
-PODFILE CHECKSUM: 62695ff4d52f9f95f33797b029b95b8173994cdc
+PODFILE CHECKSUM: c007b5dc4ba950afe17139fc7ca999084c99b943
 
 COCOAPODS: 1.10.1
