@@ -1012,8 +1012,14 @@
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from this device.";
 
+/* Message for the 'conversations delete confirmation' alert for multiple messages. */
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES" = "These chats will be deleted from this device.";
+
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
+
+/* Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}. */
+"CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE" = "Delete %@ Chats?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
@@ -1024,11 +1030,11 @@
 /* 1 hour */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 hour";
 
-/* 2 hours */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 hours";
-
-/* 7 days */
+/* 1 week */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 week";
+
+/* 8 hours */
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 hours";
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Always";
@@ -2961,6 +2967,12 @@
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
+
+/* Title for the 'Select Messages' option in the HomeView. */
+"HOME_VIEW_TITLE_SELECT_MESSAGES" = "Select Messages";
+
+/* Title 'Read All' button in the toolbar of the homeview if multi-section is active. */
+"HOME_VIEW_TOOLBAR_READ_ALL" = "Read All";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";

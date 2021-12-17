@@ -497,14 +497,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.homeViewMode != HomeViewModeInbox) {
+    if (self.homeViewMode != HomeViewModeInbox || self.viewState.multiSelectState.isActive) {
         return;
     }
 
     // Settings button.
     UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
-    [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
+    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchUpInside];
 
     UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
     [avatarButton addSubview:avatarImageView];

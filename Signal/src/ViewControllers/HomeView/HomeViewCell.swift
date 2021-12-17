@@ -8,6 +8,7 @@ import SignalUI
 
 @objc
 public class HomeViewCell: UITableViewCell {
+    public static let switchRowSelection = Notification.Name("switchRowSelection")
 
     @objc
     public static let reuseIdentifier = "HomeViewCell"
@@ -23,6 +24,7 @@ public class HomeViewCell: UITableViewCell {
     private let messageStatusIconView = CVImageView()
     private let typingIndicatorView = TypingIndicatorView()
     private let muteIconView = CVImageView()
+    private let selectButton = CVImageView()
 
     private let unreadBadge = NeverClearView(name: "unreadBadge")
     private let unreadLabel = CVLabel()
@@ -57,6 +59,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     private struct ReuseToken {
+        let hasSelectButton: Bool
         let hasMuteIndicator: Bool
         let hasMessageStatusToken: Bool
         let hasUnreadBadge: Bool
@@ -85,6 +88,7 @@ public class HomeViewCell: UITableViewCell {
         let thread: ThreadViewModel
         let lastReloadDate: Date?
         let isBlocked: Bool
+        let isSelected: Bool?
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
 
@@ -111,11 +115,13 @@ public class HomeViewCell: UITableViewCell {
         init(thread: ThreadViewModel,
              lastReloadDate: Date?,
              isBlocked: Bool,
+             isSelected: Bool? = nil,
              overrideSnippet: NSAttributedString? = nil,
              overrideDate: Date? = nil) {
             self.thread = thread
             self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
+            self.isSelected = isSelected
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
         }
@@ -155,6 +161,7 @@ public class HomeViewCell: UITableViewCell {
     // This value is now larger than AvatarBuilder.standardAvatarSizePoints.
     private static let avatarSize: UInt = 56
     private static let muteIconSize: CGFloat = 16
+    private static let selectBoxSize: CGFloat = 22
 
     // MARK: -
 
@@ -204,6 +211,7 @@ public class HomeViewCell: UITableViewCell {
             thread: configuration.thread.threadRecord,
             lastReloadDate: configuration.lastReloadDate,
             isBlocked: configuration.isBlocked,
+            isSelected: configuration.isSelected,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
             messageStatusToken: messageStatusToken,
@@ -296,11 +304,11 @@ public class HomeViewCell: UITableViewCell {
                                                         ])
         let vStackSize = vStackMeasurement.measuredSize
 
-        let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
-                                                             subviewInfos: [
-                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
-                                                                vStackSize.asManualSubviewInfo
-                                                             ])
+        let outerHStackMeasurement = ManualStackView.measure(
+            config: outerHStackConfig,
+            subviewInfos: [CGSize(square: configuration.isSelected == nil ? 0 : HomeViewCell.selectBoxSize).asManualSubviewInfo(hasFixedSize: true),
+                           avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                           vStackSize.asManualSubviewInfo])
 
         return HVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
                                   topRowStackMeasurement: topRowStackMeasurement,
@@ -438,11 +446,20 @@ public class HomeViewCell: UITableViewCell {
 
         let avatarStackSubviews = [ avatarView ]
         let vStackSubviews = [ topRowStack, bottomRowStack ]
-        let outerHStackSubviews = [ avatarStack, vStack ]
+
+        if let selected = configs.isSelected {
+            selectButton.setImage(imageName: selected ? "contact_checkbox_checked" : "contact_checkbox_unchecked")
+            selectButton.isUserInteractionEnabled = true
+            if selectButton.gestureRecognizers?.isEmpty ?? true {
+                selectButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(switchSelectionState)))
+            }
+        }
+        let outerHStackSubviews = [selectButton, avatarStack, vStack]
 
         // It is only safe to reuse the bottom row wrapper if its subview list
         // hasn't changed.
-        let newReuseToken = ReuseToken(hasMuteIndicator: shouldShowMuteIndicator,
+        let newReuseToken = ReuseToken(hasSelectButton: configs.isSelected != nil,
+                                       hasMuteIndicator: shouldShowMuteIndicator,
                                        hasMessageStatusToken: configs.messageStatusToken != nil,
                                        hasUnreadBadge: measurements.unreadBadgeMeasurements != nil)
 
@@ -495,6 +512,11 @@ public class HomeViewCell: UITableViewCell {
         }
 
         self.reuseToken = newReuseToken
+    }
+
+    @objc
+    private func switchSelectionState() {
+        NotificationCenter.default.post(name: HomeViewCell.switchRowSelection, object: self)
     }
 
     // MARK: - Stack Configs
@@ -952,6 +974,7 @@ private struct HVCellConfigs {
     let thread: TSThread
     let lastReloadDate: Date?
     let isBlocked: Bool
+    let isSelected: Bool?
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
     let messageStatusToken: HVMessageStatusToken?

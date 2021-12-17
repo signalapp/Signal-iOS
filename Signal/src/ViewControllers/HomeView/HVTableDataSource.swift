@@ -208,6 +208,15 @@ public enum HomeViewSection: Int, CaseIterable {
 
 extension HVTableDataSource: UITableViewDelegate {
 
+    public func tableView(_ tableView: UITableView,
+                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.none
+    }
+
+    public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         AssertIsOnMainThread()
 
@@ -725,6 +734,7 @@ extension HVTableDataSource: UITableViewDataSource {
 
 extension HVTableDataSource {
 
+    @discardableResult
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
 
@@ -747,13 +757,15 @@ extension HVTableDataSource {
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?) -> HomeViewCell.Configuration {
+                                               lastReloadDate: Date?,
+                                               isSelected: Bool?) -> HomeViewCell.Configuration {
         owsAssertDebug(threadViewModel.homeViewInfo != nil)
 
         let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked)
+                                                       isBlocked: isBlocked,
+                                                       isSelected: isSelected)
         return configuration
     }
 
@@ -775,12 +787,17 @@ extension HVTableDataSource {
             return self.lastReloadDate
         }()
         let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate)
+                                                        lastReloadDate: lastReloadDate,
+                                                        isSelected: viewController.isSelected(indexPath))
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
             // Cell measurement/arrangement is expensive.
-            let cacheKey = configuration.thread.threadRecord.uniqueId
+            var prefix = ""
+            if let selected = viewController.isSelected(indexPath) {
+                prefix = selected ? "SELECTED-" : "UNSELECTED-"
+            }
+            let cacheKey = prefix + configuration.thread.threadRecord.uniqueId
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
             }
@@ -841,7 +858,8 @@ extension HVTableDataSource {
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                            lastReloadDate: lastReloadDate)
+                                                            lastReloadDate: lastReloadDate,
+                                                            isSelected: viewController.isSelected(indexPath))
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,

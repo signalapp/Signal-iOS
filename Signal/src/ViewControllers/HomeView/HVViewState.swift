@@ -9,6 +9,9 @@ public class HVViewState: NSObject {
 
     public let tableDataSource = HVTableDataSource()
 
+    @objc
+    public let multiSelectState = MultiSelectState()
+
     public let loadCoordinator = HVLoadCoordinator()
 
     // MARK: - Caches

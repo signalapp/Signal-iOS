@@ -127,12 +127,23 @@ extension ThreadSwipeHandler where Self: UIViewController {
         return image.withRenderingMode(.alwaysTemplate)
     }
 
-    fileprivate func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
+    func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
         databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isArchived: !threadViewModel.isArchived,
+                                                      updateStorageService: true,
+                                                      transaction: transaction)
+        }
+        updateUIAfterSwipeAction?()
+    }
+
+    func markThreadRead(threadViewModel: ThreadViewModel) {
+        AssertIsOnMainThread()
+
+        databaseStorage.write { transaction in
+            threadViewModel.associatedData.updateWith(isMarkedUnread: false,
                                                       updateStorageService: true,
                                                       transaction: transaction)
         }
@@ -155,7 +166,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         presentActionSheet(alert)
     }
 
-    fileprivate func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
+    func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
