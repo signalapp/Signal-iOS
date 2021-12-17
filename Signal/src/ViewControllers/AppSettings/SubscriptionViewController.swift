@@ -1373,6 +1373,22 @@ extension SubscriptionViewController: BadgeConfigurationDelegate {
             } else {
                 return Promise.value(())
             }
+        }.then(on: .global()) { () -> Promise<Void> in
+            let displayBadgesOnProfile: Bool
+            switch setting {
+            case .doNotDisplayPublicly:
+                displayBadgesOnProfile = false
+            case .display:
+                displayBadgesOnProfile = true
+            }
+
+            return Self.databaseStorage.writePromise { transaction in
+                Self.subscriptionManager.setDisplayBadgesOnProfile(
+                    displayBadgesOnProfile,
+                    updateStorageService: true,
+                    transaction: transaction
+                )
+            }.asVoid()
         }.done {
             self.navigationController?.popViewController(animated: true)
         }.catch { error in

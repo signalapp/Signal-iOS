@@ -999,7 +999,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                             method:@"POST"
                                         parameters:@{
                                             @"receiptCredentialPresentation" : base64ReceiptCredentialPresentation,
-                                            @"visible" : @(self.profileManager.localProfileHasVisibleBadge),
+                                            @"visible" : @(self.subscriptionManager.displayBadgesOnProfile),
                                             @"primary" : @(NO)
                                         }];
     return request;

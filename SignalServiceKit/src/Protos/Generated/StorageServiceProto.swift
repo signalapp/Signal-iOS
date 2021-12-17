@@ -2562,6 +2562,12 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if let _value = subscriberCurrencyCode {
             builder.setSubscriberCurrencyCode(_value)
         }
+        if hasDisplayBadgesOnProfile {
+            builder.setDisplayBadgesOnProfile(displayBadgesOnProfile)
+        }
+        if hasSubscriptionManuallyCancelled {
+            builder.setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2694,6 +2700,14 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setSubscriberCurrencyCode(_ valueParam: String) {
             proto.subscriberCurrencyCode = valueParam
+        }
+
+        public mutating func setDisplayBadgesOnProfile(_ valueParam: Bool) {
+            proto.displayBadgesOnProfile = valueParam
+        }
+
+        public mutating func setSubscriptionManuallyCancelled(_ valueParam: Bool) {
+            proto.subscriptionManuallyCancelled = valueParam
         }
 
         public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2861,6 +2875,20 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
     public var hasSubscriberCurrencyCode: Bool {
         return !proto.subscriberCurrencyCode.isEmpty
+    }
+
+    public var displayBadgesOnProfile: Bool {
+        return proto.displayBadgesOnProfile
+    }
+    public var hasDisplayBadgesOnProfile: Bool {
+        return true
+    }
+
+    public var subscriptionManuallyCancelled: Bool {
+        return proto.subscriptionManuallyCancelled
+    }
+    public var hasSubscriptionManuallyCancelled: Bool {
+        return true
     }
 
     public var hasUnknownFields: Bool {

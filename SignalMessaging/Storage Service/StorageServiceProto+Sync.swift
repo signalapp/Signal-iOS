@@ -587,6 +587,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
 
+        builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
+        builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
+
         return try builder.build()
     }
 
@@ -754,6 +757,24 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             if subscriberCurrencyCode != SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
                 SubscriptionManager.setSubscriberCurrencyCode(subscriberCurrencyCode, transaction: transaction)
             }
+        }
+
+        let localDisplayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(transaction: transaction)
+        if localDisplayBadgesOnProfile != displayBadgesOnProfile {
+            subscriptionManager.setDisplayBadgesOnProfile(
+                displayBadgesOnProfile,
+                updateStorageService: false,
+                transaction: transaction
+            )
+        }
+
+        let localSubscriptionManuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(transaction: transaction)
+        if localSubscriptionManuallyCancelled != subscriptionManuallyCancelled {
+            subscriptionManager.setUserManuallyCancelledSubscription(
+                subscriptionManuallyCancelled,
+                updateStorageService: false,
+                transaction: transaction
+            )
         }
 
         return mergeState

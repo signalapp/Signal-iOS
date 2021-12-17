@@ -5,6 +5,7 @@
 import Foundation
 import PassKit
 import ZKGroup
+import SignalServiceKit
 
 public enum SubscriptionBadgeIds: String, CaseIterable {
     case low = "R_LOW"
@@ -111,8 +112,42 @@ public class SubscriptionManager: NSObject {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Self.performSubscriptionKeepAliveIfNecessary()
+            DispatchQueue.global().async {
+                Self.warmCaches()
+                Self.performMigrationToStorageServiceIfNecessary()
+                Self.performSubscriptionKeepAliveIfNecessary()
+            }
         }
+    }
+
+    private static func warmCaches() {
+        let value = databaseStorage.read { displayBadgesOnProfile(transaction: $0) }
+        displayBadgesOnProfileCache.set(value)
+    }
+
+    private static func performMigrationToStorageServiceIfNecessary() {
+        let hasMigratedToStorageService = databaseStorage.read { transaction in
+            subscriptionKVS.getBool(hasMigratedToStorageServiceKey, defaultValue: false, transaction: transaction)
+        }
+
+        guard !hasMigratedToStorageService else { return }
+
+        databaseStorage.write { transaction in
+            subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
+
+            let localProfile = profileManagerImpl.localUserProfile()
+            let allBadges = localProfile.profileBadgeInfo ?? []
+            let displayBadgesOnProfile = allBadges.allSatisfy { badge in
+                badge.isVisible ?? {
+                    owsFailDebug("Local user badges should always have a non-nil visibility flag")
+                    return true
+                }()
+            }
+
+            setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
+        }
+
+        storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
     public static let subscriptionJobQueue = SubscriptionReceiptCredentialJobQueue()
@@ -126,10 +161,12 @@ public class SubscriptionManager: NSObject {
     fileprivate static let lastSubscriptionHeartbeatKey = "subscriptionHeartbeat"
     fileprivate static let lastSubscriptionReceiptRedemptionFailedKey = "lastSubscriptionReceiptRedemptionFailedKey"
     fileprivate static let userManuallyCancelledSubscriptionKey = "userManuallyCancelledSubscriptionKey"
+    fileprivate static let displayBadgesOnProfileKey = "displayBadgesOnProfileKey"
     fileprivate static let knownUserSubscriptionBadgeIDsKey = "knownUserSubscriptionBadgeIDsKey"
     fileprivate static let knownUserBoostBadgeIDsKey = "knownUserBoostBadgeIDsKey"
     fileprivate static let mostRecentlyExpiredBadgeIDKey = "mostRecentlyExpiredBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
+    fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
     public static var terminateTransactionIfPossible = false
 
@@ -820,8 +857,26 @@ extension SubscriptionManager {
         return subscriptionKVS.getBool(userManuallyCancelledSubscriptionKey, transaction: transaction) ?? false
     }
 
-    private static func setUserManuallyCancelledSubscription(_ userCancelled: Bool, transaction: SDSAnyWriteTransaction) {
-        subscriptionKVS.setBool(userCancelled, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
+    private static func setUserManuallyCancelledSubscription(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+        guard value != userManuallyCancelledSubscription(transaction: transaction) else { return }
+        subscriptionKVS.setBool(value, key: userManuallyCancelledSubscriptionKey, transaction: transaction)
+        if updateStorageService {
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+    }
+
+    private static func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
+        return subscriptionKVS.getBool(displayBadgesOnProfileKey, transaction: transaction) ?? false
+    }
+
+    private static var displayBadgesOnProfileCache = AtomicBool(false)
+    private static func setDisplayBadgesOnProfile(_ value: Bool, updateStorageService: Bool = false, transaction: SDSAnyWriteTransaction) {
+        guard value != displayBadgesOnProfile(transaction: transaction) else { return }
+        displayBadgesOnProfileCache.set(value)
+        subscriptionKVS.setBool(value, key: displayBadgesOnProfileKey, transaction: transaction)
+        if updateStorageService {
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
     }
 
     fileprivate static func lastSubscriptionExpirationDate(transaction: SDSAnyReadTransaction) -> Date? {
@@ -1081,6 +1136,20 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
         var expiringBadgeId = Self.mostRecentlyExpiredBadgeID(transaction: transaction)
         var userManuallyCancelled = Self.userManuallyCancelledSubscription(transaction: transaction)
         var showExpiryOnHomeScreen = Self.showExpirySheetOnHomeScreenKey(transaction: transaction)
+        var displayBadgesOnProfile = Self.displayBadgesOnProfile(transaction: transaction)
+
+        if !currentBadges.isEmpty {
+            let isCurrentlyDisplayingBadgesOnProfile = currentBadges.allSatisfy { badge in
+                badge.isVisible ?? {
+                    owsFailDebug("Local user badges should always have a non-nil visibility flag")
+                    return true
+                }()
+            }
+            if displayBadgesOnProfile != isCurrentlyDisplayingBadgesOnProfile {
+                displayBadgesOnProfile = isCurrentlyDisplayingBadgesOnProfile
+                Logger.info("Updating displayBadgesOnProfile to reflect state on profile \(displayBadgesOnProfile)")
+            }
+        }
 
         let newSubscriberBadgeIds = Set(currentSubscriberBadgeIDs).subtracting(persistedSubscriberBadgeIDs)
         Logger.info("Learned of \(newSubscriberBadgeIds.count) new subscriber badge ids: \(newSubscriberBadgeIds)")
@@ -1141,6 +1210,7 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
             Most Recently Expired Badge Id: \(expiringBadgeId ?? "nil")
             Show Expiry On Home Screen: \(showExpiryOnHomeScreen)
             User Manually Cancelled Subscription: \(userManuallyCancelled)
+            Display Badges On Profile: \(displayBadgesOnProfile)
         """)
 
         // Persist new values
@@ -1149,6 +1219,7 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
         Self.setMostRecentlyExpiredBadgeID(badgeID: expiringBadgeId, transaction: transaction)
         Self.setShowExpirySheetOnHomeScreenKey(show: showExpiryOnHomeScreen, transaction: transaction)
         Self.setUserManuallyCancelledSubscription(userManuallyCancelled, transaction: transaction)
+        Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, transaction: transaction)
     }
 
     public func hasCurrentSubscription(transaction: SDSAnyReadTransaction) -> Bool {
@@ -1161,5 +1232,23 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
         }
 
         return lastSubscriptionExpiryDate.isAfterNow
+    }
+
+    public func userManuallyCancelledSubscription(transaction: SDSAnyReadTransaction) -> Bool {
+        return Self.userManuallyCancelledSubscription(transaction: transaction)
+    }
+
+    public func setUserManuallyCancelledSubscription(_ userCancelled: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+        Self.setUserManuallyCancelledSubscription(userCancelled, updateStorageService: updateStorageService, transaction: transaction)
+    }
+
+    public var displayBadgesOnProfile: Bool { Self.displayBadgesOnProfileCache.get() }
+
+    public func displayBadgesOnProfile(transaction: SDSAnyReadTransaction) -> Bool {
+        return Self.displayBadgesOnProfile(transaction: transaction)
+    }
+
+    public func setDisplayBadgesOnProfile(_ displayBadgesOnProfile: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+        Self.setDisplayBadgesOnProfile(displayBadgesOnProfile, updateStorageService: updateStorageService, transaction: transaction)
     }
 }
