@@ -63,14 +63,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
     convenience init(fetchingDataFromLocalProfileWithDelegate delegate: BadgeConfigurationDelegate) {
         let snapshot = Self.profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
         let allBadges = snapshot.profileBadgeInfo ?? []
-        let shouldDisplayOnProfile = allBadges.allSatisfy { badge in
-            if let isVisible = badge.isVisible {
-                return isVisible
-            } else {
-                owsFailDebug("Expecting visibility for local profile badge settings")
-                return true
-            }
-        }
+        let shouldDisplayOnProfile = Self.subscriptionManager.displayBadgesOnProfile
 
         self.init(availableBadges: allBadges, shouldDisplayOnProfile: shouldDisplayOnProfile, delegate: delegate)
     }

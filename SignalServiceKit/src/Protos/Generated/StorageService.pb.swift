@@ -500,6 +500,16 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._subscriberCurrencyCode = newValue}
   }
 
+  var displayBadgesOnProfile: Bool {
+    get {return _storage._displayBadgesOnProfile}
+    set {_uniqueStorage()._displayBadgesOnProfile = newValue}
+  }
+
+  var subscriptionManuallyCancelled: Bool {
+    get {return _storage._subscriptionManuallyCancelled}
+    set {_uniqueStorage()._subscriptionManuallyCancelled = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -1292,7 +1302,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     17: .same(proto: "universalExpireTimer"),
     19: .same(proto: "e164"),
     21: .same(proto: "subscriberID"),
-    22: .same(proto: "subscriberCurrencyCode")
+    22: .same(proto: "subscriberCurrencyCode"),
+    23: .same(proto: "displayBadgesOnProfile"),
+    24: .same(proto: "subscriptionManuallyCancelled")
   ]
 
   fileprivate class _StorageClass {
@@ -1316,6 +1328,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _e164: String = String()
     var _subscriberID: Data = Data()
     var _subscriberCurrencyCode: String = String()
+    var _displayBadgesOnProfile: Bool = false
+    var _subscriptionManuallyCancelled: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -1342,6 +1356,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _e164 = source._e164
       _subscriberID = source._subscriberID
       _subscriberCurrencyCode = source._subscriberCurrencyCode
+      _displayBadgesOnProfile = source._displayBadgesOnProfile
+      _subscriptionManuallyCancelled = source._subscriptionManuallyCancelled
     }
   }
 
@@ -1380,6 +1396,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._e164) }()
         case 21: try { try decoder.decodeSingularBytesField(value: &_storage._subscriberID) }()
         case 22: try { try decoder.decodeSingularStringField(value: &_storage._subscriberCurrencyCode) }()
+        case 23: try { try decoder.decodeSingularBoolField(value: &_storage._displayBadgesOnProfile) }()
+        case 24: try { try decoder.decodeSingularBoolField(value: &_storage._subscriptionManuallyCancelled) }()
         default: break
         }
       }
@@ -1452,6 +1470,12 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._subscriberCurrencyCode.isEmpty {
         try visitor.visitSingularStringField(value: _storage._subscriberCurrencyCode, fieldNumber: 22)
       }
+      if _storage._displayBadgesOnProfile != false {
+        try visitor.visitSingularBoolField(value: _storage._displayBadgesOnProfile, fieldNumber: 23)
+      }
+      if _storage._subscriptionManuallyCancelled != false {
+        try visitor.visitSingularBoolField(value: _storage._subscriptionManuallyCancelled, fieldNumber: 24)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1481,6 +1505,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._e164 != rhs_storage._e164 {return false}
         if _storage._subscriberID != rhs_storage._subscriberID {return false}
         if _storage._subscriberCurrencyCode != rhs_storage._subscriberCurrencyCode {return false}
+        if _storage._displayBadgesOnProfile != rhs_storage._displayBadgesOnProfile {return false}
+        if _storage._subscriptionManuallyCancelled != rhs_storage._subscriptionManuallyCancelled {return false}
         return true
       }
       if !storagesAreEqual {return false}

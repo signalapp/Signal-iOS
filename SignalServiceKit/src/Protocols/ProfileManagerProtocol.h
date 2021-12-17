@@ -51,8 +51,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 
-@property (nonatomic, readonly) BOOL localProfileHasVisibleBadge;
-
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 

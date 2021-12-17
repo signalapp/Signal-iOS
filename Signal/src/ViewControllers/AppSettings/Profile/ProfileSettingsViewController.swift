@@ -40,12 +40,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
         allBadges = snapshot.profileBadgeInfo ?? []
-        displayBadgesOnProfile = allBadges.allSatisfy { badge in
-            badge.isVisible ?? {
-                owsFailDebug("Local user badges should always have a non-nil visibility flag")
-                return true
-            }()
-        }
+        displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile
         updateTableContents()
     }
 
@@ -208,6 +203,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let normalizedBio = self.normalizedBio
         let normalizedBioEmoji = self.normalizedBioEmoji
         let visibleBadgeIds = displayBadgesOnProfile ? self.allBadges.map { $0.badgeId } : []
+        let displayBadgesOnProfile = displayBadgesOnProfile
 
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(message: NSLocalizedString("PROFILE_VIEW_NO_CONNECTION",
@@ -227,6 +223,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                                                             profileAvatarData: avatarData,
                                                             visibleBadgeIds: visibleBadgeIds,
                                                             userProfileWriter: .localUser)
+            }.then(on: .global()) { () -> Promise<Void> in
+                Self.databaseStorage.writePromise { transaction in
+                    Self.subscriptionManager.setDisplayBadgesOnProfile(
+                        displayBadgesOnProfile,
+                        updateStorageService: true,
+                        transaction: transaction
+                    )
+                }.asVoid()
             }.done(on: .main) { _ in
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()
