@@ -372,7 +372,7 @@ CHECKOUT OPTIONS:
     :commit: aaa24f6efae6114f1252ae86f02aeedc69a8b151
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 04920eef158f9c3c88bc33fa75d9f18c3f2879e8
+    :commit: 517562ffa87cd18fe812d2abe50ff152e03e47e7
     :git: "git@github.com:signalapp/SignalCoreKit"
   SignalMetadataKit:
     :commit: 90f1776e631e8e232360bbe11db620c77f078567
