@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentGetStartedBannerIfNecessary;
 
 @property (nonatomic) UIView *firstConversationCueView;
+@property (nonatomic) BOOL hasShownBadgeExpiration;
 
 @end
 
