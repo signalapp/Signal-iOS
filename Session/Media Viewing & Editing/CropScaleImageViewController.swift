@@ -42,7 +42,7 @@ import SignalUtilitiesKit
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(width: 210, height: 210)
+        return CGSize(width: 640, height: 640)
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height

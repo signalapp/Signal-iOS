@@ -362,7 +362,6 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 let maxMessageWidth = VisibleMessageCell.getMaxWidth(for: viewItem)
                 let albumView = MediaAlbumView(mediaCache: cache, items: viewItem.mediaAlbumItems!, isOutgoing: isOutgoing, maxMessageWidth: maxMessageWidth)
                 self.albumView = albumView
-                snContentView.addSubview(albumView)
                 let size = getSize(for: viewItem)
                 albumView.set(.width, to: size.width)
                 albumView.set(.height, to: size.height)
@@ -398,9 +397,25 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
                 Storage.shared.getContact(with: thread.contactSessionID())?.isTrusted != true {
                 showMediaPlaceholder()
             } else {
+                let inset: CGFloat = 12
+                let maxWidth = VisibleMessageCell.getMaxWidth(for: viewItem) - 2 * inset
+                // Stack view
+                let stackView = UIStackView(arrangedSubviews: [])
+                stackView.axis = .vertical
+                stackView.spacing = Values.smallSpacing
+                // Document view
                 let documentView = DocumentView(viewItem: viewItem, textColor: bodyLabelTextColor)
-                snContentView.addSubview(documentView)
-                documentView.pin(to: snContentView)
+                stackView.addArrangedSubview(documentView)
+                // Body text view
+                if let message = viewItem.interaction as? TSMessage, let body = message.body, body.count > 0,
+                    let delegate = delegate { // delegate should always be set at this point
+                    let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: bodyLabelTextColor, searchText: delegate.lastSearchedText, delegate: self)
+                    self.bodyTextView = bodyTextView
+                    stackView.addArrangedSubview(bodyTextView)
+                }
+                // Constraints
+                snContentView.addSubview(stackView)
+                stackView.pin(to: snContentView, withInset: inset)
             }
         case .deletedMessage:
             let deletedMessageView = DeletedMessageView(viewItem: viewItem, textColor: bodyLabelTextColor)
@@ -468,6 +483,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let location = gestureRecognizer.location(in: self)
         if profilePictureView.frame.contains(location) && VisibleMessageCell.shouldShowProfilePicture(for: viewItem) {
             guard let message = viewItem.interaction as? TSIncomingMessage else { return }
+            guard !message.isOpenGroupMessage else { return } // Do not show user details to prevent spam
             delegate?.showUserDetails(for: message.authorId)
         } else if replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
