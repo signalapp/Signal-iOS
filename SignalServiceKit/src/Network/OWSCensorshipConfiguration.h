@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class AFSecurityPolicy;
+@class OWSHTTPSecurityPolicy;
 
 extern NSString *const OWSFrontingHost_GoogleEgypt;
 extern NSString *const OWSFrontingHost_GoogleUAE;
@@ -25,7 +25,7 @@ extern NSString *const OWSFrontingHost_GoogleUzbekistan;
 + (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 
 @property (nonatomic, readonly) NSURL *domainFrontBaseURL;
-@property (nonatomic, readonly) AFSecurityPolicy *domainFrontSecurityPolicy;
+@property (nonatomic, readonly) OWSHTTPSecurityPolicy *domainFrontSecurityPolicy;
 
 @end
 
