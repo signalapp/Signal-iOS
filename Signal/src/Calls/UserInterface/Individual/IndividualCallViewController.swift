@@ -7,6 +7,7 @@ import WebRTC
 import SignalServiceKit
 import SignalMessaging
 import SignalRingRTC
+import AVFoundation
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
@@ -92,6 +93,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     private lazy var audioModeSourceButton = createButton(iconName: "speaker-solid-28", action: #selector(didPressAudioSource))
     private lazy var audioModeMuteButton = createButton(iconName: "mic-off-solid-28", action: #selector(didPressMute))
     private lazy var audioModeVideoButton = createButton(iconName: "video-solid-28", action: #selector(didPressVideo))
+    private lazy var centerStageButton = createButton(iconName: "centre-stage-28", action: #selector(didPressCenterStage))
 
     // MARK: - Ongoing Video Call Controls
 
@@ -225,7 +227,18 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         // we want to remove them so they are free'd when the call ends
         remoteVideoView.removeFromSuperview()
         localVideoView.removeFromSuperview()
+        
+        self.removeObserver(self, forKeyPath: "isCenterStageEnabled")
     }
+    
+    // MARK: - KVO
+    override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if forKeyPath == "isCenterStageEnabled",
+           let enabled = change?[.newKey] as? Bool {
+            centerStageButton.isSelected = enabled
+        }
+    }
+    
 
     // MARK: - View Lifecycle
 
@@ -288,6 +301,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
                                                selector: #selector(didBecomeActive),
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
+        
+        configCenterStageIfSupported()
+        
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -950,6 +966,42 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         scheduleControlTimeoutIfNecessary()
     }
+    
+    func configCenterStageIfSupported() {
+        if #available(iOS 14.5, *) {
+            let deviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera]
+            let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
+                                                                mediaType: .video,
+                                                                position: .front)
+            
+            if let device = selectAVCaptureDevice(session: frontSession, deviceTypes: deviceTypes) {
+                if device.activeFormat.isCenterStageSupported {
+                    AVCaptureDevice.centerStageControlMode = .cooperative
+                    centerStageButton.isHidden = false
+                    KVOCenterStageEnabled()
+                    return
+                }
+            }
+        }
+        centerStageButton.isHidden = true
+    }
+    
+    func selectAVCaptureDevice(session: AVCaptureDevice.DiscoverySession, deviceTypes: [AVCaptureDevice.DeviceType]) -> AVCaptureDevice? {
+        var deviceMap = [AVCaptureDevice.DeviceType: AVCaptureDevice]()
+        for device in session.devices {
+            deviceMap[device.deviceType] = device
+        }
+        for deviceType in deviceTypes {
+            if let device = deviceMap[deviceType] {
+                return device
+            }
+        }
+        return nil
+    }
+    
+    func KVOCenterStageEnabled() {
+        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
+    }
 
     func displayNeedPermissionErrorAndDismiss() {
         guard !hasDismissed else { return }
@@ -1087,7 +1139,16 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         button.isSelected = !button.isSelected
         callService.audioService.requestSpeakerphone(isEnabled: button.isSelected)
     }
+    
+    @objc func didPressCenterStage(sender button: UIButton) {
+        Logger.info("Pressed center stage")
 
+        button.isSelected = !button.isSelected
+        if #available(iOS 14.5, *) {
+            AVCaptureDevice.isCenterStageEnabled = button.isSelected
+        }
+    }
+    
     func didPressTextMessage(sender button: UIButton) {
         Logger.info("")
 

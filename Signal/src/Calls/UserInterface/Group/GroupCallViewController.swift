@@ -397,7 +397,6 @@ class GroupCallViewController: UIViewController {
 
     func updateCallUI(size: CGSize? = nil) {
         let localDevice = groupCall.localDeviceState
-
         localMemberView.configure(
             call: call,
             isFullScreen: localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
