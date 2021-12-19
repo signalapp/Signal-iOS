@@ -13,9 +13,7 @@ class CenterStageUtil {
                                                                 position: .front)
             
             if let device = AVCaptureDevice.select(session: frontSession, deviceTypes: deviceTypes) {
-                if device.activeFormat.isCenterStageSupported {
-                    return true
-                }
+                return device.activeFormat.isCenterStageSupported
             }
         }
         return false
