@@ -640,6 +640,9 @@
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "End call";
 
+/* Accessibility label for selecting center stage */
+"CALL_VIEW_CENTER_STAGE_LABEL" = "Center Stage";
+
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Mute";
 

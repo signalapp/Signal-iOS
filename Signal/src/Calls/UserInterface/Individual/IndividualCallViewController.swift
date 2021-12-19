@@ -441,6 +441,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         videoModeHangUpButton.unselectedBackgroundColor = .ows_accentRed
         videoModeHangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                                  comment: "Accessibility label for hang up call")
+        
+        centerStageButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_CENTER_STAGE_LABEL",
+                                                                   comment: "Accessibility label for selecting center stage")
 
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
         videoModeMuteButton.alpha = 0.9
@@ -968,8 +971,8 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
     
     func configCenterStageIfSupported() {
-        if isCenterStageSupported() {
-            setCentreStageCooperative()
+        if CenterStageUtil.isCenterStageSupported() {
+            CenterStageUtil.setCooperative()
             centerStageButton.isHidden = false
             KVOCenterStageEnabled()
         } else {
@@ -1122,9 +1125,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("Pressed center stage")
 
         button.isSelected = !button.isSelected
-        if #available(iOS 14.5, *) {
-            AVCaptureDevice.isCenterStageEnabled = button.isSelected
-        }
+        CenterStageUtil.setCenterStageEnabledIfAvailable(value: button.isSelected)
     }
     
     func didPressTextMessage(sender button: UIButton) {

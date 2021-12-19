@@ -759,14 +759,14 @@ private class QRCodeScanner {
         let backSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
                                                            mediaType: .video,
                                                            position: .back)
-        if let device = selectAVCaptureDevice(session: backSession, deviceTypes: deviceTypes) {
+        if let device = AVCaptureDevice.select(session: backSession, deviceTypes: deviceTypes) {
             return device
         }
         // Failover to a front-facing camera.
         let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
                                                             mediaType: .video,
                                                             position: .front)
-        if let device = selectAVCaptureDevice(session: frontSession, deviceTypes: deviceTypes) {
+        if let device = AVCaptureDevice.select(session: frontSession, deviceTypes: deviceTypes) {
             return device
         }
 
