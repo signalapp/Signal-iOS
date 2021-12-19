@@ -755,31 +755,18 @@ private class QRCodeScanner {
         deviceTypes.append(.builtInDualCamera)
         deviceTypes.append(.builtInTelephotoCamera)
 
-        func selectDevice(session: AVCaptureDevice.DiscoverySession) -> AVCaptureDevice? {
-            var deviceMap = [AVCaptureDevice.DeviceType: AVCaptureDevice]()
-            for device in session.devices {
-                deviceMap[device.deviceType] = device
-            }
-            for deviceType in deviceTypes {
-                if let device = deviceMap[deviceType] {
-                    return device
-                }
-            }
-            return nil
-        }
-
         // Prefer a back-facing camera.
         let backSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
                                                            mediaType: .video,
                                                            position: .back)
-        if let device = selectDevice(session: backSession) {
+        if let device = selectAVCaptureDevice(session: backSession, deviceTypes: deviceTypes) {
             return device
         }
         // Failover to a front-facing camera.
         let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
                                                             mediaType: .video,
                                                             position: .front)
-        if let device = selectDevice(session: frontSession) {
+        if let device = selectAVCaptureDevice(session: frontSession, deviceTypes: deviceTypes) {
             return device
         }
 
