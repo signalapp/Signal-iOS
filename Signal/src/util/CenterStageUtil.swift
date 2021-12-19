@@ -27,7 +27,7 @@ class CenterStageUtil {
         }
     }
     
-    static func setCenterStageEnabledIfAvailable(value: Bool) {
+    static func setCenterStageEnabled(value: Bool) {
         if #available(iOS 14.5, *) {
             AVCaptureDevice.isCenterStageEnabled = value
         }

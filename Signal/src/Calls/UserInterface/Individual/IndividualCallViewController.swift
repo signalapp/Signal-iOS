@@ -1125,7 +1125,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("Pressed center stage")
 
         button.isSelected = !button.isSelected
-        CenterStageUtil.setCenterStageEnabledIfAvailable(value: button.isSelected)
+        CenterStageUtil.setCenterStageEnabled(value: button.isSelected)
     }
     
     func didPressTextMessage(sender button: UIButton) {
