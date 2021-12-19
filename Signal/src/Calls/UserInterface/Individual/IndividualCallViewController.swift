@@ -968,35 +968,13 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
     
     func configCenterStageIfSupported() {
-        if #available(iOS 14.5, *) {
-            let deviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera]
-            let frontSession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
-                                                                mediaType: .video,
-                                                                position: .front)
-            
-            if let device = selectAVCaptureDevice(session: frontSession, deviceTypes: deviceTypes) {
-                if device.activeFormat.isCenterStageSupported {
-                    AVCaptureDevice.centerStageControlMode = .cooperative
-                    centerStageButton.isHidden = false
-                    KVOCenterStageEnabled()
-                    return
-                }
-            }
+        if isCenterStageSupported() {
+            setCentreStageCooperative()
+            centerStageButton.isHidden = false
+            KVOCenterStageEnabled()
+        } else {
+            centerStageButton.isHidden = true
         }
-        centerStageButton.isHidden = true
-    }
-    
-    func selectAVCaptureDevice(session: AVCaptureDevice.DiscoverySession, deviceTypes: [AVCaptureDevice.DeviceType]) -> AVCaptureDevice? {
-        var deviceMap = [AVCaptureDevice.DeviceType: AVCaptureDevice]()
-        for device in session.devices {
-            deviceMap[device.deviceType] = device
-        }
-        for deviceType in deviceTypes {
-            if let device = deviceMap[deviceType] {
-                return device
-            }
-        }
-        return nil
     }
     
     func KVOCenterStageEnabled() {
