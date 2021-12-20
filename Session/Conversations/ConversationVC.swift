@@ -471,6 +471,10 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     
     func scrollToBottom(isAnimated: Bool) {
         guard !isUserScrolling else { return }
+        if let interactionID = viewItems.last?.interaction.uniqueId {
+            self.scrollToInteraction(with: interactionID, position: .top, isAnimated: isAnimated)
+            return
+        }
         // Ensure the view is fully up to date before we try to scroll to the bottom, since
         // we use the table view's bounds to determine where the bottom is.
         view.layoutIfNeeded()
