@@ -35,7 +35,7 @@ extension HomeViewController {
 
         viewState.multiSelectState.title = title
         viewState.multiSelectState.selectedThreadModels.removeAll()
-        let doneButton = UIBarButtonItem(title: CommonStrings.doneButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.doneButton)
+        let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
         navigationItem.setLeftBarButton(doneButton, animated: self.homeViewMode == .inbox)
         navigationItem.setRightBarButtonItems(nil, animated: self.homeViewMode == .inbox)
         showToolbar()
@@ -219,6 +219,7 @@ extension HomeViewController {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
         }
+        done()
     }
 
     @objc
@@ -226,6 +227,7 @@ extension HomeViewController {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
         }
+        done()
     }
 
     @objc
@@ -233,6 +235,7 @@ extension HomeViewController {
         performOnAllSelectedEntries { thread in
             markThreadRead(threadViewModel: thread)
         }
+        done()
     }
 
     @objc
@@ -277,6 +280,7 @@ extension HomeViewController {
             self?.performOnAllSelectedEntries { thread in
                 self?.deleteThread(threadViewModel: thread, closeConversationBlock: nil)
             }
+            self?.done()
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
