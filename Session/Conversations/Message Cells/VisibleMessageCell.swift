@@ -612,8 +612,15 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         let maxAspectRatio = 1 / minAspectRatio
         aspectRatio = aspectRatio.clamp(minAspectRatio, maxAspectRatio)
         let maxSize = CGSize(width: maxMessageWidth, height: maxMessageWidth)
-        var width = with(maxSize.height * aspectRatio) { $0 > maxSize.width ? maxSize.width : $0 }
-        var height = (width > maxSize.width) ? (maxSize.width / aspectRatio) : maxSize.height
+        var width: CGFloat
+        var height: CGFloat
+        if aspectRatio > 1 {
+            width = maxSize.width
+            height = width / aspectRatio
+        } else {
+            height = maxSize.height
+            width = height * aspectRatio
+        }
         // Don't blow up small images unnecessarily
         let minSize: CGFloat = 150
         let shortSourceDimension = min(size.width, size.height)
