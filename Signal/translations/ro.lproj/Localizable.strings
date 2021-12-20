@@ -119,7 +119,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problemă de livrare";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Un mesaj, autocolant, reacție, confirmare de citire sau mesaj media nu v-a putut fi livrat de la %@. Este posibil ca utilizatorul să fi încercat să vă trimită mesajul direct sau într-un grup.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Un mesaj, autocolant, reacție, confirmare de citire sau mesaj media nu a putut fi livrat de la %@. Este posibil ca utilizatorul să fi încercat să vă trimită mesajul direct sau într-un grup.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Renunță";
@@ -385,6 +385,30 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dați un Boost la Signal";
 
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Fii un Susținător";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Adaugă un Boost";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Vă mulțumim pentru Boost!";
 
@@ -485,7 +509,7 @@
 "BOOST_VIEW_BODY" = "Spune \"Mulțumesc!\" și obține insigna Boost pentru 30 de zile.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Insigna ta Boost va expira pe %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduceți o sumă specifică";
@@ -911,7 +935,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Susținători & Signal Boost";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Susținători & Boost";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nu a putut finaliza solicitarea ta de asistență.";
@@ -5930,7 +5954,7 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Afișează numărul de siguranță";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Afișați conversația";
+"SHOW_THREAD_BUTTON_TITLE" = "Afișează conversația";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Te invit să instalezi Signal! Uite linkul:";
@@ -5945,13 +5969,13 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Verificare finalizată.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Dacă alegeți să omiteți verificarea, este posibil să pierdeți mesaje de la alte persoane și este posibil ca mesajele dvs. să nu poată fi trimise.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Dacă alegi să omiți verificarea, este posibil să pierzi mesaje de la alte persoane și este posibil ca mesajele tale să nu poată fi trimise.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continuați fără verificare?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continui fără verificare?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Pentru a ajuta la prevenirea spam-ului pe Signal, vă rugăm să completați verificarea.\n\nDupă verificare, puteți continua să trimiteți mesaje. Toate mesajele aflate în pauză vor fi trimise automat.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Pentru a ajuta la prevenirea spam-ului pe Signal, te rugăm să completezi verificarea.\n\nDupă verificare, poți continua să trimiți mesaje. Toate mesajele aflate în pauză vor fi trimise automat.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Verificați pentru a continua conversația";
@@ -6107,13 +6131,13 @@
 "SUSTAINER_READ_MORE_TITLE" = "Sprijină tehnologia construită pentru tine - nu pentru datele tale - alăturându-te comunității de oameni care o susțin.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "De ce să contribuiți?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "De ce să contribui?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "În curs de procesare";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "Adăugați un Boost la Signal";
+"SUSTAINER_VIEW_ADD_BOOST" = "Adaugă un Boost la Signal";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obține insigna %@";
@@ -6125,10 +6149,10 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmă";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nu veți fi taxat din nou. Insigna dvs. va fi eliminată din profilul dvs. la sfârșitul perioadei de facturare.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nu vei fi taxat din nou. Insigna ta va fi eliminată din profilul tău la sfârșitul perioadei de facturare.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmați anularea?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmi anularea?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nu s-a putut adăuga insigna. %@";
@@ -6146,13 +6170,13 @@
 "SUSTAINER_VIEW_CURRENCY" = "Alege Moneda";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Eroare la procesarea plății";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "Sprijinul meu";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Eroare la procesarea plății. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/lună";
@@ -6209,13 +6233,13 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifică";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Timpul de dispariție a mesajului va fi setat la %@ în momentul în care le trimiteți un mesaj.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Timpul de dispariție a mesajului va fi setat la %@ în momentul în care le trimiți un mesaj.";
 
 /* Indicator warning about an unknown contact thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Niciun grup în comun. Examinați solicitările cu atenție.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Niciun grup în comun. Examinează cu atenție solicitările.";
 
 /* Indicator warning about an unknown group thread. */
-"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Nu există contacte în acest grup. Examinați solicitările cu atenție.";
+"SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "Nu există contacte în acest grup. Examinează cu atenție solicitările.";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "Acest mesaj a fost șters.";
@@ -6311,25 +6335,25 @@
 "UNKNOWN_COUNTRY_NAME" = "Țară necunoscută";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Unul dintre dispozitivele dvs. a trimis un mesaj ce nu poate fi procesat sau afișat aici deoarece utilizează o nouă funcționalitate Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Unul dintre dispozitivele tale a trimis un mesaj ce nu poate fi procesat sau afișat aici deoarece utilizează o nouă funcționalitate Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ v-a trimis un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ ți-a trimis un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Ați primit un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Ai primit un mesaj care nu poate fi procesat sau afișat pentru că utilizează o nouă funcționalitate Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Actualizați Signal acum";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Actualizează Signal acum";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Actualizat la ultima versiune de Signal. Acum puteți primi acest tip de mesaj pe dispozitiv.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Actualizat la ultima versiune de Signal. Acum poți primi acest tip de mesaj pe dispozitiv.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Îl puteți ruga pe %@ să retrimită acest mesaj acum că folosiți o versiune actualizată de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Îl poți ruga pe %@ să retrimită acest mesaj acum că folosești o versiune actualizată de Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Îl puteți ruga pe expeditor să retrimită acest mesaj acum că folosiți o versiune actualizată de Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Îl poți ruga pe expeditor să retrimită acest mesaj acum că folosești o versiune actualizată de Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Necunoscut";
@@ -6362,7 +6386,7 @@
 "UNNAMED_DEVICE" = "Dispozitiv fără nume";
 
 /* Pressing this button upins a thread */
-"UNPIN_ACTION" = "Anulați fixarea";
+"UNPIN_ACTION" = "Anulare fixare";
 
 /* The title for unpinned conversation section on the conversation list */
 "UNPINNED_SECTION_TITLE" = "Conversații";
@@ -6377,58 +6401,58 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Dispozitivul tău nu suportă această funcționalitate.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Numărul dvs. de siguranță pentru %@ s-a schimbat, probabil pentru că au reinstalat Signal sau au schimbat dispozitivele. Atingeți Verificare pentru a confirma noul număr de siguranță. Acest lucru este opțional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Numărul tău de siguranță pentru %@ s-a schimbat, probabil pentru că au reinstalat Signal sau au schimbat dispozitivele. Atinge Verificare pentru a confirma noul număr de siguranță. Acest lucru este opțional.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verifică";
 
 /* Action sheet item */
-"UPDATE_CONTACT_ACTION" = "Actualizați contactul";
+"UPDATE_CONTACT_ACTION" = "Actualizează contactul";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Grupul nu a putut fi actualizat.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupul nu a putut fi actualizat. Verificați conexiunea la internet și încercați din nou.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupul nu a putut fi actualizat. Verifică-ți conexiunea la internet și încearcă din nou.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creați-vă PIN-ul";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creează-ți PIN-ul";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Aflați mai multe despre PIN-uri";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "Află mai multe despre PIN-uri";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-urile păstrează informațiile stocate în Signal criptate, astfel încât numai tu să le poți accesa. Profilul, setările și contactele se vor restabili atunci când reinstalați Signal. Nu aveți nevoie de PIN pentru a deschide aplicația.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-urile păstrează informațiile stocate în Signal criptate, astfel încât numai tu să le poți accesa. Profilul, setările și contactele se vor restabili atunci când reinstalezi Signal. Nu ai nevoie de PIN pentru a deschide aplicația.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Vă prezentăm PIN-uri";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Îți prezentăm PIN-uri";
 
 /* Skip action on the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "Dezactivare PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal va necesita în curând iOS 11 sau o versiune mai nouă. Vă rugăm să actualizați din aplicația Setări >> General >> Actualizări Software.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal va necesita în curând iOS 11 sau o versiune mai nouă. Te rugăm să actualizezi din aplicația Setări >> General >> Actualizări Software.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Actualizează-ți iOS-ul";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Numele de utilizator pe Signal sunt opționale. Dacă alegi să creezi un nume de utilizator, alți utilizatori de Signal te vor putea găsi prin acest nume și te vor contacta fără să îți știe numărul de telefon.";
+"USERNAME_DESCRIPTION" = "Numele de utilizator pe Signal este opțional. Dacă alegi să creezi un nume de utilizator, alți utilizatori de Signal te vor putea găsi prin acest nume și te vor putea contacta fără să îți știe numărul de telefon.";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Numele de utilizatori pot conține doar a-z, 0-9, și _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "A apărut o eroare la căutarea numelui de utilizator. Vă rugăm să încercați din nou mai târziu.";
+"USERNAME_LOOKUP_ERROR" = "A apărut o eroare la căutarea numelui de utilizator. Te rugăm să încerci din nou mai târziu.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ nu este un utilizator Signal. Asigurați-vă că ați introdus numele de utilizator complet.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ nu este un utilizator Signal. Asigură-te că ai introdus numele de utilizator complet.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Utilizatorul nu a fost găsit";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Introduceți un nume de utilizator";
+"USERNAME_PLACEHOLDER" = "Introdu un nume de utilizator";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -6452,7 +6476,7 @@
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Numele dispozitivului nu poate fi gol";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Numele dispozitivului este prea lung.";
+"VALIDATION_ERROR_TOO_LONG" = "Numele dispozitivului este prea lung";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Ai marcat pe %@ ca neverificat.";
@@ -6479,22 +6503,22 @@
 "VIDEO_CALL_LABEL" = "Apel Video";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ați văzut deja acest mesaj.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ai văzut deja acest mesaj.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Atingeți aici pentru a face acest mesaj să dispară după ce este vizualizat.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Atinge aici pentru a face acest mesaj să dispară după ce este vizualizat.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Fișierele trimise de tip media vizibile o singură dată sunt eliminate automat după ce sunt trimise.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisați pentru a anula";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisează pentru a anula";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Mesaj vocal";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Apăsați lung pentru a înregistra.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Apasă lung pentru a înregistra.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Finalizează configurarea în Signal Desktop.";
@@ -6524,7 +6548,7 @@
 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR" = "Eliminare culoare conversație";
 
 /* Confirmation dialog when clearing the chat color for a specific chat. */
-"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Eliminați culoarea pentru această conversație?";
+"WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION" = "Elimini culoarea pentru această conversație?";
 
 /* Clear wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER" = "Eliminare fundal";
@@ -6536,10 +6560,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Tema întunecată estompează fundalul";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Imaginea de fundal nu a putut fi ștearsă, încearcă din nou mai târziu sau contactează suportul dacă eroarea persistă.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Imaginea de fundal nu a putut fi ștearsă, încearcă din nou mai târziu sau contactează asistența dacă eroarea persistă.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Nu s-au putut reseta toate imaginile de fundal, încercați din nou mai târziu sau contactați suportul dacă eroarea persistă.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Nu s-au putut reseta toate imaginile de fundal, încearcă din nou mai târziu sau contactează asistența dacă eroarea persistă.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Resetare toate culorile";
@@ -6548,7 +6572,7 @@
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Resetare toate imaginile de fundal";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Doriți să suprascrieți culorile pentru toate conversațiile?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Vrei să suprascrii culorile pentru toate conversațiile?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Resetare culori conversație";
@@ -6572,7 +6596,7 @@
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Resetare imagini de fundal";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Doriți să suprascrieți toate fundalurile?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Dorești să suprascrii toate fundalurile?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Resetare imagine de fundal";

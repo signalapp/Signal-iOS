@@ -385,6 +385,30 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Help Signal met een eenmalige bijdrage";
 
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Help Signal mogelijk maken";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Nogmaals eenmalig doneren";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Bedankt voor je bijdrage!";
 
@@ -401,7 +425,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Als je meerdere badges hebt dan kun je er één kiezen om voor anderen op je profiel weer te geven.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Je hebt de %@-badge verdiend! Help Signal om bewustwording te creëren door deze badge op je profiel weer te geven.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Je hebt de ‘%@’-badge verdiend! Help Signal om bewustwording te creëren door deze badge op je profiel weer te geven.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Banier sluiten";
@@ -482,10 +506,10 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Valuta instellen";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Bedank Signal en verdien de eenmalige-donateur-badge voor 30 dagen.";
+"BOOST_VIEW_BODY" = "Bedank Signal en verdien de ‘Eenmalige donateur’-badge voor 30 dagen.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Je eenmalige-donateur-badge verloopt op %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Je ‘Eenmalige donateur’-badge verloopt op %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Vul een zelfgekozen bedrag in";
@@ -3509,7 +3533,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Je hebt het maximum aantal apparaten gekoppeld. Verwijder een apparaat en probeer het opnieuw.";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Microfoon is gedempt";
+"MUTED_BADGE" = "Gedempt";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ heeft recentelijk zijn of haar profielnaam naar %2$@ gewijzigd.";
@@ -6116,7 +6140,7 @@
 "SUSTAINER_VIEW_ADD_BOOST" = "Geef Signal een oppepper";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Ontvang een %@-badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Ontvang een ‘%@’-badge";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Maandelijkse donatie annuleren";

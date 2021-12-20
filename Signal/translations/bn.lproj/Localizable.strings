@@ -374,16 +374,40 @@
 "BACK_BUTTON" = "পেছনে";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "আমার ব্যাজগুলি";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "ব্যাজগুলি";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "	\nএকজন সাসটেইনার হোন";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "সংকেতে একটি বুস্ট দিন";
+
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "একজন সাসটেইনার হয়ে উঠুন";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "একটি বুস্ট যোগ করুন";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "বুস্টের জন্য ধন্যবাদ!";
@@ -392,16 +416,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "প্রোফাইলে প্রদর্শন করুন";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "বৈশিষ্ট্যযুক্ত ব্যাজ তৈরি করুন";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "আপনার সহযোগীতার জন্য ধন্যবাদ!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "যখন আপনার একাধিক ব্যাজ থাকে, আপনি অন্যদের আপনার প্রোফাইলে দেখার জন্য বৈশিষ্ট্যের একটি বেছে নিতে পারেন।";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "আপনি %@ ব্যাজ অর্জন করেছেন! আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করে সচেতনতা তৈরিতে সিগন্যালকে সহায়তা করুন।";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "ব্যানার বন্ধ করুন";
@@ -479,13 +503,13 @@
 "BLUR_TOOLTIP" = "নতুন: ফেসগুলি ঝাপসা করুন অথবা যেকোনও জায়গায় ঝাপসা করতে আঁকুন।";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "মুদ্রা সেট করুন";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "\"ধন্যবাদ!\" বলুন এবং 30 দিনের জন্য বুস্ট ব্যাজ অর্জন করুন।";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "আপনার বুস্ট ব্যাজের মেয়াদ %@ এ শেষ হবে।";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "কাস্টম পরিমাণ লিখুন";
@@ -656,7 +680,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "দেশ নির্বাচন করুন";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "ছবি সম্পাদনা করুন";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "এখানে চ্যাটের রংয়ের প্রিভিউ রয়েছে।";
@@ -908,10 +932,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "কিছু একটা কাজ করছে না";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "সাসটেইনারস এবং সিগন্যাল বুস্ট";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "সাসটেইনারস এবং বুস্ট";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal আপনার সহায়তার অনুরোধটি সম্পন্ন করতে পারেনি।";
@@ -1025,7 +1049,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "অডিও";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "সিগন্যাল সমর্থন করে আপনার প্রোফাইলের জন্য ব্যাজ পান। আরও জানতে একটি ব্যাজ এ চাপুন।";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "ব্যাজগুলি";
@@ -1790,10 +1814,10 @@
 "FAILED_VERIFICATION_TITLE" = "নিরাপত্তা নাম্বার যাচাই করতে ব্যর্থ!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "একটি ব্যাজ নির্বাচন করুন";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "বৈশিষ্ট্যযুক্ত ব্যাজ";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "যাচাইকৃত হিসাবে চিহ্নিত করুন";
@@ -5840,7 +5864,7 @@
 "SETTINGS_SIGNAL_BOOST" = "সিগন্যাল বুস্ট";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Become a Signal Sustainer";
+"SETTINGS_SUBSCRIPTION" = "একজন সিগন্যাল সাসটেইনার হয়ে উঠুন";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "রেজিস্ট্রেশন লক";
@@ -6023,22 +6047,22 @@
 "SUBSCRIBER_BADGES" = "ব্যাজগুলি";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "সদস্যতা পরিচালনা করুন";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "সাবস্ক্রিপশন FAQ";
 
 /* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Contribute";
+"SUBSCRIPTION_MEGAPHONE_ACTION" = "অবদান রাখুন";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "সিগন্যাল আপনার মতো লোকদের দ্বারা চালিত হয়। অবদান রাখুন এবং একটি ব্যাজ গ্রহণ করুন।";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "না ধন্যবাদ";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "একজন সাসটেইনার হোন";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ এর  সাথে আপনার নিরাপত্তা নাম্বার মিল আছে। আপনি এই পরিচিতি যাচাইকৃত হিসাবে চিহ্নিত করতে পারেন।";
@@ -6098,25 +6122,25 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "লোড হচ্ছে";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "সিগন্যাল একটি অলাভজনক যার কোন বিজ্ঞাপনদাতা বা বিনিয়োগকারী নেই, শুধুমাত্র যারা এটি ব্যবহার করে এবং মূল্য দেয় তাদের দ্বারা টেকসই হয়। আপনার সমর্থন শেয়ার করতে একটি পুনরাবৃত্ত মাসিক অবদান রাখুন এবং একটি প্রোফাইল ব্যাজ পান।";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "সিগন্যাল ওপেন সোর্স গোপনীয়তা প্রযুক্তি বিকাশে প্রতিশ্রুতিবদ্ধ যা মুক্ত অভিব্যক্তিকে রক্ষা করে এবং নিরাপদ বৈশ্বিক যোগাযোগকে সক্ষম করে।\n\nআপনার অবদান এই কারণটিকে জ্বালানি দেয় এবং ব্যক্তিগত যোগাযোগের জন্য লক্ষ লক্ষ লোক দ্বারা ব্যবহৃত একটি অ্যাপের বিকাশ এবং ক্রিয়াকলাপের জন্য অর্থ প্রদান করে। কোন বিজ্ঞাপন নেই। কোনও ট্র্যাকার নেই। কোনো মজা নয়।";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "সমর্থন প্রযুক্তি যা আপনার জন্য তৈরি করা হয়েছে - আপনার ডেটার জন্য নয় - এটিকে টিকিয়ে রাখে এমন সম্প্রদায়ে যোগদানের মাধ্যমে।";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "কেন অবদান?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "এখনও প্রক্রিয়া করা হচ্ছে";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "একটি Signal বুস্ট যোগ করুন";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "একটি %@ ব্যাজ পান";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "সাবস্ক্রিপশন বাতিল করুন";
@@ -6131,55 +6155,55 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "বাতিলকরণ নিশ্চিত করবেন?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "ব্যাজ যোগ করা যায়নি। %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "আপনার ব্যাজ আপনার অ্যাকাউন্টে যোগ করা যায় নি। অনুগ্রহ করে সহায়তা কেন্দ্রে যোগাযোগ করুন।";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "ব্যাজ যোগ করা যায় নি";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "অনুগ্রহ করে সহায়তা কেন্দ্রে যোগাযোগ করুন।";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "মুদ্রা সেট করুন";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "ত্রুটি প্রক্রিয়াকরণ পেমেন্ট";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "আমার সমর্থন";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "ত্রুটি প্রক্রিয়াকরণ পেমেন্ট। %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/মাস";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = "· মেয়াদ শেষ হবে %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = "· নবায়ন করে %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "পেমেন্ট প্রক্রিয়া করা হচ্ছে...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "লেনদেন প্রক্রিয়া করা হচ্ছে...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "আরও পড়ুন।";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "নবায়ন করে %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "আপনার পেমেন্ট এখনও প্রক্রিয়া করা হচ্ছে। আপনার সংযোগের উপর নির্ভর করে এটি কয়েক মিনিট সময় নিতে পারে।";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "আপনার সদস্যতা বাতিল করা হয়েছে";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "এখন নয়";
@@ -6188,16 +6212,16 @@
 "SUSTAINER_VIEW_TITLE" = "Signal আপনার মতো ব্যক্তির সহায়তায় পরিচালিত হয়।";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "আপনাকে আজ নতুন সদস্যতার মূল্যের পুরো পরিমাণ (%@) চার্জ করা হবে। আপনার নতুন সদস্যতা মাসিক পুনর্নবীকরণ করা হবে।";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "সদস্যতা আপডেট করবেন?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "আপডেট করুন";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "সমর্থন প্রযুক্তি যা আপনার জন্য তৈরি করা হয়েছে - আপনার ডেটার জন্য নয় - এটিকে টিকিয়ে রাখে এমন লোকেদের সম্প্রদায়ে যোগদানের মাধ্যমে।";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "বন্ধ";

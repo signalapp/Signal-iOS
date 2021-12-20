@@ -385,6 +385,30 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dejte Signalu Boost";
 
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Staňte se podporovatelem";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Přidat Boost";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Díky za Boost!";
 
@@ -1337,10 +1361,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tímto smažete informace o účtu, profil a všechny vaše zprávy.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Mažu účet...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Odstraňování účtu…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Žádné připojení k internetu. Ujistěte se, že WiFi připojení nebo mobilní data máte aktivní a poté to zkuste znovu.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Žádné připojení k internetu. Ujistěte se, že máte aktivní WiFi připojení nebo mobilní data a poté to zkuste znovu.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Telefonní číslo";
@@ -1460,7 +1484,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nevidíte výzvu na svém starém zařízení?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Čekáme na druhé zařízení...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Čekání na druhé zařízení…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Mějte obě zařízení blízko sebe a zapnutá. Nechte Signal otevřený. Přenos je koncově zašifrován.";
@@ -2081,7 +2105,7 @@
 "GROUP_DESCRIPTION_MORE" = "více";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Přidejte popisek skupiny...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Přidejte popisek skupiny…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Popisky skupiny budou viditelné členům skupiny a lidem, kteří byli pozváni.";
@@ -3188,10 +3212,10 @@
 "MESSAGE_ACTION_DETAILS" = "Více informací";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nová emailová zpráva";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nová e-mailová zpráva";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Email není nakonfigurován";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail není nastaven.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Přeposlat tuto zprávu";
@@ -3284,7 +3308,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Přeskočeno";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Nahrávám";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Nahrávání";
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Zobrazil(a)";
@@ -3419,7 +3443,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Doručena";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Stahuji";
+"MESSAGE_STATUS_DOWNLOADING" = "Stahování";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Odesílání selhalo.";
@@ -3809,7 +3833,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Zavolejte mi za %@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Ověřuji kód...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Ověřování kódu…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tento kód je nesprávný";
@@ -3980,7 +4004,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Odesláno";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Připravuji";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Probíhá příprava";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Nepotvrzené";
@@ -4010,7 +4034,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Odesláno";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Připravuji";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Probíhá příprava";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Nepotvrzené";
@@ -4571,7 +4595,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vaši nálepku";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reaguje %@ na „%@“";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagoval(a) %@ na vaše video";
@@ -4703,7 +4727,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Upravit";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Ověřuji %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Ověřování %@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Odmítnout";
@@ -4901,7 +4925,7 @@
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Hej, kde jsi?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Dnes je...";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Dnes je…";
 
 /* This is a message in the group chat of family members. */
 "SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Všechno nejlepší k narozeninám. Všechno nejlepší k narozeninám!";
@@ -4928,7 +4952,7 @@
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "To je nádherné.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Ona chodí s kočkou na vodítku...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Ona chodí s kočkou na vodítku…";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "Dobré ráno!";
@@ -4997,7 +5021,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Zvolte si jméno pro toto zařízení";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Název tohoto zařízení uvidíte pod \"Spárovaná zařízení\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Název tohoto zařízení uvidíte pod „Spárovaná zařízení“";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Zvolte jméno";
@@ -5018,7 +5042,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Nainstalovat Signal na váš telefon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klepnutím na Vaši profilovou fotku v telefonu otevřete Nastavení Signal. Pokračujte přes \"Propojená zařízení\" a \"Připojit nové zařízení\" pro naskenování kódu pomocí vašeho telefonu:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Klepnutím na vaši profilovou fotku v telefonu otevřete Nastavení Signal. Pokračujte přes „Spárovaná zařízení“ a „Připojit nové zařízení“ pro naskenování kódu pomocí vašeho telefonu:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Pomoc s připojením iPad získáte zde";
@@ -5900,10 +5924,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Přílohu nelze odeslat";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Nahrávám %1$@ z %2$@…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Nahrávání %1$@ z %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nahrávám...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nahrávání...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Přílohu nelze připravit";
@@ -6095,7 +6119,7 @@
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Přidat debug log";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Načítám";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Načítání";
 
 /* First block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je nezisková organizace bez inzerentů a investorů, kterou živí pouze lidé, kteří ji používají a oceňují. Přispívejte pravidelně každý měsíc a získejte profilový odznak, abyste se podělili o svou podporu.";
@@ -6164,10 +6188,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = "· Obnoví se %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Zpracovávám platbu";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Zpracovávání platby…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Zpracovávání transakce...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Zpracovávání transakce…";
 
 /* Read More tappable text in sustainer view body */
 "SUSTAINER_VIEW_READ_MORE" = "Číst dál.";

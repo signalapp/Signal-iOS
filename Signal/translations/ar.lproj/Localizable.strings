@@ -32,7 +32,7 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "رسالة صوتية";
 
 /* Accessibility label for a voice memo. Embeds: {{ the duration of the voice message }}. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رِسالة صوتيَّة زمن %@ ثانية";
+"ACCESSIBILITY_LABEL_VOICE_MEMO_FORMAT" = "رِسالة صوتية مدتها %@ ثانية";
 
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "مكالمة Signal";
@@ -92,7 +92,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "إضافة عضو جديد";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "إنَّهُ بِالفِعل عُضو ";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "إنه بالفعل عضو ";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ بالفعل عضو في %@";
@@ -104,7 +104,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تمت إضافة %@ إلى %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "إضافَة إلَى مَجمُوعَة";
+"ADD_TO_GROUP_TITLE" = "إضافة إلى مجموعة";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذا المستخدم ؟";
@@ -116,10 +116,10 @@
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه المحادثة.";
 
 /* Title for delivery issue sheet */
-"ALERT_DELIVERY_ISSUE_TITLE" = "مشكل في التوصيل";
+"ALERT_DELIVERY_ISSUE_TITLE" = "هناك مشكل في التوصيل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لقد تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -329,10 +329,10 @@
 "ATTACHMENT_TYPE_VIDEO" = "فيديو";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رِسالة صوتيَّة";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رِسالة سَمعيَّة";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "رسالة سمعية";
 
 /* Accessibility label for placing an audio call */
 "AUDIO_CALL_LABEL" = "مكالمة صوتية";
@@ -374,16 +374,40 @@
 "BACK_BUTTON" = "الرجوع";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "شاراتي";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "شارات";
+"BADGE_CONFIGURATION_TITLE" = "الشارات";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "كن من الداعمين";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
+
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "كن من الداعمين";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "أضف دعماً";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "شكراً على الدعم!";
@@ -392,16 +416,16 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "عرض في الملف الشخصي";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "الحصول على شارة مميزة";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "شكراً لدعمك!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "عندما يكون لديك أكثر من شارة واحدة، يمكنك اختيار واحدة لتمييزها ليراها الآخرين في ملفك الشخصي.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "عندما يكون لديك أكثر من شارة واحدة، يمكنك اختيار واحدة لتمييزها ليراها الآخرون في ملفك الشخصي.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned the %@ badge! Help Signal build awareness by displaying this badge on your profile.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "لقد ربحت شارة %@! نرجو منك مساعدة Signal على نشر الوعي، وذلك عبر عرض هذه الشارة في ملفك الشخصي.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق اللافتة";
@@ -452,13 +476,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "تم حظر %@";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "لقد تم حظر %@";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المُستخدم محظور";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المستخدمون المحظورون";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "مجموعة محظورة";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "المجموعات المحظورة";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "لا يمكنك حظر نفسك.";
@@ -470,22 +494,22 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "تم رفع الحظر عن %@";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "اﻷعضاء الموجودون يمكنهم إضافتك للمجموعة مرة أُخرى.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "يمكن للأعضاء الموجودين إضافتك للمجموعة مرة أُخرى.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "المُستخدمون المحظورون لن يتمكنوا من الاتصال بك أو إرسال رسالة إليك.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "لن يتمكن المستخدمون المحظورون من الاتصال بك أو إرسال رسالة إليك.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "جديد : اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
 
 /* Donation amount label for the donate to signal view */
-"BOOST_VIEW_AMOUNT_LABEL" = "Set currency";
+"BOOST_VIEW_AMOUNT_LABEL" = "ضبط العملة";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Say “Thanks!” and earn the Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "قل \"شكراً!\" واحصل على شارة دعم لمدة 30 يوماً.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ستنتهي صلاحية شارة الدعم الخاصة بك يوم %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "إدخال مَبلَغ مُخَصَّص";
@@ -548,7 +572,7 @@
 "BUTTON_SHARE" = "المُشاركة";
 
 /* Label for the 'start' button. */
-"BUTTON_START" = "البدأ";
+"BUTTON_START" = "البدء";
 
 /* Label for the 'submit' button. */
 "BUTTON_SUBMIT" = "إرسال";
@@ -584,7 +608,7 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "لم يتم الرد";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "%@ Signal";
+"CALL_STATUS_FORMAT" = "‪Signal %@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "اتصل";
@@ -596,10 +620,10 @@
 "CALL_USER_ALERT_TITLE" = "أأتصل ؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 مكالمة بالصورة واردة...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة واردة...";
 
 /* notification body */
-"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 مكالمة بالصورة فائتة";
+"CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة فائتة";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "أجِب بلا فيديو";
@@ -626,10 +650,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغيير اتجاه الكاميرا";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "التحويل إلى مكالمة صوتية";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "التبديل إلى مكالمة صوتية";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التحويل إلى مكالمة بالصورة";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "التبديل إلى مكالمة بالصورة";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "إعادة الاتصال";
@@ -656,7 +680,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "عليك باختيار الدولة";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Edit Photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "تحرير الصورة";
 
 /* The incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE" = "إليك معاينة لون المحادثة.";
@@ -908,10 +932,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "شيء ما لا يعمل";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "الداعمون ودعم Signal";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "الداعمون والدعم";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "تعذَّر على Signal إكمال طَلب الدَّعم.";
@@ -1025,7 +1049,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "صوتيَّة";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "احصل على شارة لملفك الشخصي عن طريق دعم Signal. انقر على شارة لمعرفة المزيد.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "شارات";
@@ -1790,10 +1814,10 @@
 "FAILED_VERIFICATION_TITLE" = "فشل التحقّق من رقم اﻷمان!";
 
 /* Section header directing user to select a badge */
-"FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
+"FEATURED_BADGE_SECTION_HEADER" = "اختر شارة";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = " الشارة المميزة";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علِّم كمُتحقَّق منه";
@@ -6023,7 +6047,7 @@
 "SUBSCRIBER_BADGES" = "شارات";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "إدارة الاشتراك";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
 "SUBSCRIBER_SUBSCRIPTION_FAQ" = "الأسئلة الشائعة حول الاشتراك";
@@ -6032,7 +6056,7 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "المساهمة";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Contribute and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal يدعمه أشخاص مثلك. ساهم واحصل على شارة.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "لا شكرا";
@@ -6098,25 +6122,25 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "يَجري التَّحميل";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly contribution and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "إن Signal غير ربحي بلا إعلانات أو مستثمرين، يدعمه فقط الأشخاص الذين يستخدمونه ويقدرونه. ساهم بشكل شهري واحصل على شارة ملف شخصي لمشاركة دعمك.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal ملتزمة بتطوير تكنولوجيا خصوصية مفتوحة المصدر تحمي حرية التعبير وتجعل التواصل العالمي الآمن ممكناً.\n\nتدعم مساهمتك هذه القضية وتساعد في دفع تكلفة التطوير والعمليات اللازمة لتطبيق يستخدمه الملايين للتواصل الخاص. بلا إعلانات. بلا أدوات تتبع. بلا مزاح.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "تكنولوجيا دعم تمّ إنشاؤها لك - وليس لبياناتك - بالانضمام إلى المجتمع الذي يدعمها.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "لماذا المساهمة؟";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "ما زال قيد المعالجة.";
 
 /* Sustainer view Add Boost button title */
 "SUSTAINER_VIEW_ADD_BOOST" = "دعم Signal ";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "احصل على شارة %@ ";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "إلغاء الاشتراك";
@@ -6131,55 +6155,55 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأكيد الإلغاء؟";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "تعذّر إضافة الشارة. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Your badge could not be added to your account. Please contact support.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "تعذّر إضافة شارتك إلى حسابك. يُرجى التواصل مع الدعم.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "تعذّر إضافة الشارة";
 
 /* Contact support link */
 "SUSTAINER_VIEW_CONTACT_SUPPORT" = "يُرجى الاتصال بفريق الدعم.";
 
 /* Set currency label in sustainer view */
-"SUSTAINER_VIEW_CURRENCY" = "Set currency";
+"SUSTAINER_VIEW_CURRENCY" = "تحديد العملة";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "حدث خطأ أثناء إجراء عملية الدفع";
 
 /* Existing subscriber support header */
-"SUSTAINER_VIEW_MY_SUPPORT" = "My Support";
+"SUSTAINER_VIEW_MY_SUPPORT" = "دعمي";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "حدث خطأ أثناء معالجة عملية الدفع الخاصة بك. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/month";
+"SUSTAINER_VIEW_PRICING" = "%@/شهر";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = "· تنتهي فترة السريان %@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = ". يتجدد %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "جاري تنفيذ عملية الدفع...";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "جاري معالجة المعاملة...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read More.";
+"SUSTAINER_VIEW_READ_MORE" = "اقرأ المزيد.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %@";
+"SUSTAINER_VIEW_RENEWAL" = "يتجدد %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "ما زالت عملية الدفع الخاصة بك قيد المعالجة. قد يستغرق الأمر بضع دقائق وفقاً لاتصال شبكتك.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "تمّ إلغاء اشتراكك";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "ليس الآن";
@@ -6188,16 +6212,16 @@
 "SUSTAINER_VIEW_TITLE" = "يُشغَّل Signal بِواسِطَة أشخاص مِثلَك.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "ستدفع كامل مبلغ (%@) من سعر الاشتراك الجديد اليوم. وسيتجدد اشتراكك الجديد شهرياً.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "تحديث الاشتراك؟";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "تحديث التطبيق";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Support technology that is built for you - not for your data - by joining the community of people that sustain it.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "تكنولوجيا دعم تمّ إنشاؤها لك - وليس لبياناتك - بالانضمام إلى مجتمع الأشخاص الذين يدعموها.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "مُعطَّل";
@@ -6239,55 +6263,55 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %@ و %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "زمن %@ أيام";
+"TIME_AMOUNT_DAYS" = "%@ أيام";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ي";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "زمن %@ ساعات";
+"TIME_AMOUNT_HOURS" = "%@ ساعات";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@س";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "زمن %@ دقائق";
+"TIME_AMOUNT_MINUTES" = " %@ دقائق";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@د";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "زمن %@ ثوان";
+"TIME_AMOUNT_SECONDS" = "%@ ثوان";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ث";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "زمن %@ يوم";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ يوم";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "زمن %@ ساعة";
+"TIME_AMOUNT_SINGLE_HOUR" = " %@ ساعة";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "زمن %@ دقيقة";
+"TIME_AMOUNT_SINGLE_MINUTE" = " %@ دقيقة";
 
 /* {{1 second}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 second}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_SECOND" = "زمن %@ ثانية";
+"TIME_AMOUNT_SINGLE_SECOND" = " %@ ثانية";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "زمن %@ أُسبوع";
+"TIME_AMOUNT_SINGLE_WEEK" = " %@ أُسبوع";
 
 /* {{1 year}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 year}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_YEAR" = "زمن %@ سنة";
+"TIME_AMOUNT_SINGLE_YEAR" = " %@ سنة";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "زمن %@ أسابيع";
+"TIME_AMOUNT_WEEKS" = "%@ أسابيع";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@أ";
 
 /* {{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_YEARS_FORMAT" = "زمن %@ سنوات";
+"TIME_AMOUNT_YEARS_FORMAT" = " %@ سنوات";
 
 /* Indicates that a duration of time is zero seconds. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_ZERO_SECONDS" = "0 ثانية";
@@ -6302,13 +6326,13 @@
 "UNARCHIVE_ACTION" = "الإخراج من اﻷرشيف";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "المُستخدم ليس ضمن جهات الاتصال الخاصة بك. هل ترغب في حظر هذا المُستخدم؟";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "إن المُستخدم ليس ضمن جهات اتصالك. هل أقوم بحظر هذا المُستخدم؟";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "جهة اتصال غير معروفة";
+"UNKNOWN_CONTACT_NAME" = "جهة اتصال مجهولة";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "بلد غير معروف";
+"UNKNOWN_COUNTRY_NAME" = "بلد مجهول";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";
@@ -6332,7 +6356,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يُمكن أن تطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "غير معروف";
+"UNKNOWN_USER" = "مجهول";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعطيل الرسائل المختفية.";
@@ -6341,7 +6365,7 @@
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعيين زمن الرسائل المُختفية إلى %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "غير معروف";
+"UNKNOWN_VALUE" = "مجهولة";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "إلغاء الارتباط";
@@ -6392,19 +6416,19 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لا يُمكن تحديث المجموعة. تحقق من اتصالك بالإنترنت ثمَّ حاول مرة أُخرى.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الـPIN الخاص بك";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "إنشاء الرقم التعريفي الشخصي الخاص بك";
 
 /* Learn more action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "تعرَّف على المزيد حَول الـPIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE" = "التعرف على المزيد حول الأرقام التعريفية الشخصية";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "الـPIN يُبقي المعلومات المحفوظة مع Signal مُعمّاة لذلك تستطيع أنت فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، الإعدادات وجهات الاتصال عندما تُعيد التثبيت. أنت لست بحاجة إلى الـPIN لفتح التطبيق.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "تُبقي الأرقام التعريفية الشخصية المعلومات المحفوظة داخل Signal مُعمّاة، لذلك يمكنك وحدك فقط الوصول إليها. سيتم استرجاع ملفك الشخصي، بما في ذلك الإعدادات وجهات الاتصال عندما تُعيد التثبيت. لست بحاجة إلى الرقم التعريفي الشخصي لفتح التطبيق.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نُقدِّم لكُم الـPIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "نُقدِّم لكُم الأرقام التعريفية الشخصية";
 
 /* Skip action on the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "تعطيل الـPIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SKIP" = "تعطيل الرقم التعريفي الشخصي";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "قريبًا سيطلب تطبيق Signal نظام iOS 11 أو أحدث. يُرجى الترقية من تطبيق الإعدادات >> عام >> تحديث البرامج.";
@@ -6584,10 +6608,10 @@
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "تَعيِّين خلفيَّة";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "أنتَ قد حذفتَ هذه الرِّسالة.";
+"YOU_DELETED_THIS_MESSAGE" = "لقد حذفت هذه الرسالة.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "أنتَ قد عطَّلتَ الرَّسائل المُختفية.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد عطلتَ الرسائل المختفية.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجبُ عليكَ أن تُكمِلَ الإعداد قبل المُتابعة.";

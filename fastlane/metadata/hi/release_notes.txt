@@ -1,2 +1,2 @@
-• We spruced up the chat list a bit to make unread chats clearer to see
-• Fixes for some issues with search and zooming in on photos
+• हमने नहीं पढ़ी हुई चैट को स्पष्ट रूप से देखने के लिए चैट लिस्ट को थोड़ा संवारा है
+• फ़ोटो को सर्च और ज़ूम इन करने के कई मसलों के लिए कुछ फ़िक्स

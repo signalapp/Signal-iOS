@@ -137,7 +137,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "Δεν είσαι σε κοινές ομάδες με αυτό το άτομο. Εξέτασε τα αιτήματα προσεκτικά πριν αποδεχτείς, για να γλιτώσεις ανεπιθύμητα μηνύματα.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Δεν έχετε κοινά μέλη με αυτήν την ομάδα. Ελέγξτε προσεκτικά τα αιτήματα πριν την αποδοχή για να αποφύγετε τα ανεπιθύμητα μηνύματα.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Σχετικά με τα αιτήματα μηνυμάτων";
@@ -296,7 +296,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Μόλις τραβήξεις φωτογραφίες, θα μπορείς να στέλνεις τις πιο πρόσφατες από εδώ.";
 
 /* A button to select a payment from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PAYMENT" = "Payment";
+"ATTACHMENT_KEYBOARD_PAYMENT" = "Πληρωμή";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Συνημμένο";
@@ -380,10 +380,34 @@
 "BADGE_CONFIGURATION_TITLE" = "Εμβλήματα";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Γίνε υποστηρικτής";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Γίνε υποστηρικτής/τρια";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Δώσε Ενίσχυση στο Signal";
+
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Γίνε υποστηρικτής/τρια";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Προσθήκη Ενίσχυσης";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Ευχαριστούμε για την ενίσχυση!";
@@ -485,7 +509,7 @@
 "BOOST_VIEW_BODY" = "Πες \"ευχαριστώ!\" και κέρδισε το έμβλημα Eνίσχυσης για 30 ημέρες.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Το έμβλημα Boost σου θα λήξει στις %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Το έμβλημα Ενίσχυσης θα λήξει στις %@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Εισαγωγή προσαρμοσμένου ποσού";
@@ -1559,7 +1583,7 @@
 "DONATION_VIEW_TITLE" = "Το Signal στηρίζεται σε άτομα σαν κι εσένα.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Η ομάδα της Signal έχει δεσμευτεί στην αποστολή ανάπτυξης τεχνολογίας απορρήτου με ελεύθερο κώδικα που προστατεύει την ελεύθερη έκφραση και επιτρέπει την ασφαλή παγκόσμια επικοινωνία. Η συνεισφορά σας τροφοδοτεί αυτόν τον σκοπό. Χωρίς διαφημίσεις. Χωρίς ιχνηλάτες. Ναι, αλήθεια είναι.\n\nΗ δωρεά σας μας βοηθά να πληρώνουμε για την ανάπτυξη, τους διακομιστές και το εύρος ζώνης μιας εφαρμογής που χρησιμοποιείται από εκατομμύρια άτομα σε όλο τον κόσμο για ιδιωτική και άμεση επικοινωνία.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Γιατί να κάνω δωρεά;";
@@ -3857,7 +3881,7 @@
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Απόρριψη του αιτήματος;";
 
 /* Label for 'defragmentation' payments. */
-"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Coin Cleanup Fee";
+"PAYMENTS_DEFRAGMENTATION_PAYMENT" = "Τέλος Εκκαθάρισης Νομισμάτων";
 
 /* Error indicating that a payment request could not be cancelled. */
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "Το αίτημα δεν μπόρεσε να ακυρωθεί.";
@@ -3869,10 +3893,10 @@
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Απέτυχε";
 
 /* Status indicator for incoming payments which failed to verify. */
-"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED" = "Μη Έγκυρο";
 
 /* Status indicator for invalid payments which could not be processed. */
-"PAYMENTS_FAILURE_INVALID" = "Invalid";
+"PAYMENTS_FAILURE_INVALID" = "Μη έγκυρο";
 
 /* Status indicator for outgoing payments which failed. */
 "PAYMENTS_FAILURE_OUTGOING_FAILED" = "Απέτυχε";
@@ -3881,19 +3905,19 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Υπόλοιπο μη επαρκές";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Receipt Could Not Be Sent To Recipient";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Δεν ήταν δυνατή η αποστολή απόδειξης στον παραλήπτη";
 
 /* Status indicator for outgoing payments which failed to verify. */
-"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
+"PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Μη έγκυρο";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Προσθήκη σημείωσης";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Available Balance: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Εναπομείναν Υπόλοιπο: %@";
 
 /* Label for the 'confirm payment' button. */
-"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Confirm Payment";
+"PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Επιβεβαίωση Παραγγελίας";
 
 /* Title for the 'confirm payment' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE" = "Πληρωμή";
@@ -3902,31 +3926,31 @@
 "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT" = "%1$@ %2$@";
 
 /* Indicates that a payment failed due to a connectivity failure. */
-"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Could not contact service";
+"PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Δεν ήταν δυνατή η επικοινωνία με την υπηρεσία";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "You don’t have enough MOB to complete this payment.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Δεν έχετε αρκετά MOB για να ολοκληρώσετε αυτή την πληρωμή.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Δεν έχετε αρκετά MOB για να ολοκληρώσετε αυτήν την πληρωμή. Το τρέχον υπόλοιπό σας είναι %@.";
 
 /* Indicates that a payment failed due to being invalid. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Invalid transaction";
+"PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Μη έγκυρη συναλλαγή";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Update Signal to use payments.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Ενημερώστε το Signal για να χρησιμοποιήσετε τις πληρωμές.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Η πληρωμή δεν έχει επαληθευτεί ακόμη";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Αδυναμία ολοκλήρωσης πληρωμής. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.";
 
 /* Label for the 'payment estimated fee' indicator. */
-"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Network Fee";
+"PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Τέλος Δικτύου";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Estimated %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Εκτιμώμενη %@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Λάθος ποσό";
@@ -3944,10 +3968,10 @@
 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL" = "Συνολικό ποσό";
 
 /* Indicator that a new payment is being processed in the 'send payment' UI. */
-"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Processing";
+"PAYMENTS_NEW_PAYMENT_PROCESSING" = "Επεξεργασία";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "To %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Προς %@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Αίτημα";
@@ -3956,22 +3980,22 @@
 "PAYMENTS_NOTIFICATION_BANNER_1" = "1 νέα ειδοποίηση πληρωμής";
 
 /* Format for the payments notification banner for a single payment notification with details. Embeds: {{ %1$@ the name of the user who sent you the payment, %2$@ the amount of the payment }}. */
-"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ sent you %2$@";
+"PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ σας έστειλε %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ new payment notifications";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ νέες ειδοποιήσεις πληρωμών";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Πληρωμή Ολοκληρώθηκε";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Μη επαληθευμένο";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Πληρωμή Ολοκληρώθηκε";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Στέλνεται...";
@@ -3980,28 +4004,28 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Στάλθηκε στις";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Προετοιμασία";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Μη επαληθευμένο";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN" = "Άγνωστο Σφάλμα";
 
 /* Status indicator for incoming payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Ολοκληρώθηκε";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Μη επαληθευμένο";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for outgoing payments which are complete. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Ολοκληρώθηκε";
 
 /* Status indicator for outgoing payments which are being sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Στέλνεται...";
@@ -4010,43 +4034,43 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Στάλθηκε στις";
 
 /* Status indicator for outgoing payments which have not yet been submitted. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Preparing";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Προετοιμασία";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Unverified";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Μη επαληθευμένο";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Επιβεβαιωμένος";
 
 /* Status indicator for payments which had an unknown failure. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Unknown Failure";
+"PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Άγνωστο Σφάλμα";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "To send a payment to this user they need to accept a message request from you.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Για αποστολή πληρωμής σε αυτόν τον χρήστη, πρέπει να αποδεχτεί ένα μήνυμα με αίτημα από εσάς.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "To send a payment to this user they need to accept a message request from you. Send them a message to create a message request.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Για να στείλετε πληρωμή σε αυτόν τον χρήστη πρέπει να αποδεχτεί ένα αίτημα μηνύματος από εσάς. Στείλτε τους ένα μήνυμα για να δημιουργήσετε αίτημα μηνύματος.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Αδυναμία αποστολής πληρωμής";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "This person has not activated payments.";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Αυτό το άτομο δεν έχει ενεργοποιήσει τις πληρωμές.";
 
 /* Title for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Invalid Recipient";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE" = "Μη Έγκυρος Αποδέκτης";
 
 /* Label for 'transfer out' payments. */
-"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Transfer Out";
+"PAYMENTS_TRANSFER_OUT_PAYMENT" = "Εξωτερική Μεταφορά";
 
 /* Indicator for unidentified incoming payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Received Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING" = "Ληφθείσα Πληρωμή";
 
 /* Indicator for unidentified outgoing payments. */
-"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Sent Payment";
+"PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING" = "Απεσταλμένη Πληρωμή";
 
 /* Label for unknown payments. */
-"PAYMENTS_UNKNOWN_PAYMENT" = "Invalid Payment";
+"PAYMENTS_UNKNOWN_PAYMENT" = "Μη Έγκυρη Πληρωμή";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Προσθήκη σε Ομάδα";
@@ -5219,16 +5243,16 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Διαγραφή λογαριασμού";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Don’t Transfer";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Να μην γίνει μεταφορά";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "You have a balance of %@. If you do not transfer your funds to another wallet address before deleting your account, you will lose it forever.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Έχετε υπόλοιπο %@. Εάν δεν μεταφέρετε τα χρήματά σας σε άλλη διεύθυνση πορτοφολιού πριν διαγράψετε τον λογαριασμό σας, θα τα χάσετε για πάντα.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Transfer payments balance?";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Υπόλοιπο πληρωμών μεταφοράς;";
 
 /* Button for transferring the user's payments balance before deleting their account. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Transfer Balance";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Υπόλοιπο Μεταφοράς";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Διαγραφή όλων των δεδομένων";
@@ -5327,22 +5351,22 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Ενεργοποίηση";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You can use Signal to send and receive MobileCoin. All payments are subject to the Terms of Use for MobileCoins and the MobileCoin Wallet. This is a beta feature so you may encounter some issues and payments or balances you may lose can’t be recovered.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Μπορείτε να χρησιμοποιήσετε το Signal για να στέλνετε και να λαμβάνετε MobileCoin. Όλες οι πληρωμές υπόκεινται στους Όρους Χρήσης για τα MobileCoins και το πορτοφόλι MobileCoin. Πρόκειται για μια λειτουργία beta, οπότε ενδέχεται να αντιμετωπίσετε κάποια προβλήματα και οι πληρωμές ή τα υπόλοιπα που ενδέχεται να χάσετε να μην μπορούν να ανακτηθούν.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Ενεργοποίηση";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "View MobileCoin Terms";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Προβολή Όρων MobileCoin";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "Προσθήκη Χρημάτων";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "To add funds, send MobileCoin to your wallet address. Start a transaction from your account on an exchange that supports MobileCoin, then scan the QR code or copy your wallet address.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Για να προσθέσετε χρήματα, στείλτε MobileCoin στη διεύθυνση του πορτοφολιού σας. Ξεκινήστε μια συναλλαγή από τον λογαριασμό σας σε ένα ανταλλακτήριο που υποστηρίζει MobileCoin και στη συνέχεια σαρώστε τον κωδικό QR ή αντιγράψτε τη διεύθυνση του πορτοφολιού σας.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
-"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Wallet Address Copied";
+"SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Η διεύθυνση πορτοφολιού αντιγράφηκε";
 
 /* Label for the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Όλες οι πληρωμές";
@@ -5351,28 +5375,28 @@
 "SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ στις %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Οι πληρωμές στο Signal δεν είναι πλέον διαθέσιμες. Μπορείτε ακόμα να μεταφέρετε χρήματα προς ένα ανταλλακτήριο, αλλά δεν μπορείτε πλέον να στέλνετε και να λαμβάνετε πληρωμές ή να προσθέτετε χρήματα.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
 "SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Δεν μπορούν να απενεργοποιηθούν οι πληρωμές επειδή το υπόλοιπό σας δεν είναι διαθέσιμο. Ελέγξτε τη σύνδεσή σας και προσπαθήστε ξανά.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Couldn't complete payment because your balance is not available. Check your connection and try again.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Δεν ήταν δυνατή η ολοκλήρωση της πληρωμής επειδή το υπόλοιπό σας δεν είναι διαθέσιμο. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Οι πληρωμές στο Signal δεν είναι πλέον διαθέσιμες. Μπορείτε ακόμα να μεταφέρετε χρήματα προς ένα ανταλλακτήριο, αλλά δεν μπορείτε πλέον να στέλνετε και να λαμβάνετε πληρωμές ή να προσθέτετε χρήματα.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Payments in Signal is no longer available. You can still transfer funds to an exchange but you can no longer send and receive payments or add funds.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "Η υπηρεσία Payments in Signal δεν είναι πλέον διαθέσιμη. Μπορείτε ακόμα να μεταφέρετε χρήματα σε ένα ανταλλακτήριο, αλλά δεν μπορείτε πλέον να στέλνετε και να λαμβάνετε πληρωμές ή να προσθέτετε χρήματα.";
 
 /* Message for the 'currency conversions info' alert. */
-"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Conversions are just estimates and may not be accurate.";
+"SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "Οι μετατροπές είναι απλώς εκτιμήσεις και μπορεί να μην είναι ακριβείς.";
 
 /* Label for 'all currencies' section in the payment currency settings. */
 "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES" = "Όλα τα νομίσματα";
 
 /* Label for 'transfer balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Transfer Remaining Balance";
+"SETTINGS_PAYMENTS_DEACTIVATE_AFTER_TRANSFERRING_BALANCE" = "Υπολειπόμενο Ποσό Μεταφοράς";
 
 /* Label for the 'deactivate payments' button in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_BUTTON" = "Απενεργοποίηση";
@@ -5381,7 +5405,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Απενεργοποίηση πληρωμών";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "You will not be able to send or receive Mobilecoin in Signal if you deactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Δεν θα μπορείτε να στείλετε ή να λάβετε Mobilecoin στο Signal εάν απενεργοποιήσετε τις πληρωμές.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Απενεργοποίηση πληρωμών;";
@@ -5390,76 +5414,76 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Απενεργοποίηση πληρωμών";
 
 /* Explanation of the 'deactivate payments with balance' process in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "It’s recommended that you transfer your funds to another wallet address before deactivating payments. If you choose not to transfer your funds now, they will remain in your wallet linked to Signal if you reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITH_BALANCE_EXPLANATION" = "Συνιστάται να μεταφέρετε τα χρήματά σας σε άλλη διεύθυνση πορτοφολιού πριν απενεργοποιήσετε τις πληρωμές. Εάν επιλέξετε να μην μεταφέρετε τα χρήματά σας τώρα, θα παραμείνουν στο πορτοφόλι σας που είναι συνδεδεμένο με το Signal εάν ενεργοποιήσετε εκ νέου τις πληρωμές.";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Your balance will remain in your wallet linked to Signal if you choose to reactivate payments.";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_DESCRIPTION" = "Το υπόλοιπό σας θα παραμείνει στο πορτοφόλι σας που είναι συνδεδεμένο με το Signal, σε περίπτωση που επιλέξετε να ενεργοποιήσετε ξανά τις πληρωμές.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Deactivate Without Transferring?";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFER_CONFIRM_TITLE" = "Απενεργοποίηση χωρίς μεταφορά;";
 
 /* Label for 'deactivate payments without transferring balance' button in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Deactivate Without Transferring";
+"SETTINGS_PAYMENTS_DEACTIVATE_WITHOUT_TRANSFERRING_BALANCE" = "Απενεργοποίηση Χωρίς Μεταφορά";
 
 /* Error indicating that payments could not be deactivated in the payments settings. */
-"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Payments could not be deactivated";
+"SETTINGS_PAYMENTS_DEACTIVATION_FAILED" = "Δεν ήταν δυνατή η απενεργοποίηση των πληρωμών";
 
 /* Label for the 'payments details' view of the app settings. */
 "SETTINGS_PAYMENTS_DETAIL_VIEW_TITLE" = "Λεπτομέρειες";
 
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
+"SETTINGS_PAYMENTS_ENABLE_ACTION" = "Ενεργοποίηση Πληρωμών";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "Το MobileCoin είναι ένα νέο ψηφιακό νόμισμα που εστιάζει στην προστασία της ιδιωτικότητας.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Σχετικά με το MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "You can add funds for use in Signal by sending MobileCoin to your wallet address.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Μπορείτε να προσθέσετε χρήματα για χρήση στο Signal στέλνοντας MobileCoin στη διεύθυνση του πορτοφολιού σας.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Adding Funds";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Προσθήκη Χρημάτων";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "You can cash out MobileCoin anytime on an exchange that supports MobileCoin. Just make a transfer to your account at that exchange.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Μπορείτε να εξαργυρώσετε MobileCoin ανά πάσα στιγμή σε ένα ανταλλακτήριο που υποστηρίζει το MobileCoin. Απλώς κάντε μια μεταφορά προς τον λογαριασμό σας σε αυτό το ανταλλακτήριο.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Cashing out";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Εξαργύρωση";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Ανανέωση PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "With a high balance, you may want to update to an alphanumeric PIN to add more protection to your account.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Με υψηλό υπόλοιπο, μπορεί να θέλετε να κάνετε ενημέρωση σε ένα αλφαριθμητικό PIN για να προσθέσετε περισσότερη προστασία στον λογαριασμό σας.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Ενημέρωση του PIN";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Καταγραφή Φράσης Ανάκτησης";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your payments account.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Η φράση ανάκτησης σάς δίνει ακόμα έναν τρόπο να επαναφέρεται τον λογαριασμό πληρωμών σας.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Record recovery phrase";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Καταγραφή φράσης ανάκτησης";
 
 /* Indicator that the payments wallet address is invalid. */
-"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+"SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Μη Έγκυρη Διεύθυνση Πορτοφολιού";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
-"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
+"SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Δεν υπάρχει ακόμη πρόσφατη δραστηριότητα.";
 
 /* Message for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Would you like to enable payments?";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Θέλετε να ενεργοποιήσετε τις πληρωμές;";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Payments Not Enabled";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Οι πληρωμές δεν είναι ενεργοποιημένες";
 
 /* Message for the 'payments not registered' alert. */
-"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Re-register to send payments.";
+"SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Εγγραφείτε ξανά για αποστολή πληρωμών.";
 
 /* Title for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Μη εγγεγραμμένος";
@@ -5468,40 +5492,40 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Ενεργοποίηση πληρωμών";
 
 /* Message shown when payments rae activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Payments activated.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Οι πληρωμές ενεργοποιήθηκαν.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Use Signal to send and receive MobileCoin, a new privacy focused digital currency. Activate to get started.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Χρησιμοποιήστε το Signal για να στέλνετε και να λαμβάνετε MobileCoin, ένα νέο ψηφιακό νόμισμα που εστιάζει στην προστασία της ιδιωτικότητας. Ενεργοποιήστε το για να ξεκινήσετε.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Reactivate Payments";
+"SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Επανενεργοποίηση πληρωμών";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Introducing Payments (Beta)";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Παρουσίαση των πληρωμών (Beta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Your balance will automatically restore when you reinstall Signal if you confirm your Signal PIN. You can also restore your balance using a recovery phrase, which is a 24-word phrase unique to you. Write it down and store it in a safe place.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Το υπόλοιπό σας θα αποκατασταθεί αυτόματα όταν εγκαταστήσετε ξανά το Signal, εάν επιβεβαιώσετε το Signal PIN. Μπορείτε επίσης να επαναφέρετε το υπόλοιπό σας χρησιμοποιώντας μια φράση ανάκτησης, η οποία είναι μια φράση 24 λέξεων, μοναδική για εσάς. Σημειώστε την και αποθηκεύστε την σε ασφαλές μέρος.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Add Funds";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Προσθήκη Χρημάτων";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "Φραγή αριθμού";
 
 /* Label for the 'MobileCoin network fee' in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Network Fee";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_FEE" = "Τέλος Δικτύου";
 
 /* Indicates that you received a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Ελήφθη";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Received from %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Λήφθηκε από %@";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Απεστάλη από";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ σε %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Εσύ";
@@ -5510,31 +5534,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Στάλθηκε στις";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Sent to %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Στάλθηκε σε %@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Κατάσταση";
 
 /* Footer string for the status section of the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Transaction details including the payment amount and time of transaction are part of the MobileCoin Ledger.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER" = "Τα στοιχεία συναλλαγής, συμπεριλαμβανομένου του ποσού πληρωμής και του χρόνου συναλλαγής, αποτελούν μέρος του Καθολικού MobileCoin.";
 
 /* Footer string for the status section of the payment details view in the app settings for defragmentation transactions. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin cleanup fee” is charged when the coins in your possession can not be combined to complete a transaction. Cleanup will allow you to continue sending payments.";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "Ένα «τέλος καθαρισμού κερμάτων» χρεώνεται όταν τα κέρματα που έχετε στην κατοχή σας δεν μπορούν να συνδυαστούν για να ολοκληρωθεί μια συναλλαγή. Ο καθαρισμός θα σας επιτρέψει να συνεχίσετε να στέλνετε πληρωμές.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "You don’t have enough MOB to complete this payment. Your current balance is %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Δεν έχετε αρκετά MOB για να ολοκληρώσετε αυτήν την πληρωμή. Το τρέχον υπόλοιπό σας είναι %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Insufficient Balance";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Μη Επαρκές Υπόλοιπο";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Από %@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "To %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Προς %@";
 
 /* Message indicating that payments have been disabled in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+"SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Οι πληρωμές απενεργοποιήθηκαν.";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Όλοι/ες";
@@ -5549,43 +5573,43 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Πρόσφατες πληρωμές";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Before you can disable your PIN, you must record your payments recovery phrase to ensure you can recover your payments account.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Για να μπορέσετε να απενεργοποιήσετε το PIN σας, πρέπει να καταγράψετε τη φράση ανάκτησης πληρωμών για να διασφαλίσετε ότι μπορείτε να ανακτήσετε τον λογαριασμό πληρωμών σας.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Record Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Καταγραφή Φράσης Ανάκτησης";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Record Payments Recovery Phrase";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Καταγραφή φράσης ανάκτησης πληρωμών";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
-"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Remaining balance";
+"SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Εναπομείναν υπόλοιπο";
 
 /* Label for the 'remove payments details' button in the app settings. */
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Αφαίρεση";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Restore a Payments Account";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Επαναφορά ενός Λογαριασμού Πληρωμών";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Make sure you’ve entered your phrase correctly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Βεβαιωθείτε ότι έχετε πληκτρολογήσει τη φράση σωστά.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Επιβεβαίωση Φράσης Ανάκτησης";
 
 /* Message indicating that 'restore payments wallet' is complete. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Payments account restored.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Ο λογαριασμός σας πληρωμών αποκαταστάθηκε.";
 
 /* Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Enter Manually";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY" = "Μη Αυτόματη Εισαγωγή";
 
 /* Error indicating that 'restore payments wallet failed' in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Recovery Failed";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Αποτυχία Ανάκτησης";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "This is not a valid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Αυτή δεν είναι έγκυρη φράση ανάκτησης.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Invalid phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Μη έγκυρη φράση";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Επικόλληση από πρόχειρο";
@@ -5594,10 +5618,10 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Φράση ανάκτησης";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Paste Recovery Phrase";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Επικόλληση Φράσης Ανάκτησης ";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Your recovery phrase is a 12-word phrase unique to you. Use it to restore your payments account.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "Η φράση αποκατάστασης είναι μια φράση 12 λέξεων μοναδική για εσάς. Χρησιμοποιήστε την για αποκατάσταση του λογαριασμό πληρωμών σας.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Εισάγετε τη φράση ανάκτησης";
@@ -5606,22 +5630,22 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Φράση ανάκτησης";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Enter word %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Εισαγάγετε τη λέξη %@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Invalid recovery phrase.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Μη έγκρυρη φράση ανάκτησης.";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Word is spelled incorrectly.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "Η λέξη έχει γραφεί λανθασμένα.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Εισάγετε τη φράση ανάκτησης";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Scan the QR Code for the transfer recipient.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Σαρώστε τον κωδικό QR για τον παραλήπτη της μεταφοράς.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
-"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Invalid address";
+"SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Μη έγκυρη διεύθυνση";
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Σκανάρισμα κωδικού QR";
@@ -5639,37 +5663,37 @@
 "SETTINGS_PAYMENTS_TITLE" = "Πληρωμές";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "You can’t transfer to your Signal wallet address. Enter the wallet address from your account at a supported exchange.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Δεν μπορείτε να πραγματοποιήσετε μεταφορά στη διεύθυνση του πορτοφολιού σας Signal. Εισαγάγετε τη διεύθυνση πορτοφολιού του λογαριασμού σας σε ένα υποστηριζόμενο ανταλλακτήριο.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "You can transfer MobileCoin by completing a transfer to the wallet address provided by the exchange. The wallet address is the string of numbers and letters most commonly below the QR code.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Μπορείτε να μεταφέρετε MobileCoin ολοκληρώνοντας μια μεταφορά προς τη διεύθυνση πορτοφολιού που παρέχεται από το ανταλλακτήριο. Η διεύθυνση του πορτοφολιού είναι μια  σειρά από αριθμούς και γράμματα που συνήθως βρίσκονται κάτω από τον κωδικό QR.";
 
 /* Error indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Check the wallet address you’re attempting to transfer to and try again.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Ελέγξτε τη διεύθυνση πορτοφολιού στο οποίο προσπαθείτε να κάνετε μεταφορά και δοκιμάστε ξανά.";
 
 /* Title for error alert indicating that MobileCoin public address is not valid. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Incorrect Address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Λανθασμένη Διεύθυνση";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Scan or enter wallet address";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Προς: Σαρώστε ή εισαγάγετε διεύθυνση πορτοφολιού";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Μεταφορά για Ανταλλαγή";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Transfer to Exchange";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Μεταφορά σε Ανταλλακτήριο";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Recovery phrase setup complete.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Η ρύθμιση της φράσης ανάκτησης ολοκληρώθηκε.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Επιβεβαίωση";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Enter words %1$@ and %2$@ from your recovery phrase.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Εισάγετε τις λέξεις %1$@ και %2$@ από τη φράση ανάκτησης.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "A word is incorrect. Try again.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Μία λέξη είναι λανθασμένη. Δοκιμάστε ξανά.";
 
 /* Error indicating that all words of the payments passphrase are not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Και οι δύο λέξεις είναι λανθασμένες. Προσπαθήστε ξανά.";
@@ -5678,34 +5702,34 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Λέξη %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Confirm Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Επιβεβαίωση Φράσης Ανάκτησης";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Recovery Phrase Copied";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Η Φράση Ανάκτησης Αντιγράφηκε";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Αντιγραφή στο πρόχειρο";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "If you choose to store your recovery phrase digitally, ensure it is securely stored somewhere you trust.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Εάν επιλέξετε να αποθηκεύσετε τη φράση ανάκτησης ψηφιακά, βεβαιωθείτε ότι είναι αποθηκευμένη με ασφάλεια σε μέρος που εμπιστεύεστε.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Copy to Clipboard?";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Αντιγραφή στο Πρόχειρο;";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "See Phrase Again";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Εμφάνιση Φράσης Ξανά";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "View Recovery Phrase";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Προβολή Φράσης Ανάκτησης";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Φράση ανάκτησης";
 
 /* Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Write down the following 24 words in order. Store your list in a secure place.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Σημειώστε τις ακόλουθες 24 λέξεις με τη σειρά. Φυλάξτε τον κατάλογό σας σε ασφαλές μέρος.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Μην λαμβάνετε στιγμιότυπα οθόνης και μην στέλνετε με email.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Φράση ανάκτησης";
@@ -5840,7 +5864,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Ενίσχυση Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Γίνε Υποστηρικτής Signal";
+"SETTINGS_SUBSCRIPTION" = "Γίνε Υποστηρικτής/τρια Signal";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Κλείδωμα εγγραφής";
@@ -6038,7 +6062,7 @@
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "Όχι ευχαριστώ";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Γίνε υποστηρικτής";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "Γίνε υποστηρικτής/τρια";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ο αριθμός ασφαλείας με τον/την %@ ταιριάζει. Μπορείς να σημειώσεις αυτή την επαφή ως επιβεβαιωμένη.";
@@ -6101,10 +6125,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Το Signal είναι μια ΜΚΟ χωρις διαφημίσεις και επενδυτές, που συντηρείται μόνο από τα άτομα που το χρησιμοποιούν και το θεωρούν σημαντικό. Με μια επαναλαμβανόμενη μηνιαία συνεισφορά παίρνεις ένα έμβλημα για το προφίλ σου, για να δείξεις την υποστήριξή σου.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour contribution fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Η Signal έχει δεσμευτεί να αναπτύσσει τεχνολογία απορρήτου με ελεύθερο κώδικα που προστατεύει την ελεύθερη έκφραση και επιτρέπει την ασφαλή παγκόσμια επικοινωνία.\n\nΗ συνεισφορά σας τροφοδοτεί αυτόν τον σκοπό και πληρώνει για την ανάπτυξη και τη λειτουργία μιας εφαρμογής που χρησιμοποιείται από εκατομμύρια άτομα για τις απόρρητες επικοινωνίες τους. Χωρίς διαφημίσεις. Χωρίς ιχνηλάτες. Ναι, αλήθεια είναι.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you - not for your data - by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Υποστηρίξτε την τεχνολογία που έχει δημιουργηθεί για εσάς —και όχι για τα δεδομένα σας— συμμετέχοντας στην κοινότητα που τη συντηρεί.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Γιατι να συνεισφέρω;";
