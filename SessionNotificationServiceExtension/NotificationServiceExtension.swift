@@ -92,6 +92,7 @@ public final class NotificationServiceExtension : UNNotificationServiceExtension
                         }
                     case let callMessage as CallMessage:
                         MessageReceiver.handleCallMessage(callMessage, using: transaction)
+                        guard case .preOffer = callMessage.kind else { return self.completeSilenty() }
                         if !SSKPreferences.areCallsEnabled {
                             if let sender = callMessage.sender, let thread = TSContactThread.fetch(for: sender, using: transaction), thread.hasOutgoingInteraction(with: transaction) {
                                 let infoMessage = TSInfoMessage.from(callMessage, associatedWith: thread)
