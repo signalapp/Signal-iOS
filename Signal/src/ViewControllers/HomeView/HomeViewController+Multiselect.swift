@@ -29,18 +29,29 @@ extension HomeViewController {
         return key == nil ? false : viewState.multiSelectState.selectedThreadModels.keys.contains(key!)
     }
 
+    @objc
+    func shallSelectMultipleMessages() {
+        AssertIsOnMainThread()
+
+        viewState.multiSelectState.title = title
+        viewState.multiSelectState.selectedThreadModels.removeAll()
+        let doneButton = UIBarButtonItem(title: CommonStrings.doneButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.doneButton)
+        navigationItem.setLeftBarButton(doneButton, animated: self.homeViewMode == .inbox)
+        navigationItem.setRightBarButtonItems(nil, animated: self.homeViewMode == .inbox)
+        showToolbar()
+    }
+
     // MARK: private helper
 
     private func showMenu(button: UIButton) {
         AssertIsOnMainThread()
 
-        viewState.multiSelectState.title = title
         viewState.multiSelectState.parentButton = button
         viewState.multiSelectState.parentButton?.alpha = 0.4
 
         let selectMessages = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: renderState.inboxCount == 0 ? [.disabled] : [], handler: { [weak self] (_) in
             self?.hideMenu()
-            self?.selectMessages()
+            self?.shallSelectMultipleMessages()
         })
         let settings = ContextMenuAction(title: CommonStrings.openSettingsButton, image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"), attributes: [], handler: { [weak self] (_) in
             self?.hideMenu()
@@ -48,9 +59,7 @@ extension HomeViewController {
         })
         let archived = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."), image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"), attributes: renderState.archiveCount < 2 ? [.disabled] : [], handler: { [weak self] (_) in
             self?.hideMenu()
-            self?.homeViewMode = .archive
-            self?.loadCoordinator.ensureFirstLoad()
-            self?.selectMessages()
+            self?.showArchivedConversations(multiSelectMode: true)
         })
 
         if viewState.multiSelectState.contextMenuView == nil {
@@ -71,11 +80,11 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         hideToolbar()
-        if homeViewMode == .archive {
-            homeViewMode = .inbox
-            loadCoordinator.ensureFirstLoad()
+        if self.homeViewMode == .archive {
+            self.navigationController?.popViewController(animated: true)
+        } else {
+            updateBarButtonItems()
         }
-        updateBarButtonItems()
     }
 
     @objc
@@ -86,14 +95,6 @@ extension HomeViewController {
         viewState.multiSelectState.parentButton = nil
         viewState.multiSelectState.contextMenuView?.removeFromSuperview()
         viewState.multiSelectState.contextMenuView = nil
-    }
-
-    private func selectMessages() {
-        viewState.multiSelectState.selectedThreadModels.removeAll()
-        let doneButton = UIBarButtonItem(title: CommonStrings.doneButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.doneButton)
-        navigationItem.setLeftBarButton(doneButton, animated: true)
-        navigationItem.setRightBarButtonItems(nil, animated: true)
-        showToolbar()
     }
 
     private func adjustNavigationBarTitles(_ toolbar: UIToolbar?) {
@@ -178,7 +179,7 @@ extension HomeViewController {
 
         if let homeCell = notification.object as? HomeViewCell, let primKey = homeCell.thread?.uniqueId, let paths = tableView.indexPathsForVisibleRows {
             for path in paths {
-                if thread(forIndexPath: path)?.uniqueId == primKey {
+                if (homeViewMode != .archive || path.section != 0) && thread(forIndexPath: path)?.uniqueId == primKey {
                     if viewState.multiSelectState.selectedThreadModels.keys.contains(primKey) {
                         viewState.multiSelectState.selectedThreadModels.removeValue(forKey: primKey)
                     } else {

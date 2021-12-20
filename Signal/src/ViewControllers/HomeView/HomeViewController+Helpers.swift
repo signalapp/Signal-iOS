@@ -44,19 +44,22 @@ public extension HomeViewController {
         owsAssertDebug(!searchBar.isFirstResponder)
     }
 
-    func showArchivedConversations() {
+    func showArchivedConversations(multiSelectMode: Bool = false) {
         AssertIsOnMainThread()
 
         owsAssertDebug(self.homeViewMode == .inbox)
-
-        // When showing archived conversations, we want to use a conventional "back" button
-        // to return to the "inbox" conversation list.
-        applyArchiveBackButton()
 
         // Push a separate instance of this view using "archive" mode.
         let homeView = HomeViewController()
         homeView.homeViewMode = .archive
 
+        // When showing archived conversations, we want to use a conventional "back" button
+        // to return to the "inbox" conversation list.
+        if multiSelectMode {
+            homeView.viewState.multiSelectState.setIsActive(true)
+        } else {
+            applyArchiveBackButton()
+        }
         self.show(homeView, sender: self)
     }
 
