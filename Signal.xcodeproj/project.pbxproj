@@ -2030,6 +2030,8 @@
 		88238EAE24EB798900F28079 /* ConversationViewController+GestureRecognizers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GestureRecognizers.swift"; sourceTree = "<group>"; };
 		88238EB024EE29F400F28079 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = translations/hr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88238EBB24F21EE400F28079 /* EmojiSkinTonePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSkinTonePicker.swift; sourceTree = "<group>"; };
+		8824993E277116970097ED97 /* es_MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es_MX; path = translations/es_MX.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		88249942277116C40097ED97 /* es_MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es_MX; path = translations/es_MX.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsTableViewController.swift; sourceTree = "<group>"; };
 		8829883825B979F900DEE1E3 /* ThemeSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSettingsTableViewController.swift; sourceTree = "<group>"; };
 		8829883A25B9FD6700DEE1E3 /* MockConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockConversationView.swift; sourceTree = "<group>"; };
@@ -5002,6 +5004,7 @@
 				tk,
 				ps,
 				yue,
+				es_MX,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -6630,6 +6633,7 @@
 				88E1EACC26BB286F00AD0C2D /* kn */,
 				34067EAF271621CD000407C3 /* ps */,
 				881A05FA2745DDD20020E0C8 /* yue */,
+				8824993E277116970097ED97 /* es_MX */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -6712,6 +6716,7 @@
 				88E1EACD26BB28A400AD0C2D /* zh_HK */,
 				34067EB0271621CD000407C3 /* ps */,
 				881A05FE2745DE100020E0C8 /* yue */,
+				88249942277116C40097ED97 /* es_MX */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

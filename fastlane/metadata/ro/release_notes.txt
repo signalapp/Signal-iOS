@@ -1,2 +1,2 @@
-• We spruced up the chat list a bit to make unread chats clearer to see
-• Fixes for some issues with search and zooming in on photos
+• Am aranjat un pic lista de conversații pentru a face conversațiile necitite mai ușor de văzut
+• Am rezolvat unele probleme legate de căutarea și mărirea fotografiilor

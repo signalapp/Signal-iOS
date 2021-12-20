@@ -1,2 +1,2 @@
-• We spruced up the chat list a bit to make unread chats clearer to see
-• Fixes for some issues with search and zooming in on photos
+• Retocamos um pouco a lista de conversas para facilitar o seu reconhecimento de quais conversas ainda não foram lidas
+• Consertamos alguns problemas envolvendo a caixa de busca e o gesto de zoom em fotos
