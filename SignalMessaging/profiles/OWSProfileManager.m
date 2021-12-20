@@ -113,7 +113,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             && TSAccountManager.shared.isRegistered) {
             [self logLocalAvatarStatus];
             [self fetchLocalUsersProfile];
-            [SubscriptionManager performSubscriptionKeepAliveIfNecessary];
         }
     });
 
@@ -344,11 +343,6 @@ const NSString *kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         return nil;
     }
     return [self loadProfileAvatarDataWithFilename:filename];
-}
-
-- (BOOL)localProfileHasVisibleBadge
-{
-    return self.localUserProfile.visibleBadges.count > 0;
 }
 
 - (nullable NSString *)localUsername

@@ -102,6 +102,7 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         updateBarButtonItems()
+        showBadgeExpirationSheetIfNeeded()
     }
 
     @objc

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
     override var renderExternalHandle: Bool { false }
     private var shouldMakeVisibleAndPrimary = false
-    public var delegate: BadgeExpirationSheetDelegate?
+    public weak var delegate: BadgeExpirationSheetDelegate?
 
     var contentSizeHeight: CGFloat {
         tableViewController.tableView.layoutIfNeeded()
@@ -30,17 +30,17 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
 
     private let tableViewController = OWSTableViewController2()
     private let handleContainer = UIView()
-    
+
     private let badge: ProfileBadge
-    
+
     public var badgeID: String {
         return badge.id
     }
-    
+
     private lazy var isCurrentSustainer = {
-        return SubscriptionManager.hasCurrentSubscriptionCached()
+        return SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction()
     }()
-    
+
     required init(badge: ProfileBadge) {
         owsAssertDebug(badge.assets != nil)
         self.badge = badge
@@ -50,11 +50,11 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
         tableViewController.shouldDeferInitialLoad = false
         updateTableContents()
     }
-    
+
     public required init() {
         fatalError("init() has not been implemented")
     }
-    
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -80,7 +80,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
 
         updateViewState()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -94,69 +94,71 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             previousMinimizedHeight = minimizedHeight
         }
     }
-    
+
     override func themeDidChange() {
         super.themeDidChange()
         handleContainer.backgroundColor = Theme.tableView2PresentedBackgroundColor
         updateTableContents()
     }
-    
+
     var titleText: String {
-        switch badge.id {
-        case "BOOST": return NSLocalizedString(
-            "BADGE_EXPIRED_BOOST_TITLE",
-            comment: "Title for boost on the badge expiration sheet."
-        )
-        default: return NSLocalizedString(
-            "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
-            comment: "Title for subscription on the badge expiration sheet."
-        )
+        if BoostBadgeIds.contains(badge.id) {
+            return NSLocalizedString(
+                "BADGE_EXPIRED_BOOST_TITLE",
+                comment: "Title for boost on the badge expiration sheet."
+            )
+        } else {
+            return NSLocalizedString(
+                "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
+                comment: "Title for subscription on the badge expiration sheet."
+            )
         }
     }
 
     var bodyText: String {
         var formatText: String
-        
-        switch (badgeID: badge.id, isSustainer: isCurrentSustainer) {
-        case (badgeID: "BOOST", isSustainer: true):
-            formatText = NSLocalizedString(
-                "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet."
-            )
-        case (badgeID: "BOOST", isSustainer: false):
-            formatText = NSLocalizedString(
-                "BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet."
-            )
 
-        default:
+        if BoostBadgeIds.contains(badge.id) {
+            if isCurrentSustainer {
+                formatText = NSLocalizedString(
+                    "BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
+                    comment: "String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet."
+                )
+            } else {
+                formatText = NSLocalizedString(
+                    "BADGE_EXIPRED_BOOST_BODY_FORMAT",
+                    comment: "String explaing to the user that their boost badge has expired on the badge expiry sheetsheet."
+                )
+            }
+        } else {
             formatText = NSLocalizedString(
                 "BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT",
                 comment: "String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}."
             )
         }
-        
+
         return String(format: formatText, badge.localizedName)
     }
-    
+
     var actionButtonText: String {
-        switch (badgeID: badge.id, isSustainer: isCurrentSustainer) {
-        case (badgeID: "BOOST", isSustainer: true):
-            return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
-                                     comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
-        case (badgeID: "BOOST", isSustainer: false):
-            return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
-                                     comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
-        default:
+        if BoostBadgeIds.contains(badge.id) {
+            if isCurrentSustainer {
+                return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
+                                         comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
+            } else {
+                return NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
+                                         comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
+            }
+        } else {
             return NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
                                      comment: "Button title for subscription on the badge expiration sheet.")
         }
     }
-    
+
     private func updateTableContents() {
         let contents = OWSTableContents()
         defer { tableViewController.contents = contents }
-        
+
         let headerSection = OWSTableSection()
         headerSection.hasBackground = false
         headerSection.customHeaderHeight = 1
@@ -181,7 +183,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             badgeImageView.autoSetDimensions(to: CGSize(square: 112))
             stackView.addArrangedSubview(badgeImageView)
             stackView.setCustomSpacing(16, after: badgeImageView)
-            
+
             let titleLabel = UILabel()
             titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
             titleLabel.textColor = Theme.primaryTextColor
@@ -202,7 +204,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
 
             return cell
         }, actionBlock: nil))
-        
+
         let buttonSection = OWSTableSection()
         buttonSection.hasBackground = false
         contents.addSection(buttonSection)
@@ -210,7 +212,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
             guard let self = self else { return cell }
-            
+
             let stackView = UIStackView()
             stackView.axis = .vertical
             stackView.alignment = .center
@@ -219,7 +221,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             stackView.isLayoutMarginsRelativeArrangement = true
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewEdges()
-            
+
             let actionButton = OWSFlatButton.button(title: self.actionButtonText,
                                                     font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                     titleColor: .white,
@@ -230,7 +232,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             actionButton.cornerRadius = 8
             stackView.addArrangedSubview(actionButton)
             actionButton.autoPinWidthToSuperviewMargins()
-            
+
             let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
                 guard let self = self else { return }
                 self.didTapNotNow()
@@ -238,16 +240,15 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             notNowButton.setTitleColor(Theme.accentBlueColor, for: .normal)
             notNowButton.dimsWhenHighlighted = true
             stackView.addArrangedSubview(notNowButton)
-            
+
             return cell
         }, actionBlock: nil))
     }
-    
+
     public override func willDismissInteractively() {
         didTapNotNow()
         super.willDismissInteractively()
     }
-
 
     @objc
     func didTapAction() {
@@ -256,7 +257,7 @@ class BadgeExpirationSheet: InteractiveSheetViewController {
             delegate.badgeExpirationSheetActionButtonTapped(self)
         }
     }
-    
+
     @objc
     func didTapNotNow() {
         dismiss(animated: true, completion: nil)

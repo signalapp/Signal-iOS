@@ -1,16 +1,23 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-#import <AFNetworking/AFSecurityPolicy.h>
+#import <Foundation/Foundation.h>
+#import <Security/SecTrust.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSData *SSKTextSecureServiceCertificateData(void);
 
-@interface OWSHTTPSecurityPolicy : AFSecurityPolicy
+/// A simplified version of AFNetworking's AFSecurityPolicy.
+@interface OWSHTTPSecurityPolicy : NSObject
 
 + (instancetype)sharedPolicy;
++ (instancetype)systemDefault;
+
+- (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates;
+
+- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain;
 
 @end
 
