@@ -606,6 +606,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
     }
 
     private func sendReactiveProfileKeyIfNecessary(address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
+        guard !address.isLocalAddress else {
+            Logger.debug("Skipping send of reactive profile key to self")
+            return
+        }
+
         guard !blockingManager.isAddressBlocked(address) else {
             Logger.info("Skipping send of reactive profile key to blocked address")
             return
