@@ -93,7 +93,10 @@ class GroupCallViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configCenterStageIfSupported()
+        CenterStageUtil.configCenterStage(observer: self, isSupportedHandler: { [weak self] isSupported in
+            self?.callControls.centerStageButton.isHidden = !isSupported
+            
+        })
     }
 
     @discardableResult
@@ -509,27 +512,11 @@ class GroupCallViewController: UIViewController {
         shouldRemoteVideoControlsBeHidden = true
     }
     
-    // MARK: - Center Stage
-    func configCenterStageIfSupported() {
-        if CenterStageUtil.isCenterStageSupported() {
-            CenterStageUtil.setCooperative()
-            callControls.centerStageButton.isHidden = false
-            KVOCenterStageEnabled()
-        } else {
-            callControls.centerStageButton.isHidden = true
-        }
-    }
-    
     // MARK: - KVO
     override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if forKeyPath == "isCenterStageEnabled",
-           let enabled = change?[.newKey] as? Bool {
-            self.callControls.centerStageButton.isSelected = enabled
-        }
-    }
-    
-    func KVOCenterStageEnabled() {
-        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
+        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, isSelectedHandler: { selected in
+            callControls.centerStageButton.isSelected = selected
+        })
     }
 }
 

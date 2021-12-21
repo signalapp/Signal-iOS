@@ -232,14 +232,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     
     // MARK: - KVO
     override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if forKeyPath == "isCenterStageEnabled",
-           let enabled = change?[.newKey] as? Bool {
-            centerStageButton.isSelected = enabled
-        }
-    }
-    
-    func KVOCenterStageEnabled() {
-        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
+        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, isSelectedHandler: { [weak self] selected in
+            self?.centerStageButton.isSelected = selected
+        })
     }
 
     // MARK: - View Lifecycle
@@ -304,7 +299,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
         
-        configCenterStageIfSupported()
+        CenterStageUtil.configCenterStage(observer: self, isSupportedHandler: { isSupported in
+            self.centerStageButton.isHidden = !isSupported
+            
+        })
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -1041,18 +1039,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     func updateCallDuration() {
         updateCallStatusLabel()
-    }
-    
-    // MARK: - Center Stage
-    
-    func configCenterStageIfSupported() {
-        if CenterStageUtil.isCenterStageSupported() {
-            CenterStageUtil.setCooperative()
-            centerStageButton.isHidden = false
-            KVOCenterStageEnabled()
-        } else {
-            centerStageButton.isHidden = false
-        }
     }
 
     // MARK: - Video control timeout
