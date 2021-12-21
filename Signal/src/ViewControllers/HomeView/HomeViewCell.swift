@@ -41,6 +41,8 @@ public class HomeViewCell: UITableViewCell {
         }
     }
 
+    private var loadAvatarWorkItem: DispatchWorkItem?
+
     private var cvviews: [CVView] {
         [
             avatarView,
@@ -343,12 +345,16 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .thread(cellContentToken.thread)
-            if !cellContentToken.shouldLoadAvatarAsync {
-                config.applyConfigurationSynchronously()
+        loadAvatarWorkItem?.cancel()
+        loadAvatarWorkItem = DispatchWorkItem { [weak self] in
+            self?.avatarView.updateWithSneakyTransactionIfNecessary { config in
+                config.dataSource = .thread(cellContentToken.thread)
+                if !cellContentToken.shouldLoadAvatarAsync {
+                    config.applyConfigurationSynchronously()
+                }
             }
         }
+        DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
 
         typingIndicatorView.configureForHomeView()
 
@@ -852,6 +858,7 @@ public class HomeViewCell: UITableViewCell {
 
     func reset() {
         isCellVisible = false
+        loadAvatarWorkItem?.cancel()
 
         for cvview in cvviews {
             cvview.reset()

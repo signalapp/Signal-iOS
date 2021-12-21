@@ -126,9 +126,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public private(set) var configuration: Configuration {
         didSet {
-            AssertIsOnMainThread()
             if configuration.dataSource != oldValue.dataSource {
-                ensureObservers()
+                if Thread.isMainThread {
+                    ensureObservers()
+                } else {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.ensureObservers()
+                    }
+                }
             }
         }
     }
@@ -152,11 +157,23 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
         // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
         if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
-            setNeedsUpdateConstraints()
+            if Thread.isMainThread {
+                setNeedsUpdateConstraints()
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.setNeedsUpdateConstraints()
+                }
+            }
         }
 
         if sizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange {
-            setNeedsLayout()
+            if Thread.isMainThread {
+                setNeedsLayout()
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.setNeedsLayout()
+                }
+            }
         }
     }
 
@@ -174,8 +191,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
-        AssertIsOnMainThread()
-
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
@@ -197,8 +212,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
-        AssertIsOnMainThread()
-
         guard nextModelGeneration.get() > currentModelGeneration else { return }
         Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
@@ -220,12 +233,21 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
-        AssertIsOnMainThread()
-
-        self.avatarView.image = avatarImage
-        self.badgeView.image = badgeImage
-        currentModelGeneration = nextModelGeneration.get()
-        setNeedsLayout()
+        let uiUpdateBlock = { [weak self] in
+            if let self = self {
+                self.avatarView.image = avatarImage
+                self.badgeView.image = badgeImage
+                self.currentModelGeneration = self.nextModelGeneration.get()
+                self.setNeedsLayout()
+            }
+        }
+        if Thread.isMainThread {
+            uiUpdateBlock()
+        } else {
+            DispatchQueue.main.async {
+                uiUpdateBlock()
+            }
+        }
     }
 
     // MARK: - Model Tracking
@@ -240,8 +262,15 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     private var nextModelGeneration = AtomicUInt(0)
     @discardableResult
     private func setNeedsModelUpdate() -> UInt {
-        AssertIsOnMainThread()
-        return nextModelGeneration.increment()
+        var ret: UInt?
+        if Thread.isMainThread {
+            ret = nextModelGeneration.increment()
+        } else {
+            DispatchQueue.main.sync {
+                ret = nextModelGeneration.increment()
+            }
+        }
+        return ret!
     }
 
     // Load avatars in _reverse_ order in which they are enqueued.
