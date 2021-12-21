@@ -26,7 +26,7 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         result.contentMode = .scaleAspectFill
         result.set(.width, to: 80)
         result.set(.height, to: 173)
-//        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
+        result.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture)))
         return result
     }()
     
@@ -263,7 +263,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
     }
     
     func setUpViewHierarchy() {
-        let safeAreaInsets = UIApplication.shared.keyWindow!.safeAreaInsets
         // Profile picture container
         let profilePictureContainer = UIView()
         view.addSubview(profilePictureContainer)
@@ -274,10 +273,6 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         remoteVideoView.pin(to: view)
         // Local video view
         call.attachLocalVideoRenderer(localVideoView)
-        view.addSubview(localVideoView)
-        localVideoView.pin(.right, to: .right, of: view, withInset: -Values.smallSpacing)
-        let topMargin = safeAreaInsets.top + Values.veryLargeSpacing
-        localVideoView.pin(.top, to: .top, of: view, withInset: topMargin)
         // Fade view
         view.addSubview(fadeView)
         fadeView.translatesAutoresizingMaskIntoConstraints = false
@@ -317,15 +312,26 @@ final class CallVC : UIViewController, VideoPreviewDelegate {
         callInfoLabel.center(in: callInfoLabelContainer)
     }
     
+    private func addLocalVideoView() {
+        let safeAreaInsets = UIApplication.shared.keyWindow!.safeAreaInsets
+        let window = CurrentAppContext().mainWindow!
+        window.addSubview(localVideoView)
+        localVideoView.autoPinEdge(toSuperviewEdge: .right, withInset: Values.smallSpacing)
+        let topMargin = safeAreaInsets.top + Values.veryLargeSpacing
+        localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
         shouldRestartCamera = true
+        addLocalVideoView()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
+        localVideoView.removeFromSuperview()
     }
     
     // MARK: Call signalling
