@@ -238,6 +238,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         }
     }
     
+    func KVOCenterStageEnabled() {
+        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
+    }
 
     // MARK: - View Lifecycle
 
@@ -302,7 +305,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
                                                object: nil)
         
         configCenterStageIfSupported()
-        
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -968,20 +970,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         scheduleControlTimeoutIfNecessary()
     }
-    
-    func configCenterStageIfSupported() {
-        if CenterStageUtil.isCenterStageSupported() {
-            CenterStageUtil.setCooperative()
-            centerStageButton.isHidden = false
-            KVOCenterStageEnabled()
-        } else {
-            centerStageButton.isHidden = true
-        }
-    }
-    
-    func KVOCenterStageEnabled() {
-        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
-    }
 
     func displayNeedPermissionErrorAndDismiss() {
         guard !hasDismissed else { return }
@@ -1053,6 +1041,18 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     func updateCallDuration() {
         updateCallStatusLabel()
+    }
+    
+    // MARK: - Center Stage
+    
+    func configCenterStageIfSupported() {
+        if CenterStageUtil.isCenterStageSupported() {
+            CenterStageUtil.setCooperative()
+            centerStageButton.isHidden = false
+            KVOCenterStageEnabled()
+        } else {
+            centerStageButton.isHidden = false
+        }
     }
 
     // MARK: - Video control timeout

@@ -90,6 +90,11 @@ class GroupCallViewController: UIViewController {
             self.updateSwipeToastView()
         }
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configCenterStageIfSupported()
+    }
 
     @discardableResult
     @objc(presentLobbyForThread:)
@@ -503,6 +508,29 @@ class GroupCallViewController: UIViewController {
         guard !isCallMinimized && !groupCall.remoteDeviceStates.isEmpty && !shouldRemoteVideoControlsBeHidden else { return }
         shouldRemoteVideoControlsBeHidden = true
     }
+    
+    // MARK: - Center Stage
+    func configCenterStageIfSupported() {
+        if CenterStageUtil.isCenterStageSupported() {
+            CenterStageUtil.setCooperative()
+            callControls.centerStageButton.isHidden = false
+            KVOCenterStageEnabled()
+        } else {
+            callControls.centerStageButton.isHidden = true
+        }
+    }
+    
+    // MARK: - KVO
+    override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if forKeyPath == "isCenterStageEnabled",
+           let enabled = change?[.newKey] as? Bool {
+            self.callControls.centerStageButton.isSelected = enabled
+        }
+    }
+    
+    func KVOCenterStageEnabled() {
+        AVCaptureDevice.addObserver(self, forKeyPath: "isCenterStageEnabled", options: [.old, .new], context: nil)
+    }
 }
 
 extension GroupCallViewController: CallViewControllerWindowReference {
@@ -739,6 +767,11 @@ extension GroupCallViewController: CallControlsDelegate {
             callControls.audioSourceButton.isSelected = true
             callService.audioService.requestSpeakerphone(isEnabled: true)
         }
+    }
+    
+    func didPressCenterStage(sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+        CenterStageUtil.setCenterStageEnabled(value: sender.isSelected)
     }
 
     func didPressFlipCamera(sender: UIButton) {

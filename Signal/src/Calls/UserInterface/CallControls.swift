@@ -11,6 +11,7 @@ protocol CallControlsDelegate: AnyObject {
     func didPressAudioSource(sender: UIButton)
     func didPressMute(sender: UIButton)
     func didPressVideo(sender: UIButton)
+    func didPressCenterStage(sender: UIButton)
     func didPressFlipCamera(sender: UIButton)
     func didPressCancel(sender: UIButton)
     func didPressJoin(sender: UIButton)
@@ -37,6 +38,12 @@ class CallControls: UIView {
         iconName: "video-solid-28",
         action: #selector(CallControlsDelegate.didPressVideo)
     )
+    
+    private(set) lazy var centerStageButton = createButton(
+        iconName: "centre-stage-28",
+        action: #selector(CallControlsDelegate.didPressCenterStage)
+    )
+    
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
             iconName: "switch-camera-28",
@@ -129,6 +136,7 @@ class CallControls: UIView {
         controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: 22)
 
         updateControls()
+        setAccessibiltyForControls()
     }
 
     deinit {
@@ -147,6 +155,7 @@ class CallControls: UIView {
         stackView.addArrangedSubview(leadingSpacer)
         stackView.addArrangedSubview(audioSourceButton)
         stackView.addArrangedSubview(flipCameraButton)
+        stackView.addArrangedSubview(centerStageButton)
         stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(videoButton)
         stackView.addArrangedSubview(hangUpButton)
@@ -192,8 +201,8 @@ class CallControls: UIView {
         hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
 
         // Use small controls if video is enabled and we have external
-        // audio inputs, because we have five buttons now.
-        [audioSourceButton, flipCameraButton, videoButton, muteButton, hangUpButton].forEach {
+        // audio inputs, because we have six buttons now (generally only on iPad, and 5 buttons for iPhone, due to center stage).
+        [audioSourceButton, flipCameraButton, videoButton, centerStageButton, muteButton, hangUpButton].forEach {
             $0.isSmall = hasExternalAudioInputs && !isLocalVideoMuted
         }
 
@@ -246,6 +255,13 @@ class CallControls: UIView {
             joinButton.setTitle(deviceCount == 0 ? startCallText : joinCallText, for: .normal)
         }
     }
+    
+    func setAccessibiltyForControls() {
+        // TODO: Set Accessibilty for other controls
+        centerStageButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_CENTER_STAGE_LABEL",
+                                                                   comment: "Accessibility label for selecting center stage")
+    }
+    
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
