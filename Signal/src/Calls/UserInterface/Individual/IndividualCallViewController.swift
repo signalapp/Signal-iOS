@@ -102,6 +102,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
             UIView.hStretchingSpacer(),
             videoModeAudioSourceButton,
             videoModeFlipCameraButton,
+            centerStageButton,
             videoModeVideoButton,
             videoModeMuteButton,
             videoModeHangUpButton,
@@ -227,8 +228,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         // we want to remove them so they are free'd when the call ends
         remoteVideoView.removeFromSuperview()
         localVideoView.removeFromSuperview()
-        
-        self.removeObserver(self, forKeyPath: "isCenterStageEnabled")
     }
     
     // MARK: - KVO
