@@ -190,9 +190,9 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
         // try our best to create appropriate components to represent it.
         NSArray<NSString *> *components = [self.contactFullName componentsSeparatedByString:@" "];
 
-        // If there are only two words separated by a space, this is probably a given
-        // and family name.
-        if (components.count <= 2) {
+        // If there are at least two words separated by a space, we can use the first and last as
+        // a given and family name. Otherwise, we'll use whatever we have as a given name.
+        if (components.count >= 2) {
             nameComponents.givenName = components.firstObject;
             nameComponents.familyName = components.lastObject;
         } else {
