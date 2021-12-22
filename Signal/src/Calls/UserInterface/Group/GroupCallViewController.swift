@@ -514,7 +514,7 @@ class GroupCallViewController: UIViewController {
     
     // MARK: - KVO
     override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, isSelectedHandler: { selected in
+        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, centerStageEnabledHandler: { selected in
             callControls.centerStageButton.isSelected = selected
         })
     }

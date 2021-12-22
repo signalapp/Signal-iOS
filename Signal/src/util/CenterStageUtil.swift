@@ -35,13 +35,12 @@ class CenterStageUtil {
         AVCaptureDevice.addObserver(observer, forKeyPath: observedKey, options: [.old, .new], context: nil)
     }
     
-    static func handleObservedValue(forKeyPath: String?, change: [NSKeyValueChangeKey : Any]?, isSelectedHandler: (Bool) -> Void) {
+    static func handleObservedValue(forKeyPath: String?, change: [NSKeyValueChangeKey : Any]?, centerStageEnabledHandler: (Bool) -> Void) {
         if forKeyPath == observedKey,
-           let selected = change?[.newKey] as? Bool {
-            isSelectedHandler(selected)
+           let enabled = change?[.newKey] as? Bool {
+            centerStageEnabledHandler(enabled)
             return
         }
-        isSelectedHandler(false)
     }
     
     static func setCooperative() {

@@ -232,7 +232,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     
     // MARK: - KVO
     override func observeValue(forKeyPath: String?, of ofObject: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, isSelectedHandler: { [weak self] selected in
+        CenterStageUtil.handleObservedValue(forKeyPath: forKeyPath, change: change, centerStageEnabledHandler: { [weak self] selected in
             self?.centerStageButton.isSelected = selected
         })
     }
