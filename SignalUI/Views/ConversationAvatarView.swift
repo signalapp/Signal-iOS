@@ -235,7 +235,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
         let uiUpdateBlock = { [weak self] in
             if let self = self {
-                self.avatarView.image = avatarImage
+                self.avatarView.image = avatarImage ?? UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
                 self.badgeView.image = badgeImage
                 self.currentModelGeneration = self.nextModelGeneration.get()
                 self.setNeedsLayout()
