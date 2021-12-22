@@ -47,7 +47,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     @objc
     private func resetButtonTapped(sender: UIButton) {
         let emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
-            return ReactionManager.emojiSet(transaction: transaction).compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
+            return ReactionManager.defaultEmojiSet.compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
         }
         
         for (index, emoji) in reactionPicker.currentEmojiSet().enumerated() {
