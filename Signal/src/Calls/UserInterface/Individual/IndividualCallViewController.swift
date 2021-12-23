@@ -7,7 +7,6 @@ import WebRTC
 import SignalServiceKit
 import SignalMessaging
 import SignalRingRTC
-import AVFoundation
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
