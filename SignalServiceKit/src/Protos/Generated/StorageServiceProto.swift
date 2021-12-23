@@ -2559,6 +2559,7 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         if let _value = e164 {
             builder.setE164(_value)
         }
+        builder.setPreferredReactionEmoji(preferredReactionEmoji)
         if let _value = subscriberID {
             builder.setSubscriberID(_value)
         }
@@ -2693,6 +2694,14 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
 
         public mutating func setE164(_ valueParam: String) {
             proto.e164 = valueParam
+        }
+
+        public mutating func addPreferredReactionEmoji(_ valueParam: String) {
+            proto.preferredReactionEmoji.append(valueParam)
+        }
+
+        public mutating func setPreferredReactionEmoji(_ wrappedItems: [String]) {
+            proto.preferredReactionEmoji = wrappedItems
         }
 
         @available(swift, obsoleted: 1.0)
@@ -2878,6 +2887,10 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     }
     public var hasE164: Bool {
         return !proto.e164.isEmpty
+    }
+
+    public var preferredReactionEmoji: [String] {
+        return proto.preferredReactionEmoji
     }
 
     public var subscriberID: Data? {

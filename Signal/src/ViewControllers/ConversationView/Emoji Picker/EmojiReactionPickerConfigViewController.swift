@@ -63,6 +63,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         SDSDatabaseStorage.shared.write { transaction in
             ReactionManager.setEmojiSet(currentEmojiSet, transaction: transaction)
         }
+        Self.storageServiceManager.recordPendingLocalAccountUpdates()
         dismiss(animated: true, completion: nil)
     }
     
