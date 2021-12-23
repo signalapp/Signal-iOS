@@ -4,7 +4,6 @@
 
 import Foundation
 import SignalCoreKit
-import AFNetworking
 
 @objc
 public enum HTTPMethod: UInt {
@@ -120,8 +119,7 @@ public class OWSURLSession: NSObject {
 
     private let configuration: URLSessionConfiguration
 
-    // TODO: Replace AFSecurityPolicy.
-    private let securityPolicy: AFSecurityPolicy
+    private let securityPolicy: OWSHTTPSecurityPolicy
 
     private let extraHeaders: [String: String]
 
@@ -195,12 +193,12 @@ public class OWSURLSession: NSObject {
     }()
 
     @objc
-    public static var defaultSecurityPolicy: AFSecurityPolicy {
-        AFSecurityPolicy.default()
+    public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy {
+        OWSHTTPSecurityPolicy.systemDefault()
     }
 
     @objc
-    public static var signalServiceSecurityPolicy: AFSecurityPolicy {
+    public static var signalServiceSecurityPolicy: OWSHTTPSecurityPolicy {
         OWSHTTPSecurityPolicy.shared()
     }
 
@@ -221,7 +219,7 @@ public class OWSURLSession: NSObject {
 
     public init(baseUrl: URL? = nil,
                 frontingInfo: FrontingInfo? = nil,
-                securityPolicy: AFSecurityPolicy,
+                securityPolicy: OWSHTTPSecurityPolicy,
                 configuration: URLSessionConfiguration,
                 extraHeaders: [String: String] = [:],
                 maxResponseSize: Int? = nil) {
@@ -239,22 +237,17 @@ public class OWSURLSession: NSObject {
     }
 
     @objc
-    public init(baseUrl: URL? = nil,
-                frontingInfo: FrontingInfo? = nil,
-                securityPolicy: AFSecurityPolicy,
-                configuration: URLSessionConfiguration,
-                extraHeaders: [String: String] = [:]) {
-        self.baseUrl = baseUrl
-        self.frontingInfo = frontingInfo
-        self.securityPolicy = securityPolicy
-        self.configuration = configuration
-        self.extraHeaders = extraHeaders
-        self.maxResponseSize = nil
-
-        super.init()
-
-        // Ensure this is set so that we don't try to create it in deinit().
-        _ = self.delegateBox
+    public convenience init(baseUrl: URL?,
+                            frontingInfo: FrontingInfo?,
+                            securityPolicy: OWSHTTPSecurityPolicy,
+                            configuration: URLSessionConfiguration,
+                            extraHeaders: [String: String]) {
+        self.init(baseUrl: baseUrl,
+                  frontingInfo: frontingInfo,
+                  securityPolicy: securityPolicy,
+                  configuration: configuration,
+                  extraHeaders: extraHeaders,
+                  maxResponseSize: nil)
     }
 
     deinit {
@@ -1319,18 +1312,18 @@ extension OWSURLSession {
                                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         do {
             let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl()
-            let boundary = AFMultipartBody.createMultipartFormBoundary()
+            let boundary = OWSMultipartBody.createMultipartFormBoundary()
             // Order of form parts matters.
             let textParts = textPartsDictionary.map { (key, value) in
-                AFMultipartTextPart(key: key, value: value)
+                OWSMultipartTextPart(key: key, value: value)
             }
-            try AFMultipartBody.write(forInputFileURL: inputFileURL,
-                                      outputFileURL: multipartBodyFileURL,
-                                      name: name,
-                                      fileName: fileName,
-                                      mimeType: mimeType,
-                                      boundary: boundary,
-                                      textParts: textParts)
+            try OWSMultipartBody.write(forInputFileURL: inputFileURL,
+                                       outputFileURL: multipartBodyFileURL,
+                                       name: name,
+                                       fileName: fileName,
+                                       mimeType: mimeType,
+                                       boundary: boundary,
+                                       textParts: textParts)
             guard let bodyFileSize = OWSFileSystem.fileSize(of: multipartBodyFileURL) else {
                 return Promise(error: OWSAssertionError("Missing bodyFileSize."))
             }

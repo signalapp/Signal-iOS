@@ -380,13 +380,37 @@
 "BADGE_CONFIGURATION_TITLE" = "徽章";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為定期贊助人";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "成為贊助人";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "單次贊助 Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "加油支持 Signal";
+
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為贊助人";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "新增一次單次贊助";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "謝謝你的贊助!";
+"BADGE_THANKS_BOOST_TITLE" = "謝謝你的加油與支持!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "在個人資訊中展示";
@@ -482,10 +506,10 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "設定貨幣";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得單次贊助徽章 30 天 。";
+"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得加油支持徽章 30 天 。";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "你的單次贊助徽章將於%@過期。";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "你的加油支持徽章將於%@過期。";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
@@ -503,7 +527,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "選擇要贊助的金額";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "單次贊助 Signal";
+"BOOST_VIEW_TITLE" = "加油支持 Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "新增";
@@ -908,10 +932,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "操作異常";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "定期贊助者 & Signal 單次贊助";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "贊助人 & Signal 加油支持";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "定期贊助 & 單次贊助";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "贊助人 & 加油支持";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal 無法完成你的支援請求。";
@@ -5837,7 +5861,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "允許 iOS 連結 Signal 聯絡人和聊天以獲取共享建議和通知等功能。";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Signal 單次贊助";
+"SETTINGS_SIGNAL_BOOST" = "Signal 加油支持";
 
 /* Title for the 'become a sustainer' link in settings. */
 "SETTINGS_SUBSCRIPTION" = "成為Signal 定期贊助人";
@@ -6113,7 +6137,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "仍在處理中";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的單次贊助次數";
+"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的加油支持次數";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "得到一個 %@ 徽章";

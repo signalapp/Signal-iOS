@@ -5,6 +5,8 @@
 import Foundation
 import SignalCoreKit
 import SignalServiceKit
+import SignalMessaging
+import UIKit
 
 @objc
 public extension HomeViewController {
@@ -54,7 +56,7 @@ public extension HomeViewController {
     // MARK: -
 
     func showBadgeExpirationSheetIfNeeded() {
-        guard !hasEverAppeared else { // Do this once per launch
+        guard !hasShownBadgeExpiration else { // Do this once per launch
             return
         }
 
@@ -64,40 +66,39 @@ public extension HomeViewController {
             return
         }
 
-        let shouldShow = SDSDatabaseStorage.shared.read { transaction in
+        let shouldShow = databaseStorage.read { transaction in
             SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction)
         }
 
-        Logger.info("showing expiry sheet \(shouldShow) for badge \(expiredBadgeID)")
+        guard shouldShow else { return }
 
-        guard shouldShow else {
-            return
-        }
+        Logger.info("showing expiry sheet for badge \(expiredBadgeID)")
 
-        if expiredBadgeID == "BOOST" {
+        if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
                 SubscriptionManager.getBoostBadge()
             }.done(on: .global()) { boostBadge in
                 firstly {
                     self.profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
                 }.done(on: .main) {
-
-                    SDSDatabaseStorage.shared.write { transaction in
-                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                    }
+                    // Make sure we're still the active VC
+                    guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
+                          self.conversationSplitViewController?.selectedThread == nil else { return }
 
                     let badgeSheet = BadgeExpirationSheet(badge: boostBadge)
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
-
+                    self.hasShownBadgeExpiration = true
+                    self.databaseStorage.write { transaction in
+                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                    }
                 }.catch { error in
                     owsFailDebug("Failed to fetch boost badge assets for expiry \(error)")
                 }
             }.catch { error in
                 owsFailDebug("Failed to fetch boost badge for expiry \(error)")
             }
-
-        } else {
+        } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
             // Fetch current subscriptions, required to populate badge assets
             firstly {
                 SubscriptionManager.getSubscriptions()
@@ -111,15 +112,17 @@ public extension HomeViewController {
                 firstly {
                     self.profileManager.badgeStore.populateAssetsOnBadge(subscriptionLevel.badge)
                 }.done(on: .main) {
-
-                    SDSDatabaseStorage.shared.write { transaction in
-                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                    }
+                    // Make sure we're still the active VC
+                    guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
+                          self.conversationSplitViewController?.selectedThread == nil else { return }
 
                     let badgeSheet = BadgeExpirationSheet(badge: subscriptionLevel.badge)
                     badgeSheet.delegate = self
                     self.present(badgeSheet, animated: true)
-
+                    self.hasShownBadgeExpiration = true
+                    self.databaseStorage.write { transaction in
+                        SubscriptionManager.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                    }
                 }.catch { error in
                     owsFailDebug("Failed to fetch subscription badge assets for expiry \(error)")
                 }
@@ -128,7 +131,6 @@ public extension HomeViewController {
                 owsFailDebug("Failed to fetch subscriptions for expiry \(error)")
             }
         }
-
     }
 
     // MARK: -
@@ -398,10 +400,9 @@ public extension HomeViewController {
 extension HomeViewController: BadgeExpirationSheetDelegate {
     func badgeExpirationSheetActionButtonTapped(_ badgeExpirationSheet: BadgeExpirationSheet) {
         SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
-        switch (badgeID: badgeExpirationSheet.badgeID, isSustainer: SubscriptionManager.hasCurrentSubscriptionCached()) {
-        case (badgeID: "BOOST", isSustainer: true):
+        if BoostBadgeIds.contains(badgeExpirationSheet.badgeID), SubscriptionManager.hasCurrentSubscriptionWithSneakyTransaction() {
             showAppSettings(mode: .boost)
-        default:
+        } else {
             showAppSettings(mode: .subscriptions)
         }
     }

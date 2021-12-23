@@ -60,6 +60,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol RemoteConfigManager;
 @protocol SSKReachabilityManager;
 @protocol StorageServiceManagerProtocol;
+@protocol SubscriptionManagerProtocol;
 @protocol SyncManagerProtocol;
 @protocol VersionedProfiles;
 @protocol WebSocketFactory;
@@ -122,7 +123,8 @@ extern NSNotificationName const WarmCachesNotification;
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id<WebSocketFactory>)webSocketFactory
-                      changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber NS_DESIGNATED_INITIALIZER;
+                      changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
+                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -189,6 +191,7 @@ extern NSNotificationName const WarmCachesNotification;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
 @property (nonatomic, readonly) id<WebSocketFactory> webSocketFactoryRef;
 @property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
+@property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

@@ -119,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
         AvatarBuilder *avatarBuilder = [AvatarBuilder new];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
         ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
+        SubscriptionManager *subscriptionManager = [SubscriptionManager new];
 
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
@@ -183,7 +184,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    senderKeyStore:senderKeyStore
                                                                   phoneNumberUtil:phoneNumberUtil
                                                                  webSocketFactory:webSocketFactory
-                                                                changePhoneNumber:changePhoneNumber]];
+                                                                changePhoneNumber:changePhoneNumber
+                                                              subscriptionManager:subscriptionManager]];
 
         appSpecificSingletonBlock();
 

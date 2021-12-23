@@ -140,7 +140,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Nincsenek közös tagjaid ezzel a csoporttal. Ellenőrizd a kérelmet figyelmesen mielőtt elfogadod, hogy elkerüld a nem kívánt üzeneteket.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Az csevegési felkérésekről";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "A csevegési felkérésekről";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Válasz";
@@ -385,6 +385,30 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Adj egy Lökést a Signalnak";
 
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Válj Fenntartóvá!";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "\"Löket\" hozzáadása";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Köszönet a Lökésért!";
 
@@ -401,7 +425,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "Ha egynél több jelvényed van, választhatsz, hogy melyiket tűzöd ki a profilképedre.";
 
 /* String explaing to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Elnyerted a %@ kitűzőt! Segíts a tudatosság terjesztésében a kitűződ megjelenítésével profilképeden.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Elnyerted a %@ kitűzőt! Segítsd a Signalt a tudatosság terjesztésében a kitűződ megjelenítésével profilképeden.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Tájékoztató bezárása";
@@ -482,7 +506,7 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "Pénznem beállítása";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "\"Köszönet!\" után nyerj Lökés kitűzőt 30 napra.";
+"BOOST_VIEW_BODY" = "Támogass és nyerj egy Lökés kitűzőt 30 napra.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Lökés kitűződ lejár: %@.";
@@ -1427,7 +1451,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "A folytatással letiltod a Signalt a másik eszközön ami ugyanezzel a telefonszámmal került regisztrálásra.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nem sikerült ellenőrizni az eszközödet. Kérlek próbáld újra!";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Nem sikerült ellenőrizni az eszközödet. Kérjük próbáld újra!";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Az átvitel nem befejezhető, kérlek biztosítsd, hogy a két eszköz egymás közelében legyen, majd próbáld újra.";
@@ -1442,7 +1466,7 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Nincs elég szabad terület a teljes átmozgatáshoz";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Frissíts a legújabb Signal verzióra és próbáld újra";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Frissíts a legújabb Signal verzióra és próbáld újra!";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Signal fiókod átvitele új iOS eszközre. Figyelj rá, hogy az eszköz a közelben legyen és be legyen kapcsolva.";
@@ -1451,10 +1475,10 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Fiók átmozgatása";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Nyisd meg a Signal-t a régi eszközödön, hozd közelbe és ellenőrizd hogy a Wi-Fi és a Bluetooth bekapcsolt mindké eszközön.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Nyisd meg a Signalt a régi eszközödön, helyezd el a közelben és ellenőrizd hogy a Wi-Fi és Bluetooth mindkét eszközön bekapcsolt állapotban van.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Igazítsd a QR kódot a keretbe a másik eszközön";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Igazítsd a QR kódot a keretbe a másik eszközön.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nem látod a feliratot a régi eszközödön?";
@@ -1463,7 +1487,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Várakozás a másik eszközre...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem és tartsd a Signal-t nyitva. Az adatvitel a végpontok között titkosított.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem és tartsd a Signalt nyitva. Az adatvitel végpontok között titkosított.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Adat fogadása";
@@ -1478,7 +1502,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Tartsd fel új eszközödet a kamera elé";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem és tartsd a Signal-t nyitva.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem és tartsd a Signalt nyitva.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Adat átvitele";
@@ -1559,7 +1583,7 @@
 "DONATION_VIEW_TITLE" = "A Signalt hozzád hasonló emberek működtetik.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják. Nincs reklám. Nincs követés. Nincs trükk.\n\nAdományoddal hozzájárulhatsz a fejlesztés, a szerverek és a sávszélesség költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják. Adományod ebben segít nekünk. Nincs reklám. Nincs követés. Nincs trükk.\n\nAdományoddal hozzájárulhatsz a fejlesztés, a szerverek és a sávszélesség költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
 "DONATION_VIEW_WHY_DONATE_TITLE" = "Miért támogassam?";
@@ -2888,7 +2912,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ hozzáadott a csoporthoz";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Kezdeményezett beszélgetés";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Felkérés csevegésre";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nincs találat a kifejezésre: '%@'";
@@ -2915,7 +2939,7 @@
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Fotók módosítása";
 
 /* Explanation showing that the user has granted limited access to their photos and can change that in the Settings app. */
-"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Teljes hozzáférés adása a beálltásoknál vagy annak megadása mely fotókhoz férhet hozzá a Signal.";
+"IMAGE_PICKER_CHANGE_PHOTOS_EXPLANATION" = "Az iPhone Beállításokban adj teljes hozzáférést, vagy add meg egyedileg, mely fotókhoz férhet hozzá a Signal.";
 
 /* Title show that the user has granted limited access to their photos and can change that in the Settings app. */
 "IMAGE_PICKER_CHANGE_PHOTOS_TITLE" = "Nem látod a fotóid?";
@@ -2927,7 +2951,7 @@
 "IN_CALL_CONNECTING" = "Csatlakozás...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Fogadva egy másik eszközön";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Fogadva egy másik eszközön.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Elmulasztott, mert hívás volt folyamatban egy másik eszközön.";
@@ -3845,7 +3869,7 @@
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Kérés elutasítása";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ ekkor: %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ @ %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
@@ -3905,10 +3929,10 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE" = "Sikertelen kapcsolódás a szolgáltatáshoz";
 
 /* Indicates that a payment failed due to insufficient funds. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nincs elég MOB-od, hogy befejezd ezt a fizetést.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nincs elég MOB a birtokodban ehhez a kifizetéshez.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nincs elég MOB-od, hogy befejezd ezt a fizetést. Az aktuális egyenleged: %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nincs elég MOB a birtokodban ehhez a kifizetéshez. Az aktuális egyenleged: %@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Érvénytelen tranzakció";
@@ -4022,10 +4046,10 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN" = "Ismeretlen hiba";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Ahhoz, hogy fizethess ennek a felhasználónak, el kell fogadnia egy csevegési felkérést tőled.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Ha pénzt küldenél ennek a felhasználónak, előbb el kell fogadnia egy csevegési felkérést a részedről. ";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Ahhoz, hogy fizethess ennek a felhasználónak, neki el kell fogadni egy üzenet kérelmet tőled. Küldj neki egy üzenetet, hogy létrehozz egy üzenet kérelmet.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Ha pénzt küldenél ennek a felhasználónak, előbb el kell fogadnia egy csevegési felkérést a részedről. Küldj neki egy üzenetet, így kapni fog egy ilyen felkérést.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Nem lehetséges a fizetés küldése";
@@ -5327,19 +5351,19 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "Aktiválás";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Használhatod a Signalt MobileCoin küldésére és fogadását. Minden fizetést a MobileCoins és a MobileCoin Wallet szolgáltatási feltételek szabályoznak. Ez egy béta funkció, így előfordulhat, hogy hibákkal találkozol, az elveszett fizetések és egyenlegek nem helyreállíthatóak.";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "A Signal segítségével MobileCoin kriptovalutát küldhetsz és fogadhatsz. Minden fizetést a MobileCoins és a MobileCoin Wallet szolgáltatási feltételek szabályoznak. Ez egy béta funkció, így előfordulhat, hogy hibákkal találkozol, az elveszett fizetések és egyenlegek nem helyreállíthatóak.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Aktiválás";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "A MobileCoin szolgáltatási feltételek megtekintése";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "MobileCoin szolgáltatási feltételek";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Alaptőke hozzáadása";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Az alaptőke hozzáadásához küldj MobileCoin-t a tárca címedre. A tranzakciót indítsd egy tőzsdei fiókodról, ami támogatja a MobileCoin-t, azután olvass le a a QR kódot vagy másold be a tárca címedet";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "Adj hozzá alaptőkét, küldj Mobilecoin valutát a tárcád címére. Indíts egy tranzakciót egy Mobilecoin valutát támogató tözsdefiók alól, majd olvasd be a QR kódot, vagy másold be tárcád címét.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "Tárca cím másolva";
@@ -5348,7 +5372,7 @@
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Minden fizetés";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ %3$@ napján";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ @ %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "A Fizetés a Signalban a továbbiakban nem elérhető. Továbbra is átviheted egyenlegedet egy átváltó szolgáltatáson, de a továbbiakban már nem tudsz küldeni vagy fogadni fizetéseket, vagy feltölteni az egyenleged.";
@@ -5381,7 +5405,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS" = "Fizetések deaktiválása";
 
 /* Description for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Többé nem tudsz küldeni vagy fogadni Mobilecoin fizetéseket, ha deaktiválod a fizetéseket.";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Többé nem tudsz küldeni vagy fogadni Mobilecoint, ha deaktiválod a fizetési funkciót.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Fizetések deaktiválása?";
@@ -5411,19 +5435,19 @@
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Fizetések engedélyezése";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "A MobileCoin egy új adatvédelmi fókuszú digitális pénznem.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "A MobileCoin egy új, adatvédelem-fókuszú digitális pénznem.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "A MobileCoin-ról";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "A MobileCoin valutáról";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Alaptőkét úgy adhatsz a Signalhoz, hogy MobileCoin-t küldesz a pénztárca címedre.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Alaptőkét úgy adhatsz a Signalhoz, hogy MobileCoint küldesz a pénztárca címedre.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Alaptőke hozzáadása";
 
 /* Description for the 'Cashing Out' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Bármikor kiveheted a MobileCoint egy átváltó szolgáltatáson, ami támogatja a MobileCoint. Csak utalj a fiókodnak azon a tőzsdén.";
+"SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_DESCRIPTION" = "Bármikor kiveheted a MobileCoint egy átváltó szolgáltatáson, ami támogatja a MobileCoint. Csak utalj a fiókod részére azon a tőzsdén.";
 
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Pénzkivét";
@@ -5438,13 +5462,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Frissítsd a PIN kódodat";
 
 /* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Helyreállítási mondat rögzítése";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Helyreállítási kifejezés rögzítése";
 
 /* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "A helyreállítási mondatod egy másik lehetőséget ad arra, hogy visszaállítsd a fizetési fiókod.";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "A helyreállítási kifejezés egy másik lehetőséget ad arra, hogy visszaállítsd a fizetési fiókod.";
 
 /* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Helyreállítási mondat rögzítése";
+"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Helyreállítási kifejezés rögzítése";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Érvénytelen tárca cím";
@@ -5471,7 +5495,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Fizetések aktiválva.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Használd a Signalt, hogy küldj és fogadj MobileCoint, egy új adatvédelmi fókuszú digitális pénznemet. Aktiváld a kezdéshez.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "A Signalt m'r használhatod MobileCoin - egy új adatvédelmi fókuszú digitális pénznem - küldésére és fogadására is. Aktiváld a kezdéshez.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Fizetések újraaktiválása";
@@ -5480,7 +5504,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Bemutatkozik a Fizetések (Béta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Az egyenleged automatikusan helyreáll, ha újra telepíted a Signalt, ha megadott a Signal PIN-et. Továbbá helyreállíthatod az egyenleged a helyreállítási mondattal, ami egy 24 szavas számodra egyedi mondat.  Írd le és tárold biztonságos helyen.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Az egyenleged automatikusan helyreáll, mikor újratelepíted a Signalt, mikor megadod a Signal PIN kódodat. Egyenleged egy helyreállítási kifejezéssel is helyreállíthatod, ami egy 24 szavas, egyedi mondat. Írd le és tárold biztonságos helyen.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Alaptőke hozzáadása";
@@ -5501,7 +5525,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Küldte";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ %2$@ napján";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ @ %2$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Te";
@@ -5522,7 +5546,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "A “coin rendbetételi díj ” akkor kerül felszámolásra, ha a birtokodban lévő coinok nem kombinálhatók egy tranzakció teljesítéséhez. A rendbetétel lehetővé teszi, hogy folytasd a fizetések küldését.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nincs elég MOB-od, hogy befejezd ezt a fizetést. Az aktuális egyenleged: %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nincs elég MOB a birtokodban ehhez a kifizetéshez. Az aktuális egyenleged: %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Nem elég egyenleg";
@@ -5549,13 +5573,13 @@
 "SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Legutóbbi fizetések";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Mielőtt letiltod a PIN kódod, rögzítened kell egy fizetés helyreállítási mondatot, hogy biztosítsd a fizetési fiókod helyreállítását.";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Mielőtt letiltod a PIN kódodat, rögzítened kell egy fizetés helyreállítási kifejezést, hogy biztosítsd a fizetési fiókod helyreállítását.";
 
 /* Label for the 'record recovery passphrase' button in the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Helyreállítási mondat rögzítése";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_RECORD_PASSPHRASE" = "Helyreállítási kifejezés rögzítése";
 
 /* Title for the 'record payments passphrase to disable pin' UI in the app settings. */
-"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Fizetési helyreállítási mondat rögzítése";
+"SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_TITLE" = "Fizetési helyreállítási kifejezés rögzítése";
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Maradék egyenleg";
@@ -5567,10 +5591,10 @@
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Fizetési fiók helyreállítása";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Bizonyosodj meg, hogy a helyreállítási mondatod jól adtad meg.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Bizonyosodj meg, hogy a helyreállítási kifejezésed jól adtad meg.";
 
 /* Title for the 'review payments passphrase' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Helyreállítási mondat megerősítése";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE" = "Kifejezés megerősítése";
 
 /* Message indicating that 'restore payments wallet' is complete. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TOAST" = "Fizetési fiók helyreállítva.";
@@ -5582,25 +5606,25 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED" = "Helyreállítás sikertelen";
 
 /* Message for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Ez nem egy érvényes helyreállítási mondat.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE" = "Ez nem egy érvényes helyreállítási kifejezés.";
 
 /* Title for the 'invalid payments wallet passphrase' error alert in the app payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Érvénytelen mondat";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE" = "Érvénytelen kifejezés";
 
 /* Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD" = "Beillesztés vágólapról";
 
 /* Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Helyreállítási mondat";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER" = "Helyreállítási kifejezés";
 
 /* Title for the 'restore payments wallet from pasteboard' view of the app settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Helyreállítási mondat beillesztése";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE" = "Helyreállítási kifejezés beillesztése";
 
 /* Explanation of the 'restore payments wallet' process payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "A helyreállítási mondatod egy 12 szavas mondat ami számodra egyedi. Használd arra, hogy helyreállítsd a fizetési fiókod.";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION" = "A helyreállítási kifejezésed egy 12 szavas mondat, amelyet te adsz meg. Fizetési fiókod helyreállítására használhatod.";
 
 /* Title for the first step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Helyreállítási mondat megadása";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE" = "Helyreállítási kifejezés megadása";
 
 /* Title for the 'restore payments wallet' view of the app settings. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Helyreállítási fázis";
@@ -5609,13 +5633,13 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Add meg a %@. szót";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Érvénytelen helyreállítási mondat";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Érvénytelen helyreállítási kifejezés";
 
 /* Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD" = "A szó helytelen.";
 
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Helyreállítási mondat megadása";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Helyreállítási kifejezés megadása";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Szkenneld be a küldés címzettjének QR kódját.";
@@ -5642,7 +5666,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Nem küldhetsz a Signal tárca címedre. Add meg a támogatott tőzsdei fiókhoz tartozó tárca címedet ";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Átutalhatod MobileCoint a fizetés befejezésével a tárca címre, amit a tőzsde biztosított. A tárca cím egy szöveg számokkal és betűkkel, többnyire a QR kód alatt.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Átutalhatsz MobileCoint a tőzsdéd által megadott digitális pénztárca címére. A tárca cím egy szöveg, számokkal és betűkkel, amely legtöbbször a QR kód alatt található.";
 
 /* Error indicating that MobileCoin public address is not valid. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS" = "Ellenőrizd a tárca címet amire küldeni szeretnél és próbáld újra.";
@@ -5651,7 +5675,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Érvénytelen cím";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Címzett: Olvass le, vagy adj meg egy tárca címet";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Ide: tárcacím beírása/beolvasása";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Átutalás a tőzsdére";
@@ -5660,13 +5684,13 @@
 "SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "Átutalás a tőzsdére";
 
 /* Message indicating that 'payments passphrase review' is complete. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Helyreállítási mondat beállítása sikeres.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Helyreállítási kifejezés beállítása sikeres.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Megerősítés";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Add meg az %1$@ és a  %2$@ szót a helyreállítási mondatodból.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Add meg a(z) %1$@ és a(z) %2$@ szót a helyreállítási kifejezésből.";
 
 /* Error indicating that at least one word of the payments passphrase is not correct in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORD" = "Egy szó helytelen. Próbáld újra.";
@@ -5678,25 +5702,25 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Szó %@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Helyreállítási mondat megerősítése";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Kifejezés megerősítése";
 
 /* Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Helyreállítási mondat másolva";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD" = "Helyreállítási kifejezés kimásolva";
 
 /* Label for the 'copy to clipboard' button in the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Másolás vágólapra";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Ha úgy döntesz, hogy a helyreállítási mondatod digitálisan tárolod, biztosítsd, hogy biztonságosan legyen tárolva valami olyan helyen, amiben megbízol.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Ha úgy döntesz, hogy a helyreállítási kifejezésed digitális formában tárolod, biztosítsd, hogy biztonságosan legyen tárolva, egy olyan helyen, amiben megbízol.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Másolás vágólapra?";
 
 /* Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Mondat megtekintése mégegyszer";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN" = "Kifejezés megtekintése újra";
 
 /* Title for the first step of the 'view payments passphrase' views. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Helyreállítási mondat megtekintése";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE" = "Helyreállítási kifejezés";
 
 /* Title for the 'view payments passphrase' view of the app settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE" = "Helyreállítási fázis";
@@ -5708,7 +5732,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Ne készíts képernyőképet vagy küldd el emailben.";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
-"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Helyreállítási mondat";
+"SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Helyreállítási kifejezés";
 
 /* Title for the 'payments settings' view in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_TITLE" = "Fizetések (Béta)";
@@ -6116,7 +6140,7 @@
 "SUSTAINER_VIEW_ADD_BOOST" = "Signal Lökés adása";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Kaptál egy %@ kitűzőt";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Szerezz egy %@ kitűzőt";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Előfizetés törlése";

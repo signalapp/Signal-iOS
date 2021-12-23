@@ -77,15 +77,8 @@ public enum ExperienceUpgradeId: String, CaseIterable, Dependencies {
         case .avatarBuilder:
             return profileManager.localProfileAvatarData() == nil
         case .subscriptionMegaphone:
-            return RemoteConfig.subscriptionMegaphone && !localUserHasSubscription(transaction: transaction)
+            return RemoteConfig.subscriptionMegaphone && !subscriptionManager.hasCurrentSubscription(transaction: transaction.asAnyRead)
         }
-    }
-
-    // TODO: We should probably expose this to SSK in a better way,
-    // but for now this is the only place we need it.
-    func localUserHasSubscription(transaction: GRDBReadTransaction) -> Bool {
-        let keyValueStore = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")
-        return keyValueStore.hasValue(forKey: "subscriberID", transaction: transaction.asAnyRead)
     }
 
     // Some upgrades stop running after a certain date. This lets

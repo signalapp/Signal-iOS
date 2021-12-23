@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class AnyPromise;
 @class TSAttachmentStream;
 
-@protocol AFMultipartFormData;
-
 @interface OWSUploadFormV2 : NSObject
 
 // These properties will be set for all uploads.

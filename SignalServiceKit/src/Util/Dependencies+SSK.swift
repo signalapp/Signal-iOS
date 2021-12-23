@@ -513,6 +513,14 @@ public extension NSObject {
     static var changePhoneNumber: ChangePhoneNumber {
         SSKEnvironment.shared.changePhoneNumberRef
     }
+
+    var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    static var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -1017,6 +1025,14 @@ public extension Dependencies {
 
     static var changePhoneNumber: ChangePhoneNumber {
         SSKEnvironment.shared.changePhoneNumberRef
+    }
+
+    var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    static var subscriptionManager: SubscriptionManagerProtocol {
+        SSKEnvironment.shared.subscriptionManagerRef
     }
 }
 
