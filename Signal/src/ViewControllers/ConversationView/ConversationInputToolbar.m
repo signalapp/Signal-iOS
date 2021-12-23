@@ -704,7 +704,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     if (isAnimated) {
         [UIView animateWithDuration:0.1 animations:updateBlock completion:^(BOOL finished) {
             if (doLayout) {
-                [self performSelector:@selector(layoutIfNeeded) withObject:NULL afterDelay:0.1];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self layoutIfNeeded];
+                });
             }
         }];
     } else {
