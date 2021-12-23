@@ -18,6 +18,13 @@ extension DispatchQueue {
                              autoreleaseFrequency: .workItem)
     }()
 
+    public static let sharedUserInitiatedConcurrent: DispatchQueue = {
+        return DispatchQueue(label: "org.whispersystems.signal.sharedUserInitiatedConcurrent",
+                             qos: .userInitiated,
+                             attributes: [.concurrent],
+                             autoreleaseFrequency: .workItem)
+    }()
+
     public static let sharedUtility: DispatchQueue = {
         return DispatchQueue(label: "org.whispersystems.signal.sharedUtility",
                              qos: .utility,

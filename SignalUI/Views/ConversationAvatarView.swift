@@ -205,7 +205,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         if performAsync {
             loadAvatarWorkItem?.cancel()
             loadAvatarWorkItem = DispatchWorkItem {workBlock()}
-            DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
+            DispatchQueue.sharedUserInitiatedConcurrent.async(execute: loadAvatarWorkItem!)
         } else {
             workBlock()
         }
