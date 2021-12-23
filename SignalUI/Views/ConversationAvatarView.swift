@@ -15,6 +15,7 @@ public extension ConversationAvatarViewDelegate {
 }
 
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
+    private var loadAvatarWorkItem: DispatchWorkItem?
 
     public required init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),
@@ -155,6 +156,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             setNeedsModelUpdate()
         }
 
+        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+            return
+        }
         // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
         if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
             if Thread.isMainThread {
@@ -180,7 +184,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: Configuration updates
 
     public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
-        update(optionalTransaction: nil, updateBlock)
+        update(optionalTransaction: nil, updateBlock, performAsync: true)
     }
 
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
@@ -190,12 +194,21 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         update(optionalTransaction: transaction, updateBlock)
     }
 
-    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
+    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void, performAsync: Bool = false) {
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
-        updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
-        updateModelIfNecessary(transaction: transaction)
+        let workBlock = { [weak self] in
+            self?.updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
+            self?.updateModelIfNecessary(transaction: transaction)
+        }
+        if performAsync {
+            loadAvatarWorkItem?.cancel()
+            loadAvatarWorkItem = DispatchWorkItem {workBlock()}
+            DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
+        } else {
+            workBlock()
+        }
     }
 
     // MARK: Model Updates
@@ -212,6 +225,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
+        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+            return
+        }
         guard nextModelGeneration.get() > currentModelGeneration else { return }
         Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
@@ -233,9 +249,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
+        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+            return
+        }
         let uiUpdateBlock = { [weak self] in
             if let self = self {
-                self.avatarView.image = avatarImage ?? UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
+                if avatarImage != nil {
+                    self.avatarView.image = avatarImage
+                }
                 self.badgeView.image = badgeImage
                 self.currentModelGeneration = self.nextModelGeneration.get()
                 self.setNeedsLayout()
@@ -311,6 +332,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private var avatarView: UIImageView = {
         let view = UIImageView()
+        view.image = UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
         view.contentMode = .scaleAspectFill
         view.layer.minificationFilter = .trilinear
         view.layer.magnificationFilter = .trilinear
@@ -556,6 +578,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: - <CVView>
 
     public func reset() {
+        loadAvatarWorkItem?.cancel()
         configuration.dataSource = nil
         reloadDataIfNecessary()
     }
