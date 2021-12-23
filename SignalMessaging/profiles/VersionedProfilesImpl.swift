@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 import SignalMetadataKit
-import ZKGroup
+import SignalClient
 
 public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let request: TSRequest
@@ -57,8 +57,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             return (localUuid, profileKey)
         }.then(on: .global()) { (localUuid: UUID, profileKey: OWSAES256Key) -> Promise<HTTPResponse> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKey)
-            let zkgUuid = try localUuid.asZKGUuid()
-            let commitment = try localProfileKey.getCommitment(uuid: zkgUuid)
+            let commitment = try localProfileKey.getCommitment(uuid: localUuid)
             let commitmentData = commitment.serialize().asData
             let hasAvatar = profileAvatarData != nil
 
@@ -141,7 +140,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                                                               paddedLengths: [554],
                                                               validBase64Lengths: [776])
 
-            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: zkgUuid)
+            let profileKeyVersion = try localProfileKey.getProfileKeyVersion(uuid: localUuid)
             let profileKeyVersionString = try profileKeyVersion.asHexadecimalString()
             let request = OWSRequestFactory.versionedProfileSetRequest(withName: nameValue,
                                                                        bio: bioValue,
@@ -194,7 +193,6 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
               let uuid: UUID = address.uuid else {
             throw OWSAssertionError("Invalid address: \(address)")
         }
-        let zkgUuid = try uuid.asZKGUuid()
 
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
@@ -208,14 +206,14 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             }
             profileKeyForRequest = profileKeyForAddress
             let profileKey: ProfileKey = try self.parseProfileKey(profileKey: profileKeyForAddress)
-            let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: zkgUuid)
+            let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: uuid)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
             // We need to request a credential if we don't have one already.
             let credential = try self.profileKeyCredentialData(for: address, transaction: transaction)
             if credential == nil {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
-                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: try uuid.asZKGUuid(),
+                let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: uuid,
                                                                                                      profileKey: profileKey)
                 requestContext = context
                 let credentialRequest = try context.getRequest()

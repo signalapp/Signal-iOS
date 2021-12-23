@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 import SignalMetadataKit
-import ZKGroup
+import SignalClient
 
 @objc
 public class GroupsV2Impl: NSObject, GroupsV2Swift {
@@ -1264,13 +1264,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
             let temporalCredentials = try self.parseCredentialResponse(responseObject: json)
-            let localZKGUuid = try localUuid.asZKGUuid()
             let serverPublicParams = try GroupsV2Protos.serverPublicParams()
             let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
             var credentialMap = AuthCredentialMap()
             for temporalCredential in temporalCredentials {
                 // Verify the credentials.
-                let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localZKGUuid,
+                let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localUuid,
                                                                                                       redemptionTime: temporalCredential.redemptionTime,
                                                                                                       authCredentialResponse: temporalCredential.authCredentialResponse)
                 credentialMap[temporalCredential.redemptionTime] = authCredential
