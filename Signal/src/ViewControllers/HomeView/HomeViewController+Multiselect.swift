@@ -20,25 +20,33 @@ extension HomeViewController {
         }
     }
 
-    public func isSelected(_ indexPath: IndexPath) -> Bool? {
-        guard viewState.multiSelectState.isActive else {
-            return nil
-        }
-
-        let key = tableDataSource.thread(forIndexPath: indexPath)?.uniqueId
-        return key == nil ? false : viewState.multiSelectState.selectedThreadModels.keys.contains(key!)
-    }
-
     @objc
-    func shallSelectMultipleMessages() {
+    func willEnterMultiselectMode() {
         AssertIsOnMainThread()
 
         viewState.multiSelectState.title = title
-        viewState.multiSelectState.selectedThreadModels.removeAll()
         let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
         navigationItem.setLeftBarButton(doneButton, animated: self.homeViewMode == .inbox)
         navigationItem.setRightBarButtonItems(nil, animated: self.homeViewMode == .inbox)
+        tableView.allowsSelectionDuringEditing = true
+        tableView.allowsMultipleSelectionDuringEditing = true
         showToolbar()
+    }
+
+    @objc
+    func showToolbar() {
+        AssertIsOnMainThread()
+
+        viewState.multiSelectState.setIsActive(true, tableView: tableView)
+        if let nav = navigationController {
+            if nav.isToolbarHidden {
+                adjustNavigationBarTitles(nav.toolbar)
+                nav.setToolbarHidden(false, animated: true)
+            }
+            nav.toolbar.barTintColor = Theme.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha40
+            nav.toolbar.tintColor = Theme.primaryTextColor
+        }
+        updateCaptions()
     }
 
     // MARK: private helper
@@ -51,7 +59,7 @@ extension HomeViewController {
 
         let selectMessages = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: renderState.inboxCount == 0 ? [.disabled] : [], handler: { [weak self] (_) in
             self?.hideMenu()
-            self?.shallSelectMultipleMessages()
+            self?.willEnterMultiselectMode()
         })
         let settings = ContextMenuAction(title: CommonStrings.openSettingsButton, image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"), attributes: [], handler: { [weak self] (_) in
             self?.hideMenu()
@@ -98,18 +106,24 @@ extension HomeViewController {
     }
 
     private func adjustNavigationBarTitles(_ toolbar: UIToolbar?) {
-        let hasSelectedEntries = !viewState.multiSelectState.selectedThreadModels.isEmpty
+        let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
 
         let archiveBtn = UIBarButtonItem(title: homeViewMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction, style: .plain, target: self, action: #selector(performUnarchive))
         archiveBtn.isEnabled = hasSelectedEntries
         var buttons: [UIBarButtonItem] = [archiveBtn]
-        if viewState.multiSelectState.selectedThreadModels.isEmpty {
+        if !hasSelectedEntries {
             let btn = UIBarButtonItem(title: NSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the homeview if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
             btn.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
             buttons.append(btn)
         } else {
             let btn = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
-            btn.isEnabled = hasUnreadEntry(models: Array(viewState.multiSelectState.selectedThreadModels.values))
+            btn.isEnabled = false
+            for path in tableView.indexPathsForSelectedRows ?? [] {
+                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.isMarkedUnread {
+                    btn.isEnabled = true
+                    break
+                }
+            }
             buttons.append(btn)
         }
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
@@ -125,7 +139,7 @@ extension HomeViewController {
         toolbar?.setItems(entries, animated: false)
     }
 
-    private func hasUnreadEntry(threads: [TSThread]? = nil, models: [ThreadViewModel]? = nil) -> Bool {
+    private func hasUnreadEntry(threads: [TSThread]? = nil) -> Bool {
         if let entries = threads {
             for entry in entries {
                 if tableDataSource.threadViewModel(forThread: entry).isMarkedUnread {
@@ -133,39 +147,14 @@ extension HomeViewController {
                 }
             }
         }
-        if let entries = models {
-            for entry in entries {
-                if entry.isMarkedUnread {
-                    return true
-                }
-            }
-        }
         return false
-    }
-
-    private func showToolbar() {
-        AssertIsOnMainThread()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(switchSelectionState), name: HomeViewCell.switchRowSelection, object: nil)
-        cellContentCache.clear()
-        viewState.multiSelectState.setIsActive(true, tableView: tableView)
-
-        if let nav = navigationController {
-            if nav.isToolbarHidden {
-                adjustNavigationBarTitles(nav.toolbar)
-                nav.setToolbarHidden(false, animated: true)
-            }
-            nav.toolbar.barTintColor = Theme.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha40
-            nav.toolbar.tintColor = Theme.primaryTextColor
-        }
-        updateCaptions()
     }
 
     private func hideToolbar() {
         AssertIsOnMainThread()
 
-        NotificationCenter.default.removeObserver(self, name: HomeViewCell.switchRowSelection, object: nil)
-        cellContentCache.clear()
+        tableView.allowsSelectionDuringEditing = false
+        tableView.allowsMultipleSelectionDuringEditing = false
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
 
         navigationController?.setToolbarHidden(true, animated: true)
@@ -173,34 +162,14 @@ extension HomeViewController {
         title = viewState.multiSelectState.title
     }
 
-    @objc
-    private func switchSelectionState(_ notification: Notification) {
-        AssertIsOnMainThread()
-
-        if let homeCell = notification.object as? HomeViewCell, let primKey = homeCell.thread?.uniqueId, let paths = tableView.indexPathsForVisibleRows {
-            for path in paths {
-                if (homeViewMode != .archive || path.section != 0) && thread(forIndexPath: path)?.uniqueId == primKey {
-                    if viewState.multiSelectState.selectedThreadModels.keys.contains(primKey) {
-                        viewState.multiSelectState.selectedThreadModels.removeValue(forKey: primKey)
-                    } else {
-                        viewState.multiSelectState.selectedThreadModels[primKey] = tableDataSource.threadViewModel(forIndexPath: path)
-                    }
-                    updateCaptions()
-                    tableDataSource.updateVisibleCellContent(at: path, for: tableView)
-                    break
-                }
-            }
-        }
-    }
-
-    private func updateCaptions() {
+    public func updateCaptions() {
         AssertIsOnMainThread()
 
         for item in navigationController?.toolbar.items ?? [] {
-            item.isEnabled = item.target != nil && !viewState.multiSelectState.selectedThreadModels.isEmpty
+            item.isEnabled = item.target != nil && !(tableView.indexPathsForSelectedRows ?? []).isEmpty
         }
 
-        let count = viewState.multiSelectState.selectedThreadModels.count
+        let count = tableView.indexPathsForSelectedRows?.count ?? 0
         if count == 0 {
             title = viewState.multiSelectState.title
         } else if count == 1 {
@@ -240,27 +209,33 @@ extension HomeViewController {
 
     @objc
     func performReadAll() {
-        viewState.multiSelectState.selectedThreadModels.removeAll()
-        for thread in renderState.pinnedThreads.orderedValues {
-            viewState.multiSelectState.selectedThreadModels[thread.uniqueId] = tableDataSource.threadViewModel(forThread: thread)
+        var entries: [ThreadViewModel] = []
+        var threads = Array(renderState.pinnedThreads.orderedValues)
+        threads.append(contentsOf: renderState.unpinnedThreads)
+        for t in threads {
+            let thread = tableDataSource.threadViewModel(forThread: t)
+            if thread.isMarkedUnread {
+                entries.append(thread)
+            }
         }
-        for thread in renderState.unpinnedThreads {
-            viewState.multiSelectState.selectedThreadModels[thread.uniqueId] = tableDataSource.threadViewModel(forThread: thread)
+
+        performOn(entries: entries) { thread in
+            markThreadRead(threadViewModel: thread)
         }
-        performRead()
+        done()
     }
 
     @objc
     func performDelete() {
         AssertIsOnMainThread()
 
-        guard viewState.multiSelectState.selectedThreadModels.count > 0 else {
+        guard !(tableView.indexPathsForSelectedRows ?? []).isEmpty else {
             return
         }
 
         let title: String
         let message: String
-        let count = viewState.multiSelectState.selectedThreadModels.count
+        let count = tableView.indexPathsForSelectedRows?.count ?? 0
         if count > 1 {
             let labelFormat = NSLocalizedString("CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE",
                                                 comment: "Title for the 'conversations delete confirmation' alert for multiple messages. Embeds: {{ %@ the number of currently selected items }}.")
@@ -288,11 +263,20 @@ extension HomeViewController {
     }
 
     private func performOnAllSelectedEntries(action: ((ThreadViewModel) -> Void)) {
+        var entries: [ThreadViewModel] = []
+        for path in tableView.indexPathsForSelectedRows ?? [] {
+            if let thread = tableDataSource.threadViewModel(forIndexPath: path) {
+                entries.append(thread)
+            }
+        }
+        performOn(entries: entries, action: action)
+    }
+
+    private func performOn(entries: [ThreadViewModel]?, action: ((ThreadViewModel) -> Void)) {
         cellContentCache.clear()
-        for thread in viewState.multiSelectState.selectedThreadModels.values {
+        for thread in entries ?? [] {
             action(thread)
         }
-        viewState.multiSelectState.selectedThreadModels.removeAll()
         updateCaptions()
     }
 }
@@ -329,7 +313,6 @@ private class ContextMenuActionsViewContainer: UIView {
 // MARK: - object encapsulating the complete state of the MultiSelect process
 @objc
 public class MultiSelectState: NSObject {
-    fileprivate var selectedThreadModels: [String: ThreadViewModel] = [:]
     fileprivate var parentButton: UIButton?
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
@@ -339,8 +322,9 @@ public class MultiSelectState: NSObject {
     var isActive: Bool { return _isActive}
 
     func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
-        _isActive = active
-        tableView?.setEditing(active, animated: false)
-        tableView?.reloadData()
+        if active != _isActive {
+            _isActive = active
+            tableView?.setEditing(active, animated: false)
+        }
     }
 }

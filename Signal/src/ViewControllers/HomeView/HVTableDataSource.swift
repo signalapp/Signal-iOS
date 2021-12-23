@@ -286,6 +286,18 @@ extension HVTableDataSource: UITableViewDelegate {
         return UIView()
     }
 
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        if viewState.multiSelectState.isActive {
+            viewController.updateCaptions()
+        }
+    }
+
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
@@ -303,17 +315,21 @@ extension HVTableDataSource: UITableViewDelegate {
             return
         }
 
-        switch section {
-        case .reminders:
-            break
-        case .pinned, .unpinned:
-            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-                owsFailDebug("Missing threadViewModel.")
-                return
+        if viewState.multiSelectState.isActive {
+            viewController.updateCaptions()
+        } else {
+            switch section {
+            case .reminders:
+                break
+            case .pinned, .unpinned:
+                guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+                    owsFailDebug("Missing threadViewModel.")
+                    return
+                }
+                viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
+            case .archiveButton:
+                viewController.showArchivedConversations()
             }
-            viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
-        case .archiveButton:
-            viewController.showArchivedConversations()
         }
     }
 
@@ -524,6 +540,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Missing splitViewController.")
         }
 
+        cell.tintColor = .ows_accentBlue
         return cell
     }
 
@@ -757,15 +774,13 @@ extension HVTableDataSource {
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?,
-                                               isSelected: Bool?) -> HomeViewCell.Configuration {
+                                               lastReloadDate: Date?) -> HomeViewCell.Configuration {
         owsAssertDebug(threadViewModel.homeViewInfo != nil)
 
         let isBlocked = threadViewModel.homeViewInfo?.isBlocked == true
         let configuration = HomeViewCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: isBlocked,
-                                                       isSelected: isSelected)
+                                                       isBlocked: isBlocked)
         return configuration
     }
 
@@ -786,18 +801,12 @@ extension HVTableDataSource {
             }
             return self.lastReloadDate
         }()
-        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate,
-                                                        isSelected: viewController.isSelected(indexPath))
+        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel, lastReloadDate: lastReloadDate)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
             // Cell measurement/arrangement is expensive.
-            var prefix = ""
-            if let selected = viewController.isSelected(indexPath) {
-                prefix = selected ? "SELECTED-" : "UNSELECTED-"
-            }
-            let cacheKey = prefix + configuration.thread.threadRecord.uniqueId
+            let cacheKey = configuration.thread.threadRecord.uniqueId
             if let cellContentToken = cellContentCache.get(key: cacheKey) {
                 return cellContentToken
             }
@@ -857,9 +866,7 @@ extension HVTableDataSource {
             let threadViewModel = Self.databaseStorage.read { transaction in
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
             }
-            let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                            lastReloadDate: lastReloadDate,
-                                                            isSelected: viewController.isSelected(indexPath))
+            let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel, lastReloadDate: lastReloadDate)
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,

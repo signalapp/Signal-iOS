@@ -473,7 +473,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self showBadgeExpirationSheetIfNeeded];
 
     self.hasEverAppeared = YES;
-    if (![self.viewState.multiSelectState isActive]) {
+    if (self.viewState.multiSelectState.isActive) {
+        [self showToolbar];
+    }
+    else {
         [self applyDefaultBackButton];
     }
 }
@@ -741,12 +744,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         }
     }
 
-    if ([self.viewState.multiSelectState isActive]) {
+    if (self.viewState.multiSelectState.isActive) {
         [self.tableView setEditing:YES animated:NO];
         [self.tableView reloadData];
-        [self shallSelectMultipleMessages];
-    }
-    else {
+        [self willEnterMultiselectMode];
+    } else {
         [self applyDefaultBackButton];
     }
 
