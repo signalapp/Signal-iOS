@@ -1,2 +1,2 @@
-• We spruced up the chat list a bit to make unread chats clearer to see
-• Fixes for some issues with search and zooming in on photos
+• Vi piffade upp chattlistan lite för att göra olästa chattar tydligare att se
+• Rättar vissa problem med sökning och zoomning av foton

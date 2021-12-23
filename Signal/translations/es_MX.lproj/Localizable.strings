@@ -383,7 +383,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Sostén Signal";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Dale un impulso a Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Da un impulso a Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
 "BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
@@ -527,7 +527,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Selecciona una cantidad para donar";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Dale un impulso a Signal";
+"BOOST_VIEW_TITLE" = "Da un impulso a Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Añadir";
@@ -5861,7 +5861,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las notificaciones y sugerencias al compartir adjuntos desde otras aplicaciones.";
 
 /* Title for the 'signal boost' link in settings. */
-"SETTINGS_SIGNAL_BOOST" = "Impulso a Signal";
+"SETTINGS_SIGNAL_BOOST" = "Impulsa Signal";
 
 /* Title for the 'become a sustainer' link in settings. */
 "SETTINGS_SUBSCRIPTION" = "Sostén Signal";

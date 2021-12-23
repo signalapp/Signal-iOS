@@ -385,6 +385,30 @@
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
 
+/* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+
+/* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+
+/* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+
+/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "सस्टेनर बना";
+
+/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "बूस्ट जोडा";
+
+/* Title for boost on the badge expiration sheet. */
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+
+/* Button title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+
+/* Title for subscription on the badge expiration sheet. */
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "बूस्ट साठी धन्यवाद !";
 
@@ -416,7 +440,7 @@
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "\"%@\" गट अवरोधित करायचा आणि सोडायचा?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ अवरोधित करायचे?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ ला अवरोधित करायचे?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "अवरोधित केलेले गट";
@@ -452,7 +476,7 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "अवरोधित करा";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@अवरोधित केले गेले आहे.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ अवरोधित केले गेले आहे.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "वापरकर्ता अवरोधित केला गेला";
@@ -485,7 +509,7 @@
 "BOOST_VIEW_BODY" = "\"धन्यवाद !\" म्हणा आणि ३० दिवसांसाठी बूस्ट बॅज मिळवा.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "आपला बूस्ट बॅज कालबाह्य होईल. %@";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "कस्टम रक्कम प्रविष्ट करा";
@@ -911,7 +935,7 @@
 "CONTACT_SUPPORT_FILTER_SUSTAINERS" = "सस्टेनर आणि Signal बूस्ट";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "सस्टेनर आणि Signal बूस्ट";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "आपली समर्थन विनंती पूर्ण करण्यात Signal अक्षम होता.";
@@ -2666,7 +2690,7 @@
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "गट अवरोधित करा आणि %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ अवरोधित करा";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ ला अवरोधित करा";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "मित्रांना आमंत्रित करा";
@@ -3254,7 +3278,7 @@
 "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP" = "पाठवलेली वेळ कॉपी केली";
 
 /* Title for the 'sent from' section on the 'message details' view. */
-"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "यावरून पाठवले";
+"MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "यांनी पाठवले";
 
 /* Label for file size of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "फाईल आकार";
@@ -3263,22 +3287,22 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME प्रकार";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "याला पोहोचवले";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "यांना पोहोचवले";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "अयशस्वी";
 
 /* Status label for messages which are paused. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "पाठवण्याला विराम दिला";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "पाठवणे थांबवले";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "याने वाचले";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "यांनी वाचले";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "यास पाठवत आहे";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "यांना पाठवत आहे";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "याला पाठवले";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "यांना पाठवले";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "वगळले";
@@ -3317,7 +3341,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "अवरोधित व्यक्ती आपल्याला कॉल करू किंवा संदेश पाठवू शकणार नाहीत.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ अवरोधित करायचे?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ ला अवरोधित करायचे?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "आपण हा गट सोडाल आणि यापुढे संदेश किंवा अद्यतने प्राप्त करणार नाही.";
@@ -5498,10 +5522,10 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ कडून प्राप्त झालेले पेमेंट";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "याने पाठवले";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "यांनी पाठवले";
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ वर %1$@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ ने %1$@";
 
 /* Indicates that you send the payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "आपण";
@@ -6146,13 +6170,13 @@
 "SUSTAINER_VIEW_CURRENCY" = "चलन सेट करा";
 
 /* Action sheet title for Error Processing Payment sheet */
-"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
+"SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "पेमेंट प्रक्रिया करताना त्रुटी आली";
 
 /* Existing subscriber support header */
 "SUSTAINER_VIEW_MY_SUPPORT" = "आपले समर्थन";
 
 /* Payment error occured text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "पेमेंट प्रक्रिया करताना त्रुटी आली. %@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%@/महिना";
@@ -6461,7 +6485,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "इतर डिव्हाईस वर %@ यास आपण सत्यापित नाही म्हणून चिन्हांकित केेले.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ यास आपण सत्यापित म्हणून चिन्हांकित केेले.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ ला आपण सत्यापित म्हणून चिन्हांकित केेले.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "इतर डिव्हाईस वर %@ यास आपण सत्यापित म्हणून चिन्हांकित केेले.";
