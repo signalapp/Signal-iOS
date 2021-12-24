@@ -6,6 +6,8 @@ import Foundation
 
 extension HomeViewController {
 
+    public static let clearSearch = Notification.Name("clearSearch")
+
     @objc
     public func observeNotifications() {
         AssertIsOnMainThread()
@@ -57,6 +59,14 @@ extension HomeViewController {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(uiContentSizeCategoryDidChange),
                                                name: UIContentSizeCategory.didChangeNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: HomeViewController.clearSearch,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(clearSearch),
+                                               name: ReactionManager.localUserReacted,
                                                object: nil)
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -177,6 +187,15 @@ extension HomeViewController {
 
         // This is expensive but this event is very rare.
         reloadTableDataAndResetCellContentCache()
+    }
+
+    @objc
+    private func clearSearch(_ notification: NSNotification) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
+            if let self = self {
+                self.searchBar.delegate?.searchBarCancelButtonClicked?(self.searchBar)
+            }
+        }
     }
 }
 
