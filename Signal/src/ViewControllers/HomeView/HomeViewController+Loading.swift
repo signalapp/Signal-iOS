@@ -110,6 +110,7 @@ extension HomeViewController {
             break
         }
 
+        tableDataSource.updateAndSetRefreshTimer()
         // We need to perform this regardless of the load result type.
         updateViewState()
     }
@@ -165,6 +166,7 @@ extension HomeViewController {
         }
 
         tableView.endUpdates()
+        tableDataSource.updateAndSetRefreshTimer()
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
