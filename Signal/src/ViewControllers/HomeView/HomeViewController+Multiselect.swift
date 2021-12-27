@@ -144,7 +144,7 @@ extension HomeViewController {
             let btn = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
             btn.isEnabled = false
             for path in tableView.indexPathsForSelectedRows ?? [] {
-                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.isMarkedUnread {
+                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
                     btn.isEnabled = true
                     break
                 }
@@ -167,7 +167,7 @@ extension HomeViewController {
     private func hasUnreadEntry(threads: [TSThread]? = nil) -> Bool {
         if let entries = threads {
             for entry in entries {
-                if tableDataSource.threadViewModel(forThread: entry).isMarkedUnread {
+                if tableDataSource.threadViewModel(forThread: entry).hasUnreadMessages {
                     return true
                 }
             }
@@ -227,7 +227,7 @@ extension HomeViewController {
     @objc
     func performRead() {
         performOnAllSelectedEntries { thread in
-            markThreadRead(threadViewModel: thread)
+            markThreadAsRead(threadViewModel: thread)
         }
         done()
     }
@@ -239,13 +239,13 @@ extension HomeViewController {
         threads.append(contentsOf: renderState.unpinnedThreads)
         for t in threads {
             let thread = tableDataSource.threadViewModel(forThread: t)
-            if thread.isMarkedUnread {
+            if thread.hasUnreadMessages {
                 entries.append(thread)
             }
         }
 
         performOn(entries: entries) { thread in
-            markThreadRead(threadViewModel: thread)
+            markThreadAsRead(threadViewModel: thread)
         }
         done()
     }

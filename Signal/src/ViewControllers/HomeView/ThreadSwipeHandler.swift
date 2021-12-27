@@ -139,7 +139,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         updateUIAfterSwipeAction?()
     }
 
-    func markThreadRead(threadViewModel: ThreadViewModel) {
+    fileprivate func markThreadRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
@@ -176,7 +176,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         updateUIAfterSwipeAction?()
     }
 
-    fileprivate func markThreadAsRead(threadViewModel: ThreadViewModel) {
+    func markThreadAsRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
