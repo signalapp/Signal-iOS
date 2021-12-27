@@ -21,10 +21,6 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
     @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
-
-        title = NSLocalizedString("NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE",
-                                  comment: "The title for the 'select members for new group' view.")
-
         updateBarButtons()
     }
 
@@ -42,6 +38,14 @@ public class NewGroupMembersViewController: BaseGroupMemberViewController {
         rightBarButtonItem.accessibilityLabel
             = NSLocalizedString("FINISH_GROUP_CREATION_LABEL", comment: "Accessibility label for finishing new group")
         navigationItem.rightBarButtonItem = rightBarButtonItem
+        if newGroupState.recipientSet.count == 1 {
+            title = NSLocalizedString("NEW_GROUP_1_MEMBERS_VIEW_TITLE", comment: "The title for the 'select members for new group' view if already one member is selected.")
+        } else if hasMembers {
+            let format = NSLocalizedString("NEW_GROUP_MANY_MEMBERS_VIEW_TITLE", comment: "The title for the 'select members for new group' view if already some members are selected. Embeds {{number}} of members.")
+            title = String(format: format, OWSFormat.formatInt(newGroupState.recipientSet.count))
+        } else {
+            title = NSLocalizedString("NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE", comment: "The title for the 'select members for new group' view.")
+        }
     }
 
     // MARK: - Actions
@@ -90,7 +94,7 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
-        true
+        false
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {

@@ -329,6 +329,7 @@ extension ConversationSettingsViewController {
                 ) { configuration in
                     self?.disappearingMessagesConfiguration = configuration
                     self?.updateTableContents()
+                    NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
                 }
                 self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
