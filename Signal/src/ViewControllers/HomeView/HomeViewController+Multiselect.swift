@@ -25,9 +25,11 @@ extension HomeViewController {
         AssertIsOnMainThread()
 
         viewState.multiSelectState.title = title
-        let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
-        navigationItem.setLeftBarButton(doneButton, animated: self.homeViewMode == .inbox)
-        navigationItem.setRightBarButtonItems(nil, animated: self.homeViewMode == .inbox)
+        if homeViewMode == .inbox {
+            let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
+            navigationItem.setLeftBarButton(doneButton, animated: true)
+            navigationItem.setRightBarButtonItems(nil, animated: true)
+        }
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
         showToolbar()
@@ -49,13 +51,22 @@ extension HomeViewController {
         updateCaptions()
     }
 
+    @objc
+    func switchMultiSelectState(_ sender: UIBarButtonItem) {
+        if viewState.multiSelectState.isActive {
+            sender.title = CommonStrings.selectButton
+            viewState.multiSelectState.setIsActive(false, tableView: tableView)
+            hideToolbar()
+        } else {
+            sender.title = CommonStrings.doneButton
+            willEnterMultiselectMode()
+        }
+    }
+
     // MARK: private helper
 
     private func showMenu(button: UIButton) {
         AssertIsOnMainThread()
-
-        viewState.multiSelectState.parentButton = button
-        viewState.multiSelectState.parentButton?.alpha = 0.4
 
         let selectMessages = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: renderState.inboxCount == 0 ? [.disabled] : [], handler: { [weak self] (_) in
             self?.hideMenu()
@@ -67,19 +78,26 @@ extension HomeViewController {
         })
         let archived = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."), image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"), attributes: renderState.archiveCount < 2 ? [.disabled] : [], handler: { [weak self] (_) in
             self?.hideMenu()
-            self?.showArchivedConversations(multiSelectMode: true)
+            self?.showArchivedConversations(offerMultiSelectMode: true)
         })
 
         if viewState.multiSelectState.contextMenuView == nil {
+            viewState.multiSelectState.parentButton = button
+
             let v = ContextMenuActionsView(menu: ContextMenu([selectMessages, settings, archived]))
             let size = v.sizeThatFitsMaxSize
             v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
             v.delegate = self
 
             viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
+            viewState.multiSelectState.contextMenuView?.alpha = 0
             view.addSubview(viewState.multiSelectState.contextMenuView!)
             viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
             viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
+            UIView.animate(withDuration: 0.25) { [weak self] in
+                self?.viewState.multiSelectState.parentButton?.alpha = 0.4
+                self?.viewState.multiSelectState.contextMenuView?.alpha = 1
+            }
         }
     }
 
@@ -99,10 +117,14 @@ extension HomeViewController {
     private func hideMenu() {
         AssertIsOnMainThread()
 
-        viewState.multiSelectState.parentButton?.alpha = 1
-        viewState.multiSelectState.parentButton = nil
-        viewState.multiSelectState.contextMenuView?.removeFromSuperview()
-        viewState.multiSelectState.contextMenuView = nil
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
+            self?.viewState.multiSelectState.parentButton?.alpha = 1
+            self?.viewState.multiSelectState.contextMenuView?.alpha = 0
+        }, completion: { [weak self] (_) in
+            self?.viewState.multiSelectState.parentButton = nil
+            self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
+            self?.viewState.multiSelectState.contextMenuView = nil
+        })
     }
 
     private func adjustNavigationBarTitles(_ toolbar: UIToolbar?) {
@@ -324,7 +346,7 @@ public class MultiSelectState: NSObject {
     func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {
             _isActive = active
-            tableView?.setEditing(active, animated: false)
+            tableView?.setEditing(active, animated: true)
         }
     }
 }

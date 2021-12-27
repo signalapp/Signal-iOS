@@ -877,6 +877,13 @@ public class HomeViewCell: UITableViewCell {
         NotificationCenter.default.removeObserver(self)
     }
 
+    // MARK: - Selection
+
+    override public func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        self.selectedBackgroundView?.backgroundColor = UIColor.clear
+    }
+
     // MARK: - Name
 
     @objc
