@@ -282,17 +282,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     private var currentModelGeneration: UInt = 0
     private var nextModelGeneration = AtomicUInt(0)
     @discardableResult
-    private func setNeedsModelUpdate() -> UInt {
-        var ret: UInt?
-        if Thread.isMainThread {
-            ret = nextModelGeneration.increment()
-        } else {
-            DispatchQueue.main.sync {
-                ret = nextModelGeneration.increment()
-            }
-        }
-        return ret!
-    }
+    private func setNeedsModelUpdate() -> UInt { nextModelGeneration.increment() }
 
     // Load avatars in _reverse_ order in which they are enqueued.
     // Avatars are enqueued as the user navigates (and not cancelled),
