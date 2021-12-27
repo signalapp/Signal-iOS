@@ -2,11 +2,6 @@
 //  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
 //
 
-import Foundation
-import UIKit
-import SignalMessaging
-import Lottie
-
 extension HomeViewController {
 
     @objc
@@ -55,7 +50,6 @@ extension HomeViewController {
     func switchMultiSelectState(_ sender: UIBarButtonItem) {
         if viewState.multiSelectState.isActive {
             sender.title = CommonStrings.selectButton
-            viewState.multiSelectState.setIsActive(false, tableView: tableView)
             hideToolbar()
         } else {
             sender.title = CommonStrings.doneButton
@@ -68,36 +62,45 @@ extension HomeViewController {
     private func showMenu(button: UIButton) {
         AssertIsOnMainThread()
 
-        let selectMessages = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: renderState.inboxCount == 0 ? [.disabled] : [], handler: { [weak self] (_) in
-            self?.hideMenu()
-            self?.willEnterMultiselectMode()
-        })
-        let settings = ContextMenuAction(title: CommonStrings.openSettingsButton, image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"), attributes: [], handler: { [weak self] (_) in
-            self?.hideMenu()
-            self?.showAppSettings(mode: .none)
-        })
-        let archived = ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."), image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"), attributes: renderState.archiveCount < 2 ? [.disabled] : [], handler: { [weak self] (_) in
-            self?.hideMenu()
-            self?.showArchivedConversations(offerMultiSelectMode: true)
-        })
+        guard viewState.multiSelectState.contextMenuView == nil else {
+            return
+        }
 
-        if viewState.multiSelectState.contextMenuView == nil {
-            viewState.multiSelectState.parentButton = button
+        var contextMenuActions: [ContextMenuAction] = []
+        if renderState.inboxCount > 0 {
+            contextMenuActions.append(
+                ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: [], handler: { [weak self] (_) in
+                    self?.hideMenu()
+                    self?.willEnterMultiselectMode()
+                }))
+        }
+        contextMenuActions.append(
+            ContextMenuAction(title: CommonStrings.openSettingsButton, image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"), attributes: [], handler: { [weak self] (_) in
+                self?.hideMenu()
+                self?.showAppSettings(mode: .none)
+            }))
+        if renderState.archiveCount > 1 {
+            contextMenuActions.append(
+                ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."), image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"), attributes: [], handler: { [weak self] (_) in
+                    self?.hideMenu()
+                    self?.showArchivedConversations(offerMultiSelectMode: true)
+                }))
+        }
 
-            let v = ContextMenuActionsView(menu: ContextMenu([selectMessages, settings, archived]))
-            let size = v.sizeThatFitsMaxSize
-            v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-            v.delegate = self
+        viewState.multiSelectState.parentButton = button
+        let v = ContextMenuActionsView(menu: ContextMenu(contextMenuActions))
+        let size = v.sizeThatFitsMaxSize
+        v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        v.delegate = self
 
-            viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-            viewState.multiSelectState.contextMenuView?.alpha = 0
-            view.addSubview(viewState.multiSelectState.contextMenuView!)
-            viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
-            viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
-            UIView.animate(withDuration: 0.25) { [weak self] in
-                self?.viewState.multiSelectState.parentButton?.alpha = 0.4
-                self?.viewState.multiSelectState.contextMenuView?.alpha = 1
-            }
+        viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
+        viewState.multiSelectState.contextMenuView?.alpha = 0
+        view.addSubview(viewState.multiSelectState.contextMenuView!)
+        viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
+        viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
+        UIView.animate(withDuration: 0.25) { [weak self] in
+            self?.viewState.multiSelectState.parentButton?.alpha = 0.4
+            self?.viewState.multiSelectState.contextMenuView?.alpha = 1
         }
     }
 
@@ -295,8 +298,8 @@ extension HomeViewController {
     }
 
     private func performOn(entries: [ThreadViewModel]?, action: ((ThreadViewModel) -> Void)) {
-        cellContentCache.clear()
         for thread in entries ?? [] {
+            viewState.multiSelectState.actionPerformed = true
             action(thread)
         }
         updateCaptions()
@@ -339,14 +342,28 @@ public class MultiSelectState: NSObject {
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
     private var _isActive = false
+    var actionPerformed = false
 
     @objc
     var isActive: Bool { return _isActive}
 
-    func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
+    fileprivate func setIsActive(_ active: Bool, tableView: UITableView? = nil) {
         if active != _isActive {
             _isActive = active
-            tableView?.setEditing(active, animated: true)
+            if active || !actionPerformed {
+                tableView?.setEditing(active, animated: true)
+            } else if let tableView = tableView {
+                // The animation of unsetting the setEditing flag will be performed
+                // in the tableView.beginUpdates/endUpdates block (called in applyPartialLoadResult).
+                // This results in a nice combined animation.
+                // The following code is usually not needed and serves only as an
+                // emergency exit if the provided mechanism does not work.
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+                    if tableView.isEditing {
+                        tableView.setEditing(active, animated: false)
+                    }
+                }
+            }
         }
     }
 }

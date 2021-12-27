@@ -129,6 +129,11 @@ extension HomeViewController {
         let cellContentCache = self.cellContentCache
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
         tableView.beginUpdates()
+
+        // animate all UI changes within the same transaction
+        if tableView.isEditing {
+            tableView.setEditing(false, animated: true)
+        }
         for rowChange in rowChanges {
 
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
