@@ -99,6 +99,7 @@ public extension ConversationViewController {
 
         outboundIndividualCallInitiator.initiateCall(address: contactThread.contactAddress,
                                                      isVideo: withVideo)
+        NotificationCenter.default.post(name: HomeViewController.clearSearch, object: nil)
     }
 
     func refreshCallState() {

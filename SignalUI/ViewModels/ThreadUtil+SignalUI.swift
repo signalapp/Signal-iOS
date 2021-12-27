@@ -7,7 +7,6 @@ import SignalMessaging
 
 @objc
 public extension ThreadUtil {
-
     // MARK: - Durable Message Enqueue
 
     @discardableResult

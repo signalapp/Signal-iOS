@@ -123,6 +123,7 @@ public class HomeViewCell: UITableViewCell {
         }
     }
     private var cellContentToken: HVCellContentToken?
+    public var nextUpdateTimestamp: Date?
     var thread: TSThread? {
         cellContentToken?.thread
     }
@@ -205,6 +206,7 @@ public class HomeViewCell: UITableViewCell {
         return HVCellConfigs(
             thread: configuration.thread.threadRecord,
             lastReloadDate: configuration.lastReloadDate,
+            timestamp: configuration.overrideDate ?? configuration.thread.homeViewInfo?.lastMessageDate,
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
@@ -392,6 +394,17 @@ public class HomeViewCell: UITableViewCell {
         }
 
         dateTimeLabelConfig.applyForRendering(label: dateTimeLabel)
+        self.nextUpdateTimestamp = nil
+        if let date = configs.timestamp, !DateUtil.dateIsOlderThanToday(date) {
+            self.dateTimeLabel.text = DateUtil.formatDateShort(date)
+            let calendar = Calendar.current
+            let minutesDiff = calendar.dateComponents([.minute], from: date, to: Date()).minute ?? 0
+            if minutesDiff <= 60 {
+                let secondsDiff = (calendar.dateComponents([.second], from: date, to: Date()).second ?? 0) % 60
+                self.nextUpdateTimestamp = Date().addingTimeInterval(Double(60 - secondsDiff))
+            }
+        }
+
         topRowStackSubviews.append(dateTimeLabel)
 
         // The bottom row layout is also complicated because we want to be able to
@@ -853,6 +866,7 @@ public class HomeViewCell: UITableViewCell {
     }
 
     func reset() {
+        nextUpdateTimestamp = nil
         isCellVisible = false
 
         for cvview in cvviews {
@@ -954,6 +968,7 @@ private struct HVCellConfigs {
     // State
     let thread: TSThread
     let lastReloadDate: Date?
+    let timestamp: Date?
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool

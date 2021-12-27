@@ -6,7 +6,7 @@ import Foundation
 
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
-
+    public static let localUserReacted = Notification.Name("localUserReacted")
     public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
 
     @discardableResult
@@ -24,6 +24,7 @@ public class ReactionManager: NSObject {
             owsFailDebug("Error: \(error)")
             return Promise(error: error)
         }
+        NotificationCenter.default.post(name: ReactionManager.localUserReacted, object: nil)
         let messagePreparer = outgoingMessage.asPreparer
         return Self.messageSenderJobQueue.add(
             .promise,

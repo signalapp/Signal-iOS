@@ -28,7 +28,27 @@ public class NewGroupMembersBar: UIView {
     private var members = [NewGroupMember]()
 
     func setMembers(_ members: [NewGroupMember]) {
+        var addedEntries: [IndexPath] = []
+        var removedEntries: [IndexPath] = []
+        let oldMemberHashes: [PickedRecipient] = self.members.map { $0.recipient }
+        let newMemberHashes: [PickedRecipient] = members.map { $0.recipient }
+        for row in 0..<self.members.count {
+            if !newMemberHashes.contains(self.members[row].recipient) {
+                removedEntries.append(IndexPath(row: row, section: 0))
+            }
+        }
+        for row in 0..<members.count {
+            if !oldMemberHashes.contains(members[row].recipient) {
+                addedEntries.append(IndexPath(row: row, section: 0))
+            }
+        }
         self.members = members
+        if !addedEntries.isEmpty || !removedEntries.isEmpty {
+            collectionView.performBatchUpdates { [weak self] in
+                self?.collectionView.deleteItems(at: removedEntries)
+                self?.collectionView.insertItems(at: addedEntries)
+            }
+        }
         resetContentAndLayout()
         updateHeightConstraint()
     }
@@ -80,8 +100,16 @@ public class NewGroupMembersBar: UIView {
             owsFailDebug("Missing heightConstraint.")
             return
         }
-        let contentHeight = self.contentHeight
-        heightConstraint.constant = members.isEmpty ? 0 : contentHeight
+        let desiredHeight = members.isEmpty ? 0 : self.contentHeight
+        if heightConstraint.constant != desiredHeight {
+            superview?.layoutIfNeeded()
+            collectionView.alpha = desiredHeight == 0 ? 1 : 0
+            heightConstraint.constant = desiredHeight
+            UIView.animate(withDuration: 0.25) { [weak self] in
+                self?.collectionView.alpha = desiredHeight == 0 ? 0 : 1
+                self?.superview?.layoutIfNeeded()
+            }
+        }
     }
 
     private var contentHeight: CGFloat {
