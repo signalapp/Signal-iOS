@@ -168,8 +168,12 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     // MARK: Configuration updates
 
-    public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
+    public func updateAndDisplayAsync(_ updateBlock: (inout Configuration) -> Void) {
         update(optionalTransaction: nil, updateBlock, performAsync: true)
+    }
+
+    public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
+        update(optionalTransaction: nil, updateBlock)
     }
 
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
