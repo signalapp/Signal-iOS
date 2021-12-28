@@ -156,28 +156,13 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             setNeedsModelUpdate()
         }
 
-        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
-            return
-        }
         // If autolayout was toggled, or the size changed while autolayout is enabled we need to update our constraints
         if autolayoutDidChange || (configuration.useAutolayout && sizeClassDidChange) {
-            if Thread.isMainThread {
-                setNeedsUpdateConstraints()
-            } else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.setNeedsUpdateConstraints()
-                }
-            }
+            setNeedsUpdateConstraints()
         }
 
         if sizeClassDidChange || shouldShowBadgeDidChange || shapeDidChange {
-            if Thread.isMainThread {
-                setNeedsLayout()
-            } else {
-                DispatchQueue.main.async { [weak self] in
-                    self?.setNeedsLayout()
-                }
-            }
+            setNeedsLayout()
         }
     }
 
@@ -198,16 +183,15 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
-        let workBlock = { [weak self] in
-            self?.updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
-            self?.updateModelIfNecessary(transaction: transaction)
-        }
-        if performAsync {
+        updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
+        if performAsync && transaction == nil {
             loadAvatarWorkItem?.cancel()
-            loadAvatarWorkItem = DispatchWorkItem {workBlock()}
+            loadAvatarWorkItem = DispatchWorkItem { [weak self] in
+                self?.updateModelIfNecessary(transaction: nil)
+            }
             DispatchQueue.sharedUserInitiatedConcurrent.async(execute: loadAvatarWorkItem!)
         } else {
-            workBlock()
+            updateModelIfNecessary(transaction: transaction)
         }
     }
 
