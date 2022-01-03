@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,7 +19,7 @@ extension FeatureBuild {
     }
 }
 
-private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
 
 // MARK: -
 
