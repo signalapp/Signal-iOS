@@ -377,7 +377,7 @@
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Badges";
+"BADGE_CONFIGURATION_TITLE" = "Wapens";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
@@ -512,19 +512,19 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Voer eie bedrag in";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Kies ’n groter bedrag te skenk";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Kies ’n kleiner bedrag om by te dra";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"BOOST_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"BOOST_VIEW_SELECT_AN_AMOUNT" = "Kies ’n bedrag om by te dra";
 
 /* Title for the donate to signal view */
 "BOOST_VIEW_TITLE" = "Give Signal a Boost";
@@ -932,10 +932,10 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Iets werk nie";
 
 /* The localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Sustainers & Signal Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS" = "Handhawers & Signal-hupstoot";
 
 /* A brief localized representation of the 'Sustainers & Signal Boost' support filter. */
-"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Sustainers & Boost";
+"CONTACT_SUPPORT_FILTER_SUSTAINERS_SHORT" = "Handhawers & hupstoot";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal kon nie u steundiensversoek voltooi nie.";
@@ -944,19 +944,19 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Probeer weer";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Jou ontfout-logs sal ons help om jou kwessie vinniger op te los. Om logs in te dien, is opsioneel.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "U ontfoutlogs sal ons help om u kwessie vinniger op te los. Om logs in te dien, is opsioneel.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Dien ontfout-log in?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Dien ontfoutlog in?";
 
 /* Placeholder telling user they must select a filter. */
 "CONTACT_SUPPORT_SELECT_A_FILTER" = "Kies rede";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Dien in met ontfout-log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Dien in met ontfoutlog";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Dien in sonder ontfout-log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Dien in sonder ontfoutlog";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Maak oop in Kaarte";
@@ -971,7 +971,7 @@
 "CONTEXT_MENU_COPY" = "Kopieer";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Wis";
+"CONTEXT_MENU_DELETE_MESSAGE" = "Skrap";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "Inligting";
@@ -1049,10 +1049,10 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "oudio";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Get badges for your profile by supporting Signal. Tap a badge to learn more.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Kry wapens vir u profiel deur Signal te ondersteun. Tik op ’n wapen om meer te leer.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Badges";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Wapens";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "U sal nie meer boodskappe of opdaterings te ontvang van hierdie gebruiker.";
@@ -1106,16 +1106,16 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ lede";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Laat altyd weet";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Don’t Notify If Muted";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Laat nie weet indien gedemp";
 
 /* Title of the 'mention notification mode' action sheet. */
 "CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Ontvang kennisgewings wanneer u in gedempte kletse genoem word?";
 
 /* label for 'mentions' cell in conversation settings */
-"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Mentions";
+"CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Meldings";
 
 /* Button to message the chat */
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "boodskap";
@@ -1208,10 +1208,10 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Slegs beheerders";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Ontblokkeer groep";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Ontsper groep";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Ontblokkeer gebruiker";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Ontsper gebruiker";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ontdemp";
@@ -1238,7 +1238,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Wis alles";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Laai meer boodskappe...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Laai nog boodskappe…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lees Meer";
@@ -1247,7 +1247,7 @@
 "COPIED_TO_CLIPBOARD" = "Na knipbord gekopieer";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Indien jy jou sessie terugstel, sal jy toekomstige boodskappe van %@ kan ontvang, maar dit sal nie enige beskadigde boodskappe teruglaai nie.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Indien u u sessie terugstel, sal u toekomstige boodskappe van %@ kan ontvang, maar dit sal nie enige beskadigde boodskappe teruglaai nie.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Kies landkode";
@@ -1256,7 +1256,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Skuif en skaleer";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Set Currency";
+"CURRENCY_PICKER_VIEW_TITLE" = "Stel geldeenheid";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradiënt";
@@ -1304,13 +1304,13 @@
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Kon nie logs kopieer nie.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Kon nie logs inpak nie.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Kon nie logs verpak nie.";
 
 /* Error indicating that a debug log could not be uploaded. */
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Kon nie logs oplaai nie.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Wat wil jy doen met die skakel na jou ontfout-log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Wat wil u doen met die skakel na u ontfoutlog?";
 
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Kon nie enige logs vind nie.";
@@ -1322,7 +1322,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopieer skakel";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-pos steundiens";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-possteundiens";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Stuur na self";
@@ -1334,7 +1334,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Nog één stap";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Die gist-skakel is na jou knipbord gekopieer. Jy gaan nou na die GitHub-kwessielys herlei word.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Die gist-skakel is na u knipbord gekopieer. U gaan nou na die GitHub-kwessielys herlei word.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-herleiding";
@@ -1373,10 +1373,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Bevestig u Signal-nommer";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Wis rekening";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Skrap rekening";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "The phone number you entered doesn’t match your account’s.";
+"DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Die foonnommer wat u ingevoer het stem nie met dié van u rekening ooreen nie.";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Skrap alle boodskappe in die klets?";
@@ -1403,7 +1403,7 @@
 "DEVICE_LINKED_AT_LABEL" = "%@ gekoppel";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Kon nie toestellys opdateer nie.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Kon nie toestellys bywerk nie.";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop oordrag";
@@ -1436,10 +1436,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Dra rekening en boodskappe oor";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Dra jou rekening en boodskapgeskiedenis vanaf jou ou iOS-toestel oor";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Dra u rekening en boodskapgeskiedenis vanaf u ou iOS-toestel oor";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Dra jou rekening en boodskapgeskiedenis vanaf jou ou iPad oor";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Dra u rekening en boodskapgeskiedenis vanaf u ou iPad oor";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Dra oor van ’n ander iPad";
@@ -1451,7 +1451,7 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "As u voortgaan, sal dit Signal op enige ander toestelle wat tans met dieselfde foonnommer geregistreer is, deaktiveer.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Kan nie jou nuwe toestel verifieer nie; probeer asseblief weer";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Kan nie u nuwe toestel verifieer nie; probeer asb. weer";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Kon nie die oordrag voltooi nie; maak seker u toestelle is naby mekaar, en probeer weer";
@@ -1523,7 +1523,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien geaktiveer, sal nuwe boodskappe wat in hierdie klets gestuur en ontvang is, verdwyn nadat dit gesien is.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Tans verdwyn boodskappe ná %@";
+"DISAPPEARING_MESSAGES_HINT" = "Boodskappe verdwyn tans ná %@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "uur";
@@ -1544,10 +1544,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "weke";
 
 /* Short text to dismiss current modal / actionsheet / screen */
-"DISMISS_BUTTON_TEXT" = "Wys weg";
+"DISMISS_BUTTON_TEXT" = "Wys af";
 
 /* Dismiss context menu accessibility label */
-"DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
+"DISMISS_CONTEXT_MENU" = "Wys kontekskieslys af";
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
@@ -1556,40 +1556,40 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ligging van sensuuromseiling";
 
 /* Donation amount label for the donate to signal view */
-"DONATION_VIEW_AMOUNT_LABEL" = "Donation amount";
+"DONATION_VIEW_AMOUNT_LABEL" = "Skenkingsbedrag";
 
 /* Default text for the custom amount field of the donation view. */
-"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"DONATION_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Voer eie bedrag in";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Skenings aan Signal";
 
 /* Text explaining there are other ways to donate on the donation view. */
-"DONATION_VIEW_OTHER_WAYS" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS" = "Ander maniere om te skenk";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate";
+"DONATION_VIEW_SELECT_A_LARGER_AMOUNT" = "Kies ’n groter bedrag te skenk";
 
 /* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate";
+"DONATION_VIEW_SELECT_A_SMALLER_AMOUNT" = "Kies ’n kleiner bedrag om te skenk";
 
 /* Error text notifying the user they must select an amount on the donate to signal view */
-"DONATION_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
+"DONATION_VIEW_SELECT_AN_AMOUNT" = "Kies ’n bedrag om te skenk";
 
 /* Thank you message on the donate to signal view */
-"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Thank you for your support!";
+"DONATION_VIEW_THANKS_FOR_YOUR_SUPPORT" = "Dankie vir u ondersteuning!";
 
 /* Title for the donate to signal view */
-"DONATION_VIEW_TITLE" = "Signal is powered by people like you.";
+"DONATION_VIEW_TITLE" = "Signal word aangedryf deur mense soos u.";
 
 /* The body of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_BODY" = "The team at Signal is committed to the mission of developing open source privacy technology that protects free expression and enables secure global communication. Your contribution fuels this cause. No ads. No trackers. No kidding.\n\nYour donation helps pay for the development, servers, and bandwidth of an app used by millions around the world for private and instantaneous communication.";
+"DONATION_VIEW_WHY_DONATE_BODY" = "Die span by Signal is toegewyd aan die doel om oopbronprivaatheidtegnologie te ontwikkel wat vrye uitdrukking beskerm en veilige globale kommunikasie moontlik maak. U bydrae maak ’n groot verskil. Geen advertensies. Geen naspoorders. Geen lollery.\n\nU skenking help om vir die ontwikkeling, bedieners en bandwydte van ’n toep wat deur miljoene regoor die wêreld vir privaat en kitskommunikasie gebruik word, te betaal.";
 
 /* The title of the 'Why Donate' section of the donate to signal view */
-"DONATION_VIEW_WHY_DONATE_TITLE" = "Why Donate?";
+"DONATION_VIEW_WHY_DONATE_TITLE" = "Waarom skenk?";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Jy kan toegang in die iOS Settings-program aktiveer.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "U kan toegang in die iOS-instellingstoep aktiveer.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal benodig toegang tot kontakte om kontakinligting te wysig";
@@ -1607,13 +1607,13 @@
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ongeldige foto.";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "Dateer op";
+"EDIT_GROUP_UPDATE_BUTTON" = "Werk by";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Wil jy die veranderinge wat jy aan hierdie groep gemaak het, stoor?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Wil u die veranderinge wat u aan hierdie groep gemaak het, bewaar?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Ongestoorde veranderinge";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Onbewaarde veranderinge";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopie";
@@ -1622,19 +1622,19 @@
 "EMAIL_INVITE_BODY" = "Dagsê.\n\nEk het onlangs Signal begin gebruik om gesprekke op my iPhone privaat te hou. Ek stel voor u installeer dit ook, sodat ons seker kan weet dat net ek en u ons boodskappe kan lees of ons oproepe kan hoor.\n\nSignal is beskikbaar vir iPhone en Android. Kry dit hier: %@\n\nSignal werk net soos u bestaande boodskaptoepassing. Ons kan foto’s en video’s stuur, mekaar bel, en groepkletse begin. En niemand anders kan iets daarvan sien nie, selfs nie eens die mense wat Signal maak nie!\n\nVir meer inligting oor Open Whisper Systems, die mense wat Signal maak, kyk hier: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Kom ons wissel na Signal";
+"EMAIL_INVITE_SUBJECT" = "Kom ons gebruik liewer Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Your device isn't configured to send email. To send a support request, set up email on your device or email support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "U toestel is nie opgestel om e-pos te stuur nie. Stel e-pos op u toestel op of stuur ’n e-pos na support@signal.org om ’n steunversoek te rig.";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Email unavailable";
+"EMAIL_SIGNAL_TITLE" = "E-pos onbeskikbaar";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktiwiteite";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Diere & die Natuur";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Diere & die natuur";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "Vlae";
@@ -1658,7 +1658,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Reis & Plekke";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Geen van jou kontakte het Signal nie.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Geen van u kontakte het Signal nie.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Nooi ’n paar van hulle uit!";
@@ -1676,34 +1676,34 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Kon nie toegang tot kontakte kry nie.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Couldn't forward message.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kon nie boodskap aanstuur nie.";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Kon nie boodskap aanstuur nie omdat dit nie meer beskikbaar is nie.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kon nie boodskappe aanstuur nie omdat dit nie meer beskikbaar is nie.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kon nie boodskappe aanstuur nie";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Kon nie video stoor nie.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Kon nie video bewaar nie.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Kon nie boodskap stuur nie.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Failed to open email app";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Kon nie e-postoep open nie";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Could not create support request";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Kon nie steunversoek skep nie";
 
 /* Generic error indicating that log upload failed */
-"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Failed to upload logs.";
+"ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Kon nie logs oplaai nie.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kon nie boodskap aan gebruiker stuur nie want jy het hulle geblokkeer.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kon nie boodskap aan gebruiker stuur nie want u het hulle versper.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kon nie aan die internet koppel nie. Probeer gerus weer.";
@@ -1718,16 +1718,16 @@
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Netwerkversoek het uitgetel.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ongeldige response vanaf diens.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Ongeldige respons vanaf diens.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Hierdie toestel is nie meer met jou foonnommer geregistreer nie. Installeer Signal weer.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Hierdie toestel is nie meer met u telefoonnommer geregistreer nie. Herinstalleer Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Bedienerfout. Probeer gerus later weer.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Server requires user verification before sending the message.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Bediener vereis gebruikersverifiëring woordat die boodskap gestuur word.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "’n Onbekende fout het voorgekom.";
@@ -1739,7 +1739,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Kon nie aanhegsel aflaai nie.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "A message from %@ could not be delivered";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "’n Boodskap van %@ kon nie afgelewer word nie";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "’n Boodskap kon nie afgelewer word nie";
@@ -1748,10 +1748,10 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Het ’n duplikaatboodskap ontvang.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Die ontvanger se sleutel is nie geldig nie.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Die ontvanger se sleutel is ongeldig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Ontvangde boodskap is nie goed gesinkroniseer nie.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Ontvange boodskap is nie goed gesinkroniseer nie.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Het ’n boodskap ontvang wat nie met hierdie weergawe versoenbaar is nie.";
@@ -1763,7 +1763,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Veiligheidsnommer het verander.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Jou veiligheidsnommer met %@ het verander.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "U veiligheidsnommer met %@ het verander.";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "Kletssessie het verfris";
@@ -1778,37 +1778,37 @@
 "ERROR_NETWORK_FAILURE" = "Netwerkfout";
 
 /* Format string for an error alert notification message. Embes {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Please help us improve Signal by reporting this error along with debug logs from your device to support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Help ons asb. om Signal te verbeter deur hierdie fout saam met ontfoutlogs van u toestel te rapporteer aan support@signal.org; %@";
 
 /* Format string for an error alert notification title. */
-"ERROR_NOTIFICATION_TITLE" = "Signal Beta: An error occurred";
+"ERROR_NOTIFICATION_TITLE" = "Signal-beta: ’n Fout het voorgekom";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Jou toestel is nie meer gekoppel nie. Koppel dit weer sodat jy verdere boodskappe kan stuur.";
+"ERROR_SENDING_DELINKED" = "U toestel is nie meer gekoppel nie. Koppel dit weer sodat u verdere boodskappe kan stuur.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Jou toestel is nie meer geregistreer nie. Herregistreer dit sodat jy verdere boodskappe kan stuur.";
+"ERROR_SENDING_DEREGISTERED" = "U toestel is nie meer geregistreer nie. Herregistreer dit sodat u verdere boodskappe kan stuur.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Jou weergawe van Signal het verstryk. Dateer dit op sodat jy verdere boodskappe kan stuur.";
+"ERROR_SENDING_EXPIRED" = "U weergawe van Signal het verstryk. Werk dit by sodat u verdere boodskappe kan stuur.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ongeregistreerde gebruiker: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "U weergawe van Signal het verstryk! Tik om na die jongste weergawe by te werk.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Jou weergawe van Signal verstryk oor %d dae. Druk om na die jongste weergawe op te dateer.";
+"EXPIRATION_WARNING_SOON" = "U weergawe van Signal verstryk oor %d dae. Tik om na die jongste weergawe by te werk.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Jou weergawe van Signal verstryk vandag. Druk om na die jongste weergawe op te dateer.";
+"EXPIRATION_WARNING_TODAY" = "U weergawe van Signal verstryk vandag. Tik om na die jongste weergawe by te werk.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel mislukkings met hierdie kontak. Probeer gerus later weer.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel mislukkings met hierdie kontak. Probeer later weer.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Jou veiligheidsnommer met %@ het onlangs verander. Jy moet dit miskien verifieer voordat jy weer hierdie boodskap stuur.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "U veiligheidsnommer met %@ het onlangs verander. U moet dit dalk verifieer voordat u weer hierdie boodskap stuur.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Kon nie veiligheidsnommer verifieer nie!";
@@ -6044,7 +6044,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Deïnstalleer";
 
 /* Title for the 'Badges' button in sustainer view. */
-"SUBSCRIBER_BADGES" = "Badges";
+"SUBSCRIBER_BADGES" = "Wapens";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
 "SUBSCRIBER_MANAGE_SUBSCRIPTION" = "Manage Subscription";
@@ -6209,7 +6209,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Nie nou nie";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
+"SUSTAINER_VIEW_TITLE" = "Signal word aangedryf deur mense soos u.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
