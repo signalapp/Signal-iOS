@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -128,7 +128,17 @@ extension HomeViewController {
         let threadViewModelCache = self.threadViewModelCache
         let cellContentCache = self.cellContentCache
         let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
-        tableView.beginUpdates()
+
+        // only perform a beginUpdates/endUpdates block if really necessary, otherwise
+        // strange scroll animations may occur
+        var tableUpdatesPerformed = false
+        let checkAndSetTableUpdates = {
+            if !tableUpdatesPerformed {
+                tableView.beginUpdates()
+                tableUpdatesPerformed = true
+            }
+        }
+
         for rowChange in rowChanges {
 
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
@@ -139,8 +149,10 @@ extension HomeViewController {
             }
             switch rowChange.type {
             case .delete(let oldIndexPath):
+                checkAndSetTableUpdates()
                 tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
             case .insert(let newIndexPath):
+                checkAndSetTableUpdates()
                 tableView.insertRows(at: [newIndexPath], with: rowAnimation)
             case .move(let oldIndexPath, let newIndexPath):
                 // NOTE: if we're moving within the same section, we perform
@@ -151,6 +163,7 @@ extension HomeViewController {
                 //       animation. This should generally be safe, because you'll only
                 //       move between sections when pinning / unpinning which doesn't
                 //       require the moved item to be reloaded.
+                checkAndSetTableUpdates()
                 if oldIndexPath.section != newIndexPath.section {
                     tableView.moveRow(at: oldIndexPath, to: newIndexPath)
                 } else {
@@ -160,13 +173,14 @@ extension HomeViewController {
             case .update(let oldIndexPath):
                 let tds = tableView.dataSource as? HVTableDataSource
                 if tds == nil || !tds!.updateVisibleCellContent(at: oldIndexPath, for: tableView) {
+                    checkAndSetTableUpdates()
                     tableView.reloadRows(at: [oldIndexPath], with: .none)
                 }
             }
         }
-
-        tableView.endUpdates()
-        tableDataSource.updateAndSetRefreshTimer()
+        if tableUpdatesPerformed {
+            tableView.endUpdates()
+        }
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }
 }
