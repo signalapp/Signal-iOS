@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,6 +70,7 @@ public class SubscriptionLevel: Comparable {
 public struct Subscription {
 
     public enum StripeSubscriptionStatus: String {
+        case unknown
         case trialing = "trialing"
         case active = "active"
         case incomplete = "incomplete"
@@ -98,7 +99,7 @@ public struct Subscription {
         billingCycleAnchor = try params.required(key: "billingCycleAnchor")
         active = try params.required(key: "active")
         cancelAtEndOfPeriod = try params.required(key: "cancelAtPeriodEnd")
-        status = StripeSubscriptionStatus(rawValue: try params.required(key: "status"))!
+        status = StripeSubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
     }
 }
 
@@ -623,7 +624,7 @@ public class SubscriptionManager: NSObject {
             if let error = error as? OWSHTTPError {
                 let statusCode = error.responseStatusCode
                 if statusCode == 400 || statusCode == 402 || statusCode == 403 || statusCode == 404 || statusCode ==  409 {
-                    let failureReason = SubscriptionRedemptionFailureReason(rawValue: statusCode)!
+                    let failureReason = SubscriptionRedemptionFailureReason(rawValue: statusCode) ?? .none
                     databaseStorage.write { transaction in
                         self.setLastReceiptRedemptionFailed(failureReason: failureReason, transaction: transaction)
                     }
