@@ -113,13 +113,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Rendben";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Egy üzenet, matrica, reakció emoji, kézbesítési nyugta, vagy média küldése %@ kontakttól nem érkezett meg hozzád.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Nem sikerült kézbesíteni egy %@ által részedre küldött üzenetet, matricát, reakciót, olvasási nyugtát vagy médiafájlt.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Kézbesítési probléma";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Egy üzenet, matrica, reakció emoji, kézbesítési nyugta, vagy média küldése %@ kontakttól nem érkezett meg hozzád. A küldési kísérlet történhetett egyéni, vagy csoportüzenetben is.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Nem sikerült kézbesíteni egy %@ által küldött üzenetet, matricát, reakciót, olvasási nyugtát vagy médiafájlt. A küldési kísérlet történhetett egyéni, vagy csoportüzenetben is.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Elvetés";
@@ -386,28 +386,28 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Adj egy Lökést a Signalnak";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "A Lökés Kitűző lejárt és így többé nem látható a profilképeden.\n\nA Signal további használata nem változik, de ha hosszútávon is támogatnád ezt a mindenki számára fejlesztett technológiát, akkor fontold meg a havi Fenntartóvá válást.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "A Lökés Kitűző lejárt és így többé nem látható a profilképeden.\n\nA Lökés Kitűző újabb 30 napra történő aktiválását egy ismételt egyszeri hozzájárulással tudod megtenni.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Fenntartói előfizetésed automatikusan törlésre került, mert túl sokáig voltál inaktív. A %@ kitűződ már nem látható profilképeden.\n\nA Signal használata nem változik, de ha fenntartanád a támogatásod és újraaktiválnád a kitűződet, akkor előfizetésed megújítása szükséges.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Válj Fenntartóvá!";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "\"Löket\" hozzáadása";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "\"Lökés” adása";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "A kitűző lejárt";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Előfizetés megújítása";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Előfizetés törölve";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Köszönet a Lökésért!";
@@ -1622,7 +1622,7 @@
 "EMAIL_INVITE_BODY" = "Szia,\n\nújabban privát csevegéseimet a Signal üzenetküldő alkalmazással bonyolítom iPhone-on. Örülnék, ha te is telepítenéd, így biztosak lehetünk benne, hogy amit írunk, vagy mondunk a telefonba, az köztünk marad.\n\nA Signal elérhető iPhone és Android telefonokra is innen: %@\n\nA Signal az ismert csevegőprogramokhoz hasonlóan működik: küldhetünk képeket, videókat, hívhatjuk egymást, csoportos csevegést indíthatunk. A legjobb, hogy a fentiekbe senkinek, még a Signal fejlesztőinek sincs semmilyen betekintési, belehallgatási lehetősége.\n\nHa érdekel a készítő gárda (az Open Whisper Systems), vagy hogy kik is az emberek, akik a Signal fejlesztését végzik, akkor látogass el ide: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Váltsunk Signal-ra";
+"EMAIL_INVITE_SUBJECT" = "Váltsunk Signalra!";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "Készülékeden nincs beállítva levelező kliens. Vagy állítsd be, vagy támogatási kérelmedet emailben küldd el erre a címre: support@signal.org";
@@ -3875,7 +3875,7 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ értesítésre kerül, hogy elutasítottad.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ értesítést kap, hogy elutasítottad.";
 
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Elutasítod ezt a kérést?";
@@ -3887,7 +3887,7 @@
 "PAYMENTS_ERROR_PAYMENT_REQUEST_CANCEL_FAILED" = "A kérés nem megszakítható.";
 
 /* Error indicating that a payment request could not be declined. */
-"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "A kérés em elutasítható.";
+"PAYMENTS_ERROR_PAYMENT_REQUEST_DECLINE_FAILED" = "A kérés nem elutasítható.";
 
 /* Status indicator for incoming payments which failed. */
 "PAYMENTS_FAILURE_INCOMING_FAILED" = "Sikertelen";
@@ -3905,7 +3905,7 @@
 "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS" = "Nincs elég alaptőke";
 
 /* Status indicator for outgoing payments for which the notification could not be sent. */
-"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Nyugta küldése sikertelen a címzettnek";
+"PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED" = "Sikertelen nyugtaküldés a címzett számára";
 
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Érvénytelen";
@@ -3938,13 +3938,13 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Érvénytelen tranzakció";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Frissítsd a Signalt a fizetések használatához";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Frissítsd a Signalt a fizetések használatához!";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "A fizetés még nem került ellenőrzésre";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Sikertelen a fizetés befejezése. Ellenőrizd a kapcsolatod és próbáld újra.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "A fizetés befejezése sikertelen. Ellenőrizd a netkapcsolatod és próbáld újra.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Hálózati díj";
@@ -4886,7 +4886,7 @@
 "SCREENSHOT_NAME_LOCAL_PROFILE" = "Freya elnökasszony";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Gratulálok! Nem tudom elhinni!";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Gratulálok! El se hiszem!";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "Holnap látlak?";
@@ -5387,7 +5387,7 @@
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "A fizetés funkció a Signalban a továbbiakban nem elérhető. Továbbra is átviheted egyenlegedet egy átváltó szolgáltatáson, de a továbbiakban már nem tudsz küldeni vagy fogadni fizetéseket, vagy feltölteni az egyenleged.adni fizetéseket vagy feltölteni az egyenleged.";
 
 /* Error message indicating that you cannot transfer into your payments wallet because the feature is not currently available. */
-"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "A Fizetések a Signal-ban a továbbiakban nem elérhető. Átviheted az egyenleged egy tőzsdére, de a továbbiakban már nem tudsz küldeni vagy fogadni fizetéseket vagy feltölteni az egyenleged.";
+"SETTINGS_PAYMENTS_CANNOT_TRANSFER_IN_KILL_SWITCH" = "A Fizetések funkció a Signalban a továbbiakban nem elérhető. Átviheted az egyenleged egy átváltó tőzsdére, de a továbbiakban már nem tudsz küldeni vagy fogadni fizetéseket vagy feltölteni az egyenleged.";
 
 /* Message for the 'currency conversions info' alert. */
 "SETTINGS_PAYMENTS_CURRENCY_CONVERSIONS_INFO_ALERT_MESSAGE" = "A pénznem váltás csak becslés és elképzelhető, hogy nem pontos.";
@@ -5456,7 +5456,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "PIN frissítése";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Nagy egyenleggel lehet, hogy szeretnél egy alfanumerikus PIN-re frissíteni, hogy további védelmet adj a fiókodhoz.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Nagy egyenleggel lehet, hogy tanácsos lenne egy alfanumerikus PIN-re frissíteni, hogy további védelmet adj a fiókodhoz.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Frissítsd a PIN kódodat";
@@ -5549,7 +5549,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nincs elég MOB a birtokodban ehhez a kifizetéshez. Az aktuális egyenleged: %@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Nem elég egyenleg";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Fedezethiány";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Küldte: %@";
@@ -5663,7 +5663,7 @@
 "SETTINGS_PAYMENTS_TITLE" = "Fizetések";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Nem küldhetsz a Signal tárca címedre. Add meg a támogatott tőzsdei fiókhoz tartozó tárca címedet ";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Nem küldhetsz a Signal tárca címedre. Add meg a támogatott átváltói tőzsdei fiókhoz tartozó tárca címedet!";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Átutalhatsz MobileCoint a tőzsdéd által megadott digitális pénztárca címére. A tárca cím egy szöveg, számokkal és betűkkel, amely legtöbbször a QR kód alatt található.";

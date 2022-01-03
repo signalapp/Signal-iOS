@@ -386,13 +386,13 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Rhowch Hwb i Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Mae eich bathodyn Hwb wedi dod i ben, ac nid yw bellach i'w weld ar eich proffil.\n\nGallwch barhau i ddefnyddio Signal ond i gefnogi technoleg sydd wedi'i hadeiladu ar eich cyfer chi, ystyriwch ddod yn Gynhaliwr misol.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Mae eich bathodyn Hwb wedi dod i ben, ac nid yw bellach i'w weld ar eich proffil.\n\nGallwch ail-greu eich bathodyn Hwb am 30 diwrnod arall gyda chyfraniad unigol.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Cafodd eich tanysgrifiad Cynhaliwr ei ganslo’n awtomatig oherwydd nad oeddech yn weithredol am gyfnod. Nid yw eich bathodyn %@ bellach i'w weld ar eich proffil.\n\nGallwch barhau i ddefnyddio Signal ond i gefnogi'r ap ac ail-greu'ch bathodyn, adnewyddwch nawr.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Dod yn Gynhaliwr";
@@ -401,13 +401,13 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Ychwanegwch Boost";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Bathodyn Wedi Darfod";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Adnewyddu Tanysgrifiad";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Diddymwyd Tanysgrifiad";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Diolch am yr Hwb!";
