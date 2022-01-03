@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import ZKGroup
+import SignalClient
 
 @objc(OWSSubscriptionReceiptCredentialJobQueue)
 public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {

@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import ZKGroup
+import SignalClient
 
 @objc
 public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {

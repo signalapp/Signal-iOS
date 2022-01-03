@@ -4,7 +4,7 @@
 
 import Foundation
 import PassKit
-import ZKGroup
+import SignalClient
 import SignalServiceKit
 
 public enum SubscriptionBadgeIds: String, CaseIterable {

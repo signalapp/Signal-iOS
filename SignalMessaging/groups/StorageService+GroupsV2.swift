@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import ZKGroup
+import SignalClient
 
 public struct GroupsV2Request {
     let urlString: String
