@@ -76,7 +76,7 @@ public struct Subscription {
         case incomplete = "incomplete"
         case incompleteExpired = "incomplete_expired"
         case pastDue = "past_due"
-        case cancelled = "cancelled"
+        case canceled = "canceled"
         case unpaid = "unpaid"
     }
 
