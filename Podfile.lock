@@ -90,9 +90,9 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalArgon2 (1.3.2)
   - SignalArgon2/Tests (1.3.2)
-  - SignalClient (0.9.0):
+  - SignalClient (0.12.0):
     - SignalCoreKit
-  - SignalClient/Tests (0.9.0):
+  - SignalClient/Tests (0.12.0):
     - SignalCoreKit
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
@@ -205,8 +205,6 @@ PODS:
     - YYImage/Core
   - YYImage/WebP (1.0.4):
     - YYImage/Core
-  - ZKGroup (0.8.2)
-  - ZKGroup/Tests (0.8.2)
 
 DEPENDENCIES:
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
@@ -241,8 +239,6 @@ DEPENDENCIES:
   - SwiftProtobuf (>= 1.14.0)
   - YYImage (from `https://github.com/signalapp/YYImage`)
   - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
-  - ZKGroup (from `https://github.com/signalapp/zkgroup`)
-  - ZKGroup/Tests (from `https://github.com/signalapp/zkgroup`)
 
 SPEC REPOS:
   trunk:
@@ -320,8 +316,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Starscream.git
   YYImage:
     :git: https://github.com/signalapp/YYImage
-  ZKGroup:
-    :git: https://github.com/signalapp/zkgroup
 
 CHECKOUT OPTIONS:
   blurhash:
@@ -353,7 +347,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalClient:
-    :commit: aaa24f6efae6114f1252ae86f02aeedc69a8b151
+    :commit: 3da7078ffe3f818b0b6c871f12cc4fd6d7c25fa8
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
     :commit: 517562ffa87cd18fe812d2abe50ff152e03e47e7
@@ -367,9 +361,6 @@ CHECKOUT OPTIONS:
   YYImage:
     :commit: 62a4cede20bcf31da73d18163408e46a92f171c6
     :git: https://github.com/signalapp/YYImage
-  ZKGroup:
-    :commit: bbd71fd1fb56cbaf5af6e20d3837b210d5bbd5e2
-    :git: https://github.com/signalapp/zkgroup
 
 SPEC CHECKSUMS:
   blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
@@ -399,7 +390,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalClient: 5e281d5917af94036553debe8450b209d603c280
+  SignalClient: 2dcc2d86deaf6736af34dfa11caa23d54f5a0aed
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalMetadataKit: eb928ec98376ab5a6ef2108a7fcd3b2d792b8c65
   SignalRingRTC: f78bb3674dd0baee0e60a920064ee07f5ba82ae8
@@ -419,8 +410,7 @@ SPEC CHECKSUMS:
   SwiftNIOTransportServices: 896c9a4ac98698d32aa2feea7657ade219ae80bb
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
-  ZKGroup: 8f762d76c98c38d4de3c9a3406309e873a856383
 
-PODFILE CHECKSUM: 94178b0d43076f2339b589fc4cc0e76b1855e94c
+PODFILE CHECKSUM: 1e25c00efcbd52fb42b214c37129048ddbf653e4
 
 COCOAPODS: 1.10.1

@@ -781,6 +781,9 @@
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
 
+/* Configure reactions title text */
+"CONFIGURE_REACTIONS" = "Configure Reactions";
+
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_DATA_TEXT" = "This will reset the application by deleting your messages. The app will close after this process is complete.";
 
@@ -4813,6 +4816,9 @@
 /* Title for the research megaphone modal */
 "RESEARCH_MODAL_TITLE" = "Signal Research";
 
+/* Configure reactions reset button text */
+"RESET" = "Reset";
+
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Retry";
 
@@ -6333,6 +6339,9 @@
 
 /* Indicator warning about an unknown group thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP" = "No contacts in this group. Review requests carefully.";
+
+/* Tap to Replace Emoji string for reaction configuration */
+"TAP_REPLACE_EMOJI" = "Tap to replace an emoji";
 
 /* text indicating the message was remotely deleted */
 "THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
