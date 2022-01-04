@@ -226,8 +226,8 @@ DEPENDENCIES:
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - SignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - SignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
-  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
+  - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit-Private`, branch `mlin/PR/AggressiveFlushing`)"
+  - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit-Private`, branch `mlin/PR/AggressiveFlushing`)"
   - "SignalMetadataKit (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - "SignalMetadataKit/Tests (from `ssh://git@github.com/signalapp/SignalMetadataKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
@@ -304,7 +304,8 @@ EXTERNAL SOURCES:
   SignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :git: "git@github.com:signalapp/SignalCoreKit"
+    :branch: mlin/PR/AggressiveFlushing
+    :git: "git@github.com:signalapp/SignalCoreKit-Private"
   SignalMetadataKit:
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
   SignalRingRTC:
@@ -350,8 +351,8 @@ CHECKOUT OPTIONS:
     :commit: 3da7078ffe3f818b0b6c871f12cc4fd6d7c25fa8
     :git: https://github.com/signalapp/libsignal-client.git
   SignalCoreKit:
-    :commit: 517562ffa87cd18fe812d2abe50ff152e03e47e7
-    :git: "git@github.com:signalapp/SignalCoreKit"
+    :commit: 0cd0f6d7b04609e364878153a435318e1adf2dd8
+    :git: "git@github.com:signalapp/SignalCoreKit-Private"
   SignalMetadataKit:
     :commit: 90f1776e631e8e232360bbe11db620c77f078567
     :git: "ssh://git@github.com/signalapp/SignalMetadataKit"
@@ -411,6 +412,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 1e25c00efcbd52fb42b214c37129048ddbf653e4
+PODFILE CHECKSUM: 4e27145718a0c32abac6b974d5292b3800615093
 
 COCOAPODS: 1.10.1

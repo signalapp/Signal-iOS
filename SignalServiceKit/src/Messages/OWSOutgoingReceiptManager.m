@@ -186,9 +186,7 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
 
 - (void)logMemoryUsage {
     if (SSKDebugFlags.internalLogging) {
-        dispatch_async(self.serialQueue, ^{
-            OWSLogVerbose(@"memoryUsage: %@", LocalDevice.memoryUsage);
-        });
+        OWSLogInfo(@"memoryUsage: %@", LocalDevice.memoryUsageString);
     }
 }
 

@@ -254,6 +254,10 @@ public final class AtomicOptional<T> {
     public func swap(_ value: T?) -> T? {
         self.value.swap(value)
     }
+
+    public func map(_ block: @escaping (T?) -> T?) -> T? {
+        value.map(block)
+    }
 }
 
 extension AtomicOptional: Codable where T: Codable {
