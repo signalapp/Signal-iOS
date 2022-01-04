@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 // MARK: - NSObject
 

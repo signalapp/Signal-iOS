@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import YYImage
 
 @objc
 class ViewOnceMessageViewController: OWSViewController {

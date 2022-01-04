@@ -5,6 +5,7 @@
 #import "DebugUIMisc.h"
 #import "DebugUIMessagesAssetLoader.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/ThreadUtil.h>

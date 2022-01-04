@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 let kIsDebuggingMediaPresentationAnimations = false
 

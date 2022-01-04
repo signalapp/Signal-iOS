@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import SignalUI
+import UIKit
 
 class MediaDismissAnimationController: NSObject {
     private let item: Media

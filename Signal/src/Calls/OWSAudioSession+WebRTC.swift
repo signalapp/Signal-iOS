@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalMessaging
+import SignalUI
 import WebRTC
 
 /**

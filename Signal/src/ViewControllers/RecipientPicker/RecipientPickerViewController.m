@@ -6,6 +6,7 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <MessageUI/MessageUI.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

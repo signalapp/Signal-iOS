@@ -4,6 +4,7 @@
 
 #import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
