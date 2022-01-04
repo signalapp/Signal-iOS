@@ -193,7 +193,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             loadAvatarWorkItem = DispatchWorkItem { [weak self] in
                 self?.updateModelIfNecessary(transaction: nil)
             }
-            DispatchQueue.sharedUserInitiatedConcurrent.async(execute: loadAvatarWorkItem!)
+            DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
         } else {
             updateModelIfNecessary(transaction: transaction)
         }
