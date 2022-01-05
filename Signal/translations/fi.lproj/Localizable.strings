@@ -512,7 +512,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Merkkisi Boostaus erääntyy %@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syöltä muu summa";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Syötä muu summa";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Enemmän maksuvaihtoehtoja";

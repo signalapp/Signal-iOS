@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import ZKGroup
 import SignalClient
 
 @objc

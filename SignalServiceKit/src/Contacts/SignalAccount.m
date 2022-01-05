@@ -186,18 +186,10 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
         nameComponents.givenName = self.contactFirstName;
         nameComponents.familyName = self.contactLastName;
     } else if (self.contactFullName.length > 0) {
-        // If we don't have a first name or last name, but we *do* have a full name,
-        // try our best to create appropriate components to represent it.
-        NSArray<NSString *> *components = [self.contactFullName componentsSeparatedByString:@" "];
-
-        // If there are only two words separated by a space, this is probably a given
-        // and family name.
-        if (components.count <= 2) {
-            nameComponents.givenName = components.firstObject;
-            nameComponents.familyName = components.lastObject;
-        } else {
-            nameComponents.givenName = self.contactFullName;
-        }
+        // Originally we had a heuristic to try and guess which was the given and family name. It
+        // wasn't always correct. We're probably better off just sticking the entire name in the
+        // given name.
+        nameComponents.givenName = self.contactFullName;
     }
     nameComponents.nickname = self.contactNicknameIfAvailable;
 

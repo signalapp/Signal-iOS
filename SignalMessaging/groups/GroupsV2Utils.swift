@@ -5,23 +5,11 @@
 import Foundation
 import SignalServiceKit
 import SignalMetadataKit
-import ZKGroup
+import SignalClient
 
 public extension UUID {
-    func asZKGUuid() throws -> ZKGUuid {
-        return try withUnsafeBytes(of: self.uuid) { (buffer: UnsafeRawBufferPointer) in
-            try ZKGUuid(contents: [UInt8](buffer))
-        }
-    }
-}
-
-// MARK: -
-
-public extension ZKGUuid {
-    func asUUID() -> UUID {
-        return serialize().asData.withUnsafeBytes {
-            UUID(uuid: $0.bindMemory(to: uuid_t.self).first!)
-        }
+    var data: Data {
+        return withUnsafeBytes(of: self.uuid, { Data($0) })
     }
 }
 

@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import ZKGroup
+import SignalClient
 
 // Represents a proposed set of changes to a group.
 //

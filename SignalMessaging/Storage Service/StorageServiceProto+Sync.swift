@@ -586,6 +586,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setE164(localPhoneNumber)
         }
 
+        builder.setPreferredReactionEmoji(ReactionManager.emojiSet(transaction: transaction))
+
         if let subscriberID = SubscriptionManager.getSubscriberID(transaction: transaction),
            let subscriberCurrencyCode = SubscriptionManager.getSubscriberCurrencyCode(transaction: transaction) {
             builder.setSubscriberID(subscriberID)
@@ -752,6 +754,19 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let remoteExpireToken = DisappearingMessageToken.token(forProtoExpireTimer: universalExpireTimer)
         if localExpireToken != remoteExpireToken {
             localConfiguration.applyToken(remoteExpireToken, transaction: transaction)
+        }
+
+        if !preferredReactionEmoji.isEmpty {
+            // Treat new preferred emoji as a full source of truth (if not empty).
+            // Any holes or invalid choices are filled in with the *default* reactions, not the previous local choices.
+            let reactionEmoji = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> String in
+                if let newReaction = preferredReactionEmoji[safe: i], newReaction.isSingleEmoji {
+                    return newReaction
+                } else {
+                    return defaultEmoji
+                }
+            }
+            ReactionManager.setEmojiSet(reactionEmoji, transaction: transaction)
         }
 
         if let subscriberIDData = subscriberID, let subscriberCurrencyCode = subscriberCurrencyCode {

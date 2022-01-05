@@ -386,28 +386,28 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dale un impulso a Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Tu distintivo de impulso ha caducado y ya no es visible en tu perfil.\n\nPuedes continuar usando Signal, pero para sostener la tecnología hecha para ti, y no para tus datos, considera en sostener Signal mensualmente.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Tu distintivo de impulso ha caducado y ya no es visible en tu perfil.\n\nPuedes reactivar tu distintivo de impulso por otros 30 días con una contribución puntual.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Tu suscripción de sostén se ha cancelado automáticamente por inactividad demasiado prolongada en tu cuenta. Tu distintivo «%@» ya no es visible en tu perfil.\n\nPuedes continuar usando Signal, pero para sostener la aplicación y reactivar tu distintivo, renuévalo ahora.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Sostén Signal";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Danos un impulso";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Distintivo caducado";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renovar suscripción";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Suscripción cancelada";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "¡Gracias por el impulso!";

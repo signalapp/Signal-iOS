@@ -401,13 +401,13 @@
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Donner un coup de pouce";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Macaron expiré";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renouveler l’abonnement";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Abonnement annulé";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Merci pour le coup de pouce !";
@@ -5159,7 +5159,7 @@
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Journaux d’erreurs";
 
 /* Footer for avatar section in appearance settings */
-"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Voir les photos de contact du système lorsque disponibles.";
+"SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Afficher les photos de contact du système si disponibles.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Utiliser les photos de contact du système";
@@ -5321,7 +5321,7 @@
 "SETTINGS_MESSAGING" = "Messagerie";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Voir et partager lorsque les messages sont lus et saisis. Lorsque désactivé, vous ne verrez pas les accusés de lecture ni indications de saisie des autres utilisateurs.";
+"SETTINGS_MESSAGING_FOOTER" = "Voyez et partagez la lecture et la saisie des messages. Si cette option est désactivée, vous ne verrez ni les accusés de lecture ni les indications de saisie des autres utilisateurs.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Paramètres";
@@ -5333,7 +5333,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de comptage";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d'appels et de messages peuvent apparaître lorsque votre téléphone est verrouillé.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appels et de messages peuvent apparaître alors que votre téléphone est verrouillé.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
@@ -5504,7 +5504,7 @@
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Nous présentons les paiements (bêta)";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Votre solde sera automatiquement restitué lorsque vous réinstallez Signal et confirmez votre NIP. Vous pouvez aussi récupérer votre solde en utilisant une phrase de récupération, laquelle est une phrase unique et personnelle de 24-mots. Notez la et rangez la dans un endroit sûr.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Après avoir réinstallé Signal, votre solde sera restauré automatiquement si vous confirmez votre NIP Signal. Vous pouvez aussi restaurer votre solde grâce à une phrase de récupération, une phrase de 24 mots qui vous est propre. Prenez-la par écrit et gardez-la en lieu sûr.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Ajouter des fonds";
@@ -5765,7 +5765,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Rappels du NIP";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "NIPs conservent les informations de Signal sous forme chiffrée pour que vous seul puissiez y accéder. Votre NIP ne peut être retrouvé. Votre profil, configuration et contacts sont rétablis lorsque vous ré-installez Signal.";
+"SETTINGS_PINS_FOOTER" = "Les NIP conservent les renseignements stockés dans Signal sous forme chiffrée afin que vous seul puissiez y accéder. Votre NIP ne peut pas être récupéré. Votre profil, votre configuration et vos contacts seront restaurés quand vous réinstallez Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer votre NIP";

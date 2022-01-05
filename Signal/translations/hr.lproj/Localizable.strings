@@ -380,34 +380,34 @@
 "BADGE_CONFIGURATION_TITLE" = "Značke";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Postanite pretplatnik";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Pretplatite se";
 
 /* Text prompting the user to boost */
 "BADGE_DETAILS_GIVE_A_BOOST" = "Donirajte jednokratno";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Vaša \"Boost\" značka je istekla i više nije vidljiva na vašem profilu.\n\nMožete nastaviti koristiti Signal, ali kako biste podržali aplikaciju koja je napravljena za vas, razmislite o tome da postanete mjesečni pretplatnik.";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Vaša \"Boost\" značka je istekla i više nije vidljiva na vašem profilu. \n\nSvoju \"Boost\" značku možete ponovno aktivirati na sljedećih 30 dana uz jednokratnu donaciju.";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša %@ značka više nije vidljiva na vašem profilu. \n\nMožete nastaviti koristiti Signal, ali da biste podržali aplikaciju i ponovno aktivirali svoju značku, obnovite je sada.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Postanite pretplatnik";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Pretplatite se";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Značka je istekla";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Obnovi pretplatu";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Pretplata je otkazana";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Hvala vam na uplati!";
@@ -1817,7 +1817,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Odaberite značku";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Vaše značke";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označi kao provjereno";
@@ -5864,7 +5864,7 @@
 "SETTINGS_SIGNAL_BOOST" = "Jednokratna donacija";
 
 /* Title for the 'become a sustainer' link in settings. */
-"SETTINGS_SUBSCRIPTION" = "Postanite Signalov pretplatnik";
+"SETTINGS_SUBSCRIPTION" = "Pretplatite se";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";
