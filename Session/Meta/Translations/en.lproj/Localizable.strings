@@ -598,3 +598,5 @@
 "UNPIN_BUTTON_TEXT" = "Unpin";
 "modal_call_missed_tips_title" = "Call missed";
 "modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
+"meida_saved" = "Media saved by %@.";
+"screenshot_taken" = "%@ took a screenshot.";
