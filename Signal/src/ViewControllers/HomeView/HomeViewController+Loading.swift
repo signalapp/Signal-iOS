@@ -142,6 +142,7 @@ extension HomeViewController {
                 tableUpdatesPerformed = true
             }
         }
+
         for rowChange in rowChanges {
 
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
