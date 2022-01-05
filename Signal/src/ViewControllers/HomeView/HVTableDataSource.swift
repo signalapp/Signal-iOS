@@ -233,6 +233,15 @@ public enum HomeViewSection: Int, CaseIterable {
 
 extension HVTableDataSource: UITableViewDelegate {
 
+    public func tableView(_ tableView: UITableView,
+                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return UITableViewCell.EditingStyle.none
+    }
+
+    public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         AssertIsOnMainThread()
 
@@ -302,6 +311,18 @@ extension HVTableDataSource: UITableViewDelegate {
         return UIView()
     }
 
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        AssertIsOnMainThread()
+
+        guard let viewController = self.viewController else {
+            owsFailDebug("Missing viewController.")
+            return
+        }
+        if viewState.multiSelectState.isActive {
+            viewController.updateCaptions()
+        }
+    }
+
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
 
@@ -319,17 +340,21 @@ extension HVTableDataSource: UITableViewDelegate {
             return
         }
 
-        switch section {
-        case .reminders:
-            break
-        case .pinned, .unpinned:
-            guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
-                owsFailDebug("Missing threadViewModel.")
-                return
+        if viewState.multiSelectState.isActive {
+            viewController.updateCaptions()
+        } else {
+            switch section {
+            case .reminders:
+                break
+            case .pinned, .unpinned:
+                guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+                    owsFailDebug("Missing threadViewModel.")
+                    return
+                }
+                viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
+            case .archiveButton:
+                viewController.showArchivedConversations()
             }
-            viewController.present(threadViewModel.threadRecord, action: .none, animated: true)
-        case .archiveButton:
-            viewController.showArchivedConversations()
         }
     }
 
@@ -540,6 +565,7 @@ extension HVTableDataSource: UITableViewDataSource {
             owsFailDebug("Missing splitViewController.")
         }
 
+        cell.tintColor = .ows_accentBlue
         return cell
     }
 
@@ -766,6 +792,7 @@ extension HVTableDataSource {
         }
     }
 
+    @discardableResult
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
 

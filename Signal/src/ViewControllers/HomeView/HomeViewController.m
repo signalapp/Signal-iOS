@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewController.h"
@@ -398,7 +398,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             break;
     }
 
-    [self applyDefaultBackButton];
+    if (![self.viewState.multiSelectState isActive]) {
+        [self applyDefaultBackButton];
+    }
 
     if (@available(iOS 13, *)) {
         // Automatically handled by UITableViewDelegate callbacks
@@ -457,8 +459,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self presentGetStartedBannerIfNecessary];
     }
 
-    [self applyDefaultBackButton];
-
     // Whether or not the theme has changed, always ensure
     // the right theme is applied. The initial collapsed
     // state of the split view controller is determined between
@@ -473,6 +473,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self showBadgeExpirationSheetIfNeeded];
 
     self.hasEverAppeared = YES;
+    if (self.viewState.multiSelectState.isActive) {
+        [self showToolbar];
+    } else {
+        [self applyDefaultBackButton];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -497,14 +502,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)updateBarButtonItems
 {
-    if (self.homeViewMode != HomeViewModeInbox) {
+    if (self.homeViewMode != HomeViewModeInbox || self.viewState.multiSelectState.isActive) {
         return;
     }
 
     // Settings button.
     UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
-    [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
+    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchUpInside];
 
     UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
     [avatarButton addSubview:avatarImageView];
@@ -738,7 +743,13 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         }
     }
 
-    [self applyDefaultBackButton];
+    if (self.viewState.multiSelectState.isActive) {
+        [self.tableView setEditing:YES animated:NO];
+        [self.tableView reloadData];
+        [self willEnterMultiselectMode];
+    } else {
+        [self applyDefaultBackButton];
+    }
 
     [self.searchResultsController viewWillAppear:animated];
 

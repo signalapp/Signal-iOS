@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -8,7 +8,6 @@ import SignalUI
 
 @objc
 public class HomeViewCell: UITableViewCell {
-
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
@@ -881,6 +880,13 @@ public class HomeViewCell: UITableViewCell {
         typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - Selection
+
+    override public func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+        self.selectedBackgroundView?.backgroundColor = UIColor.clear
     }
 
     // MARK: - Name

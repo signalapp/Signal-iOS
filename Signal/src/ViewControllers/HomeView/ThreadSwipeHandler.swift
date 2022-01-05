@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -127,7 +127,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         return image.withRenderingMode(.alwaysTemplate)
     }
 
-    fileprivate func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
+    func archiveThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
@@ -155,7 +155,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         presentActionSheet(alert)
     }
 
-    fileprivate func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
+    func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
         AssertIsOnMainThread()
 
         closeConversationBlock?()
@@ -165,7 +165,7 @@ extension ThreadSwipeHandler where Self: UIViewController {
         updateUIAfterSwipeAction?()
     }
 
-    fileprivate func markThreadAsRead(threadViewModel: ThreadViewModel) {
+    func markThreadAsRead(threadViewModel: ThreadViewModel) {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in

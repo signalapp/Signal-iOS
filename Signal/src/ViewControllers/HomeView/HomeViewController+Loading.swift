@@ -135,6 +135,10 @@ extension HomeViewController {
         let checkAndSetTableUpdates = {
             if !tableUpdatesPerformed {
                 tableView.beginUpdates()
+                // animate all UI changes within the same transaction
+                if tableView.isEditing {
+                    tableView.setEditing(false, animated: true)
+                }
                 tableUpdatesPerformed = true
             }
         }
@@ -180,6 +184,8 @@ extension HomeViewController {
         }
         if tableUpdatesPerformed {
             tableView.endUpdates()
+        } else if tableView.isEditing {
+            tableView.setEditing(false, animated: true)
         }
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }

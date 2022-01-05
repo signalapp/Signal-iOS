@@ -38,6 +38,11 @@ public class CommonStrings: NSObject {
     }
 
     @objc
+    static public var selectButton: String {
+        NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode")
+    }
+
+    @objc
     static public var doneButton: String {
         NSLocalizedString("BUTTON_DONE", comment: "Label for generic done button.")
     }
