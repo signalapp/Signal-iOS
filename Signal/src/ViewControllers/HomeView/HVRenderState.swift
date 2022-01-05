@@ -42,9 +42,9 @@ public class HVRenderState: NSObject {
     }
 
     @objc
-    func thread(forIndexPath indexPath: IndexPath, failDebug: Bool = true) -> TSThread? {
+    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
         guard let section = HomeViewSection(rawValue: indexPath.section) else {
-            if failDebug {
+            if expectsSuccess {
                 owsFailDebug("Invalid section: \(indexPath.section).")
             }
             return nil
@@ -53,7 +53,7 @@ public class HVRenderState: NSObject {
         switch section {
         case .pinned:
             guard let thread = pinnedThreads[safe: indexPath.row]?.value else {
-                if failDebug {
+                if expectsSuccess {
                     owsFailDebug("No thread for index path: \(indexPath)")
                 }
                 return nil
@@ -61,14 +61,14 @@ public class HVRenderState: NSObject {
             return thread
         case .unpinned:
             guard let thread = unpinnedThreads[safe: indexPath.row] else {
-                if failDebug {
+                if expectsSuccess {
                     owsFailDebug("No thread for index path: \(indexPath)")
                 }
                 return nil
             }
             return thread
         default:
-            if failDebug {
+            if expectsSuccess {
                 owsFailDebug("Invalid index path: \(indexPath).")
             }
             return nil

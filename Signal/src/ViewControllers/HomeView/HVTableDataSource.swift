@@ -85,15 +85,15 @@ extension HVTableDataSource {
     }
 
     @objc
-    func threadViewModel(forIndexPath indexPath: IndexPath, failDebug: Bool = true) -> ThreadViewModel? {
-        guard let thread = self.thread(forIndexPath: indexPath, failDebug: failDebug) else {
+    func threadViewModel(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> ThreadViewModel? {
+        guard let thread = self.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess) else {
             return nil
         }
         return self.threadViewModel(forThread: thread)
     }
 
-    func thread(forIndexPath indexPath: IndexPath, failDebug: Bool = true) -> TSThread? {
-        renderState.thread(forIndexPath: indexPath, failDebug: failDebug)
+    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
+        renderState.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess)
     }
 }
 
@@ -769,7 +769,7 @@ extension HVTableDataSource {
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
 
-        if let primKey = threadViewModel(forIndexPath: indexPath, failDebug: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+        if let primKey = threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
             for cell in tableView.visibleCells {
                 if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
                     homeCell.reset()
