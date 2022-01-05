@@ -207,8 +207,7 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
     // MARK: Updating
     override func update() {
         guard let viewItem = viewItem, let message = viewItem.interaction as? TSMessage else { return }
-        let thread = message.thread
-        let isGroupThread = thread.isGroupThread()
+        let isGroupThread = viewItem.isGroupThread
         // Profile picture view
         profilePictureViewLeftConstraint.constant = isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0
         profilePictureViewWidthConstraint.constant = isGroupThread ? VisibleMessageCell.profilePictureSize : 0
@@ -217,8 +216,8 @@ final class VisibleMessageCell : MessageCell, LinkPreviewViewDelegate {
         if let senderSessionID = senderSessionID {
             profilePictureView.update(for: senderSessionID)
         }
-        if let thread = thread as? TSGroupThread, thread.isOpenGroup, let senderSessionID = senderSessionID {
-            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: thread.uniqueId!) {
+        if let senderSessionID = senderSessionID, message.isOpenGroupMessage {
+            if let openGroupV2 = Storage.shared.getV2OpenGroup(for: message.uniqueThreadId) {
                 let isUserModerator = OpenGroupAPIV2.isUserModerator(senderSessionID, for: openGroupV2.room, on: openGroupV2.server)
                 moderatorIconImageView.isHidden = !isUserModerator || profilePictureView.isHidden
             } else {

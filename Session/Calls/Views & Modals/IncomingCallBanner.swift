@@ -167,7 +167,7 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         self.alpha = 0.0
         let window = CurrentAppContext().mainWindow!
         window.addSubview(self)
-        let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top - Values.smallSpacing
+        let topMargin = window.safeAreaInsets.top - Values.smallSpacing
         self.autoPinWidthToSuperview(withMargin: Values.smallSpacing)
         self.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
         UIView.animate(withDuration: 0.5, delay: 0, options: [], animations: {
