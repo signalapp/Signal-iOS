@@ -12,11 +12,13 @@ public class HomeViewCell: UITableViewCell {
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
-    private let avatarView = ConversationAvatarView(
-        sizeClass: .fiftySix,
-        localUserDisplayMode: .noteToSelf,
-        useAutolayout: true)
-
+    private static func createFreshAvatarView() -> ConversationAvatarView {
+        return ConversationAvatarView(
+            sizeClass: .fiftySix,
+            localUserDisplayMode: .noteToSelf,
+            useAutolayout: true)
+    }
+    private var avatarView = HomeViewCell.createFreshAvatarView()
     private let nameLabel = CVLabel()
     private let snippetLabel = CVLabel()
     private let dateTimeLabel = CVLabel()
@@ -345,7 +347,7 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        avatarView.updateWithSneakyTransactionIfNecessary { config in
+        avatarView.updateAndDisplayAsync { config in
             config.dataSource = .thread(cellContentToken.thread)
             if !cellContentToken.shouldLoadAvatarAsync {
                 config.applyConfigurationSynchronously()
@@ -875,6 +877,7 @@ public class HomeViewCell: UITableViewCell {
 
         cellContentToken = nil
         avatarView.reset()
+        avatarView = HomeViewCell.createFreshAvatarView()
         typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)

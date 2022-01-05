@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -15,6 +15,7 @@ public extension ConversationAvatarViewDelegate {
 }
 
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
+    private var loadAvatarWorkItem: DispatchWorkItem?
 
     public required init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),
@@ -126,9 +127,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     public private(set) var configuration: Configuration {
         didSet {
-            AssertIsOnMainThread()
             if configuration.dataSource != oldValue.dataSource {
-                ensureObservers()
+                if Thread.isMainThread {
+                    ensureObservers()
+                } else {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.ensureObservers()
+                    }
+                }
             }
         }
     }
@@ -162,6 +168,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     // MARK: Configuration updates
 
+    public func updateAndDisplayAsync(_ updateBlock: (inout Configuration) -> Void) {
+        update(optionalTransaction: nil, updateBlock, performAsync: true)
+    }
+
     public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
         update(optionalTransaction: nil, updateBlock)
     }
@@ -173,14 +183,20 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         update(optionalTransaction: transaction, updateBlock)
     }
 
-    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
-        AssertIsOnMainThread()
-
+    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void, performAsync: Bool = false) {
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
         updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
-        updateModelIfNecessary(transaction: transaction)
+        if performAsync && transaction == nil {
+            loadAvatarWorkItem?.cancel()
+            loadAvatarWorkItem = DispatchWorkItem { [weak self] in
+                self?.updateModelIfNecessary(transaction: nil)
+            }
+            DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
+        } else {
+            updateModelIfNecessary(transaction: transaction)
+        }
     }
 
     // MARK: Model Updates
@@ -197,8 +213,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
-        AssertIsOnMainThread()
-
+        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+            return
+        }
         guard nextModelGeneration.get() > currentModelGeneration else { return }
         Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
@@ -220,12 +237,22 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
-        AssertIsOnMainThread()
-
-        self.avatarView.image = avatarImage
-        self.badgeView.image = badgeImage
-        currentModelGeneration = nextModelGeneration.get()
-        setNeedsLayout()
+        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+            return
+        }
+        let uiUpdateBlock = { [weak self] in
+            if let self = self {
+                if avatarImage != nil {
+                    self.avatarView.image = avatarImage
+                }
+                self.badgeView.image = badgeImage
+                self.currentModelGeneration = self.nextModelGeneration.get()
+                self.setNeedsLayout()
+            }
+        }
+        DispatchMainThreadSafe {
+            uiUpdateBlock()
+        }
     }
 
     // MARK: - Model Tracking
@@ -239,10 +266,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     private var currentModelGeneration: UInt = 0
     private var nextModelGeneration = AtomicUInt(0)
     @discardableResult
-    private func setNeedsModelUpdate() -> UInt {
-        AssertIsOnMainThread()
-        return nextModelGeneration.increment()
-    }
+    private func setNeedsModelUpdate() -> UInt { nextModelGeneration.increment() }
 
     // Load avatars in _reverse_ order in which they are enqueued.
     // Avatars are enqueued as the user navigates (and not cancelled),
@@ -282,6 +306,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private var avatarView: UIImageView = {
         let view = UIImageView()
+        view.image = UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
         view.contentMode = .scaleAspectFill
         view.layer.minificationFilter = .trilinear
         view.layer.magnificationFilter = .trilinear
@@ -527,6 +552,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: - <CVView>
 
     public func reset() {
+        loadAvatarWorkItem?.cancel()
         configuration.dataSource = nil
         reloadDataIfNecessary()
     }
