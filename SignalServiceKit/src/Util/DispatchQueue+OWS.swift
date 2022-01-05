@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,13 +15,6 @@ extension DispatchQueue {
     public static let sharedUserInitiated: DispatchQueue = {
         return DispatchQueue(label: "org.whispersystems.signal.sharedUserInitiated",
                              qos: .userInitiated,
-                             autoreleaseFrequency: .workItem)
-    }()
-
-    public static let sharedUserInitiatedConcurrent: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.sharedUserInitiatedConcurrent",
-                             qos: .userInitiated,
-                             attributes: [.concurrent],
                              autoreleaseFrequency: .workItem)
     }()
 
