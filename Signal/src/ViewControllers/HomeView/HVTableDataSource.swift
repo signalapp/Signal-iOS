@@ -33,6 +33,8 @@ public class HVTableDataSource: NSObject {
                 return
             }
 
+            updateTimer?.invalidate()
+            updateTimer = nil
             if let interval = nextUpdateAt?.timeIntervalSinceNow {
                 updateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] (_) in
                     if let self = self {
@@ -44,9 +46,6 @@ public class HVTableDataSource: NSObject {
                     }
                     self?.updateAndSetRefreshTimer()
                 }
-            } else if updateTimer != nil {
-                updateTimer?.invalidate()
-                updateTimer = nil
             }
         }
     }
@@ -86,15 +85,15 @@ extension HVTableDataSource {
     }
 
     @objc
-    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        guard let thread = self.thread(forIndexPath: indexPath) else {
+    func threadViewModel(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> ThreadViewModel? {
+        guard let thread = self.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess) else {
             return nil
         }
         return self.threadViewModel(forThread: thread)
     }
 
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        renderState.thread(forIndexPath: indexPath)
+    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
+        renderState.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess)
     }
 }
 
@@ -797,7 +796,7 @@ extension HVTableDataSource {
     public func updateVisibleCellContent(at indexPath: IndexPath, for tableView: UITableView) -> Bool {
         AssertIsOnMainThread()
 
-        if let primKey = threadViewModel(forIndexPath: indexPath)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
+        if let primKey = threadViewModel(forIndexPath: indexPath, expectsSuccess: false)?.threadRecord.uniqueId, (tableView.indexPathsForVisibleRows ?? []).contains(indexPath) {
             for cell in tableView.visibleCells {
                 if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
                     homeCell.reset()
