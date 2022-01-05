@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -843,7 +843,8 @@ extension HVTableDataSource {
             }
             return self.lastReloadDate
         }()
-        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel, lastReloadDate: lastReloadDate)
+        let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
+                                                        lastReloadDate: lastReloadDate)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> HVCellContentToken in
             // If we have an existing HVCellContentToken, use it.
@@ -908,7 +909,8 @@ extension HVTableDataSource {
             let threadViewModel = Self.databaseStorage.read { transaction in
                 ThreadViewModel(thread: thread, forHomeView: true, transaction: transaction)
             }
-            let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel, lastReloadDate: lastReloadDate)
+            let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
+                                                            lastReloadDate: lastReloadDate)
             let contentToken = HomeViewCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel,

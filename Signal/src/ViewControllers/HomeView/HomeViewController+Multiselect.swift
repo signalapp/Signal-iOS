@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 extension HomeViewController {
@@ -315,19 +315,19 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
 
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
-    required init(_ child: UIView) {
-        super.init(frame: child.frame)
-        let frame = child.bounds
-        let radius = child.layer.cornerRadius
+    required init(_ target: UIView) {
+        super.init(frame: target.frame)
+        let frame = target.bounds
+        let radius = target.layer.cornerRadius
         let shadowView = UIView(frame: CGRect(x: radius,
                                               y: radius,
                                               width: frame.width - 2 * radius,
                                               height: frame.height - 2 * radius))
         shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
         shadowView.setShadow(radius: 40, opacity: 0.3, offset: CGSize(width: 8, height: 20))
-        child.frame = frame
+        target.frame = frame
         self.addSubview(shadowView)
-        self.addSubview(child)
+        self.addSubview(target)
     }
 
     required init?(coder: NSCoder) {

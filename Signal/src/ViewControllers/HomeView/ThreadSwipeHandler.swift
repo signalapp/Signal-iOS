@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -133,17 +133,6 @@ extension ThreadSwipeHandler where Self: UIViewController {
         closeConversationBlock?()
         databaseStorage.write { transaction in
             threadViewModel.associatedData.updateWith(isArchived: !threadViewModel.isArchived,
-                                                      updateStorageService: true,
-                                                      transaction: transaction)
-        }
-        updateUIAfterSwipeAction?()
-    }
-
-    fileprivate func markThreadRead(threadViewModel: ThreadViewModel) {
-        AssertIsOnMainThread()
-
-        databaseStorage.write { transaction in
-            threadViewModel.associatedData.updateWith(isMarkedUnread: false,
                                                       updateStorageService: true,
                                                       transaction: transaction)
         }

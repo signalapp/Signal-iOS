@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "HomeViewController.h"
@@ -475,8 +475,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.hasEverAppeared = YES;
     if (self.viewState.multiSelectState.isActive) {
         [self showToolbar];
-    }
-    else {
+    } else {
         [self applyDefaultBackButton];
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -297,9 +297,11 @@ public class HomeViewCell: UITableViewCell {
                                                         ])
         let vStackSize = vStackMeasurement.measuredSize
 
-        let outerHStackMeasurement = ManualStackView.measure(
-            config: outerHStackConfig,
-            subviewInfos: [avatarStackSize.asManualSubviewInfo(hasFixedWidth: true), vStackSize.asManualSubviewInfo])
+        let outerHStackMeasurement = ManualStackView.measure(config: outerHStackConfig,
+                                                             subviewInfos: [
+                                                                avatarStackSize.asManualSubviewInfo(hasFixedWidth: true),
+                                                                vStackSize.asManualSubviewInfo
+                                                             ])
 
         return HVCellMeasurements(avatarStackMeasurement: avatarStackMeasurement,
                                   topRowStackMeasurement: topRowStackMeasurement,
