@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>WebRTCCommit</key>
-		<string>0c2bab0285b8e10879ee59daa3c048e503a89704 Production build of v2.16.0</string>
+		<string>132420bab6f207ab1951acf630ff1432f34bbb55 Production build of v2.16.1</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -43,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>74</string>
+	<string>75</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -141,7 +141,7 @@
 		<string>INStartCallIntent</string>
 	</array>
 	<key>OWSBundleVersion4</key>
-	<string>5.27.0.74</string>
+	<string>5.27.0.75</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIAppFonts</key>
