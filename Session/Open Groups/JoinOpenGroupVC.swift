@@ -143,7 +143,7 @@ final class JoinOpenGroupVC : BaseVC, UIPageViewControllerDataSource, UIPageView
             Storage.shared.write { transaction in
                 OpenGroupManagerV2.shared.add(room: room, server: server, publicKey: publicKey, using: transaction)
                 .done(on: DispatchQueue.main) { [weak self] _ in
-                    self?.presentingViewController!.dismiss(animated: true, completion: nil)
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
                     let appDelegate = UIApplication.shared.delegate as! AppDelegate
                     appDelegate.forceSyncConfigurationNowIfNeeded().retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                 }
