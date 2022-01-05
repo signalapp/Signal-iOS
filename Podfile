@@ -28,8 +28,6 @@ pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-ma
 
 pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
-pod 'ZKGroup', git: 'https://github.com/signalapp/zkgroup', testspecs: ["Tests"]
-
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
 
@@ -257,11 +255,6 @@ def disable_non_development_pod_warnings(installer)
     !installer.development_pod_targets.include?(target)
   end
 
-  # ZKGroup is security sensitive and is going to be around for the foreseeable
-  # future. Let's always warn for it to keep an eye on the warnings
-  # (and also fix the warnings)
-  always_warn_names = ['ZKGroup']
-
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |build_configuration|
       # Only suppress warnings for the debug configuration
@@ -270,10 +263,6 @@ def disable_non_development_pod_warnings(installer)
 
       next unless non_development_targets.any? do |non_dev_target|
         target.name.include?(non_dev_target.name)
-      end
-
-      next if always_warn_names.any? do |warnable_target_name|
-        target.name.include?(warnable_target_name)
       end
 
       build_configuration.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'

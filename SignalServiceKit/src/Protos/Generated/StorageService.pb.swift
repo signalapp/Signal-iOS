@@ -490,6 +490,11 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._e164 = newValue}
   }
 
+  var preferredReactionEmoji: [String] {
+    get {return _storage._preferredReactionEmoji}
+    set {_uniqueStorage()._preferredReactionEmoji = newValue}
+  }
+
   var subscriberID: Data {
     get {return _storage._subscriberID}
     set {_uniqueStorage()._subscriberID = newValue}
@@ -1301,6 +1306,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     16: .same(proto: "payments"),
     17: .same(proto: "universalExpireTimer"),
     19: .same(proto: "e164"),
+    20: .same(proto: "preferredReactionEmoji"),
     21: .same(proto: "subscriberID"),
     22: .same(proto: "subscriberCurrencyCode"),
     23: .same(proto: "displayBadgesOnProfile"),
@@ -1326,6 +1332,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _payments: StorageServiceProtos_AccountRecord.Payments?
     var _universalExpireTimer: UInt32 = 0
     var _e164: String = String()
+    var _preferredReactionEmoji: [String] = []
     var _subscriberID: Data = Data()
     var _subscriberCurrencyCode: String = String()
     var _displayBadgesOnProfile: Bool = false
@@ -1354,6 +1361,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _payments = source._payments
       _universalExpireTimer = source._universalExpireTimer
       _e164 = source._e164
+      _preferredReactionEmoji = source._preferredReactionEmoji
       _subscriberID = source._subscriberID
       _subscriberCurrencyCode = source._subscriberCurrencyCode
       _displayBadgesOnProfile = source._displayBadgesOnProfile
@@ -1394,6 +1402,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 16: try { try decoder.decodeSingularMessageField(value: &_storage._payments) }()
         case 17: try { try decoder.decodeSingularUInt32Field(value: &_storage._universalExpireTimer) }()
         case 19: try { try decoder.decodeSingularStringField(value: &_storage._e164) }()
+        case 20: try { try decoder.decodeRepeatedStringField(value: &_storage._preferredReactionEmoji) }()
         case 21: try { try decoder.decodeSingularBytesField(value: &_storage._subscriberID) }()
         case 22: try { try decoder.decodeSingularStringField(value: &_storage._subscriberCurrencyCode) }()
         case 23: try { try decoder.decodeSingularBoolField(value: &_storage._displayBadgesOnProfile) }()
@@ -1464,6 +1473,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if !_storage._e164.isEmpty {
         try visitor.visitSingularStringField(value: _storage._e164, fieldNumber: 19)
       }
+      if !_storage._preferredReactionEmoji.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._preferredReactionEmoji, fieldNumber: 20)
+      }
       if !_storage._subscriberID.isEmpty {
         try visitor.visitSingularBytesField(value: _storage._subscriberID, fieldNumber: 21)
       }
@@ -1503,6 +1515,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._payments != rhs_storage._payments {return false}
         if _storage._universalExpireTimer != rhs_storage._universalExpireTimer {return false}
         if _storage._e164 != rhs_storage._e164 {return false}
+        if _storage._preferredReactionEmoji != rhs_storage._preferredReactionEmoji {return false}
         if _storage._subscriberID != rhs_storage._subscriberID {return false}
         if _storage._subscriberCurrencyCode != rhs_storage._subscriberCurrencyCode {return false}
         if _storage._displayBadgesOnProfile != rhs_storage._displayBadgesOnProfile {return false}

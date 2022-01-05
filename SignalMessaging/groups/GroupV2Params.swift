@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import ZKGroup
+import SignalClient
 
 public struct GroupV2Params {
     let groupSecretParamsData: Data
@@ -100,8 +100,7 @@ public extension GroupV2Params {
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        let zkgUuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
-        let uuid = zkgUuid.asUUID()
+        let uuid = try clientZkGroupCipher.decryptUuid(uuidCiphertext: uuidCiphertext)
 
         Self.decryptedUuidCache.setObject(uuid, forKey: cacheKey)
         return uuid
@@ -109,7 +108,7 @@ public extension GroupV2Params {
 
     func userId(forUuid uuid: UUID) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
-        let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: try uuid.asZKGUuid())
+        let uuidCiphertext = try clientZkGroupCipher.encryptUuid(uuid: uuid)
         let userId = uuidCiphertext.serialize().asData
 
         let cacheKey = (groupSecretParamsData + userId)
@@ -122,16 +121,15 @@ public extension GroupV2Params {
 
     func profileKey(forProfileKeyCiphertext profileKeyCiphertext: ProfileKeyCiphertext,
                     uuid: UUID) throws -> Data {
-        let zkgUuid = try uuid.asZKGUuid()
 
-        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + zkgUuid.serialize().asData)
+        let cacheKey = (groupSecretParamsData + profileKeyCiphertext.serialize().asData + uuid.data)
         if let plaintext = Self.decryptedProfileKeyCache.object(forKey: cacheKey) {
             return plaintext
         }
 
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: self.groupSecretParams)
         let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext,
-                                                                   uuid: zkgUuid)
+                                                                   uuid: uuid)
         let plaintext = profileKey.serialize().asData
 
         Self.decryptedProfileKeyCache.setObject(plaintext, forKey: cacheKey)

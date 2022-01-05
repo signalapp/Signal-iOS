@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 protocol MessageReactionPickerDelegate: AnyObject {
     func didSelectReaction(reaction: String, isRemoving: Bool)
@@ -18,11 +19,14 @@ class MessageReactionPicker: UIStackView {
     let pickerPadding: CGFloat = 6
     var reactionHeight: CGFloat { return pickerDiameter - (pickerPadding * 2) }
     var selectedBackgroundHeight: CGFloat { return pickerDiameter - 4 }
+    let configureMode: Bool
 
     private var buttonForEmoji = [String: OWSFlatButton]()
     private var selectedEmoji: EmojiWithSkinTones?
     private var backgroundView: UIView?
-    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?) {
+    init(selectedEmoji: String?, delegate: MessageReactionPickerDelegate?, configureMode: Bool = false) {
+        self.configureMode = configureMode
+
         if let selectedEmoji = selectedEmoji {
             self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
             owsAssertDebug(self.selectedEmoji != nil)
@@ -58,13 +62,12 @@ class MessageReactionPicker: UIStackView {
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
         var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
-            return ReactionManager.emojiSet.compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
+            return ReactionManager.emojiSet(transaction: transaction).compactMap { Emoji(rawValue: $0)?.withPreferredSkinTones(transaction: transaction) }
         }
-        owsAssertDebug(emojiSet.count == ReactionManager.emojiSet.count)
 
-        var addAnyButton = true
+        var addAnyButton = !self.configureMode
 
-        if let selectedEmoji = self.selectedEmoji {
+        if !self.configureMode, let selectedEmoji = self.selectedEmoji {
             // If the local user reacted with any of the default emoji set,
             // regardless of skin tone, we should show it in the normal place
             // in the picker bar.
@@ -109,6 +112,65 @@ class MessageReactionPicker: UIStackView {
             buttonForEmoji[MessageReactionPicker.anyEmojiName] = button
             addArrangedSubview(button)
         }
+    }
+
+    public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String) {
+        let button = buttonForEmoji[oldEmoji]
+        if let button = button {
+            button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
+            buttonForEmoji[newEmoji] = button
+        }
+    }
+
+    public func currentEmojiSet() -> [String] {
+        var emojiSet: [String] = []
+        for view in arrangedSubviews {
+            if let button = view as? OWSFlatButton, let emoji = button.button.title(for: .normal) {
+                emojiSet.append(emoji)
+            }
+        }
+        return emojiSet
+    }
+
+    public func startReplaceAnimation(focusedEmoji: String) {
+        var buttonToWiggle: OWSFlatButton?
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
+            for view in self.arrangedSubviews {
+                if let button = view as? OWSFlatButton, let emoji = button.button.title(for: .normal) {
+                    // Shrink and fade
+                    if emoji != focusedEmoji {
+                        button.alpha = 0.3
+                        button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                    } else { // Expand and wiggle
+                        button.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                        buttonToWiggle = button
+                    }
+                }
+            }
+        } completion: { finished in
+            if finished, let buttonToWiggle = buttonToWiggle {
+                let leftRotationValue = NSValue(caTransform3D: CATransform3DConcat(CATransform3DMakeScale(1.3, 1.3, 1), CATransform3DMakeRotation(-0.08, 0, 0, 1)))
+                let rightRotationValue = NSValue(caTransform3D: CATransform3DConcat(CATransform3DMakeScale(1.3, 1.3, 1), CATransform3DMakeRotation(0.08, 0, 0, 1)))
+                let animation = CAKeyframeAnimation(keyPath: "transform")
+                animation.values = [leftRotationValue, rightRotationValue]
+                animation.autoreverses = true
+                animation.duration = 0.2
+                animation.repeatCount = MAXFLOAT
+                buttonToWiggle.layer.add(animation, forKey: "wiggle")
+            }
+        }
+    }
+
+    public func endReplaceAnimation() {
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
+            for view in self.arrangedSubviews {
+                if let button = view as? OWSFlatButton {
+                    button.alpha = 1
+                    button.transform = CGAffineTransform.identity
+                    button.layer.removeAnimation(forKey: "wiggle")
+                }
+            }
+        } completion: { _ in }
     }
 
     func playPresentationAnimation(duration: TimeInterval) {

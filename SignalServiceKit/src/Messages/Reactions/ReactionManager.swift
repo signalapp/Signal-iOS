@@ -7,7 +7,18 @@ import Foundation
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
     public static let localUserReacted = Notification.Name("localUserReacted")
-    public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
+    public static let defaultEmojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
+
+    private static let emojiSetKVS = SDSKeyValueStore(collection: "EmojiSetKVS")
+    private static let emojiSetKey = "EmojiSetKey"
+
+    public class func emojiSet(transaction: SDSAnyReadTransaction) -> [String] {
+        return emojiSetKVS.getObject(forKey: emojiSetKey, transaction: transaction) as? [String] ?? defaultEmojiSet
+    }
+
+    public class func setEmojiSet(_ emojis: [String], transaction: SDSAnyWriteTransaction) {
+        emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction)
+    }
 
     @discardableResult
     public class func localUserReacted(

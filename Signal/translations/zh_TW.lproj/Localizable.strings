@@ -386,28 +386,28 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "加油支持 Signal";
 
 /* String explaing to the user that their boost badge has expired on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly Sustainer.";
+"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "你的\"加油支持\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以繼續使用 Signal，但為了支持專為你研發的技術，請考慮成為每月的定期贊助人。";
 
 /* String explaing to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheetsheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
+"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "你的\"加油支持\"徽章已過期，不會再顯示於你的個人資料中。\n\n你可以透過一次性捐款將你的\"加油支持\"徽章再展示 30 天。";
 
 /* String explaing to the user that their subscription badge has expired on the badge expiry sheetsheet. Embed {badge name}. */
-"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "Your Sustainer subscription was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_EXIPRED_SUBSCRIPTION_BODY_FORMAT" = "你的贊助人定期贊助已自動取消，因為你的非活動時間過長。你的 %@ 徽章在你的個人資料中無法顯示。\n\n你可以繼續使用 Signal，但要支援該應用程式並重新展示你的徽章，請立即更新。";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "成為贊助人";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "新增一次單次贊助";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "增加一次加油支持";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "徽章已過期";
 
 /* Button title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
+"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "更新定期贊助";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Subscription Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "定期贊助已取消";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "謝謝你的加油與支持!";
@@ -506,10 +506,10 @@
 "BOOST_VIEW_AMOUNT_LABEL" = "設定貨幣";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得加油支持徽章 30 天 。";
+"BOOST_VIEW_BODY" = "說聲謝謝！” 並獲得\"加油支持\"徽章 30 天 。";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "你的加油支持徽章將於%@過期。";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "你的\"加油支持\"徽章將於%@過期。";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "輸入自定義金額";
@@ -5201,7 +5201,7 @@
 "SETTINGS_COPYRIGHT" = "版權Signal Messenger\n根據GPLv3版權";
 
 /* Title for the 'Subscription' link in settings. */
-"SETTINGS_CURRENT_SUBSCRIPTION" = "訂閱";
+"SETTINGS_CURRENT_SUBSCRIPTION" = "定期贊助";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "數據使用量";
@@ -6047,10 +6047,10 @@
 "SUBSCRIBER_BADGES" = "徽章";
 
 /* Title for the 'Manage Subscription' button in sustainer view. */
-"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "管理訂閱";
+"SUBSCRIBER_MANAGE_SUBSCRIPTION" = "管理定期贊助";
 
 /* Title for the 'Subscription FAQ' button in sustainer view. */
-"SUBSCRIBER_SUBSCRIPTION_FAQ" = "訂閱 問與答";
+"SUBSCRIBER_SUBSCRIPTION_FAQ" = "定期贊助 問與答";
 
 /* Action text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "貢獻";
@@ -6137,13 +6137,13 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "仍在處理中";
 
 /* Sustainer view Add Boost button title */
-"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的加油支持次數";
+"SUSTAINER_VIEW_ADD_BOOST" = "增加 Signal 的\"加油支持\"次數";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "得到一個 %@ 徽章";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "取消訂閱";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "取消定期贊助";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "確認";
@@ -6203,7 +6203,7 @@
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "你的付款仍在處理中。 這可能需要幾分鐘時間，這將取決於你的網路連接。";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "你的訂閱已取消";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "你的定期贊助已取消";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "現在不要";
@@ -6212,10 +6212,10 @@
 "SUSTAINER_VIEW_TITLE" = "Signal 由像你這樣的人提供動力。";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "今天將向你收取新訂閱價格的全額 (%@)。你的新訂閱將每月更新。";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "今天將向你收取新定期贊助價格的全額 (%@)。你的新定期贊助將每月更新。";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "續約訂閱嗎？";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "更新定期贊助嗎？";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "更新";

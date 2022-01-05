@@ -4,7 +4,7 @@
 
 import Foundation
 import SignalServiceKit
-import ZKGroup
+import SignalClient
 
 public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
