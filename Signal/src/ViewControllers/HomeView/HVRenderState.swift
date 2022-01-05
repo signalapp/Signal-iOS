@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,27 +42,35 @@ public class HVRenderState: NSObject {
     }
 
     @objc
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
         guard let section = HomeViewSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
+            if expectsSuccess {
+                owsFailDebug("Invalid section: \(indexPath.section).")
+            }
             return nil
         }
 
         switch section {
         case .pinned:
             guard let thread = pinnedThreads[safe: indexPath.row]?.value else {
-                owsFailDebug("No thread for index path: \(indexPath)")
+                if expectsSuccess {
+                    owsFailDebug("No thread for index path: \(indexPath)")
+                }
                 return nil
             }
             return thread
         case .unpinned:
             guard let thread = unpinnedThreads[safe: indexPath.row] else {
-                owsFailDebug("No thread for index path: \(indexPath)")
+                if expectsSuccess {
+                    owsFailDebug("No thread for index path: \(indexPath)")
+                }
                 return nil
             }
             return thread
         default:
-            owsFailDebug("Invalid index path: \(indexPath).")
+            if expectsSuccess {
+                owsFailDebug("Invalid index path: \(indexPath).")
+            }
             return nil
         }
     }
