@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -8,7 +8,7 @@ extension OWSSyncGroupsMessage {
 
     @objc
     public func buildPlainTextAttachmentFile(transaction: SDSAnyReadTransaction) -> URL? {
-        let fileUrl = OWSFileSystem.temporaryFileUrl()
+        let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
             owsFailDebug("Could not open outputStream.")
             return nil

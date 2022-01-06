@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1311,7 +1311,7 @@ extension OWSURLSession {
                                            textParts textPartsDictionary: OrderedDictionary<String, String>,
                                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         do {
-            let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl()
+            let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let boundary = OWSMultipartBody.createMultipartFormBoundary()
             // Order of form parts matters.
             let textParts = textPartsDictionary.map { (key, value) in

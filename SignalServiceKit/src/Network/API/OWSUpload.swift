@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -676,7 +676,7 @@ public extension OWSUpload {
 
         let cdn0UrlSession = signalService.urlSessionForCdn(cdnNumber: 0)
         return firstly { () -> Promise<HTTPResponse> in
-            let dataFileUrl = OWSFileSystem.temporaryFileUrl()
+            let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try data.write(to: dataFileUrl)
 
             let request = try cdn0UrlSession.buildRequest(uploadUrlPath, method: .post)
