@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppDelegate.h"
@@ -77,19 +77,38 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 }
 
-#if TESTABLE_BUILD
-void uncaughtExceptionHandler(NSException *exception);
-
-void uncaughtExceptionHandler(NSException *exception)
+static void uncaughtExceptionHandler(NSException *exception)
 {
-    OWSLogError(@"exception: %@", exception);
-    OWSLogError(@"name: %@", exception.name);
-    OWSLogError(@"reason: %@", exception.reason);
-    OWSLogError(@"userInfo: %@", exception.userInfo);
+    if (SSKDebugFlags.internalLogging) {
+        OWSLogError(@"exception: %@", exception);
+        OWSLogError(@"name: %@", exception.name);
+        OWSLogError(@"reason: %@", exception.reason);
+        OWSLogError(@"userInfo: %@", exception.userInfo);
+    } else {
+        NSString *reason = exception.reason;
+        NSString *reasonHash =
+            [[Cryptography computeSHA256Digest:[reason dataUsingEncoding:NSUTF8StringEncoding]] base64EncodedString];
+
+        // Truncate the error message to minimize potential leakage of user data.
+        // Attempt to truncate at word boundaries so that we don't, say, print *most* of a phone number
+        // and have it evade the log filter...but fall back to printing the whole first N characters if there's
+        // not a word boundary.
+        static const NSUInteger TRUNCATED_REASON_LENGTH = 20;
+        NSString *maybeEllipsis = @"";
+        if ([reason length] > TRUNCATED_REASON_LENGTH) {
+            NSRange lastSpaceRange = [reason rangeOfString:@" "
+                                                   options:NSBackwardsSearch
+                                                     range:NSMakeRange(0, TRUNCATED_REASON_LENGTH)];
+            NSUInteger endIndex
+                = (lastSpaceRange.location != NSNotFound) ? lastSpaceRange.location : TRUNCATED_REASON_LENGTH;
+            reason = [reason substringToIndex:endIndex];
+            maybeEllipsis = @"...";
+        }
+        OWSLogError(@"%@: %@%@ (hash: %@)", exception.name, reason, maybeEllipsis, reasonHash);
+    }
     OWSLogError(@"callStackSymbols: %@", exception.callStackSymbols);
     OWSLogFlush();
 }
-#endif
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -132,11 +151,10 @@ void uncaughtExceptionHandler(NSException *exception)
     OWSLogFlush();
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-#if TESTABLE_BUILD
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
-#endif
+
     // This should be the first thing we do.
     SetCurrentAppContext([MainAppContext new]);
 
