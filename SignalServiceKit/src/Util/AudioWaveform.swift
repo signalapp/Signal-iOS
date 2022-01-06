@@ -106,7 +106,7 @@ public class AudioWaveformManager: NSObject {
         // true and this path will no longer be hit.
         if !asset.isReadable, audioPath.hasSuffix("m4a") {
 
-            let symlinkPath = OWSFileSystem.temporaryFilePath(fileExtension: "aac")
+            let symlinkPath = OWSFileSystem.temporaryFilePath(fileExtension: "aac", isAvailableWhileDeviceLocked: true)
             do {
                 try FileManager.default.createSymbolicLink(atPath: symlinkPath,
                                                            withDestinationPath: audioPath)

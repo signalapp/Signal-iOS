@@ -1311,7 +1311,7 @@ extension OWSURLSession {
                                            textParts textPartsDictionary: OrderedDictionary<String, String>,
                                            progress progressBlock: ProgressBlock? = nil) -> Promise<HTTPResponse> {
         do {
-            let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl()
+            let multipartBodyFileURL = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let boundary = OWSMultipartBody.createMultipartFormBoundary()
             // Order of form parts matters.
             let textParts = textPartsDictionary.map { (key, value) in

@@ -676,7 +676,7 @@ public extension OWSUpload {
 
         let cdn0UrlSession = signalService.urlSessionForCdn(cdnNumber: 0)
         return firstly { () -> Promise<HTTPResponse> in
-            let dataFileUrl = OWSFileSystem.temporaryFileUrl()
+            let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try data.write(to: dataFileUrl)
 
             let request = try cdn0UrlSession.buildRequest(uploadUrlPath, method: .post)
