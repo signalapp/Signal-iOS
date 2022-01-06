@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -253,6 +253,10 @@ public final class AtomicOptional<T> {
     // Returns the old value.
     public func swap(_ value: T?) -> T? {
         self.value.swap(value)
+    }
+
+    public func map(_ block: @escaping (T?) -> T?) -> T? {
+        value.map(block)
     }
 }
 

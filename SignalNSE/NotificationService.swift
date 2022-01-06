@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UserNotifications
@@ -47,7 +47,7 @@ class NotificationService: UNNotificationServiceExtension {
             if DebugFlags.internalLogging,
                _logTimer == nil {
                 _logTimer = OffMainThreadTimer(timeInterval: 1.0, repeats: true) { _ in
-                    Logger.info("... memoryUsage: \(LocalDevice.memoryUsage)")
+                    Logger.info("... memoryUsage: \(LocalDevice.memoryUsageString)")
                 }
             }
 
@@ -77,7 +77,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
-                Logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount).")
+                Logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
             }
             Logger.flush()
             return
@@ -105,7 +105,7 @@ class NotificationService: UNNotificationServiceExtension {
         content.badge = updatedBadgeCount
 
         if DebugFlags.internalLogging {
-            Logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount).")
+            Logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
         }
         Logger.flush()
 
@@ -151,17 +151,17 @@ class NotificationService: UNNotificationServiceExtension {
 
         let nseCount = Self.nseDidStart()
 
-        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsage), nseCount: \(nseCount)")
+        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount)")
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {
-                    Logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsage).")
+                    Logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
                     self?.completeSilenty()
                     return
                 }
 
-                Logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsage).")
+                Logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsageString).")
 
                 self?.fetchAndProcessMessages()
             }

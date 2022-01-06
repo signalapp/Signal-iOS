@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -89,7 +89,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         }
 
-        infoSection.add(.label(withText: "Memory Usage: \(LocalDevice.memoryUsage)"))
+        infoSection.add(.label(withText: "Memory Usage: \(LocalDevice.memoryUsageString)"))
 
         let (threadCount, messageCount, attachmentCount, subscriberID) = databaseStorage.read { transaction in
             return (

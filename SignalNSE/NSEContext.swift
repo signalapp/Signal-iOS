@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,42 +59,25 @@ class NSEContext: NSObject, AppContext {
         return userDefaults
     }
 
+    let memoryPressureSource = DispatchSource.makeMemoryPressureSource(
+        eventMask: .all,
+        queue: .global()
+    )
+
     override init() {
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationWillResignActive),
-                                               name: UIApplication.willResignActiveNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationWillTerminate),
-                                               name: UIApplication.willTerminateNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidReceiveMemoryWarning),
-                                               name: UIApplication.didReceiveMemoryWarningNotification,
-                                               object: nil)
-    }
+        memoryPressureSource.setEventHandler { [weak self] in
+            if let self = self {
+                Logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
+            } else {
+                Logger.warn("Memory pressure event.")
+            }
+            Logger.warn("Current memory usage: \(LocalDevice.memoryUsageString)")
+            Logger.flush()
+        }
+        memoryPressureSource.resume()
 
-    @objc
-    private func applicationWillResignActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
-    }
-
-    @objc
-    private func applicationWillTerminate(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
-    }
-
-    @objc
-    private func applicationDidReceiveMemoryWarning(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        Logger.info("memoryUsage: \(LocalDevice.memoryUsage)")
     }
 
     // MARK: - Unused in this extension
@@ -134,5 +117,20 @@ class NSEContext: NSObject, AppContext {
 
     var debugLogsDirPath: String {
         DebugLogger.nseDebugLogsDirPath
+    }
+}
+
+fileprivate extension DispatchSourceMemoryPressure {
+    var memoryEvent: DispatchSource.MemoryPressureEvent {
+        DispatchSource.MemoryPressureEvent(rawValue: data)
+    }
+
+    var memoryEventDescription: String {
+        switch memoryEvent {
+        case .normal: return "Normal"
+        case .warning: return "Warning!"
+        case .critical: return "Critical!!"
+        default: return "Unknown value: \(memoryEvent.rawValue)"
+        }
     }
 }
