@@ -24,9 +24,8 @@ public class LocalDevice: NSObject {
         public let footprint: UInt64
         public let peakFootprint: Int64
         public let bytesRemaining: UInt64
-
-        let mallocSize: UInt64
-        let mallocAllocations: UInt64
+        public let mallocSize: Int64
+        public let mallocAllocations: Int64
 
         fileprivate static func fetchCurrentStatus() -> MemoryStatus? {
             let vmInfoExpectedSize = MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<natural_t>.size
@@ -52,19 +51,29 @@ public class LocalDevice: NSObject {
             var statistics = malloc_statistics_t()
             malloc_zone_statistics(mallocZone, &statistics)
 
-            if DebugFlags.internalLogging, CurrentAppContext().isNSE {
-                // Losing log messages is painful when trying to track down memory usage bugs
-                OWSLogger.aggressiveFlushing = (vmInfo.limit_bytes_remaining < 1024 * 1024)
-            }
-
-            return MemoryStatus(
+            let result = MemoryStatus(
                 fetchDate: Date(),
                 footprint: vmInfo.phys_footprint,
                 peakFootprint: vmInfo.ledger_phys_footprint_peak,
                 bytesRemaining: vmInfo.limit_bytes_remaining,
-                mallocSize: UInt64(statistics.size_in_use),
-                mallocAllocations: UInt64(statistics.size_allocated)
+                mallocSize: Int64(statistics.size_in_use),
+                mallocAllocations: Int64(statistics.size_allocated)
             )
+
+            if DebugFlags.internalLogging, CurrentAppContext().isNSE {
+                if result.bytesRemaining > 0 {
+                    // If we're running out of free memory, let's start aggressively flushing
+                    // our log messages. This way, we don't lose any logs when we're suddenly terminated.
+                    // There's a perf cost here, but we're going to be killed soon anyway so it's not a big deal.
+                    OWSLogger.aggressiveFlushing = result.bytesRemaining < (1024 * 1024)
+                } else {
+                    // The source of the remaining bits is fairly under documented. In my testing, things
+                    // seem to be working as expected. Just to be safe, let's interpret 0 free bytes as invalid
+                    // and fall back to a different heuristic.
+                    OWSLogger.aggressiveFlushing = result.footprint > (20 * 1024 * 1024)
+                }
+            }
+            return result
         }
     }
 
