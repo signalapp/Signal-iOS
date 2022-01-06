@@ -67,7 +67,8 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeServerRejectedSuspectedSpam,
     OWSErrorCodeSenderKeyEphemeralFailure,
     OWSErrorCodeSenderKeyUnavailable,
-    OWSErrorCodeMessageSendEncryptionFailure
+    OWSErrorCodeMessageSendEncryptionFailure,
+    OWSErrorCodeInvalidMessage
 };
 
 extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);

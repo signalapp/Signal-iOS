@@ -515,6 +515,32 @@ public class MessageDeletedBeforeSentError: NSObject, CustomNSError, IsRetryable
     public var isRetryableProvider: Bool { false }
 }
 
+@objc
+public class InvalidMessageError: NSObject, CustomNSError, IsRetryableProvider {
+    @objc
+    public static var asNSError: NSError {
+        InvalidMessageError() as Error as NSError
+    }
+
+    // NSError bridging: the domain of the error.
+    @objc
+    public static var errorDomain: String { OWSSignalServiceKitErrorDomain }
+
+    // NSError bridging: the error code within the given domain.
+    @objc
+    public static var errorCode: Int { OWSErrorCode.invalidMessage.rawValue }
+
+    // NSError bridging: the error code within the given domain.
+    public var errorCode: Int { Self.errorCode }
+
+    public var localizedDescription: String {
+        return NSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
+                                 comment: "Label indicating that a message failed to send.")
+    }
+
+    public var isRetryableProvider: Bool { false }
+}
+
 // MARK: -
 
 @objc

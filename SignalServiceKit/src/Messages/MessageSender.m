@@ -924,47 +924,33 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     @try {
         deviceMessages = [self throws_deviceMessagesForMessageSend:messageSend];
     } @catch (NSException *exception) {
+        OWSLogWarn(@"Could not build device messages: %@", exception);
+        NSError *error = nil;
         if ([exception.name isEqualToString:NoSessionForTransientMessageException]) {
             // When users re-register, we don't want transient messages (like typing
             // indicators) to cause users to hit the prekey fetch rate limit.  So
             // we silently discard these message if there is no pre-existing session
             // for the recipient.
-            NSError *error = MessageSenderNoSessionForTransientMessageError.asNSError;
-            *errorHandle = error;
-            return nil;
+            error = MessageSenderNoSessionForTransientMessageError.asNSError;
         } else if ([UntrustedIdentityError isUntrustedIdentityError:exception.userInfo[NSUnderlyingErrorKey]]) {
             // This *can* happen under normal usage, but it should happen relatively rarely.
             // We expect it to happen whenever Bob reinstalls, and Alice messages Bob before
             // she can pull down his latest identity.
             // If it's happening a lot, we should rethink our profile fetching strategy.
             OWSProdInfo([OWSAnalyticsEvents messageSendErrorFailedDueToUntrustedKey]);
-
-            NSError *error = [UntrustedIdentityError asNSErrorWithAddress:address];
-            *errorHandle = error;
-
-            return nil;
+            error = [UntrustedIdentityError asNSErrorWithAddress:address];
+        } else if ([exception.name isEqualToString:MessageSenderRateLimitedException]) {
+            error = [SignalServiceRateLimitedError asNSError];
+        } else if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException]) {
+            error = [SpamChallengeResolvedError asNSError];
+        } else if ([exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
+            error = [SpamChallengeRequiredError asNSError];
+        } else if ([exception.name isEqualToString:InvalidMessageException]) {
+            error = [InvalidMessageError asNSError];
+        } else {
+            error = [OWSRetryableMessageSenderError asNSError];
         }
-
-        if ([exception.name isEqualToString:MessageSenderRateLimitedException]) {
-            NSError *error = [SignalServiceRateLimitedError asNSError];
-            *errorHandle = error;
-            return nil;
-        }
-
-        if ([exception.name isEqualToString:MessageSenderSpamChallengeResolvedException]) {
-            NSError *error = [SpamChallengeResolvedError asNSError];
-            *errorHandle = error;
-            return nil;
-        }
-        if ([exception.name isEqualToString:MessageSenderSpamChallengeRequiredException]) {
-            NSError *error = [SpamChallengeRequiredError asNSError];
-            *errorHandle = error;
-            return nil;
-        }
-
-        OWSLogWarn(@"Could not build device messages: %@", exception);
-        NSError *error = [OWSRetryableMessageSenderError asNSError];
-        *errorHandle = error;
+        if (errorHandle) *errorHandle = error;
         return nil;
     }
 
