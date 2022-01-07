@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1208,15 +1208,11 @@ class StorageServiceOperation: OWSOperation {
     private func cleanUpRecordsWithUnknownFields(transaction: SDSAnyWriteTransaction) {
         var state = State.current(transaction: transaction)
 
-        var mutatedRecordCountPerType = [StorageServiceProtoManifestRecordKeyType: Int]()
+        var resolvedRecordCountPerType = [StorageServiceProtoManifestRecordKeyType: (Int, Int)]()
 
-        // For any cached records with unknown fields, if they no longer have
-        // unknown fields merge the newly understood data with our local data.
-
-        if let localAccountRecord = state.localAccountRecordWithUnknownFields, !localAccountRecord.hasUnknownFields {
-
-            mutatedRecordCountPerType[.account] = 1
-
+        // For any cached records with unknown fields, optimistically try to merge with our local data to see if we now
+        // understand those fields, or at least some of them.
+        if let localAccountRecord = state.localAccountRecordWithUnknownFields {
             if let identifier = state.localAccountIdentifier {
                 mergeAccountRecordWithLocalAccountAndUpdateState(
                     localAccountRecord,
@@ -1228,68 +1224,78 @@ class StorageServiceOperation: OWSOperation {
                 owsFailDebug("Unexpectedly missing identifer for local account with unknownFields")
                 state.localAccountRecordWithUnknownFields = nil
             }
-        }
 
-        for (accountId, record) in state.accountIdToRecordWithUnknownFields {
-            guard !record.hasUnknownFields else { continue }
-
-            mutatedRecordCountPerType[.contact] = mutatedRecordCountPerType[.contact] ?? 0 + 1
-
-            guard let identifier = state.accountIdToIdentifierMap[accountId] else {
-                owsFailDebug("Unexpectedly missing identifer for account with unknownFields \(accountId)")
-                state.accountIdToRecordWithUnknownFields[accountId] = nil
-                continue
+            if state.localAccountRecordWithUnknownFields == nil {
+                resolvedRecordCountPerType[.account] = (1, 0)
+            } else {
+                resolvedRecordCountPerType[.account] = (1, 1)
             }
-
-            mergeContactRecordWithLocalContactAndUpdateState(
-                record,
-                identifier: identifier,
-                state: &state,
-                transaction: transaction
-            )
         }
 
-        for (groupId, record) in state.groupV1IdToRecordWithUnknownFields {
-            guard !record.hasUnknownFields else { continue }
+        let oldCountOfContactRecordsWithUnknownFields = state.accountIdToRecordWithUnknownFields.count
+        if oldCountOfContactRecordsWithUnknownFields != 0 {
+            for (accountId, record) in state.accountIdToRecordWithUnknownFields {
+                guard let identifier = state.accountIdToIdentifierMap[accountId] else {
+                    owsFailDebug("Unexpectedly missing identifer for account with unknownFields \(accountId)")
+                    state.accountIdToRecordWithUnknownFields[accountId] = nil
+                    continue
+                }
 
-            mutatedRecordCountPerType[.groupv1] = mutatedRecordCountPerType[.groupv1] ?? 0 + 1
-
-            guard let identifier = state.groupV1IdToIdentifierMap[groupId] else {
-                owsFailDebug("Unexpectedly missing identifer for group v1 with unknownFields \(groupId)")
-                state.groupV1IdToRecordWithUnknownFields[groupId] = nil
-                continue
+                mergeContactRecordWithLocalContactAndUpdateState(
+                    record,
+                    identifier: identifier,
+                    state: &state,
+                    transaction: transaction
+                )
             }
-
-            mergeGroupV1RecordWithLocalGroupAndUpdateState(
-                record,
-                identifier: identifier,
-                state: &state,
-                transaction: transaction
-            )
+            resolvedRecordCountPerType[.contact] =
+                (oldCountOfContactRecordsWithUnknownFields, state.accountIdToRecordWithUnknownFields.count)
         }
 
-        for (groupMasterKey, record) in state.groupV2MasterKeyToRecordWithUnknownFields {
-            guard !record.hasUnknownFields else { continue }
+        let oldCountOfGroupV1RecordsWithUnknownFields = state.groupV1IdToRecordWithUnknownFields.count
+        if oldCountOfGroupV1RecordsWithUnknownFields != 0 {
+            for (groupId, record) in state.groupV1IdToRecordWithUnknownFields {
+                guard let identifier = state.groupV1IdToIdentifierMap[groupId] else {
+                    owsFailDebug("Unexpectedly missing identifer for group v1 with unknownFields \(groupId)")
+                    state.groupV1IdToRecordWithUnknownFields[groupId] = nil
+                    continue
+                }
 
-            mutatedRecordCountPerType[.groupv2] = mutatedRecordCountPerType[.groupv2] ?? 0 + 1
-
-            guard let identifier = state.groupV2MasterKeyToIdentifierMap[groupMasterKey] else {
-                owsFailDebug("Unexpectedly missing identifer for group v2 with unknownFields \(groupMasterKey)")
-                state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = nil
-                continue
+                mergeGroupV1RecordWithLocalGroupAndUpdateState(
+                    record,
+                    identifier: identifier,
+                    state: &state,
+                    transaction: transaction
+                )
             }
-
-            mergeGroupV2RecordWithLocalGroupAndUpdateState(
-                record,
-                identifier: identifier,
-                state: &state,
-                transaction: transaction
-            )
+            resolvedRecordCountPerType[.groupv1] =
+                (oldCountOfGroupV1RecordsWithUnknownFields, state.groupV1IdToRecordWithUnknownFields.count)
         }
 
-        guard !mutatedRecordCountPerType.isEmpty else { return }
+        let oldCountOfGroupV2RecordsWithUnknownFields = state.groupV2MasterKeyToRecordWithUnknownFields.count
+        if oldCountOfGroupV2RecordsWithUnknownFields != 0 {
+            for (groupMasterKey, record) in state.groupV2MasterKeyToRecordWithUnknownFields {
+                guard let identifier = state.groupV2MasterKeyToIdentifierMap[groupMasterKey] else {
+                    owsFailDebug("Unexpectedly missing identifer for group v2 with unknownFields \(groupMasterKey)")
+                    state.groupV2MasterKeyToRecordWithUnknownFields[groupMasterKey] = nil
+                    continue
+                }
 
-        let mutatedCountString = mutatedRecordCountPerType.map { type, count in
+                mergeGroupV2RecordWithLocalGroupAndUpdateState(
+                    record,
+                    identifier: identifier,
+                    state: &state,
+                    transaction: transaction
+                )
+            }
+            resolvedRecordCountPerType[.groupv2] =
+                (oldCountOfGroupV2RecordsWithUnknownFields, state.groupV2MasterKeyToRecordWithUnknownFields.count)
+        }
+
+        guard !resolvedRecordCountPerType.isEmpty else { return }
+
+        let mutatedCountString = resolvedRecordCountPerType.lazy.map { type, counts in
+            let (oldCount, newCount) = counts
             let name: String = {
                 switch type {
                 case .account:
@@ -1301,15 +1307,19 @@ class StorageServiceOperation: OWSOperation {
                 case .groupv2:
                     return "group v2 record"
                 case .unknown:
-                    return "unknwon record"
+                    return "unknown record"
                 case .UNRECOGNIZED:
                     return "unrecognized record"
                 }
             }()
-            return "\(count) \(name)(s)"
+            if newCount == 0 {
+                return "\(oldCount) \(name)(s)"
+            } else {
+                return "\(oldCount - newCount) \(name)(s) (\(newCount) remaining)"
+            }
         }.joined(separator: ", ")
 
-        Logger.info("Cleared unknown fields that have become known in manifest version: \(state.manifestVersion) for \(mutatedCountString)")
+        Logger.info("Resolved unknown fields using manifest version: \(state.manifestVersion) for \(mutatedCountString)")
 
         state.save(transaction: transaction)
     }
