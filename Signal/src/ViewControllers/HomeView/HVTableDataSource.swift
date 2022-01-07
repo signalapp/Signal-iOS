@@ -39,12 +39,10 @@ public class HVTableDataSource: NSObject {
                 updateTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] (_) in
                     if let self = self {
                         for path in self.tableView.indexPathsForVisibleRows ?? [] {
-                            if !self.updateVisibleCellContent(at: path, for: self.tableView) {
-                                self.tableView.reloadRows(at: [path], with: .none)
-                            }
+                            self.updateVisibleCellContent(at: path, for: self.tableView)
                         }
+                        self.updateAndSetRefreshTimer()
                     }
-                    self?.updateAndSetRefreshTimer()
                 }
             }
         }
