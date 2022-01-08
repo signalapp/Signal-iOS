@@ -11,13 +11,7 @@ public class HomeViewCell: UITableViewCell {
     @objc
     public static let reuseIdentifier = "HomeViewCell"
 
-    private static func createFreshAvatarView() -> ConversationAvatarView {
-        return ConversationAvatarView(
-            sizeClass: .fiftySix,
-            localUserDisplayMode: .noteToSelf,
-            useAutolayout: true)
-    }
-    private var avatarView = HomeViewCell.createFreshAvatarView()
+    private var avatarView: ConversationAvatarView?
     private let nameLabel = CVLabel()
     private let snippetLabel = CVLabel()
     private let dateTimeLabel = CVLabel()
@@ -44,7 +38,6 @@ public class HomeViewCell: UITableViewCell {
 
     private var cvviews: [CVView] {
         [
-            avatarView,
             nameLabel,
             snippetLabel,
             dateTimeLabel,
@@ -346,11 +339,17 @@ public class HomeViewCell: UITableViewCell {
 
         snippetLabelConfig.applyForRendering(label: snippetLabel)
 
-        avatarView.updateAndDisplayAsync { config in
-            config.dataSource = .thread(cellContentToken.thread)
-            if !cellContentToken.shouldLoadAvatarAsync {
-                config.applyConfigurationSynchronously()
+        owsAssertDebug(avatarView == nil, "HomeViewCell.configure without prior reset called")
+        avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
+        if cellContentToken.shouldLoadAvatarAsync {
+            avatarView?.updateAndDisplayAsync { config in
+                config.dataSource = .thread(cellContentToken.thread)
             }
+        } else {
+            avatarView?.updateWithSneakyTransactionIfNecessary({ config in
+                config.dataSource = .thread(cellContentToken.thread)
+                config.applyConfigurationSynchronously()
+            })
         }
 
         typingIndicatorView.configureForHomeView()
@@ -450,7 +449,7 @@ public class HomeViewCell: UITableViewCell {
             bottomRowStackSubviews.append(unreadBadge)
         }
 
-        let avatarStackSubviews = [ avatarView ]
+        let avatarStackSubviews = [ avatarView! ]
         let vStackSubviews = [ topRowStack, bottomRowStack ]
         let outerHStackSubviews = [ avatarStack, vStack ]
 
@@ -871,12 +870,12 @@ public class HomeViewCell: UITableViewCell {
         for cvview in cvviews {
             cvview.reset()
         }
+        avatarView?.cancelPendingBackgroundOperations()
+        avatarView = nil
 
         // Some ManualStackViews are _NOT_ reset to facilitate reuse.
 
         cellContentToken = nil
-        avatarView.reset()
-        avatarView = HomeViewCell.createFreshAvatarView()
         typingIndicatorView.resetForReuse()
 
         NotificationCenter.default.removeObserver(self)

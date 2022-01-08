@@ -128,13 +128,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     public private(set) var configuration: Configuration {
         didSet {
             if configuration.dataSource != oldValue.dataSource {
-                if Thread.isMainThread {
-                    ensureObservers()
-                } else {
-                    DispatchQueue.main.async { [weak self] in
-                        self?.ensureObservers()
-                    }
-                }
+                AssertIsOnMainThread()
+                ensureObservers()
             }
         }
     }
@@ -179,19 +174,25 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     /// To reduce the occurrence of unnecessary avatar fetches, updates to the view configuration occur in a closure
     /// Configuration updates will be applied all at once
     public func update(_ transaction: SDSAnyReadTransaction, _ updateBlock: (inout Configuration) -> Void) {
-        AssertIsOnMainThread()
         update(optionalTransaction: transaction, updateBlock)
     }
 
+    public func cancelPendingBackgroundOperations() {
+        loadAvatarWorkItem?.cancel()
+    }
+
     private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void, performAsync: Bool = false) {
+        AssertIsOnMainThread()
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
         updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
+        cancelPendingBackgroundOperations()
         if performAsync && transaction == nil {
-            loadAvatarWorkItem?.cancel()
+            avatarView.image = UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
             loadAvatarWorkItem = DispatchWorkItem { [weak self] in
                 self?.updateModelIfNecessary(transaction: nil)
+                self?.loadAvatarWorkItem = nil
             }
             DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
         } else {
@@ -204,7 +205,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     public func reloadDataIfNecessary() {
         updateModel(transaction: nil)
     }
+
     private func updateModel(transaction readTx: SDSAnyReadTransaction?) {
+        cancelPendingBackgroundOperations()
         setNeedsModelUpdate()
         updateModelIfNecessary(transaction: readTx)
     }
@@ -213,7 +216,9 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
-        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+        // execute this method only if we are NOT running in a cancelled work item in a background thread
+        guard loadAvatarWorkItem == nil || (!Thread.isMainThread && !loadAvatarWorkItem!.isCancelled) else {
+            loadAvatarWorkItem = nil
             return
         }
         guard nextModelGeneration.get() > currentModelGeneration else { return }
@@ -223,28 +228,36 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             return
         }
 
-        let updateSynchronously = configuration.checkForSyncUpdateAndClear()
-        if updateSynchronously {
-            let avatarImage = dataSource.buildImage(configuration: configuration, transaction: readTx)
+        // are we working in the context of a DispatchWorkItem called in a background thread?
+        if loadAvatarWorkItem != nil && !Thread.isMainThread {
+            owsAssertDebug(readTx == nil, "background fetching called with wrong transaction")
+            let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx) ?? dataSource.buildImage(configuration: configuration, transaction: readTx)
             let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
             updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
         } else {
-            let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
-            let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
-            updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
-            enqueueAsyncModelUpdate()
+            let updateSynchronously = configuration.checkForSyncUpdateAndClear()
+            if updateSynchronously {
+                let avatarImage = dataSource.buildImage(configuration: configuration, transaction: readTx)
+                let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
+                updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+            } else {
+                let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
+                let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
+                updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+                enqueueAsyncModelUpdate()
+            }
         }
     }
 
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
-        guard loadAvatarWorkItem == nil || !loadAvatarWorkItem!.isCancelled else {
+        // execute this method only if we are NOT running in a cancelled work item in a background thread
+        guard loadAvatarWorkItem == nil || (!Thread.isMainThread && !loadAvatarWorkItem!.isCancelled) else {
+            loadAvatarWorkItem = nil
             return
         }
         let uiUpdateBlock = { [weak self] in
             if let self = self {
-                if avatarImage != nil {
-                    self.avatarView.image = avatarImage
-                }
+                self.avatarView.image = avatarImage
                 self.badgeView.image = badgeImage
                 self.currentModelGeneration = self.nextModelGeneration.get()
                 self.setNeedsLayout()
@@ -306,7 +319,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     private var avatarView: UIImageView = {
         let view = UIImageView()
-        view.image = UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
         view.contentMode = .scaleAspectFill
         view.layer.minificationFilter = .trilinear
         view.layer.magnificationFilter = .trilinear
@@ -552,7 +564,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: - <CVView>
 
     public func reset() {
-        loadAvatarWorkItem?.cancel()
+        cancelPendingBackgroundOperations()
         configuration.dataSource = nil
         reloadDataIfNecessary()
     }
