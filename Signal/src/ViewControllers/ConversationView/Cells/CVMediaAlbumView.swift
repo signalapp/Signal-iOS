@@ -483,8 +483,8 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             // XX
             // Square
             let imageSize = CGSize(square: floor((maxWidth - CVMediaAlbumView.kSpacingPts) / 2))
-            return .twoVerticalColumns(column1: ImageGroup(imageCount: 2, imageSize: imageSize),
-                                       column2: ImageGroup(imageCount: 2, imageSize: imageSize))
+            return .twoHorizontalRows(row1: ImageGroup(imageCount: 2, imageSize: imageSize),
+                                       row2: ImageGroup(imageCount: 2, imageSize: imageSize))
         default:
             // X X
             // xxx
