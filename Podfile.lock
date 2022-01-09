@@ -21,7 +21,6 @@ PODS:
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
-  - GRKOpenSSLFramework (1.0.2.20)
   - HKDFKit (0.0.3)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
@@ -29,6 +28,7 @@ PODS:
   - NVActivityIndicatorView (5.0.1):
     - NVActivityIndicatorView/Base (= 5.0.1)
   - NVActivityIndicatorView/Base (5.0.1)
+  - OpenSSL-Universal (1.1.1200)
   - PromiseKit (6.13.1):
     - PromiseKit/CorePromise (= 6.13.1)
     - PromiseKit/Foundation (= 6.13.1)
@@ -43,8 +43,8 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
-    - GRKOpenSSLFramework
-  - Sodium (0.8.0)
+    - OpenSSL-Universal
+  - Sodium (0.9.1)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
   - SQLCipher/common (4.4.0)
@@ -124,7 +124,6 @@ DEPENDENCIES:
   - AFNetworking
   - CryptoSwift
   - Curve25519Kit (from `https://github.com/signalapp/Curve25519Kit.git`)
-  - GRKOpenSSLFramework
   - HKDFKit
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - NVActivityIndicatorView
@@ -132,8 +131,8 @@ DEPENDENCIES:
   - PureLayout (~> 3.1.8)
   - Reachability
   - SAMKeychain
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - Sodium (~> 0.8.0)
+  - SignalCoreKit (from `https://github.com/mpretty-cyro/SignalCoreKit.git`, branch `session-version`)
+  - Sodium (~> 0.9.1)
   - SwiftProtobuf (~> 1.5.0)
   - YapDatabase/SQLCipher (from `https://github.com/loki-project/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -144,9 +143,9 @@ SPEC REPOS:
     - AFNetworking
     - CocoaLumberjack
     - CryptoSwift
-    - GRKOpenSSLFramework
     - HKDFKit
     - NVActivityIndicatorView
+    - OpenSSL-Universal
     - PromiseKit
     - PureLayout
     - Reachability
@@ -163,7 +162,8 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :branch: session-version
+    :git: https://github.com/mpretty-cyro/SignalCoreKit.git
   YapDatabase:
     :branch: signal-release
     :git: https://github.com/loki-project/session-ios-yap-database.git
@@ -178,8 +178,8 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 21c092e94b307690957b50f2305e5e65d28fa89e
-    :git: https://github.com/signalapp/SignalCoreKit.git
+    :commit: b6ff159ca01679d5d9f206ede8475caeb0dc3225
+    :git: https://github.com/mpretty-cyro/SignalCoreKit.git
   YapDatabase:
     :commit: 5806f6b6e0b34124ee09283a9eca9ce7e6eaf14e
     :git: https://github.com/loki-project/session-ios-yap-database.git
@@ -192,22 +192,22 @@ SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   CryptoSwift: 093499be1a94b0cae36e6c26b70870668cb56060
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
-  GRKOpenSSLFramework: dc635b0a9d4cd8af2a9ff80a61e779e21b69dfd8
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 738e843cb8924e9e4fc3e559d0728031624bf860
+  OpenSSL-Universal: 3b8c0d6268fbd5d3ac44f97338e2fd16a73d9dbf
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: a4afb3d79dd958564ce33d22c89f407280d8e6a8
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
-  Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
+  SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
+  Sodium: 23d11554ecd556196d313cf6130d406dfe7ac6da
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 50e6a35c838ba28d2ee02bc6018fdd297c04e55f
+PODFILE CHECKSUM: 1655833510a0acd49ea6a1d8e02019d7c7d405ce
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
