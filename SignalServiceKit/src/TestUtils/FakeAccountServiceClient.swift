@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,6 +36,6 @@ public class FakeAccountServiceClient: AccountServiceClient {
     }
 
     public override func getAccountWhoAmI() -> Promise<WhoAmIResponse> {
-        return Promise { $0.resolve(WhoAmIResponse(uuid: UUID(), e164: nil)) }
+        return Promise { $0.resolve(WhoAmIResponse(aci: UUID(), pni: UUID(), e164: nil)) }
     }
 }

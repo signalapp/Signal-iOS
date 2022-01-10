@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -150,14 +150,16 @@ public class ChangePhoneNumber: NSObject {
             guard let localPhoneNumber = tsAccountManager.localNumber else {
                 throw OWSAssertionError("Missing localPhoneNumber.")
             }
+            let localPni = tsAccountManager.localPni
 
-            let serviceUuid = whoAmIResponse.uuid
+            let serviceUuid = whoAmIResponse.aci
             guard let servicePhoneNumber = whoAmIResponse.e164 else {
                 throw OWSAssertionError("Missing servicePhoneNumber.")
             }
             guard serviceUuid == localUuid else {
                 throw OWSAssertionError("Unexpected uuid: \(serviceUuid) != \(localUuid)")
             }
+            let servicePni = whoAmIResponse.pni
 
             Logger.info("localUuid: \(localUuid), localPhoneNumber: \(localPhoneNumber), serviceUuid: \(serviceUuid), servicePhoneNumber: \(servicePhoneNumber)")
 
@@ -168,12 +170,13 @@ public class ChangePhoneNumber: NSObject {
                                      transaction: transaction)
             }
 
-            if servicePhoneNumber != localPhoneNumber {
-                Logger.info("Recording new phone number: \(servicePhoneNumber)")
+            if servicePhoneNumber != localPhoneNumber || servicePni != localPni {
+                Logger.info("Recording new phone number: \(servicePhoneNumber), pni: \(servicePni)")
 
                 Self.databaseStorage.write { transaction in
                     Self.tsAccountManager.updateLocalPhoneNumber(servicePhoneNumber,
-                                                                 uuid: localUuid,
+                                                                 aci: localUuid,
+                                                                 pni: servicePni,
                                                                  shouldUpdateStorageService: true,
                                                                  transaction: transaction)
                 }

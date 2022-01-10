@@ -815,7 +815,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
                     // Linked devices should always take changes from the storage service.
                     if let uuid = localAddress.uuid {
                         tsAccountManager.updateLocalPhoneNumber(serviceLocalE164,
-                                                                uuid: uuid,
+                                                                aci: uuid,
+                                                                pni: tsAccountManager.localPni,
                                                                 shouldUpdateStorageService: false,
                                                                 transaction: transaction)
                     } else {

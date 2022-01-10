@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -31,6 +31,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
 @property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
+@property (nonatomic, nullable) NSUUID *pniAwaitingVerification;
 
 #pragma mark - Initializers
 
@@ -63,6 +64,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 @property (readonly, nullable) NSUUID *localUuid;
 
 - (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(uuid(with:));
+
+@property (readonly, nullable) NSUUID *localPni;
+
+- (nullable NSUUID *)localPniWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(pni(with:));
 
 @property (readonly, nullable, class) SignalServiceAddress *localAddress;
 @property (readonly, nullable) SignalServiceAddress *localAddress;
@@ -154,10 +159,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 #pragma mark - Change Phone Number
 
 - (void)updateLocalPhoneNumber:(NSString *)phoneNumber
-                          uuid:(NSUUID *)uuid
+                           aci:(NSUUID *)aci
+                           pni:(NSUUID *_Nullable)pni
     shouldUpdateStorageService:(BOOL)shouldUpdateStorageService
                    transaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(updateLocalPhoneNumber(_:uuid:shouldUpdateStorageService:transaction:));
+    NS_SWIFT_NAME(updateLocalPhoneNumber(_:aci:pni:shouldUpdateStorageService:transaction:));
 
 #pragma mark - Manual Message Fetch
 

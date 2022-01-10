@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -47,7 +47,7 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
     override func verifyRegistration(request: TSRequest,
                                      success successBlock: @escaping (Any?) -> Void,
                                      failure failureBlock: @escaping (Error) -> Void) {
-        successBlock(["uuid": UUID().uuidString])
+        successBlock(["uuid": UUID().uuidString, "pni": UUID().uuidString])
     }
 }
 

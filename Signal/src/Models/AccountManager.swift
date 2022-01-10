@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -64,7 +64,7 @@ public class AccountManager: NSObject {
                 }
 
                 self.tsAccountManager.phoneNumberAwaitingVerification = e164
-                
+
             case .changePhoneNumber:
                 // Don't set phoneNumberAwaitingVerification in the "change phone number" flow.
                 break
@@ -135,8 +135,8 @@ public class AccountManager: NSObject {
         return firstly {
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin, checkForAvailableTransfer: checkForAvailableTransfer)
         }.then { response -> Promise<Void> in
-            assert(response.uuid != nil)
-            self.tsAccountManager.uuidAwaitingVerification = response.uuid
+            self.tsAccountManager.uuidAwaitingVerification = response.aci
+            self.tsAccountManager.pniAwaitingVerification = response.pni
 
             self.databaseStorage.write { transaction in
                 if !self.tsAccountManager.isReregistering {
@@ -298,7 +298,7 @@ public class AccountManager: NSObject {
 
         let serverAuthToken = generateServerAuthToken()
 
-        return firstly { () throws -> Promise<UInt32> in
+        return firstly { () throws -> Promise<VerifySecondaryDeviceResponse> in
             let encryptedDeviceName = try DeviceNames.encryptDeviceName(plaintext: deviceName,
                                                                         identityKeyPair: provisionMessage.identityKeyPair)
 
@@ -306,7 +306,9 @@ public class AccountManager: NSObject {
                                                               phoneNumber: provisionMessage.phoneNumber,
                                                               authKey: serverAuthToken,
                                                               encryptedDeviceName: encryptedDeviceName)
-        }.done { (deviceId: UInt32) in
+        }.done { (response: VerifySecondaryDeviceResponse) in
+            self.tsAccountManager.pniAwaitingVerification = response.pni
+
             self.databaseStorage.write { transaction in
                 self.identityManager.storeIdentityKeyPair(provisionMessage.identityKeyPair,
                                                           transaction: transaction)
@@ -321,7 +323,7 @@ public class AccountManager: NSObject {
                 }
 
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
-                                                               deviceId: deviceId,
+                                                               deviceId: response.deviceId,
                                                                transaction: transaction)
 
                 self.tsAccountManager.setStoredDeviceName(deviceName,
@@ -397,7 +399,8 @@ public class AccountManager: NSObject {
     }
 
     private struct RegistrationResponse {
-        var uuid: UUID?
+        var aci: UUID
+        var pni: UUID
         var hasPreviouslyUsedKBS = false
     }
 
@@ -433,19 +436,11 @@ public class AccountManager: NSObject {
                 throw OWSAssertionError("Missing or invalid params.")
             }
 
-            var registrationResponse = RegistrationResponse()
+            let aci: UUID = try params.required(key: "uuid")
+            let pni: UUID = try params.required(key: "pni")
+            let hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
 
-            // TODO UUID: this UUID param should be non-optional when the production service is updated
-            if let uuidString: String = try params.optional(key: "uuid") {
-                guard let uuid = UUID(uuidString: uuidString) else {
-                    throw OWSAssertionError("Missing or invalid uuid.")
-                }
-                registrationResponse.uuid = uuid
-            }
-
-            registrationResponse.hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
-
-            return registrationResponse
+            return RegistrationResponse(aci: aci, pni: pni, hasPreviouslyUsedKBS: hasPreviouslyUsedKBS)
         }
     }
 
@@ -537,7 +532,7 @@ public class AccountManager: NSObject {
         }
 
         return accountServiceClient.getAccountWhoAmI().map(on: .global()) { whoAmIResponse in
-            let uuid = whoAmIResponse.uuid
+            let uuid = whoAmIResponse.aci
 
             // It's possible this method could be called multiple times, so we check
             // again if it's been set. We dont bother serializing access since it should
