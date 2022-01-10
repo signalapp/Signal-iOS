@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceTableViewCell.h"
 #import <SignalMessaging/DateUtil.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/SignalUI-Swift.h>
 #import <SignalUI/Theme.h>
@@ -86,7 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.unlinkAction = unlinkAction;
     self.unlinkButton.hidden = !self.isEditing;
 
-    self.nameLabel.text = device.displayName;
+    if (SSKDebugFlags.internalSettings) {
+        self.nameLabel.text
+            = LocalizationNotNeeded([NSString stringWithFormat:@"#%ld: %@", device.deviceId, device.displayName]);
+    } else {
+        self.nameLabel.text = device.displayName;
+    }
 
     NSString *linkedFormatString
         = NSLocalizedString(@"DEVICE_LINKED_AT_LABEL", @"{{Short Date}} when device was linked.");
