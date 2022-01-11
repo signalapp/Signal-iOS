@@ -950,7 +950,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         } else {
             error = [OWSRetryableMessageSenderError asNSError];
         }
-        if (errorHandle) *errorHandle = error;
+        if (errorHandle) {
+            *errorHandle = error;
+        }
         return nil;
     }
 
