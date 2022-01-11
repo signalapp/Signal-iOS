@@ -9,6 +9,7 @@ final class NotificationServiceExtensionContext : NSObject, AppContext {
     let appLaunchTime = Date()
     let isMainApp = false
     let isMainAppAndActive = false
+    var isShareExtension: Bool = false
 
     var openSystemSettingsAction: UIAlertAction?
     var wasWokenUpByPushNotification = true

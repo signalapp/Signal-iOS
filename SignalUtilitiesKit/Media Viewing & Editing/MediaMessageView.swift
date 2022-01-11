@@ -5,6 +5,7 @@
 import Foundation
 import MediaPlayer
 import YYImage
+import NVActivityIndicatorView
 
 import SessionUIKit
 
@@ -52,6 +53,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     @objc
     public var contentView: UIView?
+    
+    private var linkPreviewInfo: (url: String, draft: OWSLinkPreviewDraft?)?
 
     // MARK: Initializers
 
@@ -89,6 +92,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             createVideoPreview()
         } else if attachment.isAudio {
             createAudioPreview()
+        } else if attachment.isUrl {
+            createUrlPreview()
+        } else if attachment.isText {
+            // Do nothing as we will just put the text in the 'message' input
         } else {
             createGenericPreview()
         }
@@ -115,6 +122,31 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
 
         lastView?.autoPinEdge(toSuperviewEdge: .bottom)
+
+        return stackView
+    }
+    
+    private func wrapViewsInHorizontalStack(subviews: [UIView]) -> UIView {
+        assert(subviews.count > 0)
+
+        let stackView = UIView()
+
+        var lastView: UIView?
+        for subview in subviews {
+
+            stackView.addSubview(subview)
+            subview.autoVCenterInSuperview()
+
+            if lastView == nil {
+                subview.autoPinEdge(toSuperviewEdge: .left)
+            } else {
+                subview.autoPinEdge(.left, to: .right, of: lastView!, withOffset: stackSpacing())
+            }
+
+            lastView = subview
+        }
+
+        lastView?.autoPinEdge(toSuperviewEdge: .right)
 
         return stackView
     }
@@ -264,6 +296,120 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             videoPlayButton.autoSetDimension(.width, toSize: 72)
             videoPlayButton.autoSetDimension(.height, toSize: 72)
         }
+    }
+    
+    private func createUrlPreview() {
+        // If link previews aren't enabled then use a fallback state
+        guard let linkPreviewURL: String = OWSLinkPreview.previewURL(forRawBodyText: attachment.text()) else {
+            createGenericPreview()
+            return
+        }
+        
+        linkPreviewInfo = (url: linkPreviewURL, draft: nil)
+        
+        var subviews = [UIView]()
+        
+        let color: UIColor = isLightMode ? .black : .white
+        let loadingView = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: color, padding: nil)
+        loadingView.set(.width, to: 24)
+        loadingView.set(.height, to: 24)
+        loadingView.startAnimating()
+        subviews.append(loadingView)
+        
+        let imageViewContainer = UIView()
+        imageViewContainer.clipsToBounds = true
+        imageViewContainer.contentMode = .center
+        imageViewContainer.alpha = 0
+        imageViewContainer.layer.cornerRadius = 8
+        subviews.append(imageViewContainer)
+        
+        let imageView = createHeroImageView(imageName: "FileLarge")
+        imageViewContainer.addSubview(imageView)
+        imageView.pin(to: imageViewContainer)
+
+        let titleLabel = UILabel()
+        titleLabel.text = linkPreviewURL
+        titleLabel.textColor = controlTintColor
+        titleLabel.font = labelFont()
+        titleLabel.textAlignment = .center
+        titleLabel.lineBreakMode = .byTruncatingMiddle
+        subviews.append(titleLabel)
+        
+        let stackView = wrapViewsInVerticalStack(subviews: subviews)
+        self.addSubview(stackView)
+        
+        titleLabel.autoPinWidthToSuperview(withMargin: 32)
+        
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 80),
+            imageView.heightAnchor.constraint(equalToConstant: 80)
+        ])
+        
+        // Build the link preview
+        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL).done { [weak self] draft in
+            // Loader
+            loadingView.alpha = 0
+            loadingView.stopAnimating()
+            
+            self?.linkPreviewInfo = (url: linkPreviewURL, draft: draft)
+            
+            // TODO: Look at refactoring this behaviour to consolidate attachment mutations
+            self?.attachment.linkPreviewDraft = draft
+            
+            let image: UIImage?
+
+            if let jpegImageData: Data = draft.jpegImageData, let loadedImage: UIImage = UIImage(data: jpegImageData) {
+                image = loadedImage
+                imageView.contentMode = .scaleAspectFill
+            }
+            else {
+                image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
+                imageView.contentMode = .center
+            }
+            
+            // Image view
+            (imageView as? UIImageView)?.image = image
+            imageViewContainer.alpha = 1
+            imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
+            
+            // Title
+            if let title = draft.title {
+                titleLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
+                titleLabel.text = title
+                titleLabel.textAlignment = .left
+                titleLabel.numberOfLines = 2
+            }
+            
+            guard let hStackView = self?.wrapViewsInHorizontalStack(subviews: subviews) else {
+                // TODO: Fallback
+                return
+            }
+            stackView.removeFromSuperview()
+            self?.addSubview(hStackView)
+            
+            // We want to center the stackView in it's superview while also ensuring
+            // it's superview is big enough to contain it.
+            hStackView.autoPinWidthToSuperview(withMargin: 32)
+            hStackView.autoVCenterInSuperview()
+            NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
+                hStackView.autoPinHeightToSuperview()
+            }
+            hStackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+            hStackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+        }.catch { _ in
+            // TODO: Fallback
+            loadingView.stopAnimating()
+        }.retainUntilComplete()
+
+        // We want to center the stackView in it's superview while also ensuring
+        // it's superview is big enough to contain it.
+        stackView.autoPinWidthToSuperview()
+        stackView.autoVCenterInSuperview()
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
+            stackView.autoPinHeightToSuperview()
+        }
+        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
     }
 
     private func createGenericPreview() {

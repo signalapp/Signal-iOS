@@ -241,6 +241,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         UIView.performWithoutAnimation {
             self.currentPageViewController?.view.layoutIfNeeded()
         }
+        
+        // If the first item is just text, or is a URL and LinkPreviews are disabled
+        // then just fill the 'message' box with it
+        if firstItem.attachment.isText || (firstItem.attachment.isUrl && OWSLinkPreview.previewURL(forRawBodyText: firstItem.attachment.text()) == nil) {
+            bottomToolView.attachmentTextToolbar.messageText = firstItem.attachment.text()
+        }
 
         setupLayout()
     }

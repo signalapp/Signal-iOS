@@ -13,6 +13,7 @@ final class ShareAppExtensionContext: NSObject, AppContext {
     let appLaunchTime = Date()
     let isMainApp = false
     let isMainAppAndActive = false
+    var isShareExtension: Bool = true
     
     var mainWindow: UIWindow?
     var wasWokenUpByPushNotification: Bool = false

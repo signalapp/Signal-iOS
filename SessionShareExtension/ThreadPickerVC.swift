@@ -147,19 +147,44 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     }
     
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+        // Sharing a URL or plain text will populate the 'messageText' field so in those
+        // cases we should ignore the attachments
+        let isSharingUrl: Bool = (attachments.count == 1 && attachments[0].isUrl)
+        let isSharingText: Bool = (attachments.count == 1 && attachments[0].isText)
+        let finalAttachments: [SignalAttachment] = (isSharingUrl || isSharingText ? [] : attachments)
+        
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
         message.text = messageText
         
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: selectedThread!)
-        Storage.write { transaction in
-            tsMessage.save(with: transaction)
-        }
+        Storage.write(
+            with: { transaction in
+                if isSharingUrl {
+                    message.linkPreview = VisibleMessage.LinkPreview.from(
+                        attachments[0].linkPreviewDraft,
+                        using: transaction
+                    )
+                }
+                else {
+                    tsMessage.save(with: transaction)
+                }
+            },
+            completion: {
+                if isSharingUrl {
+                    tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
+                    
+                    Storage.write { transaction in
+                        tsMessage.save(with: transaction)
+                    }
+                }
+            }
+        )
         
         shareVC!.dismiss(animated: true, completion: nil)
         
         ModalActivityIndicatorViewController.present(fromViewController: shareVC!, canCancel: false, message: "vc_share_sending_message".localized()) { activityIndicator in
-            MessageSender.sendNonDurably(message, with: attachments, in: self.selectedThread!)
+            MessageSender.sendNonDurably(message, with: finalAttachments, in: self.selectedThread!)
                 .done { [weak self] _ in
                     activityIndicator.dismiss { }
                     self?.shareVC?.shareViewWasCompleted()
