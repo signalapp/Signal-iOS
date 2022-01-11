@@ -1,12 +1,14 @@
 import CoreServices
 import PromiseKit
+import SignalUtilitiesKit
 import SessionUIKit
 
 final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
     private var areVersionMigrationsComplete = false
     public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
     
-    // MARK: Error
+    // MARK: - Error
+    
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
         case unsupportedMedia
@@ -14,7 +16,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         case obsoleteShare
     }
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func loadView() {
         super.loadView()
 
@@ -39,28 +42,35 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             return
         }
 
-        AppSetup.setupEnvironment(appSpecificSingletonBlock: {
-            SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
-        }, migrationCompletion: { [weak self] in
-            AssertIsOnMainThread()
+        AppSetup.setupEnvironment(
+            appSpecificSingletonBlock: {
+                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            },
+            migrationCompletion: { [weak self] in
+                AssertIsOnMainThread()
+                
+                self?.versionMigrationsDidComplete()
 
-            guard let strongSelf = self else { return }
-
-            // performUpdateCheck must be invoked after Environment has been initialized because
-            // upgrade process may depend on Environment.
-            strongSelf.versionMigrationsDidComplete()
-        })
+                // performUpdateCheck must be invoked after Environment has been initialized because
+                // upgrade process may depend on Environment.
+                self?.versionMigrationsDidComplete()
+            }
+        )
 
         // We don't need to use "screen protection" in the SAE.
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(storageIsReady),
-                                               name: .StorageIsReady,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(storageIsReady),
+            name: .StorageIsReady,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil
+        )
     }
 
     @objc
@@ -88,12 +98,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         AssertIsOnMainThread()
 
         // App isn't ready until storage is ready AND all version migrations are complete.
-        guard areVersionMigrationsComplete else {
-            return
-        }
-        guard OWSStorage.isStorageReady() else {
-            return
-        }
+        guard areVersionMigrationsComplete else { return }
+        guard OWSStorage.isStorageReady() else { return }
         guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return
@@ -108,9 +114,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         AppReadiness.setAppIsReady()
 
         // We don't need to use messageFetcherJob in the SAE.
-
         // We don't need to use SyncPushTokensJob in the SAE.
-
         // We don't need to use DeviceSleepManager in the SAE.
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
@@ -119,9 +123,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
-
         // We don't need to use OWSOrphanDataCleaner in the SAE.
-
         // We don't need to fetch the local profile in the SAE
 
         OWSReadReceiptManager.shared().prepareCachedValues()
@@ -129,10 +131,10 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
             AssertIsOnMainThread()
-            guard let strongSelf = self else { return }
-            strongSelf.showLockScreenOrMainContent()
+            self?.showLockScreenOrMainContent()
         }
     }
 
@@ -143,11 +145,9 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         Logger.info("")
 
         if OWSScreenLock.shared.isScreenLockEnabled() {
-
             self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
-                guard let strongSelf = self else { return }
-                strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+                self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
             }
         }
     }
@@ -161,12 +161,15 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         ExitShareExtension()
     }
 
-    // MARK: App Mode
+    // MARK: - App Mode
+    
     public func getCurrentAppMode() -> AppMode {
         guard let window = self.view.window else { return .light }
+        
         let userInterfaceStyle = window.traitCollection.userInterfaceStyle
         let isLightMode = (userInterfaceStyle == .light || userInterfaceStyle == .unspecified)
-        return isLightMode ? .light : .dark
+        
+        return (isLightMode ? .light : .dark)
     }
 
     public func setCurrentAppMode(to appMode: AppMode) {
@@ -181,7 +184,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     private func showLockScreenOrMainContent() {
         if OWSScreenLock.shared.isScreenLockEnabled() {
             showLockScreen()
-        } else {
+        }
+        else {
             showMainContent()
         }
     }
@@ -192,16 +196,23 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
     
     private func showMainContent() {
-        let threadPickerVC = ThreadPickerVC()
+        let threadPickerVC: ThreadPickerVC = ThreadPickerVC()
         threadPickerVC.shareVC = self
+        
         setViewControllers([ threadPickerVC ], animated: false)
+        
         let promise = buildAttachments()
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false, message: NSLocalizedString("vc_share_loading_message", comment: "")) { activityIndicator in
-            promise.done { _ in
-                activityIndicator.dismiss { }
-            }.catch { _ in
-                activityIndicator.dismiss { }
-            }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            message: "vc_share_loading_message".localized()) { activityIndicator in
+            promise
+                .done { _ in
+                    activityIndicator.dismiss { }
+                }
+                .catch { _ in
+                    activityIndicator.dismiss { }
+                }
         }
         ShareVC.attachmentPrepPromise = promise
     }
@@ -220,7 +231,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     func shareViewFailed(error: Error) {
         let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: { _ in
             self.extensionContext!.cancelRequest(withError: error)
         }))
         present(alert, animated: true, completion: nil)
@@ -236,22 +247,29 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         guard let firstUtiType = itemProvider.registeredTypeIdentifiers.first else {
             return false
         }
-        return firstUtiType == utiType
+        
+        return (firstUtiType == utiType)
     }
 
     private class func isVisualMediaItem(itemProvider: NSItemProvider) -> Bool {
-        return (itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
-            itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String))
+        return (
+            itemProvider.hasItemConformingToTypeIdentifier(kUTTypeImage as String) ||
+            itemProvider.hasItemConformingToTypeIdentifier(kUTTypeMovie as String)
+        )
     }
 
     private class func isUrlItem(itemProvider: NSItemProvider) -> Bool {
-        return itemMatchesSpecificUtiType(itemProvider: itemProvider,
-                                          utiType: kUTTypeURL as String)
+        return itemMatchesSpecificUtiType(
+            itemProvider: itemProvider,
+            utiType: kUTTypeURL as String
+        )
     }
 
     private class func isContactItem(itemProvider: NSItemProvider) -> Bool {
-        return itemMatchesSpecificUtiType(itemProvider: itemProvider,
-                                          utiType: kUTTypeContact as String)
+        return itemMatchesSpecificUtiType(
+            itemProvider: itemProvider,
+            utiType: kUTTypeContact as String
+        )
     }
 
     private class func utiType(itemProvider: NSItemProvider) -> String? {
@@ -259,7 +277,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         if isUrlItem(itemProvider: itemProvider) {
             return kUTTypeURL as String
-        } else if isContactItem(itemProvider: itemProvider) {
+        }
+        else if isContactItem(itemProvider: itemProvider) {
             return kUTTypeContact as String
         }
 
@@ -278,43 +297,43 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             //       and send them as normal text messages if possible.
             let urlString = url.absoluteString
             return DataSourceValue.dataSource(withOversizeText: urlString)
-        } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
+        }
+        else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.
             //
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
-            return DataSourcePath.dataSource(with: url,
-                                             shouldDeleteOnDeallocation: false)
-        } else {
-            guard let dataSource = DataSourcePath.dataSource(with: url,
-                                                             shouldDeleteOnDeallocation: false) else {
-                return nil
-            }
-
-            if let customFileName = customFileName {
-                dataSource.sourceFilename = customFileName
-            } else {
-                // Ignore the filename for URLs.
-                dataSource.sourceFilename = url.lastPathComponent
-            }
-            return dataSource
+            return DataSourcePath.dataSource(
+                with: url,
+                shouldDeleteOnDeallocation: false
+            )
         }
-    }
-
-    private class func preferredItemProviders(inputItem: NSExtensionItem) -> [NSItemProvider]? {
-        guard let attachments = inputItem.attachments else {
+        
+        guard let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
             return nil
         }
 
+        // Fallback to the last part of the URL
+        dataSource.sourceFilename = (customFileName ?? url.lastPathComponent)
+        
+        return dataSource
+    }
+
+    private class func preferredItemProviders(inputItem: NSExtensionItem) -> [NSItemProvider]? {
+        guard let attachments = inputItem.attachments else { return nil }
+
         var visualMediaItemProviders = [NSItemProvider]()
         var hasNonVisualMedia = false
+        
         for attachment in attachments {
             if isVisualMediaItem(itemProvider: attachment) {
                 visualMediaItemProviders.append(attachment)
-            } else {
+            }
+            else {
                 hasNonVisualMedia = true
             }
         }
+        
         // Only allow multiple-attachment sends if all attachments
         // are visual media.
         if visualMediaItemProviders.count > 0 && !hasNonVisualMedia {
@@ -334,6 +353,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             guard let itemProvider = attachment as? NSItemProvider else {
                 return false
             }
+            
             return isUrlItem(itemProvider: itemProvider)
         }) {
             return [preferredAttachment]
@@ -342,9 +362,11 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         // else return whatever is available
         if let itemProvider = inputItem.attachments?.first {
             return [itemProvider]
-        } else {
+        }
+        else {
             owsFailDebug("Missing attachment.")
         }
+        
         return []
     }
 
@@ -359,6 +381,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
                 Logger.error("invalid inputItem \(inputItemRaw)")
                 continue
             }
+            
             if let itemProviders = ShareVC.preferredItemProviders(inputItem: inputItem) {
                 return Promise.value(itemProviders)
             }
@@ -366,6 +389,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         let error = ShareViewControllerError.assertionError(description: "no input item")
         return Promise(error: error)
     }
+    
+    // MARK: - LoadedItem
 
     private
     struct LoadedItem {
