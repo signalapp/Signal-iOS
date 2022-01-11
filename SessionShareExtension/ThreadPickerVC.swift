@@ -172,7 +172,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     }
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
-        // Do nothing
+        dismiss(animated: true, completion: nil)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
