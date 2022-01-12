@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,7 +35,10 @@ public class CVMessageMapping: NSObject {
     // small messages (e.g. a bunch of 1-line texts in a row from the same sender and timestamp)
     internal lazy var initialLoadCount: Int = {
         let avgMessageHeight: CGFloat = 35
-        let deviceFrame = CurrentAppContext().frame
+        var deviceFrame = CGRect.zero
+        DispatchSyncMainThreadSafe {
+            deviceFrame = CurrentAppContext().frame
+        }
         let referenceSize = max(deviceFrame.width, deviceFrame.height)
         let messageCountToFillScreen = (referenceSize / avgMessageHeight)
         let minCount: Int = 10
