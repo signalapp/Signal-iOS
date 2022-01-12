@@ -132,11 +132,11 @@ extension HomeViewController {
         // only perform a beginUpdates/endUpdates block if really necessary, otherwise
         // strange scroll animations may occur
         var tableUpdatesPerformed = false
-        let checkAndSetTableUpdates = {
-            if !tableUpdatesPerformed {
+        let checkAndSetTableUpdates = { [weak self] in
+            if !tableUpdatesPerformed, let self = self {
                 tableView.beginUpdates()
                 // animate all UI changes within the same transaction
-                if tableView.isEditing {
+                if tableView.isEditing && !self.viewState.multiSelectState.isActive {
                     tableView.setEditing(false, animated: true)
                 }
                 tableUpdatesPerformed = true
@@ -184,8 +184,6 @@ extension HomeViewController {
         }
         if tableUpdatesPerformed {
             tableView.endUpdates()
-        } else if tableView.isEditing {
-            tableView.setEditing(false, animated: true)
         }
         BenchManager.completeEvent(eventId: "uiDatabaseUpdate")
     }

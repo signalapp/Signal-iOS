@@ -509,7 +509,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // Settings button.
     UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
     avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
-    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchUpInside];
+    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchDown];
 
     UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
     [avatarButton addSubview:avatarImageView];
@@ -776,6 +776,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [self leaveMultiselectMode];
     [super viewWillDisappear:animated];
 
     self.isViewVisible = NO;

@@ -617,7 +617,7 @@ extension HVTableDataSource: UITableViewDataSource {
 
         if isConversationActive(forThread: thread) {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-        } else {
+        } else if !viewState.multiSelectState.isActive {
             tableView.deselectRow(at: indexPath, animated: false)
         }
 

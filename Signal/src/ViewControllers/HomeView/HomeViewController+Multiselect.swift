@@ -2,9 +2,11 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import UIKit
+
+@objc
 extension HomeViewController {
 
-    @objc
     func showOrHideMenu(_ sender: UIButton) {
         AssertIsOnMainThread()
 
@@ -15,7 +17,6 @@ extension HomeViewController {
         }
     }
 
-    @objc
     func willEnterMultiselectMode() {
         AssertIsOnMainThread()
 
@@ -27,27 +28,38 @@ extension HomeViewController {
         }
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
+        searchBar.isUserInteractionEnabled = false
+        searchBar.alpha = 0.5
         showToolbar()
     }
 
-    @objc
+    func leaveMultiselectMode() {
+        AssertIsOnMainThread()
+
+        hideToolbar()
+    }
+
     func showToolbar() {
         AssertIsOnMainThread()
 
         viewState.multiSelectState.setIsActive(true, tableView: tableView)
-        if let nav = navigationController {
-            if nav.isToolbarHidden {
-                adjustNavigationBarTitles(nav.toolbar)
-                nav.setToolbarHidden(false, animated: true)
+        if viewState.multiSelectState.toolbar == nil {
+            let tbc = BlurredToolbarContainer()
+            tbc.alpha = 0
+            view.addSubview(tbc)
+            tbc.autoPinWidthToSuperview()
+            tbc.autoPinEdge(toSuperviewEdge: .bottom)
+            viewState.multiSelectState.toolbar = tbc
+            UIView.animate(withDuration: 0.25) {
+                tbc.alpha = 1
             }
-            nav.toolbar.barTintColor = Theme.isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha40
-            nav.toolbar.tintColor = Theme.primaryTextColor
         }
         updateCaptions()
     }
 
-    @objc
     func switchMultiSelectState(_ sender: UIBarButtonItem) {
+        AssertIsOnMainThread()
+
         if viewState.multiSelectState.isActive {
             sender.title = CommonStrings.selectButton
             hideToolbar()
@@ -69,97 +81,157 @@ extension HomeViewController {
         var contextMenuActions: [ContextMenuAction] = []
         if renderState.inboxCount > 0 {
             contextMenuActions.append(
-                ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_MESSAGES", comment: "Title for the 'Select Messages' option in the HomeView."), image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"), attributes: [], handler: { [weak self] (_) in
-                    self?.hideMenu()
-                    self?.willEnterMultiselectMode()
+                ContextMenuAction(
+                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the HomeView."),
+                    image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
+                    attributes: [],
+                    handler: { [weak self] (_) in
+                        self?.hideMenu()
+                        self?.willEnterMultiselectMode()
                 }))
         }
         contextMenuActions.append(
-            ContextMenuAction(title: CommonStrings.openSettingsButton, image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"), attributes: [], handler: { [weak self] (_) in
-                self?.hideMenu()
-                self?.showAppSettings(mode: .none)
+            ContextMenuAction(
+                title: CommonStrings.openSettingsButton,
+                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
+                attributes: [],
+                handler: { [weak self] (_) in
+                    self?.hideMenu()
+                    self?.showAppSettings(mode: .none)
             }))
         if renderState.archiveCount > 1 {
             contextMenuActions.append(
-                ContextMenuAction(title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."), image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"), attributes: [], handler: { [weak self] (_) in
-                    self?.hideMenu()
-                    self?.showArchivedConversations(offerMultiSelectMode: true)
+                ContextMenuAction(
+                    title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
+                    image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
+                    attributes: [],
+                    handler: { [weak self] (_) in
+                        self?.hideMenu()
+                        self?.showArchivedConversations(offerMultiSelectMode: true)
                 }))
         }
 
         viewState.multiSelectState.parentButton = button
+        navigationController?.navigationBar.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
+
         let v = ContextMenuActionsView(menu: ContextMenu(contextMenuActions))
         let size = v.sizeThatFitsMaxSize
         v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         v.delegate = self
 
         viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-        viewState.multiSelectState.contextMenuView?.alpha = 0
+        viewState.multiSelectState.contextMenuView!.addGestureRecognizer(TapToCloseGestureRecognizer(target: self))
         view.addSubview(viewState.multiSelectState.contextMenuView!)
-        viewState.multiSelectState.contextMenuView?.autoPinEdgesToSuperviewSafeArea()
-        viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
-        UIView.animate(withDuration: 0.25) { [weak self] in
-            self?.viewState.multiSelectState.parentButton?.alpha = 0.4
-            self?.viewState.multiSelectState.contextMenuView?.alpha = 1
-        }
+        animateIn(menu: viewState.multiSelectState.contextMenuView!, from: button)
     }
 
-    @objc
     private func done() {
-        AssertIsOnMainThread()
-
-        hideToolbar()
+        leaveMultiselectMode()
+        updateBarButtonItems()
         if self.homeViewMode == .archive {
-            self.navigationController?.popViewController(animated: true)
-        } else {
-            updateBarButtonItems()
+            navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
         }
     }
 
-    @objc
     private func hideMenu() {
         AssertIsOnMainThread()
 
-        UIView.animate(withDuration: 0.25, animations: { [weak self] in
-            self?.viewState.multiSelectState.parentButton?.alpha = 1
-            self?.viewState.multiSelectState.contextMenuView?.alpha = 0
-        }, completion: { [weak self] (_) in
+        if let navBar = navigationController?.navigationBar {
+            for recognizer in navBar.gestureRecognizers ?? [] {
+                if let tapper = recognizer as? TapToCloseGestureRecognizer {
+                    navBar.removeGestureRecognizer(tapper)
+                }
+            }
+        }
+
+        animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton) { [weak self] (_) in
             self?.viewState.multiSelectState.parentButton = nil
-            self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
             self?.viewState.multiSelectState.contextMenuView = nil
-        })
+        }
     }
 
-    private func adjustNavigationBarTitles(_ toolbar: UIToolbar?) {
+    private func animateIn(menu: UIView, from: UIView?) {
+        let oldAnchor = menu.layer.anchorPoint
+
+        menu.autoPinEdge(toSuperviewSafeArea: .top)
+        menu.autoPinEdge(toSuperviewSafeArea: .leading)
+        menu.alpha = 0
+        menu.layer.anchorPoint = .zero
+        menu.transform = .scale(0.1)
+        animate({
+            from?.alpha = 0.4
+            menu.alpha = 1
+            menu.transform = .identity
+        }) { (_) in
+            menu.layer.anchorPoint = oldAnchor
+            menu.autoPinEdgesToSuperviewSafeArea()
+        }
+    }
+
+    private func animateOut(menu: UIView?, from: UIView?, completion: ((Bool) -> Void)?) {
+        guard let menu = menu else {
+            completion?(false)
+            return
+        }
+
+        let frame = menu.frame
+        menu.autoPinEdge(toSuperviewSafeArea: .top)
+        menu.autoPinEdge(toSuperviewSafeArea: .leading)
+        menu.layer.anchorPoint = .zero
+        menu.frame = frame
+        animate({
+            from?.alpha = 1
+            menu.alpha = 0
+            menu.transform = .scale(0.1)
+        }) { (result) in
+            menu.removeFromSuperview()
+            completion?(result)
+        }
+    }
+
+    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)?) {
+        UIView.animate(withDuration: 0.4,
+                       delay: 0,
+                       usingSpringWithDamping: 0.8,
+                       initialSpringVelocity: 1,
+                       options: [.curveEaseInOut, .beginFromCurrentState],
+                       animations: animations,
+                       completion: completion)
+    }
+
+    private func adjustToolbarButtons(_ toolbar: UIToolbar?) {
         let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
 
-        let archiveBtn = UIBarButtonItem(title: homeViewMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction, style: .plain, target: self, action: #selector(performUnarchive))
+        let archiveBtn = UIBarButtonItem(
+            title: homeViewMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
+            style: .plain, target: self, action: #selector(performUnarchive))
         archiveBtn.isEnabled = hasSelectedEntries
-        var buttons: [UIBarButtonItem] = [archiveBtn]
-        if !hasSelectedEntries {
-            let btn = UIBarButtonItem(title: NSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the homeview if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
-            btn.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
-            buttons.append(btn)
-        } else {
-            let btn = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
-            btn.isEnabled = false
+
+        let readButton: UIBarButtonItem
+        if hasSelectedEntries {
+            readButton = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
+            readButton.isEnabled = false
             for path in tableView.indexPathsForSelectedRows ?? [] {
                 if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
-                    btn.isEnabled = true
+                    readButton.isEnabled = true
                     break
                 }
             }
-            buttons.append(btn)
+        } else {
+            readButton = UIBarButtonItem(title: NSLocalizedString("HOME_VIEW_TOOLBAR_READ_ALL", comment: "Title 'Read All' button in the toolbar of the homeview if multi-section is active."), style: .plain, target: self, action: #selector(performReadAll))
+            readButton.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
         }
+
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
         deleteBtn.isEnabled = hasSelectedEntries
-        buttons.append(deleteBtn)
 
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        var entries: [UIBarButtonItem] = [spacer]
-        for button in buttons {
+        var entries: [UIBarButtonItem] = []
+        for button in [archiveBtn, readButton, deleteBtn] {
+            if !entries.isEmpty {
+                entries.append(spacer)
+            }
             entries.append(button)
-            entries.append(spacer)
         }
         toolbar?.setItems(entries, animated: false)
     }
@@ -180,19 +252,23 @@ extension HomeViewController {
 
         tableView.allowsSelectionDuringEditing = false
         tableView.allowsMultipleSelectionDuringEditing = false
+        searchBar.isUserInteractionEnabled = true
+        searchBar.alpha = 1
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
 
-        navigationController?.setToolbarHidden(true, animated: true)
-        navigationController?.toolbar.setItems(nil, animated: false)
+        if let toolbar = viewState.multiSelectState.toolbar {
+            UIView.animate(withDuration: 0.25) {
+                toolbar.alpha = 0
+            } completion: { [weak self] (_) in
+                toolbar.removeFromSuperview()
+                self?.viewState.multiSelectState.toolbar = nil
+            }
+        }
         title = viewState.multiSelectState.title
     }
 
     public func updateCaptions() {
         AssertIsOnMainThread()
-
-        for item in navigationController?.toolbar.items ?? [] {
-            item.isEnabled = item.target != nil && !(tableView.indexPathsForSelectedRows ?? []).isEmpty
-        }
 
         let count = tableView.indexPathsForSelectedRows?.count ?? 0
         if count == 0 {
@@ -203,12 +279,11 @@ extension HomeViewController {
             let labelFormat = NSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_LABEL_N_FORMAT", comment: "Format for the toolbar used in the multi-select mode of conversation view. Embeds: {{ %@ the number of currently selected items }}.")
             title = String(format: labelFormat, OWSFormat.formatInt(count))
         }
-        adjustNavigationBarTitles(navigationController?.toolbar)
+        adjustToolbarButtons(viewState.multiSelectState.toolbar?.toolbar)
     }
 
     // MARK: toolbar button actions
 
-    @objc
     func performArchive() {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
@@ -216,7 +291,6 @@ extension HomeViewController {
         done()
     }
 
-    @objc
     func performUnarchive() {
         performOnAllSelectedEntries { thread in
             archiveThread(threadViewModel: thread, closeConversationBlock: nil)
@@ -224,7 +298,6 @@ extension HomeViewController {
         done()
     }
 
-    @objc
     func performRead() {
         performOnAllSelectedEntries { thread in
             markThreadAsRead(threadViewModel: thread)
@@ -232,7 +305,6 @@ extension HomeViewController {
         done()
     }
 
-    @objc
     func performReadAll() {
         var entries: [ThreadViewModel] = []
         var threads = Array(renderState.pinnedThreads.orderedValues)
@@ -250,7 +322,6 @@ extension HomeViewController {
         done()
     }
 
-    @objc
     func performDelete() {
         AssertIsOnMainThread()
 
@@ -304,6 +375,13 @@ extension HomeViewController {
         }
         updateCaptions()
     }
+
+    // private tagging interface
+    private class TapToCloseGestureRecognizer: UITapGestureRecognizer {
+        init(target: Any?) {
+            super.init(target: target, action: #selector(hideMenu))
+        }
+    }
 }
 
 // MARK: - implementation of ContextMenuActionsViewDelegate
@@ -315,12 +393,15 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
 
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
+    private let offset = CGPoint(x: 16, y: 0)
+
     required init(_ target: UIView) {
         super.init(frame: target.frame)
-        let frame = target.bounds
+        var frame = target.bounds
+        frame.origin = offset
         let radius = target.layer.cornerRadius
-        let shadowView = UIView(frame: CGRect(x: radius,
-                                              y: radius,
+        let shadowView = UIView(frame: CGRect(x: offset.x + radius,
+                                              y: offset.y + radius,
                                               width: frame.width - 2 * radius,
                                               height: frame.height - 2 * radius))
         shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
@@ -341,6 +422,7 @@ public class MultiSelectState: NSObject {
     fileprivate var parentButton: UIButton?
     fileprivate var title: String?
     fileprivate var contextMenuView: ContextMenuActionsViewContainer?
+    fileprivate var toolbar: BlurredToolbarContainer?
     private var _isActive = false
     var actionPerformed = false
 

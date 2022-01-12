@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -111,6 +111,9 @@ public extension HomeViewController {
     func canPresentPreview(fromIndexPath indexPath: IndexPath?) -> Bool {
         AssertIsOnMainThread()
 
+        guard !tableView.isEditing else {
+            return false
+        }
         guard let indexPath = indexPath else {
             return false
         }
