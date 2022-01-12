@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -254,7 +254,15 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                     owsFailDebug("Missing thread.")
                     return
                 }
-                thread.update(withDraft: currentDraft, transaction: transaction)
+
+                // Persist the draft only if its changed. This avoids unnecessary model changes.
+                let currentText = currentDraft?.text ?? ""
+                let persistedText = thread.messageDraft ?? ""
+                let currentRanges = currentDraft?.ranges.mentions ?? [:]
+                let persistedRanges = thread.messageDraftBodyRanges?.mentions ?? [:]
+                if currentText != persistedText || currentRanges != persistedRanges {
+                    thread.update(withDraft: currentDraft, transaction: transaction)
+                }
             }
         }
     }
