@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -507,8 +507,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
                     self.auxiliaryPreviewView?.frame = finalAuxFrame
                 }) { _ in
                     self.animationState = .none
-                    self.dismissButton.accessibilityActivate()
-                    UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: nil)
+                    UIAccessibility.post(notification: .layoutChanged, argument: self.dismissButton)
             }
         } else {
             // Re-scale to match original size, on the original scaling curve
