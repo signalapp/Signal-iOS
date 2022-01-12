@@ -13,6 +13,13 @@ public extension UIView {
         result.set(.height, to: height)
         return result
     }
+    
+    static func vhSpacer(_ width: CGFloat, _ height: CGFloat) -> UIView {
+        let result = UIView()
+        result.set(.width, to: width)
+        result.set(.height, to: height)
+        return result
+    }
 
     static func separator() -> UIView {
         let result = UIView()

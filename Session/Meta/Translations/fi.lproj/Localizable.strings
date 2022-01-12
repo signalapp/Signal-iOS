@@ -543,6 +543,9 @@
 "vc_share_title" = "Jaa Sessioniin";
 "vc_share_loading_message" = "Valmistellaan liitteitä...";
 "vc_share_sending_message" = "Lähetetään...";
+"vc_share_link_previews_error" = "Unable to load preview";
+"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
+"vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
 "view_open_group_invitation_description" = "Avaa ryhmäkutsu";
 "vc_conversation_settings_invite_button_title" = "Lisää jäseniä";
 "vc_settings_faq_button_title" = "FAQ";

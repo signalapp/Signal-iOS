@@ -59,7 +59,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
         createViews()
         
-        backgroundColor = .red
         
         setupLayout()
     }
@@ -78,11 +77,20 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         stackView.distribution = .equalSpacing
         
         switch mode {
-            case .large, .attachmentApproval: stackView.spacing = 10
+            case .attachmentApproval: stackView.spacing = 2
+            case .large: stackView.spacing = 10
             case .small: stackView.spacing = 5
         }
         
         return stackView
+    }()
+    
+    private lazy var loadingView: NVActivityIndicatorView = {
+        let view: NVActivityIndicatorView = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        
+        return view
     }()
     
     private lazy var imageView: UIImageView = {
@@ -98,8 +106,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private lazy var fileTypeImageView: UIImageView = {
         let view: UIImageView = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.minificationFilter = .trilinear
-        view.layer.magnificationFilter = .trilinear
         
         return view
     }()
@@ -126,8 +132,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         button.clipsToBounds = true
         button.setBackgroundImage(UIColor.white.toImage(), for: .normal)
         button.setBackgroundImage(UIColor.white.darken(by: 0.2).toImage(), for: .highlighted)
-        button.layer.cornerRadius = 30
-        
         button.addTarget(self, action: #selector(audioPlayPauseButtonPressed), for: .touchUpInside)
         
         return button
@@ -136,12 +140,34 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private lazy var titleLabel: UILabel = {
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = labelFont()
-        label.text = (formattedFileName() ?? formattedFileExtension())
-        label.textColor = controlTintColor
         label.textAlignment = .center
         label.lineBreakMode = .byTruncatingMiddle
+        
+        if let fileName: String = attachment.sourceFilename?.trimmingCharacters(in: .whitespacesAndNewlines), fileName.count > 0 {
+            label.text = fileName
+        }
+        else if let fileExtension: String = attachment.fileExtension {
+            label.text = String(
+                format: "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT".localized(),
+                fileExtension.uppercased()
+            )
+        }
+        
         label.isHidden = ((label.text?.count ?? 0) == 0)
+        
+        switch mode {
+            case .attachmentApproval:
+                label.font = UIFont.ows_boldFont(withSize: ScaleFromIPhone5To7Plus(16, 22))
+                label.textColor = Colors.text
+                
+            case .large:
+                label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
+                label.textColor = Colors.accent
+                
+            case .small:
+                label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
+                label.textColor = Colors.accent
+        }
         
         return label
     }()
@@ -151,12 +177,24 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = labelFont()
         // Format string for file size label in call interstitial view.
         // Embeds: {{file size as 'N mb' or 'N kb'}}.
         label.text = String(format: "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT".localized(), OWSFormat.formatFileSize(UInt(fileSize)))
-        label.textColor = controlTintColor
         label.textAlignment = .center
+        
+        switch mode {
+            case .attachmentApproval:
+                label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(12, 18))
+                label.textColor = Colors.pinIcon
+                
+            case .large:
+                label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
+                label.textColor = Colors.accent
+                
+            case .small:
+                label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
+                label.textColor = Colors.accent
+        }
         
         return label
     }()
@@ -253,8 +291,11 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
         audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback, delegate: self)
         
-        imageView.image = UIImage(named: "FileLarge")
-        fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")
+        imageView.image = UIImage(named: "FileLarge")?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = Colors.text
+        fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")?
+            .withRenderingMode(.alwaysTemplate)
+        fileTypeImageView.tintColor = Colors.text
         setAudioIconToPlay()
         
         self.addSubview(stackView)
@@ -266,38 +307,42 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         stackView.addArrangedSubview(fileSizeLabel)
         
         imageView.addSubview(fileTypeImageView)
-
+        
+        let imageSize: CGFloat = {
+            switch mode {
+                case .large: return 200
+                case .attachmentApproval: return 150
+                case .small: return 80
+            }
+        }()
+        let audioButtonSize: CGFloat = (imageSize / 2.5)
+        audioPlayPauseButton.layer.cornerRadius = (audioButtonSize / 2)
+        
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             stackView.widthAnchor.constraint(equalTo: widthAnchor),
             stackView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
             
-            imageView.widthAnchor.constraint(equalToConstant: 150),
-            imageView.heightAnchor.constraint(equalToConstant: 150),
+            imageView.widthAnchor.constraint(equalToConstant: imageSize),
+            imageView.heightAnchor.constraint(equalToConstant: imageSize),
             titleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
             fileSizeLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
             
             fileTypeImageView.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
             fileTypeImageView.centerYAnchor.constraint(
                 equalTo: imageView.centerYAnchor,
-                constant: 25
+                constant: ceil(imageSize * 0.15)
             ),
             fileTypeImageView.widthAnchor.constraint(
                 equalTo: fileTypeImageView.heightAnchor,
                 multiplier: ((fileTypeImageView.image?.size.width ?? 1) / (fileTypeImageView.image?.size.height ?? 1))
             ),
-            fileTypeImageView.widthAnchor.constraint(
-                equalTo: imageView.widthAnchor, constant: -75
-            ),
+            fileTypeImageView.widthAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 0.5),
             
             audioPlayPauseButton.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
             audioPlayPauseButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
-            audioPlayPauseButton.widthAnchor.constraint(
-                equalToConstant: (audioPlayPauseButton.layer.cornerRadius * 2)
-            ),
-            audioPlayPauseButton.heightAnchor.constraint(
-                equalToConstant: (audioPlayPauseButton.layer.cornerRadius * 2)
-            )
+            audioPlayPauseButton.widthAnchor.constraint(equalToConstant: audioButtonSize),
+            audioPlayPauseButton.heightAnchor.constraint(equalToConstant: audioButtonSize)
         ])
     }
 
@@ -401,16 +446,12 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             return
         }
 
-//        let imageView = UIImageView(image: image)
         imageView.image = image
-//        imageView.layer.minificationFilter = .trilinear
-//        imageView.layer.magnificationFilter = .trilinear
         self.addSubview(imageView)
         
         let aspectRatio = image.size.width / image.size.height
         let clampedRatio: CGFloat = CGFloatClamp(aspectRatio, 0.05, 95.0)
         
-//        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
         
         // Attachment approval provides it's own play button to keep it
@@ -434,9 +475,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         // at the proper zoom scale.
         if mode != .attachmentApproval {
             self.addSubview(videoPlayButton)
-//            videoPlayButton.autoCenterInSuperview()
-//            videoPlayButton.autoSetDimension(.width, toSize: 72)
-//            videoPlayButton.autoSetDimension(.height, toSize: 72)
             
             NSLayoutConstraint.activate([
                 videoPlayButton.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -450,139 +488,142 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private func createUrlPreview() {
         // If link previews aren't enabled then use a fallback state
         guard let linkPreviewURL: String = OWSLinkPreview.previewURL(forRawBodyText: attachment.text()) else {
-//            "vc_share_link_previews_disabled_title" = "Link Previews Disabled";
-//            "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you sshare. This can be useful, but Session will need to contact linked websites to generate previews. You can enable link previews in Session's settings.";
-// TODO: Show "warning" about disabled link previews instead
-            createGenericPreview()
+            titleLabel.text = "vc_share_link_previews_disabled_title".localized()
+            titleLabel.isHidden = false
+            
+            fileSizeLabel.text = "vc_share_link_previews_disabled_explanation".localized()
+            fileSizeLabel.textColor = Colors.text
+            fileSizeLabel.numberOfLines = 0
+            
+            self.addSubview(stackView)
+            
+            stackView.addArrangedSubview(titleLabel)
+            stackView.addArrangedSubview(UIView.vSpacer(10))
+            stackView.addArrangedSubview(fileSizeLabel)
+            
+            NSLayoutConstraint.activate([
+                stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+                stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+                stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -(32 * 2)),
+                stackView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor)
+            ])
             return
         }
         
         linkPreviewInfo = (url: linkPreviewURL, draft: nil)
-        
-        var subviews = [UIView]()
-        
-        let color: UIColor = isLightMode ? .black : .white
-        let loadingView = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: color, padding: nil)
-        loadingView.set(.width, to: 24)
-        loadingView.set(.height, to: 24)
-        loadingView.startAnimating()
-        subviews.append(loadingView)
-        
-        let imageViewContainer = UIView()
-        imageViewContainer.clipsToBounds = true
-        imageViewContainer.contentMode = .center
-        imageViewContainer.alpha = 0
-        imageViewContainer.layer.cornerRadius = 8
-        subviews.append(imageViewContainer)
-        
-        let imageView = createHeroImageView(imageName: "FileLarge")
-        imageViewContainer.addSubview(imageView)
-        imageView.pin(to: imageViewContainer)
 
-        let titleLabel = UILabel()
+        stackView.axis = .horizontal
+        stackView.distribution = .fill
+        
+        imageView.clipsToBounds = true
+        imageView.image = UIImage(named: "Link")?.withTint(Colors.text)
+        imageView.alpha = 0 // Not 'isHidden' because we want it to take up space in the UIStackView
+        imageView.contentMode = .center
+        imageView.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+        imageView.layer.cornerRadius = 8
+        
+        loadingView.isHidden = false
+        loadingView.startAnimating()
+        
+        titleLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
         titleLabel.text = linkPreviewURL
-        titleLabel.textColor = controlTintColor
-        titleLabel.font = labelFont()
-        titleLabel.textAlignment = .center
-        titleLabel.lineBreakMode = .byTruncatingMiddle
-        subviews.append(titleLabel)
+        titleLabel.textAlignment = .left
+        titleLabel.numberOfLines = 2
+        titleLabel.isHidden = false
         
-        let stackView = wrapViewsInVerticalStack(subviews: subviews)
         self.addSubview(stackView)
+        self.addSubview(loadingView)
         
-        titleLabel.autoPinWidthToSuperview(withMargin: 32)
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(UIView.vhSpacer(10, 0))
+        stackView.addArrangedSubview(titleLabel)
+        
+        let imageSize: CGFloat = {
+            switch mode {
+                case .large: return 120
+                case .attachmentApproval, .small: return 80
+            }
+        }()
         
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 80),
-            imageView.heightAnchor.constraint(equalToConstant: 80)
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.widthAnchor.constraint(equalTo: widthAnchor, constant: -(32 * 2)),
+            stackView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
+            
+            imageView.widthAnchor.constraint(equalToConstant: imageSize),
+            imageView.heightAnchor.constraint(equalToConstant: imageSize),
+            
+            loadingView.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
+            loadingView.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            loadingView.widthAnchor.constraint(equalToConstant: ceil(imageSize / 3)),
+            loadingView.heightAnchor.constraint(equalToConstant: ceil(imageSize / 3))
         ])
         
         // Build the link preview
-        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL).done { [weak self] draft in
-            // Loader
-            loadingView.alpha = 0
-            loadingView.stopAnimating()
-            
-            self?.linkPreviewInfo = (url: linkPreviewURL, draft: draft)
-            
-            // TODO: Look at refactoring this behaviour to consolidate attachment mutations
-            self?.attachment.linkPreviewDraft = draft
-            
-            let image: UIImage?
-
-            if let jpegImageData: Data = draft.jpegImageData, let loadedImage: UIImage = UIImage(data: jpegImageData) {
-                image = loadedImage
-                imageView.contentMode = .scaleAspectFill
+        OWSLinkPreview.tryToBuildPreviewInfo(previewUrl: linkPreviewURL)
+            .done { [weak self] draft in
+                // TODO: Look at refactoring this behaviour to consolidate attachment mutations
+                self?.attachment.linkPreviewDraft = draft
+                self?.linkPreviewInfo = (url: linkPreviewURL, draft: draft)
+                
+                // Update the UI
+                self?.titleLabel.text = (draft.title ?? self?.titleLabel.text)
+                self?.loadingView.alpha = 0
+                self?.loadingView.stopAnimating()
+                self?.imageView.alpha = 1
+                
+                if let jpegImageData: Data = draft.jpegImageData, let loadedImage: UIImage = UIImage(data: jpegImageData) {
+                    self?.imageView.image = loadedImage
+                    self?.imageView.contentMode = .scaleAspectFill
+                }
             }
-            else {
-                image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
-                imageView.contentMode = .center
+            .catch { [weak self] _ in
+                self?.titleLabel.attributedText = NSMutableAttributedString(string: linkPreviewURL)
+                    .rtlSafeAppend(
+                        "\n\("vc_share_link_previews_error".localized())",
+                        attributes: [
+                            NSAttributedString.Key.font: UIFont.ows_regularFont(
+                                withSize: Values.verySmallFontSize
+                            ),
+                            NSAttributedString.Key.foregroundColor: self?.fileSizeLabel.textColor
+                        ]
+                        .compactMapValues { $0 }
+                    )
+                self?.loadingView.alpha = 0
+                self?.loadingView.stopAnimating()
+                self?.imageView.alpha = 1
             }
-            
-            // Image view
-            (imageView as? UIImageView)?.image = image
-            imageViewContainer.alpha = 1
-            imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
-            
-            // Title
-            if let title = draft.title {
-                titleLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
-                titleLabel.text = title
-                titleLabel.textAlignment = .left
-                titleLabel.numberOfLines = 2
-            }
-            
-            guard let hStackView = self?.wrapViewsInHorizontalStack(subviews: subviews) else {
-                // TODO: Fallback
-                return
-            }
-            stackView.removeFromSuperview()
-            self?.addSubview(hStackView)
-            
-            // We want to center the stackView in it's superview while also ensuring
-            // it's superview is big enough to contain it.
-            hStackView.autoPinWidthToSuperview(withMargin: 32)
-            hStackView.autoVCenterInSuperview()
-            NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
-                hStackView.autoPinHeightToSuperview()
-            }
-            hStackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            hStackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
-        }.catch { _ in
-            // TODO: Fallback
-            loadingView.stopAnimating()
-        }.retainUntilComplete()
-
-        // We want to center the stackView in it's superview while also ensuring
-        // it's superview is big enough to contain it.
-        stackView.autoPinWidthToSuperview()
-        stackView.autoVCenterInSuperview()
-        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
-            stackView.autoPinHeightToSuperview()
-        }
-        stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+            .retainUntilComplete()
     }
 
     private func createGenericPreview() {
         imageView.image = UIImage(named: "FileLarge")
-        stackView.backgroundColor = .green
+        
         self.addSubview(stackView)
         
         stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(UIView.vSpacer(0))
+        stackView.addArrangedSubview(UIView.vSpacer(5))
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(fileSizeLabel)
         
         imageView.addSubview(fileTypeImageView)
+        
+        let imageSize: CGFloat = {
+            switch mode {
+                case .large: return 200
+                case .attachmentApproval: return 150
+                case .small: return 80
+            }
+        }()
 
         NSLayoutConstraint.activate([
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             stackView.widthAnchor.constraint(equalTo: widthAnchor),
             stackView.heightAnchor.constraint(lessThanOrEqualTo: heightAnchor),
             
-            imageView.widthAnchor.constraint(equalToConstant: 150),
-            imageView.heightAnchor.constraint(equalToConstant: 150),
+            imageView.widthAnchor.constraint(equalToConstant: imageSize),
+            imageView.heightAnchor.constraint(equalToConstant: imageSize),
             titleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
             fileSizeLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
             
@@ -599,103 +640,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 equalTo: imageView.widthAnchor, constant: -75
             )
         ])
-    }
-
-    private func createHeroViewSize() -> CGFloat {
-        switch mode {
-        case .large:
-            return ScaleFromIPhone5To7Plus(175, 225)
-        case .attachmentApproval:
-            return ScaleFromIPhone5(100)
-        case .small:
-            return ScaleFromIPhone5To7Plus(80, 80)
-        }
-    }
-
-    private func createHeroImageView(imageName: String) -> UIView {
-        let imageSize = createHeroViewSize()
-
-        let image = UIImage(named: imageName)
-        assert(image != nil)
-        let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = .trilinear
-        imageView.layer.magnificationFilter = .trilinear
-        imageView.layer.shadowColor = UIColor.black.cgColor
-        let shadowScaling = 5.0
-        imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
-        imageView.layer.shadowOpacity = 0.25
-        imageView.layer.shadowOffset = CGSize(width: 0.75 * shadowScaling, height: 0.75 * shadowScaling)
-        imageView.autoSetDimension(.width, toSize: imageSize)
-        imageView.autoSetDimension(.height, toSize: imageSize)
-
-        return imageView
-    }
-
-    private func labelFont() -> UIFont {
-        switch mode {
-            case .large, .attachmentApproval:
-                return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
-            case .small:
-                return UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
-        }
-    }
-
-    private var controlTintColor: UIColor {
-        switch mode {
-        case .small, .large:
-            return Colors.accent
-        case .attachmentApproval:
-            return Colors.text
-        }
-    }
-
-    private func formattedFileExtension() -> String? {
-        guard let fileExtension = attachment.fileExtension else {
-            return nil
-        }
-
-        //"Format string for file extension label in call interstitial view"
-        return String(format: "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT".localized(), fileExtension.uppercased())
-    }
-
-    public func formattedFileName() -> String? {
-        guard let sourceFilename = attachment.sourceFilename else { return nil }
-        
-        let filename = sourceFilename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        
-        guard filename.count > 0 else { return nil }
-        
-        return filename
-    }
-
-    private func createFileNameLabel() -> UIView? {
-        let filename = formattedFileName() ?? formattedFileExtension()
-
-        guard filename != nil else {
-            return nil
-        }
-
-        let label = UILabel()
-        label.text = filename
-        label.textColor = controlTintColor
-        label.font = labelFont()
-        label.textAlignment = .center
-        label.lineBreakMode = .byTruncatingMiddle
-        return label
-    }
-
-    private func createFileSizeLabel() -> UIView {
-        let label = UILabel()
-        let fileSize = attachment.dataLength
-        label.text = String(format: NSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
-                                                     comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
-                            OWSFormat.formatFileSize(UInt(fileSize)))
-
-        label.textColor = controlTintColor
-        label.font = labelFont()
-        label.textAlignment = .center
-
-        return label
     }
 
     // MARK: - Event Handlers
@@ -723,10 +667,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
 
     private func ensureButtonState() {
-        if playbackState == .playing {
-            setAudioIconToPause()
-        } else {
-            setAudioIconToPlay()
+        switch playbackState {
+            case .playing: setAudioIconToPause()
+            default: setAudioIconToPlay()
         }
     }
 
@@ -736,22 +679,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
 
     private func setAudioIconToPlay() {
-        //attachment_audio
-//        let image = UIImage(named: "audio_play_black_large")?.withRenderingMode(.alwaysTemplate)
-//        assert(image != nil)
-//        audioPlayButton?.setImage(image, for: .normal)
-//        audioPlayButton?.imageView?.tintColor = controlTintColor
-        //let image = UIImage(named: "CirclePlay")
-        let image = UIImage(named: "Play")
-        audioPlayPauseButton.setImage(image, for: .normal)
+        audioPlayPauseButton.setImage(UIImage(named: "Play"), for: .normal)
     }
 
     private func setAudioIconToPause() {
-//        let image = UIImage(named: "audio_pause_black_large")?.withRenderingMode(.alwaysTemplate)
-//        assert(image != nil)
-//        audioPlayButton?.setImage(image, for: .normal)
-//        audioPlayButton?.imageView?.tintColor = controlTintColor
-        let image = UIImage(named: "Pause")
-        audioPlayPauseButton.setImage(image, for: .normal)
+        audioPlayPauseButton.setImage(UIImage(named: "Pause"), for: .normal)
     }
 }
