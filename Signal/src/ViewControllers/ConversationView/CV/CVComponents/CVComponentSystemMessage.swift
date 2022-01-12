@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1123,6 +1123,10 @@ extension CVComponentSystemMessage {
                   let phoneNumberOld = infoMessage.infoMessageUserInfo?[.changePhoneNumberOld] as? String,
                         let phoneNumberNew = infoMessage.infoMessageUserInfo?[.changePhoneNumberNew] as? String else {
                 owsFailDebug("Invalid info message.")
+                return nil
+            }
+            // Only show the update contact action if this user was previously a contact.
+            guard contactsManager.isSystemContact(phoneNumber: phoneNumberOld, transaction: transaction) else {
                 return nil
             }
             return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
