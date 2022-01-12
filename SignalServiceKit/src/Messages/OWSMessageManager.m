@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageManager.h"
@@ -892,7 +892,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           sentTimestamps:sentTimestamps
                                                        deliveryTimestamp:@(envelope.timestamp)
                                                              transaction:transaction];
-            return;
+            break;
         case SSKProtoReceiptMessageTypeRead:
             if (SSKDebugFlags.internalLogging) {
                 OWSLogInfo(@"Processing receipt message with read receipts.");
