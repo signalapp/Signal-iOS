@@ -166,6 +166,10 @@ public class GroupLinkViewController: OWSTableViewController2 {
     @objc
     func didToggleApproveNewMembers(_ sender: UISwitch) {
         guard groupModelV2.isGroupInviteLinkEnabled else {
+            let message = NSLocalizedString("GROUP_APPROVE_NEW_MEMBERS_WITHOUT_GROUP_LINK_WARNING",
+                                            comment: "Message indicating that you cannot approve new members if the group link is not enabled.")
+            presentToast(text: message)
+            updateTableContents()
             return
         }
         let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator

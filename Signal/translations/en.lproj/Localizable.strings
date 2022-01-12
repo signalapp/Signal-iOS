@@ -1951,6 +1951,9 @@
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Only admins can change this option.";
 
+/* Message indicating that you cannot approve new members if the group link is not enabled. */
+"GROUP_APPROVE_NEW_MEMBERS_WITHOUT_GROUP_LINK_WARNING" = "You cannot approve new members if the group link is disabled.";
+
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "You won’t receive their audio or video and they won’t receive yours.";
 
