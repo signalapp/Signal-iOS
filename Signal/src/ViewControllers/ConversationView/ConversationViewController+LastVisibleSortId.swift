@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -73,7 +73,7 @@ extension ConversationViewController {
         return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
-    func saveLastVisibleSortIdAndOnScreenPercentage() {
+    func saveLastVisibleSortIdAndOnScreenPercentage(async: Bool = false) {
         AssertIsOnMainThread()
 
         guard hasAppearedAndHasAppliedFirstLoad else {
@@ -83,27 +83,41 @@ extension ConversationViewController {
             return
         }
 
-        var newValue: TSThread.LastVisibleInteraction?
-        if let lastVisibleIndexPath = lastVisibleIndexPath,
-           let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
-
-            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
-
-            newValue = TSThread.LastVisibleInteraction(sortId: reference.sortId,
-                                                       onScreenPercentage: onScreenPercentage)
-        }
-
         let thread = self.thread
-        let oldValue = databaseStorage.read { transaction in
-            thread.lastVisibleInteraction(transaction: transaction)
-        }
+        let readAndUpdateBlock = { (newValue: TSThread.LastVisibleInteraction?) in
+            let oldValue = self.databaseStorage.read { transaction in
+                thread.lastVisibleInteraction(transaction: transaction)
+            }
 
-        guard oldValue != newValue else {
-            return
-        }
+            guard oldValue != newValue else {
+                return
+            }
 
-        databaseStorage.asyncWrite { transaction in
-            thread.setLastVisibleInteraction(newValue, transaction: transaction)
+            self.databaseStorage.asyncWrite { transaction in
+                thread.setLastVisibleInteraction(newValue, transaction: transaction)
+            }
+        }
+        if async {
+            if let lastVisibleIndexPath = lastVisibleIndexPath, let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+                let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+                DispatchQueue.sharedUserInitiated.async {
+                    readAndUpdateBlock(TSThread.LastVisibleInteraction(sortId: reference.sortId,
+                                                                       onScreenPercentage: onScreenPercentage))
+                }
+            } else {
+                DispatchQueue.sharedUserInitiated.async {
+                    readAndUpdateBlock(nil)
+                }
+            }
+        } else {
+            var newValue: TSThread.LastVisibleInteraction?
+            if let lastVisibleIndexPath = lastVisibleIndexPath,
+               let reference = firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath) {
+                let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(reference.indexPath)
+                newValue = TSThread.LastVisibleInteraction(sortId: reference.sortId,
+                                                           onScreenPercentage: onScreenPercentage)
+            }
+            readAndUpdateBlock(newValue)
         }
     }
 
