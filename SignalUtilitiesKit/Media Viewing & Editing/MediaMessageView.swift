@@ -415,6 +415,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
     
     private func setupLayout() {
+        // Plain text will just be put in the 'message' input so do nothing
+        guard attachment.fileType != .text && attachment.fileType != .oversizeText else { return }
+        
         // Sizing calculations
         let clampedRatio: CGFloat = {
             switch attachment.fileType {

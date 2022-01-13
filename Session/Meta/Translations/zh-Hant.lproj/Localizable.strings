@@ -269,7 +269,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "顯示";
 /* No comment provided by engineer. */
-"OK" = "OK";
+"BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ 取消了閱後即焚模式";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */

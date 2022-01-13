@@ -377,7 +377,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                         let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : "Couldn't Update Profile"
                         let message = isMaxFileSizeExceeded ? "Please select a smaller photo and try again" : "Please check your internet connection and try again"
                         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                        alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
                         self?.present(alert, animated: true, completion: nil)
                     }
                 }
@@ -443,7 +443,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     @objc private func handleSaveDisplayNameButtonTapped() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)

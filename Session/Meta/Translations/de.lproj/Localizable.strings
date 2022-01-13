@@ -269,7 +269,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Anzeigen";
 /* No comment provided by engineer. */
-"OK" = "Okay";
+"BUTTON_OK" = "Okay";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ hat verschwindende Nachrichten deaktiviert.";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */

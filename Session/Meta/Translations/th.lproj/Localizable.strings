@@ -269,7 +269,7 @@
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "แสดง";
 /* No comment provided by engineer. */
-"OK" = "ตกลง";
+"BUTTON_OK" = "ตกลง";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ปิดใช้งานข้อความที่ลบตัวเองแล้ว";
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */

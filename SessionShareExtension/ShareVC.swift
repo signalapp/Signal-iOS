@@ -231,7 +231,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     
     func shareViewFailed(error: Error) {
         let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK".localized(), style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
             self.extensionContext!.cancelRequest(withError: error)
         }))
         present(alert, animated: true, completion: nil)

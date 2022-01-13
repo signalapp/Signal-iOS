@@ -155,8 +155,16 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         let message = VisibleMessage()
         message.sentTimestamp = NSDate.millisecondTimestamp()
-        message.text = messageText
-        
+        message.text = (isSharingUrl && (messageText?.isEmpty == true || attachments[0].linkPreviewDraft == nil) ?
+            (
+                (messageText?.isEmpty == true ?
+                    attachments[0].text() :
+                    "\(attachments[0].text() ?? "")\n\n\(messageText ?? "")"
+                )
+            ) :
+            messageText
+        )
+
         let tsMessage = TSOutgoingMessage.from(message, associatedWith: selectedThread!)
         Storage.write(
             with: { transaction in
