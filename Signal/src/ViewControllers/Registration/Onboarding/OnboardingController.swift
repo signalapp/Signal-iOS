@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -598,7 +598,7 @@ public class OnboardingController: NSObject {
             // they could be stale from previous registrations.
             databaseStorage.write { KeyBackupService.clearKeys(transaction: $0) }
 
-            KeyBackupService.restoreKeys(with: twoFAPin, and: self.kbsAuth).done {
+            KeyBackupService.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
                 // If we restored successfully clear out KBS auth, the server will give it
                 // to us again if we still need to do KBS operations.
                 self.kbsAuth = nil

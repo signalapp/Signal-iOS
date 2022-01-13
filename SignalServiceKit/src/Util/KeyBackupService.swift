@@ -104,7 +104,7 @@ public class KeyBackupService: NSObject {
             auth: auth,
             enclave: enclave
         ).recover { error -> Promise<String> in
-            if let error = error as? KBSError, error == .backupMissing, enclavesToCheck.count > 1 {
+            if case KBSError.backupMissing = error, enclavesToCheck.count > 1 {
                 // There's no backup on this enclave, but we have more enclaves we can try.
                 return acquireRegistrationLockForNewNumber(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
             }
@@ -125,39 +125,35 @@ public class KeyBackupService: NSObject {
             auth: auth,
             enclave: enclave,
             ignoreCachedToken: true
-        ).map(on: .global()) { masterKey, _, _ -> String in
-            guard let registrationLockToken = DerivedKey.registrationLock.derivedData(from: masterKey)?.hexadecimalString else {
+        ).map(on: .global()) { restoredKeys -> String in
+            guard let registrationLockToken = DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
                 owsFailDebug("Failed to derive registration lock token")
                 throw KBSError.assertion
             }
             return registrationLockToken
         }.recover(on: .global()) { error -> Promise<String> in
-            guard let kbsError = error as? KBSError else {
-                owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
-                throw error
-            }
-
-            throw kbsError
+            owsAssertDebug(error is KBSError, "Unexpectedly surfacing a non KBS error \(error)")
+            throw error
         }
     }
 
-    @objc(restoreKeysWithPin:)
-    static func objc_RestoreKeys(with pin: String) -> AnyPromise {
-        return AnyPromise(restoreKeys(with: pin))
+    @objc(restoreKeysAndBackupWithPin:)
+    static func objc_RestoreKeysAndBackup(with pin: String) -> AnyPromise {
+        return AnyPromise(restoreKeysAndBackup(with: pin))
     }
 
     /// Loads the users key, if any, from the KBS into the database.
-    public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
+    public static func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
         // to oldest enclave, so we start with the newest enclave and then progressively
         // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
-        return restoreKeys(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
+        return restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
     }
 
-    private static func restoreKeys(
+    private static func restoreKeysAndBackup(
         pin: String,
         auth: RemoteAttestationAuth?,
         enclavesToCheck: [KeyBackupEnclave]
@@ -166,21 +162,21 @@ public class KeyBackupService: NSObject {
             owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
             return Promise(error: KBSError.assertion)
         }
-        return restoreKeys(
+        return restoreKeysAndBackup(
             pin: pin,
             auth: auth,
             enclave: enclave
         ).recover { error -> Promise<Void> in
             if let error = error as? KBSError, error == .backupMissing, enclavesToCheck.count > 1 {
                 // There's no backup on this enclave, but we have more enclaves we can try.
-                return restoreKeys(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
+                return restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
             }
 
             throw error
         }
     }
 
-    private static func restoreKeys(
+    private static func restoreKeysAndBackup(
         pin: String,
         auth: RemoteAttestationAuth?,
         enclave: KeyBackupEnclave
@@ -191,17 +187,17 @@ public class KeyBackupService: NSObject {
             pin: pin,
             auth: auth,
             enclave: enclave
-        ).then { masterKey, encryptedMasterKey, accessKey in
+        ).then { restoredKeys in
             // Backup our keys again, even though we just fetched them.
             // This resets the number of remaining attempts. We always
             // backup to the current enclave, even if we restored from
             // a previous enclave.
             return backupKeyRequest(
-                accessKey: accessKey,
-                encryptedMasterKey: encryptedMasterKey,
+                accessKey: restoredKeys.accessKey,
+                encryptedMasterKey: restoredKeys.encryptedMasterKey,
                 enclave: currentEnclave,
                 auth: auth
-            ).map { ($0, masterKey) }
+            ).map { ($0, restoredKeys.masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -270,12 +266,18 @@ public class KeyBackupService: NSObject {
         }
     }
 
+    private struct RestoredKeys {
+        let masterKey: Data
+        let encryptedMasterKey: Data
+        let accessKey: Data
+    }
+
     private static func restoreKeys(
         pin: String,
         auth: RemoteAttestationAuth?,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
-    ) -> Promise<(Data, Data, Data)> {
+    ) -> Promise<RestoredKeys> {
         fetchBackupId(
             auth: auth,
             enclave: enclave,
@@ -289,7 +291,7 @@ public class KeyBackupService: NSObject {
                 auth: auth,
                 ignoreCachedToken: ignoreCachedToken
             ).map { ($0, encryptionKey, accessKey) }
-        }.map(on: .global()) { response, encryptionKey, accessKey -> (Data, Data, Data) in
+        }.map(on: .global()) { response, encryptionKey, accessKey -> RestoredKeys in
             guard let status = response.status else {
                 owsFailDebug("KBS restore is missing status")
                 throw KBSError.assertion
@@ -331,7 +333,7 @@ public class KeyBackupService: NSObject {
 
                 let masterKey = try decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
 
-                return (masterKey, encryptedMasterKey, accessKey)
+                return RestoredKeys(masterKey: masterKey, encryptedMasterKey: encryptedMasterKey, accessKey: accessKey)
             }
         }
     }
