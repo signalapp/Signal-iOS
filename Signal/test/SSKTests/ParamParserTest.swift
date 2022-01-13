@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -92,6 +92,34 @@ class ParamParserTest: SignalBaseTest {
 
         XCTAssertThrowsError(try {
             let _: UInt64 = try parser.required(key: "negative_int")
+        }())
+    }
+
+    func testUUID() {
+        let uuid = UUID()
+        let parser = ParamParser(dictionary: ["uuid": uuid.uuidString])
+
+        XCTAssertEqual(uuid, try parser.required(key: "uuid"))
+        XCTAssertEqual(uuid, try parser.optional(key: "uuid"))
+
+        XCTAssertNil(try parser.optional(key: "nope") as UUID?)
+        XCTAssertThrowsError(try parser.required(key: "nope") as UUID?)
+    }
+
+    func testUUIDFormatFailure() {
+        XCTAssertThrowsError(try {
+            let parser = ParamParser(dictionary: ["uuid": ""])
+            let _: UUID = try parser.required(key: "uuid")
+        }())
+
+        XCTAssertThrowsError(try {
+            let parser = ParamParser(dictionary: ["uuid": "not-a-uuid"])
+            let _: UUID = try parser.required(key: "uuid")
+        }())
+
+        XCTAssertThrowsError(try {
+            let parser = ParamParser(dictionary: ["uuid": 0])
+            let _: UUID = try parser.required(key: "uuid")
         }())
     }
 

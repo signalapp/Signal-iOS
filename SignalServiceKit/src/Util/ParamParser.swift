@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -134,6 +134,28 @@ public class ParamParser {
         default:
             throw badCast(key: key, type: T.self)
         }
+    }
+
+    // MARK: UUIDs
+
+    public func required(key: Key) throws -> UUID {
+        guard let value: UUID = try optional(key: key) else {
+            throw missing(key: key)
+        }
+
+        return value
+    }
+
+    public func optional(key: Key) throws -> UUID? {
+        guard let uuidString: String = try optional(key: key) else {
+            return nil
+        }
+
+        guard let uuid = UUID(uuidString: uuidString) else {
+            throw invalid(key: key)
+        }
+
+        return uuid
     }
 
     // MARK: Base64 Data
