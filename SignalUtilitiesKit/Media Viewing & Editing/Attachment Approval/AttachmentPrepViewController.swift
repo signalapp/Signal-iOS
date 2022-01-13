@@ -15,7 +15,7 @@ protocol AttachmentPrepViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate {
+public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarDelegate, OWSVideoPlayerDelegate, MediaMessageViewAudioDelegate {
     // We sometimes shrink the attachment view so that it remains somewhat visible
     // when the keyboard is presented.
     public enum AttachmentViewScale {
@@ -74,6 +74,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     private lazy var mediaMessageView: MediaMessageView = {
         let view: MediaMessageView = MediaMessageView(attachment: attachment, mode: .attachmentApproval)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.audioDelegate = self
         view.isHidden = (imageEditorView != nil)
         
         return view
@@ -168,11 +169,14 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             mediaMessageView.videoPlayButton.isHidden = true
             mediaMessageView.addSubview(playerView)
             
-            // we don't want the progress bar to zoom during "pinch-to-zoom"
+            // We don't want the progress bar to zoom during "pinch-to-zoom"
             // but we do want it to shrink with the media content when the user
             // pops the keyboard.
             contentContainerView.addSubview(progressBar)
             contentContainerView.addSubview(playVideoButton)
+        }
+        else if attachment.isAudio, mediaMessageView.audioPlayer != nil {
+            contentContainerView.addSubview(progressBar)
         }
         
         setupLayout()
@@ -268,6 +272,13 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 playVideoButton.heightAnchor.constraint(equalToConstant: playButtonSize),
             ])
         }
+        else if attachment.isAudio, mediaMessageView.audioPlayer != nil {
+            NSLayoutConstraint.activate([
+                progressBar.topAnchor.constraint(equalTo: view.topAnchor),
+                progressBar.widthAnchor.constraint(equalTo: contentContainerView.widthAnchor),
+                progressBar.heightAnchor.constraint(equalToConstant: 44)
+            ])
+        }
     }
 
     // MARK: - Navigation Bar
@@ -326,6 +337,11 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
+        if attachment.isAudio {
+            mediaMessageView.pauseAudio()
+            return
+        }
+        
         guard let videoPlayer = self.videoPlayer else {
             owsFailDebug("video player was unexpectedly nil")
             return
@@ -335,24 +351,49 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, scrubbedToTime time: CMTime) {
+        if attachment.isAudio {
+            mediaMessageView.setAudioTime(currentTime: CMTimeGetSeconds(time))
+            progressBar.manuallySetValue(CMTimeGetSeconds(time), durationSeconds: mediaMessageView.audioDurationSeconds)
+            return
+        }
+        
         guard let videoPlayer = self.videoPlayer else {
             owsFailDebug("video player was unexpectedly nil")
             return
         }
 
         videoPlayer.seek(to: time)
+        progressBar.updateState()
     }
 
     public func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool) {
+        if attachment.isAudio {
+            mediaMessageView.setAudioTime(currentTime: CMTimeGetSeconds(time))
+            progressBar.manuallySetValue(CMTimeGetSeconds(time), durationSeconds: mediaMessageView.audioDurationSeconds)
+            
+            if mediaMessageView.wasPlayingAudio {
+                mediaMessageView.playAudio()
+            }
+            return
+        }
+        
         guard let videoPlayer = self.videoPlayer else {
             owsFailDebug("video player was unexpectedly nil")
             return
         }
 
         videoPlayer.seek(to: time)
+        progressBar.updateState()
+        
         if (shouldResumePlayback) {
             videoPlayer.play()
         }
+    }
+    
+    // MARK: - MediaMessageViewAudioDelegate
+    
+    public func progressChanged(_ progressSeconds: CGFloat, durationSeconds: CGFloat) {
+        progressBar.manuallySetValue(progressSeconds, durationSeconds: durationSeconds)
     }
 
     // MARK: - Helpers

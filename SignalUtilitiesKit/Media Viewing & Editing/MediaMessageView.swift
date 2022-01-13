@@ -8,6 +8,10 @@ import YYImage
 import NVActivityIndicatorView
 import SessionUIKit
 
+public protocol MediaMessageViewAudioDelegate: AnyObject {
+    func progressChanged(_ progressSeconds: CGFloat, durationSeconds: CGFloat)
+}
+
 public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     public enum Mode: UInt {
         case large
@@ -26,8 +30,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         return OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback, delegate: self)
     }()
     
+    public var wasPlayingAudio: Bool = false
     public var audioProgressSeconds: CGFloat = 0
     public var audioDurationSeconds: CGFloat = 0
+    public weak var audioDelegate: MediaMessageViewAudioDelegate?
     
     public var playbackState = AudioPlaybackState.stopped {
         didSet {
@@ -354,6 +360,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 imageView.isHidden = false
                 audioPlayPauseButton.isHidden = (audioPlayer == nil)
                 setAudioIconToPlay()
+                setAudioProgress(0, duration: (audioPlayer?.duration ?? 0))
                 
                 fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")?
                     .withRenderingMode(.alwaysTemplate)
@@ -561,6 +568,32 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             }
             .retainUntilComplete()
     }
+    
+    // MARK: - Functions
+    
+    public func playAudio() {
+        audioPlayer?.play()
+        ensureButtonState()
+    }
+    
+    public func pauseAudio() {
+        wasPlayingAudio = (audioPlayer?.isPlaying == true)
+        
+        // If the 'audioPlayer' has a duration of 0 then we probably haven't played previously which
+        // will result in the audioPlayer having a 'duration' of 0 breaking the progressBar. We play
+        // the audio to get it to properly load the file right before pausing it so the data is
+        // loaded correctly
+        if audioPlayer?.duration == 0 {
+            audioPlayer?.play()
+        }
+        
+        audioPlayer?.pause()
+        ensureButtonState()
+    }
+    
+    public func setAudioTime(currentTime: TimeInterval) {
+        audioPlayer?.setCurrentTime(currentTime)
+    }
 
     // MARK: - Event Handlers
 
@@ -594,8 +627,13 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
 
     public func setAudioProgress(_ progress: CGFloat, duration: CGFloat) {
+        // Note: When the OWSAudioPlayer stops it sets the duration to 0 (which we want to ignore so
+        // the UI doesn't look buggy)
+        let finalDuration: CGFloat = (duration > 0 ? duration : audioDurationSeconds)
         audioProgressSeconds = progress
-        audioDurationSeconds = duration
+        audioDurationSeconds = finalDuration
+        
+        audioDelegate?.progressChanged(progress, durationSeconds: finalDuration)
     }
 
     private func setAudioIconToPlay() {
