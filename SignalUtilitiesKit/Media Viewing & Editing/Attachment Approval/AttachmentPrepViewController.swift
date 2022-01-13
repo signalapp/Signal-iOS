@@ -45,6 +45,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     
     // MARK: - UI
     
+    fileprivate static let verticalCenterOffset: CGFloat = (
+        AttachmentTextToolbar.kMinTextViewHeight + (AttachmentTextToolbar.kToolbarMargin * 2)
+    )
+    
     private lazy var scrollView: UIScrollView = {
         // Scroll View - used to zoom/pan on images and video
         let scrollView: UIScrollView = UIScrollView()
@@ -55,17 +59,6 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
         // Panning should stop pretty soon after the user stops scrolling
         scrollView.decelerationRate = UIScrollView.DecelerationRate.fast
-        
-        // If the content isn't zoomable then inset the content so it appears centered
-        if !isZoomable {
-            scrollView.isScrollEnabled = false
-            scrollView.contentInset = UIEdgeInsets(
-                top: 0,
-                leading: 0,
-                bottom: (AttachmentTextToolbar.kMinTextViewHeight + (AttachmentTextToolbar.kToolbarMargin * 2)),
-                trailing: 0
-            )
-        }
         
         return scrollView
     }()
@@ -112,6 +105,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     
     private lazy var progressBar: PlayerProgressBar = {
         let progressBar: PlayerProgressBar = PlayerProgressBar()
+        progressBar.translatesAutoresizingMaskIntoConstraints = false
         progressBar.player = videoPlayer?.avPlayer
         progressBar.delegate = self
         
@@ -161,7 +155,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         contentContainerView.addSubview(scrollView)
         scrollView.addSubview(mediaMessageView)
         
-        if let editorView: ImageEditorView = imageEditorView {
+        if attachment.isImage, let editorView: ImageEditorView = imageEditorView {
             view.addSubview(editorView)
             
             imageEditorUpdateNavigationBar()
@@ -235,12 +229,20 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             mediaMessageView.heightAnchor.constraint(equalTo: view.heightAnchor)
         ])
         
-        if let editorView: ImageEditorView = imageEditorView {
+        if attachment.isImage, let editorView: ImageEditorView = imageEditorView {
+            let size: CGSize = (attachment.image()?.size ?? CGSize.zero)
+            let isPortrait: Bool = (size.height > size.width)
+            
             NSLayoutConstraint.activate([
                 editorView.topAnchor.constraint(equalTo: view.topAnchor),
                 editorView.leftAnchor.constraint(equalTo: view.leftAnchor),
                 editorView.rightAnchor.constraint(equalTo: view.rightAnchor),
-                editorView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                editorView.bottomAnchor.constraint(
+                    equalTo: view.bottomAnchor,
+                    // Don't offset portrait images as they look fine vertically aligned, horizontal
+                    // ones need to be pushed up a bit though
+                    constant: (isPortrait ? 0 : -AttachmentPrepViewController.verticalCenterOffset)
+                )
             ])
         }
          
@@ -258,7 +260,10 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
                 progressBar.heightAnchor.constraint(equalToConstant: 44),
                 
                 playVideoButton.centerXAnchor.constraint(equalTo: contentContainerView.centerXAnchor),
-                playVideoButton.centerYAnchor.constraint(equalTo: contentContainerView.centerYAnchor),
+                playVideoButton.centerYAnchor.constraint(
+                    equalTo: contentContainerView.centerYAnchor,
+                    constant: -AttachmentPrepViewController.verticalCenterOffset
+                ),
                 playVideoButton.widthAnchor.constraint(equalToConstant: playButtonSize),
                 playVideoButton.heightAnchor.constraint(equalToConstant: playButtonSize),
             ])
@@ -455,8 +460,14 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     // Allow the user to zoom out to 100% of the attachment size if it's smaller
     // than the screen
     fileprivate func resetContentInset() {
+        // If the content isn't zoomable then inset the content so it appears centered
         guard isZoomable else {
-            scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentInset.bottom)
+            scrollView.contentInset = UIEdgeInsets(
+                top: -AttachmentPrepViewController.verticalCenterOffset,
+                leading: 0,
+                bottom: 0,
+                trailing: 0
+            )
             return
         }
         
@@ -464,7 +475,7 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
         let offsetY: CGFloat = max((scrollView.bounds.height - scrollView.contentSize.height) * 0.5, 0)
         
         scrollView.contentInset = UIEdgeInsets(
-            top: offsetY,
+            top: offsetY - AttachmentPrepViewController.verticalCenterOffset,
             left: offsetX,
             bottom: 0,
             right: 0
