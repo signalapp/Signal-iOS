@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -77,23 +77,83 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    @objc(restoreKeysWithPin:)
-    static func objc_RestoreKeys(with pin: String) -> AnyPromise {
-        return AnyPromise(restoreKeys(with: pin))
-    }
-
-    /// Loads the users key, if any, from the KBS into the database.
-    public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
+    // When changing number, we need to verify the PIN against the new number's KBS
+    // record in order to generate a registration lock token. It's important that this
+    // happens without touching any of the state we maintain around our account.
+    public static func acquireRegistrationLockForNewNumber(with pin: String, and auth: RemoteAttestationAuth) -> Promise<String> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
         // to oldest enclave, so we start with the newest enclave and then progressively
         // check older enclaves.
         let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
-        return restoreKeys(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
+        return acquireRegistrationLockForNewNumber(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
     }
 
-    private static func restoreKeys(
+    private static func acquireRegistrationLockForNewNumber(
+        pin: String,
+        auth: RemoteAttestationAuth,
+        enclavesToCheck: [KeyBackupEnclave]
+    ) -> Promise<String> {
+        guard let enclave = enclavesToCheck.first else {
+            owsFailDebug("Unexpectedly tried to acquire registration lock with no specified enclaves")
+            return Promise(error: KBSError.assertion)
+        }
+        return acquireRegistrationLockForNewNumber(
+            pin: pin,
+            auth: auth,
+            enclave: enclave
+        ).recover { error -> Promise<String> in
+            if case KBSError.backupMissing = error, enclavesToCheck.count > 1 {
+                // There's no backup on this enclave, but we have more enclaves we can try.
+                return acquireRegistrationLockForNewNumber(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
+            }
+
+            throw error
+        }
+    }
+
+    private static func acquireRegistrationLockForNewNumber(
+        pin: String,
+        auth: RemoteAttestationAuth,
+        enclave: KeyBackupEnclave
+    ) -> Promise<String> {
+        Logger.info("Attempting to acquire registration lock from enclave \(enclave.name)")
+
+        return restoreKeys(
+            pin: pin,
+            auth: auth,
+            enclave: enclave,
+            ignoreCachedToken: true
+        ).map(on: .global()) { restoredKeys -> String in
+            guard let registrationLockToken = DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
+                owsFailDebug("Failed to derive registration lock token")
+                throw KBSError.assertion
+            }
+            return registrationLockToken
+        }.recover(on: .global()) { error -> Promise<String> in
+            owsAssertDebug(error is KBSError, "Unexpectedly surfacing a non KBS error \(error)")
+            throw error
+        }
+    }
+
+    @objc(restoreKeysAndBackupWithPin:)
+    static func objc_RestoreKeysAndBackup(with pin: String) -> AnyPromise {
+        return AnyPromise(restoreKeysAndBackup(with: pin))
+    }
+
+    /// Loads the users key, if any, from the KBS into the database.
+    public static func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
+        // When restoring your backup we want to check the current enclave first,
+        // and then fallback to previous enclaves if the current enclave has no
+        // record of you. It's important that these are ordered from neweset enclave
+        // to oldest enclave, so we start with the newest enclave and then progressively
+        // check older enclaves.
+        let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
+        return restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
+    }
+
+    private static func restoreKeysAndBackup(
         pin: String,
         auth: RemoteAttestationAuth?,
         enclavesToCheck: [KeyBackupEnclave]
@@ -102,93 +162,42 @@ public class KeyBackupService: NSObject {
             owsFailDebug("Unexpectedly tried to restore keys with no specified enclaves")
             return Promise(error: KBSError.assertion)
         }
-        return restoreKeys(
+        return restoreKeysAndBackup(
             pin: pin,
             auth: auth,
             enclave: enclave
         ).recover { error -> Promise<Void> in
             if let error = error as? KBSError, error == .backupMissing, enclavesToCheck.count > 1 {
                 // There's no backup on this enclave, but we have more enclaves we can try.
-                return restoreKeys(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
+                return restoreKeysAndBackup(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
             }
 
             throw error
         }
     }
 
-    private static func restoreKeys(
+    private static func restoreKeysAndBackup(
         pin: String,
         auth: RemoteAttestationAuth?,
         enclave: KeyBackupEnclave
     ) -> Promise<Void> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
 
-        return fetchBackupId(
+        return restoreKeys(
+            pin: pin,
             auth: auth,
             enclave: enclave
-        ).map(on: .global()) { backupId in
-            return try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
-        }.then { encryptionKey, accessKey in
-            restoreKeyRequest(
-                accessKey: accessKey,
-                enclave: enclave,
-                auth: auth
-            ).map { ($0, encryptionKey, accessKey) }
-        }.map(on: .global()) { response, encryptionKey, accessKey -> (Data, Data, Data) in
-            guard let status = response.status else {
-                owsFailDebug("KBS restore is missing status")
-                throw KBSError.assertion
-            }
-
-            // As long as the backup exists we should always receive a
-            // new token to use on our next request. Store it now.
-            if status != .missing {
-                guard let tokenData = response.token else {
-                    owsFailDebug("KBS restore is missing token")
-                    throw KBSError.assertion
-                }
-
-                try Token.updateNext(
-                    data: tokenData,
-                    tries: response.tries,
-                    enclaveName: enclave.name
-                )
-            }
-
-            switch status {
-            case .tokenMismatch:
-                // the given token has already been spent. we'll use the new token
-                // on the next attempt.
-                owsFailDebug("attempted restore with spent token")
-                throw KBSError.assertion
-            case .pinMismatch:
-                throw KBSError.invalidPin(triesRemaining: response.tries)
-            case .missing:
-                throw KBSError.backupMissing
-            case .notYetValid:
-                owsFailDebug("the server thinks we provided a `validFrom` in the future")
-                throw KBSError.assertion
-            case .ok:
-                guard let encryptedMasterKey = response.data else {
-                    owsFailDebug("Failed to extract encryptedMasterKey from successful KBS restore response")
-                    throw KBSError.assertion
-                }
-
-                let masterKey = try decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
-
-                return (masterKey, encryptedMasterKey, accessKey)
-            }
-        }.then { masterKey, encryptedMasterKey, accessKey in
+        ).then { restoredKeys in
             // Backup our keys again, even though we just fetched them.
             // This resets the number of remaining attempts. We always
             // backup to the current enclave, even if we restored from
             // a previous enclave.
             return backupKeyRequest(
-                accessKey: accessKey,
-                encryptedMasterKey: encryptedMasterKey,
+                accessKey: restoredKeys.accessKey,
+                encryptedMasterKey: restoredKeys.encryptedMasterKey,
                 enclave: currentEnclave,
                 auth: auth
-            ).map { ($0, masterKey) }
+            ).map { ($0, restoredKeys.masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -257,141 +266,77 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    // MARK: -
-
-    // Unlike restoreKeys(), this method should have no side effects on
-    // DerivedKey, State or Token state.
-    public static func registrationLockTokenForChangePhoneNumber(pin: String,
-                                                                 auth: RemoteAttestationAuth) -> Promise<String> {
-        // Check the current enclave first, and then fallback to previous enclaves if the current
-        // enclave has no record. It's important that these are ordered from newest enclave
-        // to oldest enclave, so we start with the newest enclave and then progressively
-        // check older enclaves.
-        let enclavesToCheck = [TSConstants.keyBackupEnclave] + TSConstants.keyBackupPreviousEnclaves
-        return registrationLockTokenForChangePhoneNumber(pin: pin, auth: auth, enclavesToCheck: enclavesToCheck)
+    private struct RestoredKeys {
+        let masterKey: Data
+        let encryptedMasterKey: Data
+        let accessKey: Data
     }
 
-    private static func registrationLockTokenForChangePhoneNumber(
+    private static func restoreKeys(
         pin: String,
-        auth: RemoteAttestationAuth,
-        enclavesToCheck: [KeyBackupEnclave]
-    ) -> Promise<String> {
-        firstly { () -> Promise<String> in
-            guard let enclave = enclavesToCheck.first else {
-                owsFailDebug("No specified enclaves.")
+        auth: RemoteAttestationAuth?,
+        enclave: KeyBackupEnclave,
+        ignoreCachedToken: Bool = false
+    ) -> Promise<RestoredKeys> {
+        fetchBackupId(
+            auth: auth,
+            enclave: enclave,
+            ignoreCachedToken: ignoreCachedToken
+        ).map(on: .global()) { backupId in
+            return try deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
+        }.then { encryptionKey, accessKey in
+            restoreKeyRequest(
+                accessKey: accessKey,
+                enclave: enclave,
+                auth: auth,
+                ignoreCachedToken: ignoreCachedToken
+            ).map { ($0, encryptionKey, accessKey) }
+        }.map(on: .global()) { response, encryptionKey, accessKey -> RestoredKeys in
+            guard let status = response.status else {
+                owsFailDebug("KBS restore is missing status")
                 throw KBSError.assertion
             }
-            return registrationLockTokenForChangePhoneNumber(
-                pin: pin,
-                auth: auth,
-                enclave: enclave
-            )
-        }.recover(on: .global()) { error -> Promise<String> in
-            if let error = error as? KBSError, error == .backupMissing, enclavesToCheck.count > 1 {
-                // There's no backup on this enclave, but we have more enclaves we can try.
-                return registrationLockTokenForChangePhoneNumber(pin: pin, auth: auth, enclavesToCheck: Array(enclavesToCheck.dropFirst()))
-            }
 
-            throw error
-        }
-    }
-
-    // Unlike restoreKeys(), this method should have no side effects on
-    // DerivedKey, State or Token state.
-    private static func registrationLockTokenForChangePhoneNumber(
-        pin: String,
-        auth: RemoteAttestationAuth,
-        enclave: KeyBackupEnclave
-    ) -> Promise<String> {
-        Logger.info("Checking for KBS backup in enclave: \(enclave.name)")
-
-        return firstly { () -> Promise<Token> in
-            // First, get the KBS token.
-            return firstly { () -> Promise<RemoteAttestation> in
-                // We do separate remote attestation for each request.
-                RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
-            }.then(on: .global()) { remoteAttestation -> Promise<Token> in
-                owsAssertDebug(auth.username == remoteAttestation.auth.username)
-                owsAssertDebug(auth.password == remoteAttestation.auth.password)
-
-                // An interpolation of fetchBackupId() that ignores any existing token.
-                //
-                // We need to use tokens for the destination number's KBS
-                // without affecting the current local number's KBS state.
-                // Therefore we use fetchNewToken() which will ignore/not affect
-                // any "current" tokens.
-                return fetchNewToken(for: remoteAttestation)
-            }
-        }.then(on: .global()) { (token: Token) -> Promise<String> in
-            // Second, get the "registration lock token."
-            return firstly { () -> Promise<RemoteAttestation> in
-                // We do separate remote attestation for each request.
-                RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
-            }.then(on: .global()) { remoteAttestation -> Promise<String> in
-                let (encryptionKey, accessKey) = try deriveEncryptionKeyAndAccessKey(
-                    pin: pin,
-                    backupId: token.backupId
-                )
-
-                return firstly { () -> Promise<KeyBackupProtoRestoreResponse> in
-                    restoreKeyRequest(
-                        accessKey: accessKey,
-                        enclave: enclave,
-                        remoteAttestation: remoteAttestation,
-                        token: token
-                    )
-                }.map(on: .global()) { response -> Data in
-                    guard let status = response.status else {
-                        owsFailDebug("KBS response is missing status")
-                        throw KBSError.assertion
-                    }
-
-                    switch status {
-                    case .tokenMismatch:
-                        // the given token has already been spent. we'll use the new token
-                        // on the next attempt.
-                        //
-                        // TODO: Should this be a warn?
-                        owsFailDebug("Spent KBS token.")
-                        throw KBSError.assertion
-                    case .pinMismatch:
-                        throw KBSError.invalidPin(triesRemaining: response.tries)
-                    case .missing:
-                        throw KBSError.backupMissing
-                    case .notYetValid:
-                        owsFailDebug("The server thinks we provided a `validFrom` in the future")
-                        throw KBSError.assertion
-                    case .ok:
-                        guard let encryptedMasterKey = response.data else {
-                            owsFailDebug("Failed to extract encryptedMasterKey from successful KBS restore response")
-                            throw KBSError.assertion
-                        }
-
-                        return try decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
-                    }
-                }.map(on: .global()) { (masterKey) -> String in
-                    // Do not: Backup our keys again.
-                    // Do not: Update the current enclave or token.
-                    // Do not: Delete the key from the old enclave.
-
-                    let derivedKey: DerivedKey = .otherAccountRegistrationLock(data: masterKey)
-                    guard let registrationLockToken = Self.deriveRegistrationLockToken(derivedKey: derivedKey) else {
-                        owsFailDebug("Could not derive registrationLockToken.")
-                        throw KBSError.assertion
-                    }
-                    return registrationLockToken
+            // As long as the backup exists we should always receive a
+            // new token to use on our next request. Store it now.
+            if !ignoreCachedToken, status != .missing {
+                guard let tokenData = response.token else {
+                    owsFailDebug("KBS restore is missing token")
+                    throw KBSError.assertion
                 }
+
+                try Token.updateNext(
+                    data: tokenData,
+                    tries: response.tries,
+                    enclaveName: enclave.name
+                )
             }
-        }.recover(on: .global()) { error -> Promise<String> in
-            guard let kbsError = error as? KBSError else {
-                owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
-                throw error
+
+            switch status {
+            case .tokenMismatch:
+                // the given token has already been spent. we'll use the new token
+                // on the next attempt.
+                owsFailDebug("attempted restore with spent token")
+                throw KBSError.assertion
+            case .pinMismatch:
+                throw KBSError.invalidPin(triesRemaining: response.tries)
+            case .missing:
+                throw KBSError.backupMissing
+            case .notYetValid:
+                owsFailDebug("the server thinks we provided a `validFrom` in the future")
+                throw KBSError.assertion
+            case .ok:
+                guard let encryptedMasterKey = response.data else {
+                    owsFailDebug("Failed to extract encryptedMasterKey from successful KBS restore response")
+                    throw KBSError.assertion
+                }
+
+                let masterKey = try decryptMasterKey(encryptedMasterKey, encryptionKey: encryptionKey)
+
+                return RestoredKeys(masterKey: masterKey, encryptedMasterKey: encryptedMasterKey, accessKey: accessKey)
             }
-            throw kbsError
         }
     }
-
-    // MARK: -
 
     @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
     @available(swift, obsoleted: 1.0)
@@ -503,11 +448,9 @@ public class KeyBackupService: NSObject {
         case storageServiceManifest(version: UInt64)
         case storageServiceRecord(identifier: StorageService.StorageIdentifier)
 
-        case otherAccountRegistrationLock(data: Data)
-
         var rawValue: String {
             switch self {
-            case .registrationLock, .otherAccountRegistrationLock:
+            case .registrationLock:
                 return "Registration Lock"
             case .storageService:
                 return "Storage Service Encryption"
@@ -528,8 +471,6 @@ public class KeyBackupService: NSObject {
             switch self {
             case .storageServiceManifest, .storageServiceRecord:
                 return DerivedKey.storageService.data
-            case .otherAccountRegistrationLock(let data):
-                return data
             default:
                 // Most keys derive directly from the master key.
                 // Only a few exceptions derive from another derived key.
@@ -552,6 +493,10 @@ public class KeyBackupService: NSObject {
                 return nil
             }
 
+            return derivedData(from: dataToDeriveFrom)
+        }
+
+        public func derivedData(from dataToDeriveFrom: Data) -> Data? {
             guard let data = rawValue.data(using: .utf8) else {
                 owsFailDebug("Failed to encode data")
                 return nil
@@ -601,11 +546,7 @@ public class KeyBackupService: NSObject {
 
     @objc
     public static func deriveRegistrationLockToken() -> String? {
-        deriveRegistrationLockToken(derivedKey: .registrationLock)
-    }
-
-    public static func deriveRegistrationLockToken(derivedKey: DerivedKey) -> String? {
-        derivedKey.data?.hexadecimalString
+        return DerivedKey.registrationLock.data?.hexadecimalString
     }
 
     // MARK: - Master Key Management
@@ -728,25 +669,6 @@ public class KeyBackupService: NSObject {
         let isMasterKeyBackedUp: Bool
         let syncedDerivedKeys: [DerivedKey: Data]
         let enclaveName: String?
-
-        init(masterKey: Data?,
-             pinType: PinType?,
-             encodedVerificationString: String?,
-             hasBackupKeyRequestFailed: Bool,
-             hasPendingRestoration: Bool,
-             isMasterKeyBackedUp: Bool,
-             syncedDerivedKeys: [DerivedKey: Data],
-             enclaveName: String?) {
-
-            self.masterKey = masterKey
-            self.pinType = pinType
-            self.encodedVerificationString = encodedVerificationString
-            self.hasBackupKeyRequestFailed = hasBackupKeyRequestFailed
-            self.hasPendingRestoration = hasPendingRestoration
-            self.isMasterKeyBackedUp = isMasterKeyBackedUp
-            self.syncedDerivedKeys = syncedDerivedKeys
-            self.enclaveName = enclaveName
-        }
 
         init(transaction: SDSAnyReadTransaction) {
             masterKey = keyValueStore.getData(masterKeyIdentifer, transaction: transaction)
@@ -1013,121 +935,107 @@ public class KeyBackupService: NSObject {
     private static func enclaveRequest<RequestType: KBSRequestOption>(
         auth: RemoteAttestationAuth? = nil,
         enclave: KeyBackupEnclave,
+        ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
     ) -> Promise<RequestType.ResponseOptionType> {
-
-        firstly { () -> Promise<RemoteAttestation> in
-            RemoteAttestation.performForKeyBackup(auth: auth, enclave: enclave)
-        }.then(on: .global()) { (remoteAttestation: RemoteAttestation) -> Promise<RequestType.ResponseOptionType> in
+        return RemoteAttestation.performForKeyBackup(
+            auth: auth,
+            enclave: enclave
+        ).then { remoteAttestation -> Promise<RequestType.ResponseOptionType> in
             firstly {
-                fetchOrReuseToken(for: remoteAttestation)
-            }.then(on: .global()) { token -> Promise<RequestType.ResponseOptionType> in
-                Self.enclaveRequest(
-                    remoteAttestation: remoteAttestation,
-                    token: token,
-                    requestOptionBuilder: requestOptionBuilder
-                )
-            }
-        }
-    }
+                fetchToken(for: remoteAttestation, ignoreCachedToken: ignoreCachedToken)
+            }.then(on: .global()) { tokenResponse -> Promise<HTTPResponse> in
+                let requestOption = try requestOptionBuilder(tokenResponse)
+                let requestBuilder = KeyBackupProtoRequest.builder()
+                requestOption.set(on: requestBuilder)
+                let kbRequestData = try requestBuilder.buildSerializedData()
 
-    private static func enclaveRequest<RequestType: KBSRequestOption>(
-        remoteAttestation: RemoteAttestation,
-        token: Token,
-        requestOptionBuilder: @escaping (Token) throws -> RequestType
-    ) -> Promise<RequestType.ResponseOptionType> {
-
-        firstly { () -> Promise<HTTPResponse> in
-            let requestOption = try requestOptionBuilder(token)
-            let requestBuilder = KeyBackupProtoRequest.builder()
-            requestOption.set(on: requestBuilder)
-            let kbRequestData = try requestBuilder.buildSerializedData()
-
-            guard let encryptionResult = Cryptography.encryptAESGCM(
-                plainTextData: kbRequestData,
-                initializationVectorLength: kAESGCM256_DefaultIVLength,
-                additionalAuthenticatedData: remoteAttestation.requestId,
-                key: remoteAttestation.keys.clientKey
-            ) else {
-                owsFailDebug("Failed to encrypt request data")
-                throw KBSError.assertion
-            }
-
-            let request = OWSRequestFactory.kbsEnclaveRequest(
-                withRequestId: remoteAttestation.requestId,
-                data: encryptionResult.ciphertext,
-                cryptIv: encryptionResult.initializationVector,
-                cryptMac: encryptionResult.authTag,
-                enclaveName: remoteAttestation.enclaveName,
-                authUsername: remoteAttestation.auth.username,
-                authPassword: remoteAttestation.auth.password,
-                cookies: remoteAttestation.cookies,
-                requestType: RequestType.stringRepresentation
-            )
-            let urlSession = Self.signalService.urlSessionForKBS()
-            guard let requestUrl = request.url else {
-                owsFailDebug("Missing requestUrl.")
-                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
-                throw OWSHTTPError.missingRequest(requestUrl: url)
-            }
-            return firstly {
-                urlSession.promiseForTSRequest(request)
-            }.recover(on: .global()) { error -> Promise<HTTPResponse> in
-                // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
-                if let httpError = error as? OWSHTTPError {
-                    throw httpError
-                } else {
-                    owsFailDebug("Unexpected error: \(error)")
-                    throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                guard let encryptionResult = Cryptography.encryptAESGCM(
+                    plainTextData: kbRequestData,
+                    initializationVectorLength: kAESGCM256_DefaultIVLength,
+                    additionalAuthenticatedData: remoteAttestation.requestId,
+                    key: remoteAttestation.keys.clientKey
+                ) else {
+                    owsFailDebug("Failed to encrypt request data")
+                    throw KBSError.assertion
                 }
-            }
-        }.map(on: .global()) { (response: HTTPResponse) in
-            guard let json = response.responseBodyJson else {
-                owsFailDebug("Missing or invalid JSON.")
-                throw KBSError.assertion
-            }
-            guard let parser = ParamParser(responseObject: json) else {
-                owsFailDebug("Failed to parse response object")
-                throw KBSError.assertion
-            }
 
-            let data = try parser.requiredBase64EncodedData(key: "data")
-            guard data.count > 0 else {
-                owsFailDebug("data is invalid")
-                throw KBSError.assertion
+                let request = OWSRequestFactory.kbsEnclaveRequest(
+                    withRequestId: remoteAttestation.requestId,
+                    data: encryptionResult.ciphertext,
+                    cryptIv: encryptionResult.initializationVector,
+                    cryptMac: encryptionResult.authTag,
+                    enclaveName: remoteAttestation.enclaveName,
+                    authUsername: remoteAttestation.auth.username,
+                    authPassword: remoteAttestation.auth.password,
+                    cookies: remoteAttestation.cookies,
+                    requestType: RequestType.stringRepresentation
+                )
+                let urlSession = Self.signalService.urlSessionForKBS()
+                guard let requestUrl = request.url else {
+                    owsFailDebug("Missing requestUrl.")
+                    let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
+                    throw OWSHTTPError.missingRequest(requestUrl: url)
+                }
+                return firstly {
+                    urlSession.promiseForTSRequest(request)
+                }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                    // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
+                    if let httpError = error as? OWSHTTPError {
+                        throw httpError
+                    } else {
+                        owsFailDebug("Unexpected error: \(error)")
+                        throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
+                    }
+                }
+            }.map(on: .global()) { (response: HTTPResponse) in
+                guard let json = response.responseBodyJson else {
+                    owsFailDebug("Missing or invalid JSON.")
+                    throw KBSError.assertion
+                }
+                guard let parser = ParamParser(responseObject: json) else {
+                    owsFailDebug("Failed to parse response object")
+                    throw KBSError.assertion
+                }
+
+                let data = try parser.requiredBase64EncodedData(key: "data")
+                guard data.count > 0 else {
+                    owsFailDebug("data is invalid")
+                    throw KBSError.assertion
+                }
+
+                let iv = try parser.requiredBase64EncodedData(key: "iv")
+                guard iv.count == 12 else {
+                    owsFailDebug("iv is invalid")
+                    throw KBSError.assertion
+                }
+
+                let mac = try parser.requiredBase64EncodedData(key: "mac")
+                guard mac.count == 16 else {
+                    owsFailDebug("mac is invalid")
+                    throw KBSError.assertion
+                }
+
+                guard let encryptionResult = Cryptography.decryptAESGCM(
+                    withInitializationVector: iv,
+                    ciphertext: data,
+                    additionalAuthenticatedData: nil,
+                    authTag: mac,
+                    key: remoteAttestation.keys.serverKey
+                ) else {
+                    owsFailDebug("failed to decrypt KBS response")
+                    throw KBSError.assertion
+                }
+
+                let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
+
+                guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
+                    owsFailDebug("missing KBS response object")
+                    throw KBSError.assertion
+                }
+
+                return typedResponse
             }
-
-            let iv = try parser.requiredBase64EncodedData(key: "iv")
-            guard iv.count == 12 else {
-                owsFailDebug("iv is invalid")
-                throw KBSError.assertion
-            }
-
-            let mac = try parser.requiredBase64EncodedData(key: "mac")
-            guard mac.count == 16 else {
-                owsFailDebug("mac is invalid")
-                throw KBSError.assertion
-            }
-
-            guard let encryptionResult = Cryptography.decryptAESGCM(
-                withInitializationVector: iv,
-                ciphertext: data,
-                additionalAuthenticatedData: nil,
-                authTag: mac,
-                key: remoteAttestation.keys.serverKey
-            ) else {
-                owsFailDebug("failed to decrypt KBS response")
-                throw KBSError.assertion
-            }
-
-            let kbResponse = try KeyBackupProtoResponse(serializedData: encryptionResult)
-
-            guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
-                owsFailDebug("missing KBS response object")
-                throw KBSError.assertion
-            }
-
-            return typedResponse
         }
     }
 
@@ -1167,40 +1075,10 @@ public class KeyBackupService: NSObject {
     private static func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: RemoteAttestationAuth? = nil
+        auth: RemoteAttestationAuth? = nil,
+        ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
-
-        let requestOptionBuilder = requestOptionBuilderForRestoreKeyRequest(
-            accessKey: accessKey,
-            enclave: enclave
-        )
-        return enclaveRequest(auth: auth, enclave: enclave, requestOptionBuilder: requestOptionBuilder)
-    }
-
-    private static func restoreKeyRequest(
-        accessKey: Data,
-        enclave: KeyBackupEnclave,
-        remoteAttestation: RemoteAttestation,
-        token: Token
-    ) -> Promise<KeyBackupProtoRestoreResponse> {
-
-        let requestOptionBuilder = requestOptionBuilderForRestoreKeyRequest(
-            accessKey: accessKey,
-            enclave: enclave
-        )
-        return enclaveRequest(
-            remoteAttestation: remoteAttestation,
-            token: token,
-            requestOptionBuilder: requestOptionBuilder
-        )
-    }
-
-    private typealias RequestOptionBuilderForRestoreKeyRequest = (Token) throws -> KeyBackupProtoRestoreRequest
-
-    private static func requestOptionBuilderForRestoreKeyRequest(accessKey: Data,
-                                                                 enclave: KeyBackupEnclave) -> RequestOptionBuilderForRestoreKeyRequest {
-
-        return { (token: Token) -> KeyBackupProtoRestoreRequest in
+        return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
                 owsFailDebug("failed to encode service id")
                 throw KBSError.assertion
@@ -1307,7 +1185,15 @@ public class KeyBackupService: NSObject {
             return token
         }
 
-        static func parse(responseObject: Any?, enclaveName: String) throws -> Token {
+        /// Update the token to use for the next enclave request.
+        @discardableResult
+        static func updateNext(responseObject: Any?, enclaveName: String) throws -> Token {
+            let token = try Token(responseObject: responseObject, enclaveName: enclaveName)
+            token.recordAsCurrent()
+            return token
+        }
+
+        init(responseObject: Any?, enclaveName: String) throws {
             guard let paramParser = ParamParser(responseObject: responseObject) else {
                 owsFailDebug("Unexpectedly missing response object")
                 throw KBSError.assertion
@@ -1317,7 +1203,7 @@ public class KeyBackupService: NSObject {
             let data = try paramParser.requiredBase64EncodedData(key: "token")
             let tries: UInt32 = try paramParser.required(key: "tries")
 
-            return try Token(backupId: backupId, data: data, tries: tries, enclaveName: enclaveName)
+            try self.init(backupId: backupId, data: data, tries: tries, enclaveName: enclaveName)
         }
 
         static func clearNext() {
@@ -1358,7 +1244,7 @@ public class KeyBackupService: NSObject {
             }
         }
 
-        public func recordAsCurrent() {
+        func recordAsCurrent() {
             databaseStorage.write { transaction in
                 Token.keyValueStore.setData(self.backupId, key: Token.backupIdKey, transaction: transaction)
                 Token.keyValueStore.setData(self.data, key: Token.dataKey, transaction: transaction)
@@ -1368,38 +1254,28 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    private static func fetchBackupId(auth: RemoteAttestationAuth?, enclave: KeyBackupEnclave) -> Promise<Data> {
-        if let currentToken = Token.next(
+    private static func fetchBackupId(auth: RemoteAttestationAuth?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+        if !ignoreCachedToken, let currentToken = Token.next(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }
 
         return RemoteAttestation.performForKeyBackup(
             auth: auth,
             enclave: enclave
-        ).then(on: .global()) { remoteAttestation in
-            fetchOrReuseToken(for: remoteAttestation)
-        }.map(on: .global()) { token in
-            token.backupId
+        ).then { remoteAttestation in
+            fetchToken(for: remoteAttestation, ignoreCachedToken: ignoreCachedToken).map { $0.backupId }
         }
     }
 
-    private static func fetchOrReuseToken(for remoteAttestation: RemoteAttestation) -> Promise<Token> {
+    private static func fetchToken(for remoteAttestation: RemoteAttestation, ignoreCachedToken: Bool) -> Promise<Token> {
         // If we already have a token stored, we need to use it before fetching another.
         // We only stop using this token once the enclave informs us it is spent.
-        if let currentToken = Token.next(
+        if !ignoreCachedToken, let currentToken = Token.next(
             enclaveName: remoteAttestation.enclaveName
         ) { return Promise.value(currentToken) }
 
         // Fetch a new token
-        return firstly { () -> Promise<Token> in
-            fetchNewToken(for: remoteAttestation)
-        }.map(on: .global()) { token in
-            token.recordAsCurrent()
-            return token
-        }
-    }
 
-    private static func fetchNewToken(for remoteAttestation: RemoteAttestation) -> Promise<Token> {
         let request = OWSRequestFactory.kbsEnclaveTokenRequest(
             withEnclaveName: remoteAttestation.enclaveName,
             authUsername: remoteAttestation.auth.username,
@@ -1429,11 +1305,13 @@ public class KeyBackupService: NSObject {
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
-            return try Token.parse(responseObject: json, enclaveName: remoteAttestation.enclaveName)
+
+            let token = try Token(responseObject: json, enclaveName: remoteAttestation.enclaveName)
+            if !ignoreCachedToken { token.recordAsCurrent() }
+            return token
         }
     }
 }
-
 // MARK: -
 
 private protocol KBSRequestOption {
@@ -1443,8 +1321,6 @@ private protocol KBSRequestOption {
 
     static var stringRepresentation: String { get }
 }
-
-// MARK: -
 
 extension KeyBackupProtoBackupRequest: KBSRequestOption {
     typealias ResponseOptionType = KeyBackupProtoBackupResponse
@@ -1456,9 +1332,6 @@ extension KeyBackupProtoBackupRequest: KBSRequestOption {
     }
     static var stringRepresentation: String { "backup" }
 }
-
-// MARK: -
-
 extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     typealias ResponseOptionType = KeyBackupProtoRestoreResponse
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
@@ -1469,9 +1342,6 @@ extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     }
     static var stringRepresentation: String { "restore" }
 }
-
-// MARK: -
-
 extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     typealias ResponseOptionType = KeyBackupProtoDeleteResponse
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {

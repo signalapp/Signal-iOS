@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -362,7 +362,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         }
 
         return firstly {
-            KeyBackupService.registrationLockTokenForChangePhoneNumber(pin: pin, auth: kbsAuth)
+            KeyBackupService.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
         }.map(on: .global()) { registrationLockToken -> String in
             self.changePhoneNumberController.registrationLockToken = registrationLockToken
             return registrationLockToken
