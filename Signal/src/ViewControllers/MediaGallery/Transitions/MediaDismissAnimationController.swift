@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalUI
+import UIKit
 
 class MediaDismissAnimationController: NSObject {
     private let item: Media

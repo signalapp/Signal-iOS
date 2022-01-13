@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMisc.h"
 #import "DebugUIMessagesAssetLoader.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/ThreadUtil.h>

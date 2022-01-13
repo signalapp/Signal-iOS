@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>

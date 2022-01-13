@@ -8,6 +8,7 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalCoreKit/iOSVersions.h>
