@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
-    // Post-initial load, all work should be done on this queue
+    // All work should be done on this queue
     var workQueue: DispatchQueue { Self.workQueue }
     private static let workQueue = DispatchQueue(
         label: "org.signal.SpamChallengeResolver",
@@ -34,8 +34,10 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.loadChallengesFromDatabase()
-            Logger.info("Loaded \(self.challenges?.count ?? -1) unresolved challenges")
+            self.workQueue.async {
+                self.loadChallengesFromDatabase()
+                Logger.info("Loaded \(self.challenges?.count ?? -1) unresolved challenges")
+            }
         }
     }
 
@@ -247,6 +249,7 @@ extension SpamChallengeResolver {
     private var keyValueStore: SDSKeyValueStore { Self.keyValueStore }
 
     private func loadChallengesFromDatabase() {
+        assertOnQueue(workQueue)
         guard challenges == nil else {
             owsFailDebug("")
             return
@@ -263,7 +266,7 @@ extension SpamChallengeResolver {
             challenges = []
         }
 
-        workQueue.async { self.recheckChallenges() }
+        self.recheckChallenges()
     }
 
     private func saveChallenges() {
