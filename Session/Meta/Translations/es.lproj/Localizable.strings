@@ -543,6 +543,7 @@
 "vc_share_title" = "Compartir en Session";
 "vc_share_loading_message" = "Preparando archivos adjuntos...";
 "vc_share_sending_message" = "Enviando...";
+"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
 "vc_share_link_previews_error" = "Unable to load preview";
 "vc_share_link_previews_disabled_title" = "Link Previews Disabled";
 "vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";

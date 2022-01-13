@@ -168,6 +168,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.audioPlayer.rate;
 }
 
+- (NSTimeInterval)duration
+{
+    return [self.audioPlayer duration];
+}
+
 - (void)setPlaybackRate:(float)rate
 {
     [self.audioPlayer setRate:rate];

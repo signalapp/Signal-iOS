@@ -221,6 +221,22 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         return button
     }()
     
+    private lazy var titleStackView: UIStackView = {
+        let stackView: UIStackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.alignment = (attachment.fileType == .url ? .leading : .center)
+        stackView.distribution = .fill
+        
+        switch mode {
+            case .attachmentApproval: stackView.spacing = 2
+            case .large: stackView.spacing = 10
+            case .small: stackView.spacing = 5
+        }
+        
+        return stackView
+    }()
+    
     private lazy var titleLabel: UILabel = {
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -278,7 +294,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         return label
     }()
     
-    private lazy var fileSizeLabel: UILabel = {
+    private lazy var subtitleLabel: UILabel = {
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -303,12 +319,19 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 
             case .url:
                 // If we have no link preview info at this point then assume link previews are disabled
-                if linkPreviewInfo == nil {
+                guard let linkPreviewURL: String = linkPreviewInfo?.url else {
                     label.text = "vc_share_link_previews_disabled_explanation".localized()
                     label.textColor = Colors.text
                     label.textAlignment = .center
                     label.numberOfLines = 0
                     break
+                }
+                
+                // We only load Link Previews for HTTPS urls so append an explanation for not
+                if let targetUrl: URL = URL(string: linkPreviewURL), targetUrl.scheme?.lowercased() != "https" {
+                    label.font = UIFont.ows_regularFont(withSize: Values.verySmallFontSize)
+                    label.text = "vc_share_link_previews_unsecure".localized()
+                    label.textColor = (mode == .attachmentApproval ? Colors.pinIcon : Colors.accent)
                 }
                 
             default:
@@ -339,8 +362,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(animatedImageView)
         if !titleLabel.isHidden { stackView.addArrangedSubview(UIView.vhSpacer(10, 10)) }
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(fileSizeLabel)
+        stackView.addArrangedSubview(titleStackView)
+        
+        titleStackView.addArrangedSubview(titleLabel)
+        titleStackView.addArrangedSubview(subtitleLabel)
         
         imageView.addSubview(fileTypeImageView)
         
@@ -425,11 +450,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                     // If we don't have a valid image then use the 'generic' case
                     break
                     
-                case .url:
-                    switch mode {
-                        case .large: return 120
-                        case .attachmentApproval, .small: return 80
-                    }
+                case .url: return 80
                     
                 // Use the 'generic' case for these
                 case .audio, .unknown: break
@@ -510,7 +531,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         if (attachment.fileType != .url) {
             NSLayoutConstraint.activate([
                 titleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
-                fileSizeLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2))
+                subtitleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2))
             ])
         }
         
@@ -550,21 +571,22 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 }
             }
             .catch { [weak self] _ in
-                self?.titleLabel.attributedText = NSMutableAttributedString(string: linkPreviewURL)
-                    .rtlSafeAppend("\n")
-                    .rtlSafeAppend(
-                        "vc_share_link_previews_error".localized(),
-                        attributes: [
-                            NSAttributedString.Key.font: UIFont.ows_regularFont(
-                                withSize: Values.verySmallFontSize
-                            ),
-                            NSAttributedString.Key.foregroundColor: self?.fileSizeLabel.textColor
-                        ]
-                        .compactMapValues { $0 }
-                    )
                 self?.loadingView.alpha = 0
                 self?.loadingView.stopAnimating()
                 self?.imageView.alpha = 1
+                self?.titleLabel.numberOfLines = 1  // Truncates the URL at 1 line so the error is more readable
+                self?.subtitleLabel.isHidden = false
+                
+                // Set the error text appropriately
+                if let targetUrl: URL = URL(string: linkPreviewURL), targetUrl.scheme?.lowercased() != "https" {
+                    // This error case is handled already in the 'subtitleLabel' creation
+                }
+                else {
+                    self?.subtitleLabel.font = UIFont.ows_regularFont(withSize: Values.verySmallFontSize)
+                    self?.subtitleLabel.text = "vc_share_link_previews_error".localized()
+                    self?.subtitleLabel.textColor = (self?.mode == .attachmentApproval ? Colors.pinIcon : Colors.accent )
+                    self?.subtitleLabel.textAlignment = .left
+                }
             }
             .retainUntilComplete()
     }
