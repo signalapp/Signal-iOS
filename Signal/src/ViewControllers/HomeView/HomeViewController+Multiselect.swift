@@ -86,9 +86,10 @@ extension HomeViewController {
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
-                        self?.hideMenu()
-                        self?.willEnterMultiselectMode()
-                }))
+                        self?.hideMenuAndExecuteIfVanished {
+                            self?.willEnterMultiselectMode()
+                        }
+                    }))
         }
         contextMenuActions.append(
             ContextMenuAction(
@@ -96,8 +97,9 @@ extension HomeViewController {
                 image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
                 attributes: [],
                 handler: { [weak self] (_) in
-                    self?.hideMenu()
-                    self?.showAppSettings(mode: .none)
+                    self?.hideMenuAndExecuteIfVanished {
+                        self?.showAppSettings(mode: .none)
+                    }
             }))
         if renderState.archiveCount > 1 {
             contextMenuActions.append(
@@ -106,8 +108,9 @@ extension HomeViewController {
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
-                        self?.hideMenu()
-                        self?.showArchivedConversations(offerMultiSelectMode: true)
+                        self?.hideMenuAndExecuteIfVanished {
+                            self?.showArchivedConversations(offerMultiSelectMode: true)
+                        }
                 }))
         }
 
@@ -134,6 +137,10 @@ extension HomeViewController {
     }
 
     private func hideMenu() {
+        hideMenuAndExecuteIfVanished()
+    }
+
+    private func hideMenuAndExecuteIfVanished(completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
         if let navBar = navigationController?.navigationBar {
@@ -147,6 +154,7 @@ extension HomeViewController {
         animateOut(menu: viewState.multiSelectState.contextMenuView, from: viewState.multiSelectState.parentButton) { [weak self] (_) in
             self?.viewState.multiSelectState.parentButton = nil
             self?.viewState.multiSelectState.contextMenuView = nil
+            completion?()
         }
     }
 
@@ -168,7 +176,7 @@ extension HomeViewController {
         }
     }
 
-    private func animateOut(menu: UIView?, from: UIView?, completion: ((Bool) -> Void)?) {
+    private func animateOut(menu: UIView?, from: UIView?, completion: ((Bool) -> Void)? = nil) {
         guard let menu = menu else {
             completion?(false)
             return
