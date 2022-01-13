@@ -79,6 +79,7 @@ public class PinReminderViewController: OWSViewController {
 
         view.addSubview(containerView)
         containerView.autoPinWidthToSuperview()
+        containerView.autoPin(toTopLayoutGuideOf: self, withInset: 0, relation: .greaterThanOrEqual)
         autoPinView(toBottomOfViewControllerOrKeyboard: containerView, avoidNotch: true)
 
         // We want the background to extend to the bottom of the screen
@@ -188,10 +189,26 @@ public class PinReminderViewController: OWSViewController {
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
+        stackView.distribution = .equalCentering
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 16, right: 32)
         stackView.isLayoutMarginsRelativeArrangement = true
-        containerView.addSubview(stackView)
+
+        let scrollView = UIScrollView()
+        scrollView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
+        // Make sure this is a real width pin; a scroll view's edge anchors are different from its width.
+        stackView.autoPinWidth(toWidthOf: scrollView)
+
+        // The scroll view should never be *smaller* than the stack view...
+        scrollView.autoMatch(.height, to: .height, of: stackView, withOffset: 0, relation: .lessThanOrEqual)
+        // ...and if the stack view is smaller than the screen, the scroll view should shrink to match.
+        scrollView.autoPinHeight(toHeightOf: stackView).priority = .defaultLow - 2
+        // But the stack view shouldn't *stretch* to fill the scroll view; it should shrink as much as possible after
+        // all other constraints have been fulfilled.
+        stackView.autoSetDimension(.height, toSize: 0).priority = .defaultLow - 1
+
+        containerView.addSubview(scrollView)
+        scrollView.autoPinEdgesToSuperviewEdges()
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
