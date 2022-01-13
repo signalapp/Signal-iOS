@@ -341,16 +341,14 @@ public class HomeViewCell: UITableViewCell {
 
         owsAssertDebug(avatarView == nil, "HomeViewCell.configure without prior reset called")
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
-        if cellContentToken.shouldLoadAvatarAsync {
-            avatarView?.updateAndDisplayAsync { config in
-                config.dataSource = .thread(cellContentToken.thread)
-            }
-        } else {
-            avatarView?.updateWithSneakyTransactionIfNecessary({ config in
-                config.dataSource = .thread(cellContentToken.thread)
+        avatarView?.updateWithSneakyTransactionIfNecessary({ config in
+            config.dataSource = .thread(cellContentToken.thread)
+            if cellContentToken.shouldLoadAvatarAsync {
+                config.usePlaceholderImages()
+            } else {
                 config.applyConfigurationSynchronously()
-            })
-        }
+            }
+        })
 
         typingIndicatorView.configureForHomeView()
 
@@ -870,7 +868,6 @@ public class HomeViewCell: UITableViewCell {
         for cvview in cvviews {
             cvview.reset()
         }
-        avatarView?.cancelPendingBackgroundOperations()
         avatarView = nil
 
         // Some ManualStackViews are _NOT_ reset to facilitate reuse.

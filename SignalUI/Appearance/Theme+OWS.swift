@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -140,6 +140,8 @@ public enum ThemeIcon: UInt {
     case sealedSenderIndicator
     case accessoryCheckmark
     case empty
+
+    case profilePlaceholder
 }
 
 // MARK: - Colors
@@ -432,6 +434,9 @@ public extension Theme {
             return "accessory-checkmark-24"
         case .empty:
             return "empty-24"
+
+        case .profilePlaceholder:
+            return isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56"
         }
     }
 }

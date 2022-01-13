@@ -15,7 +15,6 @@ public extension ConversationAvatarViewDelegate {
 }
 
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
-    private var loadAvatarWorkItem: DispatchWorkItem?
 
     public required init(
         sizeClass: Configuration.SizeClass = .customDiameter(0),
@@ -119,9 +118,20 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             forceSyncUpdate = true
         }
         fileprivate mutating func checkForSyncUpdateAndClear() -> Bool {
-            let shouldUpdateSync = forceSyncUpdate || (dataSource?.isDataImmediatelyAvailable != true)
+            // If we don't have a data source then there's no slow-path asset fetching. We can just take the sync update path always
+            var shouldUpdateSync = true
+            if let dataSource = dataSource, !forceSyncUpdate {
+                // if we have data and are not forced to perform a sync call
+                // we will perform an async call if we shouldn't use the cache (placeholder shall be shown) or the data is not cached
+                shouldUpdateSync = useCachedImages && dataSource.isDataImmediatelyAvailable
+            }
             forceSyncUpdate = false
             return shouldUpdateSync
+        }
+
+        fileprivate var useCachedImages = true
+        public mutating func usePlaceholderImages() {
+            useCachedImages = false
         }
     }
 
@@ -163,10 +173,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
 
     // MARK: Configuration updates
 
-    public func updateAndDisplayAsync(_ updateBlock: (inout Configuration) -> Void) {
-        update(optionalTransaction: nil, updateBlock, performAsync: true)
-    }
-
     public func updateWithSneakyTransactionIfNecessary(_ updateBlock: (inout Configuration) -> Void) {
         update(optionalTransaction: nil, updateBlock)
     }
@@ -177,27 +183,14 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         update(optionalTransaction: transaction, updateBlock)
     }
 
-    public func cancelPendingBackgroundOperations() {
-        loadAvatarWorkItem?.cancel()
-    }
-
-    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void, performAsync: Bool = false) {
+    private func update(optionalTransaction transaction: SDSAnyReadTransaction?, _ updateBlock: (inout Configuration) -> Void) {
         AssertIsOnMainThread()
+
         let oldConfiguration = configuration
         var mutableConfig = oldConfiguration
         updateBlock(&mutableConfig)
         updateConfigurationAndSetDirtyIfNecessary(mutableConfig)
-        cancelPendingBackgroundOperations()
-        if performAsync && transaction == nil {
-            avatarView.image = UIImage(named: Theme.isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56")
-            loadAvatarWorkItem = DispatchWorkItem { [weak self] in
-                self?.updateModelIfNecessary(transaction: nil)
-                self?.loadAvatarWorkItem = nil
-            }
-            DispatchQueue.sharedUserInitiated.async(execute: loadAvatarWorkItem!)
-        } else {
-            updateModelIfNecessary(transaction: transaction)
-        }
+        updateModelIfNecessary(transaction: transaction)
     }
 
     // MARK: Model Updates
@@ -207,7 +200,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     }
 
     private func updateModel(transaction readTx: SDSAnyReadTransaction?) {
-        cancelPendingBackgroundOperations()
         setNeedsModelUpdate()
         updateModelIfNecessary(transaction: readTx)
     }
@@ -216,11 +208,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // If an async update is requested, the model is updated immediately with any available chached content
     // followed by enqueueing a full model update on a background thread.
     private func updateModelIfNecessary(transaction readTx: SDSAnyReadTransaction?) {
-        // execute this method only if we are NOT running in a cancelled work item in a background thread
-        guard loadAvatarWorkItem == nil || (!Thread.isMainThread && !loadAvatarWorkItem!.isCancelled) else {
-            loadAvatarWorkItem = nil
-            return
-        }
+        AssertIsOnMainThread()
+
         guard nextModelGeneration.get() > currentModelGeneration else { return }
         Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
@@ -228,44 +217,33 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             return
         }
 
-        // are we working in the context of a DispatchWorkItem called in a background thread?
-        if loadAvatarWorkItem != nil && !Thread.isMainThread {
-            owsAssertDebug(readTx == nil, "background fetching called with wrong transaction")
-            let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx) ?? dataSource.buildImage(configuration: configuration, transaction: readTx)
-            let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
-            updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+        var avatarImage: UIImage?
+        var badgeImage: UIImage?
+        let updateSynchronously = configuration.checkForSyncUpdateAndClear()
+        if updateSynchronously {
+            avatarImage = dataSource.buildImage(configuration: configuration, transaction: readTx)
+            badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
         } else {
-            let updateSynchronously = configuration.checkForSyncUpdateAndClear()
-            if updateSynchronously {
-                let avatarImage = dataSource.buildImage(configuration: configuration, transaction: readTx)
-                let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
-                updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+            if configuration.useCachedImages {
+                avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
+                badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
             } else {
-                let avatarImage = dataSource.fetchCachedImage(configuration: configuration, transaction: readTx)
-                let badgeImage = dataSource.fetchBadge(configuration: configuration, transaction: readTx)
-                updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
-                enqueueAsyncModelUpdate()
+                avatarImage = UIImage(named: Theme.iconName(.profilePlaceholder))
             }
+        }
+        updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+        if !updateSynchronously {
+            enqueueAsyncModelUpdate()
         }
     }
 
     private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
-        // execute this method only if we are NOT running in a cancelled work item in a background thread
-        guard loadAvatarWorkItem == nil || (!Thread.isMainThread && !loadAvatarWorkItem!.isCancelled) else {
-            loadAvatarWorkItem = nil
-            return
-        }
-        let uiUpdateBlock = { [weak self] in
-            if let self = self {
-                self.avatarView.image = avatarImage
-                self.badgeView.image = badgeImage
-                self.currentModelGeneration = self.nextModelGeneration.get()
-                self.setNeedsLayout()
-            }
-        }
-        DispatchMainThreadSafe {
-            uiUpdateBlock()
-        }
+        AssertIsOnMainThread()
+
+        avatarView.image = avatarImage
+        badgeView.image = badgeImage
+        currentModelGeneration = self.nextModelGeneration.get()
+        setNeedsLayout()
     }
 
     // MARK: - Model Tracking
@@ -286,7 +264,8 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // so the most recently enqueued avatars are most likely to be
     // visible. To put it another way, we don't cancel loads so
     // the oldest loads are most likely to be unnecessary.
-    private static let serialQueue = ReverseDispatchQueue(label: "org.signal.ConversationAvatarView")
+    private static let serialQueue = ReverseDispatchQueue(label: "org.signal.ConversationAvatarView",
+                                                          qos: .userInitiated, autoreleaseFrequency: .workItem)
 
     private func enqueueAsyncModelUpdate() {
         AssertIsOnMainThread()
@@ -300,6 +279,11 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             }
 
             let (updatedAvatar, updatedBadge) = Self.databaseStorage.read { transaction -> (UIImage?, UIImage?) in
+                guard self.nextModelGeneration.get() == generationAtEnqueue else {
+                    // will be logged below
+                    return (nil, nil)
+                }
+
                 let avatarImage = configurationAtEnqueue.dataSource?.buildImage(configuration: configurationAtEnqueue, transaction: transaction)
                 let badgeImage = configurationAtEnqueue.dataSource?.fetchBadge(configuration: configurationAtEnqueue, transaction: transaction)
                 return (avatarImage, badgeImage)
@@ -564,7 +548,6 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     // MARK: - <CVView>
 
     public func reset() {
-        cancelPendingBackgroundOperations()
         configuration.dataSource = nil
         reloadDataIfNecessary()
     }

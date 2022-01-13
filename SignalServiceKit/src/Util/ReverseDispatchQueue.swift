@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,11 +14,14 @@ public class ReverseDispatchQueue: NSObject {
     private let label: String
     private let serialQueue: DispatchQueue
 
-    // TODO: We could allow creation with various QOS.
     @objc
-    public required init(label: String) {
+    public convenience init(label: String) {
+        self.init(label: label, qos: .unspecified, autoreleaseFrequency: .inherit)
+    }
+
+    public required init(label: String, qos: DispatchQoS, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency) {
         self.label = label
-        serialQueue = DispatchQueue(label: label)
+        serialQueue = DispatchQueue(label: label, qos: qos, autoreleaseFrequency: autoreleaseFrequency)
 
         super.init()
     }
