@@ -89,7 +89,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
             setUpNavBarStyle()
         }
         updateNavBarButtons()
-        setNavBarTitle(NSLocalizedString("vc_home_title", comment: ""))
+        setUpNavBarSessionHeading()
         // Recovery phrase reminder
         let hasViewedSeed = UserDefaults.standard[.hasViewedSeed]
         if !hasViewedSeed {
