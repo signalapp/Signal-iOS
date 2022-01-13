@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -701,14 +701,12 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
-        var existingContact: CNContact?
-        databaseStorage.read { transaction in
-            if let contact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld,
-                                                         transaction: transaction),
-               let cnContactId = contact.cnContactId,
-               let cnContact = contactsManager.cnContact(withId: cnContactId) {
-                existingContact = cnContact
-            }
+        guard let existingContact: CNContact = databaseStorage.read(block: {
+            guard let contact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
+            return contactsManager.cnContact(withId: contact.cnContactId)
+        }) else {
+            owsFailDebug("Missing existing contact for phone number change.")
+            return
         }
 
         let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumberNew)

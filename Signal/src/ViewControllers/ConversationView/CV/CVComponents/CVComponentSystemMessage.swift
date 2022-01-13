@@ -1125,10 +1125,17 @@ extension CVComponentSystemMessage {
                 owsFailDebug("Invalid info message.")
                 return nil
             }
+
             // Only show the update contact action if this user was previously a contact.
-            guard contactsManager.isSystemContact(phoneNumber: phoneNumberOld, transaction: transaction) else {
+            guard let existingContact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: transaction) else {
                 return nil
             }
+
+            // Make sure the contact hasn't already had the new number added.
+            guard contactsManagerImpl.contact(forPhoneNumber: phoneNumberNew, transaction: transaction) != existingContact else {
+                return nil
+            }
+
             return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                           accessibilityIdentifier: "update_contact",
                           action: .cvc_didTapPhoneNumberChange(uuid: uuid,

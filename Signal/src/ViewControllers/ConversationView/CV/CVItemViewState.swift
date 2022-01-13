@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -640,10 +640,20 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 owsFailDebug("Invalid interactions.")
                 return
             }
-            if infoMessage.messageType == .verificationStateChange { return }
-            if infoMessage.messageType == .typeGroupUpdate { return }
-            previousItem.itemViewState.shouldCollapseSystemMessageAction
-                = previousInfoMessage.messageType == infoMessage.messageType
+            switch infoMessage.messageType {
+            case .verificationStateChange, .typeGroupUpdate:
+                return // never collapse
+            case .phoneNumberChange:
+                // Only collapse if the previous message was a change number for the same user
+                guard case .phoneNumberChange = previousInfoMessage.messageType,
+                let previousMessageUuid = previousInfoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String,
+                let currentMessageUuid = infoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String else { return }
+                previousItem.itemViewState.shouldCollapseSystemMessageAction = previousMessageUuid != currentMessageUuid
+            default:
+                // always collapse matching types
+                previousItem.itemViewState.shouldCollapseSystemMessageAction
+                    = previousInfoMessage.messageType == infoMessage.messageType
+            }
         case .call:
             previousItem.itemViewState.shouldCollapseSystemMessageAction = true
         default:
