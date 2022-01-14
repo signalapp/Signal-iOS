@@ -100,7 +100,7 @@ extension HomeViewController {
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
-                        self?.hideMenuAndExecuteIfVanished {
+                        self?.hideMenuAndExecuteWhenVanished {
                             self?.willEnterMultiselectMode()
                         }
                     }))
@@ -111,7 +111,7 @@ extension HomeViewController {
                 image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
                 attributes: [],
                 handler: { [weak self] (_) in
-                    self?.hideMenuAndExecuteIfVanished {
+                    self?.hideMenuAndExecuteWhenVanished {
                         self?.showAppSettings(mode: .none)
                     }
             }))
@@ -122,7 +122,7 @@ extension HomeViewController {
                     image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
                     attributes: [],
                     handler: { [weak self] (_) in
-                        self?.hideMenuAndExecuteIfVanished {
+                        self?.hideMenuAndExecuteWhenVanished {
                             self?.showArchivedConversations(offerMultiSelectMode: true)
                         }
                 }))
@@ -151,10 +151,10 @@ extension HomeViewController {
     }
 
     private func hideMenu() {
-        hideMenuAndExecuteIfVanished()
+        hideMenuAndExecuteWhenVanished()
     }
 
-    private func hideMenuAndExecuteIfVanished(completion: (() -> Void)? = nil) {
+    private func hideMenuAndExecuteWhenVanished(completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
 
         if let navBar = navigationController?.navigationBar {
