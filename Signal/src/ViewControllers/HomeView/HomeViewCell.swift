@@ -307,7 +307,7 @@ public class HomeViewCell: UITableViewCell {
                                   unreadBadgeMeasurements: unreadBadgeMeasurements)
     }
 
-    func configure(cellContentToken: HVCellContentToken) {
+    func configure(cellContentToken: HVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
         OWSTableItem.configureCell(self)
@@ -343,7 +343,7 @@ public class HomeViewCell: UITableViewCell {
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
         avatarView?.updateWithSneakyTransactionIfNecessary({ config in
             config.dataSource = .thread(cellContentToken.thread)
-            if cellContentToken.shouldLoadAvatarAsync {
+            if asyncAvatarLoadingAllowed && cellContentToken.shouldLoadAvatarAsync {
                 config.usePlaceholderImages()
             } else {
                 config.applyConfigurationSynchronously()

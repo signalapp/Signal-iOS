@@ -802,7 +802,8 @@ extension HVTableDataSource {
             for cell in tableView.visibleCells {
                 if let homeCell = cell as? HomeViewCell, let myKey = homeCell.thread?.uniqueId, myKey == primKey, let token = buildCellConfigurationAndContentTokenSync(forIndexPath: indexPath)?.contentToken {
                     homeCell.reset()
-                    homeCell.configure(cellContentToken: token)
+                    // reduces flicker effects for already visible cells
+                    homeCell.configure(cellContentToken: token, asyncAvatarLoadingAllowed: false)
                     return true
                 }
             }
