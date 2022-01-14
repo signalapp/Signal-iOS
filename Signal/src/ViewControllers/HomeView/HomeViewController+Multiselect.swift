@@ -20,6 +20,10 @@ extension HomeViewController {
     func willEnterMultiselectMode() {
         AssertIsOnMainThread()
 
+        guard !viewState.multiSelectState.isActive else {
+            return
+        }
+
         viewState.multiSelectState.title = title
         if homeViewMode == .inbox {
             let doneButton = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(done), accessibilityIdentifier: CommonStrings.cancelButton)
@@ -30,19 +34,29 @@ extension HomeViewController {
         tableView.allowsMultipleSelectionDuringEditing = true
         searchBar.isUserInteractionEnabled = false
         searchBar.alpha = 0.5
+        viewState.multiSelectState.setIsActive(true, tableView: tableView)
         showToolbar()
     }
 
     func leaveMultiselectMode() {
         AssertIsOnMainThread()
 
+        guard viewState.multiSelectState.isActive else {
+            return
+        }
+
+        tableView.allowsSelectionDuringEditing = false
+        tableView.allowsMultipleSelectionDuringEditing = false
+        searchBar.isUserInteractionEnabled = true
+        searchBar.alpha = 1
+        viewState.multiSelectState.setIsActive(false, tableView: tableView)
+        title = viewState.multiSelectState.title
         hideToolbar()
     }
 
     func showToolbar() {
         AssertIsOnMainThread()
 
-        viewState.multiSelectState.setIsActive(true, tableView: tableView)
         if viewState.multiSelectState.toolbar == nil {
             let tbc = BlurredToolbarContainer()
             tbc.alpha = 0
@@ -62,7 +76,7 @@ extension HomeViewController {
 
         if viewState.multiSelectState.isActive {
             sender.title = CommonStrings.selectButton
-            hideToolbar()
+            leaveMultiselectMode()
         } else {
             sender.title = CommonStrings.doneButton
             willEnterMultiselectMode()
@@ -260,12 +274,6 @@ extension HomeViewController {
     private func hideToolbar() {
         AssertIsOnMainThread()
 
-        tableView.allowsSelectionDuringEditing = false
-        tableView.allowsMultipleSelectionDuringEditing = false
-        searchBar.isUserInteractionEnabled = true
-        searchBar.alpha = 1
-        viewState.multiSelectState.setIsActive(false, tableView: tableView)
-
         if let toolbar = viewState.multiSelectState.toolbar {
             UIView.animate(withDuration: 0.25) {
                 toolbar.alpha = 0
@@ -274,7 +282,6 @@ extension HomeViewController {
                 self?.viewState.multiSelectState.toolbar = nil
             }
         }
-        title = viewState.multiSelectState.title
     }
 
     public func updateCaptions() {
@@ -456,6 +463,7 @@ public class MultiSelectState: NSObject {
                     }
                 }
             }
+            actionPerformed = false
         }
     }
 }
