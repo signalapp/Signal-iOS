@@ -85,14 +85,14 @@ public class FullTextSearchFinder: NSObject {
         return query
     }
 
-    public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
+    public func enumerateObjects(searchText: String, maxSearchResults: Int? = nil, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
         guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
             return
         }
 
         let query = FullTextSearchFinder.query(searchText: searchText)
 
-        let maxSearchResults = 500
+        let maxSearchResults = maxSearchResults ?? 500
         var searchResultCount = 0
         let snippetOptions = YapDatabaseFullTextSearchSnippetOptions()
         snippetOptions.startMatchText = ""

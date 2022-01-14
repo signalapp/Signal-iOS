@@ -227,6 +227,7 @@ public class FullTextSearcher: NSObject {
     }
 
     public func searchForHomeScreen(searchText: String,
+                                    maxSearchResults: Int? = nil,
                                     transaction: YapDatabaseReadTransaction) -> HomeScreenSearchResultSet {
 
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
@@ -234,7 +235,7 @@ public class FullTextSearcher: NSObject {
 
         var existingConversationRecipientIds: Set<String> = Set()
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, maxSearchResults: maxSearchResults, transaction: transaction) { (match: Any, snippet: String?) in
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)

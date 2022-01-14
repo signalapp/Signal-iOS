@@ -538,6 +538,7 @@ final class ConversationVC : BaseVC, ConversationViewModelDelegate, OWSConversat
     func showSearchUI() {
         isShowingSearchUI = true
         // Search bar
+        // FIXME: This code is duplicated with SearchBar
         let searchBar = searchController.uiSearchController.searchBar
         searchBar.searchBarStyle = .minimal
         searchBar.barStyle = .black

@@ -30,6 +30,18 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         result.delegate = self
         return result
     }()
+    
+    internal lazy var searchBar: SearchBar = {
+        let result = SearchBar()
+        result.delegate = self
+        return result
+    }()
+    
+    internal lazy var searchController: GlobalSearchViewController = {
+        let result = GlobalSearchViewController()
+        result.delegate = self
+        return result
+    }()
         
     private lazy var tableView: UITableView = {
         let result = UITableView()
@@ -157,6 +169,15 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, NewConv
         }
         // Get default open group rooms if needed
         OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+        // Search
+        let searchBarContainer = UIView()
+        searchBarContainer.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = UIEdgeInsets.zero
+        searchBarContainer.frame = searchBar.frame
+        searchBarContainer.addSubview(searchBar)
+        searchBar.autoPinEdgesToSuperviewMargins()
+        tableView.tableHeaderView = searchBarContainer
     }
     
     override func viewDidAppear(_ animated: Bool) {
