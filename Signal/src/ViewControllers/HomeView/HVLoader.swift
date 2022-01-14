@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -167,7 +167,7 @@ public class HVLoader: NSObject {
                 return buildRenderState()
             }
 
-            if pinnedThreadIds.contains(thread.uniqueId) {
+            if !isViewingArchive && pinnedThreadIds.contains(thread.uniqueId) {
                 pinnedThreads.append(thread)
             } else {
                 threads.append(thread)

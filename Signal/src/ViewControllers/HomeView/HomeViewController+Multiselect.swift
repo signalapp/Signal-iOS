@@ -115,7 +115,7 @@ extension HomeViewController {
                         self?.showAppSettings(mode: .none)
                     }
             }))
-        if renderState.archiveCount > 1 {
+        if renderState.archiveCount > 0 {
             contextMenuActions.append(
                 ContextMenuAction(
                     title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
