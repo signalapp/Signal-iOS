@@ -22,6 +22,7 @@ target 'SessionShareExtension' do
   pod 'CryptoSwift', :inhibit_warnings => true
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit.git', :inhibit_warnings => true
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master', :inhibit_warnings => true
+  pod 'NVActivityIndicatorView', :inhibit_warnings => true
   pod 'PromiseKit', :inhibit_warnings => true
   pod 'PureLayout', '~> 3.1.8', :inhibit_warnings => true
   pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', :inhibit_warnings => true

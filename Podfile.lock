@@ -29,6 +29,7 @@ PODS:
   - NVActivityIndicatorView (5.0.1):
     - NVActivityIndicatorView/Base (= 5.0.1)
   - NVActivityIndicatorView/Base (5.0.1)
+  - OpenSSL-Universal (1.1.1200)
   - PromiseKit (6.13.1):
     - PromiseKit/CorePromise (= 6.13.1)
     - PromiseKit/Foundation (= 6.13.1)
@@ -43,7 +44,7 @@ PODS:
   - SAMKeychain (1.5.3)
   - SignalCoreKit (1.0.0):
     - CocoaLumberjack
-    - GRKOpenSSLFramework
+    - OpenSSL-Universal
   - Sodium (0.8.0)
   - SQLCipher (4.4.0):
     - SQLCipher/standard (= 4.4.0)
@@ -147,6 +148,7 @@ SPEC REPOS:
     - GRKOpenSSLFramework
     - HKDFKit
     - NVActivityIndicatorView
+    - OpenSSL-Universal
     - PromiseKit
     - PureLayout
     - Reachability
@@ -196,11 +198,12 @@ SPEC CHECKSUMS:
   HKDFKit: c058305d6f64b84f28c50bd7aa89574625bcb62a
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   NVActivityIndicatorView: 738e843cb8924e9e4fc3e559d0728031624bf860
+  OpenSSL-Universal: 3b8c0d6268fbd5d3ac44f97338e2fd16a73d9dbf
   PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
   PureLayout: a4afb3d79dd958564ce33d22c89f407280d8e6a8
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
+  SignalCoreKit: 1fbd8732163ef76de16cd1107d1fa3684b607e5d
   Sodium: 63c0ca312a932e6da481689537d4b35568841bdc
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
@@ -208,6 +211,6 @@ SPEC CHECKSUMS:
   YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 50e6a35c838ba28d2ee02bc6018fdd297c04e55f
+PODFILE CHECKSUM: e7aa4e20c8329a413eadd5e6f0d900340810f4c7
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2

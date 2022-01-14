@@ -44,37 +44,36 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
     
     private lazy var validImage: UIImage? = {
-        switch attachment.fileType {
-            case .image:
-                guard
-                    attachment.isValidImage,
-                    let image: UIImage = attachment.image(),
-                    image.size.width > 0,
-                    image.size.height > 0
-                else {
-                    return nil
-                }
-                
-                return image
-                
-            case .video:
-                guard
-                    attachment.isValidVideo,
-                    let image: UIImage = attachment.videoPreview(),
-                    image.size.width > 0,
-                    image.size.height > 0
-                else {
-                    return nil
-                }
-                
-                return image
+        if attachment.isImage {
+            guard
+                attachment.isValidImage,
+                let image: UIImage = attachment.image(),
+                image.size.width > 0,
+                image.size.height > 0
+            else {
+                return nil
+            }
             
-            default: return nil
+            return image
         }
+        else if attachment.isVideo {
+            guard
+                attachment.isValidVideo,
+                let image: UIImage = attachment.videoPreview(),
+                image.size.width > 0,
+                image.size.height > 0
+            else {
+                return nil
+            }
+            
+            return image
+        }
+        
+        return nil
     }()
     private lazy var validAnimatedImage: YYImage? = {
         guard
-            attachment.fileType == .animatedImage,
+            attachment.isAnimatedImage,
             attachment.isValidImage,
             let dataUrl: URL = attachment.dataUrl,
             let image: YYImage = YYImage(contentsOfFile: dataUrl.path),
@@ -153,22 +152,19 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         view.isHidden = true
         
         // Override the image to the correct one
-        switch attachment.fileType {
-            case .image, .video:
-                if let validImage: UIImage = validImage {
-                    view.layer.minificationFilter = .trilinear
-                    view.layer.magnificationFilter = .trilinear
-                    view.image = validImage
-                }
-                
-            case .url:
-                view.clipsToBounds = true
-                view.image = UIImage(named: "Link")?.withTint(Colors.text)
-                view.contentMode = .center
-                view.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
-                view.layer.cornerRadius = 8
-                
-            default: break
+        if attachment.isImage || attachment.isVideo {
+            if let validImage: UIImage = validImage {
+                view.layer.minificationFilter = .trilinear
+                view.layer.magnificationFilter = .trilinear
+                view.image = validImage
+            }
+        }
+        else if attachment.isUrl {
+            view.clipsToBounds = true
+            view.image = UIImage(named: "Link")?.withTint(Colors.text)
+            view.contentMode = .center
+            view.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+            view.layer.cornerRadius = 8
         }
         
         return view
@@ -225,7 +221,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let stackView: UIStackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.alignment = (attachment.fileType == .url ? .leading : .center)
+        stackView.alignment = (attachment.isUrl ? .leading : .center)
         stackView.distribution = .fill
         
         switch mode {
@@ -257,35 +253,33 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
         
         // Content
-        switch attachment.fileType {
-            case .image, .animatedImage, .video: break  // No title for these
-                
-            case .url:
-                // If we have no link preview info at this point then assume link previews are disabled
-                guard let linkPreviewURL: String = linkPreviewInfo?.url else {
-                    label.text = "vc_share_link_previews_disabled_title".localized()
-                    break
-                }
-                
+        if attachment.isUrl {
+            // If we have no link preview info at this point then assume link previews are disabled
+            if let linkPreviewURL: String = linkPreviewInfo?.url {
                 label.font = .boldSystemFont(ofSize: Values.smallFontSize)
                 label.text = linkPreviewURL
                 label.textAlignment = .left
                 label.lineBreakMode = .byTruncatingTail
                 label.numberOfLines = 2
-                
-            default:
-                if let fileName: String = attachment.sourceFilename?.trimmingCharacters(in: .whitespacesAndNewlines), fileName.count > 0 {
-                    label.text = fileName
-                }
-                else if let fileExtension: String = attachment.fileExtension {
-                    label.text = String(
-                        format: "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT".localized(),
-                        fileExtension.uppercased()
-                    )
-                }
-                
-                label.textAlignment = .center
-                label.lineBreakMode = .byTruncatingMiddle
+            }
+            else {
+                label.text = "vc_share_link_previews_disabled_title".localized()
+            }
+        }
+        // Title for everything except these types
+        else if !attachment.isImage && !attachment.isAnimatedImage && !attachment.isVideo {
+            if let fileName: String = attachment.sourceFilename?.trimmingCharacters(in: .whitespacesAndNewlines), fileName.count > 0 {
+                label.text = fileName
+            }
+            else if let fileExtension: String = attachment.fileExtension {
+                label.text = String(
+                    format: "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT".localized(),
+                    fileExtension.uppercased()
+                )
+            }
+            
+            label.textAlignment = .center
+            label.lineBreakMode = .byTruncatingMiddle
         }
         
         // Hide the label if it has no content
@@ -314,32 +308,30 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
         
         // Content
-        switch attachment.fileType {
-            case .image, .animatedImage, .video: break  // No size for these
-                
-            case .url:
-                // If we have no link preview info at this point then assume link previews are disabled
-                guard let linkPreviewURL: String = linkPreviewInfo?.url else {
-                    label.text = "vc_share_link_previews_disabled_explanation".localized()
-                    label.textColor = Colors.text
-                    label.textAlignment = .center
-                    label.numberOfLines = 0
-                    break
-                }
-                
-                // We only load Link Previews for HTTPS urls so append an explanation for not
+        if attachment.isUrl {
+            // We only load Link Previews for HTTPS urls so append an explanation for not
+            if let linkPreviewURL: String = linkPreviewInfo?.url {
                 if let targetUrl: URL = URL(string: linkPreviewURL), targetUrl.scheme?.lowercased() != "https" {
                     label.font = UIFont.ows_regularFont(withSize: Values.verySmallFontSize)
                     label.text = "vc_share_link_previews_unsecure".localized()
                     label.textColor = (mode == .attachmentApproval ? Colors.pinIcon : Colors.accent)
                 }
-                
-            default:
-                // Format string for file size label in call interstitial view.
-                // Embeds: {{file size as 'N mb' or 'N kb'}}.
-                let fileSize: UInt = attachment.dataLength
-                label.text = String(format: "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT".localized(), OWSFormat.formatFileSize(UInt(fileSize)))
+            }
+            // If we have no link preview info at this point then assume link previews are disabled
+            else {
+                label.text = "vc_share_link_previews_disabled_explanation".localized()
+                label.textColor = Colors.text
                 label.textAlignment = .center
+                label.numberOfLines = 0
+            }
+        }
+        // Subtitle for everything else except these types
+        else if !attachment.isImage && !attachment.isAnimatedImage && !attachment.isVideo {
+            // Format string for file size label in call interstitial view.
+            // Embeds: {{file size as 'N mb' or 'N kb'}}.
+            let fileSize: UInt = attachment.dataLength
+            label.text = String(format: "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT".localized(), OWSFormat.formatFileSize(UInt(fileSize)))
+            label.textAlignment = .center
         }
         
         // Hide the label if it has no content
@@ -352,7 +344,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     private func setupViews() {
         // Plain text will just be put in the 'message' input so do nothing
-        guard attachment.fileType != .text && attachment.fileType != .oversizeText else { return }
+        guard !attachment.isText && !attachment.isOversizeText else { return }
         
         // Setup the view hierarchy
         addSubview(stackView)
@@ -370,95 +362,90 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         imageView.addSubview(fileTypeImageView)
         
         // Type-specific configurations
-        switch attachment.fileType {
-            case .animatedImage: animatedImageView.isHidden = false
-            case .image: imageView.isHidden = false
+        if attachment.isAnimatedImage {
+            animatedImageView.isHidden = false
+        }
+        else if attachment.isImage {
+            imageView.isHidden = false
+        }
+        else if attachment.isVideo {
+            // Note: The 'attachmentApproval' mode provides it's own play button to keep
+            // it at the proper scale when zooming
+            imageView.isHidden = false
+            videoPlayButton.isHidden = (mode == .attachmentApproval)
+        }
+        else if attachment.isAudio {
+            // Hide the 'audioPlayPauseButton' if the 'audioPlayer' failed to get created
+            imageView.isHidden = false
+            audioPlayPauseButton.isHidden = (audioPlayer == nil)
+            setAudioIconToPlay()
+            setAudioProgress(0, duration: (audioPlayer?.duration ?? 0))
+            
+            fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")?
+                .withRenderingMode(.alwaysTemplate)
+            fileTypeImageView.tintColor = Colors.text
+            fileTypeImageView.isHidden = false
+            
+            // Note: There is an annoying bug where the MediaMessageView will fill the screen if the
+            // 'audioPlayPauseButton' is added anywhere within the view hierarchy causing issues with
+            // the min scale on 'image' and 'animatedImage' file types (assume it's actually any UIButton)
+            addSubview(audioPlayPauseButton)
+        }
+        else if attachment.isUrl {
+            imageView.isHidden = false
+            imageView.alpha = 0 // Not 'isHidden' because we want it to take up space in the UIStackView
+            loadingView.isHidden = false
+            
+            if let linkPreviewUrl: String = linkPreviewInfo?.url {
+                // Don't want to change the axis until we have a URL to start loading, otherwise the
+                // error message will be broken
+                stackView.axis = .horizontal
                 
-            case .video:
-                // Note: The 'attachmentApproval' mode provides it's own play button to keep
-                // it at the proper scale when zooming
-                imageView.isHidden = false
-                videoPlayButton.isHidden = (mode == .attachmentApproval)
-                
-            case .audio:
-                // Hide the 'audioPlayPauseButton' if the 'audioPlayer' failed to get created
-                imageView.isHidden = false
-                audioPlayPauseButton.isHidden = (audioPlayer == nil)
-                setAudioIconToPlay()
-                setAudioProgress(0, duration: (audioPlayer?.duration ?? 0))
-                
-                fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")?
-                    .withRenderingMode(.alwaysTemplate)
-                fileTypeImageView.tintColor = Colors.text
-                fileTypeImageView.isHidden = false
-                
-                // Note: There is an annoying bug where the MediaMessageView will fill the screen if the
-                // 'audioPlayPauseButton' is added anywhere within the view hierarchy causing issues with
-                // the min scale on 'image' and 'animatedImage' file types (assume it's actually any UIButton)
-                addSubview(audioPlayPauseButton)
-                
-            case .url:
-                imageView.isHidden = false
-                imageView.alpha = 0 // Not 'isHidden' because we want it to take up space in the UIStackView
-                loadingView.isHidden = false
-                
-                if let linkPreviewUrl: String = linkPreviewInfo?.url {
-                    // Don't want to change the axis until we have a URL to start loading, otherwise the
-                    // error message will be broken
-                    stackView.axis = .horizontal
-                    
-                    loadLinkPreview(linkPreviewURL: linkPreviewUrl)
-                }
-                
-            default: imageView.isHidden = false
+                loadLinkPreview(linkPreviewURL: linkPreviewUrl)
+            }
+        }
+        else {
+            imageView.isHidden = false
         }
     }
     
     private func setupLayout() {
         // Plain text will just be put in the 'message' input so do nothing
-        guard attachment.fileType != .text && attachment.fileType != .oversizeText else { return }
+        guard !attachment.isText && !attachment.isOversizeText else { return }
         
         // Sizing calculations
         let clampedRatio: CGFloat = {
-            switch attachment.fileType {
-                case .url: return 1
-
-                case .image, .video, .audio, .unknown:
-                    let imageSize: CGSize = (imageView.image?.size ?? CGSize(width: 1, height: 1))
-                    let aspectRatio: CGFloat = (imageSize.width / imageSize.height)
-                
-                    return CGFloatClamp(aspectRatio, 0.05, 95.0)
-                    
-                case .animatedImage:
-                    let imageSize: CGSize = (animatedImageView.image?.size ?? CGSize(width: 1, height: 1))
-                    let aspectRatio: CGFloat = (imageSize.width / imageSize.height)
-                
-                    return CGFloatClamp(aspectRatio, 0.05, 95.0)
-                
-                default: return 0
+            if attachment.isUrl {
+                return 1
             }
+            
+            if attachment.isAnimatedImage {
+                let imageSize: CGSize = (animatedImageView.image?.size ?? CGSize(width: 1, height: 1))
+                let aspectRatio: CGFloat = (imageSize.width / imageSize.height)
+            
+                return CGFloatClamp(aspectRatio, 0.05, 95.0)
+            }
+            
+            // All other types should maintain the ratio of the image in the 'imageView'
+            let imageSize: CGSize = (imageView.image?.size ?? CGSize(width: 1, height: 1))
+            let aspectRatio: CGFloat = (imageSize.width / imageSize.height)
+        
+            return CGFloatClamp(aspectRatio, 0.05, 95.0)
         }()
         
         let maybeImageSize: CGFloat? = {
-            switch attachment.fileType {
-                case .image, .video:
-                    if validImage != nil { return nil }
-                    
-                    // If we don't have a valid image then use the 'generic' case
-                    break
-                    
-                case .animatedImage:
-                    if validAnimatedImage != nil { return nil }
-                    
-                    // If we don't have a valid image then use the 'generic' case
-                    break
-                    
-                case .url: return 80
-                    
-                // Use the 'generic' case for these
-                case .audio, .unknown: break
-                    
-                default: return nil
+            if attachment.isImage || attachment.isVideo {
+                if validImage != nil { return nil }
+                
+                // If we don't have a valid image then use the 'generic' case
+            }
+            else if attachment.isAnimatedImage {
+                if validAnimatedImage != nil { return nil }
+                
+                // If we don't have a valid image then use the 'generic' case
+            }
+            else if attachment.isUrl {
+                return 80
             }
             
             // Generic file size
@@ -531,7 +518,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         ])
         
         // No inset for the text for URLs but there is for all other layouts
-        if (attachment.fileType != .url) {
+        if !attachment.isUrl {
             NSLayoutConstraint.activate([
                 titleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2)),
                 subtitleLabel.widthAnchor.constraint(equalTo: stackView.widthAnchor, constant: -(32 * 2))
@@ -541,7 +528,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         // Note: There is an annoying bug where the MediaMessageView will fill the screen if the
         // 'audioPlayPauseButton' is added anywhere within the view hierarchy causing issues with
         // the min scale on 'image' and 'animatedImage' file types (assume it's actually any UIButton)
-        if attachment.fileType == .audio {
+        if attachment.isAudio {
             NSLayoutConstraint.activate([
                 audioPlayPauseButton.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
                 audioPlayPauseButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),

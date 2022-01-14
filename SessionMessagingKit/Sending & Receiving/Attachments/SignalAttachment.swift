@@ -20,18 +20,6 @@ public enum SignalAttachmentError: Error {
     case couldNotResizeImage
 }
 
-@objc
-public enum SignalAttachmentType: Int {
-    case text
-    case oversizeText
-    case image
-    case animatedImage
-    case video
-    case audio
-    case url
-    case unknown
-}
-
 extension String {
     public var filenameWithoutExtension: String {
         return (self as NSString).deletingPathExtension
@@ -445,19 +433,6 @@ public class SignalAttachment: NSObject {
     // for Signal attachments.
     private class var mediaUTISet: Set<String> {
         return audioUTISet.union(videoUTISet).union(animatedImageUTISet).union(inputImageUTISet)
-    }
-    
-    @objc
-    public var fileType: SignalAttachmentType {
-        if isAnimatedImage { return .animatedImage }
-        if isImage { return .image }
-        if isVideo { return .video }
-        if isAudio { return .audio }
-        if isUrl { return .url }
-        if isOversizeText { return .oversizeText }
-        if isText { return .text }
-        
-        return .unknown
     }
 
     @objc
