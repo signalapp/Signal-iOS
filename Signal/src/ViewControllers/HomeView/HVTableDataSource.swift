@@ -236,6 +236,10 @@ extension HVTableDataSource: UITableViewDelegate {
         return UITableViewCell.EditingStyle.none
     }
 
+    public func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
+        return viewState.multiSelectState.isActive
+    }
+
     public func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
         return false
     }

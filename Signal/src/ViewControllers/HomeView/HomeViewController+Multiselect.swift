@@ -165,10 +165,12 @@ extension HomeViewController {
         menu.autoPinEdge(toSuperviewSafeArea: .leading)
         menu.alpha = 0
         menu.layer.anchorPoint = .zero
-        menu.transform = .scale(0.1)
+        menu.transform = .scale(0.01)
+        animate({
+            menu.alpha = 1
+        }, duration: 0.15, delay: 0)
         animate({
             from?.alpha = 0.4
-            menu.alpha = 1
             menu.transform = .identity
         }) { (_) in
             menu.layer.anchorPoint = oldAnchor
@@ -188,20 +190,20 @@ extension HomeViewController {
         menu.layer.anchorPoint = .zero
         menu.frame = frame
         animate({
-            from?.alpha = 1
             menu.alpha = 0
-            menu.transform = .scale(0.1)
+        }, duration: 0.15, delay: 0.25)
+        animate({
+            from?.alpha = 1
+            menu.transform = .scale(0.01)
         }) { (result) in
             menu.removeFromSuperview()
             completion?(result)
         }
     }
 
-    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)?) {
-        UIView.animate(withDuration: 0.4,
-                       delay: 0,
-                       usingSpringWithDamping: 0.8,
-                       initialSpringVelocity: 1,
+    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.4, delay: TimeInterval = 0) {
+        UIView.animate(withDuration: duration,
+                       delay: delay,
                        options: [.curveEaseInOut, .beginFromCurrentState],
                        animations: animations,
                        completion: completion)
@@ -401,7 +403,7 @@ extension HomeViewController: ContextMenuActionsViewDelegate {
 
 // MARK: - view helper class (providing a rounded view *with* a shadow)
 private class ContextMenuActionsViewContainer: UIView {
-    private let offset = CGPoint(x: 16, y: 0)
+    private let offset = CGPoint(x: 8, y: 0)
 
     required init(_ target: UIView) {
         super.init(frame: target.frame)
