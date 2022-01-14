@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import YYImage
@@ -9,26 +9,15 @@ import AVKit
 /// Any LoopingVideoViews playing this instance will all be kept in sync
 @objc
 public class LoopingVideo: NSObject {
-    fileprivate let assetPromise: Guarantee<AVAsset?>
-    fileprivate var asset: AVAsset? { assetPromise.value.flatMap { $0 } }
+    fileprivate var asset: AVAsset
 
     @objc
     public init?(url: URL) {
         guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
             return nil
         }
-        assetPromise = firstly(on: .global(qos: .userInitiated)) { AVAsset(url: url) }
+        self.asset = AVAsset(url: url)
         super.init()
-    }
-
-    func createPlayerItem() -> AVPlayerItem? {
-        guard let asset = asset else { return nil }
-        let item = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
-        return OWSMediaUtils.isValidVideo(asset: asset) ? item : nil
-    }
-
-    deinit {
-        asset?.cancelLoading()
     }
 }
 
@@ -135,22 +124,16 @@ public class LoopingVideoView: UIView {
             player.replaceCurrentItem(with: nil)
             invalidateIntrinsicContentSize()
 
-            if let assetPromise = video?.assetPromise {
-                firstly {
-                    assetPromise
-                }.map(on: .global(qos: .userInitiated)) { [weak self] asset -> Bool in
-                    guard let self = self,
-                          let asset = asset,
-                          asset === self.video?.asset else {
-                        return false
+            if let asset = video?.asset {
+                firstly(on: .global(qos: .userInitiated)) { [weak self] () -> Void in
+                    guard let self = self else {
+                        return
                     }
                     let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
                     self.player.replaceCurrentItem(with: playerItem)
                     self.player.play()
-                    return true
-                }.done(on: .main) { [weak self] didLoadPlayer in
-                    guard let self = self,
-                          didLoadPlayer else {
+                }.done(on: .main) { [weak self] in
+                    guard let self = self else {
                         return
                     }
                     self.invalidateIntrinsicContentSize()
@@ -190,11 +173,6 @@ public class LoopingVideoView: UIView {
 
     override public var intrinsicContentSize: CGSize {
         guard let asset = video?.asset else {
-            // If we have an outstanding promise, invalidate the size once it's complete
-            // If there isn't, -noIntrinsicMetric is valid
-            if video?.assetPromise.isSealed != true {
-                video?.assetPromise.done(on: .main) { _ in self.invalidateIntrinsicContentSize() }
-            }
             return CGSize(square: UIView.noIntrinsicMetric)
         }
 
