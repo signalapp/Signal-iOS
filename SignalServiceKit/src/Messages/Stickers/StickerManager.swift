@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -468,13 +468,10 @@ public class StickerManager: NSObject {
                                         verifyExists: Bool,
                                         transaction: SDSAnyReadTransaction) -> [StickerInfo] {
 
-        let allInstalledUniqueIds = Set(InstalledSticker.anyAllUniqueIds(transaction: transaction))
         var result = [StickerInfo]()
         for stickerInfo in stickerPack.stickerInfos {
             let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
-            let isStickerInstalled = allInstalledUniqueIds.contains(uniqueId)
-            guard isStickerInstalled,
-                let installedSticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            guard let installedSticker = InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
                     continue
             }
             if verifyExists,
