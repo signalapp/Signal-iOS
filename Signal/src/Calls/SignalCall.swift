@@ -267,6 +267,10 @@ extension SignalCall: GroupCallDelegate {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
+    public func groupCall(onAudioLevels groupCall: GroupCall) {
+        // TODO: Implement audio level handling for group calls.
+    }
+
     public func groupCall(onPeekChanged groupCall: GroupCall) {
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
