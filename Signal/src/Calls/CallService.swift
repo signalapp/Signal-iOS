@@ -1137,6 +1137,15 @@ extension CallService: CallManagerDelegate {
 
     public func callManager(
         _ callManager: CallManager<SignalCall, CallService>,
+        onAudioLevelsFor call: SignalCall,
+        capturedLevel: UInt16,
+        receivedLevel: UInt16
+    ) {
+        // TODO: Implement audio level handling for individual calls.
+    }
+
+    public func callManager(
+        _ callManager: CallManager<SignalCall, CallService>,
         shouldSendOffer callId: UInt64,
         call: SignalCall,
         destinationDeviceId: UInt32?,
