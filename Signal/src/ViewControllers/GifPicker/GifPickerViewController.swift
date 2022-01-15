@@ -104,6 +104,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     var lastQuery: String?
+    var trendingLoaded: Bool = false
 
     public weak var delegate: GifPickerViewControllerDelegate?
 
@@ -600,18 +601,18 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func loadTrending() {
         assert(progressiveSearchTimer == nil)
         assert(searchBar.text == nil || searchBar.text?.count == 0)
-        assert(lastQuery == nil)
+        assert(lastQuery == nil || lastQuery == "")
 
         firstly {
             GiphyAPI.trending()
         }.done(on: .main) { [weak self] imageInfos in
             guard let self = self else { return }
-
-            guard self.lastQuery == nil else {
+            
+            if self.trendingLoaded {
                 Logger.info("not showing trending results due to subsequent searches.")
                 return
             }
-
+            self.trendingLoaded = true
             Logger.info("showing trending")
             if imageInfos.count > 0 {
                 self.imageInfos = imageInfos
@@ -634,26 +635,32 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         imageInfos = []
         viewMode = .searching
         lastQuery = query
+        
         self.collectionView.contentOffset = CGPoint.zero
 
-        firstly {
-            GiphyAPI.search(query: query)
-        }.done(on: .main) { [weak self] imageInfos in
-            guard let strongSelf = self else { return }
-            Logger.info("search complete")
-            strongSelf.imageInfos = imageInfos
-            if imageInfos.count > 0 {
-                strongSelf.viewMode = .results
-            } else {
-                strongSelf.viewMode = .noResults
-            }
-        }.catch(on: .main) { [weak self] error in
-            owsFailDebugUnlessNetworkFailure(error)
+        if query.count < 1 {
+            loadTrending()
+        } else {
+            firstly {
+                    GiphyAPI.search(query: query)
+            }.done(on: .main) { [weak self] imageInfos in
+                guard let strongSelf = self else { return }
+                Logger.info("search complete")
+                strongSelf.imageInfos = imageInfos
+                strongSelf.trendingLoaded = false
+                if imageInfos.count > 0 {
+                    strongSelf.viewMode = .results
+                } else {
+                    strongSelf.viewMode = .noResults
+                }
+            }.catch(on: .main) { [weak self] error in
+                owsFailDebugUnlessNetworkFailure(error)
 
-            guard let strongSelf = self else { return }
-            Logger.info("search failed.")
-            // TODO: Present this error to the user.
-            strongSelf.viewMode = .error
+                guard let strongSelf = self else { return }
+                Logger.info("search failed.")
+                // TODO: Present this error to the user.
+                strongSelf.viewMode = .error
+            }
         }
     }
 
