@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -1085,7 +1085,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("")
 
         button.isSelected = !button.isSelected
-        callService.audioService.requestSpeakerphone(isEnabled: button.isSelected)
+        callService.audioService.requestSpeakerphone(call: call.individualCall, isEnabled: button.isSelected)
     }
 
     func didPressTextMessage(sender button: UIButton) {
@@ -1113,6 +1113,11 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     @objc func didPressVideo(sender: UIButton) {
         Logger.info("")
         let hasLocalVideo = !sender.isSelected
+
+        // When turning off video, default speakerphone to on.
+        if !hasLocalVideo {
+            callService.audioService.requestSpeakerphone(isEnabled: true)
+        }
 
         individualCallUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }

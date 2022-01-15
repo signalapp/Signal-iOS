@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -412,12 +412,6 @@ class GroupCallViewController: UIViewController {
             speakerView.clearConfiguration()
         }
 
-        // Setting the speakerphone before we join the call will fail,
-        // but we can re-apply the setting here in case it did not work.
-        if groupCall.isOutgoingVideoMuted && !callService.audioService.hasExternalInputs {
-            callService.audioService.requestSpeakerphone(isEnabled: callControls.audioSourceButton.isSelected)
-        }
-
         guard !isCallMinimized else { return }
 
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
@@ -721,7 +715,7 @@ extension GroupCallViewController: CallControlsDelegate {
             callService.audioService.presentRoutePicker()
         } else {
             sender.isSelected = !sender.isSelected
-            callService.audioService.requestSpeakerphone(isEnabled: sender.isSelected)
+            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: sender.isSelected)
         }
     }
 
@@ -738,7 +732,7 @@ extension GroupCallViewController: CallControlsDelegate {
         // When turning off video, default speakerphone to on.
         if !sender.isSelected && !callService.audioService.hasExternalInputs {
             callControls.audioSourceButton.isSelected = true
-            callService.audioService.requestSpeakerphone(isEnabled: true)
+            callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: true)
         }
     }
 

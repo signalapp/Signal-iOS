@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,13 @@ public final class CallService: NSObject {
                     assert(calls.contains(newValue))
                     DeviceSleepManager.shared.addBlock(blockObject: newValue)
 
-                    if newValue.isIndividualCall { individualCallService.startCallTimer() }
+                    if newValue.isIndividualCall {
+
+                        // By default, individual calls should start out with speakerphone disabled.
+                        self.audioService.requestSpeakerphone(isEnabled: false)
+
+                        individualCallService.startCallTimer()
+                    }
                 } else {
                     individualCallService.stopAnyCallTimer()
                 }
@@ -501,6 +507,9 @@ public final class CallService: NSObject {
 
         guard let call = SignalCall.groupCall(thread: thread) else { return nil }
         addCall(call)
+
+        // By default, group calls should start out with speakerphone enabled.
+        self.audioService.requestSpeakerphone(isEnabled: true)
 
         currentCall = call
 
