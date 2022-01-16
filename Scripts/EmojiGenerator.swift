@@ -19,41 +19,93 @@ enum EmojiError: Error {
 // All processing of remote data is done by converting RemoteModel items to EmojiModel items
 
 enum RemoteModel {
+    
     struct EmojiItem: Codable {
-        let name: String
-        let shortName: String
-        let unified: String
-        let sortOrder: UInt
-        let category: EmojiCategory
-        let skinVariations: [String: SkinVariation]?
+        let annotation: String
+        let hexcode: String
+        let tags: [String]?
+        let emoji: String
+        let group: EmojiCategory!
+        let order: Int!
+        let skins: [EmojiItem]?
+        
+        var tone: [EmojiSkintone]
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            annotation = try container.decode(String.self, forKey: .annotation)
+            hexcode = try container.decode(String.self, forKey: .hexcode)
+            tags = try container.decodeIfPresent([String].self, forKey: .tags)
+            emoji = try container.decode(String.self, forKey: .emoji)
+            group = try container.decodeIfPresent(EmojiCategory.self, forKey: .group)
+            order = try container.decodeIfPresent(Int.self, forKey: .order)
+            skins = try container.decodeIfPresent([EmojiItem].self, forKey: .skins)
+            if let value = try? container.decode(EmojiSkintone.self, forKey: .tone) {
+                tone = [value]
+            } else if let value = try? container.decode([EmojiSkintone].self, forKey: .tone) {
+                tone = value
+            } else {
+                tone = []
+            }
+        }
     }
-
-    struct SkinVariation: Codable {
-        let unified: String
+    
+    enum EmojiSkintone: Int, Codable {
+        case light = 1
+        case mediumLight
+        case medium
+        case mediumDark
+        case dark
     }
-
-    enum EmojiCategory: String, Codable, Equatable {
-        case smileys = "Smileys & Emotion"
-        case people = "People & Body"
-
+    
+    enum EmojiCategory: Int, Codable, Equatable {
+        case smileys = 0
+        case people
+        case animals
+        case food
+        case travel
+        case activities
+        case objects
+        case symbols
+        case flags
+        case components
+        
         // This category is not provided in the data set, but is actually
         // a merger of the categories of `smileys` and `people`
-        case smileysAndPeople = "Smileys & People"
-
-        case animals = "Animals & Nature"
-        case food = "Food & Drink"
-        case activities = "Activities"
-        case travel = "Travel & Places"
-        case objects = "Objects"
-        case symbols = "Symbols"
-        case flags = "Flags"
-        case components = "Component"
+        case smileysAndPeople
+        
+        var name: String {
+            switch self {
+            case .smileys:
+                return "Smileys & Emotion"
+            case .people:
+                return "People & Body"
+            case .animals:
+                return "Animals & Nature"
+            case .food:
+                return "Food & Drink"
+            case .travel:
+                return "Travel & Places"
+            case .activities:
+                return "Activities"
+            case .objects:
+                return "Objects"
+            case .symbols:
+                return "Symbols"
+            case .flags:
+                return "Flags"
+            case .components:
+                return "Component"
+            case .smileysAndPeople:
+                return "Smileys & People"
+            }
+        }
     }
 
     static func fetchEmojiData() throws -> Data {
         // let remoteSourceUrl = URL(string: "https://unicodey.com/emoji-data/emoji.json")!
         // This URL has been unavailable the past couple of weeks. If you're seeing failures here, try this other one:
-        let remoteSourceUrl = URL(string: "https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json")!
+        let remoteSourceUrl = URL(string: "https://cdn.jsdelivr.net/npm/emojibase-data@6.2.0/en/data.json")!
         return try Data(contentsOf: remoteSourceUrl)
     }
 }
@@ -91,18 +143,18 @@ struct EmojiModel {
         }
 
         init(parsingRemoteItem remoteItem: RemoteModel.EmojiItem) throws {
-            category = remoteItem.category
-            rawName = remoteItem.name
+            category = remoteItem.group
+            rawName = remoteItem.annotation.uppercased()
             enumName = Self.parseEnumNameFromRemoteItem(remoteItem)
-
-            let baseEmojiChar = try Self.codePointsToCharacter(Self.parseCodePointString(remoteItem.unified))
+            
+            let baseEmojiChar = Character(remoteItem.emoji)//try Self.codePointsToCharacter(Self.parseCodePointString(remoteItem.hexcode))
             let baseEmoji = Emoji(emojiChar: baseEmojiChar, base: baseEmojiChar, skintoneSequence: .none)
 
             let toneVariants: [Emoji]
-            if let skinVariations = remoteItem.skinVariations {
-                toneVariants = try skinVariations.map { key, value in
-                    let modifier = SkinTone.sequence(from: Self.parseCodePointString(key))
-                    let parsedEmoji = try Self.codePointsToCharacter(Self.parseCodePointString(value.unified))
+            if let skinVariations = remoteItem.skins {
+                toneVariants = try skinVariations.map { skin in
+                    let modifier = SkinTone.sequence(from: skin.tone)
+                    let parsedEmoji = try Self.codePointsToCharacter(Self.parseCodePointString(skin.hexcode))
                     return Emoji(emojiChar: parsedEmoji, base: baseEmojiChar, skintoneSequence: modifier)
                 }.sorted()
             } else {
@@ -134,20 +186,26 @@ struct EmojiModel {
 
         static func parseEnumNameFromRemoteItem(_ item: RemoteModel.EmojiItem) -> String {
             // some names don't play nice with swift, so we special case them
-            switch item.shortName {
-            case "+1": return "plusOne"
-            case "-1": return "negativeOne"
-            case "8ball": return "eightBall"
-            case "repeat": return "`repeat`"
-            case "100": return "oneHundred"
-            case "1234": return "oneTwoThreeFour"
-            case "couplekiss": return "personKissPerson"
-            case "couple_with_heart": return "personHeartPerson"
+            switch item.annotation {
+            case "1st place medal": return "firstPlaceMedal"
+            case "2nd place medal": return "secondPlaceMedal"
+            case "3rd place medal": return "thirdPlaceMedal"
+            case "guard": return "`guard`"
             default:
-                let uppperCamelCase = item.shortName
-                    .replacingOccurrences(of: "-", with: " ")
-                    .replacingOccurrences(of: "_", with: " ")
-                    .titlecase
+                let uppperCamelCase = item.annotation
+                    .filter { !["’", ".", "!"].contains($0) }
+                    .replacingOccurrences(of: "#", with: "_pound_symbol_")
+                    .replacingOccurrences(of: "*", with: "_asterisk_")
+                    .replacingOccurrences(of: "&", with: "_and_")
+                    .replacingOccurrences(of: ",", with: "_")
+                    .replacingOccurrences(of: "“", with: "_")
+                    .replacingOccurrences(of: "”", with: "_")
+                    .replacingOccurrences(of: "(", with: "_")
+                    .replacingOccurrences(of: ")", with: "_")
+                    .replacingOccurrences(of: ":", with: "_")
+                    .replacingOccurrences(of: "-", with: "_").titlecase
+                    .components(separatedBy: "_")
+                    .joined(separator: "")
                     .replacingOccurrences(of: " ", with: "")
 
                 return uppperCamelCase.first!.lowercased() + uppperCamelCase.dropFirst()
@@ -159,18 +217,18 @@ struct EmojiModel {
             // In the picker, we need to use one emoji to represent each person. For now, we manually
             // specify this. Hopefully, in the future, the data set will contain this information.
             switch enumName {
-            case "peopleHoldingHands": return "[.standingPerson, .standingPerson]"
-            case "twoWomenHoldingHands": return "[.womanStanding, .womanStanding]"
-            case "manAndWomanHoldingHands": return "[.womanStanding, .manStanding]"
-            case "twoMenHoldingHands": return "[.manStanding, .manStanding]"
-            case "personKissPerson": return "[.adult, .adult]"
-            case "womanKissMan": return "[.woman, .man]"
-            case "manKissMan": return "[.man, .man]"
-            case "womanKissWoman": return "[.woman, .woman]"
-            case "personHeartPerson": return "[.adult, .adult]"
-            case "womanHeartMan": return "[.woman, .man]"
-            case "manHeartMan": return "[.man, .man]"
-            case "womanHeartWoman": return "[.woman, .woman]"
+            case "peopleHoldingHands": return "[.personStanding, .personStanding]"
+            case "womenHoldingHands": return "[.womanStanding, .womanStanding]"
+            case "womanAndManHoldingHands": return "[.womanStanding, .manStanding]"
+            case "menHoldingHands": return "[.manStanding, .manStanding]"
+            case "kiss": return "[.person, .person]"
+            case "kissWomanMan": return "[.woman, .man]"
+            case "kissManMan": return "[.man, .man]"
+            case "kissWomanWoman": return "[.woman, .woman]"
+            case "coupleWithHeart": return "[.person, .person]"
+            case "coupleWithHeartWomanMan": return "[.woman, .man]"
+            case "coupleWithHeartManMan": return "[.man, .man]"
+            case "coupleWithHeartWomanWoman": return "[.woman, .woman]"
             default:
                 return nil
             }
@@ -220,6 +278,10 @@ struct EmojiModel {
                     guard !result.contains(skinTone) else { return }
                     result.append(skinTone)
                 }
+        }
+        static func sequence(from tones: [RemoteModel.EmojiSkintone]) -> SkinToneSequence {
+            tones
+                .map { SkinTone.allCases[$0.rawValue - 1] }
         }
     }
 }

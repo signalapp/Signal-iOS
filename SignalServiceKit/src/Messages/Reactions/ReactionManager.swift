@@ -7,7 +7,7 @@ import Foundation
 @objc(OWSReactionManager)
 public class ReactionManager: NSObject {
 
-    public static let emojiSet = ["❤️", "👍", "👎", "😂", "😮", "😢"]
+    public static let emojiSet = ["❤️", "👍️", "👎️", "😂", "😮", "😢"]
 
     @discardableResult
     public class func localUserReacted(

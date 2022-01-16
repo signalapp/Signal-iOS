@@ -19,7 +19,7 @@ struct EmojiKeywordMatcher {
         }
         
         for searchKeyword in searchKeywords {
-            if candidate.name?.lowercased().contains(searchKeyword.lowercased()) ?? false {
+            if candidate.name.lowercased().contains(searchKeyword.lowercased()) {
                 return true
             }
         }

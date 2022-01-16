@@ -110,11 +110,11 @@ extension EmojiMoodPickerView {
 
         var emojiRepresentation: String {
             switch self {
-            case .thrilled: return Emoji.smiley.rawValue
+            case .thrilled: return Emoji.grinningFaceWithBigEyes.rawValue
             case .happy: return Emoji.slightlySmilingFace.rawValue
             case .inconvenienced: return Emoji.neutralFace.rawValue
             case .disappointed: return Emoji.slightlyFrowningFace.rawValue
-            case .angry: return Emoji.angry.rawValue
+            case .angry: return Emoji.angryFace.rawValue
             }
         }
 
