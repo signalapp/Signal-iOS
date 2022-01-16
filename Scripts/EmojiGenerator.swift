@@ -195,21 +195,16 @@ struct EmojiModel {
             case "guard": return "`guard`"
             default:
                 let uppperCamelCase = item.annotation
-                    .filter { !["’", ".", "!"].contains($0) }
                     .replacingOccurrences(of: "#", with: "_pound_symbol_")
                     .replacingOccurrences(of: "*", with: "_asterisk_")
                     .replacingOccurrences(of: "&", with: "_and_")
-                    .replacingOccurrences(of: ",", with: "_")
-                    .replacingOccurrences(of: "“", with: "_")
-                    .replacingOccurrences(of: "”", with: "_")
-                    .replacingOccurrences(of: "(", with: "_")
-                    .replacingOccurrences(of: ")", with: "_")
-                    .replacingOccurrences(of: ":", with: "_")
-                    .replacingOccurrences(of: "-", with: "_").titlecase
-                    .components(separatedBy: "_")
-                    .joined(separator: "")
-                    .replacingOccurrences(of: " ", with: "")
-
+                    .components(separatedBy: CharacterSet.alphanumerics.inverted)
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " ")
+                    .titlecase
+                    .components(separatedBy: " ")
+                    .joined()
+                
                 return uppperCamelCase.first!.lowercased() + uppperCamelCase.dropFirst()
             }
         }

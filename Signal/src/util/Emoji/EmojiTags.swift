@@ -19,8 +19,8 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "*":[
         .sparkles,
-        .eightspokedAsterisk,
-        .eightpointedStar,
+        .eightSpokedAsterisk,
+        .eightPointedStar,
         .sparkle,
     ],
     "+":[
@@ -36,149 +36,149 @@ let emojiTags: [String: [Emoji]] = [
         .thumbsDown,
     ],
     "00":[
-        .twelveOclock,
-        .oneOclock,
-        .twoOclock,
-        .threeOclock,
-        .fourOclock,
-        .fiveOclock,
-        .sixOclock,
-        .sevenOclock,
-        .eightOclock,
-        .nineOclock,
-        .tenOclock,
-        .elevenOclock,
+        .twelveOClock,
+        .oneOClock,
+        .twoOClock,
+        .threeOClock,
+        .fourOClock,
+        .fiveOClock,
+        .sixOClock,
+        .sevenOClock,
+        .eightOClock,
+        .nineOClock,
+        .tenOClock,
+        .elevenOClock,
     ],
     "1":[
-        .oneOclock,
-        .onethirty,
+        .oneOClock,
+        .oneThirty,
     ],
     "10":[
-        .tenOclock,
-        .tenthirty,
+        .tenOClock,
+        .tenThirty,
     ],
     "100":[
         .hundredPoints,
     ],
     "10:00":[
-        .tenOclock,
+        .tenOClock,
     ],
     "10:30":[
-        .tenthirty,
+        .tenThirty,
     ],
     "11":[
-        .elevenOclock,
-        .eleventhirty,
+        .elevenOClock,
+        .elevenThirty,
     ],
     "11:00":[
-        .elevenOclock,
+        .elevenOClock,
     ],
     "11:30":[
-        .eleventhirty,
+        .elevenThirty,
     ],
     "12":[
-        .twelveOclock,
-        .twelvethirty,
+        .twelveOClock,
+        .twelveThirty,
     ],
     "1234":[
         .inputNumbers,
     ],
     "12:00":[
-        .twelveOclock,
+        .twelveOClock,
     ],
     "12:30":[
-        .twelvethirty,
+        .twelveThirty,
     ],
     "18":[
         .noOneUnderEighteen,
     ],
     "1:00":[
-        .oneOclock,
+        .oneOClock,
     ],
     "1:30":[
-        .onethirty,
+        .oneThirty,
     ],
     "2":[
-        .twoOclock,
-        .twothirty,
+        .twoOClock,
+        .twoThirty,
     ],
     "2:00":[
-        .twoOclock,
+        .twoOClock,
     ],
     "2:30":[
-        .twothirty,
+        .twoThirty,
     ],
     "3":[
-        .threeOclock,
-        .threethirty,
+        .threeOClock,
+        .threeThirty,
     ],
     "3:00":[
-        .threeOclock,
+        .threeOClock,
     ],
     "3:30":[
-        .threethirty,
+        .threeThirty,
     ],
     "4":[
         .fourLeafClover,
-        .fourOclock,
-        .fourthirty,
+        .fourOClock,
+        .fourThirty,
     ],
     "4:00":[
-        .fourOclock,
+        .fourOClock,
     ],
     "4:30":[
-        .fourthirty,
+        .fourThirty,
     ],
     "5":[
-        .fiveOclock,
-        .fivethirty,
+        .fiveOClock,
+        .fiveThirty,
     ],
     "5:00":[
-        .fiveOclock,
+        .fiveOClock,
     ],
     "5:30":[
-        .fivethirty,
+        .fiveThirty,
     ],
     "6":[
-        .sixOclock,
-        .sixthirty,
+        .sixOClock,
+        .sixThirty,
     ],
     "6:00":[
-        .sixOclock,
+        .sixOClock,
     ],
     "6:30":[
-        .sixthirty,
+        .sixThirty,
     ],
     "7":[
-        .sevenOclock,
-        .seventhirty,
+        .sevenOClock,
+        .sevenThirty,
     ],
     "7:00":[
-        .sevenOclock,
+        .sevenOClock,
     ],
     "7:30":[
-        .seventhirty,
+        .sevenThirty,
     ],
     "8":[
-        .eightOclock,
-        .eightthirty,
+        .eightOClock,
+        .eightThirty,
         .pool8Ball,
     ],
     "8:00":[
-        .eightOclock,
+        .eightOClock,
     ],
     "8:30":[
-        .eightthirty,
+        .eightThirty,
     ],
     "9":[
-        .nineOclock,
-        .ninethirty,
+        .nineOClock,
+        .nineThirty,
     ],
     "9:00":[
-        .nineOclock,
+        .nineOClock,
     ],
     "9:30":[
-        .ninethirty,
+        .nineThirty,
     ],
     "?":[
         .exclamationQuestionMark,
@@ -198,7 +198,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagAfghanistan,
     ],
     "AG":[
-        .flagAntiguaandBarbuda,
+        .flagAntiguaAndBarbuda,
     ],
     "AI":[
         .flagAnguilla,
@@ -237,7 +237,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagAzerbaijan,
     ],
     "BA":[
-        .flagBosniaandHerzegovina,
+        .flagBosniaAndHerzegovina,
     ],
     "BB":[
         .flagBarbados,
@@ -303,7 +303,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagCanada,
     ],
     "CC":[
-        .flagCocoskeelingIslands,
+        .flagCocosKeelingIslands,
     ],
     "CD":[
         .flagCongoKinshasa,
@@ -318,7 +318,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagSwitzerland,
     ],
     "CI":[
-        .flagCôteDivoire,
+        .flagCôteDIvoire,
     ],
     "CK":[
         .flagCookIslands,
@@ -381,7 +381,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagAlgeria,
     ],
     "EA":[
-        .flagCeutaandMelilla,
+        .flagCeutaAndMelilla,
     ],
     "EC":[
         .flagEcuador,
@@ -468,7 +468,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagGreece,
     ],
     "GS":[
-        .flagSouthGeorgiaandSouthSandwichIslands,
+        .flagSouthGeorgiaAndSouthSandwichIslands,
     ],
     "GT":[
         .flagGuatemala,
@@ -477,7 +477,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagGuam,
     ],
     "GW":[
-        .flagGuineabissau,
+        .flagGuineaBissau,
     ],
     "GY":[
         .flagGuyana,
@@ -486,7 +486,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagHongKongSarChina,
     ],
     "HM":[
-        .flagHeardandMcdonaldIslands,
+        .flagHeardAndMcdonaldIslands,
     ],
     "HN":[
         .flagHonduras,
@@ -561,7 +561,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagComoros,
     ],
     "KN":[
-        .flagStKittsandNevis,
+        .flagStKittsAndNevis,
     ],
     "KP":[
         .flagNorthKorea,
@@ -639,7 +639,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagMali,
     ],
     "MM":[
-        .flagMyanmarburma,
+        .flagMyanmarBurma,
     ],
     "MN":[
         .flagMongolia,
@@ -741,7 +741,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagPoland,
     ],
     "PM":[
-        .flagStPierreandMiquelon,
+        .flagStPierreAndMiquelon,
     ],
     "PN":[
         .flagPitcairnIslands,
@@ -804,7 +804,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagSlovenia,
     ],
     "SJ":[
-        .flagSvalbardandJanMayen,
+        .flagSvalbardAndJanMayen,
     ],
     "SK":[
         .flagSlovakia,
@@ -828,7 +828,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagSouthSudan,
     ],
     "ST":[
-        .flagSãoToméandPríncipe,
+        .flagSãoToméAndPríncipe,
     ],
     "SV":[
         .flagElSalvador,
@@ -846,7 +846,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagTristanDaCunha,
     ],
     "TC":[
-        .flagTurksandCaicosIslands,
+        .flagTurksAndCaicosIslands,
     ],
     "TD":[
         .flagChad,
@@ -867,7 +867,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagTokelau,
     ],
     "TL":[
-        .flagTimorleste,
+        .flagTimorLeste,
     ],
     "TM":[
         .flagTurkmenistan,
@@ -882,7 +882,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagTurkey,
     ],
     "TT":[
-        .flagTrinidadandTobago,
+        .flagTrinidadAndTobago,
     ],
     "TV":[
         .flagTuvalu,
@@ -900,7 +900,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagUganda,
     ],
     "UM":[
-        .flagUsOutlyingIslands,
+        .flagUSOutlyingIslands,
     ],
     "UN":[
         .flagUnitedNations,
@@ -918,7 +918,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagVaticanCity,
     ],
     "VC":[
-        .flagStVincentandGrenadines,
+        .flagStVincentAndGrenadines,
     ],
     "VE":[
         .flagVenezuela,
@@ -927,7 +927,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagBritishVirginIslands,
     ],
     "VI":[
-        .flagUsVirginIslands,
+        .flagUSVirginIslands,
     ],
     "VN":[
         .flagVietnam,
@@ -936,7 +936,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagVanuatu,
     ],
     "WF":[
-        .flagWallisandFutuna,
+        .flagWallisAndFutuna,
     ],
     "WS":[
         .flagSamoa,
@@ -960,16 +960,16 @@ let emojiTags: [String: [Emoji]] = [
         .flagZimbabwe,
     ],
     "a":[
-        .aButtonbloodType,
+        .aButtonBloodType,
     ],
     "a button (blood type)":[
-        .aButtonbloodType,
+        .aButtonBloodType,
     ],
     "ab":[
-        .abButtonbloodType,
+        .abButtonBloodType,
     ],
     "ab button (blood type)":[
-        .abButtonbloodType,
+        .abButtonBloodType,
     ],
     "abc":[
         .inputLatinLetters,
@@ -1056,7 +1056,7 @@ let emojiTags: [String: [Emoji]] = [
         .medicalSymbol,
     ],
     "africa":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
     ],
     "afro":[
         .curlyHair,
@@ -1068,7 +1068,7 @@ let emojiTags: [String: [Emoji]] = [
         .handshake,
     ],
     "aid":[
-        .rescueWorkersHelmet,
+        .rescueWorkerSHelmet,
     ],
     "airplane":[
         .smallAirplane,
@@ -1182,15 +1182,15 @@ let emojiTags: [String: [Emoji]] = [
         .envelopeWithArrow,
         .bowAndArrow,
         .upArrow,
-        .uprightArrow,
+        .upRightArrow,
         .rightArrow,
-        .downrightArrow,
+        .downRightArrow,
         .downArrow,
-        .downleftArrow,
+        .downLeftArrow,
         .leftArrow,
-        .upleftArrow,
-        .updownArrow,
-        .leftrightArrow,
+        .upLeftArrow,
+        .upDownArrow,
+        .leftRightArrow,
         .rightArrowCurvingLeft,
         .leftArrowCurvingRight,
         .rightArrowCurvingUp,
@@ -1206,7 +1206,7 @@ let emojiTags: [String: [Emoji]] = [
         .repeatButton,
         .repeatSingleButton,
         .playButton,
-        .fastforwardButton,
+        .fastForwardButton,
         .nextTrackButton,
         .playOrPauseButton,
         .reverseButton,
@@ -1230,7 +1230,7 @@ let emojiTags: [String: [Emoji]] = [
         .funeralUrn,
     ],
     "asia":[
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
     ],
     "ask":[
         .foldedHands,
@@ -1244,7 +1244,7 @@ let emojiTags: [String: [Emoji]] = [
         .serviceDog,
     ],
     "asterisk":[
-        .eightspokedAsterisk,
+        .eightSpokedAsterisk,
     ],
     "astonished":[
         .astonishedFace,
@@ -1279,7 +1279,7 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "australia":[
         .kangaroo,
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
         .boomerang,
     ],
     "automated":[
@@ -1292,20 +1292,20 @@ let emojiTags: [String: [Emoji]] = [
         .moonCake,
     ],
     "b":[
-        .bButtonbloodType,
+        .bButtonBloodType,
     ],
     "b button (blood type)":[
-        .bButtonbloodType,
+        .bButtonBloodType,
     ],
     "baby":[
-        .breastfeeding,
+        .breastFeeding,
         .womanFeedingBaby,
         .manFeedingBaby,
         .personFeedingBaby,
         .babyAngel,
         .hatchingChick,
         .babyChick,
-        .frontfacingBabyChick,
+        .frontFacingBabyChick,
         .babyBottle,
         .babySymbol,
     ],
@@ -1330,7 +1330,7 @@ let emojiTags: [String: [Emoji]] = [
         .petriDish,
     ],
     "bactrian":[
-        .twohumpCamel,
+        .twoHumpCamel,
     ],
     "badge":[
         .nameBadge,
@@ -1412,7 +1412,7 @@ let emojiTags: [String: [Emoji]] = [
         .pineDecoration,
     ],
     "bandage":[
-        .faceWithHeadbandage,
+        .faceWithHeadBandage,
         .adhesiveBandage,
     ],
     "bangbang":[
@@ -1469,7 +1469,7 @@ let emojiTags: [String: [Emoji]] = [
         .soap,
     ],
     "bathing suit":[
-        .onepieceSwimsuit,
+        .onePieceSwimsuit,
         .briefs,
         .shorts,
     ],
@@ -1619,7 +1619,7 @@ let emojiTags: [String: [Emoji]] = [
         .rooster,
         .hatchingChick,
         .babyChick,
-        .frontfacingBabyChick,
+        .frontFacingBabyChick,
         .bird,
         .penguin,
         .dove,
@@ -1674,10 +1674,10 @@ let emojiTags: [String: [Emoji]] = [
         .dropOfBlood,
     ],
     "blood type":[
-        .aButtonbloodType,
-        .abButtonbloodType,
-        .bButtonbloodType,
-        .oButtonbloodType,
+        .aButtonBloodType,
+        .abButtonBloodType,
+        .bButtonBloodType,
+        .oButtonBloodType,
     ],
     "blossom":[
         .cherryBlossom,
@@ -1758,7 +1758,7 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "boot":[
         .hikingBoot,
-        .womansBoot,
+        .womanSBoot,
     ],
     "bored":[
         .yawningFace,
@@ -1839,7 +1839,7 @@ let emojiTags: [String: [Emoji]] = [
         .doughnut,
     ],
     "breast":[
-        .breastfeeding,
+        .breastFeeding,
     ],
     "breath":[
         .lungs,
@@ -1981,14 +1981,14 @@ let emojiTags: [String: [Emoji]] = [
         .abacus,
     ],
     "calendar":[
-        .tearoffCalendar,
+        .tearOffCalendar,
         .spiralCalendar,
     ],
     "call":[
         .callMeHand,
     ],
     "camel":[
-        .twohumpCamel,
+        .twoHumpCamel,
     ],
     "camera":[
         .selfie,
@@ -2099,7 +2099,7 @@ let emojiTags: [String: [Emoji]] = [
         .grinningCat,
         .grinningCatWithSmilingEyes,
         .catWithTearsOfJoy,
-        .smilingCatWithHearteyes,
+        .smilingCatWithHeartEyes,
         .catWithWrySmile,
         .kissingCat,
         .wearyCat,
@@ -2123,7 +2123,7 @@ let emojiTags: [String: [Emoji]] = [
         .santaClaus,
         .mrsClaus,
         .birthdayCake,
-        .jackolantern,
+        .jackOLantern,
         .christmasTree,
         .fireworks,
         .sparkler,
@@ -2238,7 +2238,7 @@ let emojiTags: [String: [Emoji]] = [
     "chick":[
         .hatchingChick,
         .babyChick,
-        .frontfacingBabyChick,
+        .frontFacingBabyChick,
     ],
     "chicken":[
         .poultryLeg,
@@ -2366,30 +2366,30 @@ let emojiTags: [String: [Emoji]] = [
         .stopwatch,
         .timerClock,
         .mantelpieceClock,
-        .twelveOclock,
-        .twelvethirty,
-        .oneOclock,
-        .onethirty,
-        .twoOclock,
-        .twothirty,
-        .threeOclock,
-        .threethirty,
-        .fourOclock,
-        .fourthirty,
-        .fiveOclock,
-        .fivethirty,
-        .sixOclock,
-        .sixthirty,
-        .sevenOclock,
-        .seventhirty,
-        .eightOclock,
-        .eightthirty,
-        .nineOclock,
-        .ninethirty,
-        .tenOclock,
-        .tenthirty,
-        .elevenOclock,
-        .eleventhirty,
+        .twelveOClock,
+        .twelveThirty,
+        .oneOClock,
+        .oneThirty,
+        .twoOClock,
+        .twoThirty,
+        .threeOClock,
+        .threeThirty,
+        .fourOClock,
+        .fourThirty,
+        .fiveOClock,
+        .fiveThirty,
+        .sixOClock,
+        .sixThirty,
+        .sevenOClock,
+        .sevenThirty,
+        .eightOClock,
+        .eightThirty,
+        .nineOClock,
+        .nineThirty,
+        .tenOClock,
+        .tenThirty,
+        .elevenOClock,
+        .elevenThirty,
     ],
     "clockwise":[
         .clockwiseVerticalArrows,
@@ -2414,23 +2414,23 @@ let emojiTags: [String: [Emoji]] = [
         .umbrellaWithRainDrops,
         .glasses,
         .necktie,
-        .tshirt,
+        .tShirt,
         .jeans,
         .dress,
         .kimono,
         .sari,
         .bikini,
-        .womansClothes,
+        .womanSClothes,
         .purse,
         .handbag,
         .clutchBag,
-        .mansShoe,
+        .manSShoe,
         .runningShoe,
-        .highheeledShoe,
-        .womansSandal,
-        .womansBoot,
+        .highHeeledShoe,
+        .womanSSandal,
+        .womanSBoot,
         .crown,
-        .womansHat,
+        .womanSHat,
         .topHat,
         .graduationCap,
         .prayerBeads,
@@ -2488,7 +2488,7 @@ let emojiTags: [String: [Emoji]] = [
         .anxiousFaceWithSweat,
         .downcastFaceWithSweat,
         .ice,
-        .snowcappedMountain,
+        .snowCappedMountain,
         .cloudWithSnow,
         .snowflake,
         .snowman,
@@ -2680,7 +2680,7 @@ let emojiTags: [String: [Emoji]] = [
     "cross":[
         .crossedFingers,
         .church,
-        .rescueWorkersHelmet,
+        .rescueWorkerSHelmet,
         .latinCross,
         .orthodoxCross,
         .crossMark,
@@ -2815,7 +2815,7 @@ let emojiTags: [String: [Emoji]] = [
         .flushedFace,
     ],
     "dead":[
-        .knockedoutFace,
+        .knockedOutFace,
     ],
     "deadpan":[
         .neutralFace,
@@ -2945,13 +2945,13 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "direction":[
         .upArrow,
-        .uprightArrow,
+        .upRightArrow,
         .rightArrow,
-        .downrightArrow,
+        .downRightArrow,
         .downArrow,
-        .downleftArrow,
+        .downLeftArrow,
         .leftArrow,
-        .upleftArrow,
+        .upLeftArrow,
     ],
     "disappointed":[
         .sadButRelievedFace,
@@ -3039,7 +3039,7 @@ let emojiTags: [String: [Emoji]] = [
         .door,
     ],
     "double":[
-        .fastforwardButton,
+        .fastForwardButton,
         .fastReverseButton,
         .fastUpButton,
         .fastDownButton,
@@ -3137,9 +3137,9 @@ let emojiTags: [String: [Emoji]] = [
         .headphone,
     ],
     "earth":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
         .globeShowingAmericas,
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
         .globeWithMeridians,
     ],
     "earthworm":[
@@ -3152,8 +3152,8 @@ let emojiTags: [String: [Emoji]] = [
         .cooking,
     ],
     "eight":[
-        .eightOclock,
-        .eightthirty,
+        .eightOClock,
+        .eightThirty,
         .pool8Ball,
     ],
     "eighteen":[
@@ -3181,12 +3181,12 @@ let emojiTags: [String: [Emoji]] = [
         .elephant,
     ],
     "eleven":[
-        .elevenOclock,
-        .eleventhirty,
+        .elevenOClock,
+        .elevenThirty,
     ],
     "email":[
         .envelope,
-        .email,
+        .eMail,
         .incomingEnvelope,
         .envelopeWithArrow,
     ],
@@ -3243,7 +3243,7 @@ let emojiTags: [String: [Emoji]] = [
         .euroBanknote,
     ],
     "europe":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
     ],
     "european":[
         .postOffice,
@@ -3256,9 +3256,9 @@ let emojiTags: [String: [Emoji]] = [
         .receipt,
     ],
     "evil":[
-        .seenoevilMonkey,
-        .hearnoevilMonkey,
-        .speaknoevilMonkey,
+        .seeNoEvilMonkey,
+        .hearNoEvilMonkey,
+        .speakNoEvilMonkey,
         .blackHeart,
         .supervillain,
         .manSupervillain,
@@ -3323,14 +3323,14 @@ let emojiTags: [String: [Emoji]] = [
         .grinningFaceWithSmilingEyes,
         .beamingFaceWithSmilingEyes,
         .smilingFaceWithSmilingEyes,
-        .smilingFaceWithHearteyes,
+        .smilingFaceWithHeartEyes,
         .kissingFaceWithClosedEyes,
         .kissingFaceWithSmilingEyes,
         .winkingFaceWithTongue,
         .zanyFace,
         .squintingFaceWithTongue,
         .grinningCatWithSmilingEyes,
-        .smilingCatWithHearteyes,
+        .smilingCatWithHeartEyes,
         .kissingCat,
         .eyeInSpeechBubble,
         .eyes,
@@ -3347,7 +3347,7 @@ let emojiTags: [String: [Emoji]] = [
         .faceWithRollingEyes,
     ],
     "eyes":[
-        .starstruck,
+        .starStruck,
         .faceWithRollingEyes,
     ],
     "eyewear":[
@@ -3364,12 +3364,12 @@ let emojiTags: [String: [Emoji]] = [
         .rollingOnTheFloorLaughing,
         .faceWithTearsOfJoy,
         .slightlySmilingFace,
-        .upsidedownFace,
+        .upsideDownFace,
         .winkingFace,
         .smilingFaceWithSmilingEyes,
         .smilingFaceWithHalo,
-        .smilingFaceWithHearteyes,
-        .starstruck,
+        .smilingFaceWithHeartEyes,
+        .starStruck,
         .faceBlowingAKiss,
         .kissingFace,
         .smilingFace,
@@ -3379,10 +3379,10 @@ let emojiTags: [String: [Emoji]] = [
         .faceWithTongue,
         .winkingFaceWithTongue,
         .squintingFaceWithTongue,
-        .moneymouthFace,
+        .moneyMouthFace,
         .huggingFace,
         .thinkingFace,
-        .zippermouthFace,
+        .zipperMouthFace,
         .neutralFace,
         .expressionlessFace,
         .faceWithoutMouth,
@@ -3398,10 +3398,10 @@ let emojiTags: [String: [Emoji]] = [
         .sleepingFace,
         .faceWithMedicalMask,
         .faceWithThermometer,
-        .faceWithHeadbandage,
+        .faceWithHeadBandage,
         .nauseatedFace,
         .sneezingFace,
-        .knockedoutFace,
+        .knockedOutFace,
         .cowboyHatFace,
         .disguisedFace,
         .smilingFaceWithSunglasses,
@@ -3446,15 +3446,15 @@ let emojiTags: [String: [Emoji]] = [
         .grinningCat,
         .grinningCatWithSmilingEyes,
         .catWithTearsOfJoy,
-        .smilingCatWithHearteyes,
+        .smilingCatWithHeartEyes,
         .catWithWrySmile,
         .kissingCat,
         .wearyCat,
         .cryingCat,
         .poutingCat,
-        .seenoevilMonkey,
-        .hearnoevilMonkey,
-        .speaknoevilMonkey,
+        .seeNoEvilMonkey,
+        .hearNoEvilMonkey,
+        .speakNoEvilMonkey,
         .eyes,
         .personFacepalming,
         .babyAngel,
@@ -3488,7 +3488,7 @@ let emojiTags: [String: [Emoji]] = [
         .fullMoonFace,
         .sunWithFace,
         .windFace,
-        .rescueWorkersHelmet,
+        .rescueWorkerSHelmet,
         .moai,
     ],
     "face in the fog":[
@@ -3571,7 +3571,7 @@ let emojiTags: [String: [Emoji]] = [
         .basket,
     ],
     "fast":[
-        .fastforwardButton,
+        .fastForwardButton,
     ],
     "father":[
         .santaClaus,
@@ -3692,12 +3692,12 @@ let emojiTags: [String: [Emoji]] = [
     "fist":[
         .raisedFist,
         .oncomingFist,
-        .leftfacingFist,
-        .rightfacingFist,
+        .leftFacingFist,
+        .rightFacingFist,
     ],
     "five":[
-        .fiveOclock,
-        .fivethirty,
+        .fiveOClock,
+        .fiveThirty,
     ],
     "flag":[
         .transgenderFlag,
@@ -3705,7 +3705,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagAndorra,
         .flagUnitedArabEmirates,
         .flagAfghanistan,
-        .flagAntiguaandBarbuda,
+        .flagAntiguaAndBarbuda,
         .flagAnguilla,
         .flagAlbania,
         .flagArmenia,
@@ -3718,7 +3718,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagAruba,
         .flagÅlandIslands,
         .flagAzerbaijan,
-        .flagBosniaandHerzegovina,
+        .flagBosniaAndHerzegovina,
         .flagBarbados,
         .flagBangladesh,
         .flagBelgium,
@@ -3740,12 +3740,12 @@ let emojiTags: [String: [Emoji]] = [
         .flagBelarus,
         .flagBelize,
         .flagCanada,
-        .flagCocoskeelingIslands,
+        .flagCocosKeelingIslands,
         .flagCongoKinshasa,
         .flagCentralAfricanRepublic,
         .flagCongoBrazzaville,
         .flagSwitzerland,
-        .flagCôteDivoire,
+        .flagCôteDIvoire,
         .flagCookIslands,
         .flagChile,
         .flagCameroon,
@@ -3766,7 +3766,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagDominica,
         .flagDominicanRepublic,
         .flagAlgeria,
-        .flagCeutaandMelilla,
+        .flagCeutaAndMelilla,
         .flagEcuador,
         .flagEstonia,
         .flagEgypt,
@@ -3795,13 +3795,13 @@ let emojiTags: [String: [Emoji]] = [
         .flagGuadeloupe,
         .flagEquatorialGuinea,
         .flagGreece,
-        .flagSouthGeorgiaandSouthSandwichIslands,
+        .flagSouthGeorgiaAndSouthSandwichIslands,
         .flagGuatemala,
         .flagGuam,
-        .flagGuineabissau,
+        .flagGuineaBissau,
         .flagGuyana,
         .flagHongKongSarChina,
-        .flagHeardandMcdonaldIslands,
+        .flagHeardAndMcdonaldIslands,
         .flagHonduras,
         .flagCroatia,
         .flagHaiti,
@@ -3826,7 +3826,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagCambodia,
         .flagKiribati,
         .flagComoros,
-        .flagStKittsandNevis,
+        .flagStKittsAndNevis,
         .flagNorthKorea,
         .flagSouthKorea,
         .flagKuwait,
@@ -3852,7 +3852,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagMarshallIslands,
         .flagNorthMacedonia,
         .flagMali,
-        .flagMyanmarburma,
+        .flagMyanmarBurma,
         .flagMongolia,
         .flagMacaoSarChina,
         .flagNorthernMarianaIslands,
@@ -3886,7 +3886,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagPhilippines,
         .flagPakistan,
         .flagPoland,
-        .flagStPierreandMiquelon,
+        .flagStPierreAndMiquelon,
         .flagPitcairnIslands,
         .flagPuertoRico,
         .flagPalestinianTerritories,
@@ -3907,7 +3907,7 @@ let emojiTags: [String: [Emoji]] = [
         .flagSingapore,
         .flagStHelena,
         .flagSlovenia,
-        .flagSvalbardandJanMayen,
+        .flagSvalbardAndJanMayen,
         .flagSlovakia,
         .flagSierraLeone,
         .flagSanMarino,
@@ -3915,43 +3915,43 @@ let emojiTags: [String: [Emoji]] = [
         .flagSomalia,
         .flagSuriname,
         .flagSouthSudan,
-        .flagSãoToméandPríncipe,
+        .flagSãoToméAndPríncipe,
         .flagElSalvador,
         .flagSintMaarten,
         .flagSyria,
         .flagEswatini,
         .flagTristanDaCunha,
-        .flagTurksandCaicosIslands,
+        .flagTurksAndCaicosIslands,
         .flagChad,
         .flagFrenchSouthernTerritories,
         .flagTogo,
         .flagThailand,
         .flagTajikistan,
         .flagTokelau,
-        .flagTimorleste,
+        .flagTimorLeste,
         .flagTurkmenistan,
         .flagTunisia,
         .flagTonga,
         .flagTurkey,
-        .flagTrinidadandTobago,
+        .flagTrinidadAndTobago,
         .flagTuvalu,
         .flagTaiwan,
         .flagTanzania,
         .flagUkraine,
         .flagUganda,
-        .flagUsOutlyingIslands,
+        .flagUSOutlyingIslands,
         .flagUnitedNations,
         .flagUnitedStates,
         .flagUruguay,
         .flagUzbekistan,
         .flagVaticanCity,
-        .flagStVincentandGrenadines,
+        .flagStVincentAndGrenadines,
         .flagVenezuela,
         .flagBritishVirginIslands,
-        .flagUsVirginIslands,
+        .flagUSVirginIslands,
         .flagVietnam,
         .flagVanuatu,
-        .flagWallisandFutuna,
+        .flagWallisAndFutuna,
         .flagSamoa,
         .flagKosovo,
         .flagYemen,
@@ -3980,7 +3980,7 @@ let emojiTags: [String: [Emoji]] = [
         .onion,
     ],
     "fleur-de-lis":[
-        .fleurdelis,
+        .fleurDeLis,
     ],
     "flex":[
         .flexedBiceps,
@@ -4010,7 +4010,7 @@ let emojiTags: [String: [Emoji]] = [
         .flowerPlayingCards,
     ],
     "fluctuate":[
-        .yoyo,
+        .yoYo,
     ],
     "flushed":[
         .flushedFace,
@@ -4058,9 +4058,9 @@ let emojiTags: [String: [Emoji]] = [
         .footprints,
     ],
     "forbidden":[
-        .seenoevilMonkey,
-        .hearnoevilMonkey,
-        .speaknoevilMonkey,
+        .seeNoEvilMonkey,
+        .hearNoEvilMonkey,
+        .speakNoEvilMonkey,
         .personGesturingNo,
         .manGesturingNo,
         .womanGesturingNo,
@@ -4085,10 +4085,10 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "fortune":[
         .crystalBall,
-        .dottedSixpointedStar,
+        .dottedSixPointedStar,
     ],
     "forward":[
-        .fastforwardButton,
+        .fastForwardButton,
     ],
     "fountain":[
         .fountain,
@@ -4096,8 +4096,8 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "four":[
         .fourLeafClover,
-        .fourOclock,
-        .fourthirty,
+        .fourOClock,
+        .fourThirty,
     ],
     "four-leaf clover":[
         .fourLeafClover,
@@ -4267,8 +4267,8 @@ let emojiTags: [String: [Emoji]] = [
         .whiteLargeSquare,
         .blackMediumSquare,
         .whiteMediumSquare,
-        .blackMediumsmallSquare,
-        .whiteMediumsmallSquare,
+        .blackMediumSmallSquare,
+        .whiteMediumSmallSquare,
         .blackSmallSquare,
         .whiteSmallSquare,
         .largeOrangeDiamond,
@@ -4351,19 +4351,19 @@ let emojiTags: [String: [Emoji]] = [
         .glowingStar,
     ],
     "globe":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
         .globeShowingAmericas,
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
         .globeWithMeridians,
     ],
     "globe showing americas":[
         .globeShowingAmericas,
     ],
     "globe showing asia-australia":[
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
     ],
     "globe showing europe-africa":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
     ],
     "glove":[
         .softball,
@@ -4462,7 +4462,7 @@ let emojiTags: [String: [Emoji]] = [
         .grinningCatWithSmilingEyes,
     ],
     "grinning":[
-        .starstruck,
+        .starStruck,
         .grinningCat,
     ],
     "groan":[
@@ -4525,7 +4525,7 @@ let emojiTags: [String: [Emoji]] = [
         .bald,
     ],
     "halloween":[
-        .jackolantern,
+        .jackOLantern,
     ],
     "halo":[
         .smilingFaceWithHalo,
@@ -4542,7 +4542,7 @@ let emojiTags: [String: [Emoji]] = [
         .okHand,
         .victoryHand,
         .crossedFingers,
-        .loveyouGesture,
+        .loveYouGesture,
         .signOfTheHorns,
         .callMeHand,
         .backhandIndexPointingLeft,
@@ -4602,10 +4602,10 @@ let emojiTags: [String: [Emoji]] = [
         .partyingFace,
         .constructionWorker,
         .personWithSkullcap,
-        .womansHat,
+        .womanSHat,
         .topHat,
         .graduationCap,
-        .rescueWorkersHelmet,
+        .rescueWorkerSHelmet,
     ],
     "hatchet":[
         .axe,
@@ -4631,11 +4631,11 @@ let emojiTags: [String: [Emoji]] = [
         .mendingHeart,
     ],
     "hear":[
-        .hearnoevilMonkey,
+        .hearNoEvilMonkey,
         .deafPerson,
     ],
     "heart":[
-        .smilingCatWithHearteyes,
+        .smilingCatWithHeartEyes,
         .loveLetter,
         .heartDecoration,
         .heartOnFire,
@@ -4658,14 +4658,14 @@ let emojiTags: [String: [Emoji]] = [
         .rock,
     ],
     "heel":[
-        .highheeledShoe,
+        .highHeeledShoe,
     ],
     "hello":[
         .peopleHugging,
     ],
     "helmet":[
         .militaryHelmet,
-        .rescueWorkersHelmet,
+        .rescueWorkerSHelmet,
     ],
     "help":[
         .personTippingHand,
@@ -4824,7 +4824,7 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "hump":[
         .camel,
-        .twohumpCamel,
+        .twoHumpCamel,
     ],
     "hundred":[
         .hundredPoints,
@@ -4833,7 +4833,7 @@ let emojiTags: [String: [Emoji]] = [
         .cyclone,
     ],
     "hurt":[
-        .faceWithHeadbandage,
+        .faceWithHeadBandage,
     ],
     "hushed":[
         .hushedFace,
@@ -4882,21 +4882,21 @@ let emojiTags: [String: [Emoji]] = [
         .idButton,
     ],
     "ideograph":[
-        .japanesemonthlyAmountButton,
-        .japanesenotFreeOfChargeButton,
-        .japanesereservedButton,
-        .japanesebargainButton,
-        .japanesediscountButton,
-        .japanesefreeOfChargeButton,
-        .japaneseprohibitedButton,
-        .japaneseacceptableButton,
-        .japaneseapplicationButton,
-        .japanesepassingGradeButton,
-        .japanesevacancyButton,
-        .japanesecongratulationsButton,
-        .japanesesecretButton,
-        .japaneseopenForBusinessButton,
-        .japanesenoVacancyButton,
+        .japaneseMonthlyAmountButton,
+        .japaneseNotFreeOfChargeButton,
+        .japaneseReservedButton,
+        .japaneseBargainButton,
+        .japaneseDiscountButton,
+        .japaneseFreeOfChargeButton,
+        .japaneseProhibitedButton,
+        .japaneseAcceptableButton,
+        .japaneseApplicationButton,
+        .japanesePassingGradeButton,
+        .japaneseVacancyButton,
+        .japaneseCongratulationsButton,
+        .japaneseSecretButton,
+        .japaneseOpenForBusinessButton,
+        .japaneseNoVacancyButton,
     ],
     "ignorance":[
         .personShrugging,
@@ -4907,7 +4907,7 @@ let emojiTags: [String: [Emoji]] = [
         .faceWithThermometer,
     ],
     "ily":[
-        .loveyouGesture,
+        .loveYouGesture,
     ],
     "imp":[
         .angryFaceWithHorns,
@@ -4957,7 +4957,7 @@ let emojiTags: [String: [Emoji]] = [
         .lungs,
     ],
     "injury":[
-        .faceWithHeadbandage,
+        .faceWithHeadBandage,
         .dropOfBlood,
     ],
     "ink":[
@@ -5002,10 +5002,10 @@ let emojiTags: [String: [Emoji]] = [
         .brain,
     ],
     "intercardinal":[
-        .uprightArrow,
-        .downrightArrow,
-        .downleftArrow,
-        .upleftArrow,
+        .upRightArrow,
+        .downRightArrow,
+        .downLeftArrow,
+        .upLeftArrow,
     ],
     "interlocking":[
         .puzzlePiece,
@@ -5039,7 +5039,7 @@ let emojiTags: [String: [Emoji]] = [
         .desertIsland,
     ],
     "jack":[
-        .jackolantern,
+        .jackOLantern,
     ],
     "jacket":[
         .coat,
@@ -5057,23 +5057,23 @@ let emojiTags: [String: [Emoji]] = [
         .japaneseDolls,
         .flowerPlayingCards,
         .japaneseSymbolForBeginner,
-        .japanesehereButton,
-        .japaneseserviceChargeButton,
-        .japanesemonthlyAmountButton,
-        .japanesenotFreeOfChargeButton,
-        .japanesereservedButton,
-        .japanesebargainButton,
-        .japanesediscountButton,
-        .japanesefreeOfChargeButton,
-        .japaneseprohibitedButton,
-        .japaneseacceptableButton,
-        .japaneseapplicationButton,
-        .japanesepassingGradeButton,
-        .japanesevacancyButton,
-        .japanesecongratulationsButton,
-        .japanesesecretButton,
-        .japaneseopenForBusinessButton,
-        .japanesenoVacancyButton,
+        .japaneseHereButton,
+        .japaneseServiceChargeButton,
+        .japaneseMonthlyAmountButton,
+        .japaneseNotFreeOfChargeButton,
+        .japaneseReservedButton,
+        .japaneseBargainButton,
+        .japaneseDiscountButton,
+        .japaneseFreeOfChargeButton,
+        .japaneseProhibitedButton,
+        .japaneseAcceptableButton,
+        .japaneseApplicationButton,
+        .japanesePassingGradeButton,
+        .japaneseVacancyButton,
+        .japaneseCongratulationsButton,
+        .japaneseSecretButton,
+        .japaneseOpenForBusinessButton,
+        .japaneseNoVacancyButton,
         .crossedFlags,
     ],
     "japanese dolls":[
@@ -5086,55 +5086,55 @@ let emojiTags: [String: [Emoji]] = [
         .japaneseSymbolForBeginner,
     ],
     "japanese “acceptable” button":[
-        .japaneseacceptableButton,
+        .japaneseAcceptableButton,
     ],
     "japanese “application” button":[
-        .japaneseapplicationButton,
+        .japaneseApplicationButton,
     ],
     "japanese “bargain” button":[
-        .japanesebargainButton,
+        .japaneseBargainButton,
     ],
     "japanese “congratulations” button":[
-        .japanesecongratulationsButton,
+        .japaneseCongratulationsButton,
     ],
     "japanese “discount” button":[
-        .japanesediscountButton,
+        .japaneseDiscountButton,
     ],
     "japanese “free of charge” button":[
-        .japanesefreeOfChargeButton,
+        .japaneseFreeOfChargeButton,
     ],
     "japanese “here” button":[
-        .japanesehereButton,
+        .japaneseHereButton,
     ],
     "japanese “monthly amount” button":[
-        .japanesemonthlyAmountButton,
+        .japaneseMonthlyAmountButton,
     ],
     "japanese “no vacancy” button":[
-        .japanesenoVacancyButton,
+        .japaneseNoVacancyButton,
     ],
     "japanese “not free of charge” button":[
-        .japanesenotFreeOfChargeButton,
+        .japaneseNotFreeOfChargeButton,
     ],
     "japanese “open for business” button":[
-        .japaneseopenForBusinessButton,
+        .japaneseOpenForBusinessButton,
     ],
     "japanese “passing grade” button":[
-        .japanesepassingGradeButton,
+        .japanesePassingGradeButton,
     ],
     "japanese “prohibited” button":[
-        .japaneseprohibitedButton,
+        .japaneseProhibitedButton,
     ],
     "japanese “reserved” button":[
-        .japanesereservedButton,
+        .japaneseReservedButton,
     ],
     "japanese “secret” button":[
-        .japanesesecretButton,
+        .japaneseSecretButton,
     ],
     "japanese “service charge” button":[
-        .japaneseserviceChargeButton,
+        .japaneseServiceChargeButton,
     ],
     "japanese “vacancy” button":[
-        .japanesevacancyButton,
+        .japaneseVacancyButton,
     ],
     "jew":[
         .synagogue,
@@ -5210,8 +5210,8 @@ let emojiTags: [String: [Emoji]] = [
         .martialArtsUniform,
     ],
     "katakana":[
-        .japanesehereButton,
-        .japaneseserviceChargeButton,
+        .japaneseHereButton,
+        .japaneseServiceChargeButton,
     ],
     "kebab":[
         .stuffedFlatbread,
@@ -5225,8 +5225,8 @@ let emojiTags: [String: [Emoji]] = [
         .musicalKeyboard,
     ],
     "keycap":[
-        .keycappoundsymbol,
-        .keycapasterisk,
+        .keycapPoundSymbol,
+        .keycapAsterisk,
         .keycap0,
         .keycap1,
         .keycap2,
@@ -5282,7 +5282,7 @@ let emojiTags: [String: [Emoji]] = [
         .controlKnobs,
     ],
     "knocked out":[
-        .knockedoutFace,
+        .knockedOutFace,
     ],
     "lab":[
         .testTube,
@@ -5314,7 +5314,7 @@ let emojiTags: [String: [Emoji]] = [
         .cityscapeAtDusk,
     ],
     "lantern":[
-        .jackolantern,
+        .jackOLantern,
         .redPaperLantern,
     ],
     "large":[
@@ -5343,8 +5343,8 @@ let emojiTags: [String: [Emoji]] = [
         .flatbread,
     ],
     "lavatory":[
-        .mensRoom,
-        .womensRoom,
+        .menSRoom,
+        .womenSRoom,
         .restroom,
         .waterCloset,
     ],
@@ -5363,7 +5363,7 @@ let emojiTags: [String: [Emoji]] = [
         .reverseButton,
     ],
     "leftwards":[
-        .leftfacingFist,
+        .leftFacingFist,
     ],
     "leg":[
         .poultryLeg,
@@ -5378,7 +5378,7 @@ let emojiTags: [String: [Emoji]] = [
     "letter":[
         .loveLetter,
         .envelope,
-        .email,
+        .eMail,
         .incomingEnvelope,
         .outboxTray,
         .inboxTray,
@@ -5485,8 +5485,8 @@ let emojiTags: [String: [Emoji]] = [
         .loudspeaker,
     ],
     "love":[
-        .smilingFaceWithHearteyes,
-        .smilingCatWithHearteyes,
+        .smilingFaceWithHeartEyes,
+        .smilingCatWithHeartEyes,
         .loveLetter,
         .twoHearts,
         .heartOnFire,
@@ -5552,7 +5552,7 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "mail":[
         .loveLetter,
-        .email,
+        .eMail,
         .outboxTray,
         .inboxTray,
         .closedMailboxWithRaisedFlag,
@@ -5667,8 +5667,8 @@ let emojiTags: [String: [Emoji]] = [
         .familyManGirl,
         .familyManGirlBoy,
         .familyManGirlGirl,
-        .mansShoe,
-        .mensRoom,
+        .manSShoe,
+        .menSRoom,
         .maleSign,
     ],
     "man gesturing no":[
@@ -5875,7 +5875,7 @@ let emojiTags: [String: [Emoji]] = [
         .squid,
     ],
     "money":[
-        .moneymouthFace,
+        .moneyMouthFace,
         .redEnvelope,
         .moneyBag,
         .coin,
@@ -5893,9 +5893,9 @@ let emojiTags: [String: [Emoji]] = [
         .moneyBag,
     ],
     "monkey":[
-        .seenoevilMonkey,
-        .hearnoevilMonkey,
-        .speaknoevilMonkey,
+        .seeNoEvilMonkey,
+        .hearNoEvilMonkey,
+        .speakNoEvilMonkey,
         .monkeyFace,
         .monkey,
     ],
@@ -5945,7 +5945,7 @@ let emojiTags: [String: [Emoji]] = [
         .personMountainBiking,
         .manMountainBiking,
         .womanMountainBiking,
-        .snowcappedMountain,
+        .snowCappedMountain,
         .mountain,
         .volcano,
         .mountFuji,
@@ -5964,8 +5964,8 @@ let emojiTags: [String: [Emoji]] = [
         .grinningFaceWithBigEyes,
         .grinningFaceWithSmilingEyes,
         .grinningSquintingFace,
-        .moneymouthFace,
-        .zippermouthFace,
+        .moneyMouthFace,
+        .zipperMouthFace,
         .faceWithoutMouth,
         .faceWithOpenMouth,
         .frowningFaceWithOpenMouth,
@@ -6089,10 +6089,10 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "news":[
         .newspaper,
-        .rolledupNewspaper,
+        .rolledUpNewspaper,
     ],
     "newspaper":[
-        .rolledupNewspaper,
+        .rolledUpNewspaper,
     ],
     "next scene":[
         .nextTrackButton,
@@ -6115,8 +6115,8 @@ let emojiTags: [String: [Emoji]] = [
         .bridgeAtNight,
     ],
     "nine":[
-        .nineOclock,
-        .ninethirty,
+        .nineOClock,
+        .nineThirty,
     ],
     "no":[
         .noEntry,
@@ -6131,10 +6131,10 @@ let emojiTags: [String: [Emoji]] = [
         .bald,
     ],
     "non-drinking":[
-        .nonpotableWater,
+        .nonPotableWater,
     ],
     "non-potable":[
-        .nonpotableWater,
+        .nonPotableWater,
     ],
     "noodle":[
         .steamingBowl,
@@ -6143,10 +6143,10 @@ let emojiTags: [String: [Emoji]] = [
         .upArrow,
     ],
     "northeast":[
-        .uprightArrow,
+        .upRightArrow,
     ],
     "northwest":[
-        .upleftArrow,
+        .upLeftArrow,
     ],
     "nose":[
         .disguisedFace,
@@ -6185,7 +6185,7 @@ let emojiTags: [String: [Emoji]] = [
         .womanHealthWorker,
     ],
     "nursing":[
-        .breastfeeding,
+        .breastFeeding,
         .womanFeedingBaby,
         .manFeedingBaby,
         .personFeedingBaby,
@@ -6199,10 +6199,10 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "o":[
         .hollowRedCircle,
-        .oButtonbloodType,
+        .oButtonBloodType,
     ],
     "o button (blood type)":[
-        .oButtonbloodType,
+        .oButtonBloodType,
     ],
     "oberon":[
         .fairy,
@@ -6265,8 +6265,8 @@ let emojiTags: [String: [Emoji]] = [
         .oncomingAutomobile,
     ],
     "one":[
-        .oneOclock,
-        .onethirty,
+        .oneOClock,
+        .oneThirty,
     ],
     "one-piece":[
         .briefs,
@@ -6335,18 +6335,18 @@ let emojiTags: [String: [Emoji]] = [
         .takeoutBox,
     ],
     "o’clock":[
-        .twelveOclock,
-        .oneOclock,
-        .twoOclock,
-        .threeOclock,
-        .fourOclock,
-        .fiveOclock,
-        .sixOclock,
-        .sevenOclock,
-        .eightOclock,
-        .nineOclock,
-        .tenOclock,
-        .elevenOclock,
+        .twelveOClock,
+        .oneOClock,
+        .twoOClock,
+        .threeOClock,
+        .fourOClock,
+        .fiveOClock,
+        .sixOClock,
+        .sevenOClock,
+        .eightOClock,
+        .nineOClock,
+        .tenOClock,
+        .elevenOClock,
     ],
     "p button":[
         .pButton,
@@ -6404,7 +6404,7 @@ let emojiTags: [String: [Emoji]] = [
     "paper":[
         .scroll,
         .newspaper,
-        .rolledupNewspaper,
+        .rolledUpNewspaper,
     ],
     "paper towels":[
         .rollOfPaper,
@@ -6974,7 +6974,7 @@ let emojiTags: [String: [Emoji]] = [
     "railway":[
         .locomotive,
         .railwayCar,
-        .highspeedTrain,
+        .highSpeedTrain,
         .bulletTrain,
         .train,
         .lightRail,
@@ -7129,8 +7129,8 @@ let emojiTags: [String: [Emoji]] = [
         .lungs,
     ],
     "restroom":[
-        .mensRoom,
-        .womensRoom,
+        .menSRoom,
+        .womenSRoom,
         .waterCloset,
     ],
     "reverse":[
@@ -7168,7 +7168,7 @@ let emojiTags: [String: [Emoji]] = [
         .playOrPauseButton,
     ],
     "rightwards":[
-        .rightfacingFist,
+        .rightFacingFist,
     ],
     "ringlets":[
         .curlyHair,
@@ -7203,7 +7203,7 @@ let emojiTags: [String: [Emoji]] = [
         .croissant,
     ],
     "rolled":[
-        .rolledupNewspaper,
+        .rolledUpNewspaper,
     ],
     "roller":[
         .rollerCoaster,
@@ -7288,7 +7288,7 @@ let emojiTags: [String: [Emoji]] = [
         .hourglassNotDone,
     ],
     "sandal":[
-        .womansSandal,
+        .womanSSandal,
     ],
     "sandals":[
         .thongSandal,
@@ -7422,7 +7422,7 @@ let emojiTags: [String: [Emoji]] = [
         .lockedWithKey,
     ],
     "see":[
-        .seenoevilMonkey,
+        .seeNoEvilMonkey,
     ],
     "selling point":[
         .hook,
@@ -7444,8 +7444,8 @@ let emojiTags: [String: [Emoji]] = [
         .triangularRuler,
     ],
     "seven":[
-        .sevenOclock,
-        .seventhirty,
+        .sevenOClock,
+        .sevenThirty,
     ],
     "sewing":[
         .thread,
@@ -7492,7 +7492,7 @@ let emojiTags: [String: [Emoji]] = [
         .glowingStar,
     ],
     "shinkansen":[
-        .highspeedTrain,
+        .highSpeedTrain,
         .bulletTrain,
     ],
     "shinto":[
@@ -7505,18 +7505,18 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "shirt":[
         .runningShirt,
-        .tshirt,
+        .tShirt,
     ],
     "shocked":[
         .explodingHead,
         .astonishedFace,
     ],
     "shoe":[
-        .mansShoe,
+        .manSShoe,
         .runningShoe,
-        .highheeledShoe,
-        .womansSandal,
-        .womansBoot,
+        .highHeeledShoe,
+        .womanSSandal,
+        .womanSBoot,
     ],
     "shooting":[
         .shootingStar,
@@ -7589,8 +7589,8 @@ let emojiTags: [String: [Emoji]] = [
         .chair,
     ],
     "six":[
-        .sixOclock,
-        .sixthirty,
+        .sixOClock,
+        .sixThirty,
     ],
     "skate":[
         .rollerSkate,
@@ -7616,9 +7616,9 @@ let emojiTags: [String: [Emoji]] = [
     ],
     "skin tone":[
         .lightSkinTone,
-        .mediumlightSkinTone,
+        .mediumLightSkinTone,
         .mediumSkinTone,
-        .mediumdarkSkinTone,
+        .mediumDarkSkinTone,
         .darkSkinTone,
     ],
     "skull":[
@@ -7685,14 +7685,14 @@ let emojiTags: [String: [Emoji]] = [
         .grinningFaceWithSweat,
         .slightlySmilingFace,
         .smilingFaceWithSmilingEyes,
-        .smilingFaceWithHearteyes,
+        .smilingFaceWithHeartEyes,
         .smilingFace,
         .kissingFaceWithSmilingEyes,
         .faceSavoringFood,
         .smilingFaceWithHorns,
         .grinningCat,
         .grinningCatWithSmilingEyes,
-        .smilingCatWithHearteyes,
+        .smilingCatWithHeartEyes,
         .catWithWrySmile,
     ],
     "smiling":[
@@ -7726,7 +7726,7 @@ let emojiTags: [String: [Emoji]] = [
     "snow":[
         .skier,
         .snowboarder,
-        .snowcappedMountain,
+        .snowCappedMountain,
         .cloudWithSnow,
         .snowflake,
         .snowman,
@@ -7798,10 +7798,10 @@ let emojiTags: [String: [Emoji]] = [
         .downArrow,
     ],
     "southeast":[
-        .downrightArrow,
+        .downRightArrow,
     ],
     "southwest":[
-        .downleftArrow,
+        .downLeftArrow,
     ],
     "sow":[
         .pig,
@@ -7823,7 +7823,7 @@ let emojiTags: [String: [Emoji]] = [
         .sparkles,
     ],
     "speak":[
-        .speaknoevilMonkey,
+        .speakNoEvilMonkey,
         .speakingHead,
     ],
     "speaker":[
@@ -7843,7 +7843,7 @@ let emojiTags: [String: [Emoji]] = [
         .eyeInSpeechBubble,
     ],
     "speed":[
-        .highspeedTrain,
+        .highSpeedTrain,
         .bulletTrain,
     ],
     "spider":[
@@ -7904,8 +7904,8 @@ let emojiTags: [String: [Emoji]] = [
         .whiteLargeSquare,
         .blackMediumSquare,
         .whiteMediumSquare,
-        .blackMediumsmallSquare,
-        .whiteMediumsmallSquare,
+        .blackMediumSmallSquare,
+        .whiteMediumSmallSquare,
         .blackSmallSquare,
         .whiteSmallSquare,
         .whiteSquareButton,
@@ -7932,7 +7932,7 @@ let emojiTags: [String: [Emoji]] = [
         .womanStanding,
     ],
     "star":[
-        .starstruck,
+        .starStruck,
         .dizzy,
         .singer,
         .manSinger,
@@ -7943,8 +7943,8 @@ let emojiTags: [String: [Emoji]] = [
         .shootingStar,
         .sparkles,
         .starOfDavid,
-        .dottedSixpointedStar,
-        .eightpointedStar,
+        .dottedSixPointedStar,
+        .eightPointedStar,
     ],
     "star of david":[
         .starOfDavid,
@@ -8175,7 +8175,7 @@ let emojiTags: [String: [Emoji]] = [
         .faceWithOpenMouth,
     ],
     "t-rex":[
-        .trex,
+        .tRex,
     ],
     "table tennis":[
         .pingPong,
@@ -8271,8 +8271,8 @@ let emojiTags: [String: [Emoji]] = [
         .friedShrimp,
     ],
     "ten":[
-        .tenOclock,
-        .tenthirty,
+        .tenOClock,
+        .tenThirty,
     ],
     "tent":[
         .circusTent,
@@ -8305,18 +8305,18 @@ let emojiTags: [String: [Emoji]] = [
         .thirdPlaceMedal,
     ],
     "thirty":[
-        .twelvethirty,
-        .onethirty,
-        .twothirty,
-        .threethirty,
-        .fourthirty,
-        .fivethirty,
-        .sixthirty,
-        .seventhirty,
-        .eightthirty,
-        .ninethirty,
-        .tenthirty,
-        .eleventhirty,
+        .twelveThirty,
+        .oneThirty,
+        .twoThirty,
+        .threeThirty,
+        .fourThirty,
+        .fiveThirty,
+        .sixThirty,
+        .sevenThirty,
+        .eightThirty,
+        .nineThirty,
+        .tenThirty,
+        .elevenThirty,
     ],
     "thong sandals":[
         .thongSandal,
@@ -8328,8 +8328,8 @@ let emojiTags: [String: [Emoji]] = [
         .thoughtBalloon,
     ],
     "three":[
-        .threeOclock,
-        .threethirty,
+        .threeOClock,
+        .threeThirty,
     ],
     "thumb":[
         .thumbsUp,
@@ -8455,7 +8455,7 @@ let emojiTags: [String: [Emoji]] = [
         .tokyoTower,
     ],
     "toy":[
-        .yoyo,
+        .yoYo,
         .teddyBear,
     ],
     "trademark":[
@@ -8475,7 +8475,7 @@ let emojiTags: [String: [Emoji]] = [
     "train":[
         .locomotive,
         .railwayCar,
-        .highspeedTrain,
+        .highSpeedTrain,
         .bulletTrain,
         .station,
         .railwayTrack,
@@ -8565,7 +8565,7 @@ let emojiTags: [String: [Emoji]] = [
         .articulatedLorry,
     ],
     "tshirt":[
-        .tshirt,
+        .tShirt,
     ],
     "tuk tuk":[
         .autoRickshaw,
@@ -8590,8 +8590,8 @@ let emojiTags: [String: [Emoji]] = [
         .television,
     ],
     "twelve":[
-        .twelveOclock,
-        .twelvethirty,
+        .twelveOClock,
+        .twelveThirty,
     ],
     "twine":[
         .knot,
@@ -8610,20 +8610,20 @@ let emojiTags: [String: [Emoji]] = [
         .cyclone,
     ],
     "two":[
-        .twoOclock,
-        .twothirty,
+        .twoOClock,
+        .twoThirty,
     ],
     "type 1–2":[
         .lightSkinTone,
     ],
     "type 3":[
-        .mediumlightSkinTone,
+        .mediumLightSkinTone,
     ],
     "type 4":[
         .mediumSkinTone,
     ],
     "type 5":[
-        .mediumdarkSkinTone,
+        .mediumDarkSkinTone,
     ],
     "type 6":[
         .darkSkinTone,
@@ -8632,7 +8632,7 @@ let emojiTags: [String: [Emoji]] = [
         .cyclone,
     ],
     "tyrannosaurus rex":[
-        .trex,
+        .tRex,
     ],
     "ufo":[
         .alien,
@@ -8719,7 +8719,7 @@ let emojiTags: [String: [Emoji]] = [
         .inputLatinUppercase,
     ],
     "upside-down":[
-        .upsidedownFace,
+        .upsideDownFace,
     ],
     "upward":[
         .chartIncreasing,
@@ -8869,7 +8869,7 @@ let emojiTags: [String: [Emoji]] = [
         .shower,
         .potableWater,
         .waterCloset,
-        .nonpotableWater,
+        .nonPotableWater,
         .aquarius,
     ],
     "water polo":[
@@ -8896,8 +8896,8 @@ let emojiTags: [String: [Emoji]] = [
         .waxingGibbousMoon,
     ],
     "wc":[
-        .mensRoom,
-        .womensRoom,
+        .menSRoom,
+        .womenSRoom,
         .restroom,
         .waterCloset,
     ],
@@ -9128,12 +9128,12 @@ let emojiTags: [String: [Emoji]] = [
         .familyWomanGirl,
         .familyWomanGirlBoy,
         .familyWomanGirlGirl,
-        .womansClothes,
-        .highheeledShoe,
-        .womansSandal,
-        .womansBoot,
-        .womansHat,
-        .womensRoom,
+        .womanSClothes,
+        .highHeeledShoe,
+        .womanSSandal,
+        .womanSBoot,
+        .womanSHat,
+        .womenSRoom,
         .femaleSign,
     ],
     "woman gesturing no":[
@@ -9168,9 +9168,9 @@ let emojiTags: [String: [Emoji]] = [
         .womanConstructionWorker,
     ],
     "world":[
-        .globeShowingEuropeafrica,
+        .globeShowingEuropeAfrica,
         .globeShowingAmericas,
-        .globeShowingAsiaaustralia,
+        .globeShowingAsiaAustralia,
         .globeWithMeridians,
         .worldMap,
     ],
@@ -9255,7 +9255,7 @@ let emojiTags: [String: [Emoji]] = [
         .highVoltage,
     ],
     "zipper":[
-        .zippermouthFace,
+        .zipperMouthFace,
     ],
     "zodiac":[
         .girl,
@@ -9300,55 +9300,55 @@ let emojiTags: [String: [Emoji]] = [
         .divide,
     ],
     "“acceptable”":[
-        .japaneseacceptableButton,
+        .japaneseAcceptableButton,
     ],
     "“application”":[
-        .japaneseapplicationButton,
+        .japaneseApplicationButton,
     ],
     "“bargain”":[
-        .japanesebargainButton,
+        .japaneseBargainButton,
     ],
     "“congratulations”":[
-        .japanesecongratulationsButton,
+        .japaneseCongratulationsButton,
     ],
     "“discount”":[
-        .japanesediscountButton,
+        .japaneseDiscountButton,
     ],
     "“free of charge”":[
-        .japanesefreeOfChargeButton,
+        .japaneseFreeOfChargeButton,
     ],
     "“here”":[
-        .japanesehereButton,
+        .japaneseHereButton,
     ],
     "“monthly amount”":[
-        .japanesemonthlyAmountButton,
+        .japaneseMonthlyAmountButton,
     ],
     "“no vacancy”":[
-        .japanesenoVacancyButton,
+        .japaneseNoVacancyButton,
     ],
     "“not free of charge”":[
-        .japanesenotFreeOfChargeButton,
+        .japaneseNotFreeOfChargeButton,
     ],
     "“open for business”":[
-        .japaneseopenForBusinessButton,
+        .japaneseOpenForBusinessButton,
     ],
     "“passing grade”":[
-        .japanesepassingGradeButton,
+        .japanesePassingGradeButton,
     ],
     "“prohibited”":[
-        .japaneseprohibitedButton,
+        .japaneseProhibitedButton,
     ],
     "“reserved”":[
-        .japanesereservedButton,
+        .japaneseReservedButton,
     ],
     "“secret”":[
-        .japanesesecretButton,
+        .japaneseSecretButton,
     ],
     "“service charge”":[
-        .japaneseserviceChargeButton,
+        .japaneseServiceChargeButton,
     ],
     "“vacancy”":[
-        .japanesevacancyButton,
+        .japaneseVacancyButton,
     ],
     "−":[
         .minus,
@@ -9362,54 +9362,54 @@ let emojiTags: [String: [Emoji]] = [
         .inputSymbols,
     ],
     "ココ":[
-        .japanesehereButton,
+        .japaneseHereButton,
     ],
     "サ":[
-        .japaneseserviceChargeButton,
+        .japaneseServiceChargeButton,
     ],
     "割":[
-        .japanesediscountButton,
+        .japaneseDiscountButton,
     ],
     "可":[
-        .japaneseacceptableButton,
+        .japaneseAcceptableButton,
     ],
     "合":[
-        .japanesepassingGradeButton,
+        .japanesePassingGradeButton,
     ],
     "営":[
-        .japaneseopenForBusinessButton,
+        .japaneseOpenForBusinessButton,
     ],
     "得":[
-        .japanesebargainButton,
+        .japaneseBargainButton,
     ],
     "指":[
-        .japanesereservedButton,
+        .japaneseReservedButton,
     ],
     "月":[
-        .japanesemonthlyAmountButton,
+        .japaneseMonthlyAmountButton,
     ],
     "有":[
-        .japanesenotFreeOfChargeButton,
+        .japaneseNotFreeOfChargeButton,
     ],
     "満":[
-        .japanesenoVacancyButton,
+        .japaneseNoVacancyButton,
     ],
     "無":[
-        .japanesefreeOfChargeButton,
+        .japaneseFreeOfChargeButton,
     ],
     "申":[
-        .japaneseapplicationButton,
+        .japaneseApplicationButton,
     ],
     "祝":[
-        .japanesecongratulationsButton,
+        .japaneseCongratulationsButton,
     ],
     "禁":[
-        .japaneseprohibitedButton,
+        .japaneseProhibitedButton,
     ],
     "秘":[
-        .japanesesecretButton,
+        .japaneseSecretButton,
     ],
     "空":[
-        .japanesevacancyButton,
+        .japaneseVacancyButton,
     ],
 ]

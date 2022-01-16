@@ -116,7 +116,7 @@ extension Emoji {
                 [.mediumDark]: "🤞🏾",
                 [.dark]: "🤞🏿",
             ]
-        case .loveyouGesture:
+        case .loveYouGesture:
             return [
                 [.light]: "🤟🏻",
                 [.mediumLight]: "🤟🏼",
@@ -220,7 +220,7 @@ extension Emoji {
                 [.mediumDark]: "👊🏾",
                 [.dark]: "👊🏿",
             ]
-        case .leftfacingFist:
+        case .leftFacingFist:
             return [
                 [.light]: "🤛🏻",
                 [.mediumLight]: "🤛🏼",
@@ -228,7 +228,7 @@ extension Emoji {
                 [.mediumDark]: "🤛🏾",
                 [.dark]: "🤛🏿",
             ]
-        case .rightfacingFist:
+        case .rightFacingFist:
             return [
                 [.light]: "🤜🏻",
                 [.mediumLight]: "🤜🏼",
@@ -1412,7 +1412,7 @@ extension Emoji {
                 [.mediumDark]: "🤰🏾",
                 [.dark]: "🤰🏿",
             ]
-        case .breastfeeding:
+        case .breastFeeding:
             return [
                 [.light]: "🤱🏻",
                 [.mediumLight]: "🤱🏼",

@@ -49,13 +49,13 @@ extension Emoji {
                     .rollingOnTheFloorLaughing,
                     .faceWithTearsOfJoy,
                     .slightlySmilingFace,
-                    .upsidedownFace,
+                    .upsideDownFace,
                     .winkingFace,
                     .smilingFaceWithSmilingEyes,
                     .smilingFaceWithHalo,
                     .smilingFaceWithHearts,
-                    .smilingFaceWithHearteyes,
-                    .starstruck,
+                    .smilingFaceWithHeartEyes,
+                    .starStruck,
                     .faceBlowingAKiss,
                     .kissingFace,
                     .smilingFace,
@@ -67,12 +67,12 @@ extension Emoji {
                     .winkingFaceWithTongue,
                     .zanyFace,
                     .squintingFaceWithTongue,
-                    .moneymouthFace,
+                    .moneyMouthFace,
                     .huggingFace,
                     .faceWithHandOverMouth,
                     .shushingFace,
                     .thinkingFace,
-                    .zippermouthFace,
+                    .zipperMouthFace,
                     .faceWithRaisedEyebrow,
                     .neutralFace,
                     .expressionlessFace,
@@ -91,14 +91,14 @@ extension Emoji {
                     .sleepingFace,
                     .faceWithMedicalMask,
                     .faceWithThermometer,
-                    .faceWithHeadbandage,
+                    .faceWithHeadBandage,
                     .nauseatedFace,
                     .faceVomiting,
                     .sneezingFace,
                     .hotFace,
                     .coldFace,
                     .woozyFace,
-                    .knockedoutFace,
+                    .knockedOutFace,
                     .faceWithSpiralEyes,
                     .explodingHead,
                     .cowboyHatFace,
@@ -150,15 +150,15 @@ extension Emoji {
                     .grinningCat,
                     .grinningCatWithSmilingEyes,
                     .catWithTearsOfJoy,
-                    .smilingCatWithHearteyes,
+                    .smilingCatWithHeartEyes,
                     .catWithWrySmile,
                     .kissingCat,
                     .wearyCat,
                     .cryingCat,
                     .poutingCat,
-                    .seenoevilMonkey,
-                    .hearnoevilMonkey,
-                    .speaknoevilMonkey,
+                    .seeNoEvilMonkey,
+                    .hearNoEvilMonkey,
+                    .speakNoEvilMonkey,
                     .kissMark,
                     .loveLetter,
                     .heartWithArrow,
@@ -206,7 +206,7 @@ extension Emoji {
                     .pinchingHand,
                     .victoryHand,
                     .crossedFingers,
-                    .loveyouGesture,
+                    .loveYouGesture,
                     .signOfTheHorns,
                     .callMeHand,
                     .backhandIndexPointingLeft,
@@ -219,8 +219,8 @@ extension Emoji {
                     .thumbsDown,
                     .raisedFist,
                     .oncomingFist,
-                    .leftfacingFist,
-                    .rightfacingFist,
+                    .leftFacingFist,
+                    .rightFacingFist,
                     .clappingHands,
                     .raisingHands,
                     .openHands,
@@ -380,7 +380,7 @@ extension Emoji {
                     .manWithVeil,
                     .womanWithVeil,
                     .pregnantWoman,
-                    .breastfeeding,
+                    .breastFeeding,
                     .womanFeedingBaby,
                     .manFeedingBaby,
                     .personFeedingBaby,
@@ -549,9 +549,9 @@ extension Emoji {
             case .animals:
                 return [
                     .lightSkinTone,
-                    .mediumlightSkinTone,
+                    .mediumLightSkinTone,
                     .mediumSkinTone,
-                    .mediumdarkSkinTone,
+                    .mediumDarkSkinTone,
                     .darkSkinTone,
                     .redHair,
                     .curlyHair,
@@ -597,7 +597,7 @@ extension Emoji {
                     .ewe,
                     .goat,
                     .camel,
-                    .twohumpCamel,
+                    .twoHumpCamel,
                     .llama,
                     .giraffe,
                     .elephant,
@@ -629,7 +629,7 @@ extension Emoji {
                     .rooster,
                     .hatchingChick,
                     .babyChick,
-                    .frontfacingBabyChick,
+                    .frontFacingBabyChick,
                     .bird,
                     .penguin,
                     .dove,
@@ -650,7 +650,7 @@ extension Emoji {
                     .dragonFace,
                     .dragon,
                     .sauropod,
-                    .trex,
+                    .tRex,
                     .spoutingWhale,
                     .whale,
                     .dolphin,
@@ -703,14 +703,14 @@ extension Emoji {
                 ]
             case .activities:
                 return [
-                    .globeShowingEuropeafrica,
+                    .globeShowingEuropeAfrica,
                     .globeShowingAmericas,
-                    .globeShowingAsiaaustralia,
+                    .globeShowingAsiaAustralia,
                     .globeWithMeridians,
                     .worldMap,
                     .mapOfJapan,
                     .compass,
-                    .snowcappedMountain,
+                    .snowCappedMountain,
                     .mountain,
                     .volcano,
                     .mountFuji,
@@ -770,7 +770,7 @@ extension Emoji {
                     .circusTent,
                     .locomotive,
                     .railwayCar,
-                    .highspeedTrain,
+                    .highSpeedTrain,
                     .bulletTrain,
                     .train,
                     .metro,
@@ -847,30 +847,30 @@ extension Emoji {
                     .stopwatch,
                     .timerClock,
                     .mantelpieceClock,
-                    .twelveOclock,
-                    .twelvethirty,
-                    .oneOclock,
-                    .onethirty,
-                    .twoOclock,
-                    .twothirty,
-                    .threeOclock,
-                    .threethirty,
-                    .fourOclock,
-                    .fourthirty,
-                    .fiveOclock,
-                    .fivethirty,
-                    .sixOclock,
-                    .sixthirty,
-                    .sevenOclock,
-                    .seventhirty,
-                    .eightOclock,
-                    .eightthirty,
-                    .nineOclock,
-                    .ninethirty,
-                    .tenOclock,
-                    .tenthirty,
-                    .elevenOclock,
-                    .eleventhirty,
+                    .twelveOClock,
+                    .twelveThirty,
+                    .oneOClock,
+                    .oneThirty,
+                    .twoOClock,
+                    .twoThirty,
+                    .threeOClock,
+                    .threeThirty,
+                    .fourOClock,
+                    .fourThirty,
+                    .fiveOClock,
+                    .fiveThirty,
+                    .sixOClock,
+                    .sixThirty,
+                    .sevenOClock,
+                    .sevenThirty,
+                    .eightOClock,
+                    .eightThirty,
+                    .nineOClock,
+                    .nineThirty,
+                    .tenOClock,
+                    .tenThirty,
+                    .elevenOClock,
+                    .elevenThirty,
                     .newMoon,
                     .waxingCrescentMoon,
                     .firstQuarterMoon,
@@ -1053,7 +1053,7 @@ extension Emoji {
                 ]
             case .objects:
                 return [
-                    .jackolantern,
+                    .jackOLantern,
                     .christmasTree,
                     .fireworks,
                     .sparkler,
@@ -1108,7 +1108,7 @@ extension Emoji {
                     .sled,
                     .curlingStone,
                     .bullseye,
-                    .yoyo,
+                    .yoYo,
                     .kite,
                     .pool8Ball,
                     .crystalBall,
@@ -1146,7 +1146,7 @@ extension Emoji {
                     .labCoat,
                     .safetyVest,
                     .necktie,
-                    .tshirt,
+                    .tShirt,
                     .jeans,
                     .scarf,
                     .gloves,
@@ -1155,32 +1155,32 @@ extension Emoji {
                     .dress,
                     .kimono,
                     .sari,
-                    .onepieceSwimsuit,
+                    .onePieceSwimsuit,
                     .briefs,
                     .shorts,
                     .bikini,
-                    .womansClothes,
+                    .womanSClothes,
                     .purse,
                     .handbag,
                     .clutchBag,
                     .shoppingBags,
                     .backpack,
                     .thongSandal,
-                    .mansShoe,
+                    .manSShoe,
                     .runningShoe,
                     .hikingBoot,
                     .flatShoe,
-                    .highheeledShoe,
-                    .womansSandal,
+                    .highHeeledShoe,
+                    .womanSSandal,
                     .balletShoes,
-                    .womansBoot,
+                    .womanSBoot,
                     .crown,
-                    .womansHat,
+                    .womanSHat,
                     .topHat,
                     .graduationCap,
                     .billedCap,
                     .militaryHelmet,
-                    .rescueWorkersHelmet,
+                    .rescueWorkerSHelmet,
                     .prayerBeads,
                     .lipstick,
                     .ring,
@@ -1260,7 +1260,7 @@ extension Emoji {
                     .scroll,
                     .pageFacingUp,
                     .newspaper,
-                    .rolledupNewspaper,
+                    .rolledUpNewspaper,
                     .bookmarkTabs,
                     .bookmark,
                     .label,
@@ -1275,7 +1275,7 @@ extension Emoji {
                     .receipt,
                     .chartIncreasingWithYen,
                     .envelope,
-                    .email,
+                    .eMail,
                     .incomingEnvelope,
                     .envelopeWithArrow,
                     .outboxTray,
@@ -1299,7 +1299,7 @@ extension Emoji {
                     .openFileFolder,
                     .cardIndexDividers,
                     .calendar,
-                    .tearoffCalendar,
+                    .tearOffCalendar,
                     .spiralNotepad,
                     .spiralCalendar,
                     .cardIndex,
@@ -1397,8 +1397,8 @@ extension Emoji {
                     .litterInBinSign,
                     .potableWater,
                     .wheelchairSymbol,
-                    .mensRoom,
-                    .womensRoom,
+                    .menSRoom,
+                    .womenSRoom,
                     .restroom,
                     .babySymbol,
                     .waterCloset,
@@ -1413,22 +1413,22 @@ extension Emoji {
                     .noBicycles,
                     .noSmoking,
                     .noLittering,
-                    .nonpotableWater,
+                    .nonPotableWater,
                     .noPedestrians,
                     .noMobilePhones,
                     .noOneUnderEighteen,
                     .radioactive,
                     .biohazard,
                     .upArrow,
-                    .uprightArrow,
+                    .upRightArrow,
                     .rightArrow,
-                    .downrightArrow,
+                    .downRightArrow,
                     .downArrow,
-                    .downleftArrow,
+                    .downLeftArrow,
                     .leftArrow,
-                    .upleftArrow,
-                    .updownArrow,
-                    .leftrightArrow,
+                    .upLeftArrow,
+                    .upDownArrow,
+                    .leftRightArrow,
                     .rightArrowCurvingLeft,
                     .leftArrowCurvingRight,
                     .rightArrowCurvingUp,
@@ -1451,7 +1451,7 @@ extension Emoji {
                     .starAndCrescent,
                     .peaceSymbol,
                     .menorah,
-                    .dottedSixpointedStar,
+                    .dottedSixPointedStar,
                     .aries,
                     .taurus,
                     .gemini,
@@ -1469,7 +1469,7 @@ extension Emoji {
                     .repeatButton,
                     .repeatSingleButton,
                     .playButton,
-                    .fastforwardButton,
+                    .fastForwardButton,
                     .nextTrackButton,
                     .playOrPauseButton,
                     .reverseButton,
@@ -1508,7 +1508,7 @@ extension Emoji {
                     .heavyDollarSign,
                     .medicalSymbol,
                     .recyclingSymbol,
-                    .fleurdelis,
+                    .fleurDeLis,
                     .tridentEmblem,
                     .nameBadge,
                     .japaneseSymbolForBeginner,
@@ -1521,14 +1521,14 @@ extension Emoji {
                     .curlyLoop,
                     .doubleCurlyLoop,
                     .partAlternationMark,
-                    .eightspokedAsterisk,
-                    .eightpointedStar,
+                    .eightSpokedAsterisk,
+                    .eightPointedStar,
                     .sparkle,
                     .copyright,
                     .registered,
                     .tradeMark,
-                    .keycappoundsymbol,
-                    .keycapasterisk,
+                    .keycapPoundSymbol,
+                    .keycapAsterisk,
                     .keycap0,
                     .keycap1,
                     .keycap2,
@@ -1545,9 +1545,9 @@ extension Emoji {
                     .inputNumbers,
                     .inputSymbols,
                     .inputLatinLetters,
-                    .aButtonbloodType,
-                    .abButtonbloodType,
-                    .bButtonbloodType,
+                    .aButtonBloodType,
+                    .abButtonBloodType,
+                    .bButtonBloodType,
                     .clButton,
                     .coolButton,
                     .freeButton,
@@ -1556,29 +1556,29 @@ extension Emoji {
                     .circledM,
                     .newButton,
                     .ngButton,
-                    .oButtonbloodType,
+                    .oButtonBloodType,
                     .okButton,
                     .pButton,
                     .sosButton,
                     .upButton,
                     .vsButton,
-                    .japanesehereButton,
-                    .japaneseserviceChargeButton,
-                    .japanesemonthlyAmountButton,
-                    .japanesenotFreeOfChargeButton,
-                    .japanesereservedButton,
-                    .japanesebargainButton,
-                    .japanesediscountButton,
-                    .japanesefreeOfChargeButton,
-                    .japaneseprohibitedButton,
-                    .japaneseacceptableButton,
-                    .japaneseapplicationButton,
-                    .japanesepassingGradeButton,
-                    .japanesevacancyButton,
-                    .japanesecongratulationsButton,
-                    .japanesesecretButton,
-                    .japaneseopenForBusinessButton,
-                    .japanesenoVacancyButton,
+                    .japaneseHereButton,
+                    .japaneseServiceChargeButton,
+                    .japaneseMonthlyAmountButton,
+                    .japaneseNotFreeOfChargeButton,
+                    .japaneseReservedButton,
+                    .japaneseBargainButton,
+                    .japaneseDiscountButton,
+                    .japaneseFreeOfChargeButton,
+                    .japaneseProhibitedButton,
+                    .japaneseAcceptableButton,
+                    .japaneseApplicationButton,
+                    .japanesePassingGradeButton,
+                    .japaneseVacancyButton,
+                    .japaneseCongratulationsButton,
+                    .japaneseSecretButton,
+                    .japaneseOpenForBusinessButton,
+                    .japaneseNoVacancyButton,
                     .redCircle,
                     .orangeCircle,
                     .yellowCircle,
@@ -1599,8 +1599,8 @@ extension Emoji {
                     .whiteLargeSquare,
                     .blackMediumSquare,
                     .whiteMediumSquare,
-                    .blackMediumsmallSquare,
-                    .whiteMediumsmallSquare,
+                    .blackMediumSmallSquare,
+                    .whiteMediumSmallSquare,
                     .blackSmallSquare,
                     .whiteSmallSquare,
                     .largeOrangeDiamond,
@@ -1629,13 +1629,13 @@ extension Emoji {
         case .rollingOnTheFloorLaughing: return .smileysAndPeople
         case .faceWithTearsOfJoy: return .smileysAndPeople
         case .slightlySmilingFace: return .smileysAndPeople
-        case .upsidedownFace: return .smileysAndPeople
+        case .upsideDownFace: return .smileysAndPeople
         case .winkingFace: return .smileysAndPeople
         case .smilingFaceWithSmilingEyes: return .smileysAndPeople
         case .smilingFaceWithHalo: return .smileysAndPeople
         case .smilingFaceWithHearts: return .smileysAndPeople
-        case .smilingFaceWithHearteyes: return .smileysAndPeople
-        case .starstruck: return .smileysAndPeople
+        case .smilingFaceWithHeartEyes: return .smileysAndPeople
+        case .starStruck: return .smileysAndPeople
         case .faceBlowingAKiss: return .smileysAndPeople
         case .kissingFace: return .smileysAndPeople
         case .smilingFace: return .smileysAndPeople
@@ -1647,12 +1647,12 @@ extension Emoji {
         case .winkingFaceWithTongue: return .smileysAndPeople
         case .zanyFace: return .smileysAndPeople
         case .squintingFaceWithTongue: return .smileysAndPeople
-        case .moneymouthFace: return .smileysAndPeople
+        case .moneyMouthFace: return .smileysAndPeople
         case .huggingFace: return .smileysAndPeople
         case .faceWithHandOverMouth: return .smileysAndPeople
         case .shushingFace: return .smileysAndPeople
         case .thinkingFace: return .smileysAndPeople
-        case .zippermouthFace: return .smileysAndPeople
+        case .zipperMouthFace: return .smileysAndPeople
         case .faceWithRaisedEyebrow: return .smileysAndPeople
         case .neutralFace: return .smileysAndPeople
         case .expressionlessFace: return .smileysAndPeople
@@ -1671,14 +1671,14 @@ extension Emoji {
         case .sleepingFace: return .smileysAndPeople
         case .faceWithMedicalMask: return .smileysAndPeople
         case .faceWithThermometer: return .smileysAndPeople
-        case .faceWithHeadbandage: return .smileysAndPeople
+        case .faceWithHeadBandage: return .smileysAndPeople
         case .nauseatedFace: return .smileysAndPeople
         case .faceVomiting: return .smileysAndPeople
         case .sneezingFace: return .smileysAndPeople
         case .hotFace: return .smileysAndPeople
         case .coldFace: return .smileysAndPeople
         case .woozyFace: return .smileysAndPeople
-        case .knockedoutFace: return .smileysAndPeople
+        case .knockedOutFace: return .smileysAndPeople
         case .faceWithSpiralEyes: return .smileysAndPeople
         case .explodingHead: return .smileysAndPeople
         case .cowboyHatFace: return .smileysAndPeople
@@ -1730,15 +1730,15 @@ extension Emoji {
         case .grinningCat: return .smileysAndPeople
         case .grinningCatWithSmilingEyes: return .smileysAndPeople
         case .catWithTearsOfJoy: return .smileysAndPeople
-        case .smilingCatWithHearteyes: return .smileysAndPeople
+        case .smilingCatWithHeartEyes: return .smileysAndPeople
         case .catWithWrySmile: return .smileysAndPeople
         case .kissingCat: return .smileysAndPeople
         case .wearyCat: return .smileysAndPeople
         case .cryingCat: return .smileysAndPeople
         case .poutingCat: return .smileysAndPeople
-        case .seenoevilMonkey: return .smileysAndPeople
-        case .hearnoevilMonkey: return .smileysAndPeople
-        case .speaknoevilMonkey: return .smileysAndPeople
+        case .seeNoEvilMonkey: return .smileysAndPeople
+        case .hearNoEvilMonkey: return .smileysAndPeople
+        case .speakNoEvilMonkey: return .smileysAndPeople
         case .kissMark: return .smileysAndPeople
         case .loveLetter: return .smileysAndPeople
         case .heartWithArrow: return .smileysAndPeople
@@ -1786,7 +1786,7 @@ extension Emoji {
         case .pinchingHand: return .smileysAndPeople
         case .victoryHand: return .smileysAndPeople
         case .crossedFingers: return .smileysAndPeople
-        case .loveyouGesture: return .smileysAndPeople
+        case .loveYouGesture: return .smileysAndPeople
         case .signOfTheHorns: return .smileysAndPeople
         case .callMeHand: return .smileysAndPeople
         case .backhandIndexPointingLeft: return .smileysAndPeople
@@ -1799,8 +1799,8 @@ extension Emoji {
         case .thumbsDown: return .smileysAndPeople
         case .raisedFist: return .smileysAndPeople
         case .oncomingFist: return .smileysAndPeople
-        case .leftfacingFist: return .smileysAndPeople
-        case .rightfacingFist: return .smileysAndPeople
+        case .leftFacingFist: return .smileysAndPeople
+        case .rightFacingFist: return .smileysAndPeople
         case .clappingHands: return .smileysAndPeople
         case .raisingHands: return .smileysAndPeople
         case .openHands: return .smileysAndPeople
@@ -1960,7 +1960,7 @@ extension Emoji {
         case .manWithVeil: return .smileysAndPeople
         case .womanWithVeil: return .smileysAndPeople
         case .pregnantWoman: return .smileysAndPeople
-        case .breastfeeding: return .smileysAndPeople
+        case .breastFeeding: return .smileysAndPeople
         case .womanFeedingBaby: return .smileysAndPeople
         case .manFeedingBaby: return .smileysAndPeople
         case .personFeedingBaby: return .smileysAndPeople
@@ -2126,9 +2126,9 @@ extension Emoji {
         case .peopleHugging: return .smileysAndPeople
         case .footprints: return .smileysAndPeople
         case .lightSkinTone: return .animals
-        case .mediumlightSkinTone: return .animals
+        case .mediumLightSkinTone: return .animals
         case .mediumSkinTone: return .animals
-        case .mediumdarkSkinTone: return .animals
+        case .mediumDarkSkinTone: return .animals
         case .darkSkinTone: return .animals
         case .redHair: return .animals
         case .curlyHair: return .animals
@@ -2171,7 +2171,7 @@ extension Emoji {
         case .ewe: return .food
         case .goat: return .food
         case .camel: return .food
-        case .twohumpCamel: return .food
+        case .twoHumpCamel: return .food
         case .llama: return .food
         case .giraffe: return .food
         case .elephant: return .food
@@ -2203,7 +2203,7 @@ extension Emoji {
         case .rooster: return .food
         case .hatchingChick: return .food
         case .babyChick: return .food
-        case .frontfacingBabyChick: return .food
+        case .frontFacingBabyChick: return .food
         case .bird: return .food
         case .penguin: return .food
         case .dove: return .food
@@ -2224,7 +2224,7 @@ extension Emoji {
         case .dragonFace: return .food
         case .dragon: return .food
         case .sauropod: return .food
-        case .trex: return .food
+        case .tRex: return .food
         case .spoutingWhale: return .food
         case .whale: return .food
         case .dolphin: return .food
@@ -2403,14 +2403,14 @@ extension Emoji {
         case .spoon: return .travel
         case .kitchenKnife: return .travel
         case .amphora: return .travel
-        case .globeShowingEuropeafrica: return .activities
+        case .globeShowingEuropeAfrica: return .activities
         case .globeShowingAmericas: return .activities
-        case .globeShowingAsiaaustralia: return .activities
+        case .globeShowingAsiaAustralia: return .activities
         case .globeWithMeridians: return .activities
         case .worldMap: return .activities
         case .mapOfJapan: return .activities
         case .compass: return .activities
-        case .snowcappedMountain: return .activities
+        case .snowCappedMountain: return .activities
         case .mountain: return .activities
         case .volcano: return .activities
         case .mountFuji: return .activities
@@ -2470,7 +2470,7 @@ extension Emoji {
         case .circusTent: return .activities
         case .locomotive: return .activities
         case .railwayCar: return .activities
-        case .highspeedTrain: return .activities
+        case .highSpeedTrain: return .activities
         case .bulletTrain: return .activities
         case .train: return .activities
         case .metro: return .activities
@@ -2547,30 +2547,30 @@ extension Emoji {
         case .stopwatch: return .activities
         case .timerClock: return .activities
         case .mantelpieceClock: return .activities
-        case .twelveOclock: return .activities
-        case .twelvethirty: return .activities
-        case .oneOclock: return .activities
-        case .onethirty: return .activities
-        case .twoOclock: return .activities
-        case .twothirty: return .activities
-        case .threeOclock: return .activities
-        case .threethirty: return .activities
-        case .fourOclock: return .activities
-        case .fourthirty: return .activities
-        case .fiveOclock: return .activities
-        case .fivethirty: return .activities
-        case .sixOclock: return .activities
-        case .sixthirty: return .activities
-        case .sevenOclock: return .activities
-        case .seventhirty: return .activities
-        case .eightOclock: return .activities
-        case .eightthirty: return .activities
-        case .nineOclock: return .activities
-        case .ninethirty: return .activities
-        case .tenOclock: return .activities
-        case .tenthirty: return .activities
-        case .elevenOclock: return .activities
-        case .eleventhirty: return .activities
+        case .twelveOClock: return .activities
+        case .twelveThirty: return .activities
+        case .oneOClock: return .activities
+        case .oneThirty: return .activities
+        case .twoOClock: return .activities
+        case .twoThirty: return .activities
+        case .threeOClock: return .activities
+        case .threeThirty: return .activities
+        case .fourOClock: return .activities
+        case .fourThirty: return .activities
+        case .fiveOClock: return .activities
+        case .fiveThirty: return .activities
+        case .sixOClock: return .activities
+        case .sixThirty: return .activities
+        case .sevenOClock: return .activities
+        case .sevenThirty: return .activities
+        case .eightOClock: return .activities
+        case .eightThirty: return .activities
+        case .nineOClock: return .activities
+        case .nineThirty: return .activities
+        case .tenOClock: return .activities
+        case .tenThirty: return .activities
+        case .elevenOClock: return .activities
+        case .elevenThirty: return .activities
         case .newMoon: return .activities
         case .waxingCrescentMoon: return .activities
         case .firstQuarterMoon: return .activities
@@ -2618,7 +2618,7 @@ extension Emoji {
         case .fire: return .activities
         case .droplet: return .activities
         case .waterWave: return .activities
-        case .jackolantern: return .objects
+        case .jackOLantern: return .objects
         case .christmasTree: return .objects
         case .fireworks: return .objects
         case .sparkler: return .objects
@@ -2673,7 +2673,7 @@ extension Emoji {
         case .sled: return .objects
         case .curlingStone: return .objects
         case .bullseye: return .objects
-        case .yoyo: return .objects
+        case .yoYo: return .objects
         case .kite: return .objects
         case .pool8Ball: return .objects
         case .crystalBall: return .objects
@@ -2708,7 +2708,7 @@ extension Emoji {
         case .labCoat: return .symbols
         case .safetyVest: return .symbols
         case .necktie: return .symbols
-        case .tshirt: return .symbols
+        case .tShirt: return .symbols
         case .jeans: return .symbols
         case .scarf: return .symbols
         case .gloves: return .symbols
@@ -2717,32 +2717,32 @@ extension Emoji {
         case .dress: return .symbols
         case .kimono: return .symbols
         case .sari: return .symbols
-        case .onepieceSwimsuit: return .symbols
+        case .onePieceSwimsuit: return .symbols
         case .briefs: return .symbols
         case .shorts: return .symbols
         case .bikini: return .symbols
-        case .womansClothes: return .symbols
+        case .womanSClothes: return .symbols
         case .purse: return .symbols
         case .handbag: return .symbols
         case .clutchBag: return .symbols
         case .shoppingBags: return .symbols
         case .backpack: return .symbols
         case .thongSandal: return .symbols
-        case .mansShoe: return .symbols
+        case .manSShoe: return .symbols
         case .runningShoe: return .symbols
         case .hikingBoot: return .symbols
         case .flatShoe: return .symbols
-        case .highheeledShoe: return .symbols
-        case .womansSandal: return .symbols
+        case .highHeeledShoe: return .symbols
+        case .womanSSandal: return .symbols
         case .balletShoes: return .symbols
-        case .womansBoot: return .symbols
+        case .womanSBoot: return .symbols
         case .crown: return .symbols
-        case .womansHat: return .symbols
+        case .womanSHat: return .symbols
         case .topHat: return .symbols
         case .graduationCap: return .symbols
         case .billedCap: return .symbols
         case .militaryHelmet: return .symbols
-        case .rescueWorkersHelmet: return .symbols
+        case .rescueWorkerSHelmet: return .symbols
         case .prayerBeads: return .symbols
         case .lipstick: return .symbols
         case .ring: return .symbols
@@ -2822,7 +2822,7 @@ extension Emoji {
         case .scroll: return .symbols
         case .pageFacingUp: return .symbols
         case .newspaper: return .symbols
-        case .rolledupNewspaper: return .symbols
+        case .rolledUpNewspaper: return .symbols
         case .bookmarkTabs: return .symbols
         case .bookmark: return .symbols
         case .label: return .symbols
@@ -2837,7 +2837,7 @@ extension Emoji {
         case .receipt: return .symbols
         case .chartIncreasingWithYen: return .symbols
         case .envelope: return .symbols
-        case .email: return .symbols
+        case .eMail: return .symbols
         case .incomingEnvelope: return .symbols
         case .envelopeWithArrow: return .symbols
         case .outboxTray: return .symbols
@@ -2861,7 +2861,7 @@ extension Emoji {
         case .openFileFolder: return .symbols
         case .cardIndexDividers: return .symbols
         case .calendar: return .symbols
-        case .tearoffCalendar: return .symbols
+        case .tearOffCalendar: return .symbols
         case .spiralNotepad: return .symbols
         case .spiralCalendar: return .symbols
         case .cardIndex: return .symbols
@@ -2956,8 +2956,8 @@ extension Emoji {
         case .litterInBinSign: return .flags
         case .potableWater: return .flags
         case .wheelchairSymbol: return .flags
-        case .mensRoom: return .flags
-        case .womensRoom: return .flags
+        case .menSRoom: return .flags
+        case .womenSRoom: return .flags
         case .restroom: return .flags
         case .babySymbol: return .flags
         case .waterCloset: return .flags
@@ -2972,22 +2972,22 @@ extension Emoji {
         case .noBicycles: return .flags
         case .noSmoking: return .flags
         case .noLittering: return .flags
-        case .nonpotableWater: return .flags
+        case .nonPotableWater: return .flags
         case .noPedestrians: return .flags
         case .noMobilePhones: return .flags
         case .noOneUnderEighteen: return .flags
         case .radioactive: return .flags
         case .biohazard: return .flags
         case .upArrow: return .flags
-        case .uprightArrow: return .flags
+        case .upRightArrow: return .flags
         case .rightArrow: return .flags
-        case .downrightArrow: return .flags
+        case .downRightArrow: return .flags
         case .downArrow: return .flags
-        case .downleftArrow: return .flags
+        case .downLeftArrow: return .flags
         case .leftArrow: return .flags
-        case .upleftArrow: return .flags
-        case .updownArrow: return .flags
-        case .leftrightArrow: return .flags
+        case .upLeftArrow: return .flags
+        case .upDownArrow: return .flags
+        case .leftRightArrow: return .flags
         case .rightArrowCurvingLeft: return .flags
         case .leftArrowCurvingRight: return .flags
         case .rightArrowCurvingUp: return .flags
@@ -3010,7 +3010,7 @@ extension Emoji {
         case .starAndCrescent: return .flags
         case .peaceSymbol: return .flags
         case .menorah: return .flags
-        case .dottedSixpointedStar: return .flags
+        case .dottedSixPointedStar: return .flags
         case .aries: return .flags
         case .taurus: return .flags
         case .gemini: return .flags
@@ -3028,7 +3028,7 @@ extension Emoji {
         case .repeatButton: return .flags
         case .repeatSingleButton: return .flags
         case .playButton: return .flags
-        case .fastforwardButton: return .flags
+        case .fastForwardButton: return .flags
         case .nextTrackButton: return .flags
         case .playOrPauseButton: return .flags
         case .reverseButton: return .flags
@@ -3067,7 +3067,7 @@ extension Emoji {
         case .heavyDollarSign: return .flags
         case .medicalSymbol: return .flags
         case .recyclingSymbol: return .flags
-        case .fleurdelis: return .flags
+        case .fleurDeLis: return .flags
         case .tridentEmblem: return .flags
         case .nameBadge: return .flags
         case .japaneseSymbolForBeginner: return .flags
@@ -3080,14 +3080,14 @@ extension Emoji {
         case .curlyLoop: return .flags
         case .doubleCurlyLoop: return .flags
         case .partAlternationMark: return .flags
-        case .eightspokedAsterisk: return .flags
-        case .eightpointedStar: return .flags
+        case .eightSpokedAsterisk: return .flags
+        case .eightPointedStar: return .flags
         case .sparkle: return .flags
         case .copyright: return .flags
         case .registered: return .flags
         case .tradeMark: return .flags
-        case .keycappoundsymbol: return .flags
-        case .keycapasterisk: return .flags
+        case .keycapPoundSymbol: return .flags
+        case .keycapAsterisk: return .flags
         case .keycap0: return .flags
         case .keycap1: return .flags
         case .keycap2: return .flags
@@ -3104,9 +3104,9 @@ extension Emoji {
         case .inputNumbers: return .flags
         case .inputSymbols: return .flags
         case .inputLatinLetters: return .flags
-        case .aButtonbloodType: return .flags
-        case .abButtonbloodType: return .flags
-        case .bButtonbloodType: return .flags
+        case .aButtonBloodType: return .flags
+        case .abButtonBloodType: return .flags
+        case .bButtonBloodType: return .flags
         case .clButton: return .flags
         case .coolButton: return .flags
         case .freeButton: return .flags
@@ -3115,29 +3115,29 @@ extension Emoji {
         case .circledM: return .flags
         case .newButton: return .flags
         case .ngButton: return .flags
-        case .oButtonbloodType: return .flags
+        case .oButtonBloodType: return .flags
         case .okButton: return .flags
         case .pButton: return .flags
         case .sosButton: return .flags
         case .upButton: return .flags
         case .vsButton: return .flags
-        case .japanesehereButton: return .flags
-        case .japaneseserviceChargeButton: return .flags
-        case .japanesemonthlyAmountButton: return .flags
-        case .japanesenotFreeOfChargeButton: return .flags
-        case .japanesereservedButton: return .flags
-        case .japanesebargainButton: return .flags
-        case .japanesediscountButton: return .flags
-        case .japanesefreeOfChargeButton: return .flags
-        case .japaneseprohibitedButton: return .flags
-        case .japaneseacceptableButton: return .flags
-        case .japaneseapplicationButton: return .flags
-        case .japanesepassingGradeButton: return .flags
-        case .japanesevacancyButton: return .flags
-        case .japanesecongratulationsButton: return .flags
-        case .japanesesecretButton: return .flags
-        case .japaneseopenForBusinessButton: return .flags
-        case .japanesenoVacancyButton: return .flags
+        case .japaneseHereButton: return .flags
+        case .japaneseServiceChargeButton: return .flags
+        case .japaneseMonthlyAmountButton: return .flags
+        case .japaneseNotFreeOfChargeButton: return .flags
+        case .japaneseReservedButton: return .flags
+        case .japaneseBargainButton: return .flags
+        case .japaneseDiscountButton: return .flags
+        case .japaneseFreeOfChargeButton: return .flags
+        case .japaneseProhibitedButton: return .flags
+        case .japaneseAcceptableButton: return .flags
+        case .japaneseApplicationButton: return .flags
+        case .japanesePassingGradeButton: return .flags
+        case .japaneseVacancyButton: return .flags
+        case .japaneseCongratulationsButton: return .flags
+        case .japaneseSecretButton: return .flags
+        case .japaneseOpenForBusinessButton: return .flags
+        case .japaneseNoVacancyButton: return .flags
         case .redCircle: return .flags
         case .orangeCircle: return .flags
         case .yellowCircle: return .flags
@@ -3158,8 +3158,8 @@ extension Emoji {
         case .whiteLargeSquare: return .flags
         case .blackMediumSquare: return .flags
         case .whiteMediumSquare: return .flags
-        case .blackMediumsmallSquare: return .flags
-        case .whiteMediumsmallSquare: return .flags
+        case .blackMediumSmallSquare: return .flags
+        case .whiteMediumSmallSquare: return .flags
         case .blackSmallSquare: return .flags
         case .whiteSmallSquare: return .flags
         case .largeOrangeDiamond: return .flags
