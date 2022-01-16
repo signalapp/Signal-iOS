@@ -24,14 +24,19 @@ class EmojiPickerCollectionView: UICollectionView {
     private let allAvailableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
     var emojiKeywordMatcher = EmojiKeywordMatcher(searchString: "") {
         didSet {
+            matchingEmoji = emojiKeywordMatcher.getMatchingEmoji()
+            filteredEmojisByCategory = allAvailableEmojiByCategory.mapValues { emojiWithSkinTones in
+                return emojiWithSkinTones.filter { matchingEmoji.contains($0.baseEmoji) }
+            }
             reloadData()
         }
     }
-    private var filteredEmojisByCategory: [Emoji.Category: [EmojiWithSkinTones]] {
+    var matchingEmoji = [Emoji]()
+    private lazy var filteredEmojisByCategory: [Emoji.Category: [EmojiWithSkinTones]] = allAvailableEmojiByCategory /*{
         return allAvailableEmojiByCategory.mapValues { emojiWithSkinTones in
-            return emojiWithSkinTones.filter { emojiKeywordMatcher.matches($0.baseEmoji) }
+            return emojiWithSkinTones.filter { matchingEmoji.contains($0.baseEmoji) }
         }
-    }
+    }*/
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
@@ -93,7 +98,7 @@ class EmojiPickerCollectionView: UICollectionView {
     func emojiForSection(_ section: Int) -> [EmojiWithSkinTones] {
         guard section > 0 || !hasRecentEmoji else { return Array(recentEmoji[0..<min(maxRecentEmoji, recentEmoji.count)]) }
 
-        guard let category = Emoji.Category.allCases[safe: section - categoryIndexOffset] else {
+        guard let category = Emoji.Category.allCases.filter({ filteredEmojisByCategory[$0]?.count ?? 0 > 0 })[safe: section - categoryIndexOffset] else {
             owsFailDebug("Unexpectedly missing category for section \(section)")
             return []
         }

@@ -120,6 +120,7 @@ struct EmojiModel {
         let rawName: String
         let enumName: String
         let variants: [Emoji]
+        let tags: [String]
         var baseEmoji: Character { variants[0].base }
 
         struct Emoji: Comparable {
@@ -162,6 +163,7 @@ struct EmojiModel {
             }
 
             variants = [baseEmoji] + toneVariants
+            tags = remoteItem.tags ?? []
             try postInitValidation()
         }
 
@@ -554,6 +556,31 @@ extension EmojiGenerator {
             fileHandle.writeLine("}")
         }
     }
+    
+    static func writeTagLookupFile(from emojiModel: EmojiModel) {
+        let emojisForTag = emojiModel.definitions.reduce(into: [String: [EmojiModel.EmojiDefinition]]()) { emojisForTag, emoji in
+            for tag in emoji.tags {
+                var emojis = emojisForTag[tag] ?? []
+                emojis.append(emoji)
+                emojisForTag[tag] = emojis
+            }
+        }
+        writeBlock(fileName: "EmojiTags.swift") { fileHandle in
+            fileHandle.writeLine("let emojiTags: [String: [Emoji]] = [")
+            fileHandle.indent {
+                for tag in emojisForTag.keys.sorted() {
+                    fileHandle.writeLine("\"\(tag)\":[")
+                    for emoji in emojisForTag[tag] ?? [] {
+                        fileHandle.indent {
+                            fileHandle.writeLine(".\(emoji.enumName),")
+                        }
+                    }
+                    fileHandle.writeLine("],")
+                }
+            }
+            fileHandle.writeLine("]")
+        }
+    }
 }
 
 // MARK: - File I/O Helpers
@@ -669,6 +696,7 @@ class EmojiGenerator {
         writeSkinToneLookupFile(from: model)
         writeCategoryLookupFile(from: model)
         writeNameLookupFile(from: model)
+        writeTagLookupFile(from: model)
     }
 }
 

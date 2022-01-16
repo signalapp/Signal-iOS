@@ -57,7 +57,7 @@ class EmojiTests: SignalBaseTest {
     func testFancyEmojiCases() {
         do {
             // Valid emoji with skin tones.
-            let fancyEmoji = EmojiWithSkinTones(baseEmoji: .manWithGuaPiMao, skinTones: [.mediumDark]).rawValue
+            let fancyEmoji = EmojiWithSkinTones(baseEmoji: .personWithSkullcap, skinTones: [.mediumDark]).rawValue
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmoji)
             XCTAssertEqual(fancyEmoji.count, 1)
@@ -92,7 +92,7 @@ class EmojiTests: SignalBaseTest {
 
         do {
             // Thumbs up sign:
-            let fancyEmoji = "\u{1F44D}" // 👍
+            let fancyEmoji = "\u{1F44D}\u{FE0F}" // 👍
             XCTAssertTrue(fancyEmoji.isSingleEmojiUsingEmojiWithSkinTones)
             XCTAssertTrue(fancyEmoji.isSingleEmoji)
             XCTAssertEqual(fancyEmoji.count, 1)

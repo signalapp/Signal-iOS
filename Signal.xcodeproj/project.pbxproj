@@ -966,6 +966,7 @@
 		A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A5E7C673248C5442007C949A /* InfoPlist.strings */; };
 		A8585158270D2871000CE500 /* EmojiSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8585157270D2871000CE500 /* EmojiSearchBar.swift */; };
 		A8698A0D2793AEC2004145D4 /* EmojiKeywordMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8698A0C2793AEC2004145D4 /* EmojiKeywordMatcher.swift */; };
+		A8698A0F2793BC34004145D4 /* EmojiTags.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8698A0E2793BC33004145D4 /* EmojiTags.swift */; };
 		AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */; };
 		B0E5FF35E928F74474D1EF08 /* Pods_SignalNSE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47D9B34F0D33764222824AE9 /* Pods_SignalNSE.framework */; };
 		B60EDE041A05A01700D73516 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EDE031A05A01700D73516 /* AudioToolbox.framework */; };
@@ -2246,6 +2247,7 @@
 		A5E7C674248C5442007C949A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = translations/en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A8585157270D2871000CE500 /* EmojiSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSearchBar.swift; sourceTree = "<group>"; };
 		A8698A0C2793AEC2004145D4 /* EmojiKeywordMatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiKeywordMatcher.swift; sourceTree = "<group>"; };
+		A8698A0E2793BC33004145D4 /* EmojiTags.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmojiTags.swift; sourceTree = "<group>"; };
 		AC12B5FAA0E45C608224A310 /* OWSAddToContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAddToContactViewController.swift; sourceTree = "<group>"; };
 		ACC519FE3DF79E0AF9BB1CD6 /* Pods-SignalNSE.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.app store release.xcconfig"; sourceTree = "<group>"; };
 		AEA97ACC8D9F89DB5E045B2B /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -2625,6 +2627,7 @@
 		3428576F26BD8777005A2A96 /* Emoji */ = {
 			isa = PBXGroup;
 			children = (
+				A8698A0E2793BC33004145D4 /* EmojiTags.swift */,
 				3428577426BD8777005A2A96 /* Emoji.swift */,
 				3428577626BD8777005A2A96 /* Emoji+Available.swift */,
 				3428577026BD8777005A2A96 /* Emoji+Category.swift */,
@@ -6035,6 +6038,7 @@
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
 				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
+				A8698A0F2793BC34004145D4 /* EmojiTags.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
 				34B14D8F24F41C4300CC3A9A /* GroupLinkQRCodeViewController.swift in Sources */,
 				3490D57F25ADE49800F5F96C /* ActionSheetContentBuilder.swift in Sources */,
